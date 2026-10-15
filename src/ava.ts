@@ -4,7 +4,8 @@
 import EventEmitter from '@antv/event-emitter';
 
 import { getEngineClass } from './engines';
-import { extractDataSchema } from './util/schema';
+import { extractDataSchema, toSchema } from './util/schema';
+import { toProfile } from './util/profile';
 import { stringifySchema } from './util/context';
 import { adviseChartType, generateVisualizationSyntax, wrapSyntaxInHTML } from './visualization';
 import { generateSuggestions } from './suggest';
@@ -25,6 +26,8 @@ import type {
   LLMConfig,
   EngineConfig,
   DataSourceConfig,
+  DataSourceMetadata,
+  DataContext,
   Schema,
   AnalysisEngine,
   AnalysisResponse,
@@ -65,6 +68,16 @@ export class AVA extends EventEmitter {
     super();
     this.llmConfig = config.llm;
     this.engineConfig = config.engine ?? { type: 'duckdb' };
+  }
+
+  /**
+   * Data context.
+   */
+  private async getContext(): Promise<DataContext> {
+    return {
+      schema: await this.schema(),
+      profile: this.dataProfile ?? undefined,
+    };
   }
 
   /**
@@ -116,21 +129,19 @@ export class AVA extends EventEmitter {
    * Load a data source config into the engine.
    * Reloading disposes the previous engine and its resources.
    */
-  async source(config: DataSourceConfig): Promise<void> {
+  async source(config: DataSourceConfig, metadata: DataSourceMetadata = {}): Promise<void> {
     emit(this, new ExecutionEvent(ExecutionEventType.LOAD_START, { type: config.type }));
 
     try {
-      this.dataSchema = null;
-      this.dataProfile = null;
-      await this.disposeEngine();
-      this.engine = null;
+      await this.dispose();
 
       this.engine = await this.createEngine();
       try {
-        this.dataSchema = await this.engine.load(config);
+        await this.engine.load(config);
+        this.dataSchema = toSchema(metadata) ?? null;
+        this.dataProfile = toProfile(metadata) ?? null;
       } catch (error) {
-        await this.disposeEngine();
-        this.engine = null;
+        await this.dispose();
         throw error;
       }
     } catch (error) {
@@ -147,17 +158,26 @@ export class AVA extends EventEmitter {
    * Include tables, fields, types, indexes, and relations.
    */
   async schema(): Promise<Schema> {
-    if (!this.dataSchema) {
+    if (!this.engine) {
       throw new Error('No data loaded. Please call source() first.');
     }
-    return this.dataSchema;
+
+    if (this.dataSchema) return this.dataSchema;
+
+    emit(this, new ExecutionEvent(ExecutionEventType.SCHEMA_START));
+
+    try {
+      return (this.dataSchema ??= await this.engine.schema());
+    } finally {
+      emit(this, new ExecutionEvent(ExecutionEventType.SCHEMA_END));
+    }
   }
 
   /**
    * Compute a statistical profile of the data source.
    */
   async profile(options: ProfileOptions = {}): Promise<Profile> {
-    if (!this.engine || !this.dataSchema) {
+    if (!this.engine) {
       throw new Error('No data loaded. Please call source() first.');
     }
     if (!this.engine.profile) {
@@ -167,16 +187,14 @@ export class AVA extends EventEmitter {
     emit(this, new ExecutionEvent(ExecutionEventType.PROFILE_START));
 
     try {
-      this.dataProfile = await this.engine.profile(options);
+      return (this.dataProfile ??= await this.engine.profile(await this.schema(), options));
     } catch (error) {
       emit(this, new ExecutionEvent(ExecutionEventType.PROFILE_END, { error: serializeError(error) }));
 
       throw error;
+    } finally {
+      emit(this, new ExecutionEvent(ExecutionEventType.PROFILE_END));
     }
-
-    emit(this, new ExecutionEvent(ExecutionEventType.PROFILE_END));
-
-    return this.dataProfile;
   }
 
   /**
@@ -185,21 +203,20 @@ export class AVA extends EventEmitter {
    * Use visualize() separately to generate charts from the analysis result.
    */
   async analyze(query: string, config: AnalysisConfig = {}): Promise<AnalysisResponse> {
-    if (!this.engine || !this.dataSchema) {
+    if (!this.engine) {
       throw new Error('No data loaded. Please call source() first.');
     }
-
-    const runtime = {
-      emit: (event: AnalysisEvent) => emit(this, event),
-      context: { schema: this.dataSchema, profile: this.dataProfile ?? undefined },
-      engine: this.engine,
-      llm: this.llmConfig,
-    };
 
     emit(this, new ExecutionEvent(ExecutionEventType.ANALYZE_START, { query }));
 
     let result: AnalysisResponse;
     try {
+      const runtime = {
+        emit: (event: AnalysisEvent) => emit(this, event),
+        context: await this.getContext(),
+        engine: this.engine,
+        llm: this.llmConfig,
+      };
       result = await analyze(query, config, runtime);
     } catch (error) {
       emit(this, new ExecutionEvent(ExecutionEventType.ANALYZE_END, { error: serializeError(error) }));
@@ -217,7 +234,7 @@ export class AVA extends EventEmitter {
    * Use query() to execute the generated DSL.
    */
   async translate(query: string): Promise<string> {
-    if (!this.engine || !this.dataSchema) {
+    if (!this.engine) {
       throw new Error('No data loaded. Please call source() first.');
     }
 
@@ -225,8 +242,7 @@ export class AVA extends EventEmitter {
 
     let dsl: string;
     try {
-      const context = { schema: this.dataSchema, profile: this.dataProfile ?? undefined };
-      dsl = await this.engine.getDSL(query, context);
+      dsl = await this.engine.getDSL(query, await this.getContext());
     } catch (error) {
       emit(this, new AnalysisEvent(AnalysisEventType.TRANSLATE_END, { error: serializeError(error) }));
 
@@ -243,7 +259,7 @@ export class AVA extends EventEmitter {
    * The DSL must match the current engine's query language.
    */
   async query(dsl: string, options?: ExecutionOptions): Promise<ExecutionResult> {
-    if (!this.engine || !this.dataSchema) {
+    if (!this.engine) {
       throw new Error('No data loaded. Please call source() first.');
     }
 
@@ -315,7 +331,7 @@ export class AVA extends EventEmitter {
    * Suggest questions about the loaded data.
    */
   async suggest(count: number = 3): Promise<SuggestResult[]> {
-    if (!this.dataSchema) {
+    if (!this.engine) {
       throw new Error('No data loaded. Please call source() first.');
     }
 
@@ -323,11 +339,7 @@ export class AVA extends EventEmitter {
 
     let result: SuggestResult[];
     try {
-      result = await generateSuggestions(
-        this.llmConfig,
-        { schema: this.dataSchema, profile: this.dataProfile ?? undefined },
-        count
-      );
+      result = await generateSuggestions(this.llmConfig, await this.getContext(), count);
     } catch (error) {
       emit(this, new ExecutionEvent(ExecutionEventType.SUGGEST_END, { error: serializeError(error) }));
 
@@ -343,9 +355,12 @@ export class AVA extends EventEmitter {
    * Clean up resources (engine storage, temp files)
    */
   async dispose(): Promise<void> {
-    await this.disposeEngine();
-    this.engine = null;
-    this.dataSchema = null;
-    this.dataProfile = null;
+    try {
+      await this.disposeEngine();
+    } finally {
+      this.engine = null;
+      this.dataSchema = null;
+      this.dataProfile = null;
+    }
   }
 }

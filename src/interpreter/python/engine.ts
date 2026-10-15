@@ -6,10 +6,10 @@ import { z } from 'zod';
 import { languageModel } from '../../util/model';
 import { stringifyProfile, stringifySchema } from '../../util/context';
 import { executionResult, maxRows, maxResultBytes } from '../../util/result';
-import { DEFAULT_METRICS, parseProfileOptions } from '../../util/profile';
+import { DEFAULT_METRICS, parseProfileOptions, profileMetadataSchema } from '../../util/profile';
 import { runWithTimeout } from '../../util/timeout';
 
-import { SCHEMA_CODE, sourceSchema, tableSchema, profileSchema, resultSchema } from './util/schema';
+import { SCHEMA_CODE, sourceSchema, tableSchema, resultSchema } from './util/schema';
 import { profileCode } from './profile';
 import { createPythonExecutor } from './util/execute';
 import { executionCode } from './util/code';
@@ -43,7 +43,6 @@ Do not read files, access the network, install packages, or print the answer.`,
   };
 
   private source: DataSourceConfig | null = null;
-  private schema: Schema | null = null;
   private readonly timeoutMs: number;
   private readonly executor: ReturnType<typeof createPythonExecutor>;
 
@@ -60,33 +59,24 @@ Do not read files, access the network, install packages, or print the answer.`,
     this.executor = engineOptions.execute ?? createPythonExecutor(this.timeoutMs);
   }
 
-  async load(config: DataSourceConfig): Promise<Schema> {
-    this.source = null;
-    this.schema = null;
-
-    try {
-      this.source = sourceSchema.parse(config) as DataSourceConfig;
-      const tables = z.array(tableSchema).parse(await this.metadata(SCHEMA_CODE));
-
-      if (new Set(tables.map((table) => table.name)).size !== tables.length) {
-        throw new Error('Python source returned duplicate table names');
-      }
-
-      this.schema = { tables } as Schema;
-
-      return this.schema;
-    } catch (error) {
-      this.source = null;
-      throw error;
-    }
+  async load(config: DataSourceConfig): Promise<void> {
+    this.source = sourceSchema.parse(config) as DataSourceConfig;
   }
 
-  async getDSL(query: string, context?: DataContext): Promise<string> {
-    if (!this.schema) throw new Error('No data loaded. Please call source() first.');
+  async schema(): Promise<Schema> {
+    if (!this.source) throw new Error('No data loaded. Please call source() first.');
 
-    const dataset = context?.profile
-      ? stringifyProfile(context.profile)
-      : stringifySchema(context?.schema ?? this.schema);
+    const tables = z.array(tableSchema).parse(await this.metadata(SCHEMA_CODE));
+    if (new Set(tables.map((table) => table.name)).size !== tables.length) {
+      throw new Error('Python source returned duplicate table names');
+    }
+    return { tables } as Schema;
+  }
+
+  async getDSL(query: string, context: DataContext): Promise<string> {
+    if (!this.source) throw new Error('No data loaded. Please call source() first.');
+
+    const dataset = context.profile ? stringifyProfile(context.profile) : stringifySchema(context.schema);
 
     const response = await generateText({
       model: languageModel(this.llmConfig),
@@ -110,14 +100,11 @@ Return ONLY executable Python code without explanation.`,
       .trim();
   }
 
-  async profile(options: ProfileOptions = {}): Promise<Profile> {
-    if (!this.schema) throw new Error('No data loaded. Please call source() first.');
+  async profile(schema: Schema, options: ProfileOptions = {}): Promise<Profile> {
+    if (!this.source) throw new Error('No data loaded. Please call source() first.');
 
-    const tables = profileSchema.parse(
-      await this.metadata(profileCode(parseProfileOptions(options, { metrics: DEFAULT_METRICS })))
-    );
-
-    return { tables, generatedAt: Date.now() } as unknown as Profile;
+    const tables = await this.metadata(profileCode(parseProfileOptions(options, { metrics: DEFAULT_METRICS }), schema));
+    return profileMetadataSchema.parse({ ...schema, tables, generatedAt: Date.now() });
   }
 
   async execute<T = Record<string, unknown>>(code: string, options?: ExecutionOptions): Promise<ExecutionResult<T>> {
@@ -150,8 +137,7 @@ Return ONLY executable Python code without explanation.`,
   }
 
   async dispose(): Promise<void> {
-    // Each executor call owns its execution resources; the engine owns only source metadata.
+    // Each executor call owns its execution resources; the engine owns only source configuration.
     this.source = null;
-    this.schema = null;
   }
 }

@@ -30,6 +30,8 @@ export enum AnalysisEventType {
 export enum ExecutionEventType {
   LOAD_START = 'loadstart',
   LOAD_END = 'loadend',
+  SCHEMA_START = 'schemastart',
+  SCHEMA_END = 'schemaend',
   PROFILE_START = 'profilestart',
   PROFILE_END = 'profileend',
   ANALYZE_START = 'analyzestart',

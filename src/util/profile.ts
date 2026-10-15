@@ -1,4 +1,38 @@
-import type { Metric, MetricConfig, ProfileOptions, ParsedProfileOptions, LogicalType } from '../types';
+import { z } from 'zod';
+
+import { jsonValue, schemaStructure } from './schema';
+
+import type {
+  Metric,
+  MetricConfig,
+  ProfileOptions,
+  ParsedProfileOptions,
+  LogicalType,
+  Profile,
+  DataSourceMetadata,
+} from '../types';
+
+const tableStructure = schemaStructure.shape.tables.element;
+export const profileMetadataSchema = schemaStructure
+  .extend({
+    generatedAt: z.number().int().min(0).max(8_640_000_000_000_000),
+    tables: z.array(
+      tableStructure.extend({
+        metrics: z.record(jsonValue),
+        fields: z.array(
+          tableStructure.shape.fields.element.extend({
+            logicalType: z.enum(['numeric', 'string', 'boolean', 'date', 'unknown']),
+            metrics: z.record(jsonValue),
+          })
+        ),
+      })
+    ),
+  })
+  .transform((value) => value as Profile);
+
+export function toProfile(metadata: DataSourceMetadata): Profile | undefined {
+  return metadata.profile === undefined ? undefined : profileMetadataSchema.parse(metadata.profile);
+}
 
 export function parseMetricConfig(config: MetricConfig): Exclude<MetricConfig, string> {
   return typeof config === 'string' ? { id: config } : config;

@@ -38,20 +38,21 @@ export class JavaScriptEngine implements AnalysisEngine {
   };
 
   private data: any[] | null = null;
-  private schema: Schema | null = null;
 
   constructor(private readonly llmConfig: LLMConfig) {}
 
-  async load(config: DataSourceConfig): Promise<Schema> {
+  async load(config: DataSourceConfig): Promise<void> {
     this.data = null;
-    this.schema = null;
     if (!['csv', 'json', 'text'].includes(config.type)) {
       throw new Error(`JavaScriptEngine only supports csv/json/text sources, got: ${config.type}`);
     }
 
     this.data = await loadSource(config as any, this.llmConfig);
-    this.schema = extractDataSchema(this.data);
-    return this.schema;
+  }
+
+  async schema(): Promise<Schema> {
+    if (!this.data) throw new Error('No data loaded. Please call source() first.');
+    return extractDataSchema(this.data);
   }
 
   /**
@@ -63,19 +64,17 @@ export class JavaScriptEngine implements AnalysisEngine {
     return this.data;
   }
 
-  async profile(options: ProfileOptions = {}): Promise<Profile> {
-    if (!this.data || !this.schema) throw new Error('No data loaded. Please call source() first.');
-    return profileTables(this.data, this.schema, parseProfileOptions(options, { metrics: DEFAULT_METRICS }));
+  async profile(schema: Schema, options: ProfileOptions = {}): Promise<Profile> {
+    if (!this.data) throw new Error('No data loaded. Please call source() first.');
+    return profileTables(this.data, schema, parseProfileOptions(options, { metrics: DEFAULT_METRICS }));
   }
 
-  async getDSL(query: string, context?: DataContext): Promise<string> {
+  async getDSL(query: string, context: DataContext): Promise<string> {
     if (!this.data) {
       throw new Error('No data loaded. Please call source() first.');
     }
 
-    const datasetContext = context?.profile
-      ? stringifyProfile(context.profile)
-      : stringifySchema(context?.schema ?? this.schema!);
+    const datasetContext = context.profile ? stringifyProfile(context.profile) : stringifySchema(context.schema);
 
     const prompt = `You are a data analysis expert. Given the following dataset information and user query, generate JavaScript code to answer the question.
 
@@ -116,6 +115,5 @@ Now generate the code:`;
 
   async dispose(): Promise<void> {
     this.data = null;
-    this.schema = null;
   }
 }

@@ -1,8 +1,6 @@
 import { column, logicalTypes, table, TOP_VALUES_OPTIONS, validateMetricConfig } from '../../util/profile';
 
-import { SCHEMA_CODE } from './util/schema';
-
-import type { LogicalType, Metric, ParsedProfileOptions } from '../../types';
+import type { LogicalType, Metric, ParsedProfileOptions, Schema } from '../../types';
 
 /** Python expressions receive the same per-target context as JavaScript interpreter metrics. */
 export const BUILTIN_METRICS: Metric<string>[] = [
@@ -33,7 +31,7 @@ export const BUILTIN_METRICS: Metric<string>[] = [
 ];
 
 /** Build fixed pandas statistics; only metadata is returned to AVA. */
-export function profileCode(options: ParsedProfileOptions): string {
+export function profileCode(options: ParsedProfileOptions, schema: Schema): string {
   const kinds: LogicalType[] = ['numeric', 'string', 'boolean', 'date', 'unknown'];
 
   const metrics = options.metrics.map((metric) => {
@@ -51,8 +49,8 @@ export function profileCode(options: ParsedProfileOptions): string {
     .map(({ id, expression }) => `${JSON.stringify(id)}: lambda ctx: ${expression}`)
     .join(',\n    ');
 
-  return `${SCHEMA_CODE}
-import json
+  return `import json
+result = json.loads(${JSON.stringify(JSON.stringify(schema.tables))})
 import math
 from collections import Counter
 from functools import cached_property
