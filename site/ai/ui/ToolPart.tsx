@@ -4,7 +4,8 @@ import { getToolName } from 'ai';
 import type { PlaygroundUIMessage } from '../core/session';
 import { MAX_TOOL_DETAIL_LENGTH, TOOL_STEPS } from './constants';
 import type { Message } from './types';
-import ToolTrace from './ToolTrace';
+import ToolRow from './ToolRow';
+import FileDiffs from './FileDiffs';
 import SchemaTable from './SchemaTable';
 import MetadataTable from './MetadataTable';
 
@@ -51,35 +52,28 @@ export default function ToolPart({
     }
   }
 
+  const running = !!pending && active;
+
   return (
-    <ToolTrace
-      inline
-      detail={detail}
-      msg={{
-        role: 'assistant',
-        text: '',
-        steps: [
-          {
-            ...presentation,
-            id: part.toolCallId,
-            label: part.title ?? presentation.label,
-            chip: `${presentation.chip} · ${pending && !active ? 'Interrupted' : status}`,
-            detail: detail
-              ? []
-              : [
-                  {
-                    text: (typeof value === 'string' ? value : JSON.stringify(value, null, 2) ?? '').slice(
-                      0,
-                      MAX_TOOL_DETAIL_LENGTH
-                    ),
-                  },
-                ],
-          },
-        ],
-        diffs,
-        diffLines,
-      }}
-      live={{ rowsShown: 1, runningRow: pending && active ? 0 : null }}
-    />
+    <div className="w-full">
+      <div className="-mx-1 overflow-hidden px-1.5">
+        <ToolRow
+          {...presentation}
+          label={part.title ?? presentation.label}
+          chip={`${presentation.chip} · ${pending && !active ? 'Interrupted' : status}`}
+          running={running}
+        >
+          {detail ?? (
+            <span className="truncate text-[11.5px] leading-[1.6] text-ink-2">
+              {(typeof value === 'string' ? value : JSON.stringify(value, null, 2) ?? '').slice(
+                0,
+                MAX_TOOL_DETAIL_LENGTH
+              )}
+            </span>
+          )}
+        </ToolRow>
+        {!running && <FileDiffs diffs={diffs} diffLines={diffLines} />}
+      </div>
+    </div>
   );
 }

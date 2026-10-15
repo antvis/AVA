@@ -58,8 +58,7 @@ const PromptBar: React.FC<{
     : PROMPT_SOURCES;
   const [draft, setDraft] = useState('');
   const [dismissed, setDismissed] = useState(false);
-  const [plusOpen, setPlusOpen] = useState(false);
-  const [modelOpen, setModelOpen] = useState(false);
+  const [openMenu, setOpenMenu] = useState<'sources' | 'model' | null>(null);
   const [model, setModel] = useState(PROMPT_MODELS[1]);
   const [attachments, setAttachments] = useState<string[]>([]);
   const [active, setActive] = useState(0);
@@ -79,7 +78,9 @@ const PromptBar: React.FC<{
   const [modelMenuBottom, setModelMenuBottom] = useState(0);
 
   const token = dismissed ? null : parseToken(draft);
-  const menu: 'at' | 'slash' | null = plusOpen ? 'at' : token?.kind ?? null;
+  const plusOpen = openMenu === 'sources';
+  const modelOpen = openMenu === 'model';
+  const menu: 'at' | 'slash' | null = modelOpen ? null : plusOpen ? 'at' : token?.kind ?? null;
   const query = plusOpen ? '' : token?.query ?? '';
 
   const rows: { key: string; name: string; desc: string }[] =
@@ -157,17 +158,15 @@ const PromptBar: React.FC<{
 
   /* clicking anywhere outside the composer closes the open menus */
   useEffect(() => {
-    if (!modelOpen && !plusOpen) return;
+    if (!openMenu) return;
     const close = (event: PointerEvent) => {
       if (!(event.target as Element).closest('[data-promptbar]')) {
-        setModelOpen(false);
-        setPlusOpen(false);
+        setOpenMenu(null);
       }
     };
     const onKey = (event: KeyboardEvent) => {
       if (event.key === 'Escape') {
-        setModelOpen(false);
-        setPlusOpen(false);
+        setOpenMenu(null);
       }
     };
     document.addEventListener('pointerdown', close);
@@ -176,12 +175,7 @@ const PromptBar: React.FC<{
       document.removeEventListener('pointerdown', close);
       document.removeEventListener('keydown', onKey);
     };
-  }, [modelOpen, plusOpen]);
-
-  const closeMenus = () => {
-    setPlusOpen(false);
-    setModelOpen(false);
-  };
+  }, [openMenu]);
 
   const pick = (row: { key: string; name: string }) => {
     const source = sources.find((s) => s.key === row.key);
@@ -194,7 +188,7 @@ const PromptBar: React.FC<{
     } else {
       setDraft(`${token ? draft.slice(0, token.start) : draft}${row.name} `);
     }
-    setPlusOpen(false);
+    setOpenMenu(null);
     setDismissed(false);
     inputRef.current?.focus();
   };
@@ -203,14 +197,14 @@ const PromptBar: React.FC<{
   const send = () => {
     if (!canSend) return;
     if (live && !live.ready) {
-      closeMenus();
+      setOpenMenu(null);
       live.onConfigure();
       return;
     }
     onSend?.(draft.trim());
     setDraft('');
     setAttachments([]);
-    closeMenus();
+    setOpenMenu(null);
   };
 
   return (
@@ -321,7 +315,7 @@ const PromptBar: React.FC<{
                 onMouseEnter={() => setModelHovered(i)}
                 onClick={() => {
                   setModel(m);
-                  setModelOpen(false);
+                  setOpenMenu(null);
                   inputRef.current?.focus();
                 }}
                 className="relative z-10 flex h-8 w-full items-center gap-2 rounded-[6px] px-2 text-left"
@@ -393,8 +387,7 @@ const PromptBar: React.FC<{
               disabled={!!live && busy}
               aria-expanded={plusOpen}
               onClick={() => {
-                setModelOpen(false);
-                setPlusOpen((current) => !current);
+                setOpenMenu((current) => (current === 'sources' ? null : 'sources'));
                 inputRef.current?.focus();
               }}
               className={`flex size-7 shrink-0 items-center justify-center justify-self-start text-zinc-400 transition-[background-color,color,transform] duration-150 hover:bg-zinc-100 hover:text-zinc-700 active:scale-[0.94] rounded-[8px] ${
@@ -414,7 +407,7 @@ const PromptBar: React.FC<{
               onChange={(event) => {
                 setDraft(event.target.value);
                 setDismissed(false);
-                setPlusOpen(false);
+                setOpenMenu(null);
               }}
               onKeyDown={(event) => {
                 if (menu && rows.length > 0) {
@@ -432,7 +425,7 @@ const PromptBar: React.FC<{
                 }
                 if (event.key === 'Escape') {
                   setDismissed(true);
-                  closeMenus();
+                  setOpenMenu(null);
                   return;
                 }
                 if (event.key === 'Enter' && !event.shiftKey && !event.nativeEvent.isComposing) {
@@ -457,9 +450,12 @@ const PromptBar: React.FC<{
               title={live ? 'Configure your model' : undefined}
               disabled={!!live && busy}
               onClick={() => {
-                setPlusOpen(false);
-                if (live) live.onConfigure();
-                else setModelOpen((current) => !current);
+                if (live) {
+                  setOpenMenu(null);
+                  live.onConfigure();
+                } else {
+                  setOpenMenu((current) => (current === 'model' ? null : 'model'));
+                }
               }}
               className={`flex h-7 max-w-[160px] shrink-0 items-center gap-1 rounded-[8px] bg-zinc-100 px-1.5 text-[12px] font-medium text-zinc-600 transition-colors duration-150 hover:bg-zinc-200/70 hover:text-zinc-800 ${
                 expanded ? 'col-start-2 row-start-2 justify-self-start' : 'col-start-3 row-start-1'
