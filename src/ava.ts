@@ -187,7 +187,8 @@ export class AVA extends EventEmitter {
     emit(this, new ExecutionEvent(ExecutionEventType.PROFILE_START));
 
     try {
-      return (this.dataProfile ??= await this.engine.profile(await this.schema(), options));
+      this.dataProfile = await this.engine.profile(await this.schema(), options);
+      return this.dataProfile;
     } catch (error) {
       emit(this, new ExecutionEvent(ExecutionEventType.PROFILE_END, { error: serializeError(error) }));
 
