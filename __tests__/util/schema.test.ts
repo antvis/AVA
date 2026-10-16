@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest';
 
-import { extractDataSchema, schemaMetadataSchema, toSchema } from '../../src/util/schema';
+import { extractDataSchema, schemaMetadataSchema } from '../../src/util/schema';
 
 import type { Profile, Schema } from '../../src/types';
 
@@ -51,31 +51,7 @@ describe('extractDataSchema', () => {
   });
 });
 
-describe('toSchema', () => {
-  it('prefers explicit schema and otherwise extracts profile structure', () => {
-    expect(toSchema({})).toBeNull();
-    expect(toSchema({ schema })).toEqual(schema);
-    expect(toSchema({ profile })).toEqual(schema);
-    const explicit = { ...schema, relations: [] };
-    expect(toSchema({ schema: explicit, profile })).toEqual(explicit);
-  });
-
-  it.each([
-    null,
-    {},
-    { tables: 'invalid' },
-    { tables: [{ ...schema.tables[0], columnCount: -1 }] },
-    { tables: [{ ...schema.tables[0], fields: [{ name: 'value', type: 123 }] }] },
-  ])('returns null for invalid explicit schema without falling back to profile %#', (input) => {
-    expect(toSchema({ schema: input as never })).toBeNull();
-    expect(toSchema({ schema: input as never, profile })).toBeNull();
-  });
-
-  it('validates structure extracted from a profile', () => {
-    const invalid = { ...profile, tables: [{ ...profile.tables[0], fields: 'invalid' }] };
-    expect(toSchema({ profile: invalid as never })).toBeNull();
-  });
-
+describe('schemaMetadataSchema', () => {
   it('extracts pure structure from profiles and CLI schema output', () => {
     expect(schemaMetadataSchema.parse(profile)).toEqual(schema);
     expect(schemaMetadataSchema.parse({ ...schema, language: { name: 'JavaScript', fence: 'js' } })).toEqual(schema);

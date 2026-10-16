@@ -5,7 +5,7 @@
 
 import { z } from 'zod';
 
-import type { Schema, TableIndex, TableRelation, TableSchema, DataSourceMetadata } from '../types';
+import type { Schema, TableIndex, TableRelation, TableSchema } from '../types';
 
 /** Metadata snapshots must survive JSON persistence and process boundaries. */
 export const jsonValue: z.ZodType<unknown> = z.lazy(() =>
@@ -37,13 +37,6 @@ export const schemaStructure = z.object({ tables: z.array(table), relations: z.a
 
 // Object parsing also projects profiles (and CLI schema output) to pure structure.
 export const schemaMetadataSchema = schemaStructure.transform((value) => value as Schema);
-
-/** Prefer explicit structure; otherwise extract it from the profile. */
-export function toSchema(metadata: DataSourceMetadata): Schema | null {
-  const schema = metadata.schema !== undefined ? metadata.schema : metadata.profile;
-  const result = schemaMetadataSchema.safeParse(schema);
-  return result.success ? result.data : null;
-}
 
 /**
  * Infer field type from sample values

@@ -1,6 +1,8 @@
 import { AVA } from '../../index';
+import { schemaMetadataSchema } from '../../util/schema';
 
-import type { DataSourceConfig, EngineConfig, LLMConfig, DataSourceMetadata } from '../../types';
+import type { Startup } from './protocol';
+import type { DataSourceConfig, EngineConfig, LLMConfig } from '../../types';
 
 // One server process owns one dataset. The socket path supplies its external ID.
 let ava: AVA | undefined;
@@ -23,7 +25,7 @@ export async function createDataset(
   source: DataSourceConfig,
   llm: LLMConfig,
   engine?: EngineConfig['type'],
-  metadata?: DataSourceMetadata
+  metadata?: Startup['metadata']
 ): Promise<void> {
   if (ava || disposal) throw new Error('Dataset process has already been initialized.');
 
@@ -31,7 +33,14 @@ export async function createDataset(
     llm,
     engine: { type: engine ?? (source.type === 'supabase' || source.type === 'clickhouse' ? source.type : 'duckdb') },
   });
-  const loading = ava.source(source, metadata);
+  const instance = ava;
+  const loading = (async () => {
+    await instance.source(source);
+    const schema = metadata?.schema ?? metadata?.profile;
+    if (schema) await instance.schema(undefined, () => schemaMetadataSchema.parse(schema));
+    const profile = metadata?.profile;
+    if (profile) await instance.profile(undefined, () => profile);
+  })();
   queue = loading.catch(() => undefined);
   try {
     await loading;

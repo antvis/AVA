@@ -425,7 +425,7 @@ describe('AVA', () => {
   });
 });
 
-describe('AVA source metadata', () => {
+describe('AVA metadata setters', () => {
   const llm = { model: 'unused' };
   const source: DataSourceConfig = { type: 'json', options: { data: [{ value: 2 }, { value: 4 }] } };
   const schema: Schema = {
@@ -458,9 +458,11 @@ describe('AVA source metadata', () => {
           type === 'duckdb' ? vi.spyOn(duckdbSchema, 'getDuckDBSchema') : vi.spyOn(memorySchema, 'extractDataSchema');
         const onProfile = vi.fn();
         restored.on('profilestart', onProfile);
-        await restored.source(source, { profile: exported });
+        await restored.source(source);
+        await restored.schema(undefined, () => expectedSchema);
+        await restored.profile(undefined, () => exported);
         expect(discover).not.toHaveBeenCalled();
-        expect(onProfile).not.toHaveBeenCalled();
+        expect(onProfile).toHaveBeenCalledOnce();
         expect(await restored.schema()).toEqual(expectedSchema);
         expect(await restored.schema()).not.toHaveProperty('generatedAt');
         expect((await restored.schema()).tables[0].fields[0]).not.toHaveProperty('metrics');
@@ -490,12 +492,13 @@ describe('AVA source metadata', () => {
         expect(getDSL).toHaveBeenLastCalledWith('Total', { schema: expectedSchema, profile: recomputed });
         expect(compute).toHaveBeenCalledExactlyOnceWith(expectedSchema, { metrics: ['sum'] });
 
-        await restored.source(source, { schema: expectedSchema, profile: undefined });
+        await restored.source(source);
+        await restored.schema(undefined, () => expectedSchema);
         const nextDSL = vi.spyOn(restored.engine!, 'getDSL').mockResolvedValue(dsl);
         await restored.translate('Total');
         expect(nextDSL).toHaveBeenLastCalledWith('Total', { schema: expectedSchema, profile: null });
         expect(discover).not.toHaveBeenCalled();
-        await restored.source(source, {});
+        await restored.source(source);
         expect(discover).not.toHaveBeenCalled();
         await restored.schema();
         await restored.schema();
@@ -507,53 +510,103 @@ describe('AVA source metadata', () => {
     }
   );
 
-  it('ignores invalid metadata, discovers schema on demand and clears stale profile', async () => {
+  it('passes options to setters and overrides cached metadata without engine calls', async () => {
     const ava = new AVA({ llm, engine: { type: 'javascript' } });
     try {
-      const end = vi.fn();
-      ava.on('loadend', end);
-      for (const metadata of [{ schema: null }, { profile: { tables: 'invalid' } }]) {
-        await ava.source(source, { schema, profile });
-        await expect(ava.source(source, metadata as never)).resolves.toBeUndefined();
-        const discover = vi.spyOn(ava.engine!, 'schema');
-        expect(end).toHaveBeenLastCalledWith({ type: 'loadend', data: {} });
-        expect((await ava.query('const result = data;')).data).toEqual([{ value: 2 }, { value: 4 }]);
-        expect(discover).not.toHaveBeenCalled();
-        expect(await ava.schema()).toEqual(schema);
-        expect(discover).toHaveBeenCalledOnce();
-        const getDSL = vi.spyOn(ava.engine!, 'getDSL').mockResolvedValue('const result = data;');
-        await ava.translate('Rows');
-        expect(getDSL).toHaveBeenCalledWith('Rows', { schema, profile: null });
-      }
-
-      await ava.source(source, { schema, profile });
-      await expect(
-        ava.source({ type: 'parquet', options: { path: 'unsupported.parquet' } }, { profile })
-      ).rejects.toThrow();
-      expect(ava.engine).toBeNull();
-      await expect(ava.schema()).rejects.toThrow('No data loaded');
       await ava.source(source);
-      const nextDSL = vi.spyOn(ava.engine!, 'getDSL').mockResolvedValue('const result = data;');
-      await ava.translate('Rows');
-      expect(nextDSL).toHaveBeenLastCalledWith('Rows', { schema, profile: null });
+      await ava.schema();
+      await ava.profile();
+      const discover = vi.spyOn(ava.engine!, 'schema');
+      const compute = vi.spyOn(ava.engine!, 'profile');
+      const options = {};
+      const setSchema = vi.fn(() => schema);
+      expect(await ava.schema(options, setSchema)).toEqual(schema);
+      expect(setSchema).toHaveBeenCalledExactlyOnceWith(options);
+      const profileOptions = { metrics: ['mean'] };
+      const setProfile = vi.fn(() => profile);
+      expect(await ava.profile(profileOptions, setProfile)).toEqual(profile);
+      expect(setProfile).toHaveBeenCalledExactlyOnceWith(profileOptions);
+      expect(discover).not.toHaveBeenCalled();
+      expect(compute).not.toHaveBeenCalled();
+      await ava.profile(profileOptions);
+      expect(compute).toHaveBeenCalledExactlyOnceWith(schema, profileOptions);
     } finally {
       await ava.dispose();
     }
-    await expect(ava.schema()).rejects.toThrow('No data loaded');
   });
 
-  it('keeps valid structure when the imported profile statistics are invalid', async () => {
+  it('allows a profile setter without engine profiling support', async () => {
     const ava = new AVA({ llm, engine: { type: 'javascript' } });
     try {
-      await ava.source(source, { profile: { ...profile, generatedAt: -1 } });
-      const discover = vi.spyOn(ava.engine!, 'schema');
+      await ava.source(source);
+      ava.engine!.profile = undefined;
+      expect(await ava.profile(undefined, () => profile)).toEqual(profile);
+      await expect(ava.profile()).rejects.toThrow('Profiling is not supported');
+    } finally {
+      await ava.dispose();
+    }
+  });
+
+  it('reports setter failures and keeps the previous metadata', async () => {
+    const ava = new AVA({ llm, engine: { type: 'javascript' } });
+    try {
+      await ava.source(source);
+      await ava.schema(undefined, () => schema);
+      await ava.profile(undefined, () => profile);
+      const schemaEnd = vi.fn();
+      const profileEnd = vi.fn();
+      ava.on('schemaend', schemaEnd);
+      ava.on('profileend', profileEnd);
+      const error = new Error('setter failed');
+      await expect(
+        ava.schema(undefined, () => {
+          throw error;
+        })
+      ).rejects.toBe(error);
+      await expect(
+        ava.profile(undefined, () => {
+          throw error;
+        })
+      ).rejects.toBe(error);
+      await expect(ava.schema(undefined, () => ({ tables: 'invalid' } as never))).rejects.toThrow();
+      await expect(ava.profile(undefined, () => ({ ...profile, generatedAt: -1 }))).rejects.toThrow();
+      expect(schemaEnd.mock.calls[0][0].data.error.message).toBe('setter failed');
+      expect(profileEnd.mock.calls[0][0].data.error.message).toBe('setter failed');
       expect(await ava.schema()).toEqual(schema);
+      const getDSL = vi.spyOn(ava.engine!, 'getDSL').mockResolvedValue('const result = data;');
+      await ava.translate('Rows');
+      expect(getDSL).toHaveBeenLastCalledWith('Rows', { schema, profile });
+      await ava.schema(undefined, () => schema);
+      await ava.translate('Rows');
+      expect(getDSL).toHaveBeenLastCalledWith('Rows', { schema, profile: null });
+    } finally {
+      await ava.dispose();
+    }
+  });
+
+  it('clears supplied metadata on reload, failed load and disposal', async () => {
+    const ava = new AVA({ llm, engine: { type: 'javascript' } });
+    try {
+      await expect(ava.schema(undefined, () => schema)).rejects.toThrow('No data loaded');
+      await expect(ava.profile(undefined, () => profile)).rejects.toThrow('No data loaded');
+      await ava.source(source);
+      await ava.schema(undefined, () => schema);
+      await ava.profile(undefined, () => profile);
+      await ava.source(source);
+      const discover = vi.spyOn(ava.engine!, 'schema');
       expect(discover).not.toHaveBeenCalled();
       const getDSL = vi.spyOn(ava.engine!, 'getDSL').mockResolvedValue('const result = data;');
       await ava.translate('Rows');
-      expect(getDSL).toHaveBeenCalledWith('Rows', { schema, profile: null });
+      expect(discover).toHaveBeenCalledOnce();
+      expect(getDSL).toHaveBeenLastCalledWith('Rows', { schema, profile: null });
+      await ava.schema(undefined, () => schema);
+      await ava.profile(undefined, () => profile);
+      await expect(ava.source({ type: 'parquet', options: { path: 'unsupported.parquet' } })).rejects.toThrow();
+      expect(ava.engine).toBeNull();
+      await expect(ava.schema()).rejects.toThrow('No data loaded');
     } finally {
       await ava.dispose();
     }
+    await expect(ava.profile(undefined, () => profile)).rejects.toThrow('No data loaded');
   });
 });

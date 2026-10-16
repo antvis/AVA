@@ -4,8 +4,8 @@
 import EventEmitter from '@antv/event-emitter';
 
 import { getEngineClass } from './engines';
-import { extractDataSchema, toSchema } from './util/schema';
-import { toProfile } from './util/profile';
+import { extractDataSchema, schemaMetadataSchema } from './util/schema';
+import { profileMetadataSchema } from './util/profile';
 import { stringifySchema } from './util/context';
 import { adviseChartType, generateVisualizationSyntax, wrapSyntaxInHTML } from './visualization';
 import { generateSuggestions } from './suggest';
@@ -26,7 +26,7 @@ import type {
   LLMConfig,
   EngineConfig,
   DataSourceConfig,
-  DataSourceMetadata,
+  SchemaOptions,
   DataContext,
   Schema,
   AnalysisEngine,
@@ -145,7 +145,7 @@ export class AVA extends EventEmitter {
    * Load a data source config into the engine.
    * Reloading disposes the previous engine and its resources.
    */
-  async source(config: DataSourceConfig, metadata: DataSourceMetadata = {}): Promise<void> {
+  async source(config: DataSourceConfig): Promise<void> {
     emit(this, new ExecutionEvent(ExecutionEventType.LOAD_START, { type: config.type }));
 
     try {
@@ -154,8 +154,6 @@ export class AVA extends EventEmitter {
       this.engine = await this.createEngine();
       try {
         await this.engine.load(config);
-        this.dataSchema = toSchema(metadata);
-        this.dataProfile = toProfile(metadata);
       } catch (error) {
         await this.dispose();
         throw error;
@@ -173,17 +171,22 @@ export class AVA extends EventEmitter {
    * Describe the data source structure.
    * Include tables, fields, types, indexes, and relations.
    */
-  async schema(): Promise<Schema> {
+  async schema(options: SchemaOptions = {}, setter?: (options: SchemaOptions) => Schema): Promise<Schema> {
     if (!this.engine) {
       throw new Error('No data loaded. Please call source() first.');
     }
 
-    if (this.dataSchema) return this.dataSchema;
+    if (!setter && this.dataSchema) return this.dataSchema;
 
     emit(this, new ExecutionEvent(ExecutionEventType.SCHEMA_START));
 
     try {
-      await this.getSchema();
+      if (setter) {
+        this.dataSchema = schemaMetadataSchema.parse(setter(options));
+        this.dataProfile = null;
+      } else {
+        await this.getSchema();
+      }
     } catch (error) {
       emit(this, new ExecutionEvent(ExecutionEventType.SCHEMA_END, { error: serializeError(error) }));
 
@@ -198,18 +201,22 @@ export class AVA extends EventEmitter {
   /**
    * Compute a statistical profile of the data source.
    */
-  async profile(options: ProfileOptions = {}): Promise<Profile> {
+  async profile(options: ProfileOptions = {}, setter?: (options: ProfileOptions) => Profile): Promise<Profile> {
     if (!this.engine) {
       throw new Error('No data loaded. Please call source() first.');
     }
-    if (!this.engine.profile) {
+    if (!setter && !this.engine.profile) {
       throw new Error('Profiling is not supported by the registered engine.');
     }
 
     emit(this, new ExecutionEvent(ExecutionEventType.PROFILE_START));
 
     try {
-      await this.getProfile(options);
+      if (setter) {
+        this.dataProfile = profileMetadataSchema.parse(setter(options));
+      } else {
+        await this.getProfile(options);
+      }
     } catch (error) {
       emit(this, new ExecutionEvent(ExecutionEventType.PROFILE_END, { error: serializeError(error) }));
 

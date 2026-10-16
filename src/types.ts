@@ -697,13 +697,8 @@ export type Profile = Omit<Schema, 'tables'> & {
   generatedAt: number;
 };
 
-/** Reuse metadata from the same data version, engine and reader configuration. */
-export interface DataSourceMetadata {
-  /** Structural metadata. Takes precedence over the structure in profile. */
-  schema?: Schema;
-  /** Observations including structure. Used as supplied, without merging with schema. */
-  profile?: Profile;
-}
+/** Schema discovery currently has no configurable options. */
+export type SchemaOptions = Record<string, never>;
 
 /**
  * Options for a profile run.

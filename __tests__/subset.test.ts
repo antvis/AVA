@@ -219,7 +219,8 @@ describe('AVA subset profiling', () => {
         profile: refreshed,
       });
 
-      await ava.source(source, { profile: full });
+      await ava.source(source);
+      await ava.profile(undefined, () => full);
       const importedCompute = vi.spyOn(ava.engine!, 'profile');
       vi.spyOn(ava.engine!, 'getDSL').mockResolvedValue('const result = data;');
       await ava.analyze('Imported values', config);

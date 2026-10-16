@@ -138,6 +138,8 @@ export const startupSchema = z
   })
   .strict();
 
+export type Startup = z.infer<typeof startupSchema>;
+
 export const responseSchema = z.union([
   z.object({ ok: z.literal(true), result: z.unknown() }).strict(),
   z.object({ ok: z.literal(false), error: z.string() }).strict(),

@@ -28,7 +28,7 @@ export type {
   DuckDBEngineOptions,
   PythonEngineOptions,
   DataSourceConfig,
-  DataSourceMetadata,
+  SchemaOptions,
   JSONReadOptions,
   ClickHouseSourceOptions,
   Schema,

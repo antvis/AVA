@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 
 import { BUILTIN_METRICS } from '../../src/duckdb/profile';
-import { validateMetricConfig, profileMetadataSchema, toProfile } from '../../src/util/profile';
+import { validateMetricConfig, profileMetadataSchema } from '../../src/util/profile';
 
 import type { Profile, Schema } from '../../src/types';
 
@@ -36,14 +36,7 @@ it('validates metric options without treating the metric id as an option', () =>
   );
 });
 
-describe('toProfile', () => {
-  it('takes profile independently of explicit schema', () => {
-    expect(toProfile({})).toBeNull();
-    expect(toProfile({ schema })).toBeNull();
-    expect(toProfile({ profile })).toEqual(profile);
-    expect(toProfile({ schema: { ...schema, relations: [] }, profile })).toEqual(profile);
-  });
-
+describe('profileMetadataSchema', () => {
   it('round trips profiles and snapshots nested metric values', () => {
     const parsed = profileMetadataSchema.parse(JSON.parse(JSON.stringify(profile)));
     expect(parsed).toEqual(profile);
@@ -54,14 +47,12 @@ describe('toProfile', () => {
 
   it.each([NaN, Infinity, -1, 8_640_000_000_000_001, '2026-01-01'])('rejects invalid generatedAt %s', (generatedAt) => {
     expect(() => profileMetadataSchema.parse({ ...profile, generatedAt })).toThrow();
-    expect(toProfile({ profile: { ...profile, generatedAt } as never })).toBeNull();
   });
 
   it.each([Infinity, undefined, () => 1, BigInt(1)])('rejects non-JSON metric values %#', (value) => {
     const input = structuredClone(profile);
     input.tables[0].metrics.custom = value;
     expect(() => profileMetadataSchema.parse(input)).toThrow();
-    expect(toProfile({ profile: input })).toBeNull();
   });
 
   it('accepts omitted statistics without inventing observations', () => {
