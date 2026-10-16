@@ -253,7 +253,7 @@ export async function main(argv = process.argv.slice(2)) {
           });
           // Stage progress is console-only; records retain query events only.
           for (const [event, stage] of [
-            ['loadstart', 'loading'],
+            ['sourcestart', 'loading'],
             ['profilestart', 'profiling'],
             ['analyzestart', 'analyzing'],
           ]) {

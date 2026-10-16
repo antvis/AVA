@@ -146,7 +146,7 @@ export class AVA extends EventEmitter {
    * Reloading disposes the previous engine and its resources.
    */
   async source(config: DataSourceConfig): Promise<void> {
-    emit(this, new ExecutionEvent(ExecutionEventType.LOAD_START, { type: config.type }));
+    emit(this, new ExecutionEvent(ExecutionEventType.SOURCE_START, { type: config.type }));
 
     try {
       await this.dispose();
@@ -159,12 +159,12 @@ export class AVA extends EventEmitter {
         throw error;
       }
     } catch (error) {
-      emit(this, new ExecutionEvent(ExecutionEventType.LOAD_END, { error: serializeError(error) }));
+      emit(this, new ExecutionEvent(ExecutionEventType.SOURCE_END, { error: serializeError(error) }));
 
       throw error;
     }
 
-    emit(this, new ExecutionEvent(ExecutionEventType.LOAD_END));
+    emit(this, new ExecutionEvent(ExecutionEventType.SOURCE_END));
   }
 
   /**

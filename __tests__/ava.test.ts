@@ -31,11 +31,11 @@ describe('AVA', () => {
 
   it('returns the current schema throughout the source lifecycle', async () => {
     const onEnd = vi.fn();
-    ava.on('loadend', onEnd);
+    ava.on('sourceend', onEnd);
     const message = 'No data loaded. Please call source() first.';
     await expect(ava.schema()).rejects.toThrow(message);
     await ava.source({ type: 'json', options: { data: [{ first: 1 }] } });
-    expect(onEnd).toHaveBeenLastCalledWith({ type: 'loadend', data: {} });
+    expect(onEnd).toHaveBeenLastCalledWith({ type: 'sourceend', data: {} });
     const first = await ava.schema();
     expect(first.tables[0].fields.map((field) => field.name)).toEqual(['first']);
     const before = JSON.stringify(first);

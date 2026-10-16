@@ -28,8 +28,8 @@ export enum AnalysisEventType {
  * Data processing events.
  */
 export enum ExecutionEventType {
-  LOAD_START = 'loadstart',
-  LOAD_END = 'loadend',
+  SOURCE_START = 'sourcestart',
+  SOURCE_END = 'sourceend',
   SCHEMA_START = 'schemastart',
   SCHEMA_END = 'schemaend',
   PROFILE_START = 'profilestart',
