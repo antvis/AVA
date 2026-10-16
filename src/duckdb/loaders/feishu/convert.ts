@@ -7,11 +7,22 @@ export function asString(value:unknown): string | null{
     return null;
 }
 
+function textOf(segment:unknown):string{
+    if(typeof segment === 'string') return segment;
+    if(segment && typeof segment === 'object'){
+        const text = (segment as {text?:unknown}).text;
+        if(typeof text === 'string') return text;
+    }
+    return '';
+}
+
 export function asText(value:unknown):string | null{
     if(!Array.isArray(value)) return asString(value);
-    // todo:文本类型转换为字符串
-
-    return null
+    const text = value
+        .map((segment)=>textOf(segment))
+        .join('')
+        .trim();
+    return text === '' ? null : text;
 
 }
 
