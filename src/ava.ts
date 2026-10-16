@@ -166,9 +166,9 @@ export class AVA extends EventEmitter {
       throw new Error('No data loaded. Please call source() first.');
     }
 
-    emit(this, new ExecutionEvent(ExecutionEventType.SCHEMA_START));
+    if (!setter && this.dataSchema) return this.dataSchema;
 
-    if (this.dataSchema) return this.dataSchema;
+    emit(this, new ExecutionEvent(ExecutionEventType.SCHEMA_START));
 
     try {
       const f = setter ?? (() => this.engine!.schema());
