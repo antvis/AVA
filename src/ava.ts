@@ -70,28 +70,18 @@ export class AVA extends EventEmitter {
     this.engineConfig = config.engine ?? { type: 'duckdb' };
   }
 
-  private async getSchema(): Promise<Schema> {
-    this.dataSchema ??= await this.engine!.schema();
-    return this.dataSchema;
-  }
-
-  private async getProfile(options: ProfileOptions = {}): Promise<Profile> {
-    this.dataProfile = await this.engine!.profile!(await this.getSchema(), options);
-    return this.dataProfile;
-  }
-
   /**
    * Data context.
    */
   private async getContext(needProfile = false): Promise<DataContext> {
-    const schema = await this.getSchema();
+    this.dataSchema ??= await this.engine!.schema();
 
     if (needProfile && !this.dataProfile && this.engine?.profile) {
-      await this.getProfile();
+      this.dataProfile = await this.engine!.profile!(this.dataSchema);
     }
 
     return {
-      schema,
+      schema: this.dataSchema,
       profile: this.dataProfile,
     };
   }
@@ -178,15 +168,12 @@ export class AVA extends EventEmitter {
 
     emit(this, new ExecutionEvent(ExecutionEventType.SCHEMA_START));
 
-    if (!setter && this.dataSchema) return this.dataSchema;
+    if (this.dataSchema) return this.dataSchema;
 
     try {
-      if (setter) {
-        this.dataSchema = schemaMetadataSchema.parse(setter(options));
-        this.dataProfile = null;
-      } else {
-        await this.getSchema();
-      }
+      const f = setter ?? (() => this.engine!.schema());
+      this.dataSchema = schemaMetadataSchema.parse(await f(options));
+      this.dataProfile = null;
     } catch (error) {
       emit(this, new ExecutionEvent(ExecutionEventType.SCHEMA_END, { error: serializeError(error) }));
 
@@ -212,11 +199,9 @@ export class AVA extends EventEmitter {
     emit(this, new ExecutionEvent(ExecutionEventType.PROFILE_START));
 
     try {
-      if (setter) {
-        this.dataProfile = profileMetadataSchema.parse(setter(options));
-      } else {
-        await this.getProfile(options);
-      }
+      this.dataSchema ??= await this.engine!.schema();
+      const f = setter ?? (async (options: ProfileOptions) => this.engine!.profile!(this.dataSchema!, options));
+      this.dataProfile = profileMetadataSchema.parse(await f(options));
     } catch (error) {
       emit(this, new ExecutionEvent(ExecutionEventType.PROFILE_END, { error: serializeError(error) }));
 
