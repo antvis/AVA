@@ -42,8 +42,6 @@ ava source @source.json > session.json
 
 A regular `.json` file is read as data rows. Only `@file` or stdin `-` reads JSON as configuration; configuration input cannot be combined with `--type`. Relative paths are resolved from the command's working directory. Read options may vary by engine.
 
-If matching metadata is already available, `source` accepts `--schema @schema.json` or `--profile @profile.json`. A profile includes structure; keep the same data version, engine, and reader settings.
-
 For other common configurations, set `type` and `options` as shown:
 
 | Use case | `type` | Example `options` |

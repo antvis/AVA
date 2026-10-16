@@ -89,60 +89,42 @@ describe('help and validation', () => {
   });
 });
 
-describe('source', () => {
-  it.each(['schema', 'profile'])('imports --%s JSON before creating the session', async (kind) => {
+describe('metadata files', () => {
+  it.each(['schema', 'profile'])('sets %s from a plain file path', async (kind) => {
     const directory = await mkdtemp(join(tmpdir(), 'ava-cli-test-'));
     try {
-      const schema = {
-        tables: [{ name: 'data', columnCount: 1, indexes: [], fields: [{ name: 'sales', type: 'BIGINT' }] }],
-      };
-      const metadata =
-        kind === 'schema'
-          ? { ...schema, language: { name: 'SQL', fence: 'sql' } }
-          : {
-              generatedAt: 1234,
-              tables: [
-                {
-                  ...schema.tables[0],
-                  metrics: { row_count: 1 },
-                  fields: [{ ...schema.tables[0].fields[0], logicalType: 'numeric', metrics: { sum: 10 } }],
-                },
-              ],
-            };
+      const value = kind === 'schema' ? { tables: [] } : { tables: [], generatedAt: 1234 };
       const file = join(directory, 'metadata.json');
-      await writeFile(file, JSON.stringify(metadata));
-      await execute(['source', 'sales.csv', `--${kind}`, `@${file}`]);
-      expect(createSession).toHaveBeenCalledExactlyOnceWith(
-        { type: 'csv-file', options: { path: resolve('sales.csv') } },
-        { model: 'gpt-4o-mini' },
-        undefined,
-        { [kind]: kind === 'schema' ? schema : metadata }
+      await writeFile(file, JSON.stringify(value));
+      await execute([kind, datasetId, '--file', file]);
+      expect(request).toHaveBeenCalledExactlyOnceWith(
+        datasetId,
+        kind === 'schema' ? { command: kind, schema: value } : { command: kind, metrics: undefined, profile: value }
       );
+      await writeFile(file, '{"tables":null}');
+      vi.mocked(request).mockClear();
+      await expect(run([kind, datasetId, '--file', file])).rejects.toThrow();
+      expect(request).not.toHaveBeenCalled();
+      await writeFile(file, 'invalid JSON');
+      await expect(run([kind, datasetId, '--file', file])).rejects.toThrow('Cannot read JSON');
+      await expect(run([kind, datasetId, '--file', join(directory, 'missing')])).rejects.toThrow('Cannot read JSON');
+      expect(request).not.toHaveBeenCalled();
     } finally {
       await rm(directory, { recursive: true, force: true });
     }
   });
 
-  it('accepts schema and profile together', async () => {
-    const schema = { tables: [] };
-    const profile = { tables: [], generatedAt: 1234 };
-    await execute(['source', 'sales.csv', '--schema', JSON.stringify(schema), '--profile', JSON.stringify(profile)]);
-    expect(createSession).toHaveBeenCalledExactlyOnceWith(
-      { type: 'csv-file', options: { path: resolve('sales.csv') } },
-      { model: 'gpt-4o-mini' },
-      undefined,
-      { schema, profile }
+  it('rejects file import combined with metric computation', async () => {
+    await expect(run(['profile', datasetId, '--file', 'profile.json', '--metrics', 'mean'])).rejects.toThrow(
+      '--file cannot be combined with --metrics'
     );
+    expect(request).not.toHaveBeenCalled();
   });
+});
 
-  it('rejects shared stdin and invalid metadata before creating a session', async () => {
-    await expect(run(['source', '-', '--schema', '-'])).rejects.toThrow('Only one input can use stdin');
-    await expect(run(['source', '-', '--profile', '-'])).rejects.toThrow('Only one input can use stdin');
-    await expect(run(['source', 'sales.csv', '--schema', '-', '--profile', '-'])).rejects.toThrow(
-      'Only one input can use stdin'
-    );
-    await expect(run(['source', 'sales.csv', '--schema', '{"tables":null}'])).rejects.toThrow();
-    await expect(run(['source', 'sales.csv', '--profile', '@missing'])).rejects.toThrow('Cannot read JSON');
+describe('source', () => {
+  it.each(['schema', 'profile'])('rejects the removed --%s source option', async (kind) => {
+    await expect(run(['source', 'sales.csv', `--${kind}`, 'metadata.json'])).rejects.toThrow('Unknown option');
     expect(createSession).not.toHaveBeenCalled();
   });
 
@@ -155,7 +137,6 @@ describe('source', () => {
     expect(createSession).toHaveBeenCalledExactlyOnceWith(
       { type, options: { path: expectedPath } },
       { model: 'gpt-4o-mini' },
-      undefined,
       undefined
     );
   });
@@ -167,7 +148,7 @@ describe('source', () => {
       const config = { type: 'json', options: { data: [{ sales: 10 }] } };
       await writeFile(file, JSON.stringify(config));
       await execute(['source', `@${file}`]);
-      expect(createSession).toHaveBeenCalledExactlyOnceWith(config, { model: 'gpt-4o-mini' }, undefined, undefined);
+      expect(createSession).toHaveBeenCalledExactlyOnceWith(config, { model: 'gpt-4o-mini' }, undefined);
       await expect(run(['source', `@${file}`, '--type', 'json-file'])).rejects.toThrow(
         '--type cannot be combined with a source config.'
       );
@@ -186,7 +167,7 @@ describe('source', () => {
         const config = { type: 'json', options: { data: [{ sales: 10 }] } };
         await writeFile(file, JSON.stringify(config));
         await execute(['source', `@${file}`, '--engine', engine]);
-        expect(createSession).toHaveBeenCalledExactlyOnceWith(config, { model: 'gpt-4o-mini' }, engine, undefined);
+        expect(createSession).toHaveBeenCalledExactlyOnceWith(config, { model: 'gpt-4o-mini' }, engine);
       } finally {
         await rm(directory, { recursive: true, force: true });
       }
@@ -198,8 +179,7 @@ describe('source', () => {
     expect(createSession).toHaveBeenCalledExactlyOnceWith(
       { type: 'csv-file', options: { path: resolve('sales.csv') } },
       { model: 'gpt-4o-mini' },
-      'python',
-      undefined
+      'python'
     );
   });
 
@@ -221,14 +201,14 @@ describe('source', () => {
 
 describe('dataset commands', () => {
   it.each([
-    { args: ['schema'], message: { command: 'schema' } },
+    { args: ['schema'], message: { command: 'schema', schema: undefined } },
     { args: ['dispose'], message: { command: 'dispose' } },
-    { args: ['profile'], message: { command: 'profile', metrics: undefined } },
+    { args: ['profile'], message: { command: 'profile', profile: undefined, metrics: undefined } },
     {
       args: ['profile', '--metrics', 'row_count, mean'],
-      message: { command: 'profile', metrics: ['row_count', 'mean'] },
+      message: { command: 'profile', profile: undefined, metrics: ['row_count', 'mean'] },
     },
-    { args: ['profile', '--metrics', ''], message: { command: 'profile', metrics: [] } },
+    { args: ['profile', '--metrics', ''], message: { command: 'profile', profile: undefined, metrics: [] } },
     { args: ['suggest'], message: { command: 'suggest', count: 3 } },
     { args: ['suggest', '--count', '5'], message: { command: 'suggest', count: 5 } },
     { args: ['translate', 'Total sales?'], message: { command: 'translate', query: 'Total sales?' } },

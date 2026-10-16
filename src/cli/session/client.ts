@@ -15,7 +15,7 @@ import {
   startupSchema,
 } from './protocol';
 
-import type { Request, Startup } from './protocol';
+import type { Request } from './protocol';
 import type { DataSourceConfig, EngineConfig, LLMConfig } from '../../types';
 
 /**
@@ -44,11 +44,10 @@ function createDatasetId(config: DataSourceConfig): string {
 export async function createSession(
   config: DataSourceConfig,
   llm: LLMConfig,
-  engine?: EngineConfig['type'],
-  metadata?: Startup['metadata']
+  engine?: EngineConfig['type']
 ): Promise<{ datasetId: string }> {
   checkEnvironment();
-  const startup = startupSchema.parse({ source: config, llm, engine, metadata });
+  const startup = startupSchema.parse({ source: config, llm, engine });
 
   const datasetId = createDatasetId(config);
   const directory = sessionDirectory(datasetId);

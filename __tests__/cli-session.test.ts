@@ -5,7 +5,7 @@ import { rm } from 'fs/promises';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { createSession } from '../src/cli/session/client';
-import { sessionDirectory, startupSchema } from '../src/cli/session/protocol';
+import { sessionDirectory, startupSchema, requestSchema } from '../src/cli/session/protocol';
 
 import type { DataSourceConfig, EngineConfig, Schema } from '../src/types';
 
@@ -31,13 +31,12 @@ describe('session startup protocol', () => {
     });
     worker.send.mockImplementation(() => queueMicrotask(() => worker.emit('message', { ok: true, result: null })));
     vi.mocked(fork).mockReturnValueOnce(worker as unknown as ReturnType<typeof fork>);
-    const { datasetId } = await createSession(source, llm, 'python', { schema });
+    const { datasetId } = await createSession(source, llm, 'python');
     try {
       expect(startupSchema.parse(worker.send.mock.calls[0][0])).toEqual({
         source,
         llm,
         engine: 'python',
-        metadata: { schema },
       });
       expect(worker.disconnect).toHaveBeenCalledOnce();
       expect(worker.unref).toHaveBeenCalledOnce();
@@ -53,12 +52,11 @@ describe('session startup protocol', () => {
     }
   });
 
-  it('rejects invalid metadata at the startup boundary before spawning a worker', async () => {
-    vi.mocked(fork).mockClear();
-    const invalid = { schema: { ...schema, tables: [{ ...schema.tables[0], columnCount: -1 }] } };
-    expect(() => startupSchema.parse({ source, llm, metadata: invalid })).toThrow();
-    await expect(createSession(source, llm, 'javascript', invalid)).rejects.toThrow();
-    expect(fork).not.toHaveBeenCalled();
+  it('validates metadata in command requests and rejects it at startup', () => {
+    expect(requestSchema.parse({ command: 'schema', schema })).toEqual({ command: 'schema', schema });
+    expect(() => requestSchema.parse({ command: 'schema', schema: { tables: null } })).toThrow();
+    expect(() => requestSchema.parse({ command: 'profile', profile: { tables: [] } })).toThrow();
+    expect(() => startupSchema.parse({ source, llm, metadata: { schema } })).toThrow();
   });
 });
 
@@ -121,7 +119,9 @@ describe('dataset engine and language', () => {
       ],
       relations: [],
     };
-    await datasets.createDataset(source, llm, 'javascript', { profile });
+    await datasets.createDataset(source, llm, 'javascript');
+    expect(await datasets.describeDataset(schema)).toMatchObject(schema);
+    await datasets.withDataset((ava) => ava.profile(undefined, () => profile));
     const getDSL = await datasets.withDataset(async (ava) =>
       vi.spyOn(ava.engine!, 'getDSL').mockResolvedValue('const result = data;')
     );

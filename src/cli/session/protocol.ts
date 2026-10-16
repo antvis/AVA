@@ -108,8 +108,14 @@ const execution = {
 };
 
 export const requestSchema = z.discriminatedUnion('command', [
-  z.object({ command: z.literal('schema') }).strict(),
-  z.object({ command: z.literal('profile'), metrics: z.array(text).optional() }).strict(),
+  z.object({ command: z.literal('schema'), schema: schemaMetadataSchema.optional() }).strict(),
+  z
+    .object({
+      command: z.literal('profile'),
+      metrics: z.array(text).optional(),
+      profile: profileMetadataSchema.optional(),
+    })
+    .strict(),
   z.object({ command: z.literal('suggest'), count: z.number().int().positive().max(100) }).strict(),
   z
     .object({
@@ -131,14 +137,8 @@ export const startupSchema = z
     source: sourceConfig,
     llm: modelSchema,
     engine: engineTypeSchema.optional(),
-    metadata: z
-      .object({ schema: schemaMetadataSchema.optional(), profile: profileMetadataSchema.optional() })
-      .strict()
-      .optional(),
   })
   .strict();
-
-export type Startup = z.infer<typeof startupSchema>;
 
 export const responseSchema = z.union([
   z.object({ ok: z.literal(true), result: z.unknown() }).strict(),

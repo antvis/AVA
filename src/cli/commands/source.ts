@@ -6,8 +6,6 @@ import { llmConfig } from '../config';
 import { readJSON } from '../io';
 import { option } from '../options';
 import { accent, badge, muted } from '../util';
-import { profileMetadataSchema } from '../../util/profile';
-import { schemaMetadataSchema } from '../../util/schema';
 
 import type { Options } from '../options';
 
@@ -28,24 +26,11 @@ export const definition = {
   options: {
     type: { type: 'string', short: 't' },
     engine: { type: 'string' },
-    schema: { type: 'string' },
-    profile: { type: 'string' },
   },
 } as const;
 
 export async function run([dataset]: string[], options: Options): Promise<{ datasetId: string }> {
   const engine = engineTypeSchema.optional().parse(option(options, 'engine'));
-  const schema = option(options, 'schema');
-  const profile = option(options, 'profile');
-  if ([dataset, schema, profile].filter((input) => input === '-').length > 1)
-    throw new Error('Only one input can use stdin.');
-  const metadata =
-    schema === undefined && profile === undefined
-      ? undefined
-      : {
-          schema: schema === undefined ? undefined : schemaMetadataSchema.parse(await readJSON(schema)),
-          profile: profile === undefined ? undefined : profileMetadataSchema.parse(await readJSON(profile)),
-        };
   let input: unknown;
 
   if (dataset.startsWith('@') || dataset === '-') {
@@ -64,7 +49,7 @@ export async function run([dataset]: string[], options: Options): Promise<{ data
     config.options.path = resolve(config.options.path);
   }
 
-  return createSession(config, llmConfig(config.type === 'text'), engine, metadata);
+  return createSession(config, llmConfig(config.type === 'text'), engine);
 }
 
 /**
@@ -93,10 +78,6 @@ Options:
   --engine <type>    duckdb, python, javascript, supabase, or clickhouse.
                     Default: supabase/clickhouse for those sources, otherwise duckdb.
                     Fixed for the session; source support depends on the engine.
-  --schema <json>    Reuse structural metadata: inline JSON, @file, or - for stdin.
-  --profile <json>   Reuse a profile, including its schema. Same input forms.
-                    Can be combined with --schema; explicit schema takes precedence.
-                    Only one input may use stdin.
   -h, --help         Show help.
 
 Environment:
@@ -111,14 +92,9 @@ IDs use a sanitized source name plus a random suffix. Requires macOS or Linux.
 Sessions expire after 30 idle minutes; dispose releases them immediately.
 Python requires python3 and pandas; local Python execution is not sandboxed.
 JavaScript accepts inline csv/json/text configs. Use ava schema to inspect the query language.
-Supplied metadata skips structure discovery; source loading and reader inference still apply.
-Reuse only with the same data version, engine and reader options. No freshness check is performed.
-Analysis uses imported statistics; ava profile always recomputes them.
 
 Examples:
   ava source sales.csv
   ava source sales.csv --engine python
   ava source @source.json
-  ava source sales.csv --schema @schema.json
-  ava source sales.csv --profile @profile.json
   echo '{ "type": "json", "options": { "data": [{ "sales": 10 }] } }' | ava source -`;
