@@ -5,6 +5,7 @@
 import type { ClickHouseClientConfigOptions } from '@clickhouse/client';
 import type { LanguageModelUsage, LanguageModel } from 'ai';
 import type { AnalysisEvent } from './event';
+import type { SemanticRegistry } from './semantic/registry';
 
 /**
  * Minimal structural type for a database connection used by LoadedSource.
@@ -785,6 +786,8 @@ export type AnalysisStrategyConfig =
       maxRetries?: number;
     }
   | { type: 'loop'; maxSteps?: number }
+  /** Semantic-layer agent: one tool call per step; `execute` is the single terminal action. maxSteps defaults to 20. */
+  | { type: 'semantic'; maxSteps?: number }
   | { type: 'subset' };
 
 /** Dataset metadata supplied to model-facing consumers. */
@@ -801,6 +804,8 @@ export interface AnalysisRuntime {
   context: DataContext;
   engine: AnalysisEngine;
   llm: LLMConfig;
+  /** Registered semantic layer, required by the semantic strategy. */
+  semantic?: SemanticRegistry;
 }
 
 /** A replaceable way of analyzing a natural-language query. */

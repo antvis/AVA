@@ -1,5 +1,6 @@
 import { directAnalysis } from './direct';
 import { loopAnalysis } from './loop';
+import { semanticAnalysis } from './semantic';
 import { subsetAnalysis } from './subset';
 
 import type { AnalysisConfig, AnalysisResponse, AnalysisRuntime } from '../types';
@@ -12,6 +13,8 @@ export function analyze(query: string, config: AnalysisConfig, runtime: Analysis
       return directAnalysis(query, config, runtime);
     case 'loop':
       return loopAnalysis(query, config, runtime);
+    case 'semantic':
+      return semanticAnalysis(query, config, runtime);
     case 'subset':
       return subsetAnalysis(query, config, runtime);
     default:

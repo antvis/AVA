@@ -11,6 +11,18 @@ registerEngine('javascript', JavaScriptEngine);
 export { AVA } from './ava';
 export type { JavaScriptEngine } from './interpreter/javascript';
 export type {
+  SemanticConfig,
+  SemanticModel,
+  SemanticDimension,
+  SemanticMeasure,
+  SemanticJoin,
+  SemanticAggregation,
+  SemanticDialectName,
+  SemanticElement,
+  SMQ,
+  CompiledSMQ,
+} from './semantic/types';
+export type {
   LLMConfig,
   AVAConfig,
   AnalysisConfig,

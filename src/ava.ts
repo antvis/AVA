@@ -10,6 +10,8 @@ import { stringifySchema } from './util/context';
 import { adviseChartType, generateVisualizationSyntax, wrapSyntaxInHTML } from './visualization';
 import { generateSuggestions } from './suggest';
 import { analyze } from './analysis';
+import { SemanticRegistry } from './semantic/registry';
+import { compileSMQ, inferDialect } from './semantic/compiler';
 import {
   LifecycleEventType,
   LifecycleEvent,
@@ -40,6 +42,7 @@ import type {
   ExecutionOptions,
   ExecutionResult,
 } from './types';
+import type { CompiledSMQ, SemanticConfig, SMQ } from './semantic/types';
 
 /**
  * Check if analysis result has meaningful data for visualization.
@@ -63,6 +66,7 @@ export class AVA extends EventEmitter {
   engine: AnalysisEngine | null = null;
   private dataSchema: Schema | null = null;
   private dataProfile: Profile | null = null;
+  private semanticRegistry: SemanticRegistry | null = null;
 
   constructor(config: AVAConfig) {
     super();
@@ -214,6 +218,33 @@ export class AVA extends EventEmitter {
   }
 
   /**
+   * Register explicit semantic models and joins used by compileSMQ() and the
+   * `semantic` analysis strategy. Accepts a config object or its JSON string.
+   * Models are validated immediately; table existence is checked at analyze time.
+   */
+  semantic(config: SemanticConfig | string): this {
+    this.semanticRegistry = new SemanticRegistry(config);
+
+    return this;
+  }
+
+  /**
+   * Compile a Semantic Model Query into SQL.
+   * Deterministic: calls no LLM and executes nothing.
+   */
+  compileSMQ(smq: SMQ): CompiledSMQ {
+    if (!this.semanticRegistry) {
+      throw new Error('No semantic layer registered. Please call semantic() first.');
+    }
+
+    return compileSMQ(
+      this.semanticRegistry,
+      smq,
+      this.semanticRegistry.dialect ?? inferDialect(this.engine?.language.name)
+    );
+  }
+
+  /**
    * Analyze data using natural language query.
    * The query is turned into SQL via LLM and executed by the configured engine.
    * Use visualize() separately to generate charts from the analysis result.
@@ -232,6 +263,7 @@ export class AVA extends EventEmitter {
         context: await this.getContext(config.strategy?.type === 'subset'),
         engine: this.engine,
         llm: this.llmConfig,
+        semantic: this.semanticRegistry ?? undefined,
       };
       result = await analyze(query, config, runtime);
     } catch (error) {
