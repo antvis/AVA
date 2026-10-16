@@ -226,6 +226,33 @@ sales, identify the products contributing most to the change, and save a chart.
 
 This workflow uses your agent's existing model. See [agent setup](https://ava.antv.vision/documentation/agent-skill/).
 
+### Semantic layer strategy
+
+The `semantic` strategy reproduces a semantic-layer-mediated NL2SQL agent. You define semantic models and joins explicitly; the agent can only discover them (`getModelDataElements`), compile Semantic Model Queries into trusted SQL (`convertSmqToSql`, with a 5-row preview), and run the final SQL once (`execute`). Each step is one tool call, up to `maxSteps` (default 20). `direct` and `loop` are unchanged for A/B comparison.
+
+```ts
+ava.semantic({
+  models: [
+    {
+      name: 'orders',
+      table: 'orders',
+      dimensions: [{ name: 'channel', column: 'channel' }, { name: 'status', column: 'status' }],
+      measures: [{ name: 'revenue', agg: 'sum', column: 'amount' }],
+    },
+  ],
+  joins: [], // { from, to, keys: [{ from, to }], type?: 'left' | 'inner' }
+});
+
+// Pure and deterministic: no LLM, no database.
+const { sql } = ava.compileSMQ({
+  metrics: ['orders__revenue'],
+  filters: ["orders__status = 'paid'"],
+  group_by: ['orders__channel'],
+});
+
+await ava.analyze('Paid revenue by channel', { strategy: { type: 'semantic', maxSteps: 20 } });
+```
+
 ### Use from the CLI
 
 Configure your model and load a CSV:

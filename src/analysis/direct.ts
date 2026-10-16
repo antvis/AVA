@@ -6,7 +6,7 @@ import { serializeError } from '../util/error';
 
 import type { AnalysisStrategy, ExecutionResult, LLMConfig } from '../types';
 
-async function summarizeResult(query: string, data: any, llm: LLMConfig): Promise<string> {
+export async function summarizeResult(query: string, data: any, llm: LLMConfig): Promise<string> {
   const dataStr = typeof data === 'object' ? JSON.stringify(data, null, 2) : String(data);
 
   const prompt = `You are a data analysis assistant. Based on the following query and analysis result, provide a clear and concise summary.

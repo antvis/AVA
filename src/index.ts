@@ -21,6 +21,18 @@ export { executionResult } from './util/result';
 
 export type { JavaScriptEngine } from './interpreter';
 export type {
+  SemanticConfig,
+  SemanticModel,
+  SemanticDimension,
+  SemanticMeasure,
+  SemanticJoin,
+  SemanticAggregation,
+  SemanticDialectName,
+  SemanticElement,
+  SMQ,
+  CompiledSMQ,
+} from './semantic/types';
+export type {
   LLMConfig,
   AVAConfig,
   AnalysisConfig,
