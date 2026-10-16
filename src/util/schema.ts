@@ -3,7 +3,40 @@
  * Database queries belong to the engines; prompt formatting belongs to context.
  */
 
+import { z } from 'zod';
+
 import type { Schema, TableIndex, TableRelation, TableSchema } from '../types';
+
+/** Metadata snapshots must survive JSON persistence and process boundaries. */
+export const jsonValue: z.ZodType<unknown> = z.lazy(() =>
+  z.union([z.string(), z.number().finite(), z.boolean(), z.null(), z.array(jsonValue), z.record(jsonValue)])
+);
+
+const field = z.object({ name: z.string(), type: z.string(), nullable: z.boolean().optional() });
+const columns = z.array(z.string());
+const index = z.object({
+  name: z.string(),
+  columns,
+  unique: z.boolean(),
+  primary: z.boolean().optional(),
+});
+const endpoint = z.object({ table: z.string(), columns });
+const relation = z.object({
+  name: z.string().optional(),
+  kind: z.literal('foreign-key'),
+  from: endpoint,
+  to: endpoint,
+});
+const table = z.object({
+  name: z.string(),
+  columnCount: z.number().int().nonnegative(),
+  fields: z.array(field),
+  indexes: z.array(index),
+});
+export const schemaStructure = z.object({ tables: z.array(table), relations: z.array(relation).optional() });
+
+// Object parsing also projects profiles (and CLI schema output) to pure structure.
+export const schemaMetadataSchema = schemaStructure.transform((value) => value as Schema);
 
 /**
  * Infer field type from sample values

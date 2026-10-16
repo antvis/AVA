@@ -22,9 +22,9 @@ To run Python in your own service, see [Supply a Python executor](/documentation
 
 ## Shared contract
 
-All engines implement `AnalysisEngine`: `language`, `load()`, `getDSL()`, `execute()`, and `dispose()`. `profile()` is optional in the interface and implemented by the built-in engines.
+Engines load data, discover schema, compute profiles, generate queries from supplied context, execute them, and release resources. AVA owns schema/profile caching and decides when discovery or computation is needed.
 
-These are engine-level methods. Application code normally uses `AVA.source()`, `AVA.translate()`, and `AVA.query()` rather than calling the engine directly.
+Applications normally use the `AVA` API. Implementers should follow the [engine contract](/documentation/engines/custom/#engine-contract), including separate `load()` and `schema()` methods.
 
 ## Registration
 

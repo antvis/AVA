@@ -20,7 +20,7 @@ console.log(result.text);
 console.table(result.data);
 ```
 
-`analyze()` uses the loaded schema and any cached profile to generate a query, execute it, and summarize the answer. It returns data and text; it does not generate a chart.
+`analyze()` obtains schema on demand and uses the available profile to generate a query, execute it, and summarize the answer. It returns data and text; it does not generate a chart.
 
 ## Read the result
 
@@ -104,7 +104,7 @@ if (result.truncated) {
 
 ## Suggest questions
 
-Use `suggest()` when you want ideas for what to ask. Computing a profile first is optional: it adds dataset statistics to the context and does not call a model.
+Use `suggest()` for analysis ideas. Computing a profile first is optional: it adds statistics to the context without an LLM call.
 
 ```typescript
 await ava.profile();

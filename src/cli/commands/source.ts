@@ -23,7 +23,10 @@ export const description = 'Load a source and return a dataset ID';
 
 export const definition = {
   positionals: 1,
-  options: { type: { type: 'string', short: 't' }, engine: { type: 'string' } },
+  options: {
+    type: { type: 'string', short: 't' },
+    engine: { type: 'string' },
+  },
 } as const;
 
 export async function run([dataset]: string[], options: Options): Promise<{ datasetId: string }> {

@@ -37,7 +37,9 @@
 
 ## Context and state
 
-An AVA instance holds one source configuration's active engine, schema, and latest profile. A source may contain multiple tables. Loading a new source clears existing context; profiling enriches later model calls.
+An AVA instance owns one active engine and its schema/profile cache. `source()` loads data; `schema()` discovers structure on first use. `profile()` computes and retains fresh observations; model context reuses the retained profile. Reloading or disposal clears both caches.
+
+Engines retain data and connections. Their `load()` returns no metadata; `schema()` discovers it, `profile(schema, options?)` computes observations, and `getDSL(query, context)` consumes AVA's context. Shared validators live in `util/schema.ts` and `util/profile.ts`.
 
 Analysis strategies share a runtime containing the engine, model configuration, schema/profile context, and event emitter. Query result limits are normalized through shared utilities.
 

@@ -37,7 +37,8 @@ These inherited methods are synchronous. `on()`, `once()`, and `off()` return th
 | ---------------- | ----------------------------------------- |
 | Engine creation  | `createstart` / `createend`               |
 | Engine cleanup   | `disposestart` / `disposeend`             |
-| Source loading   | `loadstart` / `loadend`                   |
+| Source loading   | `sourcestart` / `sourceend`               |
+| Schema discovery | `schemastart` / `schemaend`               |
 | Profiling        | `profilestart` / `profileend`             |
 | Analysis         | `analyzestart` / `analyzeend`             |
 | Translation      | `translatestart` / `translateend`         |
@@ -50,6 +51,10 @@ These inherited methods are synchronous. `on()`, `once()`, and `off()` return th
 
 ## Lifecycle
 
-Engine creation happens when `source()` is called, not in the constructor. Replacing a source disposes the previous engine. `dispose()` clears the engine, schema, and latest profile.
+`source()` creates the engine and loads data. It does not emit schema events. The first operation needing uncached structure emits `schemastart` / `schemaend`; imported and cached schema skip these events. Each `profile()` call computes statistics and emits profiling events; schema events occur inside them if discovery is needed.
 
-Translation events may include `query`, `attempt`, or generated `dsl`; query events include the DSL or execution result. Reasoning events expose the loop step and action. These are useful for progress UI and diagnostics.
+Replacing a source disposes its engine and clears metadata. `dispose()` clears state even if engine cleanup fails. Await operations before switching sources.
+
+Translation events can include `query`, `attempt`, and `dsl`; query events include the DSL or result. Reasoning events include the loop step and action.
+
+Schema and profiling failures emit an end event with `data.error` and reject the method’s Promise.

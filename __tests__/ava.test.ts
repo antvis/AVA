@@ -7,9 +7,14 @@ import * as path from 'path';
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 
 import { AVA } from '../src';
+import { JavaScriptEngine } from '../src/interpreter/javascript';
 import * as suggestions from '../src/suggest';
+import * as duckdbSchema from '../src/duckdb/util/schema';
+import * as memorySchema from '../src/util/schema';
 
 import { getLLMConfig, skipLLMTests } from './test-utils';
+
+import type { DataSourceConfig, Profile, Schema } from '../src';
 
 describe('AVA', () => {
   let ava: AVA;
@@ -26,11 +31,11 @@ describe('AVA', () => {
 
   it('returns the current schema throughout the source lifecycle', async () => {
     const onEnd = vi.fn();
-    ava.on('loadend', onEnd);
+    ava.on('sourceend', onEnd);
     const message = 'No data loaded. Please call source() first.';
     await expect(ava.schema()).rejects.toThrow(message);
     await ava.source({ type: 'json', options: { data: [{ first: 1 }] } });
-    expect(onEnd).toHaveBeenLastCalledWith({ type: 'loadend', data: {} });
+    expect(onEnd).toHaveBeenLastCalledWith({ type: 'sourceend', data: {} });
     const first = await ava.schema();
     expect(first.tables[0].fields.map((field) => field.name)).toEqual(['first']);
     const before = JSON.stringify(first);
@@ -48,6 +53,96 @@ describe('AVA', () => {
     await ava.dispose();
     await expect(ava.schema()).rejects.toThrow(message);
   });
+
+  it.each(['schema', 'profile', 'analyze', 'translate', 'suggest'] as const)(
+    'discovers schema lazily for %s and reuses it',
+    async (operation) => {
+      ava = new AVA({ llm: getLLMConfig(), engine: { type: 'javascript' } });
+      const discover = vi.spyOn(JavaScriptEngine.prototype, 'schema');
+      await ava.source({ type: 'json', options: { data: [{ value: 2 }] } });
+      expect((await ava.query('const result = data;')).data).toEqual([{ value: 2 }]);
+      expect(discover).not.toHaveBeenCalled();
+      vi.spyOn(ava.engine!, 'getDSL').mockResolvedValue('const result = data;');
+      vi.spyOn(suggestions, 'generateSuggestions').mockResolvedValue([]);
+      const computeProfile = vi.spyOn(ava.engine!, 'profile');
+      const onSchema = vi.fn();
+      ava.on('schemastart', onSchema);
+      ava.on('schemaend', onSchema);
+
+      if (operation === 'analyze') await ava.analyze('Rows', { includeSummary: false });
+      else if (operation === 'translate') await ava.translate('Rows');
+      else await ava[operation]();
+
+      expect(onSchema.mock.calls.map(([event]) => event.type)).toEqual(
+        operation === 'schema' ? ['schemastart', 'schemaend'] : []
+      );
+      if (operation !== 'profile') expect(computeProfile).not.toHaveBeenCalled();
+      expect(discover).toHaveBeenCalledOnce();
+      const schema = await ava.schema();
+      expect(schema.tables[0].fields[0].name).toBe('value');
+      expect(discover).toHaveBeenCalledOnce();
+      await ava.source({ type: 'json', options: { data: [{ next: 3 }] } });
+      expect(discover).toHaveBeenCalledOnce();
+      expect((await ava.schema()).tables[0].fields[0].name).toBe('next');
+      expect(discover).toHaveBeenCalledTimes(2);
+    }
+  );
+
+  it.each(['schema', 'profile'] as const)(
+    'emits one %s end event per computation with its outcome',
+    async (operation) => {
+      ava = new AVA({ llm: getLLMConfig(), engine: { type: 'javascript' } });
+      await ava.source({ type: 'json', options: { data: [{ value: 2 }] } });
+      const onEvent = vi.fn();
+      ava.on(`${operation}start`, onEvent);
+      ava.on(`${operation}end`, onEvent);
+      const error = new Error(`${operation} failed`);
+      vi.spyOn(ava.engine!, operation).mockRejectedValueOnce(error);
+
+      await expect(ava[operation]()).rejects.toBe(error);
+      expect(onEvent.mock.calls.map(([event]) => event)).toEqual([
+        { type: `${operation}start`, data: {} },
+        { type: `${operation}end`, data: { error: { name: 'Error', message: error.message } } },
+      ]);
+
+      onEvent.mockClear();
+      await ava[operation]();
+      expect(onEvent.mock.calls.map(([event]) => event)).toEqual([
+        { type: `${operation}start`, data: {} },
+        { type: `${operation}end`, data: {} },
+      ]);
+      if (operation === 'schema') {
+        onEvent.mockClear();
+        await ava.schema();
+        expect(onEvent).not.toHaveBeenCalled();
+      }
+    }
+  );
+
+  it.each(['profile', 'analyze', 'translate', 'suggest'] as const)(
+    'reports internal schema discovery failure only through %s',
+    async (operation) => {
+      ava = new AVA({ llm: getLLMConfig(), engine: { type: 'javascript' } });
+      await ava.source({ type: 'json', options: { data: [{ value: 2 }] } });
+      const onEvent = vi.fn();
+      ava.on('*', onEvent);
+      const error = new Error('Discovery failed');
+      vi.spyOn(ava.engine!, 'schema').mockRejectedValueOnce(error);
+      const compute = vi.spyOn(ava.engine!, 'profile');
+
+      const result = operation === 'analyze' || operation === 'translate' ? ava[operation]('Rows') : ava[operation]();
+      await expect(result).rejects.toBe(error);
+      const failure = { error: { name: 'Error', message: error.message } };
+      expect(onEvent.mock.calls.map(([event]) => event)).toEqual([
+        {
+          type: `${operation}start`,
+          data: operation === 'analyze' || operation === 'translate' ? { query: 'Rows' } : {},
+        },
+        { type: `${operation}end`, data: failure },
+      ]);
+      expect(compute).not.toHaveBeenCalled();
+    }
+  );
 
   it('profiles default and selected metrics for the loaded source', async () => {
     const onStart = vi.fn();
@@ -143,7 +238,7 @@ describe('AVA', () => {
       { type: 'translatestart', data: { query: 'Total value' } },
       { type: 'translateend', data: { dsl: 'SELECT SUM(value) FROM data' } },
     ]);
-    expect(getDSL).toHaveBeenLastCalledWith('Total value', { schema, profile: undefined });
+    expect(getDSL).toHaveBeenLastCalledWith('Total value', { schema, profile: null });
     const profile = await ava.profile();
     await ava['translate']('Total value');
     expect(getDSL).toHaveBeenLastCalledWith('Total value', { schema, profile });
@@ -258,9 +353,260 @@ describe('AVA', () => {
   });
 
   describe('dispose', () => {
+    it.each(['dispose', 'source'])('clears state when engine disposal fails during %s', async (operation) => {
+      ava = new AVA({ llm: getLLMConfig(), engine: { type: 'javascript' } });
+      const source = { type: 'json' as const, options: { data: [{ value: 2 }] } };
+      await ava.source(source);
+      await ava.profile({ metrics: ['row_count'] });
+      const engine = ava.engine!;
+      const release = engine.dispose.bind(engine);
+      const error = new Error('Release failed');
+      vi.spyOn(engine, 'dispose').mockImplementationOnce(async () => {
+        await release();
+        throw error;
+      });
+      const onCreate = vi.fn();
+      const onDisposeEnd = vi.fn();
+      ava.on('createstart', onCreate);
+      ava.on('disposeend', onDisposeEnd);
+
+      await expect(operation === 'source' ? ava.source(source) : ava.dispose()).rejects.toBe(error);
+      expect(ava.engine).toBeNull();
+      await expect(ava.schema()).rejects.toThrow('No data loaded');
+      await expect(ava.query('const result = data;')).rejects.toThrow('No data loaded');
+      expect(onCreate).not.toHaveBeenCalled();
+      expect(onDisposeEnd).toHaveBeenCalledExactlyOnceWith({
+        type: 'disposeend',
+        data: { error: { name: 'Error', message: error.message } },
+      });
+      await expect(ava.dispose()).resolves.toBeUndefined();
+      expect(engine.dispose).toHaveBeenCalledOnce();
+
+      await ava.source(source);
+      const getDSL = vi.spyOn(ava.engine!, 'getDSL').mockResolvedValue('const result = data;');
+      await ava.translate('Rows');
+      expect(getDSL).toHaveBeenLastCalledWith('Rows', { schema: await ava.schema(), profile: null });
+    });
+
+    it('keeps loaded data queryable after schema discovery fails and retries discovery', async () => {
+      ava = new AVA({ llm: getLLMConfig(), engine: { type: 'javascript' } });
+      const source = { type: 'json' as const, options: { data: [{ value: 2 }] } };
+      const error = new Error('Schema discovery failed');
+      const discover = vi.spyOn(JavaScriptEngine.prototype, 'schema').mockRejectedValueOnce(error);
+      const dispose = vi.spyOn(JavaScriptEngine.prototype, 'dispose');
+
+      await ava.source(source);
+      expect(discover).not.toHaveBeenCalled();
+      await expect(ava.schema()).rejects.toBe(error);
+      expect(dispose).not.toHaveBeenCalled();
+      expect((await ava.query('const result = data;')).data).toEqual([{ value: 2 }]);
+      const schema = await ava.schema();
+      expect(schema.tables[0].fields[0].name).toBe('value');
+      expect(await ava.schema()).toBe(schema);
+      expect(discover).toHaveBeenCalledTimes(2);
+    });
+
+    it('clears a failed-load engine even when its cleanup also fails', async () => {
+      ava = new AVA({ llm: getLLMConfig(), engine: { type: 'javascript' } });
+      vi.spyOn(JavaScriptEngine.prototype, 'load').mockRejectedValueOnce(new Error('Load failed'));
+      const cleanupError = new Error('Cleanup failed');
+      const dispose = vi.spyOn(JavaScriptEngine.prototype, 'dispose').mockRejectedValueOnce(cleanupError);
+      await expect(ava.source({ type: 'json', options: { data: [] } })).rejects.toBe(cleanupError);
+      expect(dispose).toHaveBeenCalledOnce();
+      expect(ava.engine).toBeNull();
+      await expect(ava.schema()).rejects.toThrow('No data loaded');
+      await expect(ava.profile()).rejects.toThrow('No data loaded');
+    });
+
     it('should dispose resources without error', async () => {
       await ava.source({ type: 'csv-file', options: { path: testDataPath } });
       await expect(ava.dispose()).resolves.toBeUndefined();
     });
+  });
+});
+
+describe('AVA metadata setters', () => {
+  const llm = { model: 'unused' };
+  const source: DataSourceConfig = { type: 'json', options: { data: [{ value: 2 }, { value: 4 }] } };
+  const schema: Schema = {
+    tables: [{ name: 'data', columnCount: 1, fields: [{ name: 'value', type: 'number' }], indexes: [] }],
+  };
+  const profile: Profile = {
+    generatedAt: 1234,
+    tables: [
+      {
+        ...schema.tables[0],
+        metrics: { row_count: 2 },
+        fields: [{ ...schema.tables[0].fields[0], logicalType: 'numeric', metrics: { mean: 3 } }],
+      },
+    ],
+  };
+
+  afterEach(() => vi.restoreAllMocks());
+
+  it.each(['duckdb', 'javascript'])(
+    'reuses an exported profile with %s and recomputes only on request',
+    async (type) => {
+      const original = new AVA({ llm, engine: { type } });
+      const restored = new AVA({ llm, engine: { type } });
+      try {
+        await original.source(source);
+        const exported = JSON.parse(JSON.stringify(await original.profile()));
+        const expectedSchema = await original.schema();
+        const expectedProfile = structuredClone(exported);
+        const discover =
+          type === 'duckdb' ? vi.spyOn(duckdbSchema, 'getDuckDBSchema') : vi.spyOn(memorySchema, 'extractDataSchema');
+        const onProfile = vi.fn();
+        restored.on('profilestart', onProfile);
+        await restored.source(source);
+        await restored.schema(undefined, () => expectedSchema);
+        await restored.profile(undefined, () => exported);
+        expect(discover).not.toHaveBeenCalled();
+        expect(onProfile).toHaveBeenCalledOnce();
+        expect(await restored.schema()).toEqual(expectedSchema);
+        expect(await restored.schema()).not.toHaveProperty('generatedAt');
+        expect((await restored.schema()).tables[0].fields[0]).not.toHaveProperty('metrics');
+        const dsl =
+          type === 'duckdb'
+            ? 'SELECT SUM(value) AS total FROM data'
+            : 'const result = [{total: stat.sum(data, "value")}];';
+        const getDSL = vi.spyOn(restored.engine!, 'getDSL').mockResolvedValue(dsl);
+        const suggest = vi.spyOn(suggestions, 'generateSuggestions').mockResolvedValue([]);
+        const compute = vi.spyOn(restored.engine!, 'profile');
+        exported.tables[0].fields[0].name = 'changed by caller';
+        exported.tables[0].metrics.row_count = 999;
+        await restored.translate('Total');
+        expect(getDSL).toHaveBeenLastCalledWith('Total', { schema: expectedSchema, profile: expectedProfile });
+        const analysis = await restored.analyze('Total', {
+          includeSummary: false,
+          strategy: { type: 'direct', maxRetries: 0 },
+        });
+        expect(analysis.data).toEqual([{ total: 6 }]);
+        expect(getDSL).toHaveBeenLastCalledWith('Total', { schema: expectedSchema, profile: expectedProfile });
+        await restored.suggest();
+        expect(suggest).toHaveBeenLastCalledWith(llm, { schema: expectedSchema, profile: expectedProfile }, 3);
+        expect(compute).not.toHaveBeenCalled();
+        const recomputed = await restored.profile({ metrics: ['sum'] });
+        expect(recomputed.tables[0].fields[0].metrics).toEqual({ sum: 6 });
+        await restored.translate('Total');
+        expect(getDSL).toHaveBeenLastCalledWith('Total', { schema: expectedSchema, profile: recomputed });
+        expect(compute).toHaveBeenCalledExactlyOnceWith(expectedSchema, { metrics: ['sum'] });
+
+        await restored.source(source);
+        await restored.schema(undefined, () => expectedSchema);
+        const nextDSL = vi.spyOn(restored.engine!, 'getDSL').mockResolvedValue(dsl);
+        await restored.translate('Total');
+        expect(nextDSL).toHaveBeenLastCalledWith('Total', { schema: expectedSchema, profile: null });
+        expect(discover).not.toHaveBeenCalled();
+        await restored.source(source);
+        expect(discover).not.toHaveBeenCalled();
+        await restored.schema();
+        await restored.schema();
+        expect(discover).toHaveBeenCalledOnce();
+      } finally {
+        await original.dispose();
+        await restored.dispose();
+      }
+    }
+  );
+
+  it('passes options to setters and overrides cached metadata without engine calls', async () => {
+    const ava = new AVA({ llm, engine: { type: 'javascript' } });
+    try {
+      await ava.source(source);
+      await ava.schema();
+      await ava.profile();
+      const discover = vi.spyOn(ava.engine!, 'schema');
+      const compute = vi.spyOn(ava.engine!, 'profile');
+      const options = {};
+      const setSchema = vi.fn(() => schema);
+      expect(await ava.schema(options, setSchema)).toEqual(schema);
+      expect(setSchema).toHaveBeenCalledExactlyOnceWith(options);
+      const profileOptions = { metrics: ['mean'] };
+      const setProfile = vi.fn(() => profile);
+      expect(await ava.profile(profileOptions, setProfile)).toEqual(profile);
+      expect(setProfile).toHaveBeenCalledExactlyOnceWith(profileOptions);
+      expect(discover).not.toHaveBeenCalled();
+      expect(compute).not.toHaveBeenCalled();
+      await ava.profile(profileOptions);
+      expect(compute).toHaveBeenCalledExactlyOnceWith(schema, profileOptions);
+    } finally {
+      await ava.dispose();
+    }
+  });
+
+  it('allows a profile setter without engine profiling support', async () => {
+    const ava = new AVA({ llm, engine: { type: 'javascript' } });
+    try {
+      await ava.source(source);
+      ava.engine!.profile = undefined;
+      expect(await ava.profile(undefined, () => profile)).toEqual(profile);
+      await expect(ava.profile()).rejects.toThrow('Profiling is not supported');
+    } finally {
+      await ava.dispose();
+    }
+  });
+
+  it('reports setter failures and keeps the previous metadata', async () => {
+    const ava = new AVA({ llm, engine: { type: 'javascript' } });
+    try {
+      await ava.source(source);
+      await ava.schema(undefined, () => schema);
+      await ava.profile(undefined, () => profile);
+      const schemaEnd = vi.fn();
+      const profileEnd = vi.fn();
+      ava.on('schemaend', schemaEnd);
+      ava.on('profileend', profileEnd);
+      const error = new Error('setter failed');
+      await expect(
+        ava.schema(undefined, () => {
+          throw error;
+        })
+      ).rejects.toBe(error);
+      await expect(
+        ava.profile(undefined, () => {
+          throw error;
+        })
+      ).rejects.toBe(error);
+      await expect(ava.schema(undefined, () => ({ tables: 'invalid' } as never))).rejects.toThrow();
+      await expect(ava.profile(undefined, () => ({ ...profile, generatedAt: -1 }))).rejects.toThrow();
+      expect(schemaEnd.mock.calls[0][0].data.error.message).toBe('setter failed');
+      expect(profileEnd.mock.calls[0][0].data.error.message).toBe('setter failed');
+      expect(await ava.schema()).toEqual(schema);
+      const getDSL = vi.spyOn(ava.engine!, 'getDSL').mockResolvedValue('const result = data;');
+      await ava.translate('Rows');
+      expect(getDSL).toHaveBeenLastCalledWith('Rows', { schema, profile });
+      await ava.schema(undefined, () => schema);
+      await ava.translate('Rows');
+      expect(getDSL).toHaveBeenLastCalledWith('Rows', { schema, profile: null });
+    } finally {
+      await ava.dispose();
+    }
+  });
+
+  it('clears supplied metadata on reload, failed load and disposal', async () => {
+    const ava = new AVA({ llm, engine: { type: 'javascript' } });
+    try {
+      await expect(ava.schema(undefined, () => schema)).rejects.toThrow('No data loaded');
+      await expect(ava.profile(undefined, () => profile)).rejects.toThrow('No data loaded');
+      await ava.source(source);
+      await ava.schema(undefined, () => schema);
+      await ava.profile(undefined, () => profile);
+      await ava.source(source);
+      const discover = vi.spyOn(ava.engine!, 'schema');
+      expect(discover).not.toHaveBeenCalled();
+      const getDSL = vi.spyOn(ava.engine!, 'getDSL').mockResolvedValue('const result = data;');
+      await ava.translate('Rows');
+      expect(discover).toHaveBeenCalledOnce();
+      expect(getDSL).toHaveBeenLastCalledWith('Rows', { schema, profile: null });
+      await ava.schema(undefined, () => schema);
+      await ava.profile(undefined, () => profile);
+      await expect(ava.source({ type: 'parquet', options: { path: 'unsupported.parquet' } })).rejects.toThrow();
+      expect(ava.engine).toBeNull();
+      await expect(ava.schema()).rejects.toThrow('No data loaded');
+    } finally {
+      await ava.dispose();
+    }
+    await expect(ava.profile(undefined, () => profile)).rejects.toThrow('No data loaded');
   });
 });

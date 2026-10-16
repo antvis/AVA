@@ -1,10 +1,7 @@
 import { z } from 'zod';
 
+import { jsonValue } from '../../../util/schema';
 import { excelOptionsSchema, excelSheetSchema } from '../../../util/excel';
-
-export const jsonValue: z.ZodType<unknown> = z.lazy(() =>
-  z.union([z.string(), z.number().finite(), z.boolean(), z.null(), z.array(jsonValue), z.record(jsonValue)])
-);
 
 /** Validate the JSON output of the generated Python script. */
 export const resultSchema = z
@@ -134,17 +131,3 @@ export const tableSchema = z
       new Set(table.fields.map((f) => f.name)).size === table.fields.length,
     'Invalid Python table columns'
   );
-
-export const profileSchema = z.array(
-  tableSchema.and(
-    z.object({
-      metrics: z.record(jsonValue),
-      fields: z.array(
-        z.object({
-          logicalType: z.enum(['numeric', 'string', 'boolean', 'date', 'unknown']),
-          metrics: z.record(jsonValue),
-        })
-      ),
-    })
-  )
-);

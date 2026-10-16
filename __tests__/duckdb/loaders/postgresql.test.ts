@@ -13,7 +13,7 @@ describe.skipIf(process.env.AVA_POSTGRESQL_TEST !== '1')('loaders/postgresql', (
 
   it('loads PostgreSQL with a complete schema', async () => {
     engine = new DuckDBEngine(getLLMConfig());
-    const schema = await engine.load({
+    await engine.load({
       type: 'postgresql',
       options: {
         host: '127.0.0.1',
@@ -23,6 +23,7 @@ describe.skipIf(process.env.AVA_POSTGRESQL_TEST !== '1')('loaders/postgresql', (
         password: 'ava_test_password',
       },
     });
+    const schema = await engine.schema();
 
     expect(schema).toEqual({
       tables: [

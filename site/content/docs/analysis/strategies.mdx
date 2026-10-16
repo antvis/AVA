@@ -108,7 +108,7 @@ const result = await ava.analyze('What is total revenue by region?', {
 });
 ```
 
-Subset uses an existing profile or computes one if the engine supports it. It selects profile details while preserving the complete schema. Without a profile it keeps the original context; if nothing is selected, it keeps all profile details. There are no additional subset configuration fields.
+Subset uses an available profile or asks AVA to compute and retain one if the engine supports it. Later analyses reuse the complete profile; selection only affects the current analysis. Call `ava.profile()` to refresh statistics. Selection preserves the complete schema; without a profile or a positive selection, the original context is kept. Subset has no additional options.
 
 An empty schema, a profiling failure, or a selector failure stops analysis; those errors do not fall back to Direct. Once selection succeeds, the current implementation uses Direct with **10** execution correction retries and the same optional summary behavior.
 

@@ -72,6 +72,31 @@ afterEach(() => {
 });
 
 describe('SupabaseEngine', () => {
+  it('requires a loaded source for schema discovery', async () => {
+    const engine = new SupabaseEngine(getLLMConfig());
+    try {
+      await expect(engine.schema()).rejects.toThrow('No data loaded');
+    } finally {
+      await engine.dispose();
+    }
+  });
+
+  it('skips Supabase catalog requests while keeping query execution available', async () => {
+    const fetch = vi.fn().mockResolvedValue({ ok: true, json: async () => [{ value: 2 }] });
+    vi.stubGlobal('fetch', fetch);
+    const engine = new SupabaseEngine(getLLMConfig());
+    try {
+      expect(
+        await engine.load({ type: 'supabase', options: { accessToken: 'test', projectRef: 'test' } })
+      ).toBeUndefined();
+      expect(fetch).not.toHaveBeenCalled();
+      expect((await engine.execute('SELECT value FROM data')).data).toEqual([{ value: 2 }]);
+      expect(fetch).toHaveBeenCalledOnce();
+    } finally {
+      await engine.dispose();
+    }
+  });
+
   describe('schema', () => {
     it.each([200, 503])('times out while reading an HTTP %s response body', async (status) => {
       vi.useFakeTimers();
@@ -93,7 +118,8 @@ describe('SupabaseEngine', () => {
         })
       );
       const engine = new SupabaseEngine(getLLMConfig());
-      const pending = expect(engine.load({ type: 'supabase', options: CONNECTION })).rejects.toMatchObject({
+      await engine.load({ type: 'supabase', options: CONNECTION });
+      const pending = expect(engine.schema()).rejects.toMatchObject({
         name: 'SupabaseApiError',
         message: 'Supabase API request timed out',
         status: 0,
@@ -104,7 +130,8 @@ describe('SupabaseEngine', () => {
       await vi.advanceTimersByTimeAsync(1);
       await pending;
       expect(vi.getTimerCount()).toBe(0);
-      await expect(engine.profile()).rejects.toThrow('No data loaded');
+      await engine.dispose();
+      await expect(engine.profile({ tables: [] })).rejects.toThrow('No data loaded');
     });
 
     it('clears request timers on success and preserves HTTP errors', async () => {
@@ -112,12 +139,13 @@ describe('SupabaseEngine', () => {
       stubApi([{ rows: [] }]);
       const engine = new SupabaseEngine(getLLMConfig());
       await engine.load({ type: 'supabase', options: CONNECTION });
+      await engine.schema();
       expect(vi.getTimerCount()).toBe(0);
       vi.stubGlobal(
         'fetch',
         vi.fn(async () => ({ ok: false, status: 403, text: async () => 'denied' }))
       );
-      await expect(engine.load({ type: 'supabase', options: CONNECTION })).rejects.toMatchObject({
+      await expect(engine.schema()).rejects.toMatchObject({
         name: 'SupabaseApiError',
         message: 'Supabase API request failed (403): denied',
         status: 403,
@@ -150,7 +178,8 @@ describe('SupabaseEngine', () => {
         },
       ]);
       const engine = new SupabaseEngine(getLLMConfig());
-      const schema = await engine.load({ type: 'supabase', options: CONNECTION });
+      await engine.load({ type: 'supabase', options: CONNECTION });
+      const schema = await engine.schema();
       expect(requests).toHaveLength(1);
       const parsed = await unwrapParseResult(new PgParser().parse(requests[0].body.query));
       expect(parsed.stmts).toHaveLength(1);
@@ -175,7 +204,7 @@ describe('SupabaseEngine', () => {
         },
       ]);
       const generate = vi.spyOn(PostgreSQLQueryDialect.prototype, 'getDSL').mockResolvedValue('SELECT 1');
-      await engine.getDSL('Orders by buyer');
+      await engine.getDSL('Orders by buyer', { schema });
       expect(generate).toHaveBeenCalledWith('Orders by buyer', { schema });
       expect(requests).toHaveLength(1);
     });
@@ -192,12 +221,12 @@ describe('SupabaseEngine', () => {
 
       const rows = await engine.execute('SELECT name FROM users');
       expect(rows.data).toEqual([{ name: 'Alice' }]);
-      expect(requests[1].body.query).toContain('LIMIT 201');
+      expect(requests[0].body.query).toContain('LIMIT 201');
 
       const result = await engine.execute('SELECT name FROM users', { maxRows: 2 });
       expect(result.data).toEqual([{ name: 'Alice' }]);
       expect(result.rowCount).toBe(1);
-      expect(requests[2].body.query).toContain('LIMIT 3');
+      expect(requests[1].body.query).toContain('LIMIT 3');
     });
 
     it('requires one read-only statement', async () => {
@@ -214,7 +243,7 @@ describe('SupabaseEngine', () => {
       await expect(
         engine.execute('WITH deleted AS (DELETE FROM users RETURNING *) SELECT * FROM deleted')
       ).rejects.toThrow('only read-only SELECT statements');
-      expect(requests).toHaveLength(1);
+      expect(requests).toHaveLength(0);
     });
   });
 
@@ -301,18 +330,22 @@ describe('SupabaseEngine', () => {
       stubApi([{ rows: [] }]);
       const engine = new SupabaseEngine(getLLMConfig());
       const config = { type: 'supabase' as const, options: CONNECTION };
-      await expect(engine.profile()).rejects.toThrow('No data loaded');
+      await expect(engine.profile({ tables: [] })).rejects.toThrow('No data loaded');
       await engine.load(config);
       for (const limit of [NaN, -1]) {
-        await expect(engine.profile({ metrics: [{ id: 'top_values', limit }] })).rejects.toThrow('top_values.limit');
+        await expect(engine.profile(await engine.schema(), { metrics: [{ id: 'top_values', limit }] })).rejects.toThrow(
+          'top_values.limit'
+        );
       }
-      await expect(engine.profile({ metrics: ['missing'] })).rejects.toThrow('Unknown metric');
-      await expect(engine.profile({ metrics: [{ id: 'row_count', limit: 2 }] })).rejects.toThrow('Unknown option');
+      await expect(engine.profile(await engine.schema(), { metrics: ['missing'] })).rejects.toThrow('Unknown metric');
+      await expect(engine.profile(await engine.schema(), { metrics: [{ id: 'row_count', limit: 2 }] })).rejects.toThrow(
+        'Unknown option'
+      );
       await engine.dispose();
-      await expect(engine.profile()).rejects.toThrow('No data loaded');
+      await expect(engine.profile({ tables: [] })).rejects.toThrow('No data loaded');
       await engine.load(config);
       await expect(engine.load({ type: 'csv-file', options: { path: 'unused' } })).rejects.toThrow('only supports');
-      await expect(engine.profile()).rejects.toThrow('No data loaded');
+      await expect(engine.profile({ tables: [] })).rejects.toThrow('No data loaded');
     });
   });
 });

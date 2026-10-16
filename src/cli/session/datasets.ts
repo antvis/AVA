@@ -1,6 +1,6 @@
 import { AVA } from '../../index';
 
-import type { DataSourceConfig, EngineConfig, LLMConfig } from '../../types';
+import type { DataSourceConfig, EngineConfig, LLMConfig, Schema } from '../../types';
 
 // One server process owns one dataset. The socket path supplies its external ID.
 let ava: AVA | undefined;
@@ -55,6 +55,9 @@ export function withDataset<T>(operation: (instance: AVA) => Promise<T>): Promis
   return result;
 }
 
-export async function describeDataset() {
-  return withDataset(async (instance) => ({ ...(await instance.schema()), language: instance.engine!.language }));
+export async function describeDataset(schema?: Schema) {
+  return withDataset(async (instance) => ({
+    ...(await instance.schema(undefined, schema === undefined ? undefined : () => schema)),
+    language: instance.engine!.language,
+  }));
 }

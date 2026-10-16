@@ -47,7 +47,6 @@ export class ClickHouseEngine implements AnalysisEngine {
     fence: 'sql',
   };
 
-  private schema: Schema | null = null;
   private client: ClickHouseClient | null = null;
   private database: string | null = null;
   private readonly queryDialect: ClickHouseQueryDialect;
@@ -56,7 +55,7 @@ export class ClickHouseEngine implements AnalysisEngine {
     this.queryDialect = new ClickHouseQueryDialect(llmConfig);
   }
 
-  async load(config: DataSourceConfig): Promise<Schema> {
+  async load(config: DataSourceConfig): Promise<void> {
     await this.dispose();
     if (config.type !== 'clickhouse') {
       throw new Error(`ClickHouseEngine only supports 'clickhouse' data sources, got '${config.type}'`);
@@ -65,27 +64,25 @@ export class ClickHouseEngine implements AnalysisEngine {
     const client = createClient(clientConfig(config.options));
     this.client = client;
     this.database = config.options.database;
-    try {
-      this.schema = await getClickHouseSchema((sql) => this.runQuery(sql), this.database);
-      return this.schema;
-    } catch (error) {
-      await this.dispose();
-      throw error;
-    }
   }
 
-  async profile(options: ProfileOptions = {}): Promise<Profile> {
-    if (!this.schema || !this.client) throw new Error('No data loaded. Please call source() first.');
+  async schema(): Promise<Schema> {
+    if (!this.client) throw new Error('No data loaded. Please call source() first.');
+    return getClickHouseSchema((sql) => this.runQuery(sql), this.database!);
+  }
+
+  async profile(schema: Schema, options: ProfileOptions = {}): Promise<Profile> {
+    if (!this.client) throw new Error('No data loaded. Please call source() first.');
     return profileTables(
       (sql) => this.runQuery(sql),
-      this.schema,
+      schema,
       parseProfileOptions(options, { metrics: DEFAULT_METRICS })
     );
   }
 
-  async getDSL(query: string, context?: DataContext): Promise<string> {
-    if (!this.schema) throw new Error('No data loaded. Please call source() first.');
-    return this.queryDialect.getDSL(query, context ?? { schema: this.schema });
+  async getDSL(query: string, context: DataContext): Promise<string> {
+    if (!this.client) throw new Error('No data loaded. Please call source() first.');
+    return this.queryDialect.getDSL(query, context);
   }
 
   async execute<T = Record<string, unknown>>(dsl: string, options?: ExecutionOptions): Promise<ExecutionResult<T>> {
@@ -96,7 +93,6 @@ export class ClickHouseEngine implements AnalysisEngine {
   }
 
   async dispose(): Promise<void> {
-    this.schema = null;
     this.database = null;
     const client = this.client;
     this.client = null;

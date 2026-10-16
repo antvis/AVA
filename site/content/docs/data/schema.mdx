@@ -1,67 +1,92 @@
+`Schema` describes the structure of your data. `Profile` adds statistics such as row counts, minimums, and averages. Both belong to the currently loaded source.
+
 ## Read the schema
 
-After calling `source()`, retrieve structural metadata without an LLM call:
+Load a source, then ask AVA for its structure:
 
 ```typescript
+await ava.source({
+  type: 'json',
+  options: { data: [{ region: 'East', revenue: 120 }] },
+});
+
 const schema = await ava.schema();
-for (const table of schema.tables) {
-  console.log(table.name, table.columnCount);
-  console.log(table.fields, table.indexes);
-}
-console.log(schema.relations);
+console.log(schema.tables);
 ```
 
-`schema(): Promise<Schema>` throws when no source is loaded.
+`source()` only loads the data. The first `schema()` call reads the structure through the engine and saves it; later calls return the saved schema. Analysis and profiling also obtain the schema when needed.
 
 ## Schema structure
 
-| Property               | Contents                                                                   |
-| ---------------------- | -------------------------------------------------------------------------- |
-| `tables`               | All exposed tables or views                                                |
-| `tables[].name`        | Engine-registered table name                                               |
-| `tables[].columnCount` | Number of columns                                                          |
-| `tables[].fields`      | Field `name`, native `type`, and optional `nullable`                       |
-| `tables[].indexes`     | Index name, columns, uniqueness, and optional primary-key flag             |
-| `relations`            | Optional foreign-key relationships with `from` and `to` table/column pairs |
+| Property | Meaning |
+| --- | --- |
+| `tables` | Tables or views available for queries |
+| `tables[].name` | Table name |
+| `tables[].columnCount` | Number of columns |
+| `tables[].fields` | Column names, types, and optional nullability |
+| `tables[].indexes` | Index definitions, including primary keys when available |
+| `relations` | Foreign-key relationships, when available |
 
-Metadata availability depends on the source and engine. File sources have no database indexes; not every source exposes foreign-key relations.
-
-## Schema versus profile
-
-`schema()` describes structure. [Profiling](#profile-a-dataset) adds table and column metrics, a shared logical type, and a timestamp. Calling `profile()` retains those statistics for subsequent model-facing operations.
-
-Always use returned names when writing a direct query instead of guessing a table name from the source filename.
+The available details depend on the source and engine. A query result's `schema` describes only its output columns; it is not a source `Schema`.
 
 ## Profile a dataset
 
+Call `profile()` to calculate statistics through the engine:
+
 ```typescript
-const profile = await ava.profile();
-console.log(profile.tables[0].metrics.row_count);
-console.log(profile.tables[0].fields[0].logicalType);
-console.log(profile.generatedAt);
+const profile = await ava.profile({ metrics: ['row_count', 'mean'] });
+console.log(profile.tables[0].metrics);
+console.log(profile.tables[0].fields);
 ```
 
-`profile(options?: ProfileOptions): Promise<Profile>` requires a loaded source. It computes metrics in the selected engine and retains the latest profile for analysis, translation, and query suggestions.
+Each call calculates fresh statistics and saves the returned profile. Analysis, translation, and suggestions can then use it. Profiling requires engine support and does not call an LLM.
 
 ## Select metrics
 
+Omit options to use the default metrics, or pass `metrics` to choose your own set:
+
 ```typescript
-const profile = await ava.profile({
-  metrics: ['row_count', 'null_count', 'distinct_count', { id: 'top_values', limit: 5, maxDistinctRatio: 0.5 }],
-});
+await ava.profile();
+await ava.profile({ metrics: ['min', 'max'] });
 ```
 
-| Selection  | Metrics                                                                         |
-| ---------- | ------------------------------------------------------------------------------- |
-| Default    | `row_count`, `null_count`, `distinct_count`, `top_values`, `min`, `max`, `mean` |
-| Additional | `duplicate_count`, `min_length`, `max_length`, `sum`, `stddev`, `median`        |
+The defaults are `row_count`, `null_count`, `distinct_count`, `top_values`, `min`, `max`, and `mean`. Additional built-in metrics include `duplicate_count`, `min_length`, `max_length`, `sum`, `stddev`, and `median`.
 
-A supplied `metrics` array replaces the defaults. `metrics: []` returns enriched structural metadata without computing statistics. Metrics apply only to compatible targets and field types.
+Metrics apply to compatible tables or columns. A supplied list replaces the defaults; `metrics: []` produces empty metric objects. See the [API reference](/documentation/reference/api/#profile) for metric options.
 
 ## Profile format
 
-A profile contains the schema plus table-level and field-level `metrics`. Fields also expose `logicalType`: `numeric`, `string`, `boolean`, `date`, or `unknown`. `generatedAt` is a Unix timestamp in milliseconds.
+A profile includes the schema and these additional fields:
 
-`top_values` defaults to a limit of 3 and maximum distinct ratio of 0.5. Options and availability are checked by the engine's metric definitions.
+| Property | Meaning |
+| --- | --- |
+| `tables[].metrics` | Table statistics, such as `row_count` |
+| `tables[].fields[].metrics` | Column statistics, such as `mean` |
+| `tables[].fields[].logicalType` | Column category, such as `numeric` or `string` |
+| `generatedAt` | Creation time in Unix milliseconds |
 
-See [profile parameters](/documentation/reference/api/#profile) for all metric options and their accepted values.
+A missing metric means it was not computed. It does not mean zero.
+
+## Supply metadata
+
+If you already have a schema or profile, pass a **setter** as the second argument. A setter is simply a function that returns the value you want AVA to use.
+
+Here, `savedSchema` and `savedProfile` are results you saved from earlier calls:
+
+```typescript
+await ava.schema(undefined, () => savedSchema);
+await ava.profile(undefined, () => savedProfile);
+```
+
+AVA uses the setter's return value instead of asking the engine. Omit the setter to use the normal engine behavior:
+
+```typescript
+await ava.schema();  // Read the saved schema, or discover it through the engine.
+await ava.profile(); // Calculate a fresh profile through the engine.
+```
+
+The first argument is options. `undefined` uses the default `{}`. If the setter needs options, it receives that same object as its argument. Schema currently has no configurable options.
+
+Setting a schema replaces the saved schema and clears the saved profile, so set the schema first when supplying both. Setting a profile replaces only the profile. AVA validates and copies each returned value; a thrown error or invalid value leaves the previous metadata unchanged.
+
+Use metadata that matches the loaded data. Loading another source or calling `dispose()` clears both saved values.

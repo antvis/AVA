@@ -57,7 +57,7 @@ async function dispatch(message: Request): Promise<unknown> {
     return { datasetId: id, disposed: true };
   }
 
-  if (message.command === 'schema') return describeDataset();
+  if (message.command === 'schema') return describeDataset(message.schema);
 
   if (['suggest', 'analyze', 'translate'].includes(message.command) && !hasModel) {
     throw new Error('Set OPENAI_API_KEY before ava source, then load the dataset again.');
@@ -66,7 +66,10 @@ async function dispatch(message: Request): Promise<unknown> {
   return withDataset(async (ava) => {
     switch (message.command) {
       case 'profile':
-        return ava.profile({ metrics: message.metrics });
+        return ava.profile(
+          { metrics: message.metrics },
+          message.profile === undefined ? undefined : () => message.profile!
+        );
       case 'suggest':
         return ava.suggest(message.count);
       case 'translate':

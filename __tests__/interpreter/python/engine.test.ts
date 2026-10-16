@@ -2,6 +2,9 @@ import { afterEach, describe, expect, it, vi } from 'vitest';
 
 import { PythonEngine } from '../../../src/interpreter/python/engine';
 import * as pythonExecutor from '../../../src/interpreter/python/util/execute';
+import { schemaMetadataSchema } from '../../../src/util/schema';
+
+import type { Schema } from '../../../src/types';
 
 const source = { type: 'json' as const, options: { data: [{ value: 2 }] } };
 const table = { name: 'data', columnCount: 1, indexes: [], fields: [{ name: 'value', type: 'int64' }] };
@@ -14,6 +17,15 @@ afterEach(() => {
 });
 
 describe('python/engine', () => {
+  it('requires a loaded source for schema discovery', async () => {
+    const engine = new PythonEngine({ model: 'unused' });
+    try {
+      await expect(engine.schema()).rejects.toThrow('No data loaded');
+    } finally {
+      await engine.dispose();
+    }
+  });
+
   it.each(['all_varchar', 'ignore_errors', 'stop_at_empty', 'empty_as_varchar'])(
     'rejects DuckDB-only Excel setting %s before executing Python',
     async (key) => {
@@ -38,6 +50,7 @@ describe('python/engine', () => {
     const engine = new PythonEngine({ model: 'unused' }, { queryTimeoutMs: 1234 });
     expect(createExecutor).toHaveBeenCalledExactlyOnceWith(1234);
     await engine.load(source);
+    await engine.schema();
     await engine.execute('result = df', { maxResultBytes: 100 });
     await engine.execute('result = df', { maxResultBytes: 200 });
     expect(createExecutor).toHaveBeenCalledTimes(1);
@@ -52,13 +65,12 @@ describe('python/engine', () => {
     const engine = new PythonEngine({ model: 'unused' }, { execute });
     const expectUnloaded = async () => {
       await expect(engine.execute('result = 1')).rejects.toThrow('No data loaded');
-      await expect(engine.profile()).rejects.toThrow('No data loaded');
-      await expect(engine.getDSL('sum')).rejects.toThrow('No data loaded');
+      await expect(engine.profile({ tables: [] })).rejects.toThrow('No data loaded');
+      await expect(engine.getDSL('sum', { schema: { tables: [] } })).rejects.toThrow('No data loaded');
     };
     await expectUnloaded();
     await engine.load(source);
-    execute.mockRejectedValueOnce(new Error('load failed'));
-    await expect(engine.load(source)).rejects.toThrow('load failed');
+    await expect(engine.load({ type: 'json', options: {} } as never)).rejects.toThrow();
     await expectUnloaded();
     await engine.load(source);
     await engine.dispose();
@@ -82,5 +94,72 @@ describe('python/engine', () => {
     const pending = expect(engine.execute('result = 1')).rejects.toThrow('timed out after 20ms');
     await vi.advanceTimersByTimeAsync(20);
     await pending;
+  });
+});
+
+describe('python/engine metadata', () => {
+  const llm = { model: 'unused' };
+  const source = { type: 'json' as const, options: { data: [{ value: 2 }, { value: 4 }] } };
+  const schema: Schema = {
+    tables: [{ name: 'data', columnCount: 1, fields: [{ name: 'value', type: 'number' }], indexes: [] }],
+  };
+
+  it.skipIf(process.env.AVA_PYTHON_LOCAL_TEST !== '1')(
+    'profiles imported Python structure with the real executor',
+    async () => {
+      const engine = new PythonEngine(llm);
+      try {
+        await engine.load(source);
+        const savedSchema = await engine.schema();
+        savedSchema.tables[0].fields[0].nullable = false;
+        savedSchema.tables[0].indexes = [{ name: 'idx', columns: ['value'], unique: true }];
+        savedSchema.relations = [
+          {
+            kind: 'foreign-key',
+            from: { table: 'data', columns: ['value'] },
+            to: { table: 'data', columns: ['value'] },
+          },
+        ];
+        await engine.load(source);
+        const computed = await engine.profile(savedSchema, { metrics: ['row_count', 'mean'] });
+        expect(schemaMetadataSchema.parse(computed)).toEqual(savedSchema);
+        expect(computed.tables[0].metrics).toEqual({ row_count: 2 });
+        expect(computed.tables[0].fields[0].metrics).toEqual({ mean: 3 });
+      } finally {
+        await engine.dispose();
+      }
+    },
+    30000
+  );
+
+  it('skips Python metadata execution and retains supplied structure when profiling', async () => {
+    const input = structuredClone(schema);
+    input.tables[0].fields[0].nullable = false;
+    input.tables[0].indexes.push({ name: 'idx', columns: ['value'], unique: true });
+    input.relations = [
+      { kind: 'foreign-key', from: { table: 'data', columns: ['value'] }, to: { table: 'data', columns: ['value'] } },
+    ];
+    const execute = vi.fn();
+    const engine = new PythonEngine(llm, { execute });
+    try {
+      expect(await engine.load(source)).toBeUndefined();
+      expect(execute).not.toHaveBeenCalled();
+      const tables = [
+        {
+          ...input.tables[0],
+          metrics: { row_count: 2 },
+          fields: [{ ...input.tables[0].fields[0], logicalType: 'numeric', metrics: {} }],
+        },
+      ];
+      execute.mockResolvedValue({ schema: [], data: tables, rowCount: 1 });
+      const computed = await engine.profile(input, { metrics: ['row_count'] });
+      expect(schemaMetadataSchema.parse(computed)).toEqual(input);
+      expect(execute).toHaveBeenCalledOnce();
+      expect(execute.mock.calls[0][0]).not.toContain('def field_type');
+      execute.mockResolvedValue({ schema: [{ name: 'value' }], data: [{ value: 2 }], rowCount: 1 });
+      expect((await engine.execute('result = df')).data).toEqual([{ value: 2 }]);
+    } finally {
+      await engine.dispose();
+    }
   });
 });

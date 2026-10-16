@@ -24,6 +24,7 @@ import type {
   ProfileOptions,
   DataContext,
   DataSourceConfig,
+  LoadedSource,
   DuckDBEngineOptions,
   Schema,
   LLMConfig,
@@ -66,9 +67,7 @@ export class DuckDBEngine implements AnalysisEngine {
 
   private instance: DuckDBInstance | null = null;
   private connection: DuckDBConnection | null = null;
-  private schema: Schema | null = null;
-  private dataProfile: Profile | null = null;
-  private cleanup: (() => Promise<void>) | null = null;
+  private source: LoadedSource | null = null;
   private readonly queryDialect: DuckDBQueryDialect;
   private allowCommunityExtensions = false;
 
@@ -122,58 +121,47 @@ export class DuckDBEngine implements AnalysisEngine {
     await conn.run('SET lock_configuration = true');
   }
 
-  async load(config: DataSourceConfig): Promise<Schema> {
-    this.schema = null;
-    this.dataProfile = null;
-    const nextAllowCommunityExtensions = config.type === 'mongodb';
-    if (
-      this.connection &&
-      !this.engineOptions.allowCommunityExtensions &&
-      nextAllowCommunityExtensions !== this.allowCommunityExtensions
-    ) {
-      await this.cleanup?.();
-      this.cleanup = null;
-      this.close();
-    }
-    this.allowCommunityExtensions = nextAllowCommunityExtensions;
+  async load(config: DataSourceConfig): Promise<void> {
+    await this.dispose();
+    this.allowCommunityExtensions = config.type === 'mongodb';
     try {
-      const source = await loadSource(config, this.llmConfig);
+      this.source = await loadSource(config, this.llmConfig);
       const conn = await this.getConnection();
-      this.cleanup = source.cleanup;
-      await source.register(conn);
-      this.schema = await source.getSchema(conn);
-      await this.restrictAccess(conn, source.allowedDirectories);
+      await this.source.register(conn);
+      await this.restrictAccess(conn, this.source.allowedDirectories);
     } catch (error) {
-      await this.cleanup?.();
-      this.cleanup = null;
-      this.close();
+      await this.dispose();
       throw error;
     }
-
-    return this.schema!;
   }
 
-  async getDSL(query: string, context?: DataContext): Promise<string> {
-    if (!this.schema) throw new Error('No data loaded. Please call source() first.');
+  async schema(): Promise<Schema> {
+    if (!this.source || !this.connection) throw new Error('No data loaded. Please call source() first.');
 
-    return this.queryDialect.getDSL(query, context ?? { schema: this.schema, profile: this.dataProfile ?? undefined });
+    return this.source.getSchema(this.connection);
   }
 
-  // TODO(profile, on demand): Cache only with reliable data versions and request-based invalidation.
-  async profile(options: ProfileOptions = {}): Promise<Profile> {
-    if (!this.schema || !this.connection) {
+  async profile(schema: Schema, options: ProfileOptions = {}): Promise<Profile> {
+    if (!this.source || !this.connection) {
       throw new Error('No data loaded. Please call source() first.');
     }
 
     const defaultOptions = { metrics: DEFAULT_METRICS };
     const parsedOptions = parseProfileOptions(options, defaultOptions);
 
-    this.dataProfile = await profileTables(this.connection, this.schema, parsedOptions);
-    return this.dataProfile;
+    return profileTables(this.connection, schema, parsedOptions);
+  }
+
+  async getDSL(query: string, context: DataContext): Promise<string> {
+    if (!this.source) throw new Error('No data loaded. Please call source() first.');
+
+    return this.queryDialect.getDSL(query, context);
   }
 
   async execute<T = Record<string, unknown>>(sql: string, options?: ExecutionOptions): Promise<ExecutionResult<T>> {
-    const conn = await this.getConnection();
+    if (!this.source || !this.connection) throw new Error('No data loaded. Please call source() first.');
+
+    const conn = this.connection;
     const query = await this.queryDialect.validateDSL(sql, conn);
     const timeoutMs = this.engineOptions.queryTimeoutMs ?? DEFAULT_QUERY_TIMEOUT_MS;
     const reader = await runWithTimeout(conn.runAndReadAll(limitedQuery(query, maxRows(options))), timeoutMs, {
@@ -202,14 +190,13 @@ export class DuckDBEngine implements AnalysisEngine {
     }
     this.connection = null;
     this.instance = null;
-    this.schema = null;
-    this.dataProfile = null;
     this.allowCommunityExtensions = false;
   }
 
   async dispose(): Promise<void> {
+    const source = this.source;
+    this.source = null;
     this.close();
-    await this.cleanup?.();
-    this.cleanup = null;
+    await source?.cleanup();
   }
 }

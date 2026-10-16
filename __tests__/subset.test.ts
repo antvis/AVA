@@ -1,7 +1,8 @@
-import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { experimental_evaluate as evaluate, generateText } from 'ai';
 
 import { analyze } from '../src/analysis';
+import { AVA } from '../src';
 import { selectSubsetContext } from '../src/analysis/subset';
 import { DuckDBQueryDialect } from '../src/query/duckdb';
 import { stringifyProfile, stringifySchema } from '../src/util/context';
@@ -59,6 +60,7 @@ function selection(ids: string[]) {
 }
 
 beforeEach(() => vi.resetAllMocks());
+afterEach(() => vi.restoreAllMocks());
 
 describe('Subset strategy', () => {
   it('selects only statistics while preserving all profile structure without mutating context', async () => {
@@ -129,7 +131,7 @@ describe('Subset strategy', () => {
       { strategy: { type: 'subset' }, maxRows: 10, includeSummary },
       {
         emit,
-        context: { schema },
+        context: { schema, profile },
         engine,
         llm: { provider: 'gateway', model: 'openai/gpt-5.5' },
       }
@@ -147,6 +149,7 @@ describe('Subset strategy', () => {
     expect(prompt).toContain('unrelated');
     expect(prompt.match(/Maximum: 123/g)).toHaveLength(1);
     expect(prompt).toContain(stringifyProfile((engine.getDSL as ReturnType<typeof vi.fn>).mock.calls[0][1].profile));
+    expect(engine.profile).not.toHaveBeenCalled();
     expect(engine.getDSL).toHaveBeenCalledOnce();
     expect(engine.execute).toHaveBeenCalledOnce();
     expect(generateText).toHaveBeenCalledTimes(includeSummary ? 2 : 1);
@@ -156,5 +159,118 @@ describe('Subset strategy', () => {
       expect.objectContaining({ maxRows: 10 })
     );
     expect(result.data).toEqual([{ total: 246 }]);
+  });
+});
+
+describe('AVA subset profiling', () => {
+  const source = {
+    type: 'json' as const,
+    options: {
+      data: [
+        { value: 2, other: 4 },
+        { value: 4, other: 8 },
+      ],
+    },
+  };
+  const config = { strategy: { type: 'subset' as const }, includeSummary: false };
+
+  beforeEach(() => {
+    vi.mocked(evaluate).mockResolvedValue({
+      answers: {
+        t0: { type: 'boolean', probability: 0 },
+        t0f0: { type: 'boolean', probability: 1 },
+        t0f1: { type: 'boolean', probability: 0 },
+      },
+    } as never);
+  });
+
+  it('retains the complete profile across analyses, refreshes explicitly and resets on source replacement', async () => {
+    const ava = new AVA({ llm: { model: 'unused' }, engine: { type: 'javascript' } });
+    try {
+      await ava.source(source);
+      const compute = vi.spyOn(ava.engine!, 'profile');
+      const getDSL = vi.spyOn(ava.engine!, 'getDSL').mockResolvedValue('const result = data;');
+      const onProfile = vi.fn();
+      ava.on('profilestart', onProfile);
+      ava.on('profileend', onProfile);
+
+      await ava.analyze('Values', config);
+      await ava.analyze('Values again', config);
+      expect(compute).toHaveBeenCalledOnce();
+      expect(onProfile).not.toHaveBeenCalled();
+      const full = await compute.mock.results[0].value;
+      expect(full.tables[0].fields[1].metrics).toHaveProperty('mean', 6);
+      const selected = getDSL.mock.calls[0][1].profile!;
+      expect(selected.tables[0].fields[1].metrics).toEqual({});
+      await ava.translate('All fields');
+      expect(getDSL).toHaveBeenLastCalledWith('All fields', { schema: await ava.schema(), profile: full });
+
+      const refreshed = await ava.profile({ metrics: ['sum'] });
+      await ava.analyze('Values after refresh', config);
+      expect(onProfile.mock.calls.map(([event]) => event)).toEqual([
+        { type: 'profilestart', data: {} },
+        { type: 'profileend', data: {} },
+      ]);
+      expect(compute).toHaveBeenCalledTimes(2);
+      expect(getDSL.mock.calls.at(-1)![1].profile!.tables[0].fields[0].metrics).toEqual({ sum: 6 });
+      await ava.translate('Full refreshed profile');
+      expect(getDSL).toHaveBeenLastCalledWith('Full refreshed profile', {
+        schema: await ava.schema(),
+        profile: refreshed,
+      });
+
+      await ava.source(source);
+      await ava.profile(undefined, () => full);
+      const importedCompute = vi.spyOn(ava.engine!, 'profile');
+      vi.spyOn(ava.engine!, 'getDSL').mockResolvedValue('const result = data;');
+      await ava.analyze('Imported values', config);
+      expect(importedCompute).not.toHaveBeenCalled();
+
+      await ava.source(source);
+      const nextCompute = vi.spyOn(ava.engine!, 'profile');
+      vi.spyOn(ava.engine!, 'getDSL').mockResolvedValue('const result = data;');
+      await ava.analyze('New values', config);
+      expect(nextCompute).toHaveBeenCalledOnce();
+    } finally {
+      await ava.dispose();
+    }
+  });
+
+  it('retries failed profiling and keeps schema-only analysis available for unsupported engines', async () => {
+    const ava = new AVA({ llm: { model: 'unused' }, engine: { type: 'javascript' } });
+    try {
+      await ava.source(source);
+      const error = new Error('Profiling failed');
+      const compute = vi.spyOn(ava.engine!, 'profile').mockRejectedValueOnce(error);
+      const getDSL = vi.spyOn(ava.engine!, 'getDSL').mockResolvedValue('const result = data;');
+      const onEnd = vi.fn();
+      const onProfile = vi.fn();
+      ava.on('profilestart', onProfile);
+      ava.on('profileend', onProfile);
+      ava.on('analyzeend', onEnd);
+      await expect(ava.analyze('Values', config)).rejects.toBe(error);
+      expect(onEnd).toHaveBeenCalledExactlyOnceWith({
+        type: 'analyzeend',
+        data: { error: { name: 'Error', message: error.message } },
+      });
+      expect(onProfile).not.toHaveBeenCalled();
+      expect(getDSL).not.toHaveBeenCalled();
+      await ava.analyze('Retry', config);
+      await ava.analyze('Reuse', config);
+      expect(compute).toHaveBeenCalledTimes(2);
+
+      await ava.source(source);
+      ava.engine!.profile = undefined;
+      const nextDSL = vi.spyOn(ava.engine!, 'getDSL').mockResolvedValue('const result = data;');
+      vi.mocked(evaluate).mockClear();
+      onEnd.mockClear();
+      await ava.analyze('Without profiling', config);
+      expect(nextDSL).toHaveBeenCalledWith('Without profiling', { schema: await ava.schema(), profile: null });
+      expect(evaluate).not.toHaveBeenCalled();
+      expect(onEnd).toHaveBeenCalledExactlyOnceWith({ type: 'analyzeend', data: {} });
+      expect(onProfile).not.toHaveBeenCalled();
+    } finally {
+      await ava.dispose();
+    }
   });
 });

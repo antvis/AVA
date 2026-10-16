@@ -12,6 +12,7 @@ import {
   responseSchema,
   sessionDirectory,
   socketPath,
+  startupSchema,
 } from './protocol';
 
 import type { Request } from './protocol';
@@ -46,6 +47,7 @@ export async function createSession(
   engine?: EngineConfig['type']
 ): Promise<{ datasetId: string }> {
   checkEnvironment();
+  const startup = startupSchema.parse({ source: config, llm, engine });
 
   const datasetId = createDatasetId(config);
   const directory = sessionDirectory(datasetId);
@@ -96,7 +98,7 @@ export async function createSession(
       worker.once('message', onMessage);
 
       try {
-        worker.send({ source: config, llm, engine }, (error) => {
+        worker.send(startup, (error) => {
           if (error) finish(error);
         });
       } catch (error) {

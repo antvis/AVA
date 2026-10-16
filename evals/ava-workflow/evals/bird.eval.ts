@@ -224,7 +224,7 @@ export async function main(argv = process.argv.slice(2)) {
             engine: { type: 'duckdb', queryTimeoutMs: timeout, memoryLimit: values['memory-limit'] },
           });
           for (const [event, stage] of [
-            ['loadstart', 'loading'],
+            ['sourcestart', 'loading'],
             ['profilestart', 'profiling'],
             ['analyzestart', 'analyzing'],
           ])

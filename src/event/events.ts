@@ -20,8 +20,10 @@ export class LifecycleEvent extends BaseEvent {
 export class ExecutionEvent extends BaseEvent {
   constructor(
     type:
-      | ExecutionEventType.LOAD_START
-      | ExecutionEventType.LOAD_END
+      | ExecutionEventType.SOURCE_START
+      | ExecutionEventType.SOURCE_END
+      | ExecutionEventType.SCHEMA_START
+      | ExecutionEventType.SCHEMA_END
       | ExecutionEventType.PROFILE_START
       | ExecutionEventType.PROFILE_END
       | ExecutionEventType.ANALYZE_START

@@ -44,10 +44,11 @@ describe('loaders/json-file', () => {
 
   it('loads a JSON file with a complete schema and original column order', async () => {
     engine = new DuckDBEngine(getLLMConfig());
-    const schema = await engine.load({
+    await engine.load({
       type: 'json-file',
       options: { path: path.join(__dirname, '../../datasets/customers.json') },
     });
+    const schema = await engine.schema();
 
     expect(schema).toEqual({
       tables: [

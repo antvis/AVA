@@ -22,7 +22,8 @@ describe('loaders/csv-file', () => {
   it('loads the sales CSV with a complete schema and original column order', async () => {
     engine = new DuckDBEngine(getLLMConfig());
     const csvPath = path.join(__dirname, '../../datasets/sales.csv');
-    const schema = await engine.load({ type: 'csv-file', options: { path: csvPath } });
+    await engine.load({ type: 'csv-file', options: { path: csvPath } });
+    const schema = await engine.schema();
 
     expect(schema).toEqual({
       tables: [

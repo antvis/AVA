@@ -46,7 +46,8 @@ describe.skipIf(process.env.AVA_PYTHON_DOCKER_TEST !== '1')('python Docker integ
     async (kind, config) => {
       const engine = new PythonEngine({ model: 'unused' }, { execute: executeDocker });
       try {
-        const schema = await engine.load(config);
+        await engine.load(config);
+        const schema = await engine.schema();
         expect(schema.tables.map((table) => table.name)).toEqual(kind === 'Excel' ? ['First', 'Second'] : ['data']);
         expect(schema.tables[0].fields[0].name).toBe('value');
         const result = await engine.execute(

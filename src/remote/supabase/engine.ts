@@ -45,7 +45,6 @@ export class SupabaseEngine implements AnalysisEngine {
     fence: 'sql',
   };
 
-  private schema: Schema | null = null;
   private connection: { accessToken: string; projectRef: string } | null = null;
   private readonly queryDialect: PostgreSQLQueryDialect;
 
@@ -53,36 +52,33 @@ export class SupabaseEngine implements AnalysisEngine {
     this.queryDialect = new PostgreSQLQueryDialect(llmConfig);
   }
 
-  async load(config: DataSourceConfig): Promise<Schema> {
-    this.schema = null;
+  async load(config: DataSourceConfig): Promise<void> {
     this.connection = null;
     if (config.type !== 'supabase') {
       throw new Error(`SupabaseEngine only supports 'supabase' data sources, got '${config.type}'`);
     }
     this.connection = config.options;
-    try {
-      this.schema = await getSupabaseSchema((sql) => this.runQuery(sql));
-    } catch (error) {
-      this.connection = null;
-      throw error;
-    }
-    return this.schema;
   }
 
-  async profile(options: ProfileOptions = {}): Promise<Profile> {
-    if (!this.schema || !this.connection) throw new Error('No data loaded. Please call source() first.');
+  async schema(): Promise<Schema> {
+    if (!this.connection) throw new Error('No data loaded. Please call source() first.');
+    return getSupabaseSchema((sql) => this.runQuery(sql));
+  }
+
+  async profile(schema: Schema, options: ProfileOptions = {}): Promise<Profile> {
+    if (!this.connection) throw new Error('No data loaded. Please call source() first.');
     return profileTables(
       (sql) => this.runQuery(sql),
-      this.schema,
+      schema,
       parseProfileOptions(options, { metrics: DEFAULT_METRICS })
     );
   }
 
-  async getDSL(query: string, context?: DataContext): Promise<string> {
-    if (!this.schema) {
+  async getDSL(query: string, context: DataContext): Promise<string> {
+    if (!this.connection) {
       throw new Error('No data loaded. Please call source() first.');
     }
-    return this.queryDialect.getDSL(query, context ?? { schema: this.schema });
+    return this.queryDialect.getDSL(query, context);
   }
 
   async execute<T = Record<string, unknown>>(sql: string, options?: ExecutionOptions): Promise<ExecutionResult<T>> {
@@ -95,7 +91,6 @@ export class SupabaseEngine implements AnalysisEngine {
   }
 
   async dispose(): Promise<void> {
-    this.schema = null;
     this.connection = null;
   }
 

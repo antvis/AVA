@@ -24,7 +24,7 @@ describe.skipIf(process.env.AVA_MYSQL_TEST !== '1')('profile/mysql', () => {
       },
     });
 
-    const profile = await engine.profile();
+    const profile = await engine.profile(await engine.schema());
 
     expect(profile.tables.map(({ name, metrics }) => ({ name, metrics }))).toEqual([
       { name: 'customers', metrics: { row_count: 3 } },

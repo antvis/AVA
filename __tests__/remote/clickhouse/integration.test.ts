@@ -13,7 +13,7 @@ describe.skipIf(process.env.AVA_CLICKHOUSE_TEST !== '1')('clickhouse/engine', ()
 
   async function load() {
     engine = new ClickHouseEngine(getLLMConfig());
-    return engine.load({
+    await engine.load({
       type: 'clickhouse',
       options: {
         url: `http://127.0.0.1:${Number(process.env.AVA_CLICKHOUSE_TEST_PORT ?? 13123)}`,
@@ -26,7 +26,8 @@ describe.skipIf(process.env.AVA_CLICKHOUSE_TEST !== '1')('clickhouse/engine', ()
   }
 
   it('discovers the ClickHouse fixture schema', async () => {
-    const schema = await load();
+    await load();
+    const schema = await engine!.schema();
 
     expect(schema.tables.map(({ name }) => name)).toEqual(['customers', 'order notes', 'orders']);
     expect(schema.tables.find(({ name }) => name === 'customers')).toMatchObject({
@@ -92,7 +93,7 @@ describe.skipIf(process.env.AVA_CLICKHOUSE_TEST !== '1')('clickhouse/engine', ()
 
   it('profiles the fixture tables', async () => {
     await load();
-    const profile = await engine!.profile();
+    const profile = await engine!.profile(await engine!.schema());
 
     expect(profile.tables.map(({ name, metrics }) => ({ name, metrics }))).toEqual([
       { name: 'customers', metrics: { row_count: 3 } },

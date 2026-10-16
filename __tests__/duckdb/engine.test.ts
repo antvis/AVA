@@ -14,6 +14,15 @@ import { maxRows } from '../../src/util/result';
 import { getLLMConfig, skipLLMTests } from '../test-utils';
 
 describe('DuckDBEngine', () => {
+  it('requires a loaded source for schema discovery', async () => {
+    const engine = new DuckDBEngine(getLLMConfig());
+    try {
+      await expect(engine.schema()).rejects.toThrow('No data loaded');
+    } finally {
+      await engine.dispose();
+    }
+  });
+
   let engine: DuckDBEngine;
 
   beforeEach(() => {
@@ -25,23 +34,27 @@ describe('DuckDBEngine', () => {
     await engine.dispose();
   });
 
-  it('uses its own schema and explicitly computed profile when generating DSL', async () => {
+  it('uses caller-supplied context without retaining schema or profile', async () => {
     const generate = vi.spyOn(DuckDBQueryDialect.prototype, 'getDSL').mockResolvedValue('SELECT 1');
     const compute = vi.spyOn(engine, 'profile');
-    const schema = await engine.load({ type: 'json', options: { data: [{ value: 1 }] } });
-    await engine.getDSL('One');
+    await engine.load({ type: 'json', options: { data: [{ value: 1 }] } });
+    const schema = await engine.schema();
+    await engine.getDSL('One', { schema });
     expect(generate).toHaveBeenLastCalledWith('One', { schema, profile: undefined });
     expect(compute).not.toHaveBeenCalled();
 
-    const profile = await engine.profile({ metrics: ['row_count'] });
-    await engine.getDSL('One');
+    const profile = await engine.profile(schema, { metrics: ['row_count'] });
+    await engine.getDSL('One', { schema, profile });
     expect(generate).toHaveBeenLastCalledWith('One', { schema, profile });
     expect(compute).toHaveBeenCalledTimes(1);
+    await engine.getDSL('One', { schema });
+    expect(generate).toHaveBeenLastCalledWith('One', { schema });
 
     await engine.dispose();
-    await expect(engine.getDSL('One')).rejects.toThrow('No data loaded');
-    const nextSchema = await engine.load({ type: 'json', options: { data: [{ other: 2 }] } });
-    await engine.getDSL('Two');
+    await expect(engine.getDSL('One', { schema })).rejects.toThrow('No data loaded');
+    await engine.load({ type: 'json', options: { data: [{ other: 2 }] } });
+    const nextSchema = await engine.schema();
+    await engine.getDSL('Two', { schema: nextSchema });
     expect(generate).toHaveBeenLastCalledWith('Two', { schema: nextSchema, profile: undefined });
   });
 
@@ -52,7 +65,8 @@ describe('DuckDBEngine', () => {
       { name: 'Charlie', age: 35, city: 'NYC' },
     ];
 
-    const schema = await engine.load({ type: 'json', options: { data: testData } });
+    await engine.load({ type: 'json', options: { data: testData } });
+    const schema = await engine.schema();
     expect(schema.tables).toEqual([
       {
         name: 'data',
@@ -79,10 +93,11 @@ describe('DuckDBEngine', () => {
 
   describe('structural schema', () => {
     it('should load a Parquet schema containing numeric arrays', async () => {
-      const schema = await engine.load({
+      await engine.load({
         type: 'parquet',
         options: { path: path.join(__dirname, '../datasets/041_Airline.parquet') },
       });
+      const schema = await engine.schema();
 
       expect(schema.tables[0]).toMatchObject({ name: 'data', columnCount: 15 });
       expect(schema.tables[0]).not.toHaveProperty('rowCount');
@@ -96,7 +111,8 @@ describe('DuckDBEngine', () => {
     });
 
     it('should return structural metadata when every column is an array', async () => {
-      const schema = await engine.load({ type: 'json', options: { data: [{ values: ['a', 'b'] }] } });
+      await engine.load({ type: 'json', options: { data: [{ values: ['a', 'b'] }] } });
+      const schema = await engine.schema();
 
       expect(schema.tables[0].fields[0]).toMatchObject({ type: 'VARCHAR[]' });
     });
@@ -197,7 +213,7 @@ describe('DuckDBEngine', () => {
         options: { data: [{ company: 'A', region: 'East', revenue: 100 }] },
       });
 
-      const sql = await engine.getDSL('Show all companies');
+      const sql = await engine.getDSL('Show all companies', { schema: await engine.schema() });
 
       expect(typeof sql).toBe('string');
       expect(sql.toLowerCase()).toContain('select');

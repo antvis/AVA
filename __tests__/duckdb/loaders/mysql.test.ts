@@ -13,7 +13,7 @@ describe.skipIf(process.env.AVA_MYSQL_TEST !== '1')('loaders/mysql', () => {
 
   it('loads MySQL with a complete schema', async () => {
     engine = new DuckDBEngine(getLLMConfig());
-    const schema = await engine.load({
+    await engine.load({
       type: 'mysql',
       options: {
         host: '127.0.0.1',
@@ -23,6 +23,7 @@ describe.skipIf(process.env.AVA_MYSQL_TEST !== '1')('loaders/mysql', () => {
         password: 'ava_test_password',
       },
     });
+    const schema = await engine.schema();
 
     expect(schema).toEqual({
       tables: [

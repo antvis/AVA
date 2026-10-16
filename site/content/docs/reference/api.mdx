@@ -76,36 +76,100 @@ Registration affects the loaded SDK module only. See [Custom engines](/documenta
 
 ## source
 
-`source(config: DataSourceConfig): Promise<void>`
+```typescript
+source(config: DataSourceConfig): Promise<void>
+```
 
-| Parameter        | Type                   | Required | Default / behavior                                                                                                           |
-| ---------------- | ---------------------- | -------- | ---------------------------------------------------------------------------------------------------------------------------- |
-| `config`         | `DataSourceConfig`     | Yes      | Replaces the current source and disposes its engine.                                                                         |
-| `config.type`    | `SourceType`           | Yes      | One of the [13 source types](/documentation/data/sources/#connect-a-source).                                                 |
-| `config.options` | Source-specific object | Yes      | [Complete source parameter tables](/documentation/data/sources/#connect-a-source), including CSV and database configuration. |
+Loads a data source through the engine. It returns no value and does not discover the schema.
 
-Returns no value. Call `schema()` to inspect the loaded source. Reloading clears the cached schema and profile.
+```typescript
+await ava.source({ type: 'json', options: { data: [{ revenue: 120 }] } });
+```
+
+| Parameter | Type | Required | Meaning |
+| --- | --- | --- | --- |
+| `config` | `DataSourceConfig` | Yes | Data source to load. |
+| `config.type` | `SourceType` | Yes | [Source type](/documentation/data/sources/#connect-a-source), such as `json` or `csv-file`. |
+| `config.options` | Source-specific object | Yes | [Reader or connection settings](/documentation/data/sources/#connect-a-source) for that type. |
+
+Loading a source disposes the previous engine and clears the saved schema and profile. A failed load leaves no active source. Await pending operations before replacing a source.
 
 ## schema
 
-`schema(): Promise<Schema>` takes no parameters. Requires a loaded source. Returns tables and optional relations; see [schema and metadata](/documentation/data/schema/).
+```typescript
+schema(options?: SchemaOptions, setter?: (options: SchemaOptions) => Schema): Promise<Schema>
+```
+
+Returns the structure of the loaded source. Without a setter, AVA returns the saved schema or discovers it through the engine and saves it.
+
+```typescript
+const schema = await ava.schema();
+```
+
+To supply an existing schema, pass a function that returns it:
+
+```typescript
+await ava.schema(undefined, () => savedSchema);
+```
+
+| Parameter | Type | Required | Meaning / default |
+| --- | --- | --- | --- |
+| `options` | `SchemaOptions` | No | `{}`; currently has no configurable fields. |
+| `setter` | `(options: SchemaOptions) => Schema` | No | Returns the schema to save instead of discovering it through the engine. |
+
+A setter receives the options object (default `{}`) and returns a `Schema` synchronously. Its result replaces the saved schema and clears the saved profile. AVA validates and copies the result; invalid results or thrown errors reject the call without changing previous metadata.
+
+Requires a loaded source. Analysis and profiling obtain the schema when needed; direct `query()` does not. See [schema structure](/documentation/data/schema/#schema-structure).
 
 ## profile
 
-`profile(options?: ProfileOptions): Promise<Profile>`
+```typescript
+profile(options?: ProfileOptions, setter?: (options: ProfileOptions) => Profile): Promise<Profile>
+```
 
-| Parameter                            | Type                                | Required              | Default / behavior                                                                                                       |
-| ------------------------------------ | ----------------------------------- | --------------------- | ------------------------------------------------------------------------------------------------------------------------ |
-| `options`                            | `ProfileOptions`                    | No                    | `{}`.                                                                                                                    |
-| `options.metrics`                    | `MetricConfig[]`                    | No                    | `row_count`, `null_count`, `distinct_count`, `top_values`, `min`, `max`, `mean`. A supplied array replaces the defaults. |
-| `options.metrics[]`                  | Metric name or `{ id, ...options }` | When provided         | Supported names are listed below.                                                                                        |
-| `options.metrics[].id`               | `string`                            | For object form       | Metric name.                                                                                                             |
-| `options.metrics[].limit`            | `number`                            | No; `top_values` only | `3`; non-negative safe integer.                                                                                          |
-| `options.metrics[].maxDistinctRatio` | `number`                            | No; `top_values` only | `0.5`; finite number from `0` to `1`.                                                                                    |
+Calculates and saves statistics for the loaded source through the engine. Each call without a setter computes a fresh profile and requires engine profiling support.
 
-Supported built-in metric names: `row_count`, `null_count`, `distinct_count`, `top_values`, `min`, `max`, `mean`, `duplicate_count`, `min_length`, `max_length`, `sum`, `stddev`, `median`. Other metrics accept no additional options. Unknown metrics and unknown option names are rejected. Availability depends on the engine's definitions and the field type.
+```typescript
+const profile = await ava.profile({ metrics: ['row_count', 'mean'] });
+```
 
-Requires a loaded source and an engine with `profile()`. Returns and caches a `Profile`; `metrics: []` skips metric computation. See [profiling](/documentation/data/schema/#profile-a-dataset) for the output format.
+To supply an existing profile, pass a function that returns it:
+
+```typescript
+await ava.profile(undefined, () => savedProfile);
+```
+
+| Parameter | Type | Required | Meaning / default |
+| --- | --- | --- | --- |
+| `options` | `ProfileOptions` | No | `{}`; uses the default metrics below. |
+| `options.metrics` | `MetricConfig[]` | No | Metrics for engine computation. A supplied list replaces the defaults. |
+| `setter` | `(options: ProfileOptions) => Profile` | No | Returns the profile to save instead of computing it through the engine. |
+
+A setter receives the options object (default `{}`) and returns a `Profile` synchronously. It does not require engine profiling support. AVA validates and copies its result; invalid results or thrown errors reject the call without changing previous metadata. The options are passed to the setter; AVA does not calculate or filter metrics on its behalf.
+
+Requires a loaded source. Both paths replace the saved profile, which analysis, translation, and suggestions can reuse. Setting a profile does not replace the saved schema. See [profile format](/documentation/data/schema/#profile-format).
+
+### Metrics
+
+The default metrics are `row_count`, `null_count`, `distinct_count`, `top_values`, `min`, `max`, and `mean`. Additional built-in metrics are `duplicate_count`, `min_length`, `max_length`, `sum`, `stddev`, and `median`.
+
+Each entry is a metric name or an object with an `id` and metric-specific options:
+
+```typescript
+await ava.profile({
+  metrics: ['row_count', { id: 'top_values', limit: 5 }],
+});
+```
+
+| Field | Type | Default / behavior |
+| --- | --- | --- |
+| `id` | `string` | Required for object entries; the metric name. |
+| `limit` | `number` | `top_values` only. Default `3`; a non-negative safe integer. |
+| `maxDistinctRatio` | `number` | `top_values` only. Default `0.5`; a finite number from `0` to `1`. |
+
+Other built-in metrics accept no additional options. Unknown metrics and unknown option names are rejected when the engine computes the profile. Availability depends on the engine and field type.
+
+`metrics: []` produces empty metric objects. A new profile replaces previous statistics; metrics are not accumulated.
 
 ## analyze
 

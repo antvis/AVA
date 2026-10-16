@@ -89,7 +89,45 @@ describe('help and validation', () => {
   });
 });
 
+describe('metadata files', () => {
+  it.each(['schema', 'profile'])('sets %s from a plain file path', async (kind) => {
+    const directory = await mkdtemp(join(tmpdir(), 'ava-cli-test-'));
+    try {
+      const value = kind === 'schema' ? { tables: [] } : { tables: [], generatedAt: 1234 };
+      const file = join(directory, 'metadata.json');
+      await writeFile(file, JSON.stringify(value));
+      await execute([kind, datasetId, '--file', file]);
+      expect(request).toHaveBeenCalledExactlyOnceWith(
+        datasetId,
+        kind === 'schema' ? { command: kind, schema: value } : { command: kind, metrics: undefined, profile: value }
+      );
+      await writeFile(file, '{"tables":null}');
+      vi.mocked(request).mockClear();
+      await expect(run([kind, datasetId, '--file', file])).rejects.toThrow();
+      expect(request).not.toHaveBeenCalled();
+      await writeFile(file, 'invalid JSON');
+      await expect(run([kind, datasetId, '--file', file])).rejects.toThrow('Cannot read JSON');
+      await expect(run([kind, datasetId, '--file', join(directory, 'missing')])).rejects.toThrow('Cannot read JSON');
+      expect(request).not.toHaveBeenCalled();
+    } finally {
+      await rm(directory, { recursive: true, force: true });
+    }
+  });
+
+  it('rejects file import combined with metric computation', async () => {
+    await expect(run(['profile', datasetId, '--file', 'profile.json', '--metrics', 'mean'])).rejects.toThrow(
+      '--file cannot be combined with --metrics'
+    );
+    expect(request).not.toHaveBeenCalled();
+  });
+});
+
 describe('source', () => {
+  it.each(['schema', 'profile'])('rejects the removed --%s source option', async (kind) => {
+    await expect(run(['source', 'sales.csv', `--${kind}`, 'metadata.json'])).rejects.toThrow('Unknown option');
+    expect(createSession).not.toHaveBeenCalled();
+  });
+
   it.each([
     ['sales.CSV', [], 'csv-file', resolve('sales.CSV')],
     ['https://example.com/sales.parquet?download=1', [], 'parquet', 'https://example.com/sales.parquet?download=1'],
@@ -163,14 +201,14 @@ describe('source', () => {
 
 describe('dataset commands', () => {
   it.each([
-    { args: ['schema'], message: { command: 'schema' } },
+    { args: ['schema'], message: { command: 'schema', schema: undefined } },
     { args: ['dispose'], message: { command: 'dispose' } },
-    { args: ['profile'], message: { command: 'profile', metrics: undefined } },
+    { args: ['profile'], message: { command: 'profile', profile: undefined, metrics: undefined } },
     {
       args: ['profile', '--metrics', 'row_count, mean'],
-      message: { command: 'profile', metrics: ['row_count', 'mean'] },
+      message: { command: 'profile', profile: undefined, metrics: ['row_count', 'mean'] },
     },
-    { args: ['profile', '--metrics', ''], message: { command: 'profile', metrics: [] } },
+    { args: ['profile', '--metrics', ''], message: { command: 'profile', profile: undefined, metrics: [] } },
     { args: ['suggest'], message: { command: 'suggest', count: 3 } },
     { args: ['suggest', '--count', '5'], message: { command: 'suggest', count: 5 } },
     { args: ['translate', 'Total sales?'], message: { command: 'translate', query: 'Total sales?' } },
