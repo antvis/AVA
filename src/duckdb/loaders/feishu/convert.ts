@@ -27,14 +27,19 @@ export function asText(value:unknown):string | null{
 }
 
 export function asNumber(value:unknown):number | null{
-    if (value == null || value ==='') return null;
-    // todo:数字类型
-    return null
+    if (value === null || value === undefined) return null;
+    // 飞书数字字段可能返回 number，也可能返回字符串（如 "100"）
+    if (typeof value === 'string' && value.trim() === '') return null;
+    const number = typeof value === 'number' ? value : Number(value);
+    return Number.isFinite(number) ? number : null;
 }
 
 export function asTimestamp(value:unknown):string | null{
     const ms = asNumber(value);
-    return ms === null ? null : new Date(ms).toISOString();
+    if (ms === null) return null;
+    const date = new Date(ms);
+    // 超出 Date 可表示范围时 getTime() 为 NaN，此时 toISOString() 会抛错
+    return Number.isNaN(date.getTime()) ? null : date.toISOString();
 }
 
 export enum FeishuFieldType{
