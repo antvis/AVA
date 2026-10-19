@@ -30,13 +30,39 @@ import type {
 const SUPABASE_API_BASE = 'https://api.supabase.com';
 const REQUEST_TIMEOUT_MS = 30_000;
 
+type SupabaseApiErrorCode =
+  | 'unauthorized'
+  | 'forbidden'
+  | 'not_found'
+  | 'rate_limited'
+  | 'bad_query'
+  | 'server_error'
+  | 'timeout'
+  | 'network'
+  | 'unknown';
+
+function classifyHttpError(status: number): SupabaseApiErrorCode {
+  if (status === 401) return 'unauthorized';
+  if (status === 403) return 'forbidden';
+  if (status === 404) return 'not_found';
+  if (status === 408) return 'timeout';
+  if (status === 429) return 'rate_limited';
+  if (status === 400 || status === 422) return 'bad_query';
+  if (status >= 500 && status < 600) return 'server_error';
+  return 'unknown';
+}
+
 export class SupabaseApiError extends Error {
-  constructor(message: string, status: number) {
+  constructor(message: string, status: number, code: SupabaseApiErrorCode, detail?: unknown) {
     super(message);
     this.name = 'SupabaseApiError';
     this.status = status;
+    this.code = code;
+    this.detail = detail;
   }
   readonly status: number;
+  readonly code: SupabaseApiErrorCode;
+  readonly detail: unknown;
 }
 
 export class SupabaseEngine implements AnalysisEngine {
@@ -117,8 +143,19 @@ export class SupabaseEngine implements AnalysisEngine {
       );
 
       if (!response.ok) {
-        const detail = (await response.text().catch(() => '')).slice(0, 200);
-        throw new SupabaseApiError(`Supabase API request failed (${response.status}): ${detail}`, response.status);
+        const responseText = await response.text().catch(() => '');
+        let detail: unknown = responseText;
+        try {
+          detail = JSON.parse(responseText);
+        } catch {
+          // Keep non-JSON response bodies intact.
+        }
+        throw new SupabaseApiError(
+          `Supabase API request failed (${response.status})`,
+          response.status,
+          classifyHttpError(response.status),
+          detail
+        );
       }
 
       const payload = (await response.json()) as unknown;
@@ -126,7 +163,12 @@ export class SupabaseEngine implements AnalysisEngine {
     } catch (error) {
       const isTimeout = controller.signal.aborted || (error instanceof Error && error.name === 'AbortError');
       if (!isTimeout && (error instanceof SupabaseApiError || error instanceof SyntaxError)) throw error;
-      throw new SupabaseApiError(isTimeout ? 'Supabase API request timed out' : 'Supabase API network error', 0);
+      throw new SupabaseApiError(
+        isTimeout ? 'Supabase API request timed out' : 'Supabase API network error',
+        0,
+        isTimeout ? 'timeout' : 'network',
+        error
+      );
     } finally {
       clearTimeout(timer);
     }

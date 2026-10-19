@@ -123,6 +123,7 @@ describe('SupabaseEngine', () => {
         name: 'SupabaseApiError',
         message: 'Supabase API request timed out',
         status: 0,
+        code: 'timeout',
       });
       await vi.advanceTimersByTimeAsync(29_999);
       expect(bodyStarted).toBe(true);
@@ -147,10 +148,58 @@ describe('SupabaseEngine', () => {
       );
       await expect(engine.schema()).rejects.toMatchObject({
         name: 'SupabaseApiError',
-        message: 'Supabase API request failed (403): denied',
+        message: 'Supabase API request failed (403)',
         status: 403,
+        code: 'forbidden',
+        detail: 'denied',
       });
       expect(vi.getTimerCount()).toBe(0);
+    });
+
+    it.each([
+      [401, 'unauthorized'],
+      [403, 'forbidden'],
+      [404, 'not_found'],
+      [408, 'timeout'],
+      [429, 'rate_limited'],
+      [400, 'bad_query'],
+      [422, 'bad_query'],
+      [503, 'server_error'],
+      [418, 'unknown'],
+    ] as const)('classifies HTTP %s errors and preserves the complete JSON payload', async (status, code) => {
+      const detail = { message: 'request failed', context: 'x'.repeat(300) };
+      vi.stubGlobal(
+        'fetch',
+        vi.fn(async () => ({
+          ok: false,
+          status,
+          text: async () => JSON.stringify(detail),
+        }))
+      );
+      const engine = new SupabaseEngine(getLLMConfig());
+      await engine.load({ type: 'supabase', options: CONNECTION });
+
+      await expect(engine.schema()).rejects.toMatchObject({
+        name: 'SupabaseApiError',
+        status,
+        code,
+        detail,
+      });
+    });
+
+    it('wraps network failures in a structured Supabase API error', async () => {
+      const networkError = new TypeError('fetch failed');
+      vi.stubGlobal('fetch', vi.fn().mockRejectedValue(networkError));
+      const engine = new SupabaseEngine(getLLMConfig());
+      await engine.load({ type: 'supabase', options: CONNECTION });
+
+      await expect(engine.schema()).rejects.toMatchObject({
+        name: 'SupabaseApiError',
+        message: 'Supabase API network error',
+        status: 0,
+        code: 'network',
+        detail: networkError,
+      });
     });
 
     it('discovers multiple tables and relations in one request and passes them to SQL generation', async () => {
