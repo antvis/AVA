@@ -41,12 +41,23 @@ type SupabaseApiErrorCode =
   | 'network'
   | 'unknown';
 
-function classifyHttpError(status: number): SupabaseApiErrorCode {
+function getSqlState(detail: unknown): string | undefined {
+  if (!detail || typeof detail !== 'object') return undefined;
+  const code = (detail as Record<string, unknown>).code;
+  return typeof code === 'string' && /^[0-9A-Z]{5}$/.test(code) ? code : undefined;
+}
+
+function classifyHttpError(status: number, detail: unknown): SupabaseApiErrorCode {
   if (status === 401) return 'unauthorized';
   if (status === 403) return 'forbidden';
   if (status === 404) return 'not_found';
-  if (status === 408) return 'timeout';
+  if (status === 408 || status === 504) return 'timeout';
   if (status === 429) return 'rate_limited';
+
+  const sqlState = getSqlState(detail);
+  if (sqlState?.startsWith('08')) return 'network';
+  if (sqlState?.startsWith('22') || sqlState?.startsWith('23') || sqlState?.startsWith('42')) return 'bad_query';
+  if (sqlState === '57014') return 'timeout';
   if (status === 400 || status === 422) return 'bad_query';
   if (status >= 500 && status < 600) return 'server_error';
   return 'unknown';
@@ -59,10 +70,12 @@ export class SupabaseApiError extends Error {
     this.status = status;
     this.code = code;
     this.detail = detail;
+    this.retryable = code === 'timeout' || code === 'network' || code === 'rate_limited' || code === 'server_error';
   }
   readonly status: number;
   readonly code: SupabaseApiErrorCode;
   readonly detail: unknown;
+  readonly retryable: boolean;
 }
 
 export class SupabaseEngine implements AnalysisEngine {
@@ -150,19 +163,25 @@ export class SupabaseEngine implements AnalysisEngine {
         } catch {
           // Keep non-JSON response bodies intact.
         }
+        const code = classifyHttpError(response.status, detail);
         throw new SupabaseApiError(
           `Supabase API request failed (${response.status})`,
           response.status,
-          classifyHttpError(response.status),
+          code,
           detail
         );
       }
 
-      const payload = (await response.json()) as unknown;
+      let payload: unknown;
+      try {
+        payload = await response.json();
+      } catch (error) {
+        throw new SupabaseApiError('Supabase API returned an invalid JSON response', response.status, 'unknown', error);
+      }
       return Array.isArray(payload) ? (payload as Record<string, unknown>[]) : [];
     } catch (error) {
       const isTimeout = controller.signal.aborted || (error instanceof Error && error.name === 'AbortError');
-      if (!isTimeout && (error instanceof SupabaseApiError || error instanceof SyntaxError)) throw error;
+      if (!isTimeout && error instanceof SupabaseApiError) throw error;
       throw new SupabaseApiError(
         isTimeout ? 'Supabase API request timed out' : 'Supabase API network error',
         0,

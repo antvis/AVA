@@ -124,6 +124,7 @@ describe('SupabaseEngine', () => {
         message: 'Supabase API request timed out',
         status: 0,
         code: 'timeout',
+        retryable: true,
       });
       await vi.advanceTimersByTimeAsync(29_999);
       expect(bodyStarted).toBe(true);
@@ -152,20 +153,21 @@ describe('SupabaseEngine', () => {
         status: 403,
         code: 'forbidden',
         detail: 'denied',
+        retryable: false,
       });
       expect(vi.getTimerCount()).toBe(0);
     });
 
     it.each([
-      [401, 'unauthorized'],
-      [403, 'forbidden'],
-      [404, 'not_found'],
-      [408, 'timeout'],
-      [429, 'rate_limited'],
-      [400, 'bad_query'],
-      [422, 'bad_query'],
-      [503, 'server_error'],
-      [418, 'unknown'],
+      [401, 'unauthorized', false],
+      [403, 'forbidden', false],
+      [404, 'not_found', false],
+      [408, 'timeout', true],
+      [429, 'rate_limited', true],
+      [400, 'bad_query', false],
+      [422, 'bad_query', false],
+      [503, 'server_error', true],
+      [418, 'unknown', false],
     ] as const)('classifies HTTP %s errors and preserves the complete JSON payload', async (status, code) => {
       const detail = { message: 'request failed', context: 'x'.repeat(300) };
       vi.stubGlobal(
@@ -184,6 +186,50 @@ describe('SupabaseEngine', () => {
         status,
         code,
         detail,
+        retryable: [408, 429, 503].includes(status),
+      });
+    });
+
+    it.each([
+      [{ code: '42601', message: 'ignored text' }, 'bad_query', false],
+      [{ code: '08006', message: 'ignored text' }, 'network', true],
+      [{ code: '57014', message: 'ignored text' }, 'timeout', true],
+    ] as const)('classifies structured SQL errors without inspecting their message', async (detail, code, retryable) => {
+      vi.stubGlobal(
+        'fetch',
+        vi.fn(async () => ({
+          ok: false,
+          status: 499,
+          text: async () => JSON.stringify(detail),
+        }))
+      );
+      const engine = new SupabaseEngine(getLLMConfig());
+      await engine.load({ type: 'supabase', options: CONNECTION });
+
+      await expect(engine.schema()).rejects.toMatchObject({ code, detail, retryable });
+    });
+
+    it('wraps malformed successful JSON responses in a non-retryable structured error', async () => {
+      vi.stubGlobal(
+        'fetch',
+        vi.fn(async () => ({
+          ok: true,
+          status: 200,
+          json: async () => {
+            throw new SyntaxError('unexpected token');
+          },
+        }))
+      );
+      const engine = new SupabaseEngine(getLLMConfig());
+      await engine.load({ type: 'supabase', options: CONNECTION });
+
+      await expect(engine.schema()).rejects.toMatchObject({
+        name: 'SupabaseApiError',
+        message: 'Supabase API returned an invalid JSON response',
+        status: 200,
+        code: 'unknown',
+        retryable: false,
+        detail: expect.any(SyntaxError),
       });
     });
 
@@ -199,6 +245,7 @@ describe('SupabaseEngine', () => {
         status: 0,
         code: 'network',
         detail: networkError,
+        retryable: true,
       });
     });
 
