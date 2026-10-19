@@ -10,7 +10,7 @@ describe('readTable pagination', () => {
       const url = String(input);
       requests.push(url);
       if (url.includes('tenant_access_token')) return Response.json({ code: 0, tenant_access_token: 't' });
-      if (url.endsWith('/fields')) return Response.json({ code: 0, data: { items: [{ field_name: 'n', type: 2 }] } });
+      if (url.includes('/fields')) return Response.json({ code: 0, data: { items: [{ field_name: 'n', type: 2 }] } });
       const data = url.includes('page_token=p2')
         ? { items: [{ fields: { n: 2 } }], has_more: false }
         : { items: [{ fields: { n: 1 } }], has_more: true, page_token: 'p2' };

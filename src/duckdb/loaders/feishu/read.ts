@@ -1,5 +1,5 @@
 import { getTenantAccessToken } from "./token";
-import { convertRecord,FeishuFieldType } from "./convert";
+import { convertRecord,FeishuFieldType,isSupportedFieldType } from "./convert";
 
 import type { FeishuCell,FeishuField } from "./convert";
 import type { FeishuBitableSourceOptions } from "../../../types";
@@ -8,21 +8,21 @@ function tableUrl(table:{appToken:string;tableId:string},suffix:string):string{
     return  `https://open.feishu.cn/open-apis/bitable/v1/apps/${encodeURIComponent(table.appToken)}/tables/${encodeURIComponent(table.tableId)}${suffix}`
 }
 
-async function getItem(token:string,url:string):Promise<any[]>{
-    const response = await fetch(url,{
-        method:'GET',
-        headers:{
-            'Authorization':`Bearer ${token}`
-        }
-    });
-    const body = await response.json();
-    if(body.code !== 0) throw new Error(`Feishu API error ${body.code}:${body.msg}`);
-    return body.data?.items??[];
+// async function getItem(token:string,url:string):Promise<any[]>{
+//     const response = await fetch(url,{
+//         method:'GET',
+//         headers:{
+//             'Authorization':`Bearer ${token}`
+//         }
+//     });
+//     const body = await response.json();
+//     if(body.code !== 0) throw new Error(`Feishu API error ${body.code}:${body.msg}`);
+//     return body.data?.items??[];
 
-}
+// }
 
 const RECORDS_PAGE_SIZE = 500;
-
+const FIELDS_PAGE_SIZE = 100;
 async function getAllItems(token:string,url:string,pageSize:number):Promise<any[]>{
     const items:any[] = [];
     const seen = new Set<string>();
@@ -53,9 +53,9 @@ export async function readTable(options:FeishuBitableSourceOptions):Promise<Reco
     const token = await getTenantAccessToken(options.appId,options.appSecret);
     
     const table = {appToken:options.appToken,tableId:options.tableId};
-    const fieldsItems = await getItem(token,tableUrl(table,'/fields'));
+    const fieldsItems = await getAllItems(token,tableUrl(table,'/fields'),FIELDS_PAGE_SIZE);
     const fields:FeishuField[] = fieldsItems
-        .filter((field)=>field.type === FeishuFieldType.Text || field.type === FeishuFieldType.Number || field.type === FeishuFieldType.DateTime)
+        .filter((field)=>isSupportedFieldType(field.type))
         .map((field)=>({name:field.field_name,type:field.type}));
     const records = await getAllItems(token,tableUrl(table,'/records'),RECORDS_PAGE_SIZE);
     return records.map((record)=>convertRecord(fields,record.fields));
