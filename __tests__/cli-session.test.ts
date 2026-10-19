@@ -102,19 +102,21 @@ describe('session startup protocol', () => {
   it('restores structured error details from a CLI session response', async () => {
     const id = 'ds_errors_012345abcdef';
     const directory = sessionDirectory(id);
-    const server = createServer((socket) =>
-      socket.end(
-        JSON.stringify({
-          ok: false,
-          error: {
-            name: 'SupabaseApiError',
-            message: 'Unauthorized',
-            category: 'authentication',
-            status: 401,
-          },
-        })
-      )
-    );
+    const server = createServer((socket) => {
+      socket.once('data', () =>
+        socket.end(
+          JSON.stringify({
+            ok: false,
+            error: {
+              name: 'SupabaseApiError',
+              message: 'Unauthorized',
+              category: 'authentication',
+              status: 401,
+            },
+          })
+        )
+      );
+    });
 
     await mkdir(directory, { recursive: true, mode: 0o700 });
     await new Promise<void>((resolve) => server.listen(socketPath(id), resolve));
