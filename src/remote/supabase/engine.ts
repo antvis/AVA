@@ -41,6 +41,8 @@ type SupabaseApiErrorCode =
   | 'network'
   | 'unknown';
 
+const RETRYABLE_ERROR_CODES = new Set<SupabaseApiErrorCode>(['timeout', 'network', 'rate_limited', 'server_error']);
+
 function getSqlState(detail: unknown): string | undefined {
   if (!detail || typeof detail !== 'object') return undefined;
   const code = (detail as Record<string, unknown>).code;
@@ -72,7 +74,8 @@ export class SupabaseApiError extends Error {
     this.status = status;
     this.code = code;
     this.detail = detail;
-    this.retryable = code === 'timeout' || code === 'network' || code === 'rate_limited' || code === 'server_error';
+    this.retryable = RETRYABLE_ERROR_CODES.has(code);
+    Object.defineProperty(this, 'detail', { enumerable: false });
   }
   readonly status: number;
   readonly code: SupabaseApiErrorCode;
@@ -159,12 +162,18 @@ export class SupabaseEngine implements AnalysisEngine {
       );
 
       if (!response.ok) {
-        const responseText = await response.text().catch(() => '');
-        let detail: unknown = responseText;
+        let detail: unknown;
         try {
-          detail = JSON.parse(responseText);
-        } catch {
-          // Keep non-JSON response bodies intact.
+          const responseText = await response.text();
+          detail = responseText;
+          try {
+            detail = JSON.parse(responseText);
+          } catch {
+            // Keep non-JSON response bodies intact.
+          }
+        } catch (error) {
+          if (controller.signal.aborted || (error instanceof Error && error.name === 'AbortError')) throw error;
+          detail = error;
         }
         const code = classifyHttpError(response.status, detail);
         throw new SupabaseApiError(
@@ -187,7 +196,8 @@ export class SupabaseEngine implements AnalysisEngine {
       return Array.isArray(payload) ? (payload as Record<string, unknown>[]) : [];
     } catch (error) {
       const isTimeout = controller.signal.aborted || (error instanceof Error && error.name === 'AbortError');
-      if (!isTimeout && error instanceof SupabaseApiError) throw error;
+      if (error instanceof SupabaseApiError) throw error;
+      if (!isTimeout && !(error instanceof TypeError)) throw error;
       throw new SupabaseApiError(
         isTimeout ? 'Supabase API request timed out' : 'Supabase API network error',
         0,

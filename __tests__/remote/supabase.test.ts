@@ -219,7 +219,33 @@ describe('SupabaseEngine', () => {
       const engine = new SupabaseEngine(getLLMConfig());
       await engine.load({ type: 'supabase', options: CONNECTION });
 
-      await expect(engine.schema()).rejects.toMatchObject({ code: 'forbidden', detail, retryable: false });
+      const error = await engine.schema().catch((caught) => caught);
+      expect(error).toMatchObject({ code: 'forbidden', detail, retryable: false });
+      expect(Object.keys(error)).not.toContain('detail');
+      expect(JSON.stringify(error)).not.toContain(detail);
+    });
+
+    it('preserves HTTP status classification when reading the error body fails', async () => {
+      const bodyError = new TypeError('connection reset');
+      vi.stubGlobal(
+        'fetch',
+        vi.fn(async () => ({
+          ok: false,
+          status: 403,
+          text: async () => {
+            throw bodyError;
+          },
+        }))
+      );
+      const engine = new SupabaseEngine(getLLMConfig());
+      await engine.load({ type: 'supabase', options: CONNECTION });
+
+      await expect(engine.schema()).rejects.toMatchObject({
+        status: 403,
+        code: 'forbidden',
+        detail: bodyError,
+        retryable: false,
+      });
     });
 
     it.each([
@@ -302,6 +328,15 @@ describe('SupabaseEngine', () => {
         detail: networkError,
         retryable: true,
       });
+    });
+
+    it('does not misclassify unexpected failures as network errors', async () => {
+      const unexpectedError = new Error('unexpected failure');
+      vi.stubGlobal('fetch', vi.fn().mockRejectedValue(unexpectedError));
+      const engine = new SupabaseEngine(getLLMConfig());
+      await engine.load({ type: 'supabase', options: CONNECTION });
+
+      await expect(engine.schema()).rejects.toBe(unexpectedError);
     });
 
     it('discovers multiple tables and relations in one request and passes them to SQL generation', async () => {
