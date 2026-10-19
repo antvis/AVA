@@ -1,6 +1,6 @@
 /**
  * MySQL loader: ATTACH a MySQL database through DuckDB's mysql extension and
- * register one view per table in the database. Supports an optional SSH tunnel.
+ * set it as the default schema so unqualified table names resolve directly. Supports an optional SSH tunnel.
  * https://duckdb.org/docs/lts/core_extensions/mysql
  */
 
@@ -100,7 +100,7 @@ export async function loadMySQL(options: MySQLSourceOptions): Promise<LoadedSour
           `ATTACH '${escapeSql(buildConnectionString(attachOptions))}' AS ${ATTACH_ALIAS} (TYPE mysql, READ_ONLY)`
         );
 
-        // Discover every table in the attached database and expose each as a view
+        // Discover every table in the attached database (returned to the caller)
         const tablesReader = await conn.runAndReadAll(
           `SELECT table_name FROM information_schema.tables
            WHERE table_catalog = ${sqlStringLiteral(ATTACH_ALIAS)}
@@ -109,13 +109,8 @@ export async function loadMySQL(options: MySQLSourceOptions): Promise<LoadedSour
         );
         const tableNames = tablesReader.getRowObjectsJson().map((row: any) => String(row.table_name));
 
-        for (const table of tableNames) {
-          await conn.run(
-            `CREATE OR REPLACE VIEW ${sqlIdentifier(table)} AS SELECT * FROM ${sqlIdentifier(
-              ATTACH_ALIAS
-            )}.${sqlIdentifier(options.database)}.${sqlIdentifier(table)}`
-          );
-        }
+        // Resolve unqualified table names straight to the attached MySQL database (no intermediate views)
+        await conn.run(`USE ${sqlIdentifier(ATTACH_ALIAS)}.${sqlIdentifier(options.database)}`);
         return tableNames;
       } catch (error) {
         await tunnel?.close();
