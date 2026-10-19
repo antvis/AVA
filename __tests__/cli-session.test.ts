@@ -46,6 +46,36 @@ describe('session startup protocol', () => {
     }
   });
 
+  it('restores structured errors from child-process startup', async () => {
+    const worker = Object.assign(new EventEmitter(), {
+      connected: true,
+      disconnect: vi.fn(),
+      unref: vi.fn(),
+      send: vi.fn<(message: unknown, callback: (error?: Error) => void) => void>(),
+    });
+    worker.send.mockImplementation(() =>
+      queueMicrotask(() =>
+        worker.emit('message', {
+          ok: false,
+          error: {
+            name: 'SupabaseApiError',
+            message: 'Unauthorized',
+            category: 'authentication',
+            status: 401,
+          },
+        })
+      )
+    );
+    vi.mocked(fork).mockReturnValueOnce(worker as unknown as ReturnType<typeof fork>);
+
+    await expect(createSession(source, llm)).rejects.toMatchObject({
+      name: 'SupabaseApiError',
+      message: 'Unauthorized',
+      category: 'authentication',
+      status: 401,
+    });
+  });
+
   it('accepts legacy startup messages and rejects custom engine configuration', () => {
     expect(startupSchema.parse({ source, llm })).toEqual({ source, llm });
     for (const engine of ['invalid', { type: 'python', execute: 'custom' }]) {

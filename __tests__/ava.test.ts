@@ -96,13 +96,19 @@ describe('AVA', () => {
       const onEvent = vi.fn();
       ava.on(`${operation}start`, onEvent);
       ava.on(`${operation}end`, onEvent);
-      const error = new Error(`${operation} failed`);
+      const error = Object.assign(new Error(`${operation} failed`), {
+        category: 'remote',
+        status: 503,
+      });
       vi.spyOn(ava.engine!, operation).mockRejectedValueOnce(error);
 
       await expect(ava[operation]()).rejects.toBe(error);
       expect(onEvent.mock.calls.map(([event]) => event)).toEqual([
         { type: `${operation}start`, data: {} },
-        { type: `${operation}end`, data: { error: { name: 'Error', message: error.message } } },
+        {
+          type: `${operation}end`,
+          data: { error: { name: 'Error', message: error.message, category: 'remote', status: 503 } },
+        },
       ]);
 
       onEvent.mockClear();
