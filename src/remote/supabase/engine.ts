@@ -51,6 +51,7 @@ function classifyHttpError(status: number, detail: unknown): SupabaseApiErrorCod
   if (status === 401) return 'unauthorized';
   if (status === 403) return 'forbidden';
   if (status === 404) return 'not_found';
+  // A gateway timeout is actionable like a client-side timeout, and both are retryable.
   if (status === 408 || status === 504) return 'timeout';
   if (status === 429) return 'rate_limited';
   if (status === 400 || status === 422) return 'bad_query';
@@ -75,7 +76,7 @@ export class SupabaseApiError extends Error {
   }
   readonly status: number;
   readonly code: SupabaseApiErrorCode;
-  /** Original response payload; avoid logging or displaying it verbatim. */
+  /** Full upstream response payload, retained for diagnosis; it may contain sensitive SQL or schema details. */
   readonly detail: unknown;
   readonly retryable: boolean;
 }
@@ -178,7 +179,10 @@ export class SupabaseEngine implements AnalysisEngine {
       try {
         payload = await response.json();
       } catch (error) {
-        throw new SupabaseApiError('Supabase API returned an invalid JSON response', response.status, 'unknown', error);
+        if (error instanceof SyntaxError) {
+          throw new SupabaseApiError('Supabase API returned an invalid JSON response', response.status, 'unknown', error);
+        }
+        throw error;
       }
       return Array.isArray(payload) ? (payload as Record<string, unknown>[]) : [];
     } catch (error) {

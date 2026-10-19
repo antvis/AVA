@@ -163,12 +163,13 @@ describe('SupabaseEngine', () => {
       [403, 'forbidden', false],
       [404, 'not_found', false],
       [408, 'timeout', true],
+      [504, 'timeout', true],
       [429, 'rate_limited', true],
       [400, 'bad_query', false],
       [422, 'bad_query', false],
       [503, 'server_error', true],
       [418, 'unknown', false],
-    ] as const)('classifies HTTP %s errors and preserves the complete JSON payload', async (status, code) => {
+    ] as const)('classifies HTTP %s errors and preserves the complete JSON payload', async (status, code, retryable) => {
       const detail = { message: 'request failed', context: 'x'.repeat(300) };
       vi.stubGlobal(
         'fetch',
@@ -186,14 +187,17 @@ describe('SupabaseEngine', () => {
         status,
         code,
         detail,
-        retryable: [408, 429, 503].includes(status),
+        retryable,
       });
     });
 
     it.each([
+      [{ code: '22012', message: 'ignored text' }, 'bad_query', false],
+      [{ code: '23505', message: 'ignored text' }, 'bad_query', false],
       [{ code: '42601', message: 'ignored text' }, 'bad_query', false],
       [{ code: '08006', message: 'ignored text' }, 'network', true],
       [{ code: '57014', message: 'ignored text' }, 'timeout', true],
+      [{ code: 'not-a-sqlstate', message: 'ignored text' }, 'unknown', false],
     ] as const)('classifies structured SQL errors without inspecting their message', async (detail, code, retryable) => {
       vi.stubGlobal(
         'fetch',
@@ -207,6 +211,15 @@ describe('SupabaseEngine', () => {
       await engine.load({ type: 'supabase', options: CONNECTION });
 
       await expect(engine.schema()).rejects.toMatchObject({ code, detail, retryable });
+    });
+
+    it('preserves the full plain-text error body', async () => {
+      const detail = 'x'.repeat(300);
+      vi.stubGlobal('fetch', vi.fn(async () => ({ ok: false, status: 403, text: async () => detail })));
+      const engine = new SupabaseEngine(getLLMConfig());
+      await engine.load({ type: 'supabase', options: CONNECTION });
+
+      await expect(engine.schema()).rejects.toMatchObject({ code: 'forbidden', detail, retryable: false });
     });
 
     it.each([
@@ -260,6 +273,30 @@ describe('SupabaseEngine', () => {
       await expect(engine.schema()).rejects.toMatchObject({
         name: 'SupabaseApiError',
         message: 'Supabase API network error',
+        status: 0,
+        code: 'network',
+        detail: networkError,
+        retryable: true,
+      });
+    });
+
+    it('classifies response-body transport failures as network errors', async () => {
+      const networkError = new TypeError('connection reset');
+      vi.stubGlobal(
+        'fetch',
+        vi.fn(async () => ({
+          ok: true,
+          status: 200,
+          json: async () => {
+            throw networkError;
+          },
+        }))
+      );
+      const engine = new SupabaseEngine(getLLMConfig());
+      await engine.load({ type: 'supabase', options: CONNECTION });
+
+      await expect(engine.schema()).rejects.toMatchObject({
+        name: 'SupabaseApiError',
         status: 0,
         code: 'network',
         detail: networkError,
