@@ -1,11 +1,12 @@
 import { fork } from 'child_process';
 import { EventEmitter } from 'events';
-import { rm } from 'fs/promises';
+import { createServer } from 'net';
+import { mkdir, rm } from 'fs/promises';
 
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
-import { createSession } from '../src/cli/session/client';
-import { sessionDirectory, startupSchema, requestSchema } from '../src/cli/session/protocol';
+import { createSession, request } from '../src/cli/session/client';
+import { responseSchema, sessionDirectory, socketPath, startupSchema, requestSchema } from '../src/cli/session/protocol';
 
 import type { DataSourceConfig, EngineConfig, Schema } from '../src/types';
 
@@ -49,6 +50,54 @@ describe('session startup protocol', () => {
     expect(startupSchema.parse({ source, llm })).toEqual({ source, llm });
     for (const engine of ['invalid', { type: 'python', execute: 'custom' }]) {
       expect(() => startupSchema.parse({ source, llm, engine })).toThrow();
+    }
+  });
+
+  it('accepts structured and legacy errors in IPC responses', () => {
+    expect(responseSchema.parse({ ok: false, error: 'Legacy error' })).toEqual({
+      ok: false,
+      error: 'Legacy error',
+    });
+    expect(
+      responseSchema.parse({
+        ok: false,
+        error: { name: 'SupabaseApiError', message: 'Unauthorized', category: 'authentication', status: 401 },
+      })
+    ).toMatchObject({
+      ok: false,
+      error: { category: 'authentication', status: 401 },
+    });
+  });
+
+  it('restores structured error details from a CLI session response', async () => {
+    const id = 'ds_errors_012345abcdef';
+    const directory = sessionDirectory(id);
+    const server = createServer((socket) =>
+      socket.end(
+        JSON.stringify({
+          ok: false,
+          error: {
+            name: 'SupabaseApiError',
+            message: 'Unauthorized',
+            category: 'authentication',
+            status: 401,
+          },
+        })
+      )
+    );
+
+    await mkdir(directory, { recursive: true, mode: 0o700 });
+    await new Promise<void>((resolve) => server.listen(socketPath(id), resolve));
+    try {
+      await expect(request(id, { command: 'dispose' })).rejects.toMatchObject({
+        name: 'SupabaseApiError',
+        message: 'Unauthorized',
+        category: 'authentication',
+        status: 401,
+      });
+    } finally {
+      await new Promise<void>((resolve, reject) => server.close((error) => (error ? reject(error) : resolve())));
+      await rm(directory, { recursive: true, force: true });
     }
   });
 

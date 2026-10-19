@@ -2,6 +2,7 @@ import { rm } from 'fs/promises';
 import { createServer } from 'net';
 
 import { createDataset, describeDataset, disposeDataset, withDataset } from './datasets';
+import { serializeError } from '../../util/error';
 import {
   IPC_TIMEOUT_MS,
   IPC_MAX_REQUEST_BYTES,
@@ -33,7 +34,7 @@ function close(): Promise<void> {
 }
 
 async function fail(error: unknown): Promise<void> {
-  if (process.connected) process.send?.({ ok: false, error: error instanceof Error ? error.message : String(error) });
+  if (process.connected) process.send?.({ ok: false, error: serializeError(error) });
   try {
     await close();
   } finally {
@@ -113,7 +114,7 @@ server = createServer({ allowHalfOpen: true }, (socket) => {
           const result = await dispatch(requestSchema.parse(JSON.parse(body)));
           response = JSON.stringify({ ok: true, result });
         } catch (error) {
-          response = JSON.stringify({ ok: false, error: error instanceof Error ? error.message : String(error) });
+          response = JSON.stringify({ ok: false, error: serializeError(error) });
         }
 
         if (socket.destroyed) return;

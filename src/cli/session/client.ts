@@ -5,6 +5,7 @@ import { mkdir, rm } from 'fs/promises';
 import { connect } from 'net';
 import { basename, extname, join } from 'path';
 
+import { deserializeError } from '../../util/error';
 import {
   IPC_TIMEOUT_MS,
   IPC_MAX_REQUEST_BYTES,
@@ -88,7 +89,12 @@ export async function createSession(
       onMessage = (message) => {
         const response = responseSchema.safeParse(message);
         if (!response.success) finish(new Error('Invalid dataset process response.'));
-        else if (response.data.ok === false) finish(new Error(response.data.error));
+        else if (response.data.ok === false)
+          finish(
+            typeof response.data.error === 'string'
+              ? new Error(response.data.error)
+              : deserializeError(response.data.error)
+          );
         else finish();
       };
       timer = setTimeout(() => finish(new Error('Data source loading timed out.')), IPC_TIMEOUT_MS);
@@ -178,7 +184,10 @@ export async function request(id: string, message: Request): Promise<unknown> {
 
       try {
         const parsed = responseSchema.parse(JSON.parse(response));
-        if (parsed.ok === false) reject(new Error(parsed.error));
+        if (parsed.ok === false)
+          reject(
+            typeof parsed.error === 'string' ? new Error(parsed.error) : deserializeError(parsed.error)
+          );
         else resolve(parsed.result);
       } catch {
         reject(new Error('Dataset returned an invalid or incomplete response.'));

@@ -140,9 +140,18 @@ export const startupSchema = z
   })
   .strict();
 
+const serializedErrorSchema = z
+  .object({
+    name: z.string().optional(),
+    message: z.string(),
+    category: z.string().optional(),
+    status: z.number().int().optional(),
+  })
+  .strict();
+
 export const responseSchema = z.union([
   z.object({ ok: z.literal(true), result: z.unknown() }).strict(),
-  z.object({ ok: z.literal(false), error: z.string() }).strict(),
+  z.object({ ok: z.literal(false), error: z.union([z.string(), serializedErrorSchema]) }).strict(),
 ]);
 
 export function sessionDirectory(id: string): string {
