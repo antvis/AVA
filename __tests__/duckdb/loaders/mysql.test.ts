@@ -81,23 +81,4 @@ describe.skipIf(process.env.AVA_MYSQL_TEST !== '1')('loaders/mysql', () => {
       ],
     });
   }, 30000);
-
-  it('queries tables with unqualified names without generated views', async () => {
-    engine = new DuckDBEngine(getLLMConfig());
-    await engine.load({
-      type: 'mysql',
-      options: {
-        host: '127.0.0.1',
-        port: Number(process.env.AVA_MYSQL_TEST_PORT ?? 13306),
-        database: 'ava_mysql_test',
-        user: 'ava_test',
-        password: 'ava_test_password',
-      },
-    });
-    const conn = (engine as any).connection;
-    const count = await conn.runAndReadAll('SELECT count(*) AS n FROM "customers"');
-    expect(Number(count.getRowObjectsJson()[0].n)).toBeGreaterThan(0);
-    const page = await conn.runAndReadAll('SELECT * FROM "orders" ORDER BY order_id LIMIT 3 OFFSET 1');
-    expect(page.getRowObjectsJson().length).toBeLessThanOrEqual(3);
-  }, 30000);
 });

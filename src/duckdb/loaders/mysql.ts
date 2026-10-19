@@ -1,6 +1,6 @@
 /**
  * MySQL loader: ATTACH a MySQL database through DuckDB's mysql extension and
- * set it as the default schema so unqualified table names resolve directly. Supports an optional SSH tunnel.
+ * register one view per table in the database. Supports an optional SSH tunnel.
  * https://duckdb.org/docs/lts/core_extensions/mysql
  */
 
@@ -96,15 +96,14 @@ export async function loadMySQL(options: MySQLSourceOptions): Promise<LoadedSour
       try {
         await conn.run('LOAD mysql');
         // Workaround for https://github.com/duckdb/duckdb-mysql/issues/266: DuckDB 1.5's aggregate
-        // pushdown to MySQL produces wrong results/errors. The issue does not affect duckdb-mysql 2.0,
-        // so this setting can be removed when upgrading to 2.0.
+        // pushdown to MySQL fails on queries through the generated views. Not needed after upgrading to 2.0.
         await conn.run('SET mysql_aggregate_pushdown_enabled = FALSE');
         // READ_ONLY keeps the analysis read-only against the source database
         await conn.run(
           `ATTACH '${escapeSql(buildConnectionString(attachOptions))}' AS ${ATTACH_ALIAS} (TYPE mysql, READ_ONLY)`
         );
 
-        // Discover every table in the attached database (returned to the caller)
+        // Discover every table in the attached database and expose each as a view
         const tablesReader = await conn.runAndReadAll(
           `SELECT table_name FROM information_schema.tables
            WHERE table_catalog = ${sqlStringLiteral(ATTACH_ALIAS)}
@@ -113,8 +112,13 @@ export async function loadMySQL(options: MySQLSourceOptions): Promise<LoadedSour
         );
         const tableNames = tablesReader.getRowObjectsJson().map((row: any) => String(row.table_name));
 
-        // Resolve unqualified table names straight to the attached MySQL database (no intermediate views)
-        await conn.run(`USE ${sqlIdentifier(ATTACH_ALIAS)}.${sqlIdentifier(options.database)}`);
+        for (const table of tableNames) {
+          await conn.run(
+            `CREATE OR REPLACE VIEW ${sqlIdentifier(table)} AS SELECT * FROM ${sqlIdentifier(
+              ATTACH_ALIAS
+            )}.${sqlIdentifier(options.database)}.${sqlIdentifier(table)}`
+          );
+        }
         return tableNames;
       } catch (error) {
         await tunnel?.close();
