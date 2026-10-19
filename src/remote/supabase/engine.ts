@@ -53,13 +53,14 @@ function classifyHttpError(status: number, detail: unknown): SupabaseApiErrorCod
   if (status === 404) return 'not_found';
   if (status === 408 || status === 504) return 'timeout';
   if (status === 429) return 'rate_limited';
+  if (status === 400 || status === 422) return 'bad_query';
+  if (status >= 500 && status < 600) return 'server_error';
 
+  // Use SQLSTATE only when HTTP status does not already provide an actionable category.
   const sqlState = getSqlState(detail);
   if (sqlState?.startsWith('08')) return 'network';
   if (sqlState?.startsWith('22') || sqlState?.startsWith('23') || sqlState?.startsWith('42')) return 'bad_query';
   if (sqlState === '57014') return 'timeout';
-  if (status === 400 || status === 422) return 'bad_query';
-  if (status >= 500 && status < 600) return 'server_error';
   return 'unknown';
 }
 
@@ -74,6 +75,7 @@ export class SupabaseApiError extends Error {
   }
   readonly status: number;
   readonly code: SupabaseApiErrorCode;
+  /** Original response payload; avoid logging or displaying it verbatim. */
   readonly detail: unknown;
   readonly retryable: boolean;
 }

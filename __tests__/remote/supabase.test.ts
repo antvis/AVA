@@ -209,6 +209,24 @@ describe('SupabaseEngine', () => {
       await expect(engine.schema()).rejects.toMatchObject({ code, detail, retryable });
     });
 
+    it.each([
+      [400, { code: '08006' }, 'bad_query', false],
+      [503, { code: '42601' }, 'server_error', true],
+    ] as const)('prioritizes actionable HTTP status %s over SQLSTATE details', async (status, detail, code, retryable) => {
+      vi.stubGlobal(
+        'fetch',
+        vi.fn(async () => ({
+          ok: false,
+          status,
+          text: async () => JSON.stringify(detail),
+        }))
+      );
+      const engine = new SupabaseEngine(getLLMConfig());
+      await engine.load({ type: 'supabase', options: CONNECTION });
+
+      await expect(engine.schema()).rejects.toMatchObject({ code, detail, retryable });
+    });
+
     it('wraps malformed successful JSON responses in a non-retryable structured error', async () => {
       vi.stubGlobal(
         'fetch',
