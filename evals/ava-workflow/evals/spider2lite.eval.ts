@@ -16,10 +16,11 @@ import { fileURLToPath } from 'node:url';
 
 import { AVA } from '../../../lib/index.js';
 import { csvCell } from '../../_shared/results.js';
-import { ROOT, inspectResources, modelQuestion, selectSamples } from '../../spider2lite/index.js';
+import { ROOT, inspectResources, modelQuestion, modelEvidence, selectSamples } from '../../spider2lite/index.js';
 import { checkScorer, pythonPath, scoreSamples } from '../../spider2lite/score.js';
 import { pendingSamples, validateResume } from '../../_shared/resume.js';
 import { workflow } from '../workflow.ts';
+import { strategyConfig } from '../strategies.ts';
 import { llmConfig } from '../model.ts';
 import { createUsage } from '../../_shared/usage.js';
 
@@ -37,9 +38,11 @@ const HELP = `Usage: node evals/cli.js run ava-workflow --benchmark spider2lite 
   --offset <number>       Start after filtering (default 0)
   --suite <database>      Filter database name
   --id <instance_id>      Repeatable local question ID
-  --strategy <name>       direct, loop or subset (default direct)
+  --strategy <name>       direct, loop, subset or apex (default direct)
+  --samples <n>           APEX independent candidates, 1–8 (default 1)
+  --ablation <name>       APEX: no-planning, no-exploration or no-guidance
   --max-retries <number>  Direct execution correction retries (default 2)
-  --max-steps <number>    Loop action budget (default 12)
+  --max-steps <number>    Action budget (loop: 12; apex: 40)
   --concurrency <number>  Parallel workflows (default 1)
   --python <path>         Python for official scorer
   --timeout <ms>          DuckDB query deadline (default 30000)
@@ -61,8 +64,14 @@ export async function runSample(
   return workflow(
     ava,
     { type: 'sqlite', options: { path: join(root, 'resource/databases/spider2-localdb', `${sample.db}.sqlite`) } },
-    modelQuestion(sample, root, maxContextBytes),
-    { includeSummary: false, strategy, ...resultLimits }
+    strategy.type === 'apex' ? sample.question : modelQuestion(sample, root, maxContextBytes),
+    {
+      includeSummary: false,
+      strategy: strategy.type === 'apex'
+        ? { ...strategy, evidence: modelEvidence(sample, root, maxContextBytes) }
+        : strategy,
+      ...resultLimits,
+    }
   );
 }
 
@@ -86,20 +95,15 @@ export async function main(argv = process.argv.slice(2)) {
       'score-timeout': { type: 'string', default: '60000' },
       'max-context-bytes': { type: 'string', default: '4194304' },
       'max-retries': { type: 'string', default: '2' },
-      'max-steps': { type: 'string', default: '12' },
+      'max-steps': { type: 'string' },
+      samples: { type: 'string' },
+      ablation: { type: 'string' },
     },
   });
   if (values.help) return process.stdout.write(HELP);
   if (values.resume && (!values.output || values.check))
     throw new Error('--resume requires --output and cannot use --check');
-  if (!['direct', 'loop', 'subset'].includes(values.strategy))
-    throw new Error('--strategy must be direct, loop or subset');
-  const strategy: AnalysisStrategyConfig =
-    values.strategy === 'direct'
-      ? { type: 'direct', maxRetries: integer(values['max-retries'], 'max-retries', 0) }
-      : values.strategy === 'loop'
-      ? { type: 'loop', maxSteps: integer(values['max-steps'], 'max-steps') }
-      : { type: 'subset' };
+  const strategy = strategyConfig(values);
   const concurrency = integer(values.concurrency, 'concurrency');
   const timeout = integer(values.timeout, 'timeout');
   const scoreTimeout = integer(values['score-timeout'], 'score-timeout');
@@ -160,7 +164,7 @@ export async function main(argv = process.argv.slice(2)) {
     mode: 'exec_result',
     resultSource: 'ava-result',
     resultLimits,
-    modelContext: 'ava-profile + question + external-knowledge',
+    modelContext: strategy.type === 'apex' ? 'ava-schema + question + separate external-knowledge' : 'ava-profile + question + external-knowledge',
     timeoutMs: timeout,
     scoreTimeoutMs: scoreTimeout,
     maxContextBytes,
@@ -171,6 +175,8 @@ export async function main(argv = process.argv.slice(2)) {
         fileURLToPath(import.meta.url),
         join(workflowRoot, '../_shared/resume.js'),
         join(workflowRoot, 'workflow.ts'),
+        join(workflowRoot, 'strategies.ts'),
+        ...['index', 'runtime', 'schema', 'linking', 'guidance', 'agent'].map((file) => join(workflowRoot, '../../lib/analysis/apex', `${file}.js`)),
         join(workflowRoot, 'model.ts'),
         join(workflowRoot, '../_shared/model-env.js'),
         join(workflowRoot, '../_shared/usage.js'),
@@ -251,7 +257,8 @@ export async function main(argv = process.argv.slice(2)) {
             llm: { ...config, onQueryUsage },
             engine: { type: 'duckdb', queryTimeoutMs: timeout },
           });
-          // Stage progress is console-only; records retain query events only.
+          if (strategy.type === 'apex') ava.on('reasonend', (event: { data: unknown }) => traces.push({ event: 'apex', data: event.data }));
+          // General stage progress is console-only; APEX additionally retains its reasoning events.
           for (const [event, stage] of [
             ['sourcestart', 'loading'],
             ['profilestart', 'profiling'],
@@ -291,6 +298,7 @@ export async function main(argv = process.argv.slice(2)) {
             renameSync(resultPath + '.tmp', resultPath);
             record = {
               status: 'success',
+              ...(result.apex ? { apex: result.apex } : {}),
               sql_sha256: sha256(sqlPath),
               result_sha256: sha256(resultPath),
               rowCount: result.data.length,

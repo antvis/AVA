@@ -249,6 +249,20 @@ ava dispose '<your-dataset-id>'
 
 `analyze` returns the answer as JSON. `dispose` releases the dataset. See [all CLI commands](https://ava.antv.vision/documentation/reference/cli/).
 
+### APEX-SQL exploration
+
+For SQL sources, `apex` links the schema using data evidence, retrieves operation guidance, then explores and confirms the answer through AI SDK `ToolLoopAgent`:
+
+```typescript
+const result = await ava.analyze('Which active district has the highest average reading score?', {
+  strategy: { type: 'apex' },
+});
+console.log(result.sql, result.data);
+console.log(result.apex); // plan, selected schema, guidance and execution trace
+```
+
+Use `samples: 8` inside `strategy` for independent candidates and result voting. See [the reproduction notes](evals/ava-workflow/APEX-SQL.md) for configuration, evaluation and differences from the paper.
+
 ## 📚 Resources
 
 - [Documentation](https://ava.antv.vision/documentation/) — Guides and examples

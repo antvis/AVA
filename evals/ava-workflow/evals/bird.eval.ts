@@ -10,6 +10,7 @@ import { ROOT, selectSamples, databasePath, modelQuestion, inspectResources, res
 import { PYTHON, compare, scoreSamples } from '../../BIRD/score.js';
 import { pendingSamples, validateResume } from '../../_shared/resume.js';
 import { workflow } from '../workflow.ts';
+import { strategyConfig } from '../strategies.ts';
 import { llmConfig } from '../model.ts';
 import { createUsage } from '../../_shared/usage.js';
 import type { AnalysisStrategyConfig, LLMConfig } from '../../../lib/index.js';
@@ -26,9 +27,11 @@ const HELP = `Usage: node evals/cli.js run ava-workflow --benchmark bird [option
   --offset <number>       Offset after filtering (default 0)
   --suite <database>      Filter database
   --id <question_id>      Repeatable question ID, including 0
-  --strategy <name>       direct, loop or subset (default direct)
+  --strategy <name>       direct, loop, subset or apex (default direct)
+  --samples <n>           APEX independent candidates, 1–8 (default 1)
+  --ablation <name>       APEX: no-planning, no-exploration or no-guidance
   --max-retries <number>  Direct execution retries (default 2)
-  --max-steps <number>    Loop action budget (default 12)
+  --max-steps <number>    Action budget (loop: 12; apex: 40)
   --concurrency <number>  Parallel workflows (default 1)
   --timeout <ms>          DuckDB query deadline (default 30000)
   --memory-limit <size>   DuckDB memory per workflow (default 2GB)
@@ -64,9 +67,17 @@ export async function runSample(ava: AVA, sample: Sample, root: string, strategy
   return workflow(
     ava,
     { type: 'sqlite', options: { path: databasePath(sample, root) } },
-    modelQuestion({ question: sample.question, evidence: sample.evidence }) +
-      '\nReturn scalar result cells (numbers, strings, booleans or null). Express durations as numbers in the units requested by the question, not INTERVAL values. Cast text dates before using DuckDB date functions.' + description,
-    { includeSummary: false, strategy, ...resultLimits }
+    strategy.type === 'apex'
+      ? sample.question
+      : modelQuestion({ question: sample.question, evidence: sample.evidence }) +
+        '\nReturn scalar result cells (numbers, strings, booleans or null). Express durations as numbers in the units requested by the question, not INTERVAL values. Cast text dates before using DuckDB date functions.' + description,
+    {
+      includeSummary: false,
+      strategy: strategy.type === 'apex'
+        ? { ...strategy, evidence: sample.evidence, schemaDescriptions: description }
+        : strategy,
+      ...resultLimits,
+    }
   );
 }
 
@@ -91,20 +102,15 @@ export async function main(argv = process.argv.slice(2)) {
       'memory-limit': { type: 'string', default: '2GB' },
       'score-timeout': { type: 'string', default: '60000' },
       'max-retries': { type: 'string', default: '2' },
-      'max-steps': { type: 'string', default: '12' },
+      'max-steps': { type: 'string' },
+      samples: { type: 'string' },
+      ablation: { type: 'string' },
     },
   });
   if (values.help) return process.stdout.write(HELP);
   if (values.resume && (!values.output || values.check))
     throw new Error('--resume requires --output and cannot use --check');
-  if (!['direct', 'loop', 'subset'].includes(values.strategy))
-    throw new Error('--strategy must be direct, loop or subset');
-  const strategy: AnalysisStrategyConfig =
-    values.strategy === 'direct'
-      ? { type: 'direct', maxRetries: integer(values['max-retries'], 'max-retries', 0) }
-      : values.strategy === 'loop'
-      ? { type: 'loop', maxSteps: integer(values['max-steps'], 'max-steps') }
-      : { type: 'subset' };
+  const strategy = strategyConfig(values);
   const concurrency = integer(values.concurrency, 'concurrency');
   const timeout = integer(values.timeout, 'timeout');
   const scoreTimeout = integer(values['score-timeout'], 'score-timeout');
@@ -160,7 +166,7 @@ export async function main(argv = process.argv.slice(2)) {
     memoryLimit: values['memory-limit'],
     scoreTimeoutMs: scoreTimeout,
     concurrency,
-    modelContext: 'ava-profile + question + evidence' + (values['database-description'] ? ' + database_description' : ''),
+    modelContext: (strategy.type === 'apex' ? 'ava-schema + question + separate evidence' : 'ava-profile + question + evidence') + (values['database-description'] ? ' + database_description' : ''),
     usageScope: 'onQueryUsage callbacks; subset auxiliary selector usage excluded',
     resources: Object.fromEntries(files.map((file) => [relative(root, file), sha256(file)])),
     implementation: Object.fromEntries(
@@ -168,6 +174,8 @@ export async function main(argv = process.argv.slice(2)) {
         fileURLToPath(import.meta.url),
         join(workflowRoot, '../_shared/resume.js'),
         join(workflowRoot, 'workflow.ts'),
+        join(workflowRoot, 'strategies.ts'),
+        ...['index', 'runtime', 'schema', 'linking', 'guidance', 'agent'].map((file) => join(workflowRoot, '../../lib/analysis/apex', `${file}.js`)),
         join(workflowRoot, 'model.ts'),
         join(workflowRoot, '../_shared/model-env.js'),
         join(workflowRoot, '../_shared/usage.js'),
@@ -223,6 +231,8 @@ export async function main(argv = process.argv.slice(2)) {
             llm: { ...config, onQueryUsage },
             engine: { type: 'duckdb', queryTimeoutMs: timeout, memoryLimit: values['memory-limit'] },
           });
+          const apexEvents: unknown[] = [];
+          if (strategy.type === 'apex') ava.on('reasonend', (event: { data: unknown }) => apexEvents.push(event.data));
           for (const [event, stage] of [
             ['sourcestart', 'loading'],
             ['profilestart', 'profiling'],
@@ -239,6 +249,7 @@ export async function main(argv = process.argv.slice(2)) {
             atomicJson(prediction, resultPayload(result));
             record = {
               status: 'success',
+              ...(result.apex ? { apex: result.apex } : {}),
               sql_sha256: sha256(sql),
               result_sha256: sha256(prediction),
               rowCount: result.data.length,
@@ -254,6 +265,7 @@ export async function main(argv = process.argv.slice(2)) {
           }
           atomicJson(join(output, 'records', `${id}.json`), {
             ...record,
+            ...(record.status === 'failed' && strategy.type === 'apex' ? { apexEvents } : {}),
             question_id: sample.question_id,
             db_id: sample.db_id,
             elapsedMs: Date.now() - startedAt,

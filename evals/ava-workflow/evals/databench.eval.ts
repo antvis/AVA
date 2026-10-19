@@ -25,7 +25,7 @@ Options:
   --offset <number>      Start offset after filtering (default: 0)
   --suite <name>         Run one dataset, e.g. 002_Titanic
   --concurrency <number> Parallel model calls (default: 3)
-  --strategy <name>      direct, loop or subset (default: direct)
+  --strategy <name>      direct, loop, subset or apex (default: direct)
   --engine <name>        duckdb or python (default: duckdb)
   --output <path>        Prediction CSV (default: evals/ava-workflow/results/<dataset>.csv)
   --help                 Show help
@@ -85,9 +85,10 @@ export async function main(argv = process.argv.slice(2)) {
     throw new Error('--engine must be duckdb or python.');
   }
   const strategy = values.strategy;
-  if (strategy !== 'direct' && strategy !== 'loop' && strategy !== 'subset') {
-    throw new Error('--strategy must be direct, loop or subset.');
+  if (strategy !== 'direct' && strategy !== 'loop' && strategy !== 'subset' && strategy !== 'apex') {
+    throw new Error('--strategy must be direct, loop, subset or apex.');
   }
+  if (strategy === 'apex' && engine !== 'duckdb') throw new Error('APEX requires the duckdb SQL engine');
   const concurrency = integer(values.concurrency, 'concurrency', 1);
   const selected = selectSamples(values);
   const output = values.output ? resolve(values.output) : resolve(root, `results/${values.dataset}.csv`);

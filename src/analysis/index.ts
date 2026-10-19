@@ -1,6 +1,7 @@
 import { directAnalysis } from './direct';
 import { loopAnalysis } from './loop';
 import { subsetAnalysis } from './subset';
+import { apexAnalysis } from './apex';
 
 import type { AnalysisConfig, AnalysisResponse, AnalysisRuntime } from '../types';
 
@@ -8,6 +9,8 @@ export function analyze(query: string, config: AnalysisConfig, runtime: Analysis
   const strategy = config.strategy?.type ?? 'direct';
 
   switch (strategy) {
+    case 'apex':
+      return apexAnalysis(query, config, runtime);
     case 'direct':
       return directAnalysis(query, config, runtime);
     case 'loop':

@@ -121,7 +121,7 @@ export const requestSchema = z.discriminatedUnion('command', [
     .object({
       command: z.literal('analyze'),
       query: text,
-      strategy: z.enum(['direct', 'loop', 'subset']).optional(),
+      strategy: z.enum(['direct', 'loop', 'subset', 'apex']).optional(),
       ...execution,
     })
     .strict(),

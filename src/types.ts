@@ -785,7 +785,44 @@ export type AnalysisStrategyConfig =
       maxRetries?: number;
     }
   | { type: 'loop'; maxSteps?: number }
-  | { type: 'subset' };
+  | { type: 'subset' }
+  | ApexStrategyConfig;
+
+/** APEX-SQL exploration. Single-candidate by default; use samples: 8 for scaling experiments. */
+export interface ApexStrategyConfig {
+  type: 'apex';
+  /** SQL-generation action budget, including execution and confirmation. Default 40. */
+  maxSteps?: number;
+  /** SQL-agent context budget, estimated as UTF-8 bytes / 3. Default 56 * 1024. */
+  maxContextTokens?: number;
+  /** Independent SQL-generation trajectories. Default 1. */
+  samples?: number;
+  /** Concurrent table-profiling agents. Database execution remains serial. Default 2. */
+  concurrency?: number;
+  /** External knowledge, kept out of schema-agnostic planning. */
+  evidence?: string;
+  /** Field descriptions, kept out of schema-agnostic planning. */
+  schemaDescriptions?: string;
+  /** Controlled ablations; omitted runs the complete method. */
+  ablation?: 'no-planning' | 'no-exploration' | 'no-guidance';
+  /** Optional external reward selector. Return an index into successful candidates. */
+  selectCandidate?: (candidates: readonly ApexCandidate[]) => Promise<number>;
+}
+
+export interface ApexCandidate extends ExecutionResult {
+  sql: string;
+  confirmation: string;
+}
+
+export interface ApexTrace {
+  plan: string;
+  schema: Schema;
+  guidance: string[];
+  candidates: { sql?: string; confirmation?: string; error?: string }[];
+  selected: number;
+  /** Stage outputs and bounded observations; never full answer result sets. */
+  events: { stage: string; detail: unknown }[];
+}
 
 /** Dataset metadata supplied to model-facing consumers. */
 export interface DataContext {
@@ -824,6 +861,8 @@ export interface QueryDialect<TContext = void> {
  * Analysis response — data analysis results only (no visualization)
  */
 export interface AnalysisResponse<T = Record<string, unknown>> extends ExecutionResult<T> {
+  /** Present for the apex strategy. */
+  apex?: ApexTrace;
   /** The original user query */
   query: string;
   /** The analysis result as text; empty when includeSummary is false. */

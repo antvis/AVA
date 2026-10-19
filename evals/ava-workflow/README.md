@@ -1,5 +1,7 @@
 # AVA Workflow
 
+`--strategy apex` runs APEX-SQL schema linking and guided SQL exploration with AI SDK ToolLoopAgent. BIRD and Spider-Lite support `--samples 1..8`, `--max-steps` (APEX default 40) and `--ablation no-planning|no-exploration|no-guidance`. APEX skips static profiling and stores its plan, linked schema and trace in successful result records. See [reproduction notes](APEX-SQL.md) for the paper mapping, run commands and benchmark limitations.
+
 按 `source → profile → analyze` 执行数据分析，支持 `direct`、`loop`、`subset` 三种策略。`workflow.ts` 负责分析编排，`model.ts` 提供模型配置，`evals/` 中的评测器负责适配数据和评分，通用工具位于 `../_shared/`。
 
 ## 准备
