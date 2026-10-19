@@ -95,6 +95,10 @@ export async function loadMySQL(options: MySQLSourceOptions): Promise<LoadedSour
     register: async (conn) => {
       try {
         await conn.run('LOAD mysql');
+        // Workaround for https://github.com/duckdb/duckdb-mysql/issues/266: DuckDB 1.5's aggregate
+        // pushdown to MySQL produces wrong results/errors. The issue does not affect duckdb-mysql 2.0,
+        // so this setting can be removed when upgrading to 2.0.
+        await conn.run('SET mysql_aggregate_pushdown_enabled = FALSE');
         // READ_ONLY keeps the analysis read-only against the source database
         await conn.run(
           `ATTACH '${escapeSql(buildConnectionString(attachOptions))}' AS ${ATTACH_ALIAS} (TYPE mysql, READ_ONLY)`
