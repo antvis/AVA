@@ -11,5 +11,24 @@ export function parseBitableUrl(input: string): { appToken: string; tableId: str
 
     return { appToken, tableId};
 
+}
 
+export function resolveBitableTable(options:{
+    url?:string;
+    appToken?:string;
+    tableId?:string;
+}):{appToken:string;tableId:string}{
+    const parsed = options.url ? parseBitableUrl(options.url) : undefined;
+    if(parsed && options.appToken && options.appToken !== parsed.appToken){
+        throw new Error(`Feishu Bitable appToken does not match url: ${options.url}`);
+    }
+    if(parsed && options.tableId && options.tableId !== parsed.tableId){
+        throw new Error(`Feishu Bitable tableId does not match url: ${options.url}`);
+    }
+    const appToken = options.appToken ?? parsed?.appToken;
+    const tableId = options.tableId ?? parsed?.tableId;
+    if(!appToken || !tableId){
+        throw new Error(`Feishu Bitable url or appToken/tableId must be provided`);
+    }
+    return { appToken, tableId };
 }

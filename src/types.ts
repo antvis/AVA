@@ -411,6 +411,7 @@ export type ClickHouseSourceOptions = Omit<ClickHouseClientConfigOptions, 'host'
 };
 
 export interface FeishuBitableSourceOptions {
+  url?:string;
   appToken:string;
   tableId: string;
   appId:string;

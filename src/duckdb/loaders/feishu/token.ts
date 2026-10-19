@@ -11,9 +11,22 @@ export async function getTenantAccessToken(appId:string,appSecret:string):Promis
             app_secret:appSecret
         })
     });
-    const body = await response.json();
-    if(body.code !== 0 || !body.tenant_access_token){
-        throw new Error(`Feishu token request failed: ${body.code}:${body.msg}`);
+    let body: unknown;
+    try{
+        body = await response.json();
+    }catch{
+        throw tokenError(undefined,'response is not JSON');
     }
-    return body.tenant_access_token;
+    if(!body || typeof body !== 'object'){
+        throw tokenError(undefined,'response is not JSON');
+    }
+    const payload = body as {code?:unknown;msg?:unknown;tenant_access_token?:unknown};
+    if(payload.code !==0 || typeof payload.tenant_access_token !== 'string'||!payload.tenant_access_token){
+        throw tokenError(payload.code,payload.msg);
+    }
+    return payload.tenant_access_token;
+}
+
+function tokenError(code:unknown,msg:unknown):Error{
+    return new Error(`Feishu token request failed:${code} msg=${msg}`);
 }
