@@ -72,9 +72,12 @@ Options:
   -t, --type <type>  Override the type inferred from the file extension.
                     Types: csv-file, json-file, parquet, excel, sqlite.
                     Cannot be used with @file or stdin configs.
+                    feishu-bitable is not inferred from an extension.
+                    Pass it in an @file or stdin config, not with --type.
   --engine <type>    duckdb, python, javascript, supabase, or clickhouse.
                     Default: supabase/clickhouse for those sources, otherwise duckdb.
                     Fixed for the session; source support depends on the engine.
+                    feishu-bitable uses duckdb. The loaded view is named data.
   -h, --help         Show help.
 
 Environment:
@@ -94,4 +97,17 @@ Examples:
   ava source sales.csv
   ava source sales.csv --engine python
   ava source @source.json
-  echo '{ "type": "json", "options": { "data": [{ "sales": 10 }] } }' | ava source -`;
+  echo '{ "type": "json", "options": { "data": [{ "sales": 10 }] } }' | ava source -
+  
+  ava source @feishu.json
+feishu.json:{
+  "type":"feishu-vitable",
+  "options":{
+    "url":"https://my.feishu.cn/base/AXuDbVoV7aKqzpslXwscP41Wncc?table=tblehsChh5T3X69i&view=vewfxHhZEb",
+    "appId":"your_id",
+    "appSecret":"your_secret"
+    }
+  }
+    appId and appSecret are required.
+    Provide url or both appToken and tableId.  
+`;

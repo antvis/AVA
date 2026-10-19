@@ -8,6 +8,7 @@
 | MySQL, PostgreSQL, SQLite, MongoDB | DuckDB by default | DuckDB SQL |
 | ClickHouse | ClickHouse is selected automatically | ClickHouse SQL |
 | Supabase | Supabase is selected automatically | PostgreSQL SQL |
+| Feishu Bitable | DuckDB only | DuckDB SQL |
 | Inline CSV/JSON/text | JavaScript is optional when explicitly selected | JavaScript |
 
 To use Python or JavaScript, add `--engine python` or `--engine javascript` to the `source` command. Python does not connect directly to databases. To post-process database results with pandas, query the database first, then export the complete result as described in [Results and Post-Processing](queries.md#results-and-post-processing).
@@ -69,3 +70,49 @@ Use authorized read-only credentials. Restrict temporary credential files to the
 - MySQL, PostgreSQL, SQLite, and MongoDB require the corresponding DuckDB extensions. MongoDB uses the `mongo` community extension. Each collection becomes a table, and its schema is inferred from samples, so rare fields may be missed.
 - ClickHouse connects over HTTP(S) and requires version 23.10 or later.
 - Supabase uses the Management API; `accessToken` must be a token authorized for that API.
+
+## Feishu Bitable
+
+`feishu-bitable` is read-only. Pass it in an `@file` or stdin config. It is not
+inferred from a file extension, and `--type` cannot supply it. The session engine is DuckDB.
+Python and Javascript cannot load this source. The loaded rows are one view named `data`.
+
+`appId` and `appSecret` are required. They are the internal app credentials used to request a tenant access token. Provide `url`, or both `appToken` and `tableId`. When both the URL and those ids are set, they must name the same table.
+
+```json
+{
+    "type":"feishu-bitable",
+    "options":{
+      "url":"https://my.feishu.cn/base/AXuDbVoV7aKqzpslXwscP41Wncc?
+      table=tblehsChh5T3X69i&view=vewfxHhZEb",
+      "appId":"cli_a91d00b31ff81cee",
+      "appSecret":"h32fMrkYRT0scbfIeeNTjfNSYgnyqRd1"
+      }
+}
+```
+
+```sh
+ava source @feishu.json > session.json
+```
+
+The path segment after `base` is `appToken`. The `table` query parameter is `tableId`.
+The `view` parameter is ignored; the whole table is loaded, not one view. Do not put `appSecret` in deliverables or logs.
+
+Supported filed types become columns. Other types are omitted.
+
+| type | Field | Cell value | 
+| --- | --- | --- |
+|1| Text | string,or null when empty |
+|2| Number | number, or null when empty |
+|3| Single select | option name, or null |
+|4| Multi select | array of option names, or null |
+|5| Date | ISO string, or null |
+|7| Checkbox | boolean|
+|13| Phone | string, or null|
+|15| URL | link text, or the URL, or null
+|1001| Created time | ISO string |
+|1002| Last modified time | ISO string |
+|1005| Auto number | string,or null|
+
+People, attachments, links to other records, locations, groups, created-by,
+modified-by, formulas, and lookups are skipped.
