@@ -34,6 +34,16 @@ export async function getTenantAccessToken(appId:string,appSecret:string,origin=
     return payload.tenant_access_token;
 }
 
+export function feishuError(code:unknown,msg:unknown):Error{
+    const id = Number(code);
+    if(id === 91402){
+        return new Error(`Feishu Error 91402: ${msg}.This table exists but you are not authorized to access it. Please check your app permissions and the table's sharing settings.`);
+    }
+    if (id===10003){
+        return new Error(`Feishu Error 10003: ${msg}. This app is not authorized to access the Feishu API. please check your appId and appSecret or update ~/.ava/feishu.json.`);
+    }
+    return new Error(`Feishu Error ${code}: ${msg}.please check your permissions or this table Url.`);
+}
 function tokenError(code:unknown,msg:unknown):Error{
-    return new Error(`Feishu token request failed:${code} msg=${msg}`);
+    return feishuError(code,msg);
 }

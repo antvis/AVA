@@ -1,4 +1,4 @@
-import { feishuOrigin,getTenantAccessToken } from "./token";
+import { feishuError,feishuOrigin,getTenantAccessToken } from "./token";
 import { convertRecord,isSupportedFieldType } from "./convert";
 import {resolveBitableTable} from "./url";
 
@@ -26,7 +26,7 @@ const RECORDS_PAGE_SIZE = 500;
 const FIELDS_PAGE_SIZE = 100;
 
 function apiError(code:unknown,msg:unknown):Error{
-    return new Error(`Feishu API error ${code}:${msg}`)
+    return feishuError(code,msg)
 }
 
 async function readFeishuBody(response:Response):Promise<{data?:{items?:any[];has_more?:unknown;page_token?:unknown}}>{
