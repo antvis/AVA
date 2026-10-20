@@ -12,7 +12,7 @@ Step 1 Get data → Step 2 Pick intent → Step 3 Check data shape → Step 4 Ch
 
 - IF the user supplied a chart type: use it, and go to Step 3 only to verify the data fits. If it does not fit, say why and use the Step 4 alternative.
 - ELSE IF there is no data yet: run a query first (see queries.md) and come back with the result.
-- ELSE IF the data has more than about 100 rows and the chart is not `scatter`, `histogram`, `boxplot`, `violin` or `table`: aggregate (`GROUP BY`) or take Top N (usually 10) sorted by value first, and label this in the chart.
+- ELSE IF the data has many rows (more than can be read in a chart, roughly 50+) and the chart is not `scatter`, `histogram`, `boxplot`, `violin` or `table`: aggregate (`GROUP BY`) or take Top N (usually 10) sorted by value first, and label this in the chart.
 - ELSE: continue.
 
 ### Step 2: Identify the intent
@@ -83,7 +83,8 @@ Use the branch for the intent from Step 2.
 
 **Other**
 - IF the text data is about word frequency: `word-cloud`.
-- IF comparing a few entities across 3-8 dimensions: `radar`.
+- IF comparing a few entities across several dimensions: `radar` (add `align true` only to compare absolute values on a shared scale).
+- IF the request needs a type not supported by `ava viz` (flow diagram, mind map, tree, network graph, org chart, fishbone, text summary): do not invent a `chartType`; use `table` or the closest supported chart and say why.
 - IF none of the above fits, there are more than two measures with no clear intent, or the user wants exact values: `table`.
 
 ### Step 5: Map fields and build the Spec
@@ -109,6 +110,58 @@ Map actual fields to the fields below. Unless noted otherwise, fields belong to 
 | `sankey` | `source`, `target`, `value` |
 | `table` | Fields from the original rows |
 | `dual-axes` | Top-level `categories` and `series` arrays; each series has `type` (`column` or `line`), `axisYTitle`, and numeric `data` aligned with `categories` |
+
+Optional properties, supported only where listed:
+
+| Property | Applies to |
+| --- | --- |
+| `title`, `theme` (`default`, `light`, `dark`, `academy`), `style` (`backgroundColor`, `palette` array) | All charts |
+| `axisXTitle`, `axisYTitle` | Charts with axes (not `pie`, `radar`, `funnel`, `liquid`, `treemap`, `sankey`) |
+| `binNumber` | `histogram` |
+| `align` | `radar` |
+| `shape` (`rect`, `circle`, `pin`, `triangle`) | `liquid` |
+| `label` on a set | `venn` |
+| `nodeAlign` (`left`, `center`, `right`, `justify`) | `sankey` |
+| `style.palette` order `[increase, decrease, total]` | `waterfall` |
+| `style.startAtZero` | `dual-axes`, `boxplot`, `violin` |
+
+Syntax patterns for the less obvious structures:
+
+```
+vis histogram
+data
+  - 68
+  - 72
+binNumber 10
+```
+
+```
+vis dual-axes
+categories
+  - Jan
+  - Feb
+series
+  - type column
+    axisYTitle Sales
+    data
+      - 820
+      - 650
+  - type line
+    axisYTitle Profit
+    data
+      - 12
+      - 10
+```
+
+```
+vis table
+data
+  - Product Laptop
+    Region "East China"
+    "Sales Amount" 3200
+```
+
+For `table`, every row is one `data` item and each original column is a key; quote keys and values that contain spaces. For `waterfall`, the total item has `category` and `isTotal true` but no `value`. For `treemap`, put nested items under `children` with the same `name`/`value` fields.
 
 Then build the Spec:
 
