@@ -72,7 +72,7 @@ async function getAllItems(token:string,url:string,pageSize:number):Promise<any[
     return items;
 }
 
-export async function readTable(options:FeishuBitableSourceOptions):Promise<Record<string,FeishuCell>[]>{
+export async function readFeishuTable(options:FeishuBitableSourceOptions):Promise<{fields:FeishuField[];rows:Record<string,FeishuCell>[]}>{
     const table = resolveBitableTable(options);
     const token = await getTenantAccessToken(options.appId,options.appSecret);
     
@@ -81,5 +81,10 @@ export async function readTable(options:FeishuBitableSourceOptions):Promise<Reco
         .filter((field)=>isSupportedFieldType(field.type))
         .map((field)=>({name:field.field_name,type:field.type}));
     const records = await getAllItems(token,tableUrl(table,'/records'),RECORDS_PAGE_SIZE);
-    return records.map((record)=>convertRecord(fields,record.fields));
+    const rows = records.map((record)=>convertRecord(fields,record.fields??{}));
+    return {fields,rows};
+}
+
+export async function readTable(options:FeishuBitableSourceOptions):Promise<Record<string,FeishuCell>[]>{
+    return (await readFeishuTable(options)).rows;
 }
