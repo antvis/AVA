@@ -7,7 +7,7 @@ import { getEngineClass } from './engines';
 import { extractDataSchema, schemaMetadataSchema } from './util/schema';
 import { profileMetadataSchema } from './util/profile';
 import { stringifySchema } from './util/context';
-import { adviseChartType, generateVisualizationSyntax, wrapSyntaxInHTML } from './visualization';
+import { adviseChartType, generateVisualizationConfig, wrapConfigInHTML } from './visualization';
 import { generateSuggestions } from './suggest';
 import { analyze } from './analysis';
 import {
@@ -322,7 +322,7 @@ export class AVA extends EventEmitter {
 
   /**
    * Recommend a chart specification for the analysis result.
-   * Combine a suitable chart type with GPT-Vis syntax for rendering.
+   * Combine a suitable chart type with GPT-Vis JSON config for rendering.
    */
   async recommend(analysisResult: Pick<AnalysisResponse, 'query' | 'data'>): Promise<ChartSpec | null> {
     const { data, query } = analysisResult;
@@ -332,15 +332,15 @@ export class AVA extends EventEmitter {
     const chartType = await adviseChartType(query, dataInfo, this.llmConfig);
     if (!chartType) return null;
 
-    const syntax = await generateVisualizationSyntax(chartType, data, query, this.llmConfig);
-    return { chartType, syntax };
+    const config = await generateVisualizationConfig(chartType, data, query, this.llmConfig);
+    return { chartType, config };
   }
 
   /**
    * Render a chart specification as standalone HTML.
    */
   async viz(spec: ChartSpec): Promise<string> {
-    return wrapSyntaxInHTML(spec.syntax);
+    return wrapConfigInHTML(spec.config);
   }
 
   /**

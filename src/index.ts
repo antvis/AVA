@@ -48,6 +48,7 @@ export type {
   AnalysisRuntime,
   DataContext,
   VisualizeResponse,
+  ChartConfig,
   ChartSpec,
   SuggestResult,
   ChartType,

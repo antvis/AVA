@@ -21,7 +21,7 @@ export default function ArtifactPanel({
   onClose: () => void;
   display?: ArtifactDisplay;
 }) {
-  const hasChart = !!artifact.syntax?.trim();
+  const hasChart = !!artifact.config;
   const activeTab = (tab === 'chart' && !hasChart) || (tab === 'sql' && !artifact.code) ? 'data' : tab;
   const tables = resultTables(artifact.data ?? []);
 
@@ -68,7 +68,7 @@ export default function ArtifactPanel({
             <>
               {display?.chartHeader}
               <div className="h-[320px]" role="img" aria-label={artifact.description}>
-                <GPTVisRenderer syntax={artifact.syntax ?? ''} />
+                <GPTVisRenderer config={artifact.config ?? {}} />
               </div>
               {display?.chartFooter}
             </>

@@ -12,7 +12,8 @@ const result = {
   schema: [{ name: 'city' }, { name: 'revenue' }],
   data: [{ city: 'Hangzhou', revenue: 100 }],
 };
-const syntax = 'vis column\ndata\n  - Hangzhou 100';
+const config = { type: 'column', data: [{ category: 'Hangzhou', value: 100 }] };
+const json = JSON.stringify(config);
 const ava = new AVA({ llm: { model: 'test' } });
 
 beforeEach(() => vi.resetAllMocks());
@@ -24,8 +25,8 @@ function reply(text: string) {
 describe('chart recommendation', () => {
   it('generates a chart specification without rendering HTML', async () => {
     reply('column');
-    reply(`\`\`\`vis\n${syntax}\n\`\`\``);
-    expect(await ava['recommend'](result)).toEqual({ chartType: 'column', syntax });
+    reply(`\`\`\`json\n${json}\n\`\`\``);
+    expect(await ava['recommend'](result)).toEqual({ chartType: 'column', config });
     expect(generateText).toHaveBeenCalledTimes(2);
     expect(vi.mocked(generateText).mock.calls[0][0].prompt).toContain(result.query);
     expect(vi.mocked(generateText).mock.calls[1][0].prompt).toContain('Hangzhou');
@@ -36,7 +37,7 @@ describe('chart recommendation', () => {
     expect(generateText).not.toHaveBeenCalled();
   });
 
-  it.each(['none', 'invalid-chart'])('skips syntax generation for %s', async (chartType) => {
+  it.each(['none', 'invalid-chart'])('skips config generation for %s', async (chartType) => {
     reply(chartType);
     expect(await ava['recommend'](result)).toBeNull();
     expect(generateText).toHaveBeenCalledOnce();
@@ -52,7 +53,7 @@ describe('chart recommendation', () => {
     ava.on('visualizestart', onEvent);
     ava.on('visualizeend', onEvent);
     reply('column');
-    reply(syntax);
+    reply(json);
     const visualization = await ava.visualize(result);
     ava.off('visualizestart', onEvent);
     ava.off('visualizeend', onEvent);
@@ -60,18 +61,18 @@ describe('chart recommendation', () => {
       { type: 'visualizestart', data: { query: result.query } },
       { type: 'visualizeend', data: {} },
     ]);
-    expect(visualization).toMatchObject({ chartType: 'column', syntax });
+    expect(visualization).toMatchObject({ chartType: 'column', config });
     expect(visualization?.html).toContain('<!DOCTYPE html>');
-    expect(visualization?.html).toContain(syntax);
+    expect(visualization?.html).toContain(json);
     expect(generateText).toHaveBeenCalledTimes(2);
   });
 
   it('renders a supplied specification deterministically without calling the model', async () => {
-    const spec = { chartType: 'column' as const, syntax };
+    const spec = { chartType: 'column' as const, config };
     const html = await ava['viz'](spec);
     expect(html).toContain('<!DOCTYPE html>');
-    expect(html).toContain(syntax);
-    expect(html).toContain('gptVis.render(visSyntax)');
+    expect(html).toContain(json);
+    expect(html).toContain('gptVis.render(visConfig)');
     expect(await ava['viz'](spec)).toBe(html);
     expect(generateText).not.toHaveBeenCalled();
   });

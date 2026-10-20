@@ -37,6 +37,6 @@ describe.skipIf(skipLLMTests)('cases/visualization', () => {
     expect(viz).not.toBeNull();
     expect(typeof viz!.chartType).toBe('string');
     expect(viz!.html).toContain('<!DOCTYPE html>');
-    expect(typeof viz!.syntax).toBe('string');
+    expect(typeof viz!.config).toBe('object');
   }, 120000);
 });

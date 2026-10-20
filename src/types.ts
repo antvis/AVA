@@ -835,13 +835,18 @@ export interface AnalysisResponse<T = Record<string, unknown>> extends Execution
 }
 
 /**
+ * GPT-Vis JSON config
+ */
+export type ChartConfig = { type: string; [key: string]: unknown };
+
+/**
  * Chart specification for rendering.
  */
 export interface ChartSpec {
   /** Recommended chart type */
   chartType: ChartType;
-  /** GPT-Vis syntax */
-  syntax: string;
+  /** GPT-Vis JSON config; its `type` matches chartType */
+  config: ChartConfig;
 }
 
 /**

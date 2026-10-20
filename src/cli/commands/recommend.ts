@@ -35,7 +35,7 @@ export const help = `${description}.
 Usage:
   ava recommend --query "<text>" --data <json|@file|->
 
-Returns { "chartType": "...", "syntax": "..." }, or null if no chart is recommended.
+Returns { "chartType": "...", "config": {...} }, or null if no chart is recommended.
 A non-null result can be passed to ava viz --spec.
 
 Options:

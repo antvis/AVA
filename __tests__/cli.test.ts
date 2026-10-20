@@ -257,7 +257,7 @@ describe('dataset commands', () => {
 
 describe('chart commands', () => {
   const data = [{ city: 'Hangzhou', sales: 10 }];
-  const spec = { chartType: 'column' as const, syntax: 'vis column\ndata\n  - Hangzhou 10' };
+  const spec = { chartType: 'column' as const, config: { type: 'column', data: [{ category: 'Hangzhou', value: 10 }] } };
   const html = '<!DOCTYPE html><html>chart</html>';
 
   it.each(['recommend', 'visualize'] as const)(

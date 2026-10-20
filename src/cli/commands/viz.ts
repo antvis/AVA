@@ -28,7 +28,7 @@ export async function run(_args: string[], options: Options): Promise<unknown> {
   if (raw === undefined) throw new Error('--spec is required.');
 
   const spec = z
-    .object({ chartType: z.string(), syntax: z.string().trim().min(1) })
+    .object({ chartType: z.string(), config: z.record(z.unknown()) })
     .strict()
     .parse(await readJSON(raw));
 
@@ -36,7 +36,7 @@ export async function run(_args: string[], options: Options): Promise<unknown> {
 
   const ava = new AVA({ llm: { model: 'unused' } });
 
-  return await writeHTML(output, await ava.viz(spec as ChartSpec));
+  return await writeHTML(output, await ava.viz({ ...spec, config: { ...spec.config, type: spec.chartType } } as ChartSpec));
 }
 
 export const help = `${description}.
@@ -44,7 +44,7 @@ export const help = `${description}.
 Usage:
   ava viz --spec <json|@file|-> --output <path>
 
-Spec must contain chartType and syntax (GPT-Vis syntax), as returned by ava recommend.
+Spec must contain chartType and config (GPT-Vis JSON config), as returned by ava recommend.
 Returns { "output": "<absolute-path>" } as JSON. No API key is required.
 
 Options:

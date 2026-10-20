@@ -32,22 +32,22 @@ export function toDisplayMessage(source: AIUIMessage, datasetName: string): Mess
         data: part.output.data,
       };
     } else if (part.type === 'tool-visualize' && part.state === 'output-available') {
-      const { result, syntax } = part.output;
+      const { result, config } = part.output;
       message.artifact = {
         id: `${source.id}:${part.toolCallId}`,
         title: 'visualization.html',
         description: result.query,
         code: result.sql,
         data: result.data,
-        syntax,
+        config,
       };
     }
   }
   if (message.artifact) {
-    const { code, syntax } = message.artifact;
+    const { code, config } = message.artifact;
     const files = {
       ...(code ? { 'query.js': code } : {}),
-      ...(syntax ? { 'visualization.vis': syntax } : {}),
+      ...(config ? { 'visualization.json': JSON.stringify(config, null, 2) } : {}),
     };
 
     message.diffs = Object.entries(files).map(([file, content]) => ({ file, add: content.split('\n').length }));
