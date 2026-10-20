@@ -31,12 +31,14 @@ const SUPABASE_API_BASE = 'https://api.supabase.com';
 const REQUEST_TIMEOUT_MS = 30_000;
 
 export class SupabaseApiError extends Error {
-  constructor(message: string, status: number) {
-    super(message);
+  constructor(status: number, detail: string) {
+    super(`Supabase API request failed (${status})`);
     this.name = 'SupabaseApiError';
     this.status = status;
+    this.detail = detail;
   }
   readonly status: number;
+  readonly detail: string;
 }
 
 export class SupabaseEngine implements AnalysisEngine {
@@ -117,16 +119,11 @@ export class SupabaseEngine implements AnalysisEngine {
       );
 
       if (!response.ok) {
-        const detail = (await response.text().catch(() => '')).slice(0, 200);
-        throw new SupabaseApiError(`Supabase API request failed (${response.status}): ${detail}`, response.status);
+        throw new SupabaseApiError(response.status, await response.text());
       }
 
       const payload = (await response.json()) as unknown;
       return Array.isArray(payload) ? (payload as Record<string, unknown>[]) : [];
-    } catch (error) {
-      const isTimeout = controller.signal.aborted || (error instanceof Error && error.name === 'AbortError');
-      if (!isTimeout && (error instanceof SupabaseApiError || error instanceof SyntaxError)) throw error;
-      throw new SupabaseApiError(isTimeout ? 'Supabase API request timed out' : 'Supabase API network error', 0);
     } finally {
       clearTimeout(timer);
     }

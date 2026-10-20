@@ -120,9 +120,8 @@ describe('SupabaseEngine', () => {
       const engine = new SupabaseEngine(getLLMConfig());
       await engine.load({ type: 'supabase', options: CONNECTION });
       const pending = expect(engine.schema()).rejects.toMatchObject({
-        name: 'SupabaseApiError',
-        message: 'Supabase API request timed out',
-        status: 0,
+        name: 'AbortError',
+        message: 'aborted',
       });
       await vi.advanceTimersByTimeAsync(29_999);
       expect(bodyStarted).toBe(true);
@@ -147,10 +146,51 @@ describe('SupabaseEngine', () => {
       );
       await expect(engine.schema()).rejects.toMatchObject({
         name: 'SupabaseApiError',
-        message: 'Supabase API request failed (403): denied',
+        message: 'Supabase API request failed (403)',
         status: 403,
+        detail: 'denied',
       });
       expect(vi.getTimerCount()).toBe(0);
+    });
+
+    it('preserves the raw HTTP error body without parsing it', async () => {
+      const detail = JSON.stringify({ code: '42601', message: 'invalid query' });
+      vi.stubGlobal('fetch', vi.fn(async () => ({ ok: false, status: 400, text: async () => detail })));
+      const engine = new SupabaseEngine(getLLMConfig());
+      await engine.load({ type: 'supabase', options: CONNECTION });
+
+      await expect(engine.schema()).rejects.toMatchObject({
+        name: 'SupabaseApiError',
+        status: 400,
+        detail,
+      });
+    });
+
+    it('lets network failures propagate unchanged', async () => {
+      const networkError = new TypeError('fetch failed');
+      vi.stubGlobal('fetch', vi.fn().mockRejectedValue(networkError));
+      const engine = new SupabaseEngine(getLLMConfig());
+      await engine.load({ type: 'supabase', options: CONNECTION });
+
+      await expect(engine.schema()).rejects.toBe(networkError);
+    });
+
+    it('lets successful response JSON parsing errors propagate unchanged', async () => {
+      const parseError = new SyntaxError('unexpected token');
+      vi.stubGlobal(
+        'fetch',
+        vi.fn(async () => ({
+          ok: true,
+          status: 200,
+          json: async () => {
+            throw parseError;
+          },
+        }))
+      );
+      const engine = new SupabaseEngine(getLLMConfig());
+      await engine.load({ type: 'supabase', options: CONNECTION });
+
+      await expect(engine.schema()).rejects.toBe(parseError);
     });
 
     it('discovers multiple tables and relations in one request and passes them to SQL generation', async () => {
