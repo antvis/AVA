@@ -286,6 +286,7 @@ ava.dispose();`}</CodeBlock>
                             <code>AVA_FEISHU_APP_ID</code>/<code>AVA_FEISHU_APP_SECRET</code>, or <code>~/.ava/feishu.json</code>.
                             Provide <code>url</code>, or both <code>appToken</code> and <code>tableId</code>.
                             Read-only; rows are exposed as one view named <code>data</code>.
+                            Complex cells (people, attachments, links, formulas, locations, groups) are flattened to comma-separated text.
                             The <code>view</code> query on a Feishu URL is ignored, and only <code>/base/</code> links are supported. </li>
                           </ul>
                         </>

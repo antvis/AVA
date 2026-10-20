@@ -102,21 +102,31 @@ ava source @feishu.json > session.json
 
 Provide `url`, or both `appToken` and `tableId`; when both are set they must name the same table. The path segment after `base` is `appToken`, and the `table` query parameter is `tableId`. Never commit `appSecret` or put it in deliverables, logs, or screenshots; rotate it if it leaks.
 
-Supported field types become columns. Other types are omitted.
+Supported field types become columns. Other types are omitted. Complex cells are flattened to text; list values are joined with a comma.
 
 | type | Field | Cell value |
 | --- | --- | --- |
 |1| Text | string, or null when empty |
 |2| Number | number, or null when empty |
 |3| Single select | option name, or null |
-|4| Multi select | array of option names, or null |
+|4| Multi select | option names joined by comma, or null |
 |5| Date | ISO string, or null |
 |7| Checkbox | boolean |
+|11| User | names joined by comma (name → en_name → email → id) |
 |13| Phone | string, or null |
 |15| URL | link text, or the URL, or null |
+|17| Attachment | file names joined by comma |
+|18| Single link | record IDs joined by comma |
+|19| Lookup | converted from the wrapped result type |
+|20| Formula | converted from the wrapped result type |
+|21| Duplex link | record IDs joined by comma |
+|22| Location | full address, falling back to name, address, or coordinates |
+|23| Group chat | group names joined by comma |
 |1001| Created time | ISO string |
 |1002| Last modified time | ISO string |
+|1003| Created user | names joined by comma |
+|1004| Modified user | names joined by comma |
 |1005| Auto number | string, or null |
 
-People, attachments, links to other records, locations, groups, created-by,
-modified-by, formulas, and lookups are skipped.
+Stage (24) and button (3001) fields are read-only and skipped. A formula or
+lookup whose result type is unsupported becomes null.
