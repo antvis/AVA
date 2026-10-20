@@ -51,7 +51,7 @@ try {
   console.log(result.text, result.data);
 
   const chart = await ava.visualize(result);
-  if (chart) console.log(chart.syntax);
+  if (chart) console.log(chart.config);
 } finally {
   await ava.dispose();
 }

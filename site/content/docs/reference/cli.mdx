@@ -77,7 +77,7 @@ All commands accept `-h` / `--help` (boolean; optional). Every positional argume
 | `query`     | `dataset-id`                           | Required `--dsl`: code, `@file`, or `-`; non-empty and at most 512 KiB. Optional `--max-rows` and `--max-result-bytes` below.                                                                         |
 | `visualize` | None                                   | Required `--query`: text; required `--data`: JSON array of objects, `@file`, or `-`; optional `-o` / `--output`: new HTML file path.                                                                  |
 | `recommend` | None                                   | Required `--query`: text; required `--data`: JSON array of objects, `@file`, or `-`.                                                                                                                  |
-| `viz`       | None                                   | Required `--spec`: JSON, `@file`, or `-`, containing `chartType` and non-empty `syntax`; required `-o` / `--output`: new HTML file path.                                                              |
+| `viz`       | None                                   | Required `--spec`: JSON, `@file`, or `-`, containing `chartType` and a `config` object; required `-o` / `--output`: new HTML file path.                                                              |
 | `dispose`   | `dataset-id`                           | No additional flags.                                                                                                                                                                                  |
 
 | Shared execution flag | Type    | Default   | Accepted range         |

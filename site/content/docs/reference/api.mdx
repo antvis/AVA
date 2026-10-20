@@ -275,8 +275,8 @@ Neither requires a loaded source. Both use the model and return `null` for empty
 | Parameter        | Type        | Required | Meaning                                                                                             |
 | ---------------- | ----------- | -------- | --------------------------------------------------------------------------------------------------- |
 | `spec`           | `ChartSpec` | Yes      | Chart specification.                                                                                |
-| `spec.chartType` | `ChartType` | Yes      | One of the chart types below. Part of the shared spec; the current renderer uses `syntax` directly. |
-| `spec.syntax`    | `string`    | Yes      | GPT-Vis chart syntax to embed in HTML.                                                              |
+| `spec.chartType` | `ChartType` | Yes      | One of the chart types below. Part of the shared spec; the current renderer uses `config` directly. |
+| `spec.config`    | `ChartConfig` | Yes    | GPT-Vis JSON config to embed in HTML; `config.type` matches `chartType`.                            |
 
 `ChartType` values: `line`, `column`, `bar`, `pie`, `area`, `scatter`, `dual-axes`, `histogram`, `boxplot`, `radar`, `funnel`, `waterfall`, `liquid`, `word-cloud`, `violin`, `venn`, `treemap`, `sankey`, `table`, `summary`.
 

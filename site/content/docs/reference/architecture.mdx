@@ -16,7 +16,7 @@
 | [`remote/supabase/`](https://github.com/antvis/AVA/tree/ai/src/remote/supabase/)               | Management API, schema, and profiling                 |
 | [`remote/clickhouse/`](https://github.com/antvis/AVA/tree/ai/src/remote/clickhouse/)           | Remote SQL, schema, and profiling                     |
 | [`query/`](https://github.com/antvis/AVA/tree/ai/src/query/)                                   | Query generation and dialect validation               |
-| [`visualization/`](https://github.com/antvis/AVA/tree/ai/src/visualization/)                   | Chart advice, GPT-Vis syntax, and HTML generation     |
+| [`visualization/`](https://github.com/antvis/AVA/tree/ai/src/visualization/)                   | Chart advice, GPT-Vis config, and HTML generation     |
 | [`suggest/`](https://github.com/antvis/AVA/tree/ai/src/suggest/)                               | Suggested analysis questions                          |
 | [`event/`](https://github.com/antvis/AVA/tree/ai/src/event/)                                   | Event types and payloads                              |
 | [`cli/`](https://github.com/antvis/AVA/tree/ai/src/cli/)                                       | Commands and local dataset sessions                   |
@@ -31,7 +31,7 @@
 | `analyze()`                           | Dispatch to [`analysis/direct.ts`](https://github.com/antvis/AVA/blob/ai/src/analysis/direct.ts), [`analysis/loop.ts`](https://github.com/antvis/AVA/blob/ai/src/analysis/loop.ts), or [`analysis/subset.ts`](https://github.com/antvis/AVA/blob/ai/src/analysis/subset.ts) |
 | `translate()` / `query()`             | Engine `getDSL()` / `execute()`                                                                                                                                                                                                                                             |
 | `suggest()`                           | [`suggest/index.ts`](https://github.com/antvis/AVA/blob/ai/src/suggest/index.ts)                                                                                                                                                                                            |
-| `recommend()`                         | [`visualization/advisor.ts`](https://github.com/antvis/AVA/blob/ai/src/visualization/advisor.ts) and syntax generation                                                                                                                                                      |
+| `recommend()`                         | [`visualization/advisor.ts`](https://github.com/antvis/AVA/blob/ai/src/visualization/advisor.ts) and config generation                                                                                                                                                      |
 | `viz()`                               | HTML wrapping in [`visualization/generator.ts`](https://github.com/antvis/AVA/blob/ai/src/visualization/generator.ts)                                                                                                                                                       |
 | `visualize()`                         | Compose `recommend()` and `viz()`                                                                                                                                                                                                                                           |
 

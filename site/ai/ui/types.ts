@@ -18,7 +18,7 @@ export interface AnalysisArtifact {
   id: string;
   title: string;
   description: string;
-  syntax?: string;
+  config?: Record<string, unknown>;
   code?: string;
   data?: Record<string, unknown>[];
 }

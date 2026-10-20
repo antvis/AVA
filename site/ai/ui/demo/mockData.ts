@@ -24,27 +24,8 @@ export const CHART_CONFIG = {
   style: { palette: ['#0891b2', '#e88245'], backgroundColor: '#ffffff', startAtZero: true },
 } satisfies DualAxesConfig;
 
-/** Native GPT-Vis syntax, matching the format returned by ava.recommend(). */
-export const CHART_SYNTAX = [
-  'vis dual-axes',
-  `title "${CHART_CONFIG.title}"`,
-  `axisXTitle "${CHART_CONFIG.axisXTitle}"`,
-  `theme ${CHART_CONFIG.theme}`,
-  'categories',
-  ...CHART_CONFIG.categories.map((month) => `  - ${month}`),
-  'series',
-  ...CHART_CONFIG.series.flatMap((series) => [
-    `  - type ${series.type}`,
-    `    axisYTitle "${series.axisYTitle}"`,
-    '    data',
-    ...series.data.map((value) => `      - ${value}`),
-  ]),
-  'style',
-  `  backgroundColor ${CHART_CONFIG.style.backgroundColor}`,
-  '  startAtZero true',
-  '  palette',
-  ...CHART_CONFIG.style.palette.map((color) => `    - ${color}`),
-].join('\n');
+/** Pretty-printed GPT-Vis JSON config, shown in the run diff. */
+export const CHART_JSON = JSON.stringify(CHART_CONFIG, null, 2);
 
 /** DuckDB file sources are registered as the `data` view. */
 export const ARTIFACT_SQL = [
@@ -121,8 +102,8 @@ const RUN_STEPS: ToolStep[] = [
     chip: 'ava.visualize(result)',
     mono: true,
     detail: [
-      { text: 'recommend() selects dual-axes and generates native GPT-Vis syntax.' },
-      { text: 'viz() wraps the syntax in HTML; visualize() returns chartType, syntax and html.' },
+      { text: 'recommend() selects dual-axes and generates a GPT-Vis JSON config.' },
+      { text: 'viz() wraps the config in HTML; visualize() returns chartType, config and html.' },
       { text: 'Revenue columns ($k) + gross-margin line (%), with labeled axes starting at zero.' },
     ],
   },
@@ -132,14 +113,14 @@ const ASSISTANT_TEXT = `Revenue more than doubled, but profitability did not imp
 
 const RUN_DIFF_LINES: Record<string, ToolDiffLine[]> = {
   'analysis.sql': ARTIFACT_SQL.split('\n').map((text) => ({ text, tone: 'add' })),
-  'growth-quality.vis': CHART_SYNTAX.split('\n')
+  'growth-quality.json': CHART_JSON.split('\n')
     .slice(0, 6)
     .map((text) => ({ text, tone: 'add' })),
 };
 
 const RUN_DIFFS: ToolDiff[] = [
   { file: 'analysis.sql', add: ARTIFACT_SQL.split('\n').length },
-  { file: 'growth-quality.vis', add: CHART_SYNTAX.split('\n').length },
+  { file: 'growth-quality.json', add: CHART_JSON.split('\n').length },
 ];
 
 const QUESTION =
@@ -157,7 +138,7 @@ export const PRESET_MESSAGES: Message[] = [
       id: 'demo-growth-quality',
       title: 'growth-quality.html',
       description: 'Revenue & gross margin · Jan–Sep 2026 · Dual Axes',
-      syntax: CHART_SYNTAX,
+      config: CHART_CONFIG,
       code: ARTIFACT_SQL,
       data: ARTIFACT_DATA,
     },
