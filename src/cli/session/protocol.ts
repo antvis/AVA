@@ -47,8 +47,8 @@ const feishuBitable = z
     url:text.optional(),
     appToken:text.optional(),
     tableId:text.optional(),
-    appSecret:text,
-    appId: text,
+    appSecret:text.optional(),
+    appId: text.optional(),
   })
   .strict()
   .refine((value)=>Boolean(value.url || (value.appToken && value.tableId)),{

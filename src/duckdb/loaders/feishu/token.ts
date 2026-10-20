@@ -1,7 +1,14 @@
-const TOKEN_URL = 'https://open.feishu.cn/open-apis/auth/v3/tenant_access_token/internal';
+const FEISHU_ORIGIN = 'https://open.feishu.cn';
+const larkHost = /(^|\.)larksuite\.com$/;
 
-export async function getTenantAccessToken(appId:string,appSecret:string):Promise<string>{
-    const response = await fetch (TOKEN_URL,{
+export function feishuOrigin(url?:string):string{
+    if(!url || !/^https?:\/\//i.test(url))return FEISHU_ORIGIN;
+    const host = new URL(url).hostname.toLowerCase();
+    return larkHost.test(host)?'https://open.larksuite.com':FEISHU_ORIGIN;
+}
+
+export async function getTenantAccessToken(appId:string,appSecret:string,origin=FEISHU_ORIGIN):Promise<string>{
+    const response = await fetch (`${origin}/open-apis/auth/v3/tenant_access_token/internal`,{
         method:'POST',
         headers:{
             'Content-Type':'application/json'

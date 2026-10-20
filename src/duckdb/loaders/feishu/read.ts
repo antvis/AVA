@@ -1,12 +1,12 @@
-import { getTenantAccessToken } from "./token";
-import { convertRecord,FeishuFieldType,isSupportedFieldType } from "./convert";
+import { feishuOrigin,getTenantAccessToken } from "./token";
+import { convertRecord,isSupportedFieldType } from "./convert";
 import {resolveBitableTable} from "./url";
 
 import type { FeishuCell,FeishuField } from "./convert";
 import type { FeishuBitableSourceOptions } from "../../../types";
 
-function tableUrl(table:{appToken:string;tableId:string},suffix:string):string{
-    return  `https://open.feishu.cn/open-apis/bitable/v1/apps/${encodeURIComponent(table.appToken)}/tables/${encodeURIComponent(table.tableId)}${suffix}`
+function tableUrl(origin:string,table:{appToken:string;tableId:string},suffix:string):string{
+    return  `${origin}/open-apis/bitable/v1/apps/${encodeURIComponent(table.appToken)}/tables/${encodeURIComponent(table.tableId)}${suffix}`
 }
 
 // async function getItem(token:string,url:string):Promise<any[]>{
@@ -74,13 +74,13 @@ async function getAllItems(token:string,url:string,pageSize:number):Promise<any[
 
 export async function readFeishuTable(options:FeishuBitableSourceOptions):Promise<{fields:FeishuField[];rows:Record<string,FeishuCell>[]}>{
     const table = resolveBitableTable(options);
-    const token = await getTenantAccessToken(options.appId,options.appSecret);
-    
-    const fieldsItems = await getAllItems(token,tableUrl(table,'/fields'),FIELDS_PAGE_SIZE);
+    const origin = feishuOrigin(options.url);
+    const token = await getTenantAccessToken(options.appId,options.appSecret,origin);
+    const fieldsItems = await getAllItems(token,tableUrl(origin,table,'/fields'),FIELDS_PAGE_SIZE);
     const fields:FeishuField[] = fieldsItems
         .filter((field)=>isSupportedFieldType(field.type))
         .map((field)=>({name:field.field_name,type:field.type}));
-    const records = await getAllItems(token,tableUrl(table,'/records'),RECORDS_PAGE_SIZE);
+    const records = await getAllItems(token,tableUrl(origin,table,'/records'),RECORDS_PAGE_SIZE);
     const rows = records.map((record)=>convertRecord(fields,record.fields??{}));
     return {fields,rows};
 }
