@@ -120,3 +120,6 @@ task/
 # AVA × Feishu batch test artifacts
 /.ava-feishu-test/
 
+
+# Local chart output from scripts/ava-chart.mjs
+/.ava-charts/
