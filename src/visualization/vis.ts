@@ -59,7 +59,7 @@ const chartDefinitions: ChartTypeDefinition[] = [
     features: ['多维对比', '趋势分析'],
     useCases: ['同时展示两个不同量级的数据'],
     dataRequirements: ['需要多个数值序列'],
-    limitations: [],
+    limitations: ['两个序列量级相近或含义无关时不适用，应使用 line 或 column'],
   },
   {
     type: 'histogram',
@@ -67,7 +67,7 @@ const chartDefinitions: ChartTypeDefinition[] = [
     features: ['分布分析'],
     useCases: ['显示数据分布'],
     dataRequirements: ['连续数值数据'],
-    limitations: [],
+    limitations: ['需要原始观测值，不适用于已聚合的计数或分类数据'],
   },
   {
     type: 'boxplot',
@@ -75,7 +75,7 @@ const chartDefinitions: ChartTypeDefinition[] = [
     features: ['分布分析', '异常检测'],
     useCases: ['显示数据分布和异常值'],
     dataRequirements: ['连续数值数据', '可按分类分组'],
-    limitations: [],
+    limitations: ['每个分类需要多条观测值，每类只有一个值时不适用'],
   },
   {
     type: 'radar',
@@ -83,7 +83,7 @@ const chartDefinitions: ChartTypeDefinition[] = [
     features: ['多维对比'],
     useCases: ['多维度数据对比'],
     dataRequirements: ['多个维度的数值数据'],
-    limitations: [],
+    limitations: ['维度过多（建议 3-8 个）或系列过多时不适用'],
   },
   {
     type: 'funnel',
@@ -91,7 +91,7 @@ const chartDefinitions: ChartTypeDefinition[] = [
     features: ['流程分析', '转化分析'],
     useCases: ['展示流程转化率'],
     dataRequirements: ['有序的分类数据和对应数值'],
-    limitations: [],
+    limitations: ['阶段必须有序且数值递减，无序分类不适用'],
   },
   {
     type: 'waterfall',
@@ -99,7 +99,7 @@ const chartDefinitions: ChartTypeDefinition[] = [
     features: ['增减变化分析'],
     useCases: ['显示累计效应'],
     dataRequirements: ['分类数据和增减数值'],
-    limitations: [],
+    limitations: ['需要分类的增减值，无累计关系时不适用'],
   },
   {
     type: 'liquid',
@@ -107,7 +107,7 @@ const chartDefinitions: ChartTypeDefinition[] = [
     features: ['进度展示', '占比'],
     useCases: ['显示百分比或进度'],
     dataRequirements: ['单个百分比数值'],
-    limitations: [],
+    limitations: ['只能展示单个 0-1 的百分比，多个数值不适用'],
   },
   {
     type: 'word-cloud',
@@ -115,7 +115,7 @@ const chartDefinitions: ChartTypeDefinition[] = [
     features: ['词频分析', '热点展示'],
     useCases: ['展示文本词频'],
     dataRequirements: ['文本和对应频次'],
-    limitations: [],
+    limitations: ['需要文本及词频，不适合精确比较数值'],
   },
   {
     type: 'violin',
@@ -123,7 +123,7 @@ const chartDefinitions: ChartTypeDefinition[] = [
     features: ['分布分析'],
     useCases: ['显示数据分布密度'],
     dataRequirements: ['连续数值数据'],
-    limitations: [],
+    limitations: ['每个分类需要多条观测值，每类只有一个值时不适用'],
   },
   {
     type: 'venn',
@@ -131,7 +131,7 @@ const chartDefinitions: ChartTypeDefinition[] = [
     features: ['集合交并关系'],
     useCases: ['显示集合关系'],
     dataRequirements: ['集合及其交集数据'],
-    limitations: [],
+    limitations: ['集合数量较多（建议不超过 4 个）时不适用'],
   },
   {
     type: 'treemap',
@@ -139,7 +139,7 @@ const chartDefinitions: ChartTypeDefinition[] = [
     features: ['层级占比', '结构分析'],
     useCases: ['显示层级数据占比'],
     dataRequirements: ['层级结构数据'],
-    limitations: [],
+    limitations: ['不适合负值，也不适合没有层级或占比意义的数据'],
   },
   {
     type: 'sankey',
@@ -147,7 +147,7 @@ const chartDefinitions: ChartTypeDefinition[] = [
     features: ['流向分析'],
     useCases: ['展示流量流向'],
     dataRequirements: ['源、目标、流量数值'],
-    limitations: [],
+    limitations: ['需要源、目标节点对，存在环路时不适用'],
   },
   {
     type: 'table',
