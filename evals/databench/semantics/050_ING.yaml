@@ -1,0 +1,79 @@
+dialect: duckdb
+models:
+  - name: posts
+    table: data
+    description: One row per tweet addressed to ING, identified by id. Manually curated using the full data and DataBench
+      question/answer definitions; reference-informed, not a schema-only baseline.
+    dimensions:
+      - name: post_id
+        column: id
+        description: Unique 64-bit post ID; retain in top-N attribute lists.
+        type: number
+      - name: author_id
+        column: author_id
+        description: Author identifier; names are not unique IDs.
+        type: number
+      - name: author_name
+        column: author_name
+        description: Display name; preserve Unicode and whitespace.
+        type: string
+      - name: language
+        column: lang
+        description: Post language code.
+        type: string
+      - name: type
+        column: type
+        description: Post type, such as original or reply.
+        type: string
+      - name: text
+        column: text
+        description: Post text.
+        type: string
+      - name: mentions
+        column: mention_names
+        description: List of mentions, including repeated mentions within one post.
+      - name: links
+        column: links
+        description: List of URLs; empty list means no links.
+    measures:
+      - name: author_name_length
+        expr: LENGTH({TABLE}."author_name")
+        description: Character count of display name.
+        type: number
+      - name: word_count
+        expr: ARRAY_LENGTH(REGEXP_EXTRACT_ALL({TABLE}."text", '[^\s\x{00A0}]+'))
+        description: Whitespace-separated word count; nonbreaking spaces also delimit words.
+        type: number
+      - name: retweets
+        column: retweets
+        description: Retweet count, including zero.
+        type: number
+      - name: favorites
+        column: favorites
+        description: Favorite count, including zero.
+        type: number
+      - name: mention_count
+        expr: ARRAY_LENGTH({TABLE}."mention_names")
+        description: Number of mentions; zero means no mentions.
+        type: number
+      - name: link_count
+        expr: ARRAY_LENGTH({TABLE}."links")
+        description: Number of links, not string length.
+        type: number
+    metrics:
+      - name: post_count
+        agg: count
+        description: Count posts; author statistics group by author_id.
+      - name: unique_authors
+        agg: count_distinct
+        description: Distinct authors.
+        column: author_id
+      - name: total_retweets
+        agg: sum
+        description: Sum retweets, including author totals when grouped.
+        column: retweets
+      - name: total_favorites
+        agg: sum
+        description: Sum favorites for an author or population.
+        column: favorites
+joins: []

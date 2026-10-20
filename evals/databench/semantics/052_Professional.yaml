@@ -1,0 +1,85 @@
+dialect: duckdb
+models:
+  - name: professions
+    table: data
+    description: One row per profession, containing precomputed trait means and underlying sample size n. Manually curated
+      using the full data and DataBench question/answer definitions; reference-informed, not a schema-only baseline.
+    dimensions:
+      - name: profession
+        column: Profession
+        description: Unique profession label; include when ranking trait values.
+        type: string
+    measures:
+      - name: openness
+        column: Openness
+        description: Profession-level openness score.
+        type: number
+      - name: conscientiousness
+        column: Conscientousness
+        description: Conscientiousness; physical column uses Conscientousness spelling.
+        type: number
+      - name: extraversion
+        column: Extraversion
+        description: Profession-level extraversion.
+        type: number
+      - name: agreeableness
+        column: Agreeableness
+        description: Profession-level agreeableness.
+        type: number
+      - name: emotional_range
+        column: Emotional_Range
+        description: Profession-level emotional range.
+        type: number
+      - name: conversation
+        column: Conversation
+        description: Recorded Conversation measure; do not rename its business meaning.
+        type: number
+      - name: openness_to_change
+        column: Openness to Change
+        description: Distinct from Openness trait.
+        type: number
+      - name: hedonism
+        column: Hedonism
+        description: Hedonism score.
+        type: number
+      - name: self_enhancement
+        column: Self-enhancement
+        description: Self-enhancement score.
+        type: number
+      - name: self_transcendence
+        column: Self-transcendence
+        description: Self-transcendence score.
+        type: number
+      - name: sample_size
+        column: n
+        description: Underlying number of records for the profession, not number of profession rows.
+        type: number
+    metrics:
+      - name: profession_count
+        agg: count
+        description: Count professions satisfying conditions.
+      - name: maximum_extraversion
+        agg: max
+        description: Largest extraversion.
+        column: Extraversion
+      - name: maximum_agreeableness
+        agg: max
+        description: Largest agreeableness.
+        column: Agreeableness
+      - name: mean_openness_to_change
+        agg: avg
+        description: Unweighted mean across profession rows, not weighted by n.
+        column: Openness to Change
+      - name: mean_hedonism
+        agg: avg
+        description: Unweighted profession mean.
+        column: Hedonism
+      - name: maximum_self_enhancement
+        agg: max
+        description: Highest self-enhancement.
+        column: Self-enhancement
+      - name: minimum_self_transcendence
+        agg: min
+        description: Lowest self-transcendence.
+        column: Self-transcendence
+joins: []

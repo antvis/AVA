@@ -1,0 +1,69 @@
+dialect: duckdb
+models:
+  - name: tweets
+    table: data
+    description: One row per tweet in the historical snapshot. Manually curated using the full data and DataBench
+      question/answer definitions; reference-informed, not a schema-only baseline.
+    dimensions:
+      - name: tweet_id
+        column: id
+        description: Unique 64-bit tweet ID, retain for top-N values.
+        type: number
+      - name: author_id
+        column: author_id
+        description: Author ID.
+        type: number
+      - name: author_name
+        column: author_name
+        description: Author display name.
+        type: string
+      - name: handle
+        column: author_handler
+        description: Account handle.
+        type: string
+      - name: language
+        column: lang
+        description: Recorded language code, including und for undetermined.
+        type: string
+      - name: text
+        column: text
+        description: Original tweet text returned for which-tweet questions.
+        type: string
+      - name: posted_at
+        column: date
+        description: Tweet timestamp.
+        type: time
+      - name: year
+        expr: EXTRACT(YEAR FROM {TABLE}."date" AT TIME ZONE 'UTC')
+        description: Posting year in UTC.
+        type: number
+      - name: mentions
+        column: mention_names
+        description: List of names; compile tweet ID and all lists then UNNEST for individual-name frequencies. Empty lists
+          contribute no mentions.
+    measures:
+      - name: retweets
+        column: retweets
+        description: Retweet count.
+        type: number
+      - name: favorites
+        column: favorites
+        description: Favorite count.
+        type: number
+    metrics:
+      - name: tweet_count
+        agg: count
+        description: Count tweet rows; respect explicitly requested tie-break on language labels.
+      - name: unique_authors
+        agg: count_distinct
+        description: Distinct authors.
+        column: author_id
+      - name: average_retweets
+        agg: avg
+        description: Mean retweets per tweet.
+        column: retweets
+      - name: maximum_favorites
+        agg: max
+        description: Largest favorites count.
+        column: favorites
+joins: []

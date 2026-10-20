@@ -1,0 +1,90 @@
+dialect: duckdb
+models:
+  - name: cars
+    table: data
+    description: One row per used-car listing, uniquely identified by url hash. Manually curated using the full data and
+      DataBench question/answer definitions; reference-informed, not a schema-only baseline.
+    dimensions:
+      - name: listing_id
+        column: url
+        description: Unique listing identifier despite URL column name.
+        type: string
+      - name: make
+        column: make
+        description: Manufacturer label.
+        type: string
+      - name: model
+        column: model
+        description: Model name; NULL unknown.
+        type: string
+      - name: version
+        column: version
+        description: Version/trim text; use containment when asked whether it mentions a brand.
+        type: string
+      - name: fuel
+        column: fuel
+        description: Recorded fuel category. NULL is missing, not a fuel type; exclude before ranking named fuels.
+        type: string
+      - name: year
+        column: year
+        description: Vehicle year; frequency ranking differs from newest year.
+        type: number
+      - name: shift
+        column: shift
+        description: Manual or Automático.
+        type: string
+      - name: color
+        column: color
+        description: Original color label.
+        type: string
+      - name: dealer
+        column: dealer
+        description: Seller/dealer label.
+        type: string
+      - name: province
+        column: province
+        description: Province label; do not add whitespace to stored text.
+        type: string
+      - name: professional
+        column: is_professional
+        description: Boolean professional-seller flag.
+        type: boolean
+    measures:
+      - name: price
+        column: price
+        description: Listed cash price, distinct from financed price.
+        type: number
+      - name: financed_price
+        column: price_financed
+        description: Financed price where recorded.
+        type: number
+      - name: mileage
+        column: kms
+        description: Mileage in kilometers, including recorded outliers.
+        type: number
+      - name: power
+        column: power
+        description: Recorded power value; preserve source unit.
+        type: number
+      - name: photos
+        column: photos
+        description: Number of photos attached to this car listing. Separate listings with the same photo count remain
+          separate observations.
+        type: number
+    metrics:
+      - name: listing_count
+        agg: count
+        description: Count car listings; retain listing_id in top-N numeric lists.
+      - name: unique_models
+        agg: count_distinct
+        description: Distinct non-null car models.
+        column: model
+      - name: average_photos
+        agg: avg
+        description: Mean photo count.
+        column: photos
+      - name: maximum_price
+        agg: max
+        description: Largest cash price.
+        column: price
+joins: []

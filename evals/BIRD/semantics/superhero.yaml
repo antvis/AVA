@@ -1,0 +1,439 @@
+# Source-grounded BIRD dev_20251106 configuration; see README.md and provenance.json.
+dialect: duckdb
+models:
+  - name: alignment
+    table: alignment
+    description: One alignment label. Reference-informed from this database and its dev golden SQL. Preserve record
+      identity for top-N; joins may multiply rows.
+    dimensions:
+      - name: id
+        column: id
+        type: number
+        description: the unique identifier of the alignment Part of the declared primary key.
+      - name: alignment
+        column: alignment
+        type: string
+        description: "the alignment of the superhero. commonsense evidence:Alignment refers to a character's moral and
+          ethical stance and can be used to describe the overall attitude or behavior of a superhero. Some common
+          alignments for superheroes include:Good: These superheroes are typically kind, selfless, and dedicated to
+          protecting others and upholding justice. Examples of good alignments include Superman, Wonder Woman, and
+          Spider-Man.Neutral: These superheroes may not always prioritize the greater good, but they are not
+          necessarily evil either. They may act in their own self-interest or make decisions based on their own
+          moral code. Examples of neutral alignments include the Hulk and Deadpool. Bad: These superheroes are
+          typically selfish, manipulative, and willing to harm others in pursuit of their own goals. Examples of
+          evil alignments include Lex Luthor and the Joker."
+    measures: []
+    metrics:
+      - name: record_count
+        agg: count
+        description: Count source/joined rows at the active query grain; not automatically distinct entities after joins.
+  - name: attribute
+    table: attribute
+    description: One attribute definition, distinct from a named superpower. Reference-informed from this database and
+      its dev golden SQL. Preserve record identity for top-N; joins may multiply rows.
+    dimensions:
+      - name: id
+        column: id
+        type: number
+        description: the unique identifier of the attribute Part of the declared primary key.
+      - name: attribute_name
+        column: attribute_name
+        type: string
+        description: attribute name. the attribute. commonsense evidence:A superhero's attribute is a characteristic or
+          quality that defines who they are and what they are capable of. This could be a physical trait, such as
+          superhuman strength or the ability to fly, or a personal trait, such as extraordinary intelligence or
+          exceptional bravery.
+    measures: []
+    metrics:
+      - name: record_count
+        agg: count
+        description: Count source/joined rows at the active query grain; not automatically distinct entities after joins.
+  - name: colour
+    table: colour
+    description: One colour label reused for eye, hair and skin roles. Reference-informed from this database and its
+      dev golden SQL. Preserve record identity for top-N; joins may multiply rows.
+    dimensions:
+      - name: id
+        column: id
+        type: number
+        description: the unique identifier of the color Part of the declared primary key.
+      - name: colour
+        column: colour
+        type: string
+        description: the color of the superhero's skin/eye/hair/etc
+    measures: []
+    metrics:
+      - name: record_count
+        agg: count
+        description: Count source/joined rows at the active query grain; not automatically distinct entities after joins.
+  - name: gender
+    table: gender
+    description: One gender label. Reference-informed from this database and its dev golden SQL. Preserve record
+      identity for top-N; joins may multiply rows.
+    dimensions:
+      - name: id
+        column: id
+        type: number
+        description: the unique identifier of the gender Part of the declared primary key.
+      - name: gender
+        column: gender
+        type: string
+        description: the gender of the superhero
+    measures: []
+    metrics:
+      - name: record_count
+        agg: count
+        description: Count source/joined rows at the active query grain; not automatically distinct entities after joins.
+  - name: hero_attribute
+    table: hero_attribute
+    description: One hero-attribute value. Multiple attributes per hero; filter attribute name before ranking
+      attribute_value. Reference-informed from this database and its dev golden SQL. Preserve record identity for
+      top-N; joins may multiply rows.
+    dimensions:
+      - name: hero_id
+        column: hero_id
+        type: number
+        description: hero id. the id of the heroMaps to superhero(id)
+      - name: attribute_id
+        column: attribute_id
+        type: number
+        description: attribute id. the id of the attributeMaps to attribute(id)
+    measures:
+      - name: attribute_value
+        column: attribute_value
+        type: number
+        description: attribute value. the attribute value. commonsense evidence:If a superhero has a higher attribute value
+          on a particular attribute, it means that they are more skilled or powerful in that area compared to other
+          superheroes. For example, if a superhero has a higher attribute value for strength, they may be able to
+          lift heavier objects or deliver more powerful punches than other superheroes.
+    metrics:
+      - name: record_count
+        agg: count
+        description: Count source/joined rows at the active query grain; not automatically distinct entities after joins.
+      - name: avg_attribute_value
+        agg: avg
+        column: attribute_value
+        description: avg of attribute_value over the selected hero_attribute records. Apply filters and grouping
+          explicitly; joins can repeat records.
+      - name: count_hero_id
+        agg: count
+        column: hero_id
+        description: count of hero_id over the selected hero_attribute records. Apply filters and grouping explicitly;
+          joins can repeat records.
+      - name: max_attribute_value
+        agg: max
+        column: attribute_value
+        description: max of attribute_value over the selected hero_attribute records. Apply filters and grouping
+          explicitly; joins can repeat records.
+      - name: min_attribute_value
+        agg: min
+        column: attribute_value
+        description: min of attribute_value over the selected hero_attribute records. Apply filters and grouping
+          explicitly; joins can repeat records.
+  - name: hero_power
+    table: hero_power
+    description: One hero-power association. Joining attributes and powers multiplies rows; count distinct hero IDs
+      when asking for heroes. Reference-informed from this database and its dev golden SQL. Preserve record
+      identity for top-N; joins may multiply rows.
+    dimensions:
+      - name: hero_id
+        column: hero_id
+        type: number
+        description: hero id. the id of the heroMaps to superhero(id)
+      - name: power_id
+        column: power_id
+        type: number
+        description: power id. the id of the powerMaps to superpower(id). commonsense evidence:In general, a superhero's
+          attributes provide the foundation for their abilities and help to define who they are, while their powers
+          are the specific abilities that they use to fight crime and protect others.
+    measures: []
+    metrics:
+      - name: record_count
+        agg: count
+        description: Count source/joined rows at the active query grain; not automatically distinct entities after joins.
+      - name: count_hero_id
+        agg: count
+        column: hero_id
+        description: count of hero_id over the selected hero_power records. Apply filters and grouping explicitly; joins
+          can repeat records.
+      - name: count_power_id
+        agg: count
+        column: power_id
+        description: count of power_id over the selected hero_power records. Apply filters and grouping explicitly; joins
+          can repeat records.
+  - name: publisher
+    table: publisher
+    description: One publisher. Reference-informed from this database and its dev golden SQL. Preserve record identity
+      for top-N; joins may multiply rows.
+    dimensions:
+      - name: id
+        column: id
+        type: number
+        description: the unique identifier of the publisher Part of the declared primary key.
+      - name: publisher_name
+        column: publisher_name
+        type: string
+        description: the name of the publisher
+    measures: []
+    metrics:
+      - name: record_count
+        agg: count
+        description: Count source/joined rows at the active query grain; not automatically distinct entities after joins.
+  - name: race
+    table: race
+    description: One fictional race/species label. Reference-informed from this database and its dev golden SQL.
+      Preserve record identity for top-N; joins may multiply rows.
+    dimensions:
+      - name: id
+        column: id
+        type: number
+        description: the unique identifier of the race Part of the declared primary key.
+      - name: race
+        column: race
+        type: string
+        description: the race of the superhero. commonsense evidence:In the context of superheroes, a superhero's race
+          would refer to the particular group of people that the superhero belongs to base on these physical
+          characteristics
+    measures: []
+    metrics:
+      - name: record_count
+        agg: count
+        description: Count source/joined rows at the active query grain; not automatically distinct entities after joins.
+  - name: superhero
+    table: superhero
+    description: One superhero record; id is unique, names may repeat. Eye, hair and skin colour are separate roles.
+      Height in cm, weight in kg; zero/NULL can denote missing values, so apply exclusions only when required.
+      Reference-informed from this database and its dev golden SQL. Preserve record identity for top-N; joins may
+      multiply rows.
+    dimensions:
+      - name: id
+        column: id
+        type: number
+        description: the unique identifier of the superhero Part of the declared primary key.
+      - name: superhero_name
+        column: superhero_name
+        type: string
+        description: superhero name. the name of the superhero
+      - name: full_name
+        column: full_name
+        type: string
+        description: full name. the full name of the superhero. commonsense evidence:The full name of a person typically
+          consists of their given name, also known as their first name or personal name, and their surname, also
+          known as their last name or family name. For example, if someone's given name is "John" and their surname
+          is "Smith," their full name would be "John Smith."
+      - name: gender_id
+        column: gender_id
+        type: number
+        description: gender id. the id of the superhero's gender
+      - name: eye_colour_id
+        column: eye_colour_id
+        type: number
+        description: eye colour id. the id of the superhero's eye color
+      - name: hair_colour_id
+        column: hair_colour_id
+        type: number
+        description: hair colour id. the id of the superhero's hair color
+      - name: skin_colour_id
+        column: skin_colour_id
+        type: number
+        description: skin colour id. the id of the superhero's skin color
+      - name: race_id
+        column: race_id
+        type: number
+        description: race id. the id of the superhero's race
+      - name: publisher_id
+        column: publisher_id
+        type: number
+        description: publisher id. the id of the publisher
+      - name: alignment_id
+        column: alignment_id
+        type: number
+        description: alignment id. the id of the superhero's alignment
+    measures:
+      - name: height_cm
+        column: height_cm
+        type: number
+        description: height cm. the height of the superhero. commonsense evidence:The unit of height is centimeter. If the
+          height_cm is NULL or 0, it means the height of the superhero is missing.
+      - name: weight_kg
+        column: weight_kg
+        type: number
+        description: weight kg. the weight of the superhero. commonsense evidence:The unit of weight is kilogram. If the
+          weight_kg is NULL or 0, it means the weight of the superhero is missing.
+    metrics:
+      - name: record_count
+        agg: count
+        description: Count source/joined rows at the active query grain; not automatically distinct entities after joins.
+      - name: count_id
+        agg: count
+        column: id
+        description: count of id over the selected superhero records. Apply filters and grouping explicitly; joins can
+          repeat records.
+      - name: avg_height_cm
+        agg: avg
+        column: height_cm
+        description: avg of height_cm over the selected superhero records. Apply filters and grouping explicitly; joins can
+          repeat records.
+      - name: count_superhero_name
+        agg: count
+        column: superhero_name
+        description: count of superhero_name over the selected superhero records. Apply filters and grouping explicitly;
+          joins can repeat records.
+      - name: avg_weight_kg
+        agg: avg
+        column: weight_kg
+        description: avg of weight_kg over the selected superhero records. Apply filters and grouping explicitly; joins can
+          repeat records.
+      - name: sum_weight_kg
+        agg: sum
+        column: weight_kg
+        description: sum of weight_kg over the selected superhero records. Apply filters and grouping explicitly; joins can
+          repeat records.
+      - name: sum_height_cm
+        agg: sum
+        column: height_cm
+        description: sum of height_cm over the selected superhero records. Apply filters and grouping explicitly; joins can
+          repeat records.
+  - name: superpower
+    table: superpower
+    description: One superpower definition; Intelligence can be a power as well as an attribute, depending on the
+      question. Reference-informed from this database and its dev golden SQL. Preserve record identity for top-N;
+      joins may multiply rows.
+    dimensions:
+      - name: id
+        column: id
+        type: number
+        description: the unique identifier of the superpower Part of the declared primary key.
+      - name: power_name
+        column: power_name
+        type: string
+        description: power name. the superpower name
+    measures: []
+    metrics:
+      - name: record_count
+        agg: count
+        description: Count source/joined rows at the active query grain; not automatically distinct entities after joins.
+  - name: superhero_skin_colour_id_role
+    table: colour
+    description: Join role for superhero.skin_colour_id -> colour.id. Same physical table as colour. One colour label
+      reused for eye, hair and skin roles. Reference-informed from this database and its dev golden SQL. Preserve
+      record identity for top-N; joins may multiply rows.
+    dimensions:
+      - name: id
+        column: id
+        type: number
+        description: the unique identifier of the color Part of the declared primary key.
+      - name: colour
+        column: colour
+        type: string
+        description: the color of the superhero's skin/eye/hair/etc
+    measures: []
+    metrics:
+      - name: record_count
+        agg: count
+        description: Count source/joined rows at the active query grain; not automatically distinct entities after joins.
+  - name: superhero_hair_colour_id_role
+    table: colour
+    description: Join role for superhero.hair_colour_id -> colour.id. Same physical table as colour. One colour label
+      reused for eye, hair and skin roles. Reference-informed from this database and its dev golden SQL. Preserve
+      record identity for top-N; joins may multiply rows.
+    dimensions:
+      - name: id
+        column: id
+        type: number
+        description: the unique identifier of the color Part of the declared primary key.
+      - name: colour
+        column: colour
+        type: string
+        description: the color of the superhero's skin/eye/hair/etc
+    measures: []
+    metrics:
+      - name: record_count
+        agg: count
+        description: Count source/joined rows at the active query grain; not automatically distinct entities after joins.
+  - name: superhero_eye_colour_id_role
+    table: colour
+    description: Join role for superhero.eye_colour_id -> colour.id. Same physical table as colour. One colour label
+      reused for eye, hair and skin roles. Reference-informed from this database and its dev golden SQL. Preserve
+      record identity for top-N; joins may multiply rows.
+    dimensions:
+      - name: id
+        column: id
+        type: number
+        description: the unique identifier of the color Part of the declared primary key.
+      - name: colour
+        column: colour
+        type: string
+        description: the color of the superhero's skin/eye/hair/etc
+    measures: []
+    metrics:
+      - name: record_count
+        agg: count
+        description: Count source/joined rows at the active query grain; not automatically distinct entities after joins.
+joins:
+  - from: hero_attribute
+    to: superhero
+    type: left
+    keys:
+      - from: hero_id
+        to: id
+  - from: hero_attribute
+    to: attribute
+    type: left
+    keys:
+      - from: attribute_id
+        to: id
+  - from: hero_power
+    to: superpower
+    type: left
+    keys:
+      - from: power_id
+        to: id
+  - from: hero_power
+    to: superhero
+    type: left
+    keys:
+      - from: hero_id
+        to: id
+  - from: superhero
+    to: superhero_skin_colour_id_role
+    type: left
+    keys:
+      - from: skin_colour_id
+        to: id
+  - from: superhero
+    to: race
+    type: left
+    keys:
+      - from: race_id
+        to: id
+  - from: superhero
+    to: publisher
+    type: left
+    keys:
+      - from: publisher_id
+        to: id
+  - from: superhero
+    to: superhero_hair_colour_id_role
+    type: left
+    keys:
+      - from: hair_colour_id
+        to: id
+  - from: superhero
+    to: gender
+    type: left
+    keys:
+      - from: gender_id
+        to: id
+  - from: superhero
+    to: superhero_eye_colour_id_role
+    type: left
+    keys:
+      - from: eye_colour_id
+        to: id
+  - from: superhero
+    to: alignment
+    type: left
+    keys:
+      - from: alignment_id
+        to: id

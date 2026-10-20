@@ -1,0 +1,119 @@
+dialect: duckdb
+models:
+  - name: fires
+    table: data
+    description: One row per recorded fire observation. Calendar labels are those supplied in this transformed dataset;
+      source_position exposes the current file scan order. Manually curated using the full data and DataBench question/answer definitions;
+      reference-informed, not a schema-only baseline.
+    dimensions:
+      - name: source_position
+        expr: ROW_NUMBER() OVER ()
+        description: One-based position in this source file scan. Materialize this with the required row attributes in an
+          unfiltered, ungrouped query before selecting source rows. It is not chronological month order or a persistent ID.
+        type: number
+      - name: x
+        column: X
+        description: Horizontal grid coordinate.
+        type: number
+      - name: y
+        column: Y
+        description: Vertical grid coordinate, not a geographic latitude.
+        type: number
+      - name: month_id
+        column: month
+        description: "Stored zero-based month ID: 0=January through 11=December. Return the stored ID for numeric-label
+          questions; worst fire incidence means the largest fire_count, not the smallest."
+        type: number
+      - name: month_name
+        column: calendar_names_1
+        description: Supplied full month name; chronological ordering follows month_id.
+        type: string
+      - name: day_id
+        column: day
+        description: Stored zero-based weekday ID, 0=Monday through 6=Sunday.
+        type: number
+      - name: day_name
+        column: calendar_names_2
+        description: Supplied full weekday name.
+        type: string
+    measures:
+      - name: area
+        column: area
+        description: Recorded transformed area values. Benchmark area comparisons and sums use this stored column directly; do
+          not exponentiate or infer original hectares.
+        type: number
+      - name: dmc
+        column: DMC
+        description: Duff Moisture Code for an observation. Selecting observations by this value precedes deduplication of
+          their associated weekday labels; grouping by weekday answers a different question.
+        type: number
+      - name: dc
+        column: DC
+        description: Drought Code.
+        type: number
+      - name: isi
+        column: ISI
+        description: Initial Spread Index.
+        type: number
+      - name: temperature
+        column: temp
+        description: Recorded temperature in degrees Celsius.
+        type: number
+      - name: humidity
+        column: RH
+        description: Recorded RH percentage for each fire observation; driest records have lowest RH. Rank rows before
+          optionally returning distinct associated month labels, rather than averaging RH by month.
+        type: number
+      - name: wind
+        column: wind
+        description: Recorded wind-speed value. Benchmark comparisons use this column directly; do not infer an undocumented
+          unit conversion.
+        type: number
+    metrics:
+      - name: fire_count
+        agg: count
+        description: Count observation rows. Top-N recorded values may repeat; preserve their multiplicity. For source-file
+          ordering use source_position, not month or weekday numbers.
+      - name: maximum_temperature
+        agg: max
+        description: Highest recorded Celsius temperature.
+        column: temp
+      - name: minimum_wind
+        agg: min
+        description: Lowest recorded wind speed.
+        column: wind
+      - name: average_wind
+        agg: avg
+        description: Mean recorded wind speed.
+        column: wind
+      - name: total_area
+        agg: sum
+        description: Sum of stored transformed area values.
+        column: area
+      - name: unique_y
+        agg: count_distinct
+        description: Distinct vertical grid coordinates.
+        column: Y
+      - name: average_humidity
+        agg: avg
+        description: Mean RH percentage.
+        column: RH
+      - name: average_dc
+        agg: avg
+        description: Mean drought code.
+        column: DC
+      - name: average_isi
+        agg: avg
+        description: Mean initial spread index.
+        column: ISI
+      - name: dc_range
+        expr: MAX({TABLE}."DC") - MIN({TABLE}."DC")
+        description: Range of drought code.
+      - name: isi_stddev
+        expr: STDDEV_SAMP({TABLE}."ISI")
+        description: Sample standard deviation of ISI.
+      - name: unique_months
+        agg: count_distinct
+        description: Distinct stored month IDs.
+        column: month
+joins: []

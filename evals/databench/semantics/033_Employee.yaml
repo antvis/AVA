@@ -1,0 +1,93 @@
+dialect: duckdb
+models:
+  - name: employees
+    table: data
+    description: One row per employee observation; no education field is present in this database. Manually curated using
+      the full data and DataBench question/answer definitions; reference-informed, not a schema-only baseline.
+    dimensions:
+      - name: left
+        column: Left
+        description: Yes means employee left, No means stayed.
+        type: string
+      - name: accident
+        column: Work Accident
+        description: Yes means a work accident.
+        type: string
+      - name: salary
+        column: salary
+        description: Salary band low, medium or high; labels are not numeric pay.
+        type: string
+      - name: department
+        column: Department
+        description: Department labels preserve case and spelling.
+        type: string
+      - name: promoted
+        column: Promoted in the last 5 years?
+        description: Yes means promoted during the recorded five-year window.
+        type: string
+      - name: hire_year
+        expr: EXTRACT(YEAR FROM {TABLE}."Date Hired" AT TIME ZONE 'UTC')
+        description: Calendar hiring year from source date.
+        type: number
+      - name: hire_date
+        column: Date Hired
+        description: Hiring date.
+        type: time
+      - name: marital_status
+        column: Marital_Status
+        description: Marital status category only. This dataset has no education field; marital_status cannot answer
+          education-level questions.
+        type: string
+    measures:
+      - name: satisfaction
+        column: Satisfaction Level
+        description: Recorded satisfaction fraction; preserve repetitions across employees.
+        type: number
+      - name: monthly_hours
+        column: Average Monthly Hours
+        description: Employee average monthly hours, not total tenure hours.
+        type: number
+      - name: evaluation
+        column: Last Evaluation
+        description: Last evaluation score.
+        type: number
+      - name: tenure
+        column: Years in the Company
+        description: Years this employee has spent in the company. Equal tenures on different employee records are separate
+          observations, not a single service-length category.
+        type: number
+      - name: projects
+        column: Number of Projects
+        description: Project count per employee.
+        type: number
+    metrics:
+      - name: employee_count
+        agg: count
+        description: Count employee rows; preserve multiplicity for employee-level numeric lists.
+      - name: unique_departments
+        agg: count_distinct
+        description: Distinct department labels.
+        column: Department
+      - name: maximum_tenure
+        agg: max
+        description: Largest company tenure.
+        column: Years in the Company
+      - name: average_monthly_hours
+        agg: avg
+        description: Mean employee monthly hours; round final numeric answer only if needed.
+        column: Average Monthly Hours
+      - name: average_satisfaction
+        agg: avg
+        description: Mean satisfaction per department.
+        column: Satisfaction Level
+      - name: promotion_count
+        expr: COUNT(*) FILTER (WHERE {TABLE}."Promoted in the last 5 years?" = 'Yes')
+        description: Number promoted. Filter promotion_count > 0 when ranking departments with promotions.
+      - name: median_satisfaction
+        expr: MEDIAN({TABLE}."Satisfaction Level")
+        description: Median employee satisfaction.
+      - name: maximum_projects
+        agg: max
+        description: Largest project count.
+        column: Number of Projects
+joins: []

@@ -25,12 +25,30 @@ function dialect(name: SemanticDialectName, quote: string, escapeBackslash: bool
   };
 }
 
+/** GoogleSQL uses backslash escapes for both quoted identifiers and string literals. */
+function googleQuote(value: string, quote: string): string {
+  const escaped = value
+    .replace(/\\/g, '\\\\')
+    // eslint-disable-next-line no-control-regex -- GoogleSQL quoted literals cannot contain raw control characters.
+    .replace(/[\x00-\x1f\x7f]/g, (character) => `\\x${character.charCodeAt(0).toString(16).padStart(2, '0')}`)
+    .split(quote)
+    .join(`\\${quote}`);
+  return `${quote}${escaped}${quote}`;
+}
+
 const dialects: Record<SemanticDialectName, SQLDialect> = {
   duckdb: dialect('duckdb', '"', false),
   postgresql: dialect('postgresql', '"', false),
   ansi: dialect('ansi', '"', false),
   clickhouse: dialect('clickhouse', '"', true),
   mysql: dialect('mysql', '`', true),
+  sqlite: dialect('sqlite', '"', false),
+  bigquery: {
+    ...dialect('bigquery', '`', true),
+    quoteIdentifier: (value) => googleQuote(value, '`'),
+    quoteString: (value) => googleQuote(value, "'"),
+  },
+  snowflake: dialect('snowflake', '"', true),
 };
 
 /** Get a dialect by name. */
@@ -46,5 +64,10 @@ export function inferDialect(languageName?: string): SemanticDialectName {
   if (name.includes('clickhouse')) return 'clickhouse';
   if (name.includes('postgres')) return 'postgresql';
   if (name.includes('mysql')) return 'mysql';
-  return 'duckdb';
+  if (name.includes('sqlite')) return 'sqlite';
+  if (name.includes('bigquery')) return 'bigquery';
+  if (name.includes('snowflake')) return 'snowflake';
+  if (!name || name.includes('duckdb')) return 'duckdb';
+  if (name.includes('ansi')) return 'ansi';
+  throw new Error(`Cannot infer a semantic SQL dialect from "${languageName}". Set semantic.dialect explicitly.`);
 }

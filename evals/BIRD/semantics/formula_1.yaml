@@ -1,0 +1,800 @@
+# Source-grounded BIRD dev_20251106 configuration; see README.md and provenance.json.
+dialect: duckdb
+models:
+  - name: circuits
+    table: circuits
+    description: One circuit location. Reference-informed from this database and its dev golden SQL. Preserve record
+      identity for top-N; joins may multiply rows.
+    dimensions:
+      - name: circuit_id
+        column: circuitId
+        type: number
+        description: circuit Id. unique identification number of the circuit Part of the declared primary key.
+      - name: circuit_ref
+        column: circuitRef
+        type: string
+        description: circuit reference name
+      - name: name
+        column: name
+        type: string
+        description: full name of circuit
+      - name: location
+        column: location
+        type: string
+        description: location of circuit
+      - name: country
+        column: country
+        type: string
+        description: country of circuit
+      - name: url
+        column: url
+        type: string
+        description: url
+    measures:
+      - name: lat
+        column: lat
+        type: number
+        description: latitude. latitude of location of circuit
+      - name: lng
+        column: lng
+        type: number
+        description: "longitude. longitude of location of circuit. commonsense evidence: Location coordinates: (lat, lng)"
+      - name: alt
+        column: alt
+        type: number
+        description: Source field circuits.alt; no additional business definition supplied.
+    metrics:
+      - name: record_count
+        agg: count
+        description: Count source/joined rows at the active query grain; not automatically distinct entities after joins.
+      - name: count_circuit_id
+        agg: count
+        column: circuitId
+        description: count of circuitId over the selected circuits records. Apply filters and grouping explicitly; joins
+          can repeat records.
+  - name: constructor_results
+    table: constructorResults
+    description: One constructor result in one race; points belong to this race. Reference-informed from this database
+      and its dev golden SQL. Preserve record identity for top-N; joins may multiply rows.
+    dimensions:
+      - name: constructor_results_id
+        column: constructorResultsId
+        type: number
+        description: constructor Results Id Part of the declared primary key.
+      - name: race_id
+        column: raceId
+        type: number
+        description: race Id. race id
+      - name: constructor_id
+        column: constructorId
+        type: number
+        description: constructor Id. constructor id
+      - name: status
+        column: status
+        type: string
+        description: status
+    measures:
+      - name: points
+        column: points
+        type: number
+        description: points
+    metrics:
+      - name: record_count
+        agg: count
+        description: Count source/joined rows at the active query grain; not automatically distinct entities after joins.
+      - name: sum_points
+        agg: sum
+        column: points
+        description: sum of points over the selected constructorResults records. Apply filters and grouping explicitly;
+          joins can repeat records.
+  - name: constructor_standings
+    table: constructorStandings
+    description: One constructor championship standing after a race. Cumulative points/wins can repeat across
+      snapshots; distinguish them from constructorResults.points. Reference-informed from this database and its dev
+      golden SQL. Preserve record identity for top-N; joins may multiply rows.
+    dimensions:
+      - name: constructor_standings_id
+        column: constructorStandingsId
+        type: number
+        description: constructor Standings Id. unique identification of the constructor standing records Part of the
+          declared primary key.
+      - name: race_id
+        column: raceId
+        type: number
+        description: race id. id number identifying which races
+      - name: constructor_id
+        column: constructorId
+        type: number
+        description: constructor id. id number identifying which id
+      - name: position_text
+        column: positionText
+        type: string
+        description: position text. same with position, not quite useful
+    measures:
+      - name: points
+        column: points
+        type: number
+        description: how many points acquired in each race
+      - name: position
+        column: position
+        type: number
+        description: position or track of circuits
+      - name: wins
+        column: wins
+        type: number
+        description: wins
+    metrics:
+      - name: record_count
+        agg: count
+        description: Count source/joined rows at the active query grain; not automatically distinct entities after joins.
+      - name: max_points
+        agg: max
+        column: points
+        description: max of points over the selected constructorStandings records. Apply filters and grouping explicitly;
+          joins can repeat records.
+      - name: sum_points
+        agg: sum
+        column: points
+        description: sum of points over the selected constructorStandings records. Apply filters and grouping explicitly;
+          joins can repeat records.
+      - name: count_race_id
+        agg: count
+        column: raceId
+        description: count of raceId over the selected constructorStandings records. Apply filters and grouping explicitly;
+          joins can repeat records.
+  - name: constructors
+    table: constructors
+    description: One constructor/team. Reference-informed from this database and its dev golden SQL. Preserve record
+      identity for top-N; joins may multiply rows.
+    dimensions:
+      - name: constructor_id
+        column: constructorId
+        type: number
+        description: constructor Id. the unique identification number identifying constructors Part of the declared primary
+          key.
+      - name: constructor_ref
+        column: constructorRef
+        type: string
+        description: Constructor Reference name
+      - name: name
+        column: name
+        type: string
+        description: full name of the constructor
+      - name: nationality
+        column: nationality
+        type: string
+        description: nationality of the constructor
+      - name: url
+        column: url
+        type: string
+        description: "the introduction website of the constructor. commonsense evidence: How to find out the detailed
+          introduction of the constructor: through its url"
+    measures: []
+    metrics:
+      - name: record_count
+        agg: count
+        description: Count source/joined rows at the active query grain; not automatically distinct entities after joins.
+      - name: count_distinct_constructor_id
+        agg: count_distinct
+        column: constructorId
+        description: count distinct of constructorId over the selected constructors records. Apply filters and grouping
+          explicitly; joins can repeat records.
+  - name: driver_standings
+    table: driverStandings
+    description: One driver championship standing after a race. Points/wins are standing snapshots; do not assume
+      summing snapshots gives season points/wins. Reference-informed from this database and its dev golden SQL.
+      Preserve record identity for top-N; joins may multiply rows.
+    dimensions:
+      - name: driver_standings_id
+        column: driverStandingsId
+        type: number
+        description: driver Standings Id. the unique identification number identifying driver standing records Part of the
+          declared primary key.
+      - name: race_id
+        column: raceId
+        type: number
+        description: constructor Reference name. id number identifying which races
+      - name: driver_id
+        column: driverId
+        type: number
+        description: id number identifying which drivers
+      - name: position_text
+        column: positionText
+        type: string
+        description: position text. same with position, not quite useful
+    measures:
+      - name: points
+        column: points
+        type: number
+        description: how many points acquired in each race
+      - name: position
+        column: position
+        type: number
+        description: position or track of circuits
+      - name: wins
+        column: wins
+        type: number
+        description: wins
+    metrics:
+      - name: record_count
+        agg: count
+        description: Count source/joined rows at the active query grain; not automatically distinct entities after joins.
+      - name: count_driver_standings_id
+        agg: count
+        column: driverStandingsId
+        description: count of driverStandingsId over the selected driverStandings records. Apply filters and grouping
+          explicitly; joins can repeat records.
+      - name: max_points
+        agg: max
+        column: points
+        description: max of points over the selected driverStandings records. Apply filters and grouping explicitly; joins
+          can repeat records.
+      - name: count_wins
+        agg: count
+        column: wins
+        description: count of wins over the selected driverStandings records. Apply filters and grouping explicitly; joins
+          can repeat records.
+      - name: sum_wins
+        agg: sum
+        column: wins
+        description: sum of wins over the selected driverStandings records. Apply filters and grouping explicitly; joins
+          can repeat records.
+      - name: avg_points
+        agg: avg
+        column: points
+        description: avg of points over the selected driverStandings records. Apply filters and grouping explicitly; joins
+          can repeat records.
+      - name: count_driver_id
+        agg: count
+        column: driverId
+        description: count of driverId over the selected driverStandings records. Apply filters and grouping explicitly;
+          joins can repeat records.
+  - name: drivers
+    table: drivers
+    description: One driver. forename and surname are separate result columns when full name is requested; driverRef is
+      a reference label. Reference-informed from this database and its dev golden SQL. Preserve record identity for
+      top-N; joins may multiply rows.
+    dimensions:
+      - name: driver_id
+        column: driverId
+        type: number
+        description: driver ID. the unique identification number identifying each driver Part of the declared primary key.
+      - name: driver_ref
+        column: driverRef
+        type: string
+        description: driver reference name
+      - name: number
+        column: number
+        type: number
+        description: number
+      - name: code
+        column: code
+        type: string
+        description: abbreviated code for drivers. if "null" or empty, it means it doesn't have code
+      - name: forename
+        column: forename
+        type: string
+        description: forename
+      - name: surname
+        column: surname
+        type: string
+        description: surname
+      - name: dob
+        column: dob
+        type: time
+        description: "date of birth Source date/time: inspect stored representation and cast before DuckDB date functions."
+      - name: nationality
+        column: nationality
+        type: string
+        description: nationality of drivers
+      - name: url
+        column: url
+        type: string
+        description: the introduction website of the drivers
+    measures: []
+    metrics:
+      - name: record_count
+        agg: count
+        description: Count source/joined rows at the active query grain; not automatically distinct entities after joins.
+      - name: count_driver_id
+        agg: count
+        column: driverId
+        description: count of driverId over the selected drivers records. Apply filters and grouping explicitly; joins can
+          repeat records.
+      - name: count_distinct_driver_id
+        agg: count_distinct
+        column: driverId
+        description: count distinct of driverId over the selected drivers records. Apply filters and grouping explicitly;
+          joins can repeat records.
+  - name: lap_times
+    table: lapTimes
+    description: One race, driver and lap. milliseconds is an elapsed lap duration; position is running position.
+      Reference-informed from this database and its dev golden SQL. Preserve record identity for top-N; joins may
+      multiply rows.
+    dimensions:
+      - name: race_id
+        column: raceId
+        type: number
+        description: race ID. the identification number identifying race Part of the declared primary key.
+      - name: driver_id
+        column: driverId
+        type: number
+        description: driver ID. the identification number identifying each driver Part of the declared primary key.
+      - name: lap
+        column: lap
+        type: number
+        description: lap number Part of the declared primary key.
+      - name: time
+        column: time
+        type: string
+        description: lap time. in minutes / seconds / ...
+    measures:
+      - name: position
+        column: position
+        type: number
+        description: position or track of circuits
+      - name: milliseconds
+        column: milliseconds
+        type: number
+        description: milliseconds
+    metrics:
+      - name: record_count
+        agg: count
+        description: Count source/joined rows at the active query grain; not automatically distinct entities after joins.
+      - name: avg_milliseconds
+        agg: avg
+        column: milliseconds
+        description: avg of milliseconds over the selected lapTimes records. Apply filters and grouping explicitly; joins
+          can repeat records.
+      - name: min_milliseconds
+        agg: min
+        column: milliseconds
+        description: min of milliseconds over the selected lapTimes records. Apply filters and grouping explicitly; joins
+          can repeat records.
+  - name: pit_stops
+    table: pitStops
+    description: One race, driver and stop. time is clock time; duration and milliseconds describe stop duration.
+      Reference-informed from this database and its dev golden SQL. Preserve record identity for top-N; joins may
+      multiply rows.
+    dimensions:
+      - name: race_id
+        column: raceId
+        type: number
+        description: race ID. the identification number identifying race Part of the declared primary key.
+      - name: driver_id
+        column: driverId
+        type: number
+        description: driver ID. the identification number identifying each driver Part of the declared primary key.
+      - name: stop
+        column: stop
+        type: number
+        description: stop number Part of the declared primary key.
+      - name: lap
+        column: lap
+        type: number
+        description: lap number
+      - name: time
+        column: time
+        type: string
+        description: time. exact time
+      - name: duration
+        column: duration
+        type: string
+        description: duration time. seconds/
+    measures:
+      - name: milliseconds
+        column: milliseconds
+        type: number
+        description: milliseconds
+      - name: duration_seconds
+        expr: TRY_CAST({TABLE}."milliseconds" AS DOUBLE) / 1000
+        type: number
+        description: Pit-stop elapsed seconds from milliseconds; distinct from clock time.
+    metrics:
+      - name: record_count
+        agg: count
+        description: Count source/joined rows at the active query grain; not automatically distinct entities after joins.
+      - name: avg_milliseconds
+        agg: avg
+        column: milliseconds
+        description: avg of milliseconds over the selected pitStops records. Apply filters and grouping explicitly; joins
+          can repeat records.
+  - name: qualifying
+    table: qualifying
+    description: One driver qualifying result at a race. q1/q2/q3 are formatted elapsed times, nullable; position is
+      qualifying placement. Reference-informed from this database and its dev golden SQL. Preserve record identity
+      for top-N; joins may multiply rows.
+    dimensions:
+      - name: qualify_id
+        column: qualifyId
+        type: number
+        description: qualify Id. the unique identification number identifying qualifying. How does F1 Sprint qualifying
+          work? Sprint qualifying is essentially a short-form Grand Prix – a race that is one-third the number of
+          laps of the main event on Sunday. However, the drivers are battling for positions on the grid for the
+          start of Sunday's race. Part of the declared primary key.
+      - name: race_id
+        column: raceId
+        type: number
+        description: race Id. the identification number identifying each race
+      - name: driver_id
+        column: driverId
+        type: number
+        description: driver Id. the identification number identifying each driver
+      - name: constructor_id
+        column: constructorId
+        type: number
+        description: constructor id. constructor Id
+      - name: number
+        column: number
+        type: number
+        description: number
+      - name: q1
+        column: q1
+        type: string
+        description: Raw first qualifying elapsed-time text (minutes:seconds); NULL means no recorded time. Do not infer
+          qualifying format beyond question evidence.
+      - name: q2
+        column: q2
+        type: string
+        description: Raw second qualifying elapsed-time text; NULL means no recorded Q2 time.
+      - name: q3
+        column: q3
+        type: string
+        description: Raw third qualifying elapsed-time text; NULL means no recorded Q3 time.
+    measures:
+      - name: position
+        column: position
+        type: number
+        description: position or track of circuit
+    metrics:
+      - name: record_count
+        agg: count
+        description: Count source/joined rows at the active query grain; not automatically distinct entities after joins.
+  - name: races
+    table: races
+    description: One race event; raceId is not round. year and round identify placement in a season. Reference-informed
+      from this database and its dev golden SQL. Preserve record identity for top-N; joins may multiply rows.
+    dimensions:
+      - name: race_id
+        column: raceId
+        type: number
+        description: race ID. the unique identification number identifying the race Part of the declared primary key.
+      - name: year
+        column: year
+        type: number
+        description: year
+      - name: round
+        column: round
+        type: number
+        description: round
+      - name: circuit_id
+        column: circuitId
+        type: number
+        description: Circuit Id. circuit Id
+      - name: name
+        column: name
+        type: string
+        description: name of the race
+      - name: date
+        column: date
+        type: time
+        description: "Race calendar date, not a duration. Source date/time: inspect stored representation and cast before
+          DuckDB date functions."
+      - name: time
+        column: time
+        type: string
+        description: time of the location
+      - name: url
+        column: url
+        type: string
+        description: introduction of races
+    measures: []
+    metrics:
+      - name: record_count
+        agg: count
+        description: Count source/joined rows at the active query grain; not automatically distinct entities after joins.
+      - name: count_race_id
+        agg: count
+        column: raceId
+        description: count of raceId over the selected races records. Apply filters and grouping explicitly; joins can
+          repeat records.
+      - name: count_round
+        agg: count
+        column: round
+        description: count of round over the selected races records. Apply filters and grouping explicitly; joins can
+          repeat records.
+      - name: count_distinct_year
+        agg: count_distinct
+        column: year
+        description: count distinct of year over the selected races records. Apply filters and grouping explicitly; joins
+          can repeat records.
+      - name: count_distinct_race_id
+        agg: count_distinct
+        column: raceId
+        description: count distinct of raceId over the selected races records. Apply filters and grouping explicitly; joins
+          can repeat records.
+      - name: count_circuit_id
+        agg: count
+        column: circuitId
+        description: count of circuitId over the selected races records. Apply filters and grouping explicitly; joins can
+          repeat records.
+  - name: results
+    table: results
+    description: One driver race result. raceId+driverId connect lap and pit-stop facts; joining only driverId mixes
+      races. rank is fastest-lap rank, position/positionOrder are finishing placement. Reference-informed from this
+      database and its dev golden SQL. Preserve record identity for top-N; joins may multiply rows.
+    dimensions:
+      - name: result_id
+        column: resultId
+        type: number
+        description: Result ID. the unique identification number identifying race result Part of the declared primary key.
+      - name: race_id
+        column: raceId
+        type: number
+        description: race ID. the identification number identifying the race
+      - name: driver_id
+        column: driverId
+        type: number
+        description: driver ID. the identification number identifying the driver
+      - name: constructor_id
+        column: constructorId
+        type: number
+        description: constructor Id. the identification number identifying which constructors
+      - name: number
+        column: number
+        type: number
+        description: number
+      - name: position_text
+        column: positionText
+        type: string
+        description: position text. not quite useful
+      - name: time
+        column: time
+        type: string
+        description: "Raw finish-time text: winner may have HH:MM:SS.mmm, other finishers may have +gap. Use milliseconds
+          for recorded absolute elapsed time; do not parse all strings as identical units."
+      - name: fastest_lap_time
+        column: fastestLapTime
+        type: string
+        description: fastest Lap Time. faster (smaller in the value) "fastestLapTime" leads to higher rank (smaller is
+          higher rank)
+      - name: fastest_lap_speed
+        column: fastestLapSpeed
+        type: string
+        description: Raw text fastest lap speed in km/h; use explicit numeric conversion for arithmetic.
+      - name: status_id
+        column: statusId
+        type: number
+        description: status Id. status ID. its category description appear in the table status
+    measures:
+      - name: grid
+        column: grid
+        type: number
+        description: the number identifying the area where cars are set into a grid formation in order to start the race.
+      - name: position
+        column: position
+        type: number
+        description: The finishing position or track of circuits
+      - name: position_order
+        column: positionOrder
+        type: number
+        description: position order. the finishing order of positions
+      - name: points
+        column: points
+        type: number
+        description: points
+      - name: laps
+        column: laps
+        type: number
+        description: lap number
+      - name: milliseconds
+        column: milliseconds
+        type: number
+        description: the actual finishing time of drivers in milliseconds. the actual finishing time of drivers
+      - name: fastest_lap
+        column: fastestLap
+        type: number
+        description: fastest lap. fastest lap number
+      - name: rank
+        column: rank
+        type: number
+        description: starting rank positioned by fastest lap speed
+      - name: fastest_lap_seconds
+        expr: TRY_CAST(SPLIT_PART({TABLE}."fastestLapTime", ':', 1) AS DOUBLE) * 60 +
+          TRY_CAST(SPLIT_PART({TABLE}."fastestLapTime", ':', 2) AS DOUBLE)
+        type: number
+        description: MM:SS.mmm fastest-lap duration converted to seconds; malformed/missing values stay NULL.
+      - name: fastest_lap_speed_numeric
+        expr: TRY_CAST({TABLE}."fastestLapSpeed" AS DOUBLE)
+        type: number
+        description: Numeric fastest-lap speed in km/h; raw text remains available.
+    metrics:
+      - name: record_count
+        agg: count
+        description: Count source/joined rows at the active query grain; not automatically distinct entities after joins.
+      - name: count_driver_id
+        agg: count
+        column: driverId
+        description: count of driverId over the selected results records. Apply filters and grouping explicitly; joins can
+          repeat records.
+      - name: sum_points
+        agg: sum
+        column: points
+        description: sum of points over the selected results records. Apply filters and grouping explicitly; joins can
+          repeat records.
+      - name: count_result_id
+        agg: count
+        column: resultId
+        description: count of resultId over the selected results records. Apply filters and grouping explicitly; joins can
+          repeat records.
+      - name: max_position_order
+        agg: max
+        column: positionOrder
+        description: max of positionOrder over the selected results records. Apply filters and grouping explicitly; joins
+          can repeat records.
+      - name: count_race_id
+        agg: count
+        column: raceId
+        description: count of raceId over the selected results records. Apply filters and grouping explicitly; joins can
+          repeat records.
+      - name: count_distinct_driver_id
+        agg: count_distinct
+        column: driverId
+        description: count distinct of driverId over the selected results records. Apply filters and grouping explicitly;
+          joins can repeat records.
+      - name: count_time
+        agg: count
+        column: time
+        description: count of time over the selected results records. Apply filters and grouping explicitly; joins can
+          repeat records.
+  - name: seasons
+    table: seasons
+    description: One season year. Reference-informed from this database and its dev golden SQL. Preserve record
+      identity for top-N; joins may multiply rows.
+    dimensions:
+      - name: year
+        column: year
+        type: number
+        description: Season year, not a race identifier. Part of the declared primary key.
+      - name: url
+        column: url
+        type: string
+        description: website link of season race introduction
+    measures: []
+    metrics:
+      - name: record_count
+        agg: count
+        description: Count source/joined rows at the active query grain; not automatically distinct entities after joins.
+  - name: status
+    table: status
+    description: One finishing-status code description. Reference-informed from this database and its dev golden SQL.
+      Preserve record identity for top-N; joins may multiply rows.
+    dimensions:
+      - name: status_id
+        column: statusId
+        type: number
+        description: status ID. the unique identification number identifying status Part of the declared primary key.
+      - name: status
+        column: status
+        type: string
+        description: full name of status
+    measures: []
+    metrics:
+      - name: record_count
+        agg: count
+        description: Count source/joined rows at the active query grain; not automatically distinct entities after joins.
+joins:
+  - from: constructor_results
+    to: constructors
+    type: left
+    keys:
+      - from: constructorId
+        to: constructorId
+  - from: constructor_results
+    to: races
+    type: left
+    keys:
+      - from: raceId
+        to: raceId
+  - from: constructor_standings
+    to: constructors
+    type: left
+    keys:
+      - from: constructorId
+        to: constructorId
+  - from: constructor_standings
+    to: races
+    type: left
+    keys:
+      - from: raceId
+        to: raceId
+  - from: driver_standings
+    to: drivers
+    type: left
+    keys:
+      - from: driverId
+        to: driverId
+  - from: driver_standings
+    to: races
+    type: left
+    keys:
+      - from: raceId
+        to: raceId
+  - from: lap_times
+    to: drivers
+    type: left
+    keys:
+      - from: driverId
+        to: driverId
+  - from: lap_times
+    to: races
+    type: left
+    keys:
+      - from: raceId
+        to: raceId
+  - from: pit_stops
+    to: drivers
+    type: left
+    keys:
+      - from: driverId
+        to: driverId
+  - from: pit_stops
+    to: races
+    type: left
+    keys:
+      - from: raceId
+        to: raceId
+  - from: qualifying
+    to: constructors
+    type: left
+    keys:
+      - from: constructorId
+        to: constructorId
+  - from: qualifying
+    to: drivers
+    type: left
+    keys:
+      - from: driverId
+        to: driverId
+  - from: qualifying
+    to: races
+    type: left
+    keys:
+      - from: raceId
+        to: raceId
+  - from: races
+    to: circuits
+    type: left
+    keys:
+      - from: circuitId
+        to: circuitId
+  - from: races
+    to: seasons
+    type: left
+    keys:
+      - from: year
+        to: year
+  - from: results
+    to: status
+    type: left
+    keys:
+      - from: statusId
+        to: statusId
+  - from: results
+    to: constructors
+    type: left
+    keys:
+      - from: constructorId
+        to: constructorId
+  - from: results
+    to: drivers
+    type: left
+    keys:
+      - from: driverId
+        to: driverId
+  - from: results
+    to: races
+    type: left
+    keys:
+      - from: raceId
+        to: raceId

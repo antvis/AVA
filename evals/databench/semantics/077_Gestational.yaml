@@ -1,0 +1,68 @@
+dialect: duckdb
+models:
+  - name: pregnancies
+    table: data
+    description: One row per woman in the screening dataset; no unique record identifier is stored. Manually curated using
+      the full data and DataBench question/answer definitions; reference-informed, not a schema-only baseline.
+    dimensions:
+      - name: heredity
+        column: Heredity
+        description: "Original binary hereditary-risk label: 1 positive, 0 negative. Return 0/1 for label questions; most common
+          status requires frequencies, not the maximum code."
+        type: number
+      - name: prediction
+        column: Prediction
+        description: 1 predicts diabetes; 0 predicts free of diabetes. This is a prediction, not an observed diagnosis.
+        type: number
+    measures:
+      - name: age
+        column: Age
+        description: Age in years; teenagers are ages 13–19 inclusive.
+        type: number
+      - name: pregnancies
+        column: Pregnancy No
+        description: Recorded pregnancy number.
+        type: number
+      - name: weight_kg
+        column: Weight
+        description: Weight in kilograms; divide grams by 1000 before comparing.
+        type: number
+      - name: height_cm
+        column: Height
+        description: Height in centimeters; divide by 100 to return meters.
+        type: number
+      - name: bmi
+        column: BMI
+        description: Recorded BMI; retain source values rather than recalculating from rounded height/weight.
+        type: number
+    metrics:
+      - name: woman_count
+        agg: count
+        description: Count women. Preserve row multiplicity for youngest/tallest records. If asked for unique values among the
+          youngest N, select N records before deduplicating.
+      - name: average_bmi
+        agg: avg
+        description: Mean recorded BMI.
+        column: BMI
+      - name: bmi_stddev
+        expr: STDDEV_SAMP({TABLE}."BMI")
+        description: Sample standard deviation of BMI.
+      - name: median_age
+        expr: MEDIAN({TABLE}."Age")
+        description: Median age.
+      - name: most_common_heredity
+        expr: MODE({TABLE}."Heredity" ORDER BY {TABLE}."Heredity")
+        description: Most frequent non-null hereditary-risk code in the filtered women or group. Returns the original numeric
+          code, not a translated label or the largest code. Ties use ascending code order.
+      - name: maximum_weight
+        agg: max
+        description: Heaviest weight in kilograms.
+        column: Weight
+      - name: minimum_height_cm
+        agg: min
+        description: Shortest height in centimeters.
+        column: Height
+      - name: height_range_m
+        expr: (MAX({TABLE}."Height") - MIN({TABLE}."Height")) / 100.0
+        description: Height range converted from centimeters to meters.
+joins: []

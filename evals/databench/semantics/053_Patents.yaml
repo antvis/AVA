@@ -1,0 +1,73 @@
+dialect: duckdb
+models:
+  - name: patents
+    table: data
+    description: One row is a patent record; numeric id can be missing or repeated. Manually curated using the full data and
+      DataBench question/answer definitions; reference-informed, not a schema-only baseline.
+    dimensions:
+      - name: patent_id
+        column: id
+        description: Patent ID where available; include title/date to retain record context.
+        type: number
+      - name: organization
+        column: organization
+        description: Assignee organization name. IBM is recorded as 'International Business Machines Corporation'. Exclude NULL
+          before ranking named organizations.
+        type: string
+      - name: kind
+        column: kind
+        description: Patent kind code (e.g. B1, B2, S1); this is distinct from type such as utility/design.
+        type: string
+      - name: type
+        column: type
+        description: Patent type such as utility or design.
+        type: string
+      - name: cluster
+        column: graphext_cluster
+        description: Whole cluster label; no splitting for category frequencies.
+        type: string
+      - name: date
+        expr: CAST({TABLE}."date" AT TIME ZONE 'UTC' AS DATE)
+        description: Patent date; date ties can be ordered by numeric patent_id when a deterministic order is needed.
+        type: time
+      - name: title
+        column: title
+        description: Patent title; text matching may be case-insensitive.
+        type: string
+      - name: abstract
+        column: abstract
+        description: Patent abstract, NULL if absent.
+        type: string
+      - name: language
+        column: lang
+        description: Language code.
+        type: string
+    measures:
+      - name: claims
+        column: num_claims
+        description: Number of claims.
+        type: number
+    metrics:
+      - name: patent_count
+        agg: count
+        description: Count patent records; named organization rankings exclude NULL, with requested alphabetic tie-break.
+      - name: unique_organizations
+        agg: count_distinct
+        description: Distinct non-null organizations.
+        column: organization
+      - name: average_claims
+        agg: avg
+        description: Average claims per patent record.
+        column: num_claims
+      - name: maximum_claims
+        agg: max
+        description: Maximum claims.
+        column: num_claims
+      - name: median_claims
+        expr: MEDIAN({TABLE}."num_claims")
+        description: Median number of claims, grouped by kind when requested.
+      - name: most_common_kind
+        expr: MODE({TABLE}."kind" ORDER BY {TABLE}."kind")
+        description: Most frequent non-null patent kind code in the filtered records or group. Returns the original code, not
+          the utility/design type. Ties use ascending code order.
+joins: []

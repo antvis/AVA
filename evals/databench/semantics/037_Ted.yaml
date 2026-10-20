@@ -1,0 +1,75 @@
+dialect: duckdb
+models:
+  - name: talks
+    table: data
+    description: One row per TED talk, identified by talk_id. Manually curated using the full data and DataBench
+      question/answer definitions; reference-informed, not a schema-only baseline.
+    dimensions:
+      - name: talk_id
+        column: talk_id
+        description: Unique talk ID; retain for top-N measurement lists.
+        type: number
+      - name: title
+        column: title
+        description: Talk title.
+        type: string
+      - name: speaker
+        column: speaker_1
+        description: Primary speaker; used for speaker counts and rankings, not parsed all_speakers text.
+        type: string
+      - name: event
+        column: event
+        description: Event label; TEDx tests use text prefix/containment.
+        type: string
+      - name: language
+        column: native_lang
+        description: Native language code.
+        type: string
+      - name: available_languages
+        column: available_lang
+        description: List of available language codes.
+      - name: topics
+        column: topics
+        description: List of topic labels.
+    measures:
+      - name: views
+        column: views
+        description: Recorded views, including zero.
+        type: number
+      - name: comments
+        column: comments
+        description: Known comment count; NULL is unknown.
+        type: number
+      - name: duration
+        column: duration
+        description: Duration in seconds.
+        type: number
+      - name: language_count
+        expr: ARRAY_LENGTH({TABLE}."available_lang")
+        description: Number of languages available for each talk.
+        type: number
+    metrics:
+      - name: talk_count
+        agg: count
+        description: Number of talks.
+      - name: unique_speakers
+        agg: count_distinct
+        description: Distinct primary speakers.
+        column: speaker_1
+      - name: average_views
+        agg: avg
+        description: Mean views per talk.
+        column: views
+      - name: average_comments
+        agg: avg
+        description: Mean non-null comments per talk.
+        column: comments
+      - name: average_duration
+        agg: avg
+        description: Mean duration in seconds.
+        column: duration
+      - name: maximum_duration
+        agg: max
+        description: Longest talk in seconds.
+        column: duration
+joins: []

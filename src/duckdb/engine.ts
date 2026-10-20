@@ -16,6 +16,7 @@ import { runWithTimeout } from '../util/timeout';
 
 import { DEFAULT_METRICS, profileTables } from './profile';
 import { loadSource } from './loaders';
+import { validateSemanticQuery } from './semantic';
 
 import type { DuckDBConnection } from '@duckdb/node-api';
 import type {
@@ -176,6 +177,11 @@ export class DuckDBEngine implements AnalysisEngine {
       type: reader.columnType(index).toString(),
     }));
     return executionResult(coerceNumbers(reader.getRowObjectsJson(), schema) as T[], schema, options);
+  }
+
+  async validateSemanticQuery(sql: string, evidence: readonly string[], schema: Schema): Promise<void> {
+    if (!this.connection) throw new Error('No data loaded. Please call source() first.');
+    await validateSemanticQuery(this.connection, sql, evidence, schema);
   }
 
   /**

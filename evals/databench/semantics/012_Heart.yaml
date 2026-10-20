@@ -1,0 +1,78 @@
+dialect: duckdb
+models:
+  - name: patients
+    table: data
+    description: One row is one patient observation; no patient identifier is supplied. Manually curated using the full data
+      and DataBench question/answer definitions; reference-informed, not a schema-only baseline.
+    dimensions:
+      - name: sex
+        column: Sex
+        description: M or F.
+        type: string
+      - name: chest_pain
+        column: ChestPainType
+        description: "Recorded chest-pain category: ASY, NAP, ATA or TA."
+        type: string
+      - name: fasting_bs
+        column: FastingBS
+        description: Binary fasting-blood-sugar indicator.
+        type: number
+      - name: resting_ecg
+        column: RestingECG
+        description: "Recorded ECG category: Normal, LVH or ST."
+        type: string
+      - name: exercise_angina
+        column: ExerciseAngina
+        description: Text Y or N; Y indicates exercise-induced angina.
+        type: string
+      - name: st_slope
+        column: ST_Slope
+        description: Flat, Up or Down.
+        type: string
+      - name: heart_disease
+        column: HeartDisease
+        description: 1 indicates heart disease, 0 absence.
+        type: number
+    measures:
+      - name: age
+        column: Age
+        description: Age in years. Oldest patient lists preserve equal ages.
+        type: number
+      - name: resting_bp
+        column: RestingBP
+        description: Resting blood pressure as recorded; preserve zero in benchmark statistics.
+        type: number
+      - name: cholesterol
+        column: Cholesterol
+        description: Recorded cholesterol value. Zero occurs in source data and remains eligible for numerical extrema; do not
+          add a positive-only filter unless requested.
+        type: number
+      - name: maximum_hr
+        column: MaxHR
+        description: Maximum heart rate.
+        type: number
+      - name: oldpeak
+        column: Oldpeak
+        description: Recorded ST depression.
+        type: number
+    metrics:
+      - name: patient_count
+        agg: count
+        description: Number of patient rows. For top-N repeated measurements retain each grouped value frequency; distinct
+          values alone are not N patients.
+      - name: maximum_age
+        agg: max
+        description: Maximum patient age.
+        column: Age
+      - name: minimum_bp
+        agg: min
+        description: Minimum recorded pressure including zero.
+        column: RestingBP
+      - name: average_cholesterol
+        agg: avg
+        description: Mean recorded cholesterol including zero.
+        column: Cholesterol
+      - name: heart_rate_stddev
+        expr: STDDEV_SAMP({TABLE}."MaxHR")
+        description: Sample standard deviation of maximum heart rate (n-1 denominator).
+joins: []

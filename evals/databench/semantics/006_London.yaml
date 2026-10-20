@@ -1,0 +1,91 @@
+dialect: duckdb
+models:
+  - name: london
+    table: data
+    description: One row is one London accommodation listing, uniquely identified by listing_url. Listing and host
+      neighbourhoods have different meanings. Manually curated using the full data and DataBench question/answer
+      definitions; reference-informed, not a schema-only baseline.
+    dimensions:
+      - name: listing_id
+        column: listing_url
+        description: Unique listing URL; include in top-N listing attribute lists to preserve equal values.
+        type: string
+      - name: neighbourhood
+        column: neighbourhood_cleansed
+        description: Cleaned listing neighbourhood used for listing populations and neighbourhood rankings.
+        type: string
+      - name: host_neighbourhood
+        column: host_neighbourhood
+        description: Host neighbourhood; used by the reference convention for unique-neighbourhood counts. Exclude NULL.
+        type: string
+      - name: host_id
+        column: host_id
+        description: Host identifier; multiple listings can belong to one host.
+        type: number
+      - name: room_type
+        column: room_type
+        description: Recorded room type.
+        type: string
+      - name: property_type
+        column: property_type
+        description: Recorded property type, more detailed than room_type.
+        type: string
+      - name: price
+        column: price
+        description: Raw price text; this full snapshot contains missing prices. Do not invent valid prices or equate missing
+          with zero.
+        type: string
+      - name: identity_verified
+        column: host_identity_verified
+        description: "Text flags: t means verified, f means not verified; other labels are unknown."
+        type: string
+      - name: verifications
+        column: host_verifications
+        description: List of verification methods. Compile listing_id and this field without a limit, then UNNEST methods in a
+          CTE and count each method; grouping whole arrays counts combinations.
+      - name: amenities
+        column: amenities
+        description: List of amenities; expand list for individual amenity frequencies.
+    measures:
+      - name: reviews_per_month
+        column: reviews_per_month
+        description: Monthly review frequency; NULL is unknown, not zero.
+        type: number
+      - name: bedrooms
+        column: bedrooms
+        description: Number of bedrooms. NULL is unknown; exclude it before ranking the frequency of known bedroom counts.
+        type: number
+      - name: location_score
+        column: review_scores_location
+        description: Location score on 0–5 scale; retain listing_id for highest N recorded scores.
+        type: number
+      - name: communication_score
+        column: review_scores_communication
+        description: Communication score on 0–5 scale. Zero is the lowest score; NULL is unreviewed, not zero.
+        type: number
+      - name: entire_home_listings
+        column: calculated_host_listings_count_entire_homes
+        description: Host entire-home listing count repeated on each listing row. Ranking recorded values uses listing_id, not a
+          deduplicated host table; this field alone does not require a room_type filter.
+        type: number
+      - name: rating
+        column: review_scores_rating
+        description: Overall review rating.
+        type: number
+      - name: beds
+        column: beds
+        description: Recorded beds.
+        type: number
+    metrics:
+      - name: listing_count
+        agg: count
+        description: Number of listing rows, not distinct hosts.
+      - name: unique_host_neighbourhoods
+        agg: count_distinct
+        description: Distinct non-null host neighbourhoods; distinct from listing boroughs.
+        column: host_neighbourhood
+      - name: maximum_bedrooms
+        agg: max
+        description: Maximum known bedroom count.
+        column: bedrooms
+joins: []

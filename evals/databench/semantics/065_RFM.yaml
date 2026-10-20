@@ -1,0 +1,69 @@
+dialect: duckdb
+models:
+  - name: invoice_lines
+    table: data
+    description: One row is an invoice line. Invoices and customers repeat; numeric InvoiceNo is missing for some source
+      rows. Manually curated using the full data and DataBench question/answer definitions; reference-informed, not a
+      schema-only baseline.
+    dimensions:
+      - name: invoice
+        column: InvoiceNo
+        description: Invoice number, not unique per line; NULL remains unavailable.
+        type: number
+      - name: stock_code
+        column: StockCode
+        description: Product identifier stored as text, including alphanumeric codes. Preserve its original text identity.
+          stock_code_number is an optional numeric ordering attribute; it does not replace this identifier.
+        type: string
+      - name: stock_code_number
+        expr: TRY_CAST({TABLE}."StockCode" AS BIGINT)
+        description: Numeric ordering attribute for stock codes that are entirely convertible to an integer. NULL for
+          alphanumeric codes; these retain stock_code as their identity and text-order fallback. This is an identifier
+          attribute, not a quantity to sum.
+        type: number
+      - name: description
+        column: Description
+        description: Product description; can differ for a stock code.
+        type: string
+      - name: customer_id
+        column: CustomerID
+        description: Customer identifier; NULL means missing.
+        type: number
+      - name: country
+        column: Country
+        description: Customer country.
+        type: string
+      - name: invoice_time
+        column: InvoiceDate
+        description: Raw invoice timestamp, month/day/year hour:minute; combine invoice, stock and timestamp for line context.
+        type: string
+    measures:
+      - name: quantity
+        column: Quantity
+        description: "Signed line quantity: returns/adjustments may be negative; retain them unless asked to exclude."
+        type: number
+      - name: unit_price
+        column: UnitPrice
+        description: Signed recorded unit price; preserve zero and negative values.
+        type: number
+    metrics:
+      - name: line_count
+        agg: count
+        description: Number of invoice lines, called transactions in benchmark counts; do not use distinct invoice count.
+      - name: unique_stock_codes
+        agg: count_distinct
+        description: Distinct product codes.
+        column: StockCode
+      - name: average_unit_price
+        agg: avg
+        description: Mean line unit price including recorded zero/negative adjustments.
+        column: UnitPrice
+      - name: maximum_quantity
+        agg: max
+        description: Maximum quantity on one line.
+        column: Quantity
+      - name: invoice_count
+        agg: count_distinct
+        description: Distinct known invoices when explicitly requested.
+        column: InvoiceNo
+joins: []

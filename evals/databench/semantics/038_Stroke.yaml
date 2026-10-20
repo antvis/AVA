@@ -1,0 +1,74 @@
+dialect: duckdb
+models:
+  - name: patients
+    table: data
+    description: One row per patient, identified by id. Manually curated using the full data and DataBench question/answer
+      definitions; reference-informed, not a schema-only baseline.
+    dimensions:
+      - name: patient_id
+        column: id
+        description: Unique patient key; retain with ranked attributes.
+        type: number
+      - name: gender
+        column: gender
+        description: Recorded gender including Other.
+        type: string
+      - name: hypertension
+        column: hypertension
+        description: 1 indicates hypertension, 0 absence.
+        type: number
+      - name: heart_disease
+        column: heart_disease
+        description: 1 indicates heart disease.
+        type: number
+      - name: married
+        column: ever_married
+        description: Yes/No ever married.
+        type: string
+      - name: work_type
+        column: work_type
+        description: Recorded employment category including children.
+        type: string
+      - name: residence
+        column: Residence_type
+        description: Urban or Rural.
+        type: string
+      - name: smoking
+        column: smoking_status
+        description: Current smokers are smokes; formerly smoked and never smoked are distinct. Unknown remains unknown.
+        type: string
+      - name: stroke
+        column: stroke
+        description: 1 stroke, 0 no stroke.
+        type: number
+    measures:
+      - name: age
+        column: age
+        description: Age recorded for this patient in years; missing ages remain unknown. Patients of the same age remain
+          separate patient observations.
+        type: number
+      - name: glucose
+        column: avg_glucose_level
+        description: Per-patient average glucose level.
+        type: number
+      - name: bmi
+        column: bmi
+        description: BMI; NULL excluded from known BMI rankings.
+        type: number
+    metrics:
+      - name: patient_count
+        agg: count
+        description: Number of patients after filters.
+      - name: average_age
+        agg: avg
+        description: Mean known patient age.
+        column: age
+      - name: average_glucose
+        agg: avg
+        description: Mean per-patient glucose level.
+        column: avg_glucose_level
+      - name: maximum_glucose
+        agg: max
+        description: Highest patient glucose level.
+        column: avg_glucose_level
+joins: []

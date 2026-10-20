@@ -219,7 +219,7 @@ export class AVA extends EventEmitter {
 
   /**
    * Register explicit semantic models and joins used by compileSMQ() and the
-   * `semantic` analysis strategy. Accepts a config object or its JSON string.
+   * `semantic` analysis strategy. Accepts a config object or a YAML/JSON string.
    * Models are validated immediately; table existence is checked at analyze time.
    */
   semantic(config: SemanticConfig | string): this {

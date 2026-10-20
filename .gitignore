@@ -101,6 +101,7 @@ pnpm-lock.yaml
 # Downloaded/generated evaluation files
 /evals/*/datasets/
 /evals/*/results/
+/evals/ava-workflow/.runs/
 /evals/*/*.jsonl
 /evals/spider2lite/resource/
 /evals/spider2lite/evaluation_suite/

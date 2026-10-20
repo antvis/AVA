@@ -1,0 +1,77 @@
+dialect: duckdb
+models:
+  - name: customers
+    table: data
+    description: One row per bank customer, identified by id. Manually curated using the full data and DataBench
+      question/answer definitions; reference-informed, not a schema-only baseline.
+    dimensions:
+      - name: customer_id
+        column: id
+        description: Actual customer ID; do not return a financial amount when an identifier is requested.
+        type: number
+      - name: attrition
+        column: attrition_flag
+        description: Recorded binary attrition code.
+        type: number
+      - name: gender
+        column: gender
+        description: F/M.
+        type: string
+      - name: education
+        column: education_level
+        description: Recorded education, including Unknown.
+        type: string
+      - name: income_band
+        column: income_category
+        description: Original income category string.
+        type: string
+    measures:
+      - name: age
+        column: customer_age
+        description: Age in years.
+        type: number
+      - name: inactive_months
+        column: months_inactive_12_mon
+        description: Months inactive during the recorded 12-month window.
+        type: number
+      - name: credit_limit
+        column: credit_limit
+        description: Known credit limit, NULL unknown.
+        type: number
+      - name: revolving_balance
+        column: total_revolving_bal
+        description: Total revolving balance.
+        type: number
+      - name: transaction_amount
+        column: total_trans_amt
+        description: Total transaction amount.
+        type: number
+      - name: transaction_count
+        column: total_trans_ct
+        description: Number of transactions.
+        type: number
+      - name: utilization
+        column: avg_utilization_ratio
+        description: Average utilization ratio.
+        type: number
+    metrics:
+      - name: customer_count
+        agg: count
+        description: Count customers; include customer_id in top-N values to retain ties.
+      - name: maximum_credit
+        agg: max
+        description: Maximum known credit limit.
+        column: credit_limit
+      - name: maximum_transactions
+        agg: max
+        description: Maximum total transaction amount.
+        column: total_trans_amt
+      - name: maximum_balance
+        agg: max
+        description: Maximum revolving balance.
+        column: total_revolving_bal
+      - name: maximum_age
+        agg: max
+        description: Oldest customer age.
+        column: customer_age
+joins: []

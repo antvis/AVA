@@ -1,0 +1,98 @@
+dialect: duckdb
+models:
+  - name: rentals
+    table: data
+    description: One row is a Madrid rental listing, uniquely identified by id. Preserve raw percentage labels separately
+      from numeric rates. Manually curated using the full data and DataBench question/answer definitions;
+      reference-informed, not a schema-only baseline.
+    dimensions:
+      - name: listing_id
+        column: id
+        description: Unique listing key; include with top-N values so repetitions remain.
+        type: number
+      - name: host_id
+        column: host_id
+        description: Host identifier.
+        type: number
+      - name: superhost
+        column: host_is_superhost
+        description: Text t is superhost, f is not; other codes unknown.
+        type: string
+      - name: instant_bookable
+        column: instant_bookable
+        description: Text t or f.
+        type: string
+      - name: room_type
+        column: room_type
+        description: Recorded room category.
+        type: string
+      - name: property_type
+        column: property_type
+        description: Detailed property type.
+        type: string
+      - name: source
+        column: source
+        description: Scraping source label.
+        type: string
+      - name: response_time
+        column: host_response_time
+        description: Host response-time label.
+        type: string
+      - name: response_rate_label
+        column: host_response_rate
+        description: Original response-rate percentage text including %. Use this value for display; response_rate is its
+          numeric counterpart for numerical comparisons.
+        type: string
+      - name: acceptance_rate_label
+        column: host_acceptance_rate
+        description: Original acceptance-rate percentage text including %. Use for display, with acceptance_rate for numeric
+          ordering; lexical ordering gives a different result.
+        type: string
+    measures:
+      - name: bedrooms
+        column: bedrooms
+        description: Known bedrooms.
+        type: number
+      - name: accommodates
+        column: accommodates
+        description: Guest capacity.
+        type: number
+      - name: rating
+        column: review_scores_rating
+        description: Recorded overall review score on a 0–5 scale; NULL is unreviewed.
+        type: number
+      - name: response_rate
+        expr: TRY_CAST(REPLACE({TABLE}."host_response_rate", '%', '') AS DOUBLE)
+        description: Host response percentage recorded on this listing, 0–100; NULL stays unknown. This numeric expression
+          supports comparisons while response_rate_label preserves the original percentage text. Different listing_id
+          records can carry the same host rate.
+        type: number
+      - name: acceptance_rate
+        expr: TRY_CAST(REPLACE({TABLE}."host_acceptance_rate", '%', '') AS DOUBLE)
+        description: Numeric acceptance percentage on 0–100 scale. A numeric rate is distinct from its text label; use
+          listing_id for individual-property rankings.
+        type: number
+      - name: price
+        expr: TRY_CAST(REPLACE(REPLACE({TABLE}."price", '$', ''), ',', '') AS DOUBLE)
+        description: Nightly price parsed from currency text; retain numeric units and zero prices.
+        type: number
+      - name: review_count
+        column: number_of_reviews
+        description: Number of reviews for this listing.
+        type: number
+    metrics:
+      - name: listing_count
+        agg: count
+        description: Count listing records, not unique hosts.
+      - name: maximum_bedrooms
+        agg: max
+        description: Maximum known bedroom count.
+        column: bedrooms
+      - name: maximum_reviews
+        agg: max
+        description: Most reviews received by one listing.
+        column: number_of_reviews
+      - name: maximum_price
+        expr: MAX(TRY_CAST(REPLACE(REPLACE({TABLE}."price", '$', ''), ',', '') AS DOUBLE))
+        description: Highest parsed nightly price.
+joins: []

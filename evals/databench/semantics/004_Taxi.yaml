@@ -1,0 +1,94 @@
+dialect: duckdb
+models:
+  - name: taxi
+    table: data
+    description: One row is one taxi trip; equal monetary amounts or distances may belong to different trips. Manually
+      curated using the full data and DataBench question/answer definitions; reference-informed, not a schema-only
+      baseline.
+    dimensions:
+      - name: vendor
+        column: VendorID
+        description: Vendor code.
+        type: number
+      - name: pickup_at
+        column: tpep_pickup_datetime
+        description: Pickup timestamp.
+        type: time
+      - name: dropoff_at
+        column: tpep_dropoff_datetime
+        description: Drop-off timestamp; combine pickup, drop-off and location fields when identifying trip records.
+        type: time
+      - name: pickup_date
+        expr: CAST({TABLE}."tpep_pickup_datetime" AT TIME ZONE 'UTC' AS DATE)
+        description: Pickup calendar date in the source UTC representation; independent of machine timezone.
+        type: time
+      - name: rate_code
+        column: RatecodeID
+        description: Recorded rate code.
+        type: number
+      - name: store_forward
+        column: store_and_fwd_flag
+        description: Store-and-forward flag, Y or N.
+        type: string
+      - name: pickup_location
+        column: PULocationID
+        description: Pickup location code.
+        type: number
+      - name: dropoff_location
+        column: DOLocationID
+        description: Drop-off location code.
+        type: number
+      - name: payment_type
+        column: payment_type
+        description: Payment code; do not restrict the population to cash/card before testing all trips.
+        type: number
+    measures:
+      - name: passengers
+        column: passenger_count
+        description: Passengers on the trip, including recorded zero.
+        type: number
+      - name: distance
+        column: trip_distance
+        description: Trip length in miles. Lists of longest trips retain repeated distances.
+        type: number
+      - name: fare
+        column: fare_amount
+        description: Base fare dollars, distinct from total_amount. Keep repeated amounts when listing trips.
+        type: number
+      - name: tip
+        column: tip_amount
+        description: Tip dollars; zero tips are included in averages.
+        type: number
+      - name: tolls
+        column: tolls_amount
+        description: Toll dollars, including zero. Highest N amounts refer to N trip records, not distinct amounts.
+        type: number
+      - name: total
+        column: total_amount
+        description: Total trip charge in dollars, not base fare.
+        type: number
+      - name: airport_fee
+        column: Airport_fee
+        description: Airport-area question uses availability of this field (IS NOT NULL), not fee > 0. A recorded zero is present.
+        type: number
+    metrics:
+      - name: trip_count
+        agg: count
+        description: Count trips. No unique trip ID is supplied; grouped values and counts preserve multiplicity. Toll, total
+          and fare top-N lists refer to individual trip rows, not distinct prices.
+      - name: unique_pickups
+        agg: count_distinct
+        description: Distinct pickup location codes.
+        column: PULocationID
+      - name: average_tip
+        description: Mean tip per trip, reported in dollars to the nearest cent.
+        expr: ROUND(AVG({TABLE}."tip_amount"), 2)
+      - name: maximum_fare
+        agg: max
+        description: Largest recorded base fare.
+        column: fare_amount
+      - name: first_pickup
+        description: Earliest recorded pickup calendar date using UTC to preserve the date stored in the source, independent of
+          machine timezone.
+        expr: MIN(CAST({TABLE}."tpep_pickup_datetime" AT TIME ZONE 'UTC' AS DATE))
+joins: []

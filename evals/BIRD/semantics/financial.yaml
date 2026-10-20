@@ -1,0 +1,763 @@
+# Source-grounded BIRD dev_20251106 configuration; see README.md and provenance.json.
+dialect: duckdb
+models:
+  - name: account
+    table: account
+    description: One bank account; district_id is the account branch district, distinct from client residence district.
+      Reference-informed from this database and its dev golden SQL. Preserve record identity for top-N; joins may
+      multiply rows.
+    dimensions:
+      - name: account_id
+        column: account_id
+        type: number
+        description: account id. the id of the account Part of the declared primary key.
+      - name: district_id
+        column: district_id
+        type: number
+        description: location of branch
+      - name: frequency
+        column: frequency
+        type: string
+        description: frequency. frequency of the acount
+      - name: date
+        column: date
+        type: time
+        description: "date. the creation date of the account. in the form YYMMDD Source date/time: inspect stored
+          representation and cast before DuckDB date functions."
+    measures: []
+    metrics:
+      - name: record_count
+        agg: count
+        description: Count source/joined rows at the active query grain; not automatically distinct entities after joins.
+      - name: count_account_id
+        agg: count
+        column: account_id
+        description: count of account_id over the selected account records. Apply filters and grouping explicitly; joins
+          can repeat records.
+      - name: count_distinct_account_id
+        agg: count_distinct
+        column: account_id
+        description: count distinct of account_id over the selected account records. Apply filters and grouping explicitly;
+          joins can repeat records.
+  - name: card
+    table: card
+    description: One credit card attached to a disposition, not directly to an account or client. Reference-informed
+      from this database and its dev golden SQL. Preserve record identity for top-N; joins may multiply rows.
+    dimensions:
+      - name: card_id
+        column: card_id
+        type: number
+        description: credit card id. id number of credit card Part of the declared primary key.
+      - name: disp_id
+        column: disp_id
+        type: number
+        description: disposition id
+      - name: type
+        column: type
+        type: string
+        description: 'type of credit card. "junior": junior class of credit card; "classic": standard class of credit card;
+          "gold": high-level credit card'
+      - name: issued
+        column: issued
+        type: time
+        description: "the date when the credit card issued. in the form YYMMDD Source date/time: inspect stored
+          representation and cast before DuckDB date functions."
+    measures: []
+    metrics:
+      - name: record_count
+        agg: count
+        description: Count source/joined rows at the active query grain; not automatically distinct entities after joins.
+      - name: count_distinct_card_id
+        agg: count_distinct
+        column: card_id
+        description: count distinct of card_id over the selected card records. Apply filters and grouping explicitly; joins
+          can repeat records.
+      - name: count_card_id
+        agg: count
+        column: card_id
+        description: count of card_id over the selected card records. Apply filters and grouping explicitly; joins can
+          repeat records.
+  - name: client
+    table: client
+    description: One client; district_id is residence district. Join accounts through disp, never infer ownership from
+      a shared district. Reference-informed from this database and its dev golden SQL. Preserve record identity for
+      top-N; joins may multiply rows.
+    dimensions:
+      - name: client_id
+        column: client_id
+        type: number
+        description: the unique number Part of the declared primary key.
+      - name: gender
+        column: gender
+        type: string
+        description: F：female M：male
+      - name: birth_date
+        column: birth_date
+        type: time
+        description: "birth date Source date/time: inspect stored representation and cast before DuckDB date functions."
+      - name: district_id
+        column: district_id
+        type: number
+        description: location of branch
+    measures: []
+    metrics:
+      - name: record_count
+        agg: count
+        description: Count source/joined rows at the active query grain; not automatically distinct entities after joins.
+      - name: count_distinct_client_id
+        agg: count_distinct
+        column: client_id
+        description: count distinct of client_id over the selected client records. Apply filters and grouping explicitly;
+          joins can repeat records.
+      - name: count_client_id
+        agg: count
+        column: client_id
+        description: count of client_id over the selected client records. Apply filters and grouping explicitly; joins can
+          repeat records.
+      - name: count_distinct_district_id
+        agg: count_distinct
+        column: district_id
+        description: count distinct of district_id over the selected client records. Apply filters and grouping explicitly;
+          joins can repeat records.
+  - name: disp
+    table: disp
+    description: One client-account disposition. OWNER identifies an owner; DISPONENT is another role. Account may have
+      multiple dispositions. Reference-informed from this database and its dev golden SQL. Preserve record identity
+      for top-N; joins may multiply rows.
+    dimensions:
+      - name: disp_id
+        column: disp_id
+        type: number
+        description: disposition id. unique number of identifying this row of record Part of the declared primary key.
+      - name: client_id
+        column: client_id
+        type: number
+        description: id number of client
+      - name: account_id
+        column: account_id
+        type: number
+        description: id number of account
+      - name: type
+        column: type
+        type: string
+        description: 'type of disposition. "OWNER" : "USER" : "DISPONENT"commonsense evidence:the account can only have the
+          right to issue permanent orders or apply for loans'
+    measures: []
+    metrics:
+      - name: record_count
+        agg: count
+        description: Count source/joined rows at the active query grain; not automatically distinct entities after joins.
+      - name: count_account_id
+        agg: count
+        column: account_id
+        description: count of account_id over the selected disp records. Apply filters and grouping explicitly; joins can
+          repeat records.
+  - name: district
+    table: district
+    description: One district demographic record. A2 is district name; A3 is region. Demographic counts/rates must not
+      be multiplied by account/transaction joins. Reference-informed from this database and its dev golden SQL.
+      Preserve record identity for top-N; joins may multiply rows.
+    dimensions:
+      - name: district_id
+        column: district_id
+        type: number
+        description: location of branch Part of the declared primary key.
+      - name: district_name
+        column: A2
+        type: string
+        description: District name; A3 is the region. Some question evidence informally calls regions districts.
+      - name: region
+        column: A3
+        type: string
+        description: Region, e.g. east Bohemia; A2 is district name.
+      - name: inhabitants_raw
+        column: A4
+        type: string
+        description: number of inhabitants
+      - name: a5
+        column: A5
+        type: string
+        description: no. of municipalities with inhabitants < 499. municipality < district < region
+      - name: a6
+        column: A6
+        type: string
+        description: no. of municipalities with inhabitants 500-1999. municipality < district < region
+      - name: a7
+        column: A7
+        type: string
+        description: no. of municipalities with inhabitants 2000-9999. municipality < district < region
+    measures:
+      - name: a8
+        column: A8
+        type: number
+        description: no. of municipalities with inhabitants > 10000. municipality < district < region
+      - name: a9
+        column: A9
+        type: number
+        description: Source field district.A9; no additional business definition supplied.
+      - name: a10
+        column: A10
+        type: number
+        description: ratio of urban inhabitants
+      - name: average_salary
+        column: A11
+        type: number
+        description: average salary
+      - name: unemployment_1995
+        column: A12
+        type: number
+        description: unemployment rate 1995
+      - name: unemployment_1996
+        column: A13
+        type: number
+        description: unemployment rate 1996
+      - name: a14
+        column: A14
+        type: number
+        description: no. of entrepreneurs per 1000 inhabitants
+      - name: crimes_1995
+        column: A15
+        type: number
+        description: no. of committed crimes 1995
+      - name: crimes_1996
+        column: A16
+        type: number
+        description: no. of committed crimes 1996
+    metrics:
+      - name: record_count
+        agg: count
+        description: Count source/joined rows at the active query grain; not automatically distinct entities after joins.
+      - name: avg_unemployment_1996
+        agg: avg
+        column: A13
+        description: avg of A13 over the selected district records. Apply filters and grouping explicitly; joins can repeat
+          records.
+      - name: avg_unemployment_1995
+        agg: avg
+        column: A12
+        description: avg of A12 over the selected district records. Apply filters and grouping explicitly; joins can repeat
+          records.
+      - name: max_average_salary
+        agg: max
+        column: A11
+        description: max of A11 over the selected district records. Apply filters and grouping explicitly; joins can repeat
+          records.
+      - name: min_average_salary
+        agg: min
+        column: A11
+        description: min of A11 over the selected district records. Apply filters and grouping explicitly; joins can repeat
+          records.
+      - name: avg_average_salary
+        agg: avg
+        column: A11
+        description: avg of A11 over the selected district records. Apply filters and grouping explicitly; joins can repeat
+          records.
+      - name: avg_crimes_1995
+        agg: avg
+        column: A15
+        description: avg of A15 over the selected district records. Apply filters and grouping explicitly; joins can repeat
+          records.
+  - name: loan
+    table: loan
+    description: One loan approved for an account. duration is months; payments is a monthly money payment. Some
+      question evidence uses conflicting status labels; retain raw status and follow explicit question definitions
+      without redefining the whole database. Reference-informed from this database and its dev golden SQL. Preserve
+      record identity for top-N; joins may multiply rows.
+    dimensions:
+      - name: loan_id
+        column: loan_id
+        type: number
+        description: the id number identifying the loan data Part of the declared primary key.
+      - name: account_id
+        column: account_id
+        type: number
+        description: the id number identifying the account
+      - name: date
+        column: date
+        type: time
+        description: "the date when the loan is approved Source date/time: inspect stored representation and cast before
+          DuckDB date functions."
+      - name: status
+        column: status
+        type: string
+        description: "Raw status code. Official description: A finished/no problems; B finished/not paid; C running/OK; D
+          running/in debt. Some New Dev questions redefine these labels inconsistently; use the explicit question
+          evidence for that query."
+    measures:
+      - name: amount
+        column: amount
+        type: number
+        description: approved amount. unit：US dollar
+      - name: duration
+        column: duration
+        type: number
+        description: loan duration. unit：month
+      - name: payments
+        column: payments
+        type: number
+        description: Monthly payment amount in money, not number of months. duration holds months; payments * duration is
+          total scheduled payments.
+      - name: scheduled_total_payments
+        expr: '{TABLE}."payments" * {TABLE}."duration"'
+        type: number
+        description: Monthly money payment times duration in months; total scheduled payments, not observed repayments.
+      - name: scheduled_interest
+        expr: '{TABLE}."payments" * {TABLE}."duration" - {TABLE}."amount"'
+        type: number
+        description: Scheduled payments minus principal; does not establish actual repayment.
+    metrics:
+      - name: record_count
+        agg: count
+        description: Count source/joined rows at the active query grain; not automatically distinct entities after joins.
+      - name: count_distinct_loan_id
+        agg: count_distinct
+        column: loan_id
+        description: count distinct of loan_id over the selected loan records. Apply filters and grouping explicitly; joins
+          can repeat records.
+      - name: avg_amount
+        agg: avg
+        column: amount
+        description: avg of amount over the selected loan records. Apply filters and grouping explicitly; joins can repeat
+          records.
+      - name: sum_amount
+        agg: sum
+        column: amount
+        description: sum of amount over the selected loan records. Apply filters and grouping explicitly; joins can repeat
+          records.
+      - name: max_amount
+        agg: max
+        column: amount
+        description: max of amount over the selected loan records. Apply filters and grouping explicitly; joins can repeat
+          records.
+      - name: count_loan_id
+        agg: count
+        column: loan_id
+        description: count of loan_id over the selected loan records. Apply filters and grouping explicitly; joins can
+          repeat records.
+      - name: count_status
+        agg: count
+        column: status
+        description: count of status over the selected loan records. Apply filters and grouping explicitly; joins can
+          repeat records.
+      - name: avg_duration
+        agg: avg
+        column: duration
+        description: avg of duration over the selected loan records. Apply filters and grouping explicitly; joins can
+          repeat records.
+      - name: avg_payments
+        agg: avg
+        column: payments
+        description: avg of payments over the selected loan records. Apply filters and grouping explicitly; joins can
+          repeat records.
+      - name: count_account_id
+        agg: count
+        column: account_id
+        description: count of account_id over the selected loan records. Apply filters and grouping explicitly; joins can
+          repeat records.
+  - name: order
+    table: order
+    description: One permanent payment order from an account; recipient account_to is an identifier, not an amount.
+      Reference-informed from this database and its dev golden SQL. Preserve record identity for top-N; joins may
+      multiply rows.
+    dimensions:
+      - name: order_id
+        column: order_id
+        type: number
+        description: identifying the unique order Part of the declared primary key.
+      - name: account_id
+        column: account_id
+        type: number
+        description: id number of account
+      - name: bank_to
+        column: bank_to
+        type: string
+        description: bank of the recipient
+      - name: account_to
+        column: account_to
+        type: number
+        description: account of the recipient. each bank has unique two-letter code
+      - name: k_symbol
+        column: k_symbol
+        type: string
+        description: characterization of the payment. purpose of the payment. "POJISTNE" stands for insurance payment"SIPO"
+          stands for household payment"LEASING" stands for leasing"UVER" stands for loan payment
+    measures:
+      - name: amount
+        column: amount
+        type: number
+        description: debited amount
+    metrics:
+      - name: record_count
+        agg: count
+        description: Count source/joined rows at the active query grain; not automatically distinct entities after joins.
+      - name: count_distinct_order_id
+        agg: count_distinct
+        column: order_id
+        description: count distinct of order_id over the selected order records. Apply filters and grouping explicitly;
+          joins can repeat records.
+      - name: sum_amount
+        agg: sum
+        column: amount
+        description: sum of amount over the selected order records. Apply filters and grouping explicitly; joins can repeat
+          records.
+  - name: trans
+    table: trans
+    description: One transaction. balance is the balance after that transaction, not an additive money-flow quantity.
+      PRIJEM and VYDAJ distinguish direction; amount is unsigned source amount. Reference-informed from this
+      database and its dev golden SQL. Preserve record identity for top-N; joins may multiply rows.
+    dimensions:
+      - name: trans_id
+        column: trans_id
+        type: number
+        description: transaction id Part of the declared primary key.
+      - name: account_id
+        column: account_id
+        type: number
+        description: Source field trans.account_id; no additional business definition supplied.
+      - name: date
+        column: date
+        type: time
+        description: "date of transaction Source date/time: inspect stored representation and cast before DuckDB date
+          functions."
+      - name: type
+        column: type
+        type: string
+        description: +/- transaction. "PRIJEM" stands for credit"VYDAJ" stands for withdrawal
+      - name: operation
+        column: operation
+        type: string
+        description: 'mode of transaction. "VYBER KARTOU": credit card withdrawal"VKLAD": credit in cash"PREVOD Z UCTU"
+          :collection from another bank"VYBER": withdrawal in cash"PREVOD NA UCET": remittance to another bank'
+      - name: k_symbol
+        column: k_symbol
+        type: string
+        description: 'characterization of the transaction. "POJISTNE": stands for insurrance payment"SLUZBY": stands for
+          payment for statement"UROK": stands for interest credited"SANKC. UROK": sanction interest if negative
+          balance"SIPO": stands for household"DUCHOD": stands for old-age pension"UVER": stands for loan payment'
+      - name: bank
+        column: bank
+        type: string
+        description: bank of the partner. each bank has unique two-letter code
+      - name: account
+        column: account
+        type: number
+        description: account of the partner
+    measures:
+      - name: amount
+        column: amount
+        type: number
+        description: amount of money. Unit：USD
+      - name: balance
+        column: balance
+        type: number
+        description: Balance after this transaction; not transaction amount and not a monthly snapshot.
+    metrics:
+      - name: record_count
+        agg: count
+        description: Count source/joined rows at the active query grain; not automatically distinct entities after joins.
+      - name: count_distinct_trans_id
+        agg: count_distinct
+        column: trans_id
+        description: count distinct of trans_id over the selected trans records. Apply filters and grouping explicitly;
+          joins can repeat records.
+      - name: count_trans_id
+        agg: count
+        column: trans_id
+        description: count of trans_id over the selected trans records. Apply filters and grouping explicitly; joins can
+          repeat records.
+      - name: max_balance
+        agg: max
+        column: balance
+        description: max of balance over the selected trans records. Apply filters and grouping explicitly; joins can
+          repeat records.
+      - name: count_distinct_k_symbol
+        agg: count_distinct
+        column: k_symbol
+        description: count distinct of k_symbol over the selected trans records. Apply filters and grouping explicitly;
+          joins can repeat records.
+      - name: min_balance
+        agg: min
+        column: balance
+        description: min of balance over the selected trans records. Apply filters and grouping explicitly; joins can
+          repeat records.
+      - name: sum_amount
+        agg: sum
+        column: amount
+        description: sum of amount over the selected trans records. Apply filters and grouping explicitly; joins can repeat
+          records.
+      - name: avg_balance
+        agg: avg
+        column: balance
+        description: avg of balance over the selected trans records. Apply filters and grouping explicitly; joins can
+          repeat records.
+      - name: avg_amount
+        agg: avg
+        column: amount
+        description: avg of amount over the selected trans records. Apply filters and grouping explicitly; joins can repeat
+          records.
+      - name: count_account_id
+        agg: count
+        column: account_id
+        description: count of account_id over the selected trans records. Apply filters and grouping explicitly; joins can
+          repeat records.
+  - name: account_district_id_role
+    table: district
+    description: Join role for account.district_id -> district.district_id. Same physical table as district. One
+      district demographic record. A2 is district name; A3 is region. Demographic counts/rates must not be
+      multiplied by account/transaction joins. Reference-informed from this database and its dev golden SQL.
+      Preserve record identity for top-N; joins may multiply rows.
+    dimensions:
+      - name: district_id
+        column: district_id
+        type: number
+        description: location of branch Part of the declared primary key.
+      - name: district_name
+        column: A2
+        type: string
+        description: District name; A3 is the region. Some question evidence informally calls regions districts.
+      - name: region
+        column: A3
+        type: string
+        description: Region, e.g. east Bohemia; A2 is district name.
+      - name: inhabitants_raw
+        column: A4
+        type: string
+        description: number of inhabitants
+      - name: a5
+        column: A5
+        type: string
+        description: no. of municipalities with inhabitants < 499. municipality < district < region
+      - name: a6
+        column: A6
+        type: string
+        description: no. of municipalities with inhabitants 500-1999. municipality < district < region
+      - name: a7
+        column: A7
+        type: string
+        description: no. of municipalities with inhabitants 2000-9999. municipality < district < region
+    measures:
+      - name: a8
+        column: A8
+        type: number
+        description: no. of municipalities with inhabitants > 10000. municipality < district < region
+      - name: a9
+        column: A9
+        type: number
+        description: Source field district.A9; no additional business definition supplied.
+      - name: a10
+        column: A10
+        type: number
+        description: ratio of urban inhabitants
+      - name: average_salary
+        column: A11
+        type: number
+        description: average salary
+      - name: unemployment_1995
+        column: A12
+        type: number
+        description: unemployment rate 1995
+      - name: unemployment_1996
+        column: A13
+        type: number
+        description: unemployment rate 1996
+      - name: a14
+        column: A14
+        type: number
+        description: no. of entrepreneurs per 1000 inhabitants
+      - name: crimes_1995
+        column: A15
+        type: number
+        description: no. of committed crimes 1995
+      - name: crimes_1996
+        column: A16
+        type: number
+        description: no. of committed crimes 1996
+    metrics:
+      - name: record_count
+        agg: count
+        description: Count source/joined rows at the active query grain; not automatically distinct entities after joins.
+      - name: avg_unemployment_1996
+        agg: avg
+        column: A13
+        description: avg of A13 over the selected district records. Apply filters and grouping explicitly; joins can repeat
+          records.
+      - name: avg_unemployment_1995
+        agg: avg
+        column: A12
+        description: avg of A12 over the selected district records. Apply filters and grouping explicitly; joins can repeat
+          records.
+      - name: max_average_salary
+        agg: max
+        column: A11
+        description: max of A11 over the selected district records. Apply filters and grouping explicitly; joins can repeat
+          records.
+      - name: min_average_salary
+        agg: min
+        column: A11
+        description: min of A11 over the selected district records. Apply filters and grouping explicitly; joins can repeat
+          records.
+      - name: avg_average_salary
+        agg: avg
+        column: A11
+        description: avg of A11 over the selected district records. Apply filters and grouping explicitly; joins can repeat
+          records.
+      - name: avg_crimes_1995
+        agg: avg
+        column: A15
+        description: avg of A15 over the selected district records. Apply filters and grouping explicitly; joins can repeat
+          records.
+  - name: client_district_id_role
+    table: district
+    description: Join role for client.district_id -> district.district_id. Same physical table as district. One
+      district demographic record. A2 is district name; A3 is region. Demographic counts/rates must not be
+      multiplied by account/transaction joins. Reference-informed from this database and its dev golden SQL.
+      Preserve record identity for top-N; joins may multiply rows.
+    dimensions:
+      - name: district_id
+        column: district_id
+        type: number
+        description: location of branch Part of the declared primary key.
+      - name: district_name
+        column: A2
+        type: string
+        description: District name; A3 is the region. Some question evidence informally calls regions districts.
+      - name: region
+        column: A3
+        type: string
+        description: Region, e.g. east Bohemia; A2 is district name.
+      - name: inhabitants_raw
+        column: A4
+        type: string
+        description: number of inhabitants
+      - name: a5
+        column: A5
+        type: string
+        description: no. of municipalities with inhabitants < 499. municipality < district < region
+      - name: a6
+        column: A6
+        type: string
+        description: no. of municipalities with inhabitants 500-1999. municipality < district < region
+      - name: a7
+        column: A7
+        type: string
+        description: no. of municipalities with inhabitants 2000-9999. municipality < district < region
+    measures:
+      - name: a8
+        column: A8
+        type: number
+        description: no. of municipalities with inhabitants > 10000. municipality < district < region
+      - name: a9
+        column: A9
+        type: number
+        description: Source field district.A9; no additional business definition supplied.
+      - name: a10
+        column: A10
+        type: number
+        description: ratio of urban inhabitants
+      - name: average_salary
+        column: A11
+        type: number
+        description: average salary
+      - name: unemployment_1995
+        column: A12
+        type: number
+        description: unemployment rate 1995
+      - name: unemployment_1996
+        column: A13
+        type: number
+        description: unemployment rate 1996
+      - name: a14
+        column: A14
+        type: number
+        description: no. of entrepreneurs per 1000 inhabitants
+      - name: crimes_1995
+        column: A15
+        type: number
+        description: no. of committed crimes 1995
+      - name: crimes_1996
+        column: A16
+        type: number
+        description: no. of committed crimes 1996
+    metrics:
+      - name: record_count
+        agg: count
+        description: Count source/joined rows at the active query grain; not automatically distinct entities after joins.
+      - name: avg_unemployment_1996
+        agg: avg
+        column: A13
+        description: avg of A13 over the selected district records. Apply filters and grouping explicitly; joins can repeat
+          records.
+      - name: avg_unemployment_1995
+        agg: avg
+        column: A12
+        description: avg of A12 over the selected district records. Apply filters and grouping explicitly; joins can repeat
+          records.
+      - name: max_average_salary
+        agg: max
+        column: A11
+        description: max of A11 over the selected district records. Apply filters and grouping explicitly; joins can repeat
+          records.
+      - name: min_average_salary
+        agg: min
+        column: A11
+        description: min of A11 over the selected district records. Apply filters and grouping explicitly; joins can repeat
+          records.
+      - name: avg_average_salary
+        agg: avg
+        column: A11
+        description: avg of A11 over the selected district records. Apply filters and grouping explicitly; joins can repeat
+          records.
+      - name: avg_crimes_1995
+        agg: avg
+        column: A15
+        description: avg of A15 over the selected district records. Apply filters and grouping explicitly; joins can repeat
+          records.
+joins:
+  - from: account
+    to: account_district_id_role
+    type: left
+    keys:
+      - from: district_id
+        to: district_id
+  - from: card
+    to: disp
+    type: left
+    keys:
+      - from: disp_id
+        to: disp_id
+  - from: client
+    to: client_district_id_role
+    type: left
+    keys:
+      - from: district_id
+        to: district_id
+  - from: disp
+    to: client
+    type: left
+    keys:
+      - from: client_id
+        to: client_id
+  - from: disp
+    to: account
+    type: left
+    keys:
+      - from: account_id
+        to: account_id
+  - from: loan
+    to: account
+    type: left
+    keys:
+      - from: account_id
+        to: account_id
+  - from: order
+    to: account
+    type: left
+    keys:
+      - from: account_id
+        to: account_id
+  - from: trans
+    to: account
+    type: left
+    keys:
+      - from: account_id
+        to: account_id

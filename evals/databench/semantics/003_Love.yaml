@@ -1,0 +1,211 @@
+dialect: duckdb
+models:
+  - name: love
+    table: data
+    description: Survey responses from 003_Love.parquet, exposed by the AVA Parquet loader as data. Curated from the full
+      database and its 20 DataBench questions and reference answers. One row represents one respondent's submission.
+      Categories and spelling are preserved as recorded. This is a reference-answer-informed semantic layer, not a
+      schema-only baseline.
+    dimensions:
+      - name: submitted_at
+        column: Submitted at
+        type: time
+        description: Submission timestamp, unique across the full dataset's responses. Include it as a record-identifying
+          dimension when selecting N respondents by salary, age or happiness. Project only the requested answer
+          afterward, preserving equal values belonging to different respondents.
+      - name: nationality
+        column: What's your nationality?
+        type: string
+        description: Self-reported nationality label. NULL means unanswered and is excluded from unique_nationalities; do not
+          count it as an extra nationality or infer nationality from other attributes.
+      - name: civil_status
+        column: What is your civil status? 💍
+        type: string
+        description: Recorded civil status. Single, Married, In a Relationship, In a Relationship Cohabiting and Divorced are
+          separate categories. Compare Single and Married counts directly; do not merge other relationships into either
+          group. Most represented statuses are ranked by respondent_count.
+      - name: sexual_orientation
+        column: What's your sexual orientation?
+        type: string
+        description: Self-reported orientation; NULL means unanswered. Rank recorded labels by
+          sexual_orientation_response_count, filtering love__sexual_orientation IS NOT NULL. Highest representation
+          means this metric descending. Return the stored label.
+      - name: has_children
+        column: Do you have children? 🍼
+        type: string
+        description: Recorded Yes/No answer about having children; this is a text field, not a Boolean.
+      - name: education_level
+        column: What is the maximum level of studies you have achieved? 🎓
+        type: string
+        description: Highest completed education level, returned using the original label, such as Master or College Degree.
+          Most common means highest respondent_count grouped by this field, not the academically highest qualification.
+      - name: body_complexity
+        column: What is your body complexity? 🏋️
+        type: string
+        description: Self-described body-build category, called body complexity in the questions. Least represented means the
+          smallest respondent_count grouped by this label, not a ranking by body size. Preserve labels such as Very
+          thin.
+      - name: eye_color
+        column: What is your eye color? 👁️
+        type: string
+        description: Recorded eye-color label. Most frequent means the largest respondent_count grouped by eye_color. Return the
+          stored capitalization.
+      - name: hair_color
+        column: What is your hair color? 👩🦰👱🏽
+        type: string
+        description: Recorded hair-color label. Rank categories by respondent_count for most or least frequent colors; least
+          common means count ascending, not alphabetical order. A question asking whether the most frequent color is
+          black compares the winning label with Black.
+      - name: skin_tone
+        column: What is your skin tone?
+        type: number
+        description: Recorded numeric skin-tone code. Zero is a valid code. Bottom N values based on frequency means the N codes
+          with the smallest respondent_count, not the smallest numeric codes. Return the numeric codes.
+      - name: hair_length
+        column: How long is your hair? 💇🏻♀️💇🏽♂️
+        type: string
+        description: Hair-length category, including Bald as a valid category. Bottom N in frequency means the N categories with
+          the smallest respondent_count, not a ranking by physical hair length.
+      - name: facial_hair_length
+        column: How long is your facial hair? 🧔🏻
+        type: string
+        description: Recorded facial-hair category. Separate from hair_length, which refers to head hair.
+      - name: glasses_frequency
+        column: How often do you wear glasses? 👓
+        type: string
+        description: Recorded glasses-use frequency. All the time means the exact label Constantly, not Regularly. Preserve
+          source labels, including the spelling Occasioanlly.
+      - name: used_dating_app
+        column: Have you ever use an oline dating app?
+        type: string
+        description: Recorded Yes/No answer about ever using an online dating app. The physical field retains the source
+          spelling oline.
+      - name: met_partner_at_bar_or_restaurant
+        column: Where have you met your sexual partners? (In a Bar or Restaurant)
+        type: boolean
+        description: Whether this meeting venue was selected. Multiple meeting venues can be true for a respondent.
+      - name: met_partner_through_friends
+        column: Where have you met your sexual partners? (Through Friends)
+        type: boolean
+        description: Whether meeting through friends was selected.
+      - name: met_partner_through_work
+        column: Where have you met your sexual partners? (Through Work or as Co-Workers)
+        type: boolean
+        description: Whether meeting through work or coworkers was selected.
+      - name: met_partner_through_family
+        column: Where have you met your sexual partners? (Through Family)
+        type: boolean
+        description: Whether meeting through family was selected.
+      - name: met_partner_at_university
+        column: Where have you met your sexual partners? (in University)
+        type: boolean
+        description: Whether meeting at university was selected.
+      - name: met_partner_at_school
+        column: Where have you met your sexual partners? (in Primary or Secondary School)
+        type: boolean
+        description: Whether meeting at primary or secondary school was selected.
+      - name: met_partner_as_neighbors
+        column: Where have you met your sexual partners? (Neighbors)
+        type: boolean
+        description: Whether meeting as neighbors was selected.
+      - name: met_partner_at_church
+        column: Where have you met your sexual partners? (in Church)
+        type: boolean
+        description: Whether meeting at church was selected.
+      - name: met_partner_elsewhere
+        column: Where have you met your sexual partners? (Other)
+        type: boolean
+        description: Whether another meeting venue was selected.
+      - name: knowledge_areas
+        column: What area of knowledge is closer to you?
+        description: Multi-select VARCHAR[] of knowledge-area labels, not a single category. To count individual areas, first
+          compile submitted_at and knowledge_areas for all respondents without a limit; then expand the compiled CTE
+          with SELECT UNNEST(love__knowledge_areas) AS area FROM smq_result in another CTE and group by area using
+          COUNT(*). Grouping the unexpanded list counts combinations, not individual areas. Preserve source spellings
+          such as Enginering & Architecture.
+      - name: relationship_duration
+        column: If you are in a relationship, how long have you been with your partner?
+        type: number
+        description: Recorded numeric relationship-duration response. NULL means unanswered or unavailable; the field does not
+          specify a unit, so do not invent a unit conversion.
+    measures:
+      - name: age
+        column: What is your age? 👶🏻👵🏻
+        type: number
+        description: "Age in years. For the N highest ages: group_by [love__submitted_at, love__age], order by love__age
+          descending, limit N; then project only love__age from that result without DISTINCT. Keep repeated ages from
+          different respondents. Use average_age or median_age for summaries."
+      - name: gross_annual_salary
+        column: Gross annual salary (in euros) 💸
+        type: number
+        description: Gross yearly salary in euros, not monthly income or net income. NULL is an unanswered salary and must be
+          excluded from averages and salary rankings. Preserve original values. To list the highest N salaries, include
+          submitted_at and take N respondent records, retaining tied salary values.
+      - name: height_cm
+        column: What's your height? in cm 📏
+        type: number
+        description: Recorded height in centimetres. Greater than 170 means strictly > 170. A majority means the number
+          satisfying the condition exceeds half of respondent_count for all responses; it does not mean that the average
+          height exceeds the threshold.
+      - name: weight_kg
+        column: What's your weight? in Kg ⚖️
+        type: number
+        description: Recorded weight in kilograms. Missing values are unknown and should not be replaced with zero.
+      - name: self_rated_attractiveness
+        column: How attractive do you consider yourself?
+        type: number
+        description: Respondent's numeric self-rated attractiveness. Distinct from the happiness score.
+      - name: people_kissed
+        column: How many people have you kissed?
+        type: number
+        description: Self-reported number of people kissed.
+      - name: sexual_partner_count
+        column: How many sexual partners have you had?
+        type: number
+        description: Self-reported lifetime number of sexual partners, distinct from respondents or romantic relationships.
+      - name: romantic_relationship_count
+        column: How many people have you considered as your boyfriend_girlfriend?
+        type: number
+        description: Self-reported number of people considered a boyfriend or girlfriend.
+      - name: recent_sex_frequency_per_month
+        column: How many times per month did you practice sex lately?
+        type: number
+        description: Reported recent frequency per month, not a lifetime count.
+      - name: happiness_score
+        column: Happiness scale
+        type: number
+        description: Recorded happiness score; lower values mean less happy. For the scores of the N unhappiest people, include
+          submitted_at, sort happiness_score ascending, and keep N respondents. Repeated scores must remain in the
+          output.
+    metrics:
+      - name: respondent_count
+        agg: count
+        description: "Number of survey response rows: COUNT(*). Use for category frequencies and filtered populations; for
+          sexual orientation, use sexual_orientation_response_count. Majority means the filtered count exceeds half the
+          total count. For most/least represented categories, group by that category and sort the applicable metric."
+      - name: sexual_orientation_response_count
+        agg: count
+        column: What's your sexual orientation?
+        description: Number of non-null sexual-orientation responses. Use for sexual-orientation frequencies and representation,
+          grouped by sexual_orientation. Unanswered responses contribute zero; exclude the NULL label when ranking
+          categories.
+      - name: unique_nationalities
+        agg: count_distinct
+        column: What's your nationality?
+        description: Number of distinct recorded nationalities; NULL unanswered values are excluded.
+      - name: average_age
+        agg: avg
+        column: What is your age? 👶🏻👵🏻
+        description: Arithmetic mean of known respondent ages in years. Compare this metric with a threshold when the question
+          asks about the average age.
+      - name: median_age
+        expr: MEDIAN({TABLE}."What is your age? 👶🏻👵🏻")
+        description: Statistical median of recorded ages, excluding NULL. Use this metric for median age rather than an average
+          or an arbitrary middle row.
+      - name: average_gross_annual_salary
+        agg: avg
+        column: Gross annual salary (in euros) 💸
+        description: Arithmetic mean gross yearly salary in euros over non-null salary responses. Do not replace unanswered
+          salaries with zero, divide by all respondents, convert to monthly income, or round away the stored computation
+          precision.
+joins: []

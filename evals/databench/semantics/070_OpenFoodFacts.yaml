@@ -1,0 +1,73 @@
+dialect: duckdb
+models:
+  - name: products
+    table: data
+    description: One row per product code. Multi-value columns contain unquoted bracketed text, not JSON; parsed lists
+      retain source spelling and case. Manually curated using the full data and DataBench question/answer definitions;
+      reference-informed, not a schema-only baseline.
+    dimensions:
+      - name: code
+        column: code
+        description: Unique textual barcode; preserve leading zeros.
+        type: string
+      - name: name
+        column: product_name
+        description: Product name, nullable and not unique.
+        type: string
+      - name: creator
+        column: creator
+        description: Contributor username, stored lowercase; match human-name references to the actual username spelling.
+        type: string
+      - name: categories
+        expr: CASE WHEN TRIM({TABLE}."categories_en") = '[]' THEN []::VARCHAR[] ELSE
+          STRING_SPLIT(SUBSTR({TABLE}."categories_en", 2, LENGTH({TABLE}."categories_en") - 2), ', ') END
+        description: Category tokens. Compile code and list, then UNNEST to count individual memberships.
+      - name: brands
+        expr: CASE WHEN TRIM({TABLE}."brands") = '[]' THEN []::VARCHAR[] ELSE STRING_SPLIT(SUBSTR({TABLE}."brands", 2,
+          LENGTH({TABLE}."brands") - 2), ', ') END
+        description: Parsed brand tokens. To expand in DuckDB FROM, use UNNEST(list_column) AS alias(value) and reference value;
+          the table alias alone is a struct. Keep product code for row identity.
+      - name: labels
+        expr: CASE WHEN TRIM({TABLE}."labels_en") = '[]' THEN []::VARCHAR[] ELSE STRING_SPLIT(SUBSTR({TABLE}."labels_en", 2,
+          LENGTH({TABLE}."labels_en") - 2), ', ') END
+        description: Certification/label tokens, including Vegan; empty list means no label.
+      - name: stores
+        expr: CASE WHEN TRIM({TABLE}."stores") = '[]' THEN []::VARCHAR[] ELSE STRING_SPLIT(SUBSTR({TABLE}."stores", 2,
+          LENGTH({TABLE}."stores") - 2), ', ') END
+        description: Store tokens; Mercadona, mercadona and MERCADONA are distinct source spellings.
+      - name: countries
+        expr: CASE WHEN TRIM({TABLE}."countries_en") = '[]' THEN []::VARCHAR[] ELSE STRING_SPLIT(SUBSTR({TABLE}."countries_en",
+          2, LENGTH({TABLE}."countries_en") - 2), ', ') END
+        description: Parsed country tokens. Count products per individual country by compiling code/countries, expanding UNNEST
+          into a column, then grouping that column. Do not rank whole country-list combinations.
+      - name: ingredient_analysis
+        expr: CASE WHEN TRIM({TABLE}."ingredients_analysis_tags") = '[]' THEN []::VARCHAR[] ELSE
+          STRING_SPLIT(SUBSTR({TABLE}."ingredients_analysis_tags", 2, LENGTH({TABLE}."ingredients_analysis_tags") - 2),
+          ', ') END
+        description: Analysis tags such as en:vegan or en:palm-oil-free. These differ from product certification labels.
+      - name: vegan_ingredients
+        expr: LIST_CONTAINS(CASE WHEN TRIM({TABLE}."ingredients_analysis_tags") = '[]' THEN []::VARCHAR[] ELSE
+          STRING_SPLIT(SUBSTR({TABLE}."ingredients_analysis_tags", 2, LENGTH({TABLE}."ingredients_analysis_tags") - 2),
+          ', ') END, 'en:vegan')
+        description: Whether ingredient analysis explicitly includes en:vegan; unknown/not-vegan tags do not imply vegan.
+        type: boolean
+      - name: palm_oil_free
+        expr: LIST_CONTAINS(CASE WHEN TRIM({TABLE}."ingredients_analysis_tags") = '[]' THEN []::VARCHAR[] ELSE
+          STRING_SPLIT(SUBSTR({TABLE}."ingredients_analysis_tags", 2, LENGTH({TABLE}."ingredients_analysis_tags") - 2),
+          ', ') END, 'en:palm-oil-free')
+        description: Whether ingredient analysis explicitly marks palm-oil-free.
+        type: boolean
+    measures: []
+    metrics:
+      - name: product_count
+        agg: count
+        description: Count product rows; use product code to retain repeated names in product lists.
+      - name: named_product_count
+        agg: count
+        description: Count non-null product names.
+        column: product_name
+      - name: unique_codes
+        agg: count_distinct
+        description: Distinct product codes.
+        column: code
+joins: []

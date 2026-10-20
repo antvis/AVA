@@ -1,0 +1,101 @@
+dialect: duckdb
+models:
+  - name: voters
+    table: data
+    description: One row per survey respondent, identified by id. Default counts are unweighted; Weight is only used when
+      weighting is explicitly requested. Manually curated using the full data and DataBench question/answer definitions;
+      reference-informed, not a schema-only baseline.
+    dimensions:
+      - name: respondent_id
+        column: id
+        description: Unique respondent ID.
+        type: number
+      - name: division
+        column: Division
+        description: Census division, distinct from broader region. The Atlantic division in the South is 'South Atlantic'.
+        type: string
+      - name: region
+        column: Region
+        description: Broad region.
+        type: string
+      - name: state
+        column: State
+        description: State code.
+        type: string
+      - name: county
+        column: County FIPS
+        description: Numeric county FIPS; unique county rankings deduplicate this code.
+        type: number
+      - name: urban_rural
+        column: NCHS Urban/rural
+        description: NCHS urban/rural category code.
+        type: number
+      - name: age_band
+        column: How old are you?
+        description: Recorded age-band label, not numeric exact age.
+        type: string
+      - name: gender
+        column: Are you
+        description: Gender label.
+        type: string
+      - name: registered
+        column: Are you registered to vote?
+        description: "Registration response for this survey branch: 'Yes', 'No - I will not register', 'No - but I will
+          register'. Both No-prefixed values mean not registered; NULL is unanswered. registered_other_branch is a
+          separate questionnaire branch."
+        type: string
+      - name: registered_other_branch
+        column: Are you registered to vote? Not open to vote
+        description: Separate registration branch; do not merge with registered implicitly.
+        type: string
+      - name: voted_2016
+        column: Did you vote in the 2016 Presidential election? (Four years ago)
+        description: Yes means voted; distinguish other nonvoting reasons.
+        type: string
+      - name: choice_2016
+        column: Who did you vote for in the 2016 Presidential election? (Four years ago)
+        description: Original 2016 candidate response.
+        type: string
+      - name: election_day_choice
+        column: Who are you most likely to vote for on election day?
+        description: Intended candidate on election day among respondents asked this branch. Use this for upcoming-election
+          preference/counts; combined_choice additionally includes people who already voted.
+        type: string
+      - name: combined_choice
+        column: Headline vote share (intention and already voted combined)
+        description: Combined early-vote/intention label.
+        type: string
+      - name: likelihood
+        column: likelihood
+        description: Numeric voting-likelihood code; 10 definitely vote, 11 already voted.
+        type: number
+      - name: likely_voter
+        column: likely_voter
+        description: Derived Yes/No likely-voter label.
+        type: string
+      - name: education
+        column: What is the highest degree or level of school you have *completed* ?
+        description: Completed education label, not employment.
+        type: string
+      - name: ethnicity
+        column: Which of the following best describes your ethnic heritage?
+        description: Original ethnic-heritage label.
+        type: string
+      - name: profession
+        column: Which of these best describes the kind of work you do?
+        description: Kind of work, excluding missing responses in named-profession rankings.
+        type: string
+    measures:
+      - name: weight
+        column: Weight
+        description: Survey weight, not a respondent count.
+        type: number
+    metrics:
+      - name: respondent_count
+        agg: count
+        description: Unweighted count of respondent records; preserve requested alphabetical tie-break.
+      - name: weighted_respondents
+        agg: sum
+        description: Sum of survey weights only for explicitly weighted questions.
+        column: Weight
+joins: []

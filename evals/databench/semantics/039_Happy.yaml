@@ -1,0 +1,74 @@
+dialect: duckdb
+models:
+  - name: reflections
+    table: data
+    description: One row is a happy-moment reflection; the same worker can submit many reflections. Manually curated using
+      the full data and DataBench question/answer definitions; reference-informed, not a schema-only baseline.
+    dimensions:
+      - name: worker_id
+        column: wid
+        description: Worker ID, not a unique reflection key.
+        type: number
+      - name: period
+        column: reflection_period
+        description: "Reflection period: 3m or 24h."
+        type: string
+      - name: text
+        column: cleaned_hm
+        description: Recorded reflection text; carry worker and text to retain reflection context.
+        type: string
+      - name: category
+        column: predicted_category
+        description: Predicted category used for unqualified reflection-category questions.
+        type: string
+      - name: annotated_category
+        column: ground_truth_category
+        description: Sparse human annotation; not a substitute for predicted_category.
+        type: string
+      - name: country
+        column: country
+        description: Recorded country code.
+        type: string
+      - name: gender
+        column: gender
+        description: Recorded m/f/o code.
+        type: string
+      - name: marital_status
+        column: marital
+        description: Recorded marital status.
+        type: string
+      - name: parenthood
+        column: parenthood
+        description: Recorded y/n code.
+        type: string
+    measures:
+      - name: sentences
+        column: num_sentence
+        description: Number of sentences in this reflection. Separate reflections with the same length each contribute a
+          count observation; this is not a list of distinct text-length categories.
+        type: number
+      - name: age
+        column: age
+        description: Reported worker age; preserve outliers and repetitions per reflection, do not cap or recalculate.
+        type: number
+    metrics:
+      - name: reflection_count
+        agg: count
+        description: Count reflection rows, not unique workers; numeric lists are reflection-weighted and preserve repetitions.
+      - name: unique_periods
+        agg: count_distinct
+        description: Distinct reflection periods.
+        column: reflection_period
+      - name: average_sentences
+        agg: avg
+        description: Mean sentence count per reflection.
+        column: num_sentence
+      - name: average_age
+        agg: avg
+        description: Mean known age across reflection rows, not deduplicated workers.
+        column: age
+      - name: maximum_age
+        agg: max
+        description: Maximum reported age without plausibility correction.
+        column: age
+joins: []

@@ -1,0 +1,98 @@
+dialect: duckdb
+models:
+  - name: loans
+    table: data
+    description: One row is a business loan identified by LoanNr_ChkDgt; company names may repeat. Approval year is a loan
+      date, not company founding year. Manually curated using the full data and DataBench question/answer definitions;
+      reference-informed, not a schema-only baseline.
+    dimensions:
+      - name: loan_id
+        column: LoanNr_ChkDgt
+        description: Unique loan key; retain for record-level attributes.
+        type: number
+      - name: company
+        column: Name
+        description: Business name, not unique.
+        type: string
+      - name: sector
+        column: Sector
+        description: Business sector label; the retail sector is stored as 'Retail trade'.
+        type: string
+      - name: city
+        column: City
+        description: Business city.
+        type: string
+      - name: state
+        column: State
+        description: Business state, distinct from bank state.
+        type: string
+      - name: bank
+        column: Bank
+        description: Lending bank.
+        type: string
+      - name: bank_state
+        column: BankState
+        description: Bank state.
+        type: string
+      - name: approval_year
+        column: ApprovalFY
+        description: Fiscal year approved; oldest by approval year sorts ascending.
+        type: number
+      - name: franchise
+        column: FranchiseCode
+        description: Recorded franchise code; use literal requested code.
+        type: number
+      - name: urban_rural
+        column: UrbanRural
+        description: Recorded location code. Preserve explicit code conditions in questions; do not silently remap 0 and 2.
+        type: number
+    measures:
+      - name: employees
+        column: NoEmp
+        description: Recorded employee count.
+        type: number
+      - name: created_jobs
+        column: CreateJob
+        description: Jobs created.
+        type: number
+      - name: retained_jobs
+        column: RetainedJob
+        description: Jobs retained.
+        type: number
+      - name: disbursement
+        column: DisbursementGross
+        description: Gross disbursement in dollars.
+        type: number
+      - name: approval_amount
+        column: GrAppv
+        description: Gross approved amount.
+        type: number
+      - name: sba_approval
+        column: SBA_Appv
+        description: SBA approved amount.
+        type: number
+      - name: default_amount
+        column: default_amount
+        description: Defaulted dollars, including zero.
+        type: number
+    metrics:
+      - name: loan_count
+        agg: count
+        description: Count loan rows, also used for benchmark company counts; frequency rankings differ from highest numeric values.
+      - name: average_disbursement
+        agg: avg
+        description: Mean gross disbursement.
+        column: DisbursementGross
+      - name: average_retained_jobs
+        agg: avg
+        description: Mean retained jobs per loan record.
+        column: RetainedJob
+      - name: latest_approval_year
+        agg: max
+        description: Latest approval fiscal year.
+        column: ApprovalFY
+      - name: unique_sectors
+        agg: count_distinct
+        description: Distinct sector labels.
+        column: Sector
+joins: []

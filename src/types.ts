@@ -3,7 +3,7 @@
  */
 
 import type { ClickHouseClientConfigOptions } from '@clickhouse/client';
-import type { LanguageModelUsage, LanguageModel } from 'ai';
+import type { LanguageModelUsage, LanguageModel, generateText } from 'ai';
 import type { AnalysisEvent } from './event';
 import type { SemanticRegistry } from './semantic/registry';
 
@@ -31,6 +31,10 @@ export interface LLMConfig {
   baseURL?: string;
   /** Maximum retries for retryable model API failures. Default 3. */
   maxRetries?: number;
+  /** Sampling and reasoning settings forwarded by the semantic agent to the configured provider. */
+  temperature?: number;
+  maxOutputTokens?: number;
+  providerOptions?: Parameters<typeof generateText>[0]['providerOptions'];
   /** Optional callback for SQL-generation token usage */
   onQueryUsage?: (usage: LanguageModelUsage) => void;
 }
@@ -748,6 +752,8 @@ export interface AnalysisEngine {
   getDSL(query: string, context: DataContext): Promise<string>;
   /** Execute one DSL statement with a bounded result. */
   execute<T = Record<string, unknown>>(dsl: string, options?: ExecutionOptions): Promise<ExecutionResult<T>>;
+  /** Validate final SQL against successful compiler outputs using the engine's native parser. Required by semantic. */
+  validateSemanticQuery?(sql: string, evidence: readonly string[], schema: Schema): Promise<void>;
   /** Release resources (temp files, database connections) */
   dispose(): Promise<void>;
 }
@@ -786,7 +792,7 @@ export type AnalysisStrategyConfig =
       maxRetries?: number;
     }
   | { type: 'loop'; maxSteps?: number }
-  /** Semantic-layer agent: one tool call per step; `execute` is the single terminal action. maxSteps defaults to 20. */
+  /** Semantic ToolLoopAgent: bounded exploration; execution or insufficient information terminates. */
   | { type: 'semantic'; maxSteps?: number }
   | { type: 'subset' };
 

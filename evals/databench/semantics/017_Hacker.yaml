@@ -1,0 +1,79 @@
+dialect: duckdb
+models:
+  - name: posts
+    table: data
+    description: One row is a Hacker News entry; timestamp is unique in this full snapshot. Manually curated using the full
+      data and DataBench question/answer definitions; reference-informed, not a schema-only baseline.
+    dimensions:
+      - name: posted_at
+        column: timestamp
+        description: Unique timestamp in this snapshot; include in top-N post values.
+        type: time
+      - name: title
+        column: title
+        description: Original title.
+        type: string
+      - name: cluster
+        column: Clusters II
+        description: Whole comma-separated cluster label. Frequency questions rank entire labels; mention tests use text
+          containment, not splitting.
+        type: string
+      - name: weekday
+        column: weekday_name
+        description: Recorded weekday; weekend is Saturday or Sunday.
+        type: string
+      - name: month
+        column: month_name
+        description: Recorded month name.
+        type: string
+      - name: part_of_day
+        column: partofday
+        description: Recorded period label; use this existing classification instead of inventing hour boundaries.
+        type: string
+      - name: season
+        column: season
+        description: Recorded season label.
+        type: string
+      - name: language
+        column: title_gx_lang
+        description: Title language code.
+        type: string
+      - name: sentiment
+        column: title_gx_cardiff_nlp_sentiment
+        description: NLP sentiment label; missing is not a negative classification.
+        type: string
+      - name: author
+        column: by
+        description: Posting username.
+        type: string
+      - name: url
+        column: url
+        description: Linked URL, possibly missing.
+        type: string
+    measures:
+      - name: title_length
+        column: title_gx_text_length
+        description: Recorded character count of this post's title; NULL unknown. Each posted_at record contributes a
+          length observation, including equal lengths of different titles.
+        type: number
+      - name: score
+        column: score
+        description: Post score; equal scores belong to different posts.
+        type: number
+      - name: descendants
+        column: descendants
+        description: Recorded descendant/comment count; NULL excluded from average.
+        type: number
+    metrics:
+      - name: post_count
+        agg: count
+        description: Number of post rows; use for frequencies and filtered counts.
+      - name: maximum_score
+        agg: max
+        description: Maximum post score.
+        column: score
+      - name: average_descendants
+        agg: avg
+        description: Mean descendant count over non-null values.
+        column: descendants
+joins: []

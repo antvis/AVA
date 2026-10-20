@@ -1,0 +1,1329 @@
+# Source-grounded BIRD dev_20251106 configuration; see README.md and provenance.json.
+dialect: duckdb
+models:
+  - name: badges
+    table: badges
+    description: One badge award to a user; repeated badge names are separate awards. Reference-informed from this
+      database and its dev golden SQL. Preserve record identity for top-N; joins may multiply rows.
+    dimensions:
+      - name: id
+        column: Id
+        type: number
+        description: the badge id Part of the declared primary key.
+      - name: user_id
+        column: UserId
+        type: number
+        description: User Id. the unique id of the user
+      - name: name
+        column: Name
+        type: string
+        description: the badge name the user obtained
+      - name: date
+        column: Date
+        type: time
+        description: "the date that the user obtained the badge Source date/time: inspect stored representation and cast
+          before DuckDB date functions."
+    measures: []
+    metrics:
+      - name: record_count
+        agg: count
+        description: Count source/joined rows at the active query grain; not automatically distinct entities after joins.
+      - name: count_id
+        agg: count
+        column: Id
+        description: count of Id over the selected badges records. Apply filters and grouping explicitly; joins can repeat
+          records.
+      - name: count_distinct_user_id
+        agg: count_distinct
+        column: UserId
+        description: count distinct of UserId over the selected badges records. Apply filters and grouping explicitly;
+          joins can repeat records.
+      - name: count_user_id
+        agg: count
+        column: UserId
+        description: count of UserId over the selected badges records. Apply filters and grouping explicitly; joins can
+          repeat records.
+      - name: count_name
+        agg: count
+        column: Name
+        description: count of Name over the selected badges records. Apply filters and grouping explicitly; joins can
+          repeat records.
+  - name: comments
+    table: comments
+    description: One comment on a post made by a user; multiple comments may come from the same user.
+      Reference-informed from this database and its dev golden SQL. Preserve record identity for top-N; joins may
+      multiply rows.
+    dimensions:
+      - name: id
+        column: Id
+        type: number
+        description: the comment Id Part of the declared primary key.
+      - name: post_id
+        column: PostId
+        type: number
+        description: Post Id. the unique id of the post
+      - name: text
+        column: Text
+        type: string
+        description: the detailed content of the comment
+      - name: creation_date
+        column: CreationDate
+        type: time
+        description: "Creation Date. the creation date of the comment Source date/time: inspect stored representation and
+          cast before DuckDB date functions."
+      - name: user_id
+        column: UserId
+        type: number
+        description: User Id. the id of the user who post the comment
+      - name: user_display_name
+        column: UserDisplayName
+        type: string
+        description: User Display Name. user's display name
+    measures:
+      - name: score
+        column: Score
+        type: number
+        description: rating score. commonsense evidence:The score is from 0 to 100. The score more than 60 refers that the
+          comment is a positive comment. The score less than 60 refers that the comment is a negative comment.
+    metrics:
+      - name: record_count
+        agg: count
+        description: Count source/joined rows at the active query grain; not automatically distinct entities after joins.
+      - name: count_id
+        agg: count
+        column: Id
+        description: count of Id over the selected comments records. Apply filters and grouping explicitly; joins can
+          repeat records.
+      - name: count_distinct_id
+        agg: count_distinct
+        column: Id
+        description: count distinct of Id over the selected comments records. Apply filters and grouping explicitly; joins
+          can repeat records.
+  - name: post_history
+    table: postHistory
+    description: One revision/history event on a post, not one post. Reference-informed from this database and its dev
+      golden SQL. Preserve record identity for top-N; joins may multiply rows.
+    dimensions:
+      - name: id
+        column: Id
+        type: number
+        description: the post history id Part of the declared primary key.
+      - name: post_history_type_id
+        column: PostHistoryTypeId
+        type: number
+        description: Post History Type Id. the id of the post history type
+      - name: post_id
+        column: PostId
+        type: number
+        description: Post Id. the unique id of the post
+      - name: revision_guid
+        column: RevisionGUID
+        type: string
+        description: Revision GUID. the revision globally unique id of the post
+      - name: creation_date
+        column: CreationDate
+        type: time
+        description: "Creation Date. the creation date of the post Source date/time: inspect stored representation and cast
+          before DuckDB date functions."
+      - name: user_id
+        column: UserId
+        type: number
+        description: User Id. the user who post the post
+      - name: text
+        column: Text
+        type: string
+        description: the detailed content of the post
+      - name: comment
+        column: Comment
+        type: string
+        description: comments of the post
+      - name: user_display_name
+        column: UserDisplayName
+        type: string
+        description: User Display Name. user's display name
+    measures: []
+    metrics:
+      - name: record_count
+        agg: count
+        description: Count source/joined rows at the active query grain; not automatically distinct entities after joins.
+      - name: count_distinct_post_history_type_id
+        agg: count_distinct
+        column: PostHistoryTypeId
+        description: count distinct of PostHistoryTypeId over the selected postHistory records. Apply filters and grouping
+          explicitly; joins can repeat records.
+      - name: count_id
+        agg: count
+        column: Id
+        description: count of Id over the selected postHistory records. Apply filters and grouping explicitly; joins can
+          repeat records.
+  - name: post_links
+    table: postLinks
+    description: One directed post-to-related-post link; PostId and RelatedPostId are distinct roles.
+      Reference-informed from this database and its dev golden SQL. Preserve record identity for top-N; joins may
+      multiply rows.
+    dimensions:
+      - name: id
+        column: Id
+        type: number
+        description: the post link id Part of the declared primary key.
+      - name: creation_date
+        column: CreationDate
+        type: time
+        description: "Creation Date. the creation date of the post link Source date/time: inspect stored representation and
+          cast before DuckDB date functions."
+      - name: post_id
+        column: PostId
+        type: number
+        description: Post Id. the post id
+      - name: related_post_id
+        column: RelatedPostId
+        type: number
+        description: Related Post Id. the id of the related post
+      - name: link_type_id
+        column: LinkTypeId
+        type: number
+        description: Link Type Id. the id of the link type
+    measures: []
+    metrics:
+      - name: record_count
+        agg: count
+        description: Count source/joined rows at the active query grain; not automatically distinct entities after joins.
+      - name: count_id
+        agg: count
+        column: Id
+        description: count of Id over the selected postLinks records. Apply filters and grouping explicitly; joins can
+          repeat records.
+  - name: posts
+    table: posts
+    description: One question or answer post. OwnerUserId, LastEditorUserId, ParentId and AcceptedAnswerId have
+      different roles. Physical spellings CreaionDate and LasActivityDate are intentional. Reference-informed from
+      this database and its dev golden SQL. Preserve record identity for top-N; joins may multiply rows.
+    dimensions:
+      - name: id
+        column: Id
+        type: number
+        description: the post id Part of the declared primary key.
+      - name: post_type_id
+        column: PostTypeId
+        type: number
+        description: Post Type Id. the id of the post type
+      - name: accepted_answer_id
+        column: AcceptedAnswerId
+        type: number
+        description: Accepted Answer Id. the accepted answer id of the post
+      - name: creaion_date
+        column: CreaionDate
+        type: time
+        description: "Creation Date. the creation date of the post Source date/time: inspect stored representation and cast
+          before DuckDB date functions."
+      - name: body
+        column: Body
+        type: string
+        description: the body of the post
+      - name: owner_user_id
+        column: OwnerUserId
+        type: number
+        description: Owner User Id. the id of the owner user
+      - name: las_activity_date
+        column: LasActivityDate
+        type: time
+        description: "Last Activity Date. the last activity date Source date/time: inspect stored representation and cast
+          before DuckDB date functions."
+      - name: title
+        column: Title
+        type: string
+        description: the title of the post
+      - name: tags
+        column: Tags
+        type: string
+        description: the tag of the post
+      - name: last_editor_user_id
+        column: LastEditorUserId
+        type: number
+        description: Last Editor User Id. the id of the last editor
+      - name: last_edit_date
+        column: LastEditDate
+        type: time
+        description: "Last Edit Date. the last edit date Source date/time: inspect stored representation and cast before
+          DuckDB date functions."
+      - name: community_owned_date
+        column: CommunityOwnedDate
+        type: time
+        description: "Community Owned Date. the community owned date Source date/time: inspect stored representation and
+          cast before DuckDB date functions."
+      - name: parent_id
+        column: ParentId
+        type: number
+        description: ParentId. the id of the parent post. commonsense evidence:If the parent id is null, the post is the
+          root post. Otherwise, the post is the child post of other post.
+      - name: closed_date
+        column: ClosedDate
+        type: time
+        description: "Source closure timestamp. Benchmark questions use IS NOT NULL for well-finished and IS NULL for not
+          well-finished; this is a benchmark convention. Source date/time: inspect stored representation and cast
+          before DuckDB date functions."
+      - name: owner_display_name
+        column: OwnerDisplayName
+        type: string
+        description: Owner Display Name. the display name of the post owner
+      - name: last_editor_display_name
+        column: LastEditorDisplayName
+        type: string
+        description: Last Editor Display Name. the display name of the last editor
+    measures:
+      - name: score
+        column: Score
+        type: number
+        description: the score of the post
+      - name: view_count
+        column: ViewCount
+        type: number
+        description: View Count. the view count of the post. commonsense evidence:Higher view count means the post has
+          higher popularity
+      - name: answer_count
+        column: AnswerCount
+        type: number
+        description: Answer Count. the total number of answers of the post
+      - name: comment_count
+        column: CommentCount
+        type: number
+        description: Comment Count. the total number of comments of the post
+      - name: favorite_count
+        column: FavoriteCount
+        type: number
+        description: Favorite Count. the total number of favorites of the post. commonsense evidence:more favorite count
+          refers to more valuable posts.
+    metrics:
+      - name: record_count
+        agg: count
+        description: Count source/joined rows at the active query grain; not automatically distinct entities after joins.
+      - name: count_id
+        agg: count
+        column: Id
+        description: count of Id over the selected posts records. Apply filters and grouping explicitly; joins can repeat
+          records.
+      - name: sum_comment_count
+        agg: sum
+        column: CommentCount
+        description: sum of CommentCount over the selected posts records. Apply filters and grouping explicitly; joins can
+          repeat records.
+      - name: avg_score
+        agg: avg
+        column: Score
+        description: avg of Score over the selected posts records. Apply filters and grouping explicitly; joins can repeat
+          records.
+      - name: sum_score
+        agg: sum
+        column: Score
+        description: sum of Score over the selected posts records. Apply filters and grouping explicitly; joins can repeat
+          records.
+      - name: avg_view_count
+        agg: avg
+        column: ViewCount
+        description: avg of ViewCount over the selected posts records. Apply filters and grouping explicitly; joins can
+          repeat records.
+      - name: sum_view_count
+        agg: sum
+        column: ViewCount
+        description: sum of ViewCount over the selected posts records. Apply filters and grouping explicitly; joins can
+          repeat records.
+      - name: max_favorite_count
+        agg: max
+        column: FavoriteCount
+        description: max of FavoriteCount over the selected posts records. Apply filters and grouping explicitly; joins can
+          repeat records.
+      - name: max_score
+        agg: max
+        column: Score
+        description: max of Score over the selected posts records. Apply filters and grouping explicitly; joins can repeat
+          records.
+      - name: count_distinct_id
+        agg: count_distinct
+        column: Id
+        description: count distinct of Id over the selected posts records. Apply filters and grouping explicitly; joins can
+          repeat records.
+  - name: tags
+    table: tags
+    description: One tag dictionary entry. Count is a stored post count; ExcerptPostId and WikiPostId identify
+      different posts. Reference-informed from this database and its dev golden SQL. Preserve record identity for
+      top-N; joins may multiply rows.
+    dimensions:
+      - name: id
+        column: Id
+        type: number
+        description: the tag id Part of the declared primary key.
+      - name: tag_name
+        column: TagName
+        type: string
+        description: Tag Name. the name of the tag
+      - name: excerpt_post_id
+        column: ExcerptPostId
+        type: number
+        description: Excerpt Post Id. the excerpt post id of the tag
+      - name: wiki_post_id
+        column: WikiPostId
+        type: number
+        description: Wiki Post Id. the wiki post id of the tag
+    measures:
+      - name: count
+        column: Count
+        type: number
+        description: the count of posts that contain this tag. more counts --> this tag is more popular
+    metrics:
+      - name: record_count
+        agg: count
+        description: Count source/joined rows at the active query grain; not automatically distinct entities after joins.
+      - name: count_id
+        agg: count
+        column: Id
+        description: count of Id over the selected tags records. Apply filters and grouping explicitly; joins can repeat
+          records.
+  - name: users
+    table: users
+    description: One user account. DisplayName is not a unique key. Reputation, profile Views, and post ViewCount are
+      distinct. Reference-informed from this database and its dev golden SQL. Preserve record identity for top-N;
+      joins may multiply rows.
+    dimensions:
+      - name: id
+        column: Id
+        type: number
+        description: the user id Part of the declared primary key.
+      - name: creation_date
+        column: CreationDate
+        type: time
+        description: "Creation Date. the creation date of the user account Source date/time: inspect stored representation
+          and cast before DuckDB date functions."
+      - name: display_name
+        column: DisplayName
+        type: string
+        description: Display Name. the user's display name
+      - name: last_access_date
+        column: LastAccessDate
+        type: time
+        description: "Last Access Date. the last access date of the user account Source date/time: inspect stored
+          representation and cast before DuckDB date functions."
+      - name: website_url
+        column: WebsiteUrl
+        type: string
+        description: Website Url. the website url of the user account
+      - name: location
+        column: Location
+        type: string
+        description: user's location
+      - name: about_me
+        column: AboutMe
+        type: string
+        description: About Me. the self introduction of the user
+      - name: account_id
+        column: AccountId
+        type: number
+        description: Account Id. the unique id of the account
+      - name: profile_image_url
+        column: ProfileImageUrl
+        type: string
+        description: Profile Image Url. the profile image url
+    measures:
+      - name: reputation
+        column: Reputation
+        type: number
+        description: the user's reputation. commonsense evidence:The user with higher reputation has more influence.
+      - name: views
+        column: Views
+        type: number
+        description: the number of views
+      - name: up_votes
+        column: UpVotes
+        type: number
+        description: the number of upvotes
+      - name: down_votes
+        column: DownVotes
+        type: number
+        description: the number of downvotes
+      - name: age
+        column: Age
+        type: number
+        description: "user's age. teenager: 13-18 adult: 19-65 elder: > 65"
+    metrics:
+      - name: record_count
+        agg: count
+        description: Count source/joined rows at the active query grain; not automatically distinct entities after joins.
+      - name: max_reputation
+        agg: max
+        column: Reputation
+        description: max of Reputation over the selected users records. Apply filters and grouping explicitly; joins can
+          repeat records.
+      - name: count_id
+        agg: count
+        column: Id
+        description: count of Id over the selected users records. Apply filters and grouping explicitly; joins can repeat
+          records.
+      - name: max_views
+        agg: max
+        column: Views
+        description: max of Views over the selected users records. Apply filters and grouping explicitly; joins can repeat
+          records.
+      - name: count_distinct_display_name
+        agg: count_distinct
+        column: DisplayName
+        description: count distinct of DisplayName over the selected users records. Apply filters and grouping explicitly;
+          joins can repeat records.
+      - name: min_views
+        agg: min
+        column: Views
+        description: min of Views over the selected users records. Apply filters and grouping explicitly; joins can repeat
+          records.
+      - name: avg_up_votes
+        agg: avg
+        column: UpVotes
+        description: avg of UpVotes over the selected users records. Apply filters and grouping explicitly; joins can
+          repeat records.
+      - name: avg_age
+        agg: avg
+        column: Age
+        description: avg of Age over the selected users records. Apply filters and grouping explicitly; joins can repeat
+          records.
+      - name: min_reputation
+        agg: min
+        column: Reputation
+        description: min of Reputation over the selected users records. Apply filters and grouping explicitly; joins can
+          repeat records.
+      - name: min_age
+        agg: min
+        column: Age
+        description: min of Age over the selected users records. Apply filters and grouping explicitly; joins can repeat
+          records.
+      - name: max_age
+        agg: max
+        column: Age
+        description: max of Age over the selected users records. Apply filters and grouping explicitly; joins can repeat
+          records.
+      - name: count_distinct_id
+        agg: count_distinct
+        column: Id
+        description: count distinct of Id over the selected users records. Apply filters and grouping explicitly; joins can
+          repeat records.
+  - name: votes
+    table: votes
+    description: One vote event. BountyAmount belongs to the vote record; count distinct PostId only when distinct
+      posts are requested. Reference-informed from this database and its dev golden SQL. Preserve record identity
+      for top-N; joins may multiply rows.
+    dimensions:
+      - name: id
+        column: Id
+        type: number
+        description: the vote id Part of the declared primary key.
+      - name: post_id
+        column: PostId
+        type: number
+        description: Post Id. the id of the post that is voted
+      - name: vote_type_id
+        column: VoteTypeId
+        type: number
+        description: Vote Type Id. the id of the vote type
+      - name: creation_date
+        column: CreationDate
+        type: time
+        description: "Creation Date. the creation date of the vote Source date/time: inspect stored representation and cast
+          before DuckDB date functions."
+      - name: user_id
+        column: UserId
+        type: number
+        description: User Id. the id of the voter
+    measures:
+      - name: bounty_amount
+        column: BountyAmount
+        type: number
+        description: Bounty Amount. the amount of bounty
+    metrics:
+      - name: record_count
+        agg: count
+        description: Count source/joined rows at the active query grain; not automatically distinct entities after joins.
+      - name: count_id
+        agg: count
+        column: Id
+        description: count of Id over the selected votes records. Apply filters and grouping explicitly; joins can repeat
+          records.
+      - name: sum_bounty_amount
+        agg: sum
+        column: BountyAmount
+        description: sum of BountyAmount over the selected votes records. Apply filters and grouping explicitly; joins can
+          repeat records.
+  - name: post_links_related_post_id_role
+    table: posts
+    description: Join role for postLinks.RelatedPostId -> posts.Id. Same physical table as posts. One question or
+      answer post. OwnerUserId, LastEditorUserId, ParentId and AcceptedAnswerId have different roles. Physical
+      spellings CreaionDate and LasActivityDate are intentional. Reference-informed from this database and its dev
+      golden SQL. Preserve record identity for top-N; joins may multiply rows.
+    dimensions:
+      - name: id
+        column: Id
+        type: number
+        description: the post id Part of the declared primary key.
+      - name: post_type_id
+        column: PostTypeId
+        type: number
+        description: Post Type Id. the id of the post type
+      - name: accepted_answer_id
+        column: AcceptedAnswerId
+        type: number
+        description: Accepted Answer Id. the accepted answer id of the post
+      - name: creaion_date
+        column: CreaionDate
+        type: time
+        description: "Creation Date. the creation date of the post Source date/time: inspect stored representation and cast
+          before DuckDB date functions."
+      - name: body
+        column: Body
+        type: string
+        description: the body of the post
+      - name: owner_user_id
+        column: OwnerUserId
+        type: number
+        description: Owner User Id. the id of the owner user
+      - name: las_activity_date
+        column: LasActivityDate
+        type: time
+        description: "Last Activity Date. the last activity date Source date/time: inspect stored representation and cast
+          before DuckDB date functions."
+      - name: title
+        column: Title
+        type: string
+        description: the title of the post
+      - name: tags
+        column: Tags
+        type: string
+        description: the tag of the post
+      - name: last_editor_user_id
+        column: LastEditorUserId
+        type: number
+        description: Last Editor User Id. the id of the last editor
+      - name: last_edit_date
+        column: LastEditDate
+        type: time
+        description: "Last Edit Date. the last edit date Source date/time: inspect stored representation and cast before
+          DuckDB date functions."
+      - name: community_owned_date
+        column: CommunityOwnedDate
+        type: time
+        description: "Community Owned Date. the community owned date Source date/time: inspect stored representation and
+          cast before DuckDB date functions."
+      - name: parent_id
+        column: ParentId
+        type: number
+        description: ParentId. the id of the parent post. commonsense evidence:If the parent id is null, the post is the
+          root post. Otherwise, the post is the child post of other post.
+      - name: closed_date
+        column: ClosedDate
+        type: time
+        description: "Source closure timestamp. Benchmark questions use IS NOT NULL for well-finished and IS NULL for not
+          well-finished; this is a benchmark convention. Source date/time: inspect stored representation and cast
+          before DuckDB date functions."
+      - name: owner_display_name
+        column: OwnerDisplayName
+        type: string
+        description: Owner Display Name. the display name of the post owner
+      - name: last_editor_display_name
+        column: LastEditorDisplayName
+        type: string
+        description: Last Editor Display Name. the display name of the last editor
+    measures:
+      - name: score
+        column: Score
+        type: number
+        description: the score of the post
+      - name: view_count
+        column: ViewCount
+        type: number
+        description: View Count. the view count of the post. commonsense evidence:Higher view count means the post has
+          higher popularity
+      - name: answer_count
+        column: AnswerCount
+        type: number
+        description: Answer Count. the total number of answers of the post
+      - name: comment_count
+        column: CommentCount
+        type: number
+        description: Comment Count. the total number of comments of the post
+      - name: favorite_count
+        column: FavoriteCount
+        type: number
+        description: Favorite Count. the total number of favorites of the post. commonsense evidence:more favorite count
+          refers to more valuable posts.
+    metrics:
+      - name: record_count
+        agg: count
+        description: Count source/joined rows at the active query grain; not automatically distinct entities after joins.
+      - name: count_id
+        agg: count
+        column: Id
+        description: count of Id over the selected posts records. Apply filters and grouping explicitly; joins can repeat
+          records.
+      - name: sum_comment_count
+        agg: sum
+        column: CommentCount
+        description: sum of CommentCount over the selected posts records. Apply filters and grouping explicitly; joins can
+          repeat records.
+      - name: avg_score
+        agg: avg
+        column: Score
+        description: avg of Score over the selected posts records. Apply filters and grouping explicitly; joins can repeat
+          records.
+      - name: sum_score
+        agg: sum
+        column: Score
+        description: sum of Score over the selected posts records. Apply filters and grouping explicitly; joins can repeat
+          records.
+      - name: avg_view_count
+        agg: avg
+        column: ViewCount
+        description: avg of ViewCount over the selected posts records. Apply filters and grouping explicitly; joins can
+          repeat records.
+      - name: sum_view_count
+        agg: sum
+        column: ViewCount
+        description: sum of ViewCount over the selected posts records. Apply filters and grouping explicitly; joins can
+          repeat records.
+      - name: max_favorite_count
+        agg: max
+        column: FavoriteCount
+        description: max of FavoriteCount over the selected posts records. Apply filters and grouping explicitly; joins can
+          repeat records.
+      - name: max_score
+        agg: max
+        column: Score
+        description: max of Score over the selected posts records. Apply filters and grouping explicitly; joins can repeat
+          records.
+      - name: count_distinct_id
+        agg: count_distinct
+        column: Id
+        description: count distinct of Id over the selected posts records. Apply filters and grouping explicitly; joins can
+          repeat records.
+  - name: post_links_post_id_role
+    table: posts
+    description: Join role for postLinks.PostId -> posts.Id. Same physical table as posts. One question or answer post.
+      OwnerUserId, LastEditorUserId, ParentId and AcceptedAnswerId have different roles. Physical spellings
+      CreaionDate and LasActivityDate are intentional. Reference-informed from this database and its dev golden
+      SQL. Preserve record identity for top-N; joins may multiply rows.
+    dimensions:
+      - name: id
+        column: Id
+        type: number
+        description: the post id Part of the declared primary key.
+      - name: post_type_id
+        column: PostTypeId
+        type: number
+        description: Post Type Id. the id of the post type
+      - name: accepted_answer_id
+        column: AcceptedAnswerId
+        type: number
+        description: Accepted Answer Id. the accepted answer id of the post
+      - name: creaion_date
+        column: CreaionDate
+        type: time
+        description: "Creation Date. the creation date of the post Source date/time: inspect stored representation and cast
+          before DuckDB date functions."
+      - name: body
+        column: Body
+        type: string
+        description: the body of the post
+      - name: owner_user_id
+        column: OwnerUserId
+        type: number
+        description: Owner User Id. the id of the owner user
+      - name: las_activity_date
+        column: LasActivityDate
+        type: time
+        description: "Last Activity Date. the last activity date Source date/time: inspect stored representation and cast
+          before DuckDB date functions."
+      - name: title
+        column: Title
+        type: string
+        description: the title of the post
+      - name: tags
+        column: Tags
+        type: string
+        description: the tag of the post
+      - name: last_editor_user_id
+        column: LastEditorUserId
+        type: number
+        description: Last Editor User Id. the id of the last editor
+      - name: last_edit_date
+        column: LastEditDate
+        type: time
+        description: "Last Edit Date. the last edit date Source date/time: inspect stored representation and cast before
+          DuckDB date functions."
+      - name: community_owned_date
+        column: CommunityOwnedDate
+        type: time
+        description: "Community Owned Date. the community owned date Source date/time: inspect stored representation and
+          cast before DuckDB date functions."
+      - name: parent_id
+        column: ParentId
+        type: number
+        description: ParentId. the id of the parent post. commonsense evidence:If the parent id is null, the post is the
+          root post. Otherwise, the post is the child post of other post.
+      - name: closed_date
+        column: ClosedDate
+        type: time
+        description: "Source closure timestamp. Benchmark questions use IS NOT NULL for well-finished and IS NULL for not
+          well-finished; this is a benchmark convention. Source date/time: inspect stored representation and cast
+          before DuckDB date functions."
+      - name: owner_display_name
+        column: OwnerDisplayName
+        type: string
+        description: Owner Display Name. the display name of the post owner
+      - name: last_editor_display_name
+        column: LastEditorDisplayName
+        type: string
+        description: Last Editor Display Name. the display name of the last editor
+    measures:
+      - name: score
+        column: Score
+        type: number
+        description: the score of the post
+      - name: view_count
+        column: ViewCount
+        type: number
+        description: View Count. the view count of the post. commonsense evidence:Higher view count means the post has
+          higher popularity
+      - name: answer_count
+        column: AnswerCount
+        type: number
+        description: Answer Count. the total number of answers of the post
+      - name: comment_count
+        column: CommentCount
+        type: number
+        description: Comment Count. the total number of comments of the post
+      - name: favorite_count
+        column: FavoriteCount
+        type: number
+        description: Favorite Count. the total number of favorites of the post. commonsense evidence:more favorite count
+          refers to more valuable posts.
+    metrics:
+      - name: record_count
+        agg: count
+        description: Count source/joined rows at the active query grain; not automatically distinct entities after joins.
+      - name: count_id
+        agg: count
+        column: Id
+        description: count of Id over the selected posts records. Apply filters and grouping explicitly; joins can repeat
+          records.
+      - name: sum_comment_count
+        agg: sum
+        column: CommentCount
+        description: sum of CommentCount over the selected posts records. Apply filters and grouping explicitly; joins can
+          repeat records.
+      - name: avg_score
+        agg: avg
+        column: Score
+        description: avg of Score over the selected posts records. Apply filters and grouping explicitly; joins can repeat
+          records.
+      - name: sum_score
+        agg: sum
+        column: Score
+        description: sum of Score over the selected posts records. Apply filters and grouping explicitly; joins can repeat
+          records.
+      - name: avg_view_count
+        agg: avg
+        column: ViewCount
+        description: avg of ViewCount over the selected posts records. Apply filters and grouping explicitly; joins can
+          repeat records.
+      - name: sum_view_count
+        agg: sum
+        column: ViewCount
+        description: sum of ViewCount over the selected posts records. Apply filters and grouping explicitly; joins can
+          repeat records.
+      - name: max_favorite_count
+        agg: max
+        column: FavoriteCount
+        description: max of FavoriteCount over the selected posts records. Apply filters and grouping explicitly; joins can
+          repeat records.
+      - name: max_score
+        agg: max
+        column: Score
+        description: max of Score over the selected posts records. Apply filters and grouping explicitly; joins can repeat
+          records.
+      - name: count_distinct_id
+        agg: count_distinct
+        column: Id
+        description: count distinct of Id over the selected posts records. Apply filters and grouping explicitly; joins can
+          repeat records.
+  - name: posts_parent_id_role
+    table: posts
+    description: Join role for posts.ParentId -> posts.Id. Same physical table as posts. One question or answer post.
+      OwnerUserId, LastEditorUserId, ParentId and AcceptedAnswerId have different roles. Physical spellings
+      CreaionDate and LasActivityDate are intentional. Reference-informed from this database and its dev golden
+      SQL. Preserve record identity for top-N; joins may multiply rows.
+    dimensions:
+      - name: id
+        column: Id
+        type: number
+        description: the post id Part of the declared primary key.
+      - name: post_type_id
+        column: PostTypeId
+        type: number
+        description: Post Type Id. the id of the post type
+      - name: accepted_answer_id
+        column: AcceptedAnswerId
+        type: number
+        description: Accepted Answer Id. the accepted answer id of the post
+      - name: creaion_date
+        column: CreaionDate
+        type: time
+        description: "Creation Date. the creation date of the post Source date/time: inspect stored representation and cast
+          before DuckDB date functions."
+      - name: body
+        column: Body
+        type: string
+        description: the body of the post
+      - name: owner_user_id
+        column: OwnerUserId
+        type: number
+        description: Owner User Id. the id of the owner user
+      - name: las_activity_date
+        column: LasActivityDate
+        type: time
+        description: "Last Activity Date. the last activity date Source date/time: inspect stored representation and cast
+          before DuckDB date functions."
+      - name: title
+        column: Title
+        type: string
+        description: the title of the post
+      - name: tags
+        column: Tags
+        type: string
+        description: the tag of the post
+      - name: last_editor_user_id
+        column: LastEditorUserId
+        type: number
+        description: Last Editor User Id. the id of the last editor
+      - name: last_edit_date
+        column: LastEditDate
+        type: time
+        description: "Last Edit Date. the last edit date Source date/time: inspect stored representation and cast before
+          DuckDB date functions."
+      - name: community_owned_date
+        column: CommunityOwnedDate
+        type: time
+        description: "Community Owned Date. the community owned date Source date/time: inspect stored representation and
+          cast before DuckDB date functions."
+      - name: parent_id
+        column: ParentId
+        type: number
+        description: ParentId. the id of the parent post. commonsense evidence:If the parent id is null, the post is the
+          root post. Otherwise, the post is the child post of other post.
+      - name: closed_date
+        column: ClosedDate
+        type: time
+        description: "Source closure timestamp. Benchmark questions use IS NOT NULL for well-finished and IS NULL for not
+          well-finished; this is a benchmark convention. Source date/time: inspect stored representation and cast
+          before DuckDB date functions."
+      - name: owner_display_name
+        column: OwnerDisplayName
+        type: string
+        description: Owner Display Name. the display name of the post owner
+      - name: last_editor_display_name
+        column: LastEditorDisplayName
+        type: string
+        description: Last Editor Display Name. the display name of the last editor
+    measures:
+      - name: score
+        column: Score
+        type: number
+        description: the score of the post
+      - name: view_count
+        column: ViewCount
+        type: number
+        description: View Count. the view count of the post. commonsense evidence:Higher view count means the post has
+          higher popularity
+      - name: answer_count
+        column: AnswerCount
+        type: number
+        description: Answer Count. the total number of answers of the post
+      - name: comment_count
+        column: CommentCount
+        type: number
+        description: Comment Count. the total number of comments of the post
+      - name: favorite_count
+        column: FavoriteCount
+        type: number
+        description: Favorite Count. the total number of favorites of the post. commonsense evidence:more favorite count
+          refers to more valuable posts.
+    metrics:
+      - name: record_count
+        agg: count
+        description: Count source/joined rows at the active query grain; not automatically distinct entities after joins.
+      - name: count_id
+        agg: count
+        column: Id
+        description: count of Id over the selected posts records. Apply filters and grouping explicitly; joins can repeat
+          records.
+      - name: sum_comment_count
+        agg: sum
+        column: CommentCount
+        description: sum of CommentCount over the selected posts records. Apply filters and grouping explicitly; joins can
+          repeat records.
+      - name: avg_score
+        agg: avg
+        column: Score
+        description: avg of Score over the selected posts records. Apply filters and grouping explicitly; joins can repeat
+          records.
+      - name: sum_score
+        agg: sum
+        column: Score
+        description: sum of Score over the selected posts records. Apply filters and grouping explicitly; joins can repeat
+          records.
+      - name: avg_view_count
+        agg: avg
+        column: ViewCount
+        description: avg of ViewCount over the selected posts records. Apply filters and grouping explicitly; joins can
+          repeat records.
+      - name: sum_view_count
+        agg: sum
+        column: ViewCount
+        description: sum of ViewCount over the selected posts records. Apply filters and grouping explicitly; joins can
+          repeat records.
+      - name: max_favorite_count
+        agg: max
+        column: FavoriteCount
+        description: max of FavoriteCount over the selected posts records. Apply filters and grouping explicitly; joins can
+          repeat records.
+      - name: max_score
+        agg: max
+        column: Score
+        description: max of Score over the selected posts records. Apply filters and grouping explicitly; joins can repeat
+          records.
+      - name: count_distinct_id
+        agg: count_distinct
+        column: Id
+        description: count distinct of Id over the selected posts records. Apply filters and grouping explicitly; joins can
+          repeat records.
+  - name: posts_owner_user_id_role
+    table: users
+    description: Join role for posts.OwnerUserId -> users.Id. Same physical table as users. One user account.
+      DisplayName is not a unique key. Reputation, profile Views, and post ViewCount are distinct.
+      Reference-informed from this database and its dev golden SQL. Preserve record identity for top-N; joins may
+      multiply rows.
+    dimensions:
+      - name: id
+        column: Id
+        type: number
+        description: the user id Part of the declared primary key.
+      - name: creation_date
+        column: CreationDate
+        type: time
+        description: "Creation Date. the creation date of the user account Source date/time: inspect stored representation
+          and cast before DuckDB date functions."
+      - name: display_name
+        column: DisplayName
+        type: string
+        description: Display Name. the user's display name
+      - name: last_access_date
+        column: LastAccessDate
+        type: time
+        description: "Last Access Date. the last access date of the user account Source date/time: inspect stored
+          representation and cast before DuckDB date functions."
+      - name: website_url
+        column: WebsiteUrl
+        type: string
+        description: Website Url. the website url of the user account
+      - name: location
+        column: Location
+        type: string
+        description: user's location
+      - name: about_me
+        column: AboutMe
+        type: string
+        description: About Me. the self introduction of the user
+      - name: account_id
+        column: AccountId
+        type: number
+        description: Account Id. the unique id of the account
+      - name: profile_image_url
+        column: ProfileImageUrl
+        type: string
+        description: Profile Image Url. the profile image url
+    measures:
+      - name: reputation
+        column: Reputation
+        type: number
+        description: the user's reputation. commonsense evidence:The user with higher reputation has more influence.
+      - name: views
+        column: Views
+        type: number
+        description: the number of views
+      - name: up_votes
+        column: UpVotes
+        type: number
+        description: the number of upvotes
+      - name: down_votes
+        column: DownVotes
+        type: number
+        description: the number of downvotes
+      - name: age
+        column: Age
+        type: number
+        description: "user's age. teenager: 13-18 adult: 19-65 elder: > 65"
+    metrics:
+      - name: record_count
+        agg: count
+        description: Count source/joined rows at the active query grain; not automatically distinct entities after joins.
+      - name: max_reputation
+        agg: max
+        column: Reputation
+        description: max of Reputation over the selected users records. Apply filters and grouping explicitly; joins can
+          repeat records.
+      - name: count_id
+        agg: count
+        column: Id
+        description: count of Id over the selected users records. Apply filters and grouping explicitly; joins can repeat
+          records.
+      - name: max_views
+        agg: max
+        column: Views
+        description: max of Views over the selected users records. Apply filters and grouping explicitly; joins can repeat
+          records.
+      - name: count_distinct_display_name
+        agg: count_distinct
+        column: DisplayName
+        description: count distinct of DisplayName over the selected users records. Apply filters and grouping explicitly;
+          joins can repeat records.
+      - name: min_views
+        agg: min
+        column: Views
+        description: min of Views over the selected users records. Apply filters and grouping explicitly; joins can repeat
+          records.
+      - name: avg_up_votes
+        agg: avg
+        column: UpVotes
+        description: avg of UpVotes over the selected users records. Apply filters and grouping explicitly; joins can
+          repeat records.
+      - name: avg_age
+        agg: avg
+        column: Age
+        description: avg of Age over the selected users records. Apply filters and grouping explicitly; joins can repeat
+          records.
+      - name: min_reputation
+        agg: min
+        column: Reputation
+        description: min of Reputation over the selected users records. Apply filters and grouping explicitly; joins can
+          repeat records.
+      - name: min_age
+        agg: min
+        column: Age
+        description: min of Age over the selected users records. Apply filters and grouping explicitly; joins can repeat
+          records.
+      - name: max_age
+        agg: max
+        column: Age
+        description: max of Age over the selected users records. Apply filters and grouping explicitly; joins can repeat
+          records.
+      - name: count_distinct_id
+        agg: count_distinct
+        column: Id
+        description: count distinct of Id over the selected users records. Apply filters and grouping explicitly; joins can
+          repeat records.
+  - name: posts_last_editor_user_id_role
+    table: users
+    description: Join role for posts.LastEditorUserId -> users.Id. Same physical table as users. One user account.
+      DisplayName is not a unique key. Reputation, profile Views, and post ViewCount are distinct.
+      Reference-informed from this database and its dev golden SQL. Preserve record identity for top-N; joins may
+      multiply rows.
+    dimensions:
+      - name: id
+        column: Id
+        type: number
+        description: the user id Part of the declared primary key.
+      - name: creation_date
+        column: CreationDate
+        type: time
+        description: "Creation Date. the creation date of the user account Source date/time: inspect stored representation
+          and cast before DuckDB date functions."
+      - name: display_name
+        column: DisplayName
+        type: string
+        description: Display Name. the user's display name
+      - name: last_access_date
+        column: LastAccessDate
+        type: time
+        description: "Last Access Date. the last access date of the user account Source date/time: inspect stored
+          representation and cast before DuckDB date functions."
+      - name: website_url
+        column: WebsiteUrl
+        type: string
+        description: Website Url. the website url of the user account
+      - name: location
+        column: Location
+        type: string
+        description: user's location
+      - name: about_me
+        column: AboutMe
+        type: string
+        description: About Me. the self introduction of the user
+      - name: account_id
+        column: AccountId
+        type: number
+        description: Account Id. the unique id of the account
+      - name: profile_image_url
+        column: ProfileImageUrl
+        type: string
+        description: Profile Image Url. the profile image url
+    measures:
+      - name: reputation
+        column: Reputation
+        type: number
+        description: the user's reputation. commonsense evidence:The user with higher reputation has more influence.
+      - name: views
+        column: Views
+        type: number
+        description: the number of views
+      - name: up_votes
+        column: UpVotes
+        type: number
+        description: the number of upvotes
+      - name: down_votes
+        column: DownVotes
+        type: number
+        description: the number of downvotes
+      - name: age
+        column: Age
+        type: number
+        description: "user's age. teenager: 13-18 adult: 19-65 elder: > 65"
+    metrics:
+      - name: record_count
+        agg: count
+        description: Count source/joined rows at the active query grain; not automatically distinct entities after joins.
+      - name: max_reputation
+        agg: max
+        column: Reputation
+        description: max of Reputation over the selected users records. Apply filters and grouping explicitly; joins can
+          repeat records.
+      - name: count_id
+        agg: count
+        column: Id
+        description: count of Id over the selected users records. Apply filters and grouping explicitly; joins can repeat
+          records.
+      - name: max_views
+        agg: max
+        column: Views
+        description: max of Views over the selected users records. Apply filters and grouping explicitly; joins can repeat
+          records.
+      - name: count_distinct_display_name
+        agg: count_distinct
+        column: DisplayName
+        description: count distinct of DisplayName over the selected users records. Apply filters and grouping explicitly;
+          joins can repeat records.
+      - name: min_views
+        agg: min
+        column: Views
+        description: min of Views over the selected users records. Apply filters and grouping explicitly; joins can repeat
+          records.
+      - name: avg_up_votes
+        agg: avg
+        column: UpVotes
+        description: avg of UpVotes over the selected users records. Apply filters and grouping explicitly; joins can
+          repeat records.
+      - name: avg_age
+        agg: avg
+        column: Age
+        description: avg of Age over the selected users records. Apply filters and grouping explicitly; joins can repeat
+          records.
+      - name: min_reputation
+        agg: min
+        column: Reputation
+        description: min of Reputation over the selected users records. Apply filters and grouping explicitly; joins can
+          repeat records.
+      - name: min_age
+        agg: min
+        column: Age
+        description: min of Age over the selected users records. Apply filters and grouping explicitly; joins can repeat
+          records.
+      - name: max_age
+        agg: max
+        column: Age
+        description: max of Age over the selected users records. Apply filters and grouping explicitly; joins can repeat
+          records.
+      - name: count_distinct_id
+        agg: count_distinct
+        column: Id
+        description: count distinct of Id over the selected users records. Apply filters and grouping explicitly; joins can
+          repeat records.
+joins:
+  - from: badges
+    to: users
+    type: left
+    keys:
+      - from: UserId
+        to: Id
+  - from: comments
+    to: users
+    type: left
+    keys:
+      - from: UserId
+        to: Id
+  - from: comments
+    to: posts
+    type: left
+    keys:
+      - from: PostId
+        to: Id
+  - from: post_history
+    to: users
+    type: left
+    keys:
+      - from: UserId
+        to: Id
+  - from: post_history
+    to: posts
+    type: left
+    keys:
+      - from: PostId
+        to: Id
+  - from: post_links
+    to: post_links_related_post_id_role
+    type: left
+    keys:
+      - from: RelatedPostId
+        to: Id
+  - from: post_links
+    to: post_links_post_id_role
+    type: left
+    keys:
+      - from: PostId
+        to: Id
+  - from: posts
+    to: posts_parent_id_role
+    type: left
+    keys:
+      - from: ParentId
+        to: Id
+  - from: posts
+    to: posts_owner_user_id_role
+    type: left
+    keys:
+      - from: OwnerUserId
+        to: Id
+  - from: posts
+    to: posts_last_editor_user_id_role
+    type: left
+    keys:
+      - from: LastEditorUserId
+        to: Id
+  - from: tags
+    to: posts
+    type: left
+    keys:
+      - from: ExcerptPostId
+        to: Id
+  - from: votes
+    to: users
+    type: left
+    keys:
+      - from: UserId
+        to: Id
+  - from: votes
+    to: posts
+    type: left
+    keys:
+      - from: PostId
+        to: Id

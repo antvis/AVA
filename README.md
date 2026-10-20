@@ -228,7 +228,11 @@ This workflow uses your agent's existing model. See [agent setup](https://ava.an
 
 ### Semantic layer strategy
 
-The `semantic` strategy reproduces a semantic-layer-mediated NL2SQL agent. You define semantic models and joins explicitly; the agent can only discover them (`getModelDataElements`), compile Semantic Model Queries into trusted SQL (`convertSmqToSql`, with a 5-row preview), and run the final SQL once (`execute`). Each step is one tool call, up to `maxSteps` (default 20). `direct` and `loop` are unchanged for A/B comparison.
+The `semantic` strategy implements the architecture described in [the semantic-layer-mediated NL2SQL paper](https://arxiv.org/abs/2606.31041). It is an independent implementation, not the authors' QUVI service or a reproduction of their benchmark score. You define semantic models and joins explicitly; the agent discovers them (`getModelDataElements`), compiles Semantic Model Queries into trusted SQL (`convertSmqToSql`, with a 5-row preview), and composes the final SQL (`execute`). The AI SDK `ToolLoopAgent` manages native tool calls and tool-result messages; the model endpoint must support tool calling. Each step permits one tool call, up to `maxSteps` (default 20). Compilation returns the selection mode (rows, distinct or aggregate), a suggested CTE name and preview truncation metadata. Tool input and pre-execution SQL validation errors allow correction within the step budget. Once final execution starts, success or failure ends the loop; database errors do not trigger SQL rewrites.
+
+After discovery, the agent can instead call `cannotAnswer` with the missing information or ambiguity. This terminates without executing a substitute query; `analyze()` rejects with an error named `InsufficientInformationError` whose message explains the limitation. The last step permits either `execute` or `cannotAnswer`. An ordinary empty query result remains a successful result.
+
+The core preserves the query's columns and values, including arrays, NULLs and empty results. Row/byte limits are reported through `truncated` and `truncatedBy`; they do not cause the agent to shrink the query to fit. Application-specific answer validation belongs to the caller. SMQ inputs retain their existing semantics: row targets in `metrics` preserve duplicates without `group_by`; non-aggregate `group_by` returns distinct combinations.
 
 ```ts
 ava.semantic({
@@ -237,7 +241,8 @@ ava.semantic({
       name: 'orders',
       table: 'orders',
       dimensions: [{ name: 'channel', column: 'channel' }, { name: 'status', column: 'status' }],
-      measures: [{ name: 'revenue', agg: 'sum', column: 'amount' }],
+      measures: [{ name: 'amount', column: 'amount', description: 'Payment amount per order' }],
+      metrics: [{ name: 'revenue', agg: 'sum', column: 'amount' }],
     },
   ],
   joins: [], // { from, to, keys: [{ from, to }], type?: 'left' | 'inner' }
@@ -245,13 +250,38 @@ ava.semantic({
 
 // Pure and deterministic: no LLM, no database.
 const { sql } = ava.compileSMQ({
-  metrics: ['orders__revenue'],
+  metrics: ['revenue'],
   filters: ["orders__status = 'paid'"],
   group_by: ['orders__channel'],
 });
 
 await ava.analyze('Paid revenue by channel', { strategy: { type: 'semantic', maxSteps: 20 } });
 ```
+
+`ava.semantic()` also accepts YAML or JSON text. Dimensions describe grouping/filtering attributes; measures describe row-level quantities; metrics define aggregates or derived aggregate calculations. `column` is shorthand for a physical column, while `expr` accepts a physical SQL expression with `{TABLE}` as its table alias. Metrics can use `agg` plus `column`/`expr`, or a complete aggregate `expr`.
+
+```yaml
+models:
+  - name: orders
+    table: orders
+    dimensions:
+      - { name: channel, column: channel, description: Sales channel }
+    measures:
+      - { name: amount, expr: '{TABLE}."amount"', description: Payment amount per order }
+    metrics:
+      - { name: revenue, agg: sum, column: amount, description: Total payment amount }
+      - name: average_order_amount
+        expr: 'SUM({TABLE}."amount") / NULLIF(COUNT(*), 0)'
+        description: Average payment amount per order
+```
+
+SMQ `metrics` is the target list: dimensions/measures use `model__element`, and unique predefined metrics may use a bare name (`revenue`). Qualified metrics (`orders__revenue`) remain supported; ambiguous bare names fail. Row targets without `group_by` preserve duplicate records. With aggregates, selected row expressions define the grouping; without aggregates, `group_by` returns distinct combinations. Measures are never implicitly summed: request a predefined aggregate metric to aggregate them. This explicit rule is AVA's choice where the paper does not specify the complete SMQ grammar. Row filters use `WHERE`; aggregate filters use `HAVING`.
+
+Joins accept either physical `keys` or an `on` SQL predicate, for example `TRIM({FROM}."customer_id") = TRIM({TO}."id")`. A reversed left join becomes a right join to preserve the declared outer-join direction. Models expose business descriptions during discovery; physical table/column expressions are introduced by compilation. SQL expressions in semantic definitions are trusted, reviewed configuration and must use the target database's syntax.
+
+The agent must discover models, compile and successfully preview SQL, then compose a final query. DuckDB validates tables and columns from the native SQL parse tree against successful compilations, including CTE/subquery scopes; unsupported constructs fail explicitly. This is a grounding check, not a database authorization boundary. SQL execution still applies the engine's read-only checks. Custom engines must implement `validateSemanticQuery`; `semantic` currently runs on the bundled DuckDB engine. Standalone compilation supports DuckDB, PostgreSQL, MySQL, ClickHouse, SQLite, BigQuery, Snowflake and ANSI identifier/literal rendering; it does not transpile configured SQL expressions or supply cloud connections.
+
+The semantic agent forwards `llm.temperature`, `llm.maxOutputTokens` and `llm.providerOptions` to the model. Configure reasoning through the selected provider instead of disabling it in the shared workflow. The step budget counts all tool actions (including discovery), not just SMQ calls. Benchmark-specific answer formatting belongs in the evaluation question, not in the generic semantic prompt.
 
 ### Use from the CLI
 

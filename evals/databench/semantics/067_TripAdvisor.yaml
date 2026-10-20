@@ -1,0 +1,99 @@
+dialect: duckdb
+models:
+  - name: reviews
+    table: data
+    description: One row per review, identified by id. ratings and author are Python-dictionary text, not JSON objects.
+      Manually curated using the full data and DataBench question/answer definitions; reference-informed, not a
+      schema-only baseline.
+    dimensions:
+      - name: review_id
+        column: id
+        description: Unique review ID; retain for repeated values in top-N lists.
+        type: number
+      - name: title
+        column: title
+        description: Review title may contain curly quotation marks; title lookup may ignore enclosing quotes and case.
+        type: string
+      - name: text
+        column: text
+        description: Review body; length excludes title.
+        type: string
+      - name: author_raw
+        column: author
+        description: Original dictionary text; username and profile totals are separate from review-level helpful votes.
+        type: string
+      - name: username
+        expr: "NULLIF(SUBSTR(REGEXP_EXTRACT({TABLE}.\"author\", '''username'':
+          (''(?:\\\\.|[^''\\\\])*''|\\\"(?:\\\\.|[^\\\"\\\\])*\\\")', 1), 2, LENGTH(REGEXP_EXTRACT({TABLE}.\"author\",
+          '''username'': (''(?:\\\\.|[^''\\\\])*''|\\\"(?:\\\\.|[^\\\"\\\\])*\\\")', 1)) - 2), '')"
+        description: Extracted username; empty/missing usernames excluded from named-author counts.
+        type: string
+      - name: offering_id
+        column: offering_id
+        description: Property ID repeats across reviews.
+        type: number
+      - name: mobile
+        column: via_mobile
+        description: Boolean submitted-via-mobile flag.
+        type: boolean
+      - name: review_year
+        expr: EXTRACT(YEAR FROM {TABLE}."date" AT TIME ZONE 'UTC')
+        description: Year review was posted.
+        type: number
+      - name: stay_year
+        expr: EXTRACT(YEAR FROM TRY_STRPTIME({TABLE}."date_stayed", '%B %Y'))
+        description: Year guest stayed, distinct from review publication year.
+        type: number
+      - name: username_lookup
+        expr: "LOWER(REGEXP_REPLACE(NULLIF(SUBSTR(REGEXP_EXTRACT({TABLE}.\"author\", '''username'':
+          (''(?:\\\\.|[^''\\\\])*''|\\\"(?:\\\\.|[^\\\"\\\\])*\\\")', 1), 2, LENGTH(REGEXP_EXTRACT({TABLE}.\"author\",
+          '''username'': (''(?:\\\\.|[^''\\\\])*''|\\\"(?:\\\\.|[^\\\"\\\\])*\\\")', 1)) - 2), ''), '\\s+', '', 'g'))"
+        type: string
+        description: Case- and whitespace-normalized username for textual lookup; username retains the original display spelling.
+    measures:
+      - name: helpful_votes
+        column: num_helpful_votes
+        description: Votes marking this review helpful, including zero; not author profile totals.
+        type: number
+      - name: text_length
+        expr: LENGTH({TABLE}."text")
+        description: Character length of body text only.
+        type: number
+      - name: overall_rating
+        expr: "TRY_CAST(REGEXP_EXTRACT({TABLE}.\"ratings\", '[''\"]overall[''\"]: *([0-9.]+)', 1) AS DOUBLE)"
+        description: Overall stars, missing key stays NULL.
+        type: number
+      - name: room_rating
+        expr: "TRY_CAST(REGEXP_EXTRACT({TABLE}.\"ratings\", '[''\"]rooms[''\"]: *([0-9.]+)', 1) AS DOUBLE)"
+        description: Room stars; missing key is unscored, not zero.
+        type: number
+      - name: location_rating
+        expr: "TRY_CAST(REGEXP_EXTRACT({TABLE}.\"ratings\", '[''\"]location[''\"]: *([0-9.]+)', 1) AS DOUBLE)"
+        description: Location stars; COUNT of non-null values counts reviews rating location.
+        type: number
+    metrics:
+      - name: review_count
+        agg: count
+        description: Count review rows; group by nonempty username for author review counts.
+      - name: average_helpful_votes
+        agg: avg
+        description: Mean helpful votes per review.
+        column: num_helpful_votes
+      - name: total_helpful_votes
+        agg: sum
+        description: Sum of review-level helpful votes.
+        column: num_helpful_votes
+      - name: maximum_helpful_votes
+        agg: max
+        description: Largest helpful count.
+        column: num_helpful_votes
+      - name: average_room_rating
+        expr: "ROUND(AVG(TRY_CAST(REGEXP_EXTRACT({TABLE}.\"ratings\", '[''\"]rooms[''\"]: *([0-9.]+)', 1) AS DOUBLE)), 2)"
+        description: Mean non-null room-star rating, reported to two decimal places.
+      - name: average_text_length
+        expr: AVG(LENGTH({TABLE}."text"))
+        description: Mean body length in characters.
+      - name: maximum_text_length
+        expr: MAX(LENGTH({TABLE}."text"))
+        description: Longest review body in characters.
+joins: []

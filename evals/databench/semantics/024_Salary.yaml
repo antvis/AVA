@@ -1,0 +1,87 @@
+dialect: duckdb
+models:
+  - name: respondents
+    table: data
+    description: One row per survey response. Preserve separate raw and transformed salary fields; their ranges differ.
+      Manually curated using the full data and DataBench question/answer definitions; reference-informed, not a
+      schema-only baseline.
+    dimensions:
+      - name: gender
+        column: SEXO
+        description: Male or Female.
+        type: string
+      - name: age_band
+        column: ANOS2
+        description: Recorded Spanish age-band label; preserve spelling.
+        type: string
+      - name: region
+        column: NUTS1
+        description: Recorded broad region.
+        type: string
+      - name: control
+        column: CONTROL
+        description: PUBLICO or PRIVADO.
+        type: string
+      - name: market
+        column: MERCADO
+        description: Market scope label.
+        type: string
+      - name: cluster
+        column: umap_cluster
+        description: UMAP cluster label, distinct from clusters_2.
+        type: string
+      - name: occupation
+        column: CNO1
+        description: Occupation category.
+        type: string
+      - name: industry
+        column: CNACE
+        description: Industry category.
+        type: string
+      - name: education
+        column: ESTU
+        description: Education category.
+        type: string
+      - name: x
+        column: x
+        description: Recorded embedding x coordinate; no geographic interpretation.
+        type: number
+      - name: y
+        column: y
+        description: Recorded embedding y coordinate.
+        type: number
+    measures:
+      - name: salary
+        column: RETRINOIN
+        description: Original numeric RETRINOIN, including outliers and zero.
+        type: number
+      - name: salary_xrzi
+        column: RETRINOIN_xRZI
+        description: Specifically RETRINOIN_xRZI, not raw RETRINOIN.
+        type: number
+      - name: salary_wwqk
+        column: RETRINOIN_WwQk
+        description: Specifically RETRINOIN_WwQk; NULL is excluded in comparisons.
+        type: number
+      - name: salary_ac1q
+        column: RETRINOIN_ac1q
+        description: Specifically RETRINOIN_ac1q.
+        type: number
+    metrics:
+      - name: respondent_count
+        agg: count
+        description: Count response rows, including for unique respondents when no respondent ID exists; do not deduplicate
+          equal salaries.
+      - name: average_salary
+        agg: avg
+        description: Mean original salary, not a transformed copy.
+        column: RETRINOIN
+      - name: maximum_salary_ac1q
+        agg: max
+        description: Maximum known ac1q field.
+        column: RETRINOIN_ac1q
+      - name: unique_clusters
+        agg: count_distinct
+        description: Distinct UMAP cluster labels.
+        column: umap_cluster
+joins: []

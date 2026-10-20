@@ -1,0 +1,100 @@
+dialect: duckdb
+models:
+  - name: aircraft
+    table: data
+    description: One row is an aircraft incident. Raw casualty strings contain separate fatalities and occupants; do not
+      conflate them. Manually curated using the full data and DataBench question/answer definitions; reference-informed,
+      not a schema-only baseline.
+    dimensions:
+      - name: date_text
+        column: Incident_Date
+        description: Original incident date text; may contain incomplete dates.
+        type: string
+      - name: date
+        expr: CAST({TABLE}."Date" AT TIME ZONE 'UTC' AS DATE)
+        description: Parsed incident date; NULL when source date is unavailable.
+        type: time
+      - name: model
+        column: Aircaft_Model
+        description: Aircraft model; spelling of physical field is retained.
+        type: string
+      - name: registration
+        column: Aircaft_Registration
+        description: Registration can repeat and can be missing; combine with date/model for record selection.
+        type: string
+      - name: operator
+        column: Aircaft_Operator
+        description: Aircraft operator.
+        type: string
+      - name: nature
+        column: Aircaft_Nature
+        description: Flight nature or purpose.
+        type: string
+      - name: category
+        column: Incident_Category
+        description: Incident category.
+        type: string
+      - name: cause
+        column: Incident_Cause(es)
+        description: Recorded incident cause taxonomy, case-sensitive. Undercarriage is written 'Undercarriage' and includes
+          landing gear faults. Search substrings without changing case or spelling in output.
+        type: string
+      - name: location
+        column: Incident_Location
+        description: Recorded incident location; do not expand truncated labels or invent airport names.
+        type: string
+      - name: damage
+        column: Aircaft_Damage_Type
+        description: Damage label; Destroyed means total destruction.
+        type: string
+      - name: phase
+        column: Aircraft_Phase
+        description: Recorded flight phase.
+        type: string
+      - name: onboard_total
+        column: Onboard_Total
+        description: Raw fatalities/occupants text.
+        type: string
+    measures:
+      - name: fatalities
+        column: Fatalities
+        description: Recorded numeric incident fatalities; some incidents include ground deaths. Distinct from occupants and
+          onboard_fatalities; do not silently substitute one casualty scope for another.
+        type: number
+      - name: onboard_fatalities
+        expr: "TRY_CAST(REGEXP_EXTRACT({TABLE}.\"Onboard_Total\", 'Fatalities: *([0-9]+)', 1) AS INTEGER)"
+        description: Onboard deaths parsed from Onboard_Total; excludes ground casualties and differs from onboard occupants.
+          Missing count stays NULL.
+        type: number
+      - name: occupants
+        expr: "TRY_CAST(REGEXP_EXTRACT({TABLE}.\"Onboard_Total\", 'Occupants: *([0-9]+)', 1) AS INTEGER)"
+        description: Total onboard occupants parsed after Occupants:, not Fatalities:. Missing count stays NULL.
+        type: number
+      - name: passengers
+        expr: "TRY_CAST(REGEXP_EXTRACT({TABLE}.\"Onboard_Passengers\", 'Occupants: *([0-9]+)', 1) AS INTEGER)"
+        description: Passenger occupants, not passenger fatalities.
+        type: number
+      - name: crew
+        expr: "TRY_CAST(REGEXP_EXTRACT({TABLE}.\"Onboard_Crew\", 'Occupants: *([0-9]+)', 1) AS INTEGER)"
+        description: Crew occupants.
+        type: number
+      - name: ground_fatalities
+        expr: "TRY_CAST(REGEXP_EXTRACT({TABLE}.\"Ground_Casualties\", 'Fatalities: *([0-9]+)', 1) AS INTEGER)"
+        description: Ground fatalities parsed from text; missing is unknown, not a positive casualty count.
+        type: number
+      - name: collision_fatalities
+        expr: "TRY_CAST(REGEXP_EXTRACT({TABLE}.\"Collision_Casualties\", 'Fatalities: *([0-9]+)', 1) AS INTEGER)"
+        description: Recorded collision casualties; presence and positive casualties are distinct conditions.
+        type: number
+    metrics:
+      - name: incident_count
+        agg: count
+        description: Count incident records; retain repeated numeric values belonging to different incidents.
+      - name: unique_models
+        agg: count_distinct
+        description: Distinct aircraft model labels.
+        column: Aircaft_Model
+      - name: maximum_occupants
+        expr: "MAX(TRY_CAST(REGEXP_EXTRACT({TABLE}.\"Onboard_Total\", 'Occupants: *([0-9]+)', 1) AS INTEGER))"
+        description: Maximum known onboard occupants.
+joins: []

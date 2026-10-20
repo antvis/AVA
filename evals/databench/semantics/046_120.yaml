@@ -1,0 +1,99 @@
+dialect: duckdb
+models:
+  - name: olympics
+    table: data
+    description: One row is an athlete-event participation. ID identifies an athlete, not a unique participation. Manually
+      curated using the full data and DataBench question/answer definitions; reference-informed, not a schema-only
+      baseline.
+    dimensions:
+      - name: athlete_id
+        column: ID
+        description: Athlete ID repeated across events and games.
+        type: number
+      - name: name
+        column: Name
+        description: Athlete name; rankings of athlete participation count rows unless distinct games is requested.
+        type: string
+      - name: sex
+        column: Sex
+        description: M/F.
+        type: string
+      - name: team
+        column: Team
+        description: Team name used for team-name frequency rankings.
+        type: string
+      - name: noc
+        column: NOC
+        description: National Olympic Committee code, used for unique-team counts in benchmark definitions.
+        type: string
+      - name: games
+        column: Games
+        description: Year/season edition label; combine athlete_id, games and event for participation context.
+        type: string
+      - name: year
+        column: Year
+        description: Games year.
+        type: number
+      - name: season
+        column: Season
+        description: Summer/Winter.
+        type: string
+      - name: city
+        column: City
+        description: Host city.
+        type: string
+      - name: sport
+        column: Sport
+        description: Sport category.
+        type: string
+      - name: event
+        column: Event
+        description: Event name.
+        type: string
+      - name: medal
+        column: Medal
+        description: Gold/Silver/Bronze; NULL means no recorded medal. Count non-null values for medals.
+        type: string
+    measures:
+      - name: age
+        column: Age
+        description: Age at participation; repeated across events, NULL unknown.
+        type: number
+      - name: height
+        column: Height
+        description: Recorded athlete height in centimeters, nullable. Exclude unknown heights before frequency rankings; one
+          athlete may have multiple participation records.
+        type: number
+      - name: weight
+        column: Weight
+        description: Weight in kg.
+        type: number
+    metrics:
+      - name: participation_count
+        agg: count
+        description: Count athlete-event rows, not unique athletes; use for participation frequencies.
+      - name: unique_athletes
+        agg: count_distinct
+        description: Distinct athletes.
+        column: ID
+      - name: unique_teams
+        agg: count_distinct
+        description: Distinct NOC codes.
+        column: NOC
+      - name: distinct_games
+        agg: count_distinct
+        description: Distinct editions, when explicitly requested.
+        column: Games
+      - name: medal_count
+        agg: count
+        description: Number of non-null medal records.
+        column: Medal
+      - name: average_age
+        agg: avg
+        description: Participation-weighted mean known age.
+        column: Age
+      - name: maximum_weight
+        agg: max
+        description: Highest recorded weight.
+        column: Weight
+joins: []

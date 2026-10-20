@@ -1,0 +1,65 @@
+dialect: duckdb
+models:
+  - name: countries
+    table: data
+    description: One row per country in the happiness snapshot. Manually curated using the full data and DataBench
+      question/answer definitions; reference-informed, not a schema-only baseline.
+    dimensions:
+      - name: country
+        column: Country name
+        description: Unique country name; retain in country-level numeric rankings.
+        type: string
+      - name: region
+        column: Regional indicator
+        description: Region label.
+        type: string
+    measures:
+      - name: ladder_score
+        column: Ladder score
+        description: Observed happiness ladder score, not Dystopia score.
+        type: number
+      - name: generosity
+        column: Generosity
+        description: Observed generosity score, not Explained by contribution.
+        type: number
+      - name: social_support
+        column: Social support
+        description: Observed social support, not Explained by contribution.
+        type: number
+      - name: corruption
+        column: Perceptions of corruption
+        description: Observed corruption perception score.
+        type: number
+      - name: log_gdp
+        column: Logged GDP per capita
+        description: Logged GDP, not unlogged currency income.
+        type: number
+      - name: life_expectancy
+        column: Healthy life expectancy
+        description: Healthy life expectancy.
+        type: number
+      - name: freedom
+        column: Freedom to make life choices
+        description: Observed freedom score.
+        type: number
+    metrics:
+      - name: country_count
+        agg: count
+        description: Count countries after all question conditions. Ranking regions means country count, not sum of ladder scores.
+      - name: average_ladder
+        agg: avg
+        description: Mean observed ladder score.
+        column: Ladder score
+      - name: average_corruption
+        agg: avg
+        description: Mean observed corruption perception.
+        column: Perceptions of corruption
+      - name: maximum_generosity
+        agg: max
+        description: Maximum observed generosity.
+        column: Generosity
+      - name: minimum_support
+        agg: min
+        description: Minimum observed social support.
+        column: Social support
+joins: []

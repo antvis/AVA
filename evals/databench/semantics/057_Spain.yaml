@@ -1,0 +1,87 @@
+dialect: duckdb
+models:
+  - name: survey
+    table: data
+    description: One row per survey response. Preserve stated categories; do not infer preferences from other demographic
+      fields. Manually curated using the full data and DataBench question/answer definitions; reference-informed, not a
+      schema-only baseline.
+    dimensions:
+      - name: vote_intentions
+        column: Vote Intention
+        description: List of stated voting intentions; empty list means no recorded choice. Membership tests use the list itself.
+      - name: vote_intention_label
+        expr: "'[' || ARRAY_TO_STRING({TABLE}.\"Vote Intention\", ', ') || ']'"
+        description: Whole-list display label including brackets; frequency questions retain empty [] as a category rather than
+          exploding it.
+        type: string
+      - name: education
+        column: edu
+        description: Education category. Incomplete primary education is stored as 'Not completed Primary education'.
+        type: string
+      - name: gender
+        column: gender
+        description: Recorded gender or I prefer not to say.
+        type: string
+      - name: language
+        column: lang
+        description: Source first-language label; preserve encoding as stored.
+        type: string
+      - name: party
+        column: partyId
+        description: Party identification, distinct from vote intention; exclude NULL from named-party rankings.
+        type: string
+      - name: political_interest
+        column: polInterest
+        description: Interest category; Not interested at all is explicit, missing is unknown.
+        type: string
+      - name: previous_vote
+        column: prevVote
+        description: Previous vote response.
+        type: string
+      - name: vote_reason
+        column: voteReason
+        description: Stated reason for voting; NULL is missing. Exclude NULL before ordering and limiting reasons, not after
+          selecting the top categories.
+        type: string
+      - name: province
+        column: prov
+        description: Province label.
+        type: string
+      - name: region
+        column: const
+        description: Recorded constitutional region.
+        type: string
+    measures:
+      - name: age
+        column: Age
+        description: Age in years. NULL is an unanswered age and is excluded from age-value frequency rankings.
+        type: number
+      - name: left_right
+        column: User self-placement on Left-Right economic values axis
+        description: 0–10 self-placement; 10 is right end.
+        type: number
+      - name: progressive_conservative
+        column: User self- placement on Progressive-Conservative economic values axis
+        description: Recorded 0–10 self-placement.
+        type: number
+      - name: decentralization
+        column: Constitutional organisation of the country (More Descentralization)
+        description: Recorded 1–5 organization scale.
+        type: number
+      - name: layoff_restrictions
+        column: It should be more difficult for companies to lay off workers
+        description: Agreement scale 1–5; agreeing under benchmark definition combines 4 and 5, excluding NULL.
+        type: number
+    metrics:
+      - name: respondent_count
+        agg: count
+        description: Count response rows; category/age/scale popularity means frequency, not largest value.
+      - name: average_age
+        agg: avg
+        description: Mean known age without filling missing values.
+        column: Age
+      - name: maximum_age
+        agg: max
+        description: Maximum reported age in selected population.
+        column: Age
+joins: []

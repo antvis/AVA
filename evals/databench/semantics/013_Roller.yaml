@@ -1,0 +1,70 @@
+dialect: duckdb
+models:
+  - name: coasters
+    table: data
+    description: One row is a roller-coaster entry; names may recur at different locations or introductions. Manually
+      curated using the full data and DataBench question/answer definitions; reference-informed, not a schema-only
+      baseline.
+    dimensions:
+      - name: name
+        column: coaster_name
+        description: Coaster name; carry location and introduction year when preserving individual entries.
+        type: string
+      - name: location
+        column: Location
+        description: Park/location label; Other is a recorded value.
+        type: string
+      - name: introduced
+        column: year_introduced
+        description: Year introduced; oldest means smallest year. Keep repeated years for multiple coasters.
+        type: number
+      - name: status
+        column: Status
+        description: Recorded operating status, e.g. Operating or Removed; NULL is unknown.
+        type: string
+      - name: manufacturer
+        column: Manufacturer
+        description: Manufacturer of the same selected coaster, not the most frequent maker.
+        type: string
+      - name: designer
+        column: Designer
+        description: Recorded designer; exact-label filters.
+        type: string
+      - name: type
+        column: Type_Main
+        description: Broad material/type category used for Steel/Wood/Other questions.
+        type: string
+      - name: detailed_type
+        column: Type
+        description: Detailed ride type.
+        type: string
+    measures:
+      - name: speed_mph
+        column: speed_mph
+        description: Normalized speed in miles/hour; exclude NULL in extremes.
+        type: number
+      - name: height_ft
+        column: height_ft
+        description: Existing numeric feet field; do not fill it using other height columns when reproducing this field statistic.
+        type: number
+      - name: inversions
+        column: Inversions_clean
+        description: Cleaned numeric inversion count.
+        type: number
+      - name: g_force
+        column: Gforce_clean
+        description: Cleaned numeric G-force; NULL is unknown and excluded from mean/extremes.
+        type: number
+    metrics:
+      - name: coaster_count
+        agg: count
+        description: Count coaster entries. Attribute lists should carry name/location/introduction fields and preserve tied values.
+      - name: maximum_speed
+        agg: max
+        description: Maximum known mph speed.
+        column: speed_mph
+      - name: average_g_force
+        agg: avg
+        description: Mean non-null cleaned G-force.
+        column: Gforce_clean
+joins: []

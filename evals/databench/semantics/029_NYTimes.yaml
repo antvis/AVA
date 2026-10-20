@@ -1,0 +1,66 @@
+dialect: duckdb
+models:
+  - name: articles
+    table: data
+    description: One row is a dated article entry; URL plus date identifies the entry in this full snapshot. Manually curated using the
+      full data and DataBench question/answer definitions; reference-informed, not a schema-only baseline.
+    dimensions:
+      - name: url
+        column: web_url
+        description: Article URL; the same URL can appear on different dates. Include url and date together in per-article
+          rankings to preserve record identity; do not group only by the answer attribute.
+        type: string
+      - name: headline
+        column: headline
+        description: Headline text; missing is unknown, not an empty headline.
+        type: string
+      - name: date
+        expr: CAST({TABLE}."date" AT TIME ZONE 'UTC' AS DATE)
+        description: Date recorded by the dataset, interpreted in UTC. It can differ from the date embedded in the URL.
+          Together with url it identifies an article entry.
+        type: time
+      - name: material
+        column: material_type
+        description: Material label preserving case, e.g. News, Op-Ed, Editorial, Video, Slideshow. Exclude requested types
+          explicitly.
+        type: string
+      - name: keywords
+        column: keywords
+        description: Actual list of keyword strings. For membership use list_contains on compiled output; empty list has zero
+          keywords, not one serialized empty token.
+    measures:
+      - name: headline_length
+        expr: LENGTH({TABLE}."headline")
+        description: Number of Unicode characters in the headline, including spaces; NULL remains NULL. For top N articles
+          select url and date, then sort and LIMIT N. Ties require an explicit tie-break to select a unique subset.
+        type: number
+      - name: headline_character_length
+        expr: LENGTH({TABLE}."headline")
+        description: Explicit character-count alias of headline_length; NULL remains NULL.
+        type: number
+      - name: headline_byte_length
+        expr: OCTET_LENGTH(ENCODE({TABLE}."headline"))
+        description: UTF-8 storage length in bytes, including spaces; use when byte length is requested. This can differ from
+          character count for non-ASCII text; NULL remains NULL.
+        type: number
+      - name: keyword_count
+        expr: ARRAY_LENGTH({TABLE}."keywords")
+        description: Number of keyword list elements; empty list is zero. Rank article records using url and date, preserving
+          repeated counts. If a fixed N is requested, use LIMIT N, not a rank threshold that includes extra ties. Tied counts
+          do not determine a unique article subset unless a tie-break is specified.
+        type: number
+    metrics:
+      - name: article_count
+        agg: count
+        description: Count article rows; top-N attributes are per article and preserve equal values.
+      - name: unique_materials
+        agg: count_distinct
+        description: Distinct non-null material types.
+        column: material_type
+      - name: maximum_headline_length
+        expr: MAX(LENGTH({TABLE}."headline"))
+        description: Maximum headline character count, using the same definition as headline_length.
+      - name: maximum_keyword_count
+        expr: MAX(ARRAY_LENGTH({TABLE}."keywords"))
+        description: Largest number of keyword entries.
+joins: []

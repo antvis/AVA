@@ -1,0 +1,93 @@
+dialect: duckdb
+models:
+  - name: borrowers
+    table: data
+    description: One row is a borrower/loan record; no unique borrower ID is provided. Manually curated using the full data
+      and DataBench question/answer definitions; reference-informed, not a schema-only baseline.
+    dimensions:
+      - name: history
+        column: Credit History
+        description: Credit-history category.
+        type: string
+      - name: purpose
+        column: Purpose of Loan
+        description: Loan-purpose label.
+        type: string
+      - name: savings
+        column: Savings Account
+        description: Original savings category, including No Savings Account.
+        type: string
+      - name: employment_length
+        column: Length of Current Employment
+        description: Employment-length category.
+        type: string
+      - name: job
+        column: Job
+        description: Job of this borrower, shared by many borrowers and not a record key. To find jobs of selected borrowers,
+          keep each loan row with its job; grouping by job instead describes occupational populations.
+        type: string
+      - name: housing
+        column: Housing
+        description: Housing tenure label.
+        type: string
+      - name: foreign_worker
+        column: Foreign Worker
+        description: Yes/No.
+        type: string
+      - name: risk
+        column: Risk
+        description: Good Risk or Bad Risk.
+        type: string
+      - name: sex
+        column: Sex
+        description: Recorded sex.
+        type: string
+      - name: status
+        column: Status
+        description: Recorded personal status.
+        type: string
+    measures:
+      - name: duration
+        column: Loan Duration - Months
+        description: Term of this loan in months. Longest/shortest orders this value; most common term orders borrower_count
+          grouped by duration. Different loans can have equal terms.
+        type: number
+      - name: amount
+        column: Loan Amount
+        description: Amount of this loan, not the maximum or total for its borrower's occupation. Equal amounts remain
+          separate loan records.
+        type: number
+      - name: age
+        column: Age
+        description: Borrower age in years.
+        type: number
+      - name: existing_loans
+        column: Number of Existing Loans
+        description: Existing-loan count for this borrower at the recorded observation. Borrowers sharing a count remain
+          separate records; this is not the number of distinct credit-exposure levels.
+        type: number
+      - name: dependants
+        column: Number of Dependants
+        description: Dependants count.
+        type: number
+    metrics:
+      - name: borrower_count
+        agg: count
+        description: Count borrower/loan records; repeated job or numeric values remain repeated in top-N borrower lists.
+      - name: maximum_amount
+        agg: max
+        description: Largest loan amount.
+        column: Loan Amount
+      - name: maximum_duration
+        agg: max
+        description: Longest term in months.
+        column: Loan Duration - Months
+      - name: maximum_age
+        agg: max
+        description: Oldest recorded borrower.
+        column: Age
+      - name: maximum_existing_loans
+        agg: max
+        description: Largest existing-loan count.
+        column: Number of Existing Loans
+joins: []

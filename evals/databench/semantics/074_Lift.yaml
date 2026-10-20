@@ -1,0 +1,74 @@
+dialect: duckdb
+models:
+  - name: lifts
+    table: data
+    description: One row per recorded lift. Names repeat; no gender field or unique lift ID is provided. Manually curated
+      using the full data and DataBench question/answer definitions; reference-informed, not a schema-only baseline.
+    dimensions:
+      - name: lifter
+        column: Lifter Name
+        description: Athlete name; do not infer gender from names. Gender-based questions lack a recorded gender attribute.
+        type: string
+      - name: weight_class
+        column: Weight Class
+        description: Weight-class upper limit in kg, or Open. Convert pounds/grams to kg before choosing the smallest
+          accommodating class.
+        type: string
+      - name: lift_type
+        column: Lift Type
+        description: Deadlift, Bench Press or Squat.
+        type: string
+    measures:
+      - name: age
+        column: Age
+        description: Age recorded on the lift entry.
+        type: number
+      - name: amount_kg
+        column: Amount Lifted (kg)
+        description: Amount lifted in kilograms; convert pounds to kg for comparisons.
+        type: number
+      - name: weight_limit_kg
+        expr: TRY_CAST(REGEXP_EXTRACT({TABLE}."Weight Class", '^([0-9]+)', 1) AS DOUBLE)
+        type: number
+        description: Numeric upper limit of weight class in kg; Open has no numeric limit. Convert body weight to kg and choose
+          the smallest available limit at least that weight; return/filter the corresponding full weight_class label.
+    metrics:
+      - name: lift_count
+        agg: count
+        description: Count lift entries, not unique athletes. Retain row multiplicity for best/worst individual lifts; no
+          source-order tie-break key is stored.
+      - name: athlete_count
+        agg: count_distinct
+        description: Distinct named lifters, including within a weight class.
+        column: Lifter Name
+      - name: unique_exercises
+        agg: count_distinct
+        description: Distinct exercise types.
+        column: Lift Type
+      - name: average_age
+        agg: avg
+        description: Mean age across lift entries.
+        column: Age
+      - name: average_amount
+        agg: avg
+        description: Mean amount lifted per entry.
+        column: Amount Lifted (kg)
+      - name: total_amount
+        agg: sum
+        description: Combined kilograms lifted, distinct from number of lifts.
+        column: Amount Lifted (kg)
+      - name: maximum_amount
+        agg: max
+        description: Largest individual lift in kg.
+        column: Amount Lifted (kg)
+      - name: minimum_amount
+        agg: min
+        description: Smallest individual lift in kg.
+        column: Amount Lifted (kg)
+      - name: amount_range
+        expr: MAX({TABLE}."Amount Lifted (kg)") - MIN({TABLE}."Amount Lifted (kg)")
+        description: Range of lifted kg.
+      - name: age_range
+        expr: MAX({TABLE}."Age") - MIN({TABLE}."Age")
+        description: Age gap within the selected lift records.
+joins: []

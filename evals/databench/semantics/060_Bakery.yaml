@@ -1,0 +1,53 @@
+dialect: duckdb
+models:
+  - name: basket_items
+    table: data
+    description: One row is an item occurrence in a transaction; transaction identifiers repeat. Manually curated using the
+      full data and DataBench question/answer definitions; reference-informed, not a schema-only baseline.
+    dimensions:
+      - name: transaction
+        column: Transaction
+        description: Transaction ID repeated for each item line. Comparing unique IDs with item_count detects repeats; grouping
+          by ID first would erase them.
+        type: number
+      - name: item
+        column: Item
+        description: Item label, e.g. Brownie. Popularity counts item rows.
+        type: string
+      - name: date
+        expr: CAST(TRY_STRPTIME({TABLE}."date_time", '%d-%m-%Y %H:%M') AS DATE)
+        description: Calendar day parsed as day-month-year, not month-day-year.
+        type: time
+      - name: datetime_text
+        column: date_time
+        description: Original day-month-year timestamp string.
+        type: string
+      - name: period
+        column: period_day
+        description: Recorded morning/afternoon/evening/night label; use existing assignment.
+        type: string
+      - name: day_type
+        column: weekday_weekend
+        description: Exact labels 'weekday' and 'weekend', lowercase.
+        type: string
+    measures: []
+    metrics:
+      - name: item_count
+        agg: count
+        description: Count item occurrences. Group by transaction to count basket size; group by item to rank popularity.
+      - name: transaction_count
+        agg: count_distinct
+        description: Distinct transactions, including period-specific counts.
+        column: Transaction
+      - name: unique_items
+        agg: count_distinct
+        description: Distinct item labels.
+        column: Item
+      - name: unique_days
+        expr: COUNT(DISTINCT CAST(TRY_STRPTIME({TABLE}."date_time", '%d-%m-%Y %H:%M') AS DATE))
+        description: Distinct calendar dates.
+      - name: maximum_transaction
+        agg: max
+        description: Largest transaction number.
+        column: Transaction
+joins: []

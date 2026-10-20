@@ -1,12 +1,15 @@
 import { appendFileSync, existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
-import { dirname, resolve } from 'node:path';
+import { createHash } from 'node:crypto';
+import { basename, dirname, join, resolve } from 'node:path';
 import { parseArgs } from 'node:util';
 import { fileURLToPath } from 'node:url';
 
-import { llmConfig } from '../model.ts';
+import { llmConfig, modelOptions, modelSettings } from '../model.ts';
 import { createUsage } from '../../_shared/usage.js';
 import { integer } from '../../_shared/args.js';
-import { atomicJson, readJson } from '../../_shared/files.js';
+import { atomicJson, readJson, sha256 } from '../../_shared/files.js';
+import { implementationHashes, traceWorkflow } from '../runtime.ts';
+import { prepareStrategy, strategyHelp, strategyOptions } from '../strategies.ts';
 
 import { AVA } from '../../../lib/index.js';
 import { evaluate, getDataset, predictionIndex, registerPlugin } from '../../_shared/index.js';
@@ -24,27 +27,54 @@ Options:
   --limit <number|all>   Questions to run (default: 20)
   --offset <number>      Start offset after filtering (default: 0)
   --suite <name>         Run one dataset, e.g. 002_Titanic
+  --ids-file <path>      JSON array of exact question IDs (within the selected dataset/slice)
   --concurrency <number> Parallel model calls (default: 3)
-  --strategy <name>      direct, loop or subset (default: direct)
+${strategyHelp}
   --engine <name>        duckdb or python (default: duckdb)
   --output <path>        Prediction CSV (default: evals/ava-workflow/results/<dataset>.csv)
   --help                 Show help
 `;
 
-function answerFrom(data: unknown, type: string) {
+export function answerInstruction(type: string) {
+  const list = /^list\[(.+)\]$/.exec(type);
+  return list
+    ? `Return one scalar ${list[1]} value per row in a single column named answer. Do not wrap values in SQL arrays or add numbering or display formatting.`
+    : `Return a single ${type} value in one column named answer.`;
+}
+
+export function answerFrom(data: unknown, type: string) {
   const rows = Array.isArray(data) ? data : [data];
-  const values = rows.flatMap((row) =>
-    row && typeof row === 'object' && !Array.isArray(row) ? Object.values(row) : [row],
-  );
+  const values = rows.map((row) => {
+    const columns = row && typeof row === 'object' && !Array.isArray(row) ? Object.values(row) : [row];
+    if (columns.length !== 1) throw new Error('DataBench answer must contain exactly one column.');
+    const value = columns[0];
+    if (value !== null && typeof value === 'object') throw new Error('DataBench answer values must be scalar.');
+    return value;
+  });
   if (type.startsWith('list[')) return formatAnswer(values);
+  if (values.length !== 1) throw new Error('DataBench scalar answer must contain exactly one row.');
   const value = values[0];
-  if (value == null) return 'None';
+  if (value == null || value === '') return 'None';
   if (type === 'boolean' && typeof value === 'number') return value === 0 ? 'False' : 'True';
   return formatAnswer(value);
 }
 
+export function selectByIds<T extends { id: string }>(samples: T[], ids: unknown): T[] {
+  if (!Array.isArray(ids) || !ids.length || ids.some((id) => typeof id !== 'string') || new Set(ids).size !== ids.length)
+    throw new Error('--ids-file must contain a nonempty JSON array of unique question IDs.');
+  const requested = new Set(ids);
+  const selected = samples.filter(({ id }) => requested.has(id));
+  if (selected.length !== ids.length) throw new Error('--ids-file contains IDs outside the selected dataset/slice.');
+  return selected;
+}
+
+export function runDirectory(output: string) {
+  const id = createHash('sha256').update(resolve(output)).digest('hex').slice(0, 12);
+  return resolve(root, '.runs', `${basename(output, '.csv')}-${id}`);
+}
+
 export function prepareOutput(path: string, spec: object) {
-  const manifest = `${path}.manifest.json`;
+  const manifest = join(runDirectory(path), 'manifest.json');
   if (existsSync(path) && (!existsSync(manifest) || JSON.stringify(readJson(manifest)) !== JSON.stringify(spec))) {
     throw new Error("Run configuration changed or manifest missing; choose a new --output path.");
   }
@@ -73,24 +103,27 @@ export async function main(argv = process.argv.slice(2)) {
       limit: { type: 'string', default: '20' },
       offset: { type: 'string', default: '0' },
       output: { type: 'string' },
-      strategy: { type: 'string', default: 'direct' },
+      ...strategyOptions,
+      ...modelOptions,
       suite: { type: 'string' },
+      'ids-file': { type: 'string' },
     },
   });
   if (values.help) return process.stdout.write(HELP);
 
-  const config = llmConfig();
   const engine = values.engine;
   if (engine !== 'duckdb' && engine !== 'python') {
     throw new Error('--engine must be duckdb or python.');
   }
-  const strategy = values.strategy;
-  if (strategy !== 'direct' && strategy !== 'loop' && strategy !== 'subset') {
-    throw new Error('--strategy must be direct, loop or subset.');
-  }
   const concurrency = integer(values.concurrency, 'concurrency', 1);
-  const selected = selectSamples(values);
+  const samples = selectSamples(values);
+  const selected = values['ids-file'] ? selectByIds(samples, readJson(resolve(values['ids-file']))) : samples;
+  const strategy = await prepareStrategy(values, {
+    type: 'parquet', samples: selected.map(({ suite, dataPath }) => ({ suite, dataPath })),
+  });
+  const config = llmConfig(values);
   const output = values.output ? resolve(values.output) : resolve(root, `results/${values.dataset}.csv`);
+  const run = runDirectory(output);
   const endpoint = new URL(config.baseURL);
   endpoint.username = '';
   endpoint.password = '';
@@ -98,8 +131,16 @@ export async function main(argv = process.argv.slice(2)) {
   const completed = prepareOutput(output, {
     dataset: values.dataset,
     model: typeof config.model === 'string' ? config.model : config.model.modelId,
-    endpoint: endpoint.toString(), engine, strategy, thinking: false,
+    endpoint: endpoint.toString(), engine, ...strategy.manifest, generation: modelSettings(values),
+    ids: selected.map((sample) => sample.id),
+    questions: selected.map(({ id, question, answerType }) => ({ id, question, answerType })),
+    modelContext: `${strategy.modelContext} + question`,
+    answerValidation: 'adapter-only-single-column-v1',
+    resources: { ...Object.fromEntries([...new Set(selected.map((sample) => sample.dataPath))].sort().map((path) => [path, sha256(path)])), ...strategy.resources },
+    implementation: { ...implementationHashes(), 'evals/ava-workflow/evals/databench.eval.ts': sha256(fileURLToPath(import.meta.url)) },
   });
+  process.stdout.write(`Predictions: ${output}\nRun artifacts: ${run}\n`);
+  strategy.saveArtifacts(run);
   const pending = selected.filter((sample) => !completed.has(sample.id));
   let cursor = 0;
 
@@ -107,6 +148,7 @@ export async function main(argv = process.argv.slice(2)) {
     Array.from({ length: Math.min(concurrency, pending.length) }, async () => {
       let usage = createUsage();
       const ava = new AVA({ engine: { type: engine }, llm: { ...config, onQueryUsage: (value) => usage.add(value) } });
+      const traces = traceWorkflow(ava);
       try {
         while (cursor < pending.length) {
           const sample = pending[cursor++];
@@ -115,21 +157,31 @@ export async function main(argv = process.argv.slice(2)) {
           let answer = '';
           let error = '';
           usage = createUsage();
+          traces.length = 0;
           try {
+            const source = { type: 'parquet' as const, options: { path: sample.dataPath } };
+            await strategy.setup(ava, source);
             const result = await workflow(
               ava,
-              { type: 'parquet', options: { path: sample.dataPath } },
-              `${sample.question}\nReturn the ${sample.answerType} answer in one column named answer.`,
+              source,
+              `${sample.question}\n${answerInstruction(sample.answerType)}`,
               {
                 includeSummary: false,
-                strategy: { type: strategy },
+                strategy: strategy.config,
               },
             );
             sql = result.sql ?? '';
+            if (result.truncated || result.truncatedBy) throw new Error('DataBench cannot score an incomplete result.');
             answer = answerFrom(result.data, sample.answerType);
           } catch (cause) {
             error = cause instanceof Error ? cause.message : String(cause);
+            if (config.apiKey) error = error.split(config.apiKey).join('[REDACTED]');
           }
+          atomicJson(join(run, 'records', `${encodeURIComponent(sample.id)}.json`), {
+            id: sample.id, status: error ? 'failed' : 'success', error, sql, answer,
+            elapsedMs: Date.now() - startedAt, usage: usage.value, traces,
+            ...strategy.record(sample.dataPath),
+          });
           appendFileSync(
             output,
             `${[
@@ -158,6 +210,7 @@ export async function main(argv = process.argv.slice(2)) {
     predictions: predictionIndex([output]),
     metricNames: getDataset(values.dataset).defaultMetrics,
   });
+  atomicJson(join(run, 'report.json'), report);
   process.stdout.write(
     `Accuracy: ${(report.metrics['databench-answer'].score * 100).toFixed(2)}% ` +
     `(${report.metrics['databench-answer'].passed}/${report.total}), missing ${report.missing}\n`,

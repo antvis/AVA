@@ -1,0 +1,85 @@
+dialect: duckdb
+models:
+  - name: complaints
+    table: data
+    description: One row is one NYC service complaint, identified by unique_key. Manually curated using the full data and
+      DataBench question/answer definitions; reference-informed, not a schema-only baseline.
+    dimensions:
+      - name: complaint_id
+        column: unique_key
+        description: Unique complaint number; retain it in record-level lists.
+        type: number
+      - name: complaint_type
+        column: complaint_type
+        description: Recorded complaint category.
+        type: string
+      - name: descriptor
+        column: descriptor
+        description: Detailed descriptor. Exclude NULL when ranking named descriptors; preserve exact text. Dog questions use
+          text containment.
+        type: string
+      - name: borough
+        column: borough
+        description: Borough label; Unspecified is a recorded category, NULL is missing.
+        type: string
+      - name: hour
+        column: hour
+        description: Recorded local complaint hour, 0 denotes midnight; use this instead of extracting session-local timestamp
+          hours.
+        type: number
+      - name: month
+        column: month_name
+        description: Full English month name.
+        type: string
+      - name: weekday
+        column: weekday_name
+        description: Full English weekday name.
+        type: string
+      - name: agency
+        column: agency
+        description: Agency abbreviation, used for distinct counts and agency rankings.
+        type: string
+      - name: agency_name
+        column: agency_name
+        description: Recorded agency name may contain mojibake apostrophes. For name matching, discover actual values or match
+          the stable name portion, e.g. %Office of Special Enforcement%, rather than inventing punctuation.
+        type: string
+      - name: created_at
+        column: created_date
+        description: Creation timestamp.
+        type: time
+      - name: status
+        column: status
+        description: Workflow status; Closed is not the whole population.
+        type: string
+      - name: city
+        column: city
+        description: Recorded city.
+        type: string
+      - name: location_type
+        column: location_type
+        description: Location category.
+        type: string
+      - name: street
+        column: street_name
+        description: Recorded street name.
+        type: string
+      - name: channel
+        column: open_data_channel_type
+        description: Channel through which request arrived.
+        type: string
+    measures: []
+    metrics:
+      - name: complaint_count
+        agg: count
+        description: Number of complaint rows; rank categories by this count. Apply an explicit requested alphabetical tie-break
+          only after count.
+      - name: unique_agencies
+        agg: count_distinct
+        description: Distinct agency abbreviations.
+        column: agency
+      - name: unique_descriptors
+        agg: count_distinct
+        description: Distinct non-null descriptors.
+        column: descriptor
+joins: []

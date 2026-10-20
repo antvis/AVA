@@ -1,0 +1,76 @@
+dialect: duckdb
+models:
+  - name: pokemon
+    table: data
+    description: One row is a Pokemon form, uniquely named; national number repeats across forms. Manually curated using the
+      full data and DataBench question/answer definitions; reference-informed, not a schema-only baseline.
+    dimensions:
+      - name: name
+        column: name
+        description: Unique form name; retain for top-N stat values.
+        type: string
+      - name: number
+        column: number
+        description: National index number, not unique across forms.
+        type: number
+      - name: primary_type
+        column: type1
+        description: Primary type; do not combine with secondary type for type1 counts.
+        type: string
+      - name: secondary_type
+        column: type2
+        description: Secondary type, NULL if absent.
+        type: string
+      - name: generation
+        column: generation
+        description: Recorded generation code.
+        type: number
+      - name: legendary
+        column: legendary
+        description: Boolean legendary flag.
+        type: boolean
+    measures:
+      - name: total
+        column: total
+        description: Recorded total stats; do not recompute or discard special forms.
+        type: number
+      - name: hp
+        column: hp
+        description: Hit points.
+        type: number
+      - name: attack
+        column: attack
+        description: Physical attack, not special attack.
+        type: number
+      - name: defense
+        column: defense
+        description: Physical defense.
+        type: number
+      - name: special_attack
+        column: sp_attack
+        description: Special attack.
+        type: number
+      - name: special_defense
+        column: sp_defense
+        description: Special defense.
+        type: number
+      - name: speed
+        column: speed
+        description: Speed stat.
+        type: number
+    metrics:
+      - name: pokemon_count
+        agg: count
+        description: Count form records, not unique national numbers.
+      - name: unique_primary_types
+        agg: count_distinct
+        description: Distinct primary types.
+        column: type1
+      - name: maximum_total
+        agg: max
+        description: Largest total stats.
+        column: total
+      - name: average_attack
+        description: Mean attack stat across Pokémon entries, reported to two decimal places.
+        expr: ROUND(AVG({TABLE}."attack"), 2)
+joins: []

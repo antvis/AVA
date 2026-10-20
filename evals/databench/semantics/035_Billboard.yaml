@@ -1,0 +1,56 @@
+dialect: duckdb
+models:
+  - name: songs
+    table: data
+    description: One row is a song placement in an annual chart; Year and Rank identify the placement. Manually curated
+      using the full data and DataBench question/answer definitions; reference-informed, not a schema-only baseline.
+    dimensions:
+      - name: year
+        column: Year
+        description: Chart year. Different years can share a rank; cross-year rankings require a stated tie-break to select
+          a unique subset.
+        type: number
+      - name: rank
+        column: Rank
+        description: "Chart placement: 1 is highest/best and 100 lowest/worst. Include year with rank to identify entries."
+        type: number
+      - name: song
+        column: Song
+        description: Recorded lowercase title; repeated titles can belong to different placements.
+        type: string
+      - name: artist
+        column: Artist
+        description: Recorded artist name is lowercase, e.g. 'the beatles'. A year/rank pair identifies a chart entry; preserve
+          that identity in rankings across years.
+        type: string
+      - name: lyrics
+        column: Lyrics
+        description: Recorded lyrics. NULL means absent; whitespace and literal NA remain source text.
+        type: string
+    measures:
+      - name: lyrics_length
+        expr: LENGTH({TABLE}."Lyrics")
+        description: Character length of stored lyrics; NULL excluded in known-length rankings.
+        type: number
+      - name: love_occurrences
+        expr: ARRAY_LENGTH(REGEXP_EXTRACT_ALL(LOWER({TABLE}."Lyrics"), '\blove\b'))
+        description: Case-insensitive occurrences of the whole word love in lyrics; word boundaries exclude substrings in
+          lover or lovely. Computed from lyrics, not the title; NULL lyrics remain unknown.
+        type: number
+    metrics:
+      - name: placement_count
+        agg: count
+        description: Number of annual chart entries; repeated artists/titles retain their placements.
+      - name: unique_artists
+        agg: count_distinct
+        description: Distinct original artist credits.
+        column: Artist
+      - name: earliest_year
+        agg: min
+        description: Earliest chart year.
+        column: Year
+      - name: latest_year
+        agg: max
+        description: Latest chart year.
+        column: Year
+joins: []

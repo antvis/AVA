@@ -1,0 +1,56 @@
+dialect: duckdb
+models:
+  - name: reviews
+    table: data
+    description: One row is a review record; Review_ID can repeat. Preserve missing month as a category for frequency
+      questions. Manually curated using the full data and DataBench question/answer definitions; reference-informed, not
+      a schema-only baseline.
+    dimensions:
+      - name: review_id
+        column: Review_ID
+        description: Review identifier; explicit rating ties use ID direction requested by question.
+        type: number
+      - name: year_month
+        column: Year_Month
+        description: Recorded review month in YYYY-MM form. Return this month label when asked for a review date; month_date is
+          only its ordering/comparison representation.
+        type: string
+      - name: month_date
+        expr: CAST(TRY_STRPTIME({TABLE}."Year_Month", '%Y-%m') AS DATE)
+        description: Parsed month for chronological ordering; missing becomes NULL.
+        type: time
+      - name: location
+        column: Reviewer_Location
+        description: Reviewer country/location label, distinct from park branch.
+        type: string
+      - name: text
+        column: Review_Text
+        description: Review text; retain with ID where record identity matters.
+        type: string
+      - name: branch
+        column: Branch
+        description: Park branch label.
+        type: string
+    measures:
+      - name: rating
+        column: Rating
+        description: Stars awarded by this review, on a 1–5 scale. Several reviews can award the same stars; each review is
+          an observation. Positive in this benchmark means >3.
+        type: number
+    metrics:
+      - name: review_count
+        agg: count
+        description: Count review rows; do not deduplicate repeated IDs.
+      - name: unique_locations
+        agg: count_distinct
+        description: Distinct reviewer locations.
+        column: Reviewer_Location
+      - name: average_rating
+        agg: avg
+        description: Mean stars for filtered/grouped reviews.
+        column: Rating
+      - name: maximum_id
+        agg: max
+        description: Largest review identifier.
+        column: Review_ID
+joins: []

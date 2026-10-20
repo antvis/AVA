@@ -1,0 +1,112 @@
+dialect: duckdb
+models:
+  - name: students
+    table: data
+    description: One row per student observation, no supplied student ID. Numeric grade/age frequency questions require
+      counts, distinct from numeric extrema. Manually curated using the full data and DataBench question/answer
+      definitions; reference-informed, not a schema-only baseline.
+    dimensions:
+      - name: school
+        column: school
+        description: School code.
+        type: string
+      - name: sex
+        column: sex
+        description: F or M.
+        type: string
+      - name: address
+        column: address
+        description: U urban, R rural.
+        type: string
+      - name: family_size
+        column: famsize
+        description: GT3 more than three, LE3 at most three.
+        type: string
+      - name: parents_status
+        column: Pstatus
+        description: T together, A apart.
+        type: string
+      - name: mother_education
+        column: Medu
+        description: Ordered education code.
+        type: number
+      - name: father_education
+        column: Fedu
+        description: Father education code.
+        type: number
+      - name: mother_job
+        column: Mjob
+        description: Mother job label.
+        type: string
+      - name: father_job
+        column: Fjob
+        description: Father job label.
+        type: string
+      - name: reason
+        column: reason
+        description: Reason for choosing school.
+        type: string
+      - name: higher
+        column: higher
+        description: yes means wants higher education.
+        type: string
+      - name: romantic
+        column: romantic
+        description: yes/no relationship flag.
+        type: string
+    measures:
+      - name: age
+        column: age
+        description: Age in years; most common ages rank student_count.
+        type: number
+      - name: family_relations
+        column: famrel
+        description: Ordered family-relation rating.
+        type: number
+      - name: free_time
+        column: freetime
+        description: Ordered free-time score, not hours.
+        type: number
+      - name: weekday_alcohol
+        column: Dalc
+        description: Workday alcohol consumption code.
+        type: number
+      - name: absences
+        column: absences
+        description: Count of absences.
+        type: number
+      - name: final_grade
+        column: G3
+        description: Final grade; G1/G2 are earlier terms. Select other attributes from the same student as an extreme grade.
+        type: number
+      - name: first_grade
+        column: G1
+        description: First-term grade.
+        type: number
+      - name: second_grade
+        column: G2
+        description: Second-term grade.
+        type: number
+    metrics:
+      - name: student_count
+        agg: count
+        description: Count student records. Ranking common numeric categories uses this count; highest numeric values use the
+          dimension instead.
+      - name: average_age
+        agg: avg
+        description: Mean student age.
+        column: age
+      - name: average_final_grade
+        agg: avg
+        description: Mean G3 across the selected students. For comparing filtered populations, compute each population mean
+          directly or weight subgroup means by student_count; unweighted means of subgroup means are different.
+        column: G3
+      - name: maximum_absences
+        agg: max
+        description: Highest absence count.
+        column: absences
+      - name: unique_schools
+        agg: count_distinct
+        description: Distinct schools.
+        column: school
+joins: []

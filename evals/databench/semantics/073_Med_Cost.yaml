@@ -1,0 +1,72 @@
+dialect: duckdb
+models:
+  - name: individuals
+    table: data
+    description: One row per insured individual; no unique individual ID is provided. Manually curated using the full data
+      and DataBench question/answer definitions; reference-informed, not a schema-only baseline.
+    dimensions:
+      - name: sex
+        column: sex
+        description: Recorded sex label.
+        type: string
+      - name: smoker
+        column: smoker
+        description: yes/no tobacco use.
+        type: string
+      - name: region
+        column: region
+        description: Residential region label.
+        type: string
+    measures:
+      - name: age
+        column: age
+        description: Age in years; teenager means 13 through 19.
+        type: number
+      - name: bmi
+        column: bmi
+        description: Body mass index; benchmark categories use underweight <18.5, obesity >=30 and class III obesity >=40.
+        type: number
+      - name: children
+        column: children
+        description: Number of dependent children; zero means childless.
+        type: number
+      - name: charges
+        column: charges
+        description: Medical insurance charges in dollars.
+        type: number
+    metrics:
+      - name: individual_count
+        agg: count
+        description: Count individual rows. Equal ages/BMIs/charges may belong to different individuals; grouped row counts
+          preserve multiplicity. No source-order tie-break key is stored.
+      - name: average_bmi
+        agg: avg
+        description: Mean BMI.
+        column: bmi
+      - name: median_bmi
+        expr: MEDIAN({TABLE}."bmi")
+        description: Median BMI.
+      - name: maximum_bmi
+        agg: max
+        description: Largest BMI.
+        column: bmi
+      - name: average_children
+        agg: avg
+        description: Mean dependent-child count.
+        column: children
+      - name: unique_regions
+        agg: count_distinct
+        description: Distinct residential regions.
+        column: region
+      - name: total_charges
+        description: Total medical charges across individual rows, reported in dollars to the nearest cent.
+        expr: ROUND(SUM({TABLE}."charges"), 2)
+      - name: maximum_charges
+        agg: max
+        description: Largest individual charge.
+        column: charges
+      - name: minimum_age
+        agg: min
+        description: Youngest age.
+        column: age
+joins: []

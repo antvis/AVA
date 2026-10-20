@@ -1,0 +1,66 @@
+dialect: duckdb
+models:
+  - name: tweets
+    table: data
+    description: One row is a tweet annotation. tweet_id can repeat; do not deduplicate annotation rows for benchmark
+      counts. Manually curated using the full data and DataBench question/answer definitions; reference-informed, not a
+      schema-only baseline.
+    dimensions:
+      - name: tweet_id
+        column: tweet_id
+        description: Original 64-bit tweet identifier; preserve integer precision in output.
+        type: number
+      - name: sentiment
+        column: airline_sentiment
+        description: negative, neutral or positive; use this rather than sparse gold labels.
+        type: string
+      - name: negative_reason
+        column: negativereason
+        description: Reason label, NULL when absent; exclude NULL from named-reason rankings.
+        type: string
+      - name: airline
+        column: airline
+        description: Airline label.
+        type: string
+      - name: text
+        column: text
+        description: Tweet content.
+        type: string
+      - name: created_at
+        column: tweet_created
+        description: Tweet timestamp.
+        type: time
+      - name: timezone
+        column: user_timezone
+        description: Recorded user timezone. NULL is unknown; exclude before ranking named timezones.
+        type: string
+      - name: username
+        column: name
+        description: Account name.
+        type: string
+    measures:
+      - name: sentiment_confidence
+        column: airline_sentiment_confidence
+        description: Confidence in assigned sentiment, not a positivity score.
+        type: number
+      - name: retweets
+        column: retweet_count
+        description: Number of retweets.
+        type: number
+    metrics:
+      - name: tweet_count
+        agg: count
+        description: Count annotation rows including repeated tweet IDs; retain multiplicity in numeric lists.
+      - name: unique_timezones
+        agg: count_distinct
+        description: Distinct non-null timezone labels.
+        column: user_timezone
+      - name: average_confidence
+        agg: avg
+        description: Mean sentiment confidence.
+        column: airline_sentiment_confidence
+      - name: maximum_retweets
+        agg: max
+        description: Highest retweet count.
+        column: retweet_count
+joins: []

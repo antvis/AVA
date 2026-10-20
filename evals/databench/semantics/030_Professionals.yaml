@@ -1,0 +1,80 @@
+dialect: duckdb
+models:
+  - name: professionals
+    table: data
+    description: One row is a professional survey respondent, identified by ID. Lists are multi-select answers; numeric
+      Average fields are provided encodings. Manually curated using the full data and DataBench question/answer
+      definitions; reference-informed, not a schema-only baseline.
+    dimensions:
+      - name: respondent_id
+        column: ID
+        description: Unique respondent key; include in top-N compensation/experience lists.
+        type: number
+      - name: geographies
+        column: Geographies
+        description: Geography list. For individual-region counts UNNEST after compiling all respondent IDs and lists; empty
+          list contributes no region.
+      - name: segments
+        column: General Segments
+        description: Multi-select segment list. Count each member across respondents by expanding before grouping/ranking; empty
+          lists add no member. Preserve respondent multiplicity.
+      - name: role
+        column: Select the title most similar to your current role (or most recent title if retired)
+        description: Current/most recent job title, including Currently not employed.
+        type: string
+      - name: country
+        column: In which country do you currently reside?
+        description: Recorded country name. UK / United Kingdom is stored as 'United Kingdom of Great Britain and Northern Ireland'.
+        type: string
+      - name: education
+        column: What is the highest level of formal education that you have attained or plan to attain within the next 2 years?
+        description: Education label preserving Unicode apostrophes.
+        type: string
+      - name: first_language
+        column: What programming language would you recommend an aspiring data scientist to learn first?
+        description: Recommended first language, distinct from languages currently used.
+        type: string
+      - name: languages
+        column: What programming languages do you use on a regular basis?
+        description: Multi-select language list. Compile respondent_id and languages, then SELECT UNNEST from that result in a
+          separate CTE before GROUP BY language; do not rank entire list combinations.
+      - name: future_cloud
+        column: Which of the following cloud computing platforms do you hope to become more familiar with in the next 2 years?
+        description: List of desired cloud platforms; membership, not exact equality to serialized array.
+      - name: platform
+        column: What type of computing platform do you use most often for your data science projects?
+        description: Primary computing platform.
+        type: string
+      - name: age_band
+        column: What is your age (years)?
+        description: Recorded age range label.
+        type: string
+      - name: company_size
+        column: What is the size of the company where you are employed?
+        description: Recorded employer-size band. NULL is unanswered; filter it before ranking named size bands.
+        type: string
+    measures:
+      - name: language_count
+        expr: ARRAY_LENGTH({TABLE}."What programming languages do you use on a regular basis?")
+        description: Number of languages selected by respondent; empty list is zero.
+        type: number
+      - name: ml_years
+        column: (Average) For how many years have you used machine learning methods?
+        description: Provided numeric encoding of ML experience in years; do not use coding years.
+        type: number
+      - name: compensation
+        column: (Average) What is your current yearly compensation (approximate $USD)?
+        description: Full numeric annual USD compensation encoding; not the clipped _rx_K field.
+        type: number
+    metrics:
+      - name: respondent_count
+        agg: count
+        description: Count respondent rows; multi-select option counts require expansion at respondent grain.
+      - name: unique_roles
+        agg: count_distinct
+        description: Distinct job titles.
+        column: Select the title most similar to your current role (or most recent title if retired)
+      - name: median_ml_years
+        expr: MEDIAN({TABLE}."(Average) For how many years have you used machine learning methods?")
+        description: Median of supplied numeric experience, excluding NULL.
+joins: []

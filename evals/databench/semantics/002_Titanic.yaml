@@ -1,0 +1,112 @@
+dialect: duckdb
+models:
+  - name: titanic
+    table: data
+    description: Titanic passenger records from 002_Titanic.parquet, exposed by the AVA Parquet loader as data. Curated from
+      the full database and its 20 DataBench questions and reference answers. One row represents one passenger. Use the
+      values in this dataset rather than assumptions from other Titanic datasets. This is a reference-answer-informed
+      semantic layer, not a schema-only baseline.
+    dimensions:
+      - name: passenger_name
+        column: Name
+        type: string
+        description: Passenger name as stored. Use as a record-identifying dimension when retrieving the ages or fares of N
+          passengers, then project only the requested values in final SQL. Different passengers can have equal ages or
+          fares, and those repeated values must remain in the answer. To test name uniqueness, compare
+          unique_passenger_names with passenger_count.
+      - name: survived
+        column: Survived
+        type: boolean
+        description: TRUE means survived; FALSE means did not survive. Use Boolean filters. An existence question is answered by
+          testing whether passenger_count for the requested conditions is greater than zero.
+      - name: passenger_class
+        column: Pclass
+        type: number
+        description: "Numeric passenger class: 1 is first, 2 is second, 3 is third. Return class codes rather than descriptive
+          labels. Rank classes by survivor_count for the number of survivors, or by survival_rate for survival
+          probability; these are different metrics."
+      - name: gender
+        column: Sex
+        type: string
+        description: Recorded gender label, male or female. Return the stored lowercase label. The most common gender among
+          survivors uses passenger_count with survived = TRUE, grouped by gender.
+      - name: fare_range
+        expr: CASE WHEN {TABLE}."Fare" IS NULL THEN NULL WHEN {TABLE}."Fare" <= 50 THEN '0-50' WHEN {TABLE}."Fare" <= 100 THEN
+          '50-100' WHEN {TABLE}."Fare" <= 150 THEN '100-150' ELSE '150+' END
+        type: string
+        description: "Fare bands: 0-50 includes zero and 50; 50-100 means >50 and <=100; 100-150 means >100 and <=150; 150+
+          means >150. NULL remains unknown. Return these exact labels. Rank bands by survivor_count for most or fewest
+          survivors, not by total passengers or by fare magnitude. For the three bands with the fewest survivors, order
+          counts ascending and take three."
+      - name: age_range
+        expr: CASE WHEN {TABLE}."Age" IS NULL THEN NULL WHEN {TABLE}."Age" <= 18 THEN '0-18' WHEN {TABLE}."Age" <= 30 THEN
+          '18-30' WHEN {TABLE}."Age" <= 50 THEN '30-50' ELSE '50+' END
+        type: string
+        description: "Age bands: 0-18 includes 18; 18-30 means >18 and <=30; 30-50 means >30 and <=50; 50+ means >50. Missing
+          ages remain NULL and must not be classified as 50+. Exclude NULL bands when comparing the named age ranges.
+          Use passenger_count for the most common range among all passengers, and survivor_count for ranges ranked by
+          survivors."
+    measures:
+      - name: age
+        column: Age
+        type: number
+        description: Age of each passenger. Select passenger_name with age for oldest/youngest N passengers so equal ages are
+          repeated, including within survivors.
+      - name: siblings_spouses_aboard
+        column: Siblings_Spouses Aboard
+        type: number
+        description: Number of siblings or spouses accompanying this passenger. Without siblings or spouses means this field
+          equals zero; it does not require parents_children_aboard to be zero.
+      - name: parents_children_aboard
+        column: Parents_Children Aboard
+        type: number
+        description: Number of parents or children accompanying this passenger. Separate from siblings_spouses_aboard; do not
+          combine them unless the question asks about all accompanying relatives.
+      - name: fare
+        column: Fare
+        type: number
+        description: Fare paid by this passenger in the dataset's original numeric units. Zero is a valid fare, not missing
+          data. Preserve raw precision in fare lists. For the highest or lowest N fares paid by passengers, include
+          passenger_name, sort by fare and limit to N records; do not use DISTINCT fare or group only by fare. More than
+          a threshold means strictly greater than it.
+    metrics:
+      - name: passenger_count
+        agg: count
+        description: "Number of passenger records: COUNT(*), including records with missing age. Apply filters for subsets such
+          as surviving children, women in third class, or passengers without siblings or spouses. For existence
+          questions, test the resulting count > 0."
+      - name: unique_passenger_names
+        agg: count_distinct
+        column: Name
+        description: Number of distinct non-null passenger names. Compare with passenger_count to test whether every record has
+          a unique name. This is not the default measure for counting passengers.
+      - name: unique_passenger_classes
+        agg: count_distinct
+        column: Pclass
+        description: Number of distinct passenger class codes present in the selected population. Use for how many unique
+          classes, not for the number of passengers in a class.
+      - name: survivor_count
+        expr: COUNT(*) FILTER (WHERE {TABLE}."Survived" = TRUE)
+        description: Number of survivors in each selected group, including zero for groups without survivors. Use for highest or
+          lowest survivor counts by class, gender, age_range or fare_range.
+      - name: survival_rate
+        expr: AVG(CAST({TABLE}."Survived" AS DOUBLE))
+        description: Fraction surviving among passengers with a known survival flag in each group. TRUE contributes 1, FALSE
+          contributes 0, NULL is excluded. For class survival rates, group by passenger_class without filtering to
+          survived = TRUE, since that would remove non-survivors from the denominator.
+      - name: average_fare
+        expr: ROUND(AVG({TABLE}."Fare"), 2)
+        description: Arithmetic mean fare per passenger, rounded to two decimal places for the monetary average answer
+          convention. Include zero fares; SQL AVG excludes NULL. This rounding applies to averages, not to individual
+          fares in top-N lists. Group by gender when ranking genders by average fare paid.
+      - name: youngest_age
+        agg: min
+        column: Age
+        description: Minimum known passenger age in the selected population; NULL ages are excluded. A list of the youngest N
+          passengers requires ordered passenger-level rows instead of this single-value aggregate.
+      - name: oldest_age
+        agg: max
+        column: Age
+        description: Maximum known passenger age in the selected population; NULL ages are excluded. A list of the oldest N
+          survivors requires survived = TRUE and ordered passenger-level rows, preserving tied ages.
+joins: []

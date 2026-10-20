@@ -1,0 +1,80 @@
+dialect: duckdb
+models:
+  - name: flows
+    table: data
+    description: One row is an origin-destination flow record. Count is the number represented by the flow, not the number
+      of rows. Manually curated using the full data and DataBench question/answer definitions; reference-informed, not a
+      schema-only baseline.
+    dimensions:
+      - name: destination_id
+        column: dest
+        description: Destination identifier; different places may share a name.
+        type: number
+      - name: origin_id
+        column: origin
+        description: Origin identifier; NULL is unknown.
+        type: number
+      - name: destination_name
+        column: name_dest
+        description: Destination name; benchmark name-grouped statistics combine matching labels.
+        type: string
+      - name: origin_name_raw
+        column: name_origin
+        description: Original origin name, NULL preserved for filters.
+        type: string
+      - name: origin_name
+        expr: COALESCE({TABLE}."name_origin", '')
+        description: Origin display label; missing names returned as empty string, without replacing the selected flow.
+        type: string
+      - name: destination_latitude
+        column: lat_dest
+        description: Latitude of destination.
+        type: number
+      - name: destination_longitude
+        column: lon_dest
+        description: Longitude of destination.
+        type: number
+      - name: origin_latitude
+        column: lat_origin
+        description: Latitude of origin.
+        type: number
+      - name: origin_longitude
+        column: lon_origin
+        description: Longitude of origin; exclude NULL when ranking known longitudes.
+        type: number
+    measures:
+      - name: flow_count
+        column: count
+        description: Recorded number of reports for this origin-destination flow row; do not confuse with count of rows having
+          the same origin/destination.
+        type: number
+    metrics:
+      - name: record_count
+        agg: count
+        description: Number of flow records. Coordinate top-N lists retain repetitions across records.
+      - name: unique_destinations
+        agg: count_distinct
+        description: Distinct destination IDs, not distinct names.
+        column: dest
+      - name: unique_origin_names
+        agg: count_distinct
+        description: Distinct non-null origin names.
+        column: name_origin
+      - name: average_flow
+        agg: avg
+        description: Mean of the recorded flow_count column, used for average reports per origin-destination entry. This is not
+          COUNT(rows)/COUNT(distinct pairs).
+        column: count
+      - name: maximum_flow
+        agg: max
+        description: Largest flow volume.
+        column: count
+      - name: average_origin_latitude
+        agg: avg
+        description: Average known origin latitude.
+        column: lat_origin
+      - name: average_origin_longitude
+        agg: avg
+        description: Average known origin longitude.
+        column: lon_origin
+joins: []

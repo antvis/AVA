@@ -1,0 +1,401 @@
+# Source-grounded BIRD dev_20251106 configuration; see README.md and provenance.json.
+dialect: duckdb
+models:
+  - name: examination
+    table: Examination
+    description: One examination observation for a patient; ID repeats. Examination Date is distinct from
+      Laboratory.Date. Diagnosis here belongs to the examination. Reference-informed from this database and its dev
+      golden SQL. Preserve record identity for top-N; joins may multiply rows.
+    dimensions:
+      - name: id
+        column: ID
+        type: number
+        description: identification of the patient
+      - name: examination_date
+        column: Examination Date
+        type: time
+        description: "Examination Date Source date/time: inspect stored representation and cast before DuckDB date functions."
+      - name: ana_pattern
+        column: ANA Pattern
+        type: string
+        description: pattern observed in the sheet of ANA examination
+      - name: diagnosis
+        column: Diagnosis
+        type: string
+        description: disease names
+      - name: kct
+        column: KCT
+        type: string
+        description: "measure of degree of coagulation. +: positive-: negative"
+      - name: rvvt
+        column: RVVT
+        type: string
+        description: "measure of degree of coagulation. +: positive-: negative"
+      - name: lac
+        column: LAC
+        type: string
+        description: "measure of degree of coagulation. +: positive-: negative"
+      - name: symptoms
+        column: Symptoms
+        type: string
+        description: other symptoms observed
+      - name: thrombosis
+        column: Thrombosis
+        type: number
+        description: "degree of thrombosis. 0: negative (no thrombosis)1: positive (the most serious)2: positive (severe)3:
+          positive (mild)"
+    measures:
+      - name: a_cl_ig_g
+        column: aCL IgG
+        type: number
+        description: anti-Cardiolipin antibody (IgG). anti-Cardiolipin antibody (IgG) concentration
+      - name: a_cl_ig_m
+        column: aCL IgM
+        type: number
+        description: anti-Cardiolipin antibody (IgM). anti-Cardiolipin antibody (IgM) concentration
+      - name: ana
+        column: ANA
+        type: number
+        description: anti-nucleus antibody. anti-nucleus antibody concentration
+      - name: a_cl_ig_a
+        column: aCL IgA
+        type: number
+        description: anti-Cardiolipin antibody (IgA) concentration
+    metrics:
+      - name: record_count
+        agg: count
+        description: Count source/joined rows at the active query grain; not automatically distinct entities after joins.
+      - name: avg_a_cl_ig_g
+        agg: avg
+        column: aCL IgG
+        description: avg of aCL IgG over the selected Examination records. Apply filters and grouping explicitly; joins can
+          repeat records.
+      - name: avg_a_cl_ig_m
+        agg: avg
+        column: aCL IgM
+        description: avg of aCL IgM over the selected Examination records. Apply filters and grouping explicitly; joins can
+          repeat records.
+      - name: count_symptoms
+        agg: count
+        column: Symptoms
+        description: count of Symptoms over the selected Examination records. Apply filters and grouping explicitly; joins
+          can repeat records.
+      - name: count_distinct_id
+        agg: count_distinct
+        column: ID
+        description: count distinct of ID over the selected Examination records. Apply filters and grouping explicitly;
+          joins can repeat records.
+      - name: count_id
+        agg: count
+        column: ID
+        description: count of ID over the selected Examination records. Apply filters and grouping explicitly; joins can
+          repeat records.
+      - name: max_ana
+        agg: max
+        column: ANA
+        description: max of ANA over the selected Examination records. Apply filters and grouping explicitly; joins can
+          repeat records.
+  - name: laboratory
+    table: Laboratory
+    description: One patient-date laboratory observation. ID is not a unique observation key. Patient and Examination
+      joins can duplicate tests; use distinct ID for unique patients, raw rows for observations. Reference normal
+      ranges are dataset definitions, not clinical advice; thresholds in individual question evidence can differ.
+      Reference-informed from this database and its dev golden SQL. Preserve record identity for top-N; joins may
+      multiply rows.
+    dimensions:
+      - name: id
+        column: ID
+        type: number
+        description: identification of the patient Part of the declared primary key.
+      - name: date
+        column: Date
+        type: time
+        description: "Date of the laboratory tests (YYMMDD) Source date/time: inspect stored representation and cast before
+          DuckDB date functions. Part of the declared primary key."
+      - name: u_pro
+        column: U-PRO
+        type: string
+        description: "proteinuria. Commonsense evidence:Normal range: 0 < N < 30"
+      - name: crp
+        column: CRP
+        type: string
+        description: "C-reactive protein. Commonsense evidence:Normal range: N= -, +-, or N < 1.0"
+      - name: ra
+        column: RA
+        type: string
+        description: "Rhuematoid Factor. Commonsense evidence:Normal range: N= -, +-"
+      - name: rf
+        column: RF
+        type: string
+        description: "RAHA. Commonsense evidence:Normal range: N < 20"
+      - name: rnp
+        column: RNP
+        type: string
+        description: "anti-ribonuclear protein. Commonsense evidence:Normal range: N= -, +-"
+      - name: sm
+        column: SM
+        type: string
+        description: "anti-SM. Commonsense evidence:Normal range: N= -, +-"
+      - name: sc170
+        column: SC170
+        type: string
+        description: "anti-scl70. Commonsense evidence:Normal range: N= -, +-"
+      - name: ssa
+        column: SSA
+        type: string
+        description: "anti-SSA. Commonsense evidence:Normal range: N= -, +-"
+      - name: ssb
+        column: SSB
+        type: string
+        description: "anti-SSB. Commonsense evidence:Normal range: N= -, +-"
+      - name: centromea
+        column: CENTROMEA
+        type: string
+        description: "anti-centromere. Commonsense evidence:Normal range: N= -, +-"
+      - name: dna
+        column: DNA
+        type: string
+        description: "anti-DNA. Commonsense evidence:Normal range: N < 8"
+    measures:
+      - name: got
+        column: GOT
+        type: number
+        description: "AST glutamic oxaloacetic transaminase. Commonsense evidence:Normal range: N < 60"
+      - name: gpt
+        column: GPT
+        type: number
+        description: "ALT glutamic pyruvic transaminase. Commonsense evidence:Normal range: N < 60"
+      - name: ldh
+        column: LDH
+        type: number
+        description: "lactate dehydrogenase. Commonsense evidence:Normal range: N < 500"
+      - name: alp
+        column: ALP
+        type: number
+        description: "alkaliphophatase. Commonsense evidence:Normal range: N < 300"
+      - name: tp
+        column: TP
+        type: number
+        description: "total protein. Commonsense evidence:Normal range: 6.0 < N < 8.5"
+      - name: alb
+        column: ALB
+        type: number
+        description: "albumin. Commonsense evidence:Normal range: 3.5 < N < 5.5"
+      - name: ua
+        column: UA
+        type: number
+        description: "uric acid. Commonsense evidence:Normal range: N > 8.0 (Male)N > 6.5 (Female)"
+      - name: un
+        column: UN
+        type: number
+        description: "urea nitrogen. Commonsense evidence:Normal range: N < 30"
+      - name: cre
+        column: CRE
+        type: number
+        description: "creatinine. Commonsense evidence:Normal range: N < 1.5"
+      - name: t_bil
+        column: T-BIL
+        type: number
+        description: "total bilirubin. Commonsense evidence:Normal range: N < 2.0"
+      - name: t_cho
+        column: T-CHO
+        type: number
+        description: "total cholesterol. Commonsense evidence:Normal range: N < 250"
+      - name: tg
+        column: TG
+        type: number
+        description: "triglyceride. Commonsense evidence:Normal range: N < 200"
+      - name: cpk
+        column: CPK
+        type: number
+        description: "creatinine phosphokinase. Commonsense evidence:Normal range: N < 250"
+      - name: glu
+        column: GLU
+        type: number
+        description: "blood glucose. Commonsense evidence:Normal range: N < 180"
+      - name: wbc
+        column: WBC
+        type: number
+        description: "White blood cell. Commonsense evidence:Normal range: 3.5 < N < 9.0"
+      - name: rbc
+        column: RBC
+        type: number
+        description: "Red blood cell. Commonsense evidence:Normal range: 3.5 < N < 6.0"
+      - name: hgb
+        column: HGB
+        type: number
+        description: "Hemoglobin. Commonsense evidence:Normal range: 10 < N < 17"
+      - name: hct
+        column: HCT
+        type: number
+        description: "Hematoclit. Commonsense evidence:Normal range: 29 < N < 52"
+      - name: plt
+        column: PLT
+        type: number
+        description: "platelet. Commonsense evidence:Normal range: 100 < N < 400"
+      - name: pt
+        column: PT
+        type: number
+        description: "prothrombin time. Commonsense evidence:Normal range: N < 14"
+      - name: aptt
+        column: APTT
+        type: number
+        description: "activated partial prothrombin time. Commonsense evidence:Normal range: N < 45"
+      - name: fg
+        column: FG
+        type: number
+        description: "fibrinogen. Commonsense evidence:Normal range: 150 < N < 450"
+      - name: pic
+        column: PIC
+        type: number
+        description: Source field Laboratory.PIC; no additional business definition supplied.
+      - name: tat
+        column: TAT
+        type: number
+        description: Source field Laboratory.TAT; no additional business definition supplied.
+      - name: tat2
+        column: TAT2
+        type: number
+        description: Source field Laboratory.TAT2; no additional business definition supplied.
+      - name: igg
+        column: IGG
+        type: number
+        description: "Ig G. Commonsense evidence:Normal range: 900 < N < 2000"
+      - name: iga
+        column: IGA
+        type: number
+        description: "Ig A. Commonsense evidence:Normal range: 80 < N < 500"
+      - name: igm
+        column: IGM
+        type: number
+        description: "Ig M. Commonsense evidence:Normal range: 40 < N < 400"
+      - name: c3
+        column: C3
+        type: number
+        description: "complement 3. Commonsense evidence:Normal range: N > 35"
+      - name: c4
+        column: C4
+        type: number
+        description: "complement 4. Commonsense evidence:Normal range: N > 10"
+      - name: dna_ii
+        column: DNA-II
+        type: number
+        description: "anti-DNA. Commonsense evidence:Normal range: N < 8"
+    metrics:
+      - name: record_count
+        agg: count
+        description: Count source/joined rows at the active query grain; not automatically distinct entities after joins.
+      - name: max_hgb
+        agg: max
+        column: HGB
+        description: max of HGB over the selected Laboratory records. Apply filters and grouping explicitly; joins can
+          repeat records.
+      - name: count_id
+        agg: count
+        column: ID
+        description: count of ID over the selected Laboratory records. Apply filters and grouping explicitly; joins can
+          repeat records.
+      - name: avg_alb
+        agg: avg
+        column: ALB
+        description: avg of ALB over the selected Laboratory records. Apply filters and grouping explicitly; joins can
+          repeat records.
+      - name: count_distinct_id
+        agg: count_distinct
+        column: ID
+        description: count distinct of ID over the selected Laboratory records. Apply filters and grouping explicitly;
+          joins can repeat records.
+      - name: avg_ldh
+        agg: avg
+        column: LDH
+        description: avg of LDH over the selected Laboratory records. Apply filters and grouping explicitly; joins can
+          repeat records.
+      - name: avg_ua
+        agg: avg
+        column: UA
+        description: avg of UA over the selected Laboratory records. Apply filters and grouping explicitly; joins can
+          repeat records.
+      - name: avg_hct
+        agg: avg
+        column: HCT
+        description: avg of HCT over the selected Laboratory records. Apply filters and grouping explicitly; joins can
+          repeat records.
+      - name: max_gpt
+        agg: max
+        column: GPT
+        description: max of GPT over the selected Laboratory records. Apply filters and grouping explicitly; joins can
+          repeat records.
+      - name: avg_pt
+        agg: avg
+        column: PT
+        description: avg of PT over the selected Laboratory records. Apply filters and grouping explicitly; joins can
+          repeat records.
+  - name: patient
+    table: Patient
+    description: One patient. Description is first record date, First Date is first hospital visit, Birthday is birth
+      date. These are not interchangeable. Reference-informed from this database and its dev golden SQL. Preserve
+      record identity for top-N; joins may multiply rows.
+    dimensions:
+      - name: id
+        column: ID
+        type: number
+        description: identification of the patient Part of the declared primary key.
+      - name: sex
+        column: SEX
+        type: string
+        description: "Sex. F: female; M: male"
+      - name: birthday
+        column: Birthday
+        type: time
+        description: "Birthday Source date/time: inspect stored representation and cast before DuckDB date functions."
+      - name: description
+        column: Description
+        type: time
+        description: "the first date when a patient data was recorded. null or empty: not recorded Source date/time:
+          inspect stored representation and cast before DuckDB date functions."
+      - name: first_date
+        column: First Date
+        type: time
+        description: "the date when a patient came to the hospital Source date/time: inspect stored representation and cast
+          before DuckDB date functions."
+      - name: admission
+        column: Admission
+        type: string
+        description: patient was admitted to the hospital (+) or followed at the outpatient clinic (-)
+      - name: diagnosis
+        column: Diagnosis
+        type: string
+        description: disease names
+    measures: []
+    metrics:
+      - name: record_count
+        agg: count
+        description: Count source/joined rows at the active query grain; not automatically distinct entities after joins.
+      - name: count_id
+        agg: count
+        column: ID
+        description: count of ID over the selected Patient records. Apply filters and grouping explicitly; joins can repeat
+          records.
+      - name: count_distinct_id
+        agg: count_distinct
+        column: ID
+        description: count distinct of ID over the selected Patient records. Apply filters and grouping explicitly; joins
+          can repeat records.
+      - name: count_diagnosis
+        agg: count
+        column: Diagnosis
+        description: count of Diagnosis over the selected Patient records. Apply filters and grouping explicitly; joins can
+          repeat records.
+joins:
+  - from: examination
+    to: patient
+    type: left
+    keys:
+      - from: ID
+        to: ID
+  - from: laboratory
+    to: patient
+    type: left
+    keys:
+      - from: ID
+        to: ID

@@ -1,0 +1,98 @@
+dialect: duckdb
+models:
+  - name: players
+    table: data
+    description: One row is one FIFA player, identified by ID. Use the recorded snapshot rather than current real-world
+      statistics. Manually curated using the full data and DataBench question/answer definitions; reference-informed,
+      not a schema-only baseline.
+    dimensions:
+      - name: player_id
+        column: ID
+        description: Unique player identifier; include in top-N numeric lists to preserve tied values.
+        type: number
+      - name: name
+        column: Name
+        description: Player name, including source whitespace; not unique.
+        type: string
+      - name: nationality
+        column: Nationality
+        description: Recorded nationality; starts-with tests use LIKE prefix%.
+        type: string
+      - name: club
+        column: Club
+        description: Current recorded club; NULL means no recorded club.
+        type: string
+      - name: preferred_foot
+        column: Preferred Foot
+        description: Left or Right.
+        type: string
+      - name: position
+        column: Position
+        description: Current squad position including SUB and RES; not Best Position.
+        type: string
+      - name: best_position
+        column: Best Position
+        description: Recommended playing position, distinct from squad position.
+        type: string
+      - name: joined
+        column: Joined
+        description: Club joining date text in Mon D, YYYY format; parse with TRY_STRPTIME when needed.
+        type: string
+    measures:
+      - name: age
+        column: Age
+        description: Snapshot age in years; a joining date alone does not establish age at joining without a reference date.
+        type: number
+      - name: overall
+        column: Overall
+        description: Overall ability score, distinct from potential.
+        type: number
+      - name: potential
+        column: Potential
+        description: Potential ability score.
+        type: number
+      - name: value_eur
+        column: Value_€
+        description: Player value in euros; already numeric, do not rescale.
+        type: number
+      - name: wage_eur
+        column: Wage_€
+        description: Recorded wage in euros.
+        type: number
+      - name: height
+        column: Height_ft
+        description: Recorded height encoding in the source; compare recorded values for height questions.
+        type: number
+      - name: agility
+        column: Agility
+        description: Agility rating.
+        type: number
+    metrics:
+      - name: player_count
+        agg: count
+        description: Number of players; use filtered count > 0 for existence.
+      - name: unique_clubs
+        agg: count_distinct
+        description: Distinct non-null clubs.
+        column: Club
+      - name: average_overall
+        agg: avg
+        description: Mean overall rating for filtered players or grouped countries.
+        column: Overall
+      - name: average_agility
+        agg: avg
+        description: Mean agility, not country population.
+        column: Agility
+      - name: average_potential
+        agg: avg
+        description: Mean potential, including every player in each club.
+        column: Potential
+      - name: total_value_eur
+        agg: sum
+        description: Total numeric player value in euros per club.
+        column: Value_€
+      - name: maximum_value_eur
+        agg: max
+        description: Largest individual player value.
+        column: Value_€
+joins: []

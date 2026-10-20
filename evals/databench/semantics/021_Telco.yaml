@@ -1,0 +1,83 @@
+dialect: duckdb
+models:
+  - name: customers
+    table: data
+    description: One row per telecom customer. Manually curated using the full data and DataBench question/answer
+      definitions; reference-informed, not a schema-only baseline.
+    dimensions:
+      - name: customer_id
+        column: customerID
+        description: Unique customer key; include with ordered customer attributes.
+        type: string
+      - name: gender
+        column: gender
+        description: Recorded gender.
+        type: string
+      - name: senior
+        column: SeniorCitizen
+        description: 1 senior citizen, 0 otherwise.
+        type: number
+      - name: partner
+        column: Partner
+        description: Yes/No.
+        type: string
+      - name: dependents
+        column: Dependents
+        description: Yes/No.
+        type: string
+      - name: phone_service
+        column: PhoneService
+        description: Yes/No; universal statements require checking all customers.
+        type: string
+      - name: multiple_lines
+        column: MultipleLines
+        description: "MultipleLines service-status categories: 'No', 'Yes', 'No phone service'. Frequencies of multiple-line
+          service statuses use this field, not InternetService."
+        type: string
+      - name: internet
+        column: InternetService
+        description: DSL, Fiber optic or No.
+        type: string
+      - name: contract
+        column: Contract
+        description: Contract term label.
+        type: string
+      - name: payment_method
+        column: PaymentMethod
+        description: Recorded payment method.
+        type: string
+      - name: churn
+        column: Churn
+        description: Yes means churned.
+        type: string
+    measures:
+      - name: tenure
+        column: tenure
+        description: This customer's tenure in months, including zero. Equal tenures belong to separate customer_id records.
+        type: number
+      - name: monthly_charge
+        column: MonthlyCharges
+        description: This customer's monthly charge, not lifetime total. Equal charges on different customer_id records are
+          separate billed-customer observations, not unique price tiers.
+        type: number
+      - name: total_charge
+        column: TotalCharges
+        description: Cumulative charges; NULL unknown.
+        type: number
+    metrics:
+      - name: customer_count
+        agg: count
+        description: Count customer records; preserve repeated numeric values across customers.
+      - name: unique_customers
+        agg: count_distinct
+        description: Distinct customer IDs.
+        column: customerID
+      - name: maximum_monthly_charge
+        agg: max
+        description: Maximum monthly charge.
+        column: MonthlyCharges
+      - name: maximum_tenure
+        agg: max
+        description: Longest tenure.
+        column: tenure
+joins: []

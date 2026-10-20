@@ -1,0 +1,70 @@
+dialect: duckdb
+models:
+  - name: tracks
+    table: data
+    description: One row per music track, identified by id. Artists is a list of credits. Manually curated using the full
+      data and DataBench question/answer definitions; reference-informed, not a schema-only baseline.
+    dimensions:
+      - name: track_id
+        column: id
+        description: Unique track key; preserve equal attributes across tracks.
+        type: number
+      - name: name
+        column: name
+        description: Track title, not unique. Ranking shortest/longest songs uses individual duration_ms and track_id, not
+          average duration grouped by title.
+        type: string
+      - name: artists
+        column: artists
+        description: Artist-name list on each track; several names can occur. Longest-duration song questions rank track records
+          before returning their artist names; do not average durations by artist unless requested.
+      - name: artist_ids
+        column: id_artists
+        description: List of artist identifiers aligned with artist names.
+      - name: release_year
+        column: release_year
+        description: Calendar release year attached to this track_id. Several tracks may share a year; a list of track
+          release years preserves those occurrences. Distinct calendar years and track counts by year are separate summaries.
+        type: number
+      - name: release_month
+        column: release_month
+        description: Month number, NULL where source only gives year.
+        type: number
+      - name: release_day
+        column: release_day
+        description: Day of month, possibly unknown.
+        type: number
+    measures:
+      - name: popularity
+        column: popularity
+        description: Popularity score, including zero.
+        type: number
+      - name: duration_ms
+        column: duration_ms
+        description: Duration in milliseconds; NULL unknown, not zero.
+        type: number
+      - name: energy
+        column: energy
+        description: Energy score in recorded scale.
+        type: number
+      - name: danceability
+        column: danceability
+        description: Danceability score.
+        type: number
+      - name: tempo
+        column: tempo
+        description: Recorded tempo.
+        type: number
+    metrics:
+      - name: track_count
+        agg: count
+        description: Count tracks; rank release years by this count for most releases.
+      - name: average_duration
+        agg: avg
+        description: Mean known duration in milliseconds; do not fill unknown duration with zero.
+        column: duration_ms
+      - name: maximum_popularity
+        agg: max
+        description: Maximum popularity score.
+        column: popularity
+joins: []

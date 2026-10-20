@@ -1,0 +1,85 @@
+dialect: duckdb
+models:
+  - name: properties
+    table: data
+    description: One row is one Spanish property listing; Id is unique. Property identification answers use the published
+      Referencia. Manually curated using the full data and DataBench question/answer definitions; reference-informed,
+      not a schema-only baseline.
+    dimensions:
+      - name: listing_id
+        column: Id
+        description: Unique internal listing ID; carry in record-level lists.
+        type: string
+      - name: reference
+        column: Referencia
+        description: Listing reference identifies which property; use for which-property answers. type is a category, not a
+          property identifier.
+        type: string
+      - name: type
+        column: Tipo
+        description: Property type, preserve Spanish labels.
+        type: string
+      - name: advertiser
+        column: Anunciante
+        description: Advertiser name. NULL is unnamed; exclude before ranking named advertisers, rather than introducing an
+          Unknown advertiser.
+        type: string
+      - name: locality
+        column: Localidad
+        description: Municipality/locality label.
+        type: string
+      - name: district
+        column: Distrito
+        description: District, excluding NULL in named district rankings.
+        type: string
+      - name: neighbourhood
+        column: Barrio
+        description: Neighbourhood label.
+        type: string
+    measures:
+      - name: price
+        column: Precio
+        description: Listed price in recorded currency units.
+        type: number
+      - name: duration
+        column: Duración
+        description: Days listed.
+        type: number
+      - name: surface
+        column: Superficie
+        description: Listed surface area; distinct from usable area and land area.
+        type: number
+      - name: usable_surface
+        column: Superficie útil
+        description: Usable area.
+        type: number
+      - name: land_surface
+        column: Superficie solar
+        description: Plot/land area.
+        type: number
+      - name: bedrooms
+        column: Habitaciones
+        description: Bedroom/room count recorded for this listed property. Several properties can have the same count;
+          those are separate property observations rather than one room-count category.
+        type: number
+      - name: bathrooms
+        column: Baños
+        description: Bathroom count.
+        type: number
+    metrics:
+      - name: listing_count
+        agg: count
+        description: Number of property listings; top-N listing measurements retain equal values across distinct listing_id.
+      - name: maximum_price
+        agg: max
+        description: Largest listed price.
+        column: Precio
+      - name: maximum_duration
+        agg: max
+        description: Longest listing duration.
+        column: Duración
+      - name: maximum_surface
+        agg: max
+        description: Largest listed surface, not plot area.
+        column: Superficie
+joins: []

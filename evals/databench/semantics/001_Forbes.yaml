@@ -1,0 +1,158 @@
+dialect: duckdb
+models:
+  - name: forbes
+    table: data
+    description: Forbes billionaire records from 001_Forbes.parquet, exposed by the AVA Parquet loader as data. Manually
+      curated from the full database and its 25 DataBench questions and reference answers. One row is one listed entry,
+      which may include a family. Names and ranks are not unique keys. Counts mean listed rows, not distinct names or
+      ranks. This is a reference-answer-informed semantic layer, not a schema-only baseline.
+    dimensions:
+      - name: rank
+        column: rank
+        type: number
+        description: Published wealth rank. Smaller numbers mean wealthier or higher-ranked entries. Top N ranks means the N
+          selected entries ordered by rank ascending, not necessarily rank <= N. Lowest placement means the largest rank
+          number. Tied ranks are valid and must be retained when listing entries. This is not a unique row identifier.
+      - name: person_name
+        column: personName
+        type: string
+        description: Listed person or family name. Repeated names exist, so use billionaire_count for population counts. For
+          person-level lists, carry person_name and other identifying attributes through SMQ discovery and project the
+          requested answer only in final SQL; do not deduplicate repeated ages, ranks or wealth values.
+      - name: category
+        column: category
+        type: string
+        description: Industry category of wealth, such as Technology or Automotive. Distinct from the specific wealth_source.
+          Category populations use billionaire_count grouped by category; fewest means count ascending.
+      - name: wealth_source
+        column: source
+        type: string
+        description: Specific source of wealth, such as an employer, business or industry phrase. Return the stored text and
+          casing. Most common sources are ranked by billionaire_count grouped by this field, not by total wealth.
+      - name: country
+        column: country
+        type: string
+        description: Country label recorded for the entry. Use this field for questions phrased as country, country of origin,
+          from a country, or countries with the most/least billionaires; do not infer a different country from biography
+          or birthplace. For equal country counts, use country ascending when an alphabetical tie-break is requested.
+      - name: state
+        column: state
+        type: string
+        description: Recorded state or region, where available. NULL is missing information, not a separate inferred location.
+      - name: city
+        expr: COALESCE({TABLE}."city", '')
+        type: string
+        description: Recorded city, with missing city rendered as the empty string used by DataBench answers. When listing where
+          N selected people live, retain the empty string for a person with missing city rather than excluding that
+          person. Use city_raw to distinguish missing values in filters. City populations use billionaire_count; include
+          country when identifying a city's country.
+      - name: city_raw
+        column: city
+        type: string
+        description: Unmodified city field, preserving NULL for missing locations. Use IS NULL/IS NOT NULL to test availability;
+          use city for answer-formatted city labels.
+      - name: organization
+        column: organization
+        type: string
+        description: Recorded affiliated organization, where available. This is distinct from the wealth_source text and from
+          industry category.
+      - name: self_made
+        column: selfMade
+        type: boolean
+        description: Recorded self-made flag. TRUE means self-made and FALSE means non-self-made. Use Boolean filters, not text
+          labels. An existence question such as whether any selected entry is non-self-made is answered by testing
+          whether the filtered billionaire_count is greater than zero.
+      - name: gender
+        column: gender
+        type: string
+        description: "Recorded gender code: M for male, F for female, NULL when absent. Return the stored code for gender
+          questions. Questions asking whether a selected person identifies as male test gender = 'M'; do not infer
+          gender from the name."
+      - name: birth_date
+        column: birthDate
+        type: time
+        description: Recorded birth timestamp with time zone. Use age for snapshot-age questions rather than deriving a current
+          age from this timestamp.
+      - name: title
+        expr: COALESCE({TABLE}."title", '')
+        type: string
+        description: Recorded professional title, with a missing title returned as the empty string used by DataBench answers.
+          Keep the selected entry even when its title is missing; do not substitute the next entry with a known title.
+      - name: title_raw
+        column: title
+        type: string
+        description: Unmodified professional title, preserving NULL. Use for missing-value predicates; use title for
+          answer-formatted output.
+      - name: biography
+        column: bio
+        type: string
+        description: Free-text biography supplied with the entry. Structured fields remain the source for rank, age, wealth,
+          location, gender and self-made questions.
+      - name: about
+        column: about
+        type: string
+        description: Additional free-text background about the listed entry. It is not a numeric metric or a replacement for
+          structured category and wealth_source fields.
+    measures:
+      - name: age
+        column: age
+        type: number
+        description: Age of each billionaire. For youngest/oldest N people select person_name with age; different people with
+          equal ages remain separate records.
+      - name: net_worth
+        column: finalWorth
+        type: number
+        description: Recorded finalWorth, also called final worth, wealth or net worth in the questions. Preserve the dataset's
+          numeric units and values; do not rescale to billions or add a currency string. Richest/highest worth sorts
+          descending. A top-N wealth list selects N entries and retains repeated values.
+      - name: philanthropy_score
+        column: philanthropyScore
+        type: number
+        description: Recorded philanthropy score. NULL means unscored, not zero and not the highest score. Above 3 means
+          strictly > 3. Score of 5 means = 5. To answer whether a selected person has a particular score, a missing
+          score does not satisfy that condition. Multiple entries can share the highest score; do not assume a unique
+          maximum.
+    metrics:
+      - name: billionaire_count
+        agg: count
+        description: "Number of listed entries: COUNT(*), including rows with missing optional fields. Use for how many
+          billionaires, existence checks, and most/least/common groups by country, city, category or wealth_source. Do
+          not use COUNT(DISTINCT personName) or COUNT(rank)."
+      - name: total_net_worth
+        agg: sum
+        column: finalWorth
+        description: Sum of finalWorth over the filtered entries, in unchanged dataset units. Use for total worth of a category
+          or other population; do not average, deduplicate equal values, or rescale.
+      - name: youngest_age
+        agg: min
+        column: age
+        description: Minimum known age in the selected population; SQL MIN excludes NULL. This gives an age, not the other
+          attributes of the youngest person. To return that person's gender, city or wealth_source, select the
+          corresponding entry by age ascending.
+      - name: oldest_age
+        agg: max
+        column: age
+        description: Maximum known age in the selected population; SQL MAX excludes NULL. To return the oldest person's country
+          or score, select attributes from the same entry rather than independently aggregating them.
+      - name: highest_net_worth
+        agg: max
+        column: finalWorth
+        description: Highest finalWorth in the selected population. To answer attributes of the richest person, select the same
+          entry ordered by net_worth descending; this aggregate alone does not identify its category or self_made flag.
+      - name: best_rank
+        agg: min
+        column: rank
+        description: Smallest numeric rank, meaning the highest wealth placement in the filtered population. For the wealthiest
+          non-self-made entry, filter self_made = FALSE before computing this metric.
+      - name: lowest_placement_rank
+        agg: max
+        column: rank
+        description: Largest numeric rank, meaning the lowest placement on the list. To retrieve a title for this placement,
+          select an entry with this rank and retain a missing title as an empty string.
+      - name: highest_philanthropy_score
+        agg: max
+        column: philanthropyScore
+        description: Maximum recorded philanthropy score among scored entries. NULL scores are excluded. The maximum may belong
+          to multiple people; retrieving a person's gender requires selecting an associated entry rather than
+          aggregating gender independently.
+joins: []

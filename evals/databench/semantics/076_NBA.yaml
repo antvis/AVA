@@ -1,0 +1,126 @@
+dialect: duckdb
+models:
+  - name: player_seasons
+    table: data
+    description: One row per player/team/season/season-type statistical record. Counting rows differs from counting unique
+      players. Manually curated using the full data and DataBench question/answer definitions; reference-informed, not a
+      schema-only baseline.
+    dimensions:
+      - name: season
+        column: year
+        description: Season label YYYY-YY; a season starting in 2012 or ending in 2013 means 2012-13.
+        type: string
+      - name: season_type
+        column: Season_type
+        description: Regular season is stored as Regular%20Season; postseason as Playoffs. Filter only when requested.
+        type: string
+      - name: player_id
+        column: PLAYER_ID
+        description: Player identifier; combine with season, season type and team for record identity.
+        type: number
+      - name: player
+        column: PLAYER
+        description: Player name; multiple season records per player.
+        type: string
+      - name: team
+        column: TEAM
+        description: Recorded team abbreviation, not a full franchise name.
+        type: string
+    measures:
+      - name: games
+        column: GP
+        description: Games played in this season/type record; a conventional full regular season is 82 games, but source
+          includes other totals.
+        type: number
+      - name: minutes
+        column: MIN
+        description: Total minutes played in this record.
+        type: number
+      - name: points
+        column: PTS
+        description: Points on this player/season/type record. Single-season scoring leaders rank individual records; overall
+          team totals sum them. Do not combine regular season and playoffs unless requested.
+        type: number
+      - name: rebounds
+        column: REB
+        description: Total rebounds for this player/season/type record. Single-season leaders rank this value; all-season totals
+          require total_rebounds with explicit aggregation.
+        type: number
+      - name: offensive_rebounds
+        column: OREB
+        description: Offensive rebounds retain possession for the shooting team.
+        type: number
+      - name: defensive_rebounds
+        column: DREB
+        description: Defensive rebounds transfer possession to the defending team.
+        type: number
+      - name: assists
+        column: AST
+        description: Assist count for this record.
+        type: number
+      - name: steals
+        column: STL
+        description: Steals for this record.
+        type: number
+      - name: blocks
+        column: BLK
+        description: Blocks for this record.
+        type: number
+      - name: field_goal_rate
+        column: FG_PCT
+        description: Field-goal fraction, 0–1.
+        type: number
+      - name: free_throw_rate
+        column: FT_PCT
+        description: Free-throw fraction, 0–1; non-perfect means strictly below 1.
+        type: number
+      - name: free_throws_made
+        column: FTM
+        description: Successful free throws.
+        type: number
+      - name: free_throws_attempted
+        column: FTA
+        description: Attempted free throws; zero attempts do not establish a perfect shooting rate.
+        type: number
+    metrics:
+      - name: record_count
+        agg: count
+        description: Count player-season-type entries; single-season maxima operate on records, overall team/player totals sum
+          across records.
+      - name: unique_players
+        agg: count_distinct
+        description: Distinct players in the selected records.
+        column: PLAYER_ID
+      - name: total_points
+        agg: sum
+        description: Combined points across selected records.
+        column: PTS
+      - name: total_rebounds
+        agg: sum
+        description: Combined rebounds.
+        column: REB
+      - name: total_offensive_rebounds
+        agg: sum
+        description: Combined offensive rebounds.
+        column: OREB
+      - name: total_defensive_rebounds
+        agg: sum
+        description: Combined defensive rebounds.
+        column: DREB
+      - name: total_steals
+        agg: sum
+        description: Combined steals, for overall player rankings.
+        column: STL
+      - name: maximum_assists
+        agg: max
+        description: Highest single-record assists.
+        column: AST
+      - name: maximum_blocks
+        agg: max
+        description: Highest single-record blocks.
+        column: BLK
+      - name: maximum_steals
+        agg: max
+        description: Highest single-record steals.
+        column: STL
+joins: []

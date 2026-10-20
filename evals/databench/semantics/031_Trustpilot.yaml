@@ -1,0 +1,53 @@
+dialect: duckdb
+models:
+  - name: reviews
+    table: data
+    description: One row is a customer review of a company. Manually curated using the full data and DataBench
+      question/answer definitions; reference-informed, not a schema-only baseline.
+    dimensions:
+      - name: published_at
+        column: published_date
+        description: Publication timestamp; non-null values are unique in this snapshot.
+        type: time
+      - name: country
+        column: country_code
+        description: Country code; exclude NULL from country rankings.
+        type: string
+      - name: title
+        column: title
+        description: Review title.
+        type: string
+      - name: body
+        column: body
+        description: Review text.
+        type: string
+      - name: company
+        column: Company
+        description: Company name. A lowest-rated review differs from the company with lowest average rating.
+        type: string
+    measures:
+      - name: rating
+        column: rating
+        description: Stars 1–5. Highest/lowest unique ratings deduplicate levels; most common ratings sort review_count.
+        type: number
+    metrics:
+      - name: review_count
+        agg: count
+        description: Number of review rows; apply specified alphabetical country tie-break after frequency.
+      - name: unique_countries
+        agg: count_distinct
+        description: Distinct non-null countries after filters.
+        column: country_code
+      - name: average_rating
+        agg: avg
+        description: Mean review stars for the selected population.
+        column: rating
+      - name: maximum_rating
+        agg: max
+        description: Highest individual rating.
+        column: rating
+      - name: minimum_rating
+        agg: min
+        description: Lowest individual rating.
+        column: rating
+joins: []

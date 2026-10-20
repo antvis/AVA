@@ -7,8 +7,9 @@ export interface JoinStep {
   /** Model being joined. */
   to: string;
   /** Key pairs oriented so `from` refers to the already-joined model. */
-  keys: { from: string; to: string }[];
-  type: 'inner' | 'left';
+  keys?: { from: string; to: string }[];
+  on?: string;
+  type: 'inner' | 'left' | 'right';
 }
 
 /** Undirected join graph over semantic models. */
@@ -18,12 +19,13 @@ export class JoinGraph {
   constructor(joins: SemanticJoin[]) {
     for (const join of joins) {
       const type = join.type ?? 'left';
-      this.edge(join.from).push({ from: join.from, to: join.to, keys: join.keys, type });
+      this.edge(join.from).push({ ...join, type });
       this.edge(join.to).push({
         from: join.to,
         to: join.from,
-        keys: join.keys.map((k) => ({ from: k.to, to: k.from })),
-        type,
+        keys: join.keys?.map((k) => ({ from: k.to, to: k.from })),
+        on: join.on?.replace(/\{(FROM|TO)\}/g, (_, side) => (side === 'FROM' ? '{TO}' : '{FROM}')),
+        type: type === 'left' ? 'right' : type,
       });
     }
   }

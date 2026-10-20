@@ -1,0 +1,76 @@
+dialect: duckdb
+models:
+  - name: dates
+    table: data
+    description: One row is a speed-dating encounter perspective, not a unique participant. Benchmark participant counts are
+      row counts. Manually curated using the full data and DataBench question/answer definitions; reference-informed,
+      not a schema-only baseline.
+    dimensions:
+      - name: wave
+        column: wave
+        description: Session wave number.
+        type: number
+      - name: gender
+        column: gender
+        description: Recorded male/female label.
+        type: string
+      - name: race
+        column: race
+        description: Participant race label, preserve text.
+        type: string
+      - name: partner_race
+        column: race_o
+        description: Partner race label.
+        type: string
+      - name: same_race
+        column: samerace
+        description: 1 same race, 0 otherwise.
+        type: number
+      - name: match
+        column: match
+        description: 1 mutual match, 0 no match; not the met field.
+        type: number
+      - name: met
+        column: met
+        description: Recorded prior meeting indicator, distinct from mutual match.
+        type: number
+      - name: decision
+        column: decision
+        description: Participant decision indicator.
+        type: number
+      - name: partner_decision
+        column: decision_o
+        description: Other participant decision indicator.
+        type: number
+    measures:
+      - name: age
+        column: age
+        description: Participant age recorded for this encounter; unknown ages excluded from extremes. Oldest/youngest sorts
+          this value, whereas the most common age ranks encounter counts. Preserve the encounter grain unless distinct
+          participants are explicitly requested.
+        type: number
+      - name: partner_age
+        column: age_o
+        description: Other participant age.
+        type: number
+      - name: expected_matches
+        column: expected_num_matches
+        description: Expected match count; zero is an explicit expectation, NULL unknown.
+        type: number
+    metrics:
+      - name: encounter_count
+        agg: count
+        description: Count rows after conditions; keep repeated ages across encounters.
+      - name: average_age
+        agg: avg
+        description: Row-weighted mean known age.
+        column: age
+      - name: maximum_expected_matches
+        agg: max
+        description: Highest expected match count.
+        column: expected_num_matches
+      - name: unique_races
+        agg: count_distinct
+        description: Distinct non-null race labels.
+        column: race
+joins: []

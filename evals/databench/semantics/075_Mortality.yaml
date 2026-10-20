@@ -1,0 +1,79 @@
+dialect: duckdb
+models:
+  - name: mortality
+    table: data
+    description: One row per region/status/sex/cause combination with a mortality rate and its standard error; rows are not
+      individual deaths. Manually curated using the full data and DataBench question/answer definitions;
+      reference-informed, not a schema-only baseline.
+    dimensions:
+      - name: row_id
+        column: rownames
+        description: Unique source row identifier. Retain for top-N rate/error records.
+        type: number
+      - name: region
+        column: Region
+        description: HHS region label; first region means HHS Region 01.
+        type: string
+      - name: status
+        column: Status
+        description: Urban or Rural setting.
+        type: string
+      - name: sex
+        column: Sex
+        description: Male or Female category.
+        type: string
+      - name: cause
+        column: Cause
+        description: Recorded cause category. Heart-related disease uses 'Heart disease'. The cause associated with an
+          individual extreme rate is different from the cause with the extreme mean rate.
+        type: string
+    measures:
+      - name: rate
+        column: Rate
+        description: Mortality rate for this region/status/sex/cause observation; higher is worse. An extreme recorded rate
+          and its cause come from the same observation. A mean across demographic groups is average_rate, not this measure.
+          Not a death count.
+        type: number
+      - name: standard_error
+        column: SE
+        description: Standard error of the rate estimate, not a mortality rate or sample standard deviation of rates.
+        type: number
+    metrics:
+      - name: record_count
+        agg: count
+        description: Count recorded combinations, called cases in benchmark count questions.
+      - name: average_rate
+        agg: avg
+        description: Unweighted mean recorded mortality rate; worst is highest, best is lowest.
+        column: Rate
+      - name: maximum_rate
+        agg: max
+        description: Highest recorded rate.
+        column: Rate
+      - name: minimum_rate
+        agg: min
+        description: Lowest recorded rate.
+        column: Rate
+      - name: total_rate
+        description: Arithmetic sum of rates recorded to one decimal place; decimal arithmetic avoids binary floating-point
+          summation artifacts. Not a count of deaths.
+        expr: SUM(CAST({TABLE}."Rate" AS DECIMAL(18, 1)))
+      - name: average_error
+        agg: avg
+        description: Mean reported standard error.
+        column: SE
+      - name: minimum_error
+        agg: min
+        description: Smallest reported standard error.
+        column: SE
+      - name: rate_stddev
+        expr: STDDEV_SAMP({TABLE}."Rate")
+        description: Sample standard deviation across recorded rates.
+      - name: rate_range
+        expr: MAX({TABLE}."Rate") - MIN({TABLE}."Rate")
+        description: Range of recorded rates.
+      - name: unique_regions
+        agg: count_distinct
+        description: Distinct HHS regions.
+        column: Region
+joins: []

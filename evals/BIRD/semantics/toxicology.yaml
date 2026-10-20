@@ -1,0 +1,319 @@
+# Source-grounded BIRD dev_20251106 configuration; see README.md and provenance.json.
+dialect: duckdb
+models:
+  - name: atom
+    table: atom
+    description: One atom in a molecule, identified by atom_id. Element symbols are lowercase. Reference-informed from
+      this database and its dev golden SQL. Preserve record identity for top-N; joins may multiply rows.
+    dimensions:
+      - name: atom_id
+        column: atom_id
+        type: string
+        description: atom id. the unique id of atoms Part of the declared primary key.
+      - name: molecule_id
+        column: molecule_id
+        type: string
+        description: molecule id. identifying the molecule to which the atom belongs. commonsense evidence:TRXXX_i
+          represents ith atom of molecule TRXXX
+      - name: element
+        column: element
+        type: string
+        description: "the element of the toxicology. cl: chlorine c: carbon h: hydrogen o: oxygen s: sulfur n: nitrogen p:
+          phosphorus na: sodium br: bromine f: fluorine i: iodine sn: Tin pb: lead te: tellurium ca: Calcium"
+    measures: []
+    metrics:
+      - name: record_count
+        agg: count
+        description: Count source/joined rows at the active query grain; not automatically distinct entities after joins.
+      - name: count_atom_id
+        agg: count
+        column: atom_id
+        description: count of atom_id over the selected atom records. Apply filters and grouping explicitly; joins can
+          repeat records.
+      - name: count_element
+        agg: count
+        column: element
+        description: count of element over the selected atom records. Apply filters and grouping explicitly; joins can
+          repeat records.
+      - name: count_distinct_atom_id
+        agg: count_distinct
+        column: atom_id
+        description: count distinct of atom_id over the selected atom records. Apply filters and grouping explicitly; joins
+          can repeat records.
+      - name: count_distinct_molecule_id
+        agg: count_distinct
+        column: molecule_id
+        description: count distinct of molecule_id over the selected atom records. Apply filters and grouping explicitly;
+          joins can repeat records.
+      - name: count_distinct_element
+        agg: count_distinct
+        column: element
+        description: count distinct of element over the selected atom records. Apply filters and grouping explicitly; joins
+          can repeat records.
+  - name: bond
+    table: bond
+    description: One bond in a molecule, identified by bond_id. Join atoms by molecule only for molecule membership,
+      not to identify bond endpoints. Reference-informed from this database and its dev golden SQL. Preserve record
+      identity for top-N; joins may multiply rows.
+    dimensions:
+      - name: bond_id
+        column: bond_id
+        type: string
+        description: unique id representing bonds. TRxxx_A1_A2:TRXXX refers to which moleculeA1 and A2 refers to which atom
+          Part of the declared primary key.
+      - name: molecule_id
+        column: molecule_id
+        type: string
+        description: identifying the molecule in which the bond appears
+      - name: bond_type
+        column: bond_type
+        type: string
+        description: "type of the bond. commonsense evidence: - : single bond'=': double bond'#': triple bond"
+    measures: []
+    metrics:
+      - name: record_count
+        agg: count
+        description: Count source/joined rows at the active query grain; not automatically distinct entities after joins.
+      - name: count_bond_id
+        agg: count
+        column: bond_id
+        description: count of bond_id over the selected bond records. Apply filters and grouping explicitly; joins can
+          repeat records.
+      - name: count_distinct_bond_id
+        agg: count_distinct
+        column: bond_id
+        description: count distinct of bond_id over the selected bond records. Apply filters and grouping explicitly; joins
+          can repeat records.
+      - name: count_bond_type
+        agg: count
+        column: bond_type
+        description: count of bond_type over the selected bond records. Apply filters and grouping explicitly; joins can
+          repeat records.
+      - name: count_molecule_id
+        agg: count
+        column: molecule_id
+        description: count of molecule_id over the selected bond records. Apply filters and grouping explicitly; joins can
+          repeat records.
+      - name: count_distinct_molecule_id
+        agg: count_distinct
+        column: molecule_id
+        description: count distinct of molecule_id over the selected bond records. Apply filters and grouping explicitly;
+          joins can repeat records.
+      - name: count_distinct_bond_type
+        agg: count_distinct
+        column: bond_type
+        description: count distinct of bond_type over the selected bond records. Apply filters and grouping explicitly;
+          joins can repeat records.
+  - name: connected
+    table: connected
+    description: One directed atom endpoint pair for a bond. Both orientations occur in this dataset, so row count is
+      not the number of physical bonds; count distinct bond_id when appropriate. Reference-informed from this
+      database and its dev golden SQL. Preserve record identity for top-N; joins may multiply rows.
+    dimensions:
+      - name: atom_id
+        column: atom_id
+        type: string
+        description: atom id. id of the first atom Part of the declared primary key.
+      - name: atom_id2
+        column: atom_id2
+        type: string
+        description: atom id 2. id of the second atom Part of the declared primary key.
+      - name: bond_id
+        column: bond_id
+        type: string
+        description: bond id. bond id representing bond between two atoms
+    measures: []
+    metrics:
+      - name: record_count
+        agg: count
+        description: Count source/joined rows at the active query grain; not automatically distinct entities after joins.
+      - name: count_distinct_bond_id
+        agg: count_distinct
+        column: bond_id
+        description: count distinct of bond_id over the selected connected records. Apply filters and grouping explicitly;
+          joins can repeat records.
+      - name: count_bond_id
+        agg: count
+        column: bond_id
+        description: count of bond_id over the selected connected records. Apply filters and grouping explicitly; joins can
+          repeat records.
+      - name: count_distinct_atom_id
+        agg: count_distinct
+        column: atom_id
+        description: count distinct of atom_id over the selected connected records. Apply filters and grouping explicitly;
+          joins can repeat records.
+      - name: count_distinct_atom_id2
+        agg: count_distinct
+        column: atom_id2
+        description: count distinct of atom_id2 over the selected connected records. Apply filters and grouping explicitly;
+          joins can repeat records.
+      - name: count_atom_id
+        agg: count
+        column: atom_id
+        description: count of atom_id over the selected connected records. Apply filters and grouping explicitly; joins can
+          repeat records.
+  - name: molecule
+    table: molecule
+    description: One molecule/compound; label + is carcinogenic and - is non-carcinogenic. Reference-informed from this
+      database and its dev golden SQL. Preserve record identity for top-N; joins may multiply rows.
+    dimensions:
+      - name: molecule_id
+        column: molecule_id
+        type: string
+        description: molecule id. unique id of molecule. "+" --> this molecule / compound is carcinogenic'-' this molecule
+          is not / compound carcinogenic Part of the declared primary key.
+      - name: label
+        column: label
+        type: string
+        description: whether this molecule is carcinogenic or not
+    measures: []
+    metrics:
+      - name: record_count
+        agg: count
+        description: Count source/joined rows at the active query grain; not automatically distinct entities after joins.
+      - name: count_distinct_molecule_id
+        agg: count_distinct
+        column: molecule_id
+        description: count distinct of molecule_id over the selected molecule records. Apply filters and grouping
+          explicitly; joins can repeat records.
+      - name: count_molecule_id
+        agg: count
+        column: molecule_id
+        description: count of molecule_id over the selected molecule records. Apply filters and grouping explicitly; joins
+          can repeat records.
+      - name: count_label
+        agg: count
+        column: label
+        description: count of label over the selected molecule records. Apply filters and grouping explicitly; joins can
+          repeat records.
+  - name: connected_atom_id2_role
+    table: atom
+    description: Join role for connected.atom_id2 -> atom.atom_id. Same physical table as atom. One atom in a molecule,
+      identified by atom_id. Element symbols are lowercase. Reference-informed from this database and its dev
+      golden SQL. Preserve record identity for top-N; joins may multiply rows.
+    dimensions:
+      - name: atom_id
+        column: atom_id
+        type: string
+        description: atom id. the unique id of atoms Part of the declared primary key.
+      - name: molecule_id
+        column: molecule_id
+        type: string
+        description: molecule id. identifying the molecule to which the atom belongs. commonsense evidence:TRXXX_i
+          represents ith atom of molecule TRXXX
+      - name: element
+        column: element
+        type: string
+        description: "the element of the toxicology. cl: chlorine c: carbon h: hydrogen o: oxygen s: sulfur n: nitrogen p:
+          phosphorus na: sodium br: bromine f: fluorine i: iodine sn: Tin pb: lead te: tellurium ca: Calcium"
+    measures: []
+    metrics:
+      - name: record_count
+        agg: count
+        description: Count source/joined rows at the active query grain; not automatically distinct entities after joins.
+      - name: count_atom_id
+        agg: count
+        column: atom_id
+        description: count of atom_id over the selected atom records. Apply filters and grouping explicitly; joins can
+          repeat records.
+      - name: count_element
+        agg: count
+        column: element
+        description: count of element over the selected atom records. Apply filters and grouping explicitly; joins can
+          repeat records.
+      - name: count_distinct_atom_id
+        agg: count_distinct
+        column: atom_id
+        description: count distinct of atom_id over the selected atom records. Apply filters and grouping explicitly; joins
+          can repeat records.
+      - name: count_distinct_molecule_id
+        agg: count_distinct
+        column: molecule_id
+        description: count distinct of molecule_id over the selected atom records. Apply filters and grouping explicitly;
+          joins can repeat records.
+      - name: count_distinct_element
+        agg: count_distinct
+        column: element
+        description: count distinct of element over the selected atom records. Apply filters and grouping explicitly; joins
+          can repeat records.
+  - name: connected_atom_id_role
+    table: atom
+    description: Join role for connected.atom_id -> atom.atom_id. Same physical table as atom. One atom in a molecule,
+      identified by atom_id. Element symbols are lowercase. Reference-informed from this database and its dev
+      golden SQL. Preserve record identity for top-N; joins may multiply rows.
+    dimensions:
+      - name: atom_id
+        column: atom_id
+        type: string
+        description: atom id. the unique id of atoms Part of the declared primary key.
+      - name: molecule_id
+        column: molecule_id
+        type: string
+        description: molecule id. identifying the molecule to which the atom belongs. commonsense evidence:TRXXX_i
+          represents ith atom of molecule TRXXX
+      - name: element
+        column: element
+        type: string
+        description: "the element of the toxicology. cl: chlorine c: carbon h: hydrogen o: oxygen s: sulfur n: nitrogen p:
+          phosphorus na: sodium br: bromine f: fluorine i: iodine sn: Tin pb: lead te: tellurium ca: Calcium"
+    measures: []
+    metrics:
+      - name: record_count
+        agg: count
+        description: Count source/joined rows at the active query grain; not automatically distinct entities after joins.
+      - name: count_atom_id
+        agg: count
+        column: atom_id
+        description: count of atom_id over the selected atom records. Apply filters and grouping explicitly; joins can
+          repeat records.
+      - name: count_element
+        agg: count
+        column: element
+        description: count of element over the selected atom records. Apply filters and grouping explicitly; joins can
+          repeat records.
+      - name: count_distinct_atom_id
+        agg: count_distinct
+        column: atom_id
+        description: count distinct of atom_id over the selected atom records. Apply filters and grouping explicitly; joins
+          can repeat records.
+      - name: count_distinct_molecule_id
+        agg: count_distinct
+        column: molecule_id
+        description: count distinct of molecule_id over the selected atom records. Apply filters and grouping explicitly;
+          joins can repeat records.
+      - name: count_distinct_element
+        agg: count_distinct
+        column: element
+        description: count distinct of element over the selected atom records. Apply filters and grouping explicitly; joins
+          can repeat records.
+joins:
+  - from: atom
+    to: molecule
+    type: left
+    keys:
+      - from: molecule_id
+        to: molecule_id
+  - from: bond
+    to: molecule
+    type: left
+    keys:
+      - from: molecule_id
+        to: molecule_id
+  - from: connected
+    to: bond
+    type: left
+    keys:
+      - from: bond_id
+        to: bond_id
+  - from: connected
+    to: connected_atom_id2_role
+    type: left
+    keys:
+      - from: atom_id2
+        to: atom_id
+  - from: connected
+    to: connected_atom_id_role
+    type: left
+    keys:
+      - from: atom_id
+        to: atom_id

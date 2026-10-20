@@ -1,0 +1,50 @@
+dialect: duckdb
+models:
+  - name: foods
+    table: data
+    description: One row is a food item, uniquely named by FOOD NAME. Manually curated using the full data and DataBench
+      question/answer definitions; reference-informed, not a schema-only baseline.
+    dimensions:
+      - name: food
+        column: FOOD NAME
+        description: Unique food name; preserve original capitalization.
+        type: string
+      - name: scientific_name
+        column: SCIENTIFIC NAME
+        description: Scientific name; multiple foods may share it, NULL is unknown.
+        type: string
+      - name: group
+        column: GROUP
+        description: Food group. Preserve case variants as recorded; exclude NULL when ranking named groups.
+        type: string
+      - name: subgroup
+        column: SUB GROUP
+        description: Food subgroup; rank by food_count.
+        type: string
+    measures:
+      - name: group_name_length
+        expr: LENGTH({TABLE}."GROUP")
+        description: Character length of the group label, including spaces; grouping this value counts foods by group-name length.
+        type: number
+      - name: subgroup_name_length
+        expr: LENGTH({TABLE}."SUB GROUP")
+        description: Character length including spaces. For lengths of the most common subgroups, rank subgroup counts first
+          then project length.
+        type: number
+    metrics:
+      - name: food_count
+        agg: count
+        description: Number of food rows; frequency ties use requested alphabetical ordering.
+      - name: unique_foods
+        agg: count_distinct
+        description: Distinct food names.
+        column: FOOD NAME
+      - name: unique_groups
+        agg: count_distinct
+        description: Distinct non-null group labels, case-sensitive.
+        column: GROUP
+      - name: unique_subgroups
+        agg: count_distinct
+        description: Distinct non-null subgroup labels.
+        column: SUB GROUP
+joins: []

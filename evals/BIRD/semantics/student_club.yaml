@@ -1,0 +1,461 @@
+# Source-grounded BIRD dev_20251106 configuration; see README.md and provenance.json.
+dialect: duckdb
+models:
+  - name: attendance
+    table: attendance
+    description: One event-member attendance pair; count rows for attendance and distinct members for people across
+      events. Reference-informed from this database and its dev golden SQL. Preserve record identity for top-N;
+      joins may multiply rows.
+    dimensions:
+      - name: link_to_event
+        column: link_to_event
+        type: string
+        description: link to event. The unique identifier of the event which was attended. References the Event table Part
+          of the declared primary key.
+      - name: link_to_member
+        column: link_to_member
+        type: string
+        description: link to member. The unique identifier of the member who attended the event. References the Member
+          table Part of the declared primary key.
+    measures: []
+    metrics:
+      - name: record_count
+        agg: count
+        description: Count source/joined rows at the active query grain; not automatically distinct entities after joins.
+      - name: count_link_to_event
+        agg: count
+        column: link_to_event
+        description: count of link_to_event over the selected attendance records. Apply filters and grouping explicitly;
+          joins can repeat records.
+      - name: count_distinct_link_to_event
+        agg: count_distinct
+        column: link_to_event
+        description: count distinct of link_to_event over the selected attendance records. Apply filters and grouping
+          explicitly; joins can repeat records.
+      - name: count_link_to_member
+        agg: count
+        column: link_to_member
+        description: count of link_to_member over the selected attendance records. Apply filters and grouping explicitly;
+          joins can repeat records.
+  - name: budget
+    table: budget
+    description: One category budget line for an event. spent is already summarized from expense; joining expense rows
+      can multiply amount/spent/remaining. Reference-informed from this database and its dev golden SQL. Preserve
+      record identity for top-N; joins may multiply rows.
+    dimensions:
+      - name: budget_id
+        column: budget_id
+        type: string
+        description: budget id. A unique identifier for the budget entry Part of the declared primary key.
+      - name: category
+        column: category
+        type: string
+        description: The area for which the amount is budgeted, such as, advertisement, food, parking
+      - name: event_status
+        column: event_status
+        type: string
+        description: "event status. the status of the event. Closed / Open/ Planning commonsense evidence: • Closed: It
+          means that the event is closed. The spent and the remaining won't change anymore.• Open: It means that
+          the event is already opened. The spent and the remaining will change with new expenses.• Planning: The
+          event is not started yet but is planning. The spent and the remaining won't change at this stage."
+      - name: link_to_event
+        column: link_to_event
+        type: string
+        description: link to event. The unique identifier of the event to which the budget line applies.. References the
+          Event table
+    measures:
+      - name: spent
+        column: spent
+        type: number
+        description: The total amount spent in the budgeted category for an event.. the unit is dollar. This is summarized
+          from the Expense table
+      - name: remaining
+        column: remaining
+        type: number
+        description: "A value calculated as the amount budgeted minus the amount spent. the unit is dollar commonsense
+          evidence: If the remaining < 0, it means that the cost has exceeded the budget."
+      - name: amount
+        column: amount
+        type: number
+        description: "The amount budgeted for the specified category and event. the unit is dollar commonsense
+          evidence:some computation like: amount = spent + remaining"
+    metrics:
+      - name: record_count
+        agg: count
+        description: Count source/joined rows at the active query grain; not automatically distinct entities after joins.
+      - name: sum_amount
+        agg: sum
+        column: amount
+        description: sum of amount over the selected budget records. Apply filters and grouping explicitly; joins can
+          repeat records.
+      - name: max_amount
+        agg: max
+        column: amount
+        description: max of amount over the selected budget records. Apply filters and grouping explicitly; joins can
+          repeat records.
+      - name: max_spent
+        agg: max
+        column: spent
+        description: max of spent over the selected budget records. Apply filters and grouping explicitly; joins can repeat
+          records.
+      - name: sum_spent
+        agg: sum
+        column: spent
+        description: sum of spent over the selected budget records. Apply filters and grouping explicitly; joins can repeat
+          records.
+      - name: count_spent
+        agg: count
+        column: spent
+        description: count of spent over the selected budget records. Apply filters and grouping explicitly; joins can
+          repeat records.
+  - name: event
+    table: event
+    description: One event; event_date is source ISO text, including time. Event name may repeat. Reference-informed
+      from this database and its dev golden SQL. Preserve record identity for top-N; joins may multiply rows.
+    dimensions:
+      - name: event_id
+        column: event_id
+        type: string
+        description: event id. A unique identifier for the event Part of the declared primary key.
+      - name: event_name
+        column: event_name
+        type: string
+        description: event name
+      - name: event_date
+        column: event_date
+        type: string
+        description: event date. The date the event took place or is scheduled to take place. e.g. 2020-03-10T12:00:00
+      - name: type
+        column: type
+        type: string
+        description: The kind of event, such as game, social, election
+      - name: notes
+        column: notes
+        type: string
+        description: A free text field for any notes about the event
+      - name: location
+        column: location
+        type: string
+        description: Address where the event was held or is to be held or the name of such a location
+      - name: status
+        column: status
+        type: string
+        description: One of three values indicating if the event is in planning, is opened, or is closed. Open/ Closed/
+          Planning
+    measures: []
+    metrics:
+      - name: record_count
+        agg: count
+        description: Count source/joined rows at the active query grain; not automatically distinct entities after joins.
+      - name: count_event_id
+        agg: count
+        column: event_id
+        description: count of event_id over the selected event records. Apply filters and grouping explicitly; joins can
+          repeat records.
+      - name: count_type
+        agg: count
+        column: type
+        description: count of type over the selected event records. Apply filters and grouping explicitly; joins can repeat
+          records.
+      - name: count_distinct_event_id
+        agg: count_distinct
+        column: event_id
+        description: count distinct of event_id over the selected event records. Apply filters and grouping explicitly;
+          joins can repeat records.
+  - name: expense
+    table: expense
+    description: One expense line incurred by a member and charged to a budget line. Reach event through budget; cost
+      is the line dollar amount. Reference-informed from this database and its dev golden SQL. Preserve record
+      identity for top-N; joins may multiply rows.
+    dimensions:
+      - name: expense_id
+        column: expense_id
+        type: string
+        description: Unique expense identifier, not income identifier (official CSV description has a typo). Part of the
+          declared primary key.
+      - name: expense_description
+        column: expense_description
+        type: string
+        description: expense description. A textual description of what the money was spend for
+      - name: expense_date
+        column: expense_date
+        type: string
+        description: expense date. The date the expense was incurred. e.g. YYYY-MM-DD
+      - name: approved
+        column: approved
+        type: string
+        description: A true or false value indicating if the expense was approved. true/ false
+      - name: link_to_member
+        column: link_to_member
+        type: string
+        description: link to member. The member who incurred the expense
+      - name: link_to_budget
+        column: link_to_budget
+        type: string
+        description: link to budget. The unique identifier of the record in the Budget table that indicates the expected
+          total expenditure for a given category and event.. References the Budget table
+    measures:
+      - name: cost
+        column: cost
+        type: number
+        description: The dollar amount of the expense. the unit is dollar
+    metrics:
+      - name: record_count
+        agg: count
+        description: Count source/joined rows at the active query grain; not automatically distinct entities after joins.
+      - name: avg_cost
+        agg: avg
+        column: cost
+        description: avg of cost over the selected expense records. Apply filters and grouping explicitly; joins can repeat
+          records.
+      - name: sum_cost
+        agg: sum
+        column: cost
+        description: sum of cost over the selected expense records. Apply filters and grouping explicitly; joins can repeat
+          records.
+  - name: income
+    table: income
+    description: One receipt of income, optionally associated with a member. amount is dollars, source identifies
+      dues/allocation/etc. Reference-informed from this database and its dev golden SQL. Preserve record identity
+      for top-N; joins may multiply rows.
+    dimensions:
+      - name: income_id
+        column: income_id
+        type: string
+        description: income id. A unique identifier for each record of income Part of the declared primary key.
+      - name: date_received
+        column: date_received
+        type: string
+        description: date received. the date that the fund received
+      - name: source
+        column: source
+        type: string
+        description: A value indicating where the funds come from such as dues, or the annual university allocation
+      - name: notes
+        column: notes
+        type: string
+        description: A free-text value giving any needed details about the receipt of funds
+      - name: link_to_member
+        column: link_to_member
+        type: string
+        description: link to member
+    measures:
+      - name: amount
+        column: amount
+        type: number
+        description: amount of funds. the unit is dollar
+    metrics:
+      - name: record_count
+        agg: count
+        description: Count source/joined rows at the active query grain; not automatically distinct entities after joins.
+      - name: sum_amount
+        agg: sum
+        column: amount
+        description: sum of amount over the selected income records. Apply filters and grouping explicitly; joins can
+          repeat records.
+      - name: count_income_id
+        agg: count
+        column: income_id
+        description: count of income_id over the selected income records. Apply filters and grouping explicitly; joins can
+          repeat records.
+  - name: major
+    table: major
+    description: One academic major with its department and college. Reference-informed from this database and its dev
+      golden SQL. Preserve record identity for top-N; joins may multiply rows.
+    dimensions:
+      - name: major_id
+        column: major_id
+        type: string
+        description: major id. A unique identifier for each major Part of the declared primary key.
+      - name: major_name
+        column: major_name
+        type: string
+        description: major name
+      - name: department
+        column: department
+        type: string
+        description: The name of the department that offers the major
+      - name: college
+        column: college
+        type: string
+        description: The name college that houses the department that offers the major
+    measures: []
+    metrics:
+      - name: record_count
+        agg: count
+        description: Count source/joined rows at the active query grain; not automatically distinct entities after joins.
+      - name: count_major_name
+        agg: count
+        column: major_name
+        description: count of major_name over the selected major records. Apply filters and grouping explicitly; joins can
+          repeat records.
+      - name: count_college
+        agg: count
+        column: college
+        description: count of college over the selected major records. Apply filters and grouping explicitly; joins can
+          repeat records.
+      - name: count_major_id
+        agg: count
+        column: major_id
+        description: count of major_id over the selected major records. Apply filters and grouping explicitly; joins can
+          repeat records.
+  - name: member
+    table: member
+    description: One club member; zip joins hometown ZIP, link_to_major joins major. Full name usually requires
+      separate first_name and last_name columns. Reference-informed from this database and its dev golden SQL.
+      Preserve record identity for top-N; joins may multiply rows.
+    dimensions:
+      - name: member_id
+        column: member_id
+        type: string
+        description: member id. unique id of member Part of the declared primary key.
+      - name: first_name
+        column: first_name
+        type: string
+        description: first name. member's first name
+      - name: last_name
+        column: last_name
+        type: string
+        description: "last name. member's last name. commonsense evidence: full name is first_name + last_name. e.g. A
+          member's first name is Angela and last name is Sanders. Thus, his/her full name is Angela Sanders."
+      - name: email
+        column: email
+        type: string
+        description: member's email
+      - name: position
+        column: position
+        type: string
+        description: The position the member holds in the club
+      - name: t_shirt_size
+        column: t_shirt_size
+        type: string
+        description: "The size of tee shirt that member wants when shirts are ordered. commonsense evidence: usually the
+          student ordered t-shirt with lager size has bigger body shape"
+      - name: phone
+        column: phone
+        type: string
+        description: The best telephone at which to contact the member
+      - name: zip
+        column: zip
+        type: number
+        description: the zip code of the member's hometown
+      - name: link_to_major
+        column: link_to_major
+        type: string
+        description: link to major. The unique identifier of the major of the member. References the Major table
+    measures: []
+    metrics:
+      - name: record_count
+        agg: count
+        description: Count source/joined rows at the active query grain; not automatically distinct entities after joins.
+      - name: count_member_id
+        agg: count
+        column: member_id
+        description: count of member_id over the selected member records. Apply filters and grouping explicitly; joins can
+          repeat records.
+      - name: count_distinct_member_id
+        agg: count_distinct
+        column: member_id
+        description: count distinct of member_id over the selected member records. Apply filters and grouping explicitly;
+          joins can repeat records.
+      - name: count_t_shirt_size
+        agg: count
+        column: t_shirt_size
+        description: count of t_shirt_size over the selected member records. Apply filters and grouping explicitly; joins
+          can repeat records.
+  - name: zip_code
+    table: zip_code
+    description: One postal ZIP code; numeric ZIP is an identifier, not a quantity. Reference-informed from this
+      database and its dev golden SQL. Preserve record identity for top-N; joins may multiply rows.
+    dimensions:
+      - name: zip_code
+        column: zip_code
+        type: number
+        description: zip code. The ZIP code itself. A five-digit number identifying a US post office. Part of the declared
+          primary key.
+      - name: type
+        column: type
+        type: string
+        description: "The kind of ZIP code. commonsense evidence: � Standard: the normal codes with which most people are
+          familiar � PO Box: zip codes have post office boxes � Unique: zip codes that are assigned to individual
+          organizations."
+      - name: city
+        column: city
+        type: string
+        description: The city to which the ZIP pertains
+      - name: county
+        column: county
+        type: string
+        description: The county to which the ZIP pertains
+      - name: state
+        column: state
+        type: string
+        description: The name of the state to which the ZIP pertains
+      - name: short_state
+        column: short_state
+        type: string
+        description: short state. The abbreviation of the state to which the ZIP pertains
+    measures: []
+    metrics:
+      - name: record_count
+        agg: count
+        description: Count source/joined rows at the active query grain; not automatically distinct entities after joins.
+      - name: count_city
+        agg: count
+        column: city
+        description: count of city over the selected zip_code records. Apply filters and grouping explicitly; joins can
+          repeat records.
+      - name: count_zip_code
+        agg: count
+        column: zip_code
+        description: count of zip_code over the selected zip_code records. Apply filters and grouping explicitly; joins can
+          repeat records.
+joins:
+  - from: attendance
+    to: member
+    type: left
+    keys:
+      - from: link_to_member
+        to: member_id
+  - from: attendance
+    to: event
+    type: left
+    keys:
+      - from: link_to_event
+        to: event_id
+  - from: budget
+    to: event
+    type: left
+    keys:
+      - from: link_to_event
+        to: event_id
+  - from: expense
+    to: member
+    type: left
+    keys:
+      - from: link_to_member
+        to: member_id
+  - from: expense
+    to: budget
+    type: left
+    keys:
+      - from: link_to_budget
+        to: budget_id
+  - from: income
+    to: member
+    type: left
+    keys:
+      - from: link_to_member
+        to: member_id
+  - from: member
+    to: zip_code
+    type: left
+    keys:
+      - from: zip
+        to: zip_code
+  - from: member
+    to: major
+    type: left
+    keys:
+      - from: link_to_major
+        to: major_id

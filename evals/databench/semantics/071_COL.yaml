@@ -1,0 +1,65 @@
+dialect: duckdb
+models:
+  - name: countries
+    table: data
+    description: One row per country with cost-of-living indices. These are comparative index points, not prices or currency
+      amounts. Manually curated using the full data and DataBench question/answer definitions; reference-informed, not a
+      schema-only baseline.
+    dimensions:
+      - name: rank
+        column: Rank
+        description: "Recorded cost ranking: rank 1 is most expensive, larger ranks cheaper. Rank numbers are positions, not any
+          of the cost or purchasing-power index values."
+        type: number
+      - name: country
+        column: Country
+        description: Unique country name; retain when ranking index values.
+        type: string
+    measures:
+      - name: living_index
+        column: Cost of Living Index
+        description: General cost-of-living index excluding rent. Use for overall living cost unless rent is explicitly
+          included; lower is cheaper.
+        type: number
+      - name: rent_index
+        column: Rent Index
+        description: Rent-only index.
+        type: number
+      - name: living_plus_rent
+        column: Cost of Living Plus Rent Index
+        description: Combined living and rent index, used for renter comparisons.
+        type: number
+      - name: groceries_index
+        column: Groceries Index
+        description: Comparative grocery-price index points; higher means groceries are more expensive. Grocery comparisons
+          and their associated index values use this measure, not the general living_index or the rank position.
+        type: number
+      - name: restaurant_index
+        column: Restaurant Price Index
+        description: Restaurant price index.
+        type: number
+      - name: purchasing_power
+        column: Local Purchasing Power Index
+        description: Local purchasing-power index. A numerical comparison reference is a threshold, not a requirement to find a
+          country with exactly that index. Retain country when ranking closest values to preserve repeats.
+        type: number
+    metrics:
+      - name: country_count
+        agg: count
+        description: Number of country records.
+      - name: average_groceries
+        agg: avg
+        description: Mean grocery index.
+        column: Groceries Index
+      - name: average_purchasing_power
+        agg: avg
+        description: Mean local purchasing-power index.
+        column: Local Purchasing Power Index
+      - name: restaurant_range
+        expr: MAX({TABLE}."Restaurant Price Index") - MIN({TABLE}."Restaurant Price Index")
+        description: Range of restaurant index points.
+      - name: average_living_index
+        agg: avg
+        description: Mean living index excluding rent.
+        column: Cost of Living Index
+joins: []

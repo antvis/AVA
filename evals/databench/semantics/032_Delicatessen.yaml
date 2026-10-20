@@ -1,0 +1,74 @@
+dialect: duckdb
+models:
+  - name: customers
+    table: data
+    description: One row per marketing customer, identified by ID. Manually curated using the full data and DataBench
+      question/answer definitions; reference-informed, not a schema-only baseline.
+    dimensions:
+      - name: customer_id
+        column: ID
+        description: Unique customer ID returned by who-customer questions; preserve for repeated attribute lists.
+        type: number
+      - name: birth_year
+        column: Year_Birth
+        description: Birth year, not current age.
+        type: number
+      - name: education
+        column: Education
+        description: Education label.
+        type: string
+      - name: marital_status
+        column: Marital_Status
+        description: Recorded status; retain unusual labels.
+        type: string
+      - name: response
+        column: Response
+        description: Recorded campaign response indicator.
+        type: number
+    measures:
+      - name: income
+        column: Income
+        description: Recorded income; NULL excluded from average and extreme rankings.
+        type: number
+      - name: recency
+        column: Recency
+        description: Days since this customer's last purchase. Most recent means smallest recency; highest recency means
+          oldest purchase. Equal elapsed days on different customer_id records remain separate customer observations.
+        type: number
+      - name: web_purchases
+        column: NumWebPurchases
+        description: Number of web purchases.
+        type: number
+      - name: store_purchases
+        column: NumStorePurchases
+        description: Number of store purchases.
+        type: number
+      - name: catalog_purchases
+        column: NumCatalogPurchases
+        description: Number of catalog purchases.
+        type: number
+      - name: wine_spend
+        column: MntWines
+        description: Spending on wine.
+        type: number
+      - name: meat_spend
+        column: MntMeatProducts
+        description: Spending on meat.
+        type: number
+    metrics:
+      - name: customer_count
+        agg: count
+        description: Number of customers.
+      - name: average_income
+        agg: avg
+        description: Average known income.
+        column: Income
+      - name: maximum_web_purchases
+        agg: max
+        description: Most web purchases by one customer.
+        column: NumWebPurchases
+      - name: minimum_recency
+        agg: min
+        description: Smallest days since purchase.
+        column: Recency
+joins: []

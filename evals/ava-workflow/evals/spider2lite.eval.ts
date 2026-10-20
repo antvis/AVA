@@ -20,10 +20,13 @@ import { ROOT, inspectResources, modelQuestion, selectSamples } from '../../spid
 import { checkScorer, pythonPath, scoreSamples } from '../../spider2lite/score.js';
 import { pendingSamples, validateResume } from '../../_shared/resume.js';
 import { workflow } from '../workflow.ts';
-import { llmConfig } from '../model.ts';
+import { implementationHashes, traceWorkflow } from '../runtime.ts';
+import { prepareStrategy, strategyHelp, strategyOptions } from '../strategies.ts';
+import type { PreparedStrategy } from '../strategies.ts';
+import { llmConfig, modelOptions, modelSettings } from '../model.ts';
 import { createUsage } from '../../_shared/usage.js';
 
-import type { AnalysisStrategyConfig, LLMConfig } from '../../../lib/index.js';
+import type { LLMConfig } from '../../../lib/index.js';
 
 type Sample = { instance_id: string; db: string; question: string; external_knowledge?: string };
 const resultLimits = { maxRows: 10_000, maxResultBytes: 64 * 1024 * 1024 };
@@ -37,9 +40,7 @@ const HELP = `Usage: node evals/cli.js run ava-workflow --benchmark spider2lite 
   --offset <number>       Start after filtering (default 0)
   --suite <database>      Filter database name
   --id <instance_id>      Repeatable local question ID
-  --strategy <name>       direct, loop or subset (default direct)
-  --max-retries <number>  Direct execution correction retries (default 2)
-  --max-steps <number>    Loop action budget (default 12)
+${strategyHelp}
   --concurrency <number>  Parallel workflows (default 1)
   --python <path>         Python for official scorer
   --timeout <ms>          DuckDB query deadline (default 30000)
@@ -55,14 +56,19 @@ export async function runSample(
   ava: AVA,
   sample: Sample,
   root: string,
-  strategy: AnalysisStrategyConfig,
+  strategy: PreparedStrategy,
   maxContextBytes: number
 ) {
+  const source = {
+    type: 'sqlite' as const,
+    options: { path: join(root, 'resource/databases/spider2-localdb', `${sample.db}.sqlite`) },
+  };
+  await strategy.setup(ava, source);
   return workflow(
     ava,
-    { type: 'sqlite', options: { path: join(root, 'resource/databases/spider2-localdb', `${sample.db}.sqlite`) } },
+    source,
     modelQuestion(sample, root, maxContextBytes),
-    { includeSummary: false, strategy, ...resultLimits }
+    { includeSummary: false, strategy: strategy.config, ...resultLimits }
   );
 }
 
@@ -79,27 +85,18 @@ export async function main(argv = process.argv.slice(2)) {
       suite: { type: 'string' },
       id: { type: 'string', multiple: true },
       output: { type: 'string' },
-      strategy: { type: 'string', default: 'direct' },
+      ...strategyOptions,
+      ...modelOptions,
       concurrency: { type: 'string', default: '1' },
       python: { type: 'string' },
       timeout: { type: 'string', default: '30000' },
       'score-timeout': { type: 'string', default: '60000' },
       'max-context-bytes': { type: 'string', default: '4194304' },
-      'max-retries': { type: 'string', default: '2' },
-      'max-steps': { type: 'string', default: '12' },
     },
   });
   if (values.help) return process.stdout.write(HELP);
   if (values.resume && (!values.output || values.check))
     throw new Error('--resume requires --output and cannot use --check');
-  if (!['direct', 'loop', 'subset'].includes(values.strategy))
-    throw new Error('--strategy must be direct, loop or subset');
-  const strategy: AnalysisStrategyConfig =
-    values.strategy === 'direct'
-      ? { type: 'direct', maxRetries: integer(values['max-retries'], 'max-retries', 0) }
-      : values.strategy === 'loop'
-      ? { type: 'loop', maxSteps: integer(values['max-steps'], 'max-steps') }
-      : { type: 'subset' };
   const concurrency = integer(values.concurrency, 'concurrency');
   const timeout = integer(values.timeout, 'timeout');
   const scoreTimeout = integer(values['score-timeout'], 'score-timeout');
@@ -108,6 +105,8 @@ export async function main(argv = process.argv.slice(2)) {
   const python = values.python ?? pythonPath();
   const samples: Sample[] = selectSamples(values, root);
   const databases = [...new Set(samples.map((sample) => sample.db))];
+  const databaseFile = (db: string) => join(root, 'resource/databases/spider2-localdb', `${db}.sqlite`);
+  const strategy = await prepareStrategy(values, { type: 'sqlite', paths: databases.map(databaseFile) });
   process.stdout.write(
     `Preflight: checking resources for ${samples.length} questions, ${databases.length} databases\n`
   );
@@ -141,7 +140,7 @@ export async function main(argv = process.argv.slice(2)) {
   }
   process.stdout.write('Preflight OK: resources and scorer ready; databases load during each case\n');
 
-  const config = llmConfig();
+  const config = llmConfig(values);
   const output = resolve(values.output ?? join(workflowRoot, `results/spider2lite-${values.strategy}`));
   const endpoint = new URL(config.baseURL);
   endpoint.username = '';
@@ -154,19 +153,20 @@ export async function main(argv = process.argv.slice(2)) {
     runtime,
     model: typeof config.model === 'string' ? config.model : config.model.modelId,
     endpoint: endpoint.toString(),
-    thinking: false,
-    strategy,
+    generation: modelSettings(values),
+    ...strategy.manifest,
     engine: 'duckdb-sqlite',
     mode: 'exec_result',
     resultSource: 'ava-result',
     resultLimits,
-    modelContext: 'ava-profile + question + external-knowledge',
+    modelContext: `${strategy.modelContext} + question + external-knowledge`,
+    resources: { ...Object.fromEntries(databases.map((db) => [databaseFile(db), sha256(databaseFile(db))])), ...strategy.resources },
     timeoutMs: timeout,
     scoreTimeoutMs: scoreTimeout,
     maxContextBytes,
     concurrency,
     usageScope: 'Accumulated onQueryUsage callbacks; subset auxiliary selector usage is not included',
-    implementation: Object.fromEntries(
+    implementation: { ...implementationHashes(), ...Object.fromEntries(
       [
         fileURLToPath(import.meta.url),
         join(workflowRoot, '../_shared/resume.js'),
@@ -187,7 +187,7 @@ export async function main(argv = process.argv.slice(2)) {
           'analysis/subset.js',
         ].map((p) => join(workflowRoot, '../../lib', p)),
       ].map((p) => [p.replace(resolve(workflowRoot, '../..') + '/', ''), sha256(p)])
-    ),
+    ) },
   };
   mkdirSync(output, { recursive: true });
   const lockPath = join(output, '.run.lock');
@@ -212,6 +212,7 @@ export async function main(argv = process.argv.slice(2)) {
     mkdirSync(sqlDir, { recursive: true });
     mkdirSync(records, { recursive: true });
     mkdirSync(resultDir, { recursive: true });
+    strategy.saveArtifacts(output);
     const pending = pendingSamples(samples, output, {
       idKey: 'instance_id',
       databaseKey: 'db',
@@ -245,12 +246,12 @@ export async function main(argv = process.argv.slice(2)) {
           const startedAt = Date.now();
           const usage = createUsage();
           let lastSQL = '';
-          const traces: unknown[] = [];
           const onQueryUsage: LLMConfig['onQueryUsage'] = usage.add;
           const ava = new AVA({
             llm: { ...config, onQueryUsage },
             engine: { type: 'duckdb', queryTimeoutMs: timeout },
           });
+          const traces = traceWorkflow(ava);
           // Stage progress is console-only; records retain query events only.
           for (const [event, stage] of [
             ['sourcestart', 'loading'],
@@ -259,18 +260,9 @@ export async function main(argv = process.argv.slice(2)) {
           ]) {
             ava.on(event, () => process.stdout.write(`${sample.instance_id} (${sample.db}): ${stage}\n`));
           }
-          // Capture executable DSL and diagnostics, not raw reasoning transcripts or gold.
-          for (const eventName of ['querystart', 'queryend']) {
-            ava.on(eventName, (event: { data?: { dsl?: string; error?: unknown; truncated?: boolean } }) => {
-              if (event.data?.dsl) lastSQL = event.data.dsl;
-              traces.push({
-                event: eventName,
-                dsl: event.data?.dsl,
-                error: event.data?.error,
-                truncated: event.data?.truncated,
-              });
-            });
-          }
+          ava.on('querystart', (event: { data?: { dsl?: string } }) => {
+            if (event.data?.dsl) lastSQL = event.data.dsl;
+          });
           const sqlPath = join(sqlDir, `${sample.instance_id}.sql`);
           const resultPath = join(resultDir, `${sample.instance_id}.csv`);
           if (existsSync(sqlPath)) unlinkSync(sqlPath);
@@ -311,6 +303,7 @@ export async function main(argv = process.argv.slice(2)) {
             db: sample.db,
             elapsedMs: Date.now() - startedAt,
             usage: usage.value,
+            ...strategy.record(databaseFile(sample.db)),
             traces,
           };
           atomicJson(join(records, `${sample.instance_id}.json`), record);

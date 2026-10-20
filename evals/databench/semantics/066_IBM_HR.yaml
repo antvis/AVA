@@ -1,0 +1,152 @@
+dialect: duckdb
+models:
+  - name: employees
+    table: data
+    description: One row per employee, identified by EmployeeNumber; monetary fields and tenure fields are distinct.
+      Manually curated using the full data and DataBench question/answer definitions; reference-informed, not a
+      schema-only baseline.
+    dimensions:
+      - name: employee_id
+        column: EmployeeNumber
+        description: Unique employee number; include in salary/raise top-N lists.
+        type: number
+      - name: attrition
+        column: Attrition
+        description: Yes left, No stayed.
+        type: string
+      - name: travel
+        column: BusinessTravel
+        description: Business travel category.
+        type: string
+      - name: department
+        column: Department
+        description: Department name; research means Research & Development, HR means Human Resources.
+        type: string
+      - name: education_level
+        column: Education
+        description: Education level code.
+        type: number
+      - name: education_field
+        column: EducationField
+        description: Field of education.
+        type: string
+      - name: gender
+        column: Gender
+        description: Gender label.
+        type: string
+      - name: role
+        column: JobRole
+        description: Job role, distinct from department.
+        type: string
+      - name: job_level
+        column: JobLevel
+        description: Job level code.
+        type: number
+      - name: marital_status
+        column: MaritalStatus
+        description: Single/Married/Divorced.
+        type: string
+      - name: overtime
+        column: OverTime
+        description: Yes/No overtime.
+        type: string
+    measures:
+      - name: age
+        column: Age
+        description: Employee age.
+        type: number
+      - name: daily_rate
+        column: DailyRate
+        description: Recorded daily rate, not MonthlyIncome.
+        type: number
+      - name: commute_distance
+        column: DistanceFromHome
+        description: Recorded distance from home; preserve dataset units.
+        type: number
+      - name: environment_satisfaction
+        column: EnvironmentSatisfaction
+        description: Ordered satisfaction score.
+        type: number
+      - name: job_satisfaction
+        column: JobSatisfaction
+        description: Job satisfaction score.
+        type: number
+      - name: monthly_income
+        column: MonthlyIncome
+        description: Monthly income, not MonthlyRate.
+        type: number
+      - name: salary_hike
+        column: PercentSalaryHike
+        description: Salary hike percentage; preserve repeated values across employees.
+        type: number
+      - name: performance
+        column: PerformanceRating
+        description: Recorded performance grade.
+        type: number
+      - name: standard_hours
+        column: StandardHours
+        description: Recorded standard working hours.
+        type: number
+      - name: working_years
+        column: TotalWorkingYears
+        description: Total career years, not years at IBM.
+        type: number
+      - name: work_life_balance
+        column: WorkLifeBalance
+        description: Balance score.
+        type: number
+      - name: company_years
+        column: YearsAtCompany
+        description: Years at company.
+        type: number
+      - name: years_since_promotion
+        column: YearsSinceLastPromotion
+        description: Years since last promotion.
+        type: number
+    metrics:
+      - name: employee_count
+        agg: count
+        description: Count employee records.
+      - name: average_age
+        agg: avg
+        description: Mean age.
+        column: Age
+      - name: unique_roles
+        agg: count_distinct
+        description: Distinct job roles.
+        column: JobRole
+      - name: average_income
+        agg: avg
+        description: Mean monthly income.
+        column: MonthlyIncome
+      - name: median_income
+        expr: MEDIAN({TABLE}."MonthlyIncome")
+        description: Median monthly income.
+      - name: total_commute_distance
+        agg: sum
+        description: Sum recorded one-way distances, no doubling.
+        column: DistanceFromHome
+      - name: average_working_years
+        agg: avg
+        description: Mean total career years.
+        column: TotalWorkingYears
+      - name: average_company_years
+        agg: avg
+        description: Mean company tenure.
+        column: YearsAtCompany
+      - name: maximum_company_years
+        agg: max
+        description: Longest company tenure.
+        column: YearsAtCompany
+      - name: average_job_satisfaction
+        agg: avg
+        description: Mean job satisfaction.
+        column: JobSatisfaction
+      - name: promotion_wait_range
+        expr: MAX({TABLE}."YearsSinceLastPromotion") - MIN({TABLE}."YearsSinceLastPromotion")
+        description: Range of years since promotion.
+      - name: maximum_promotion_wait
+        agg: max
+        description: Longest time since promotion.
+        column: YearsSinceLastPromotion
+joins: []

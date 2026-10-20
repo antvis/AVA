@@ -1,0 +1,90 @@
+dialect: duckdb
+models:
+  - name: tweets
+    table: data
+    description: One row per tweet. User-level statistics repeat on each tweet; all fields are snapshot values. Manually
+      curated using the full data and DataBench question/answer definitions; reference-informed, not a schema-only
+      baseline.
+    dimensions:
+      - name: tweet_id
+        column: id<gx:category>
+        description: Unique 64-bit tweet identifier.
+        type: number
+      - name: author_id
+        column: author_id<gx:category>
+        description: Author identifier; use for author identity answers unless a display name is explicitly requested. It
+          repeats for different tweets and does not identify a tweet.
+        type: number
+      - name: author_name
+        column: author_name<gx:category>
+        description: Author display name.
+        type: string
+      - name: verified
+        column: user_verified<gx:boolean>
+        description: Boolean verified flag.
+        type: boolean
+      - name: language
+        column: lang<gx:category>
+        description: Language code.
+        type: string
+      - name: type
+        column: type<gx:category>
+        description: Tweet type label.
+        type: string
+      - name: text
+        column: text<gx:text>
+        description: Tweet text.
+        type: string
+      - name: date
+        column: date<gx:date>
+        description: Tweet timestamp.
+        type: time
+      - name: mentions
+        column: mention_names<gx:list[category]>
+        description: List of mentioned names. Compile tweet_id and list, then UNNEST for individual mention frequencies.
+      - name: images
+        column: image_links<gx:list[url]>
+        description: Image URL list; nonempty list means images present, NULL/empty means none recorded.
+      - name: source
+        column: source<gx:text>
+        description: Full source HTML label; preserve HTML rather than extracting application name.
+        type: string
+    measures:
+      - name: followers
+        column: user_followers_count<gx:number>
+        description: Snapshot follower count, repeated per tweet; highest recorded counts retain repeated rows.
+        type: number
+      - name: following
+        column: user_following_count<gx:number>
+        description: Accounts followed by author.
+        type: number
+      - name: retweets
+        column: retweets<gx:number>
+        description: Retweet count.
+        type: number
+      - name: favorites
+        column: favorites<gx:number>
+        description: Favorite count.
+        type: number
+      - name: replies
+        column: replies<gx:number>
+        description: Replies received by this tweet. Equal reply counts on separate tweet_id records are separate engagement
+          observations.
+        type: number
+    metrics:
+      - name: tweet_count
+        agg: count
+        description: Count tweets, not profile user_tweets_count.
+      - name: unique_authors
+        agg: count_distinct
+        description: Distinct author IDs.
+        column: author_id<gx:category>
+      - name: maximum_retweets
+        agg: max
+        description: Largest retweet count.
+        column: retweets<gx:number>
+      - name: average_favorites
+        agg: avg
+        description: Mean favorites per tweet.
+        column: favorites<gx:number>
+joins: []

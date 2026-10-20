@@ -1,0 +1,77 @@
+dialect: duckdb
+models:
+  - name: purchases
+    table: data
+    description: One row is a purchase invoice; Invoice ID is unique. Manually curated using the full data and DataBench
+      question/answer definitions; reference-informed, not a schema-only baseline.
+    dimensions:
+      - name: invoice_id
+        column: Invoice ID
+        description: Unique purchase ID; include when selecting attributes of top/bottom purchases.
+        type: string
+      - name: branch
+        column: Branch
+        description: Branch code.
+        type: string
+      - name: city
+        column: City
+        description: Store city.
+        type: string
+      - name: customer_type
+        column: Customer type
+        description: Member or Normal.
+        type: string
+      - name: gender
+        column: Gender
+        description: Recorded customer gender.
+        type: string
+      - name: product_line
+        column: Product line
+        description: Product category.
+        type: string
+      - name: payment
+        column: Payment
+        description: Payment method.
+        type: string
+      - name: date
+        expr: CAST({TABLE}."Date" AT TIME ZONE 'UTC' AS DATE)
+        description: Purchase calendar date.
+        type: time
+    measures:
+      - name: unit_price
+        column: Unit price
+        description: Price per unit, not invoice total.
+        type: number
+      - name: quantity
+        column: Quantity
+        description: Units purchased.
+        type: number
+      - name: total
+        column: Total
+        description: Tax-inclusive purchase total used for purchase-cost ranking.
+        type: number
+      - name: gross_income
+        column: gross income
+        description: Recorded gross income per invoice.
+        type: number
+      - name: rating
+        column: Rating
+        description: Customer rating for purchase.
+        type: number
+    metrics:
+      - name: purchase_count
+        agg: count
+        description: Number of invoices; equal attributes on different invoices remain repeated.
+      - name: unique_branches
+        agg: count_distinct
+        description: Distinct branches.
+        column: Branch
+      - name: maximum_quantity
+        agg: max
+        description: Largest quantity on a single invoice.
+        column: Quantity
+      - name: minimum_total
+        agg: min
+        description: Smallest invoice total.
+        column: Total
+joins: []

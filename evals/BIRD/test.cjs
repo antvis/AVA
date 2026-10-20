@@ -42,6 +42,39 @@ test('result serialization rejects truncation, preserves null/text and column or
   assert.throws(() => resultPayload({ schema: [{ name: 'x' }], data: [{ x: Infinity }] }), /Unsupported/);
 });
 
+test('offline BIRD scoring verifies explicit semantic resources without treating them as database paths', async () => {
+  const { main } = require('./score');
+  const { sha256 } = require('../_shared/files');
+  const root = mkdtempSync(join(tmpdir(), 'bird-semantic-score-'));
+  const previousExitCode = process.exitCode;
+  try {
+    const run = join(root, 'run');
+    const database = join(root, 'dev_databases/demo/demo.sqlite');
+    mkdirSync(join(root, 'dev_databases/demo'), { recursive: true });
+    mkdirSync(join(run, 'exec_result'), { recursive: true });
+    execFileSync('python3', ['-c', 'import sqlite3,sys; sqlite3.connect(sys.argv[1]).execute("CREATE TABLE t(x)")', database]);
+    writeFileSync(join(root, 'dev.json'), JSON.stringify([
+      { question_id: 0, db_id: 'demo', question: 'Count rows', SQL: 'SELECT COUNT(*) FROM t' },
+    ]));
+    const source = join(root, 'demo.yaml');
+    writeFileSync(source, 'models:\n  - name: t\n    table: t\n');
+    const hash = sha256(source);
+    writeFileSync(join(run, 'manifest.json'), JSON.stringify({
+      benchmark: 'bird', ids: ['0'], resources: { 'dev.json': sha256(join(root, 'dev.json')), [`semantic:${database}`]: hash },
+    }));
+    writeFileSync(join(run, 'semantic.json'), JSON.stringify({
+      [database]: { source, sha256: hash, config: { models: [{ name: 't', table: 't' }] } },
+    }));
+    writeFileSync(join(run, 'exec_result/0.json'), JSON.stringify({ schema: [{ name: 'n', type: 'INTEGER' }], rows: [[0]] }));
+    assert.equal((await main(['--root', root, '--predictions', run])).passed, 1);
+    writeFileSync(source, '# modified\n');
+    await assert.rejects(main(['--root', root, '--predictions', run]), /semantic resource changed/);
+  } finally {
+    process.exitCode = previousExitCode;
+    rmSync(root, { recursive: true, force: true });
+  }
+});
+
 test('SQLite gold comparison follows row-set semantics and isolates failures', async () => {
   const root = mkdtempSync(join(tmpdir(), 'bird-test-'));
   try {
@@ -121,8 +154,10 @@ test('SQLite gold comparison follows row-set semantics and isolates failures', a
   }
 });
 
-test('workflow passes only question and evidence; model request disables thinking', async () => {
+test('workflow passes only question and evidence; model request preserves provider thinking', async () => {
   const { runSample } = await import('../ava-workflow/evals/bird.eval.ts');
+  const { prepareStrategy } = await import('../ava-workflow/strategies.ts');
+  const strategy = await prepareStrategy({ strategy: 'direct' }, { type: 'sqlite', paths: [] });
   const events = [];
   const ava = {
     source: async () => events.push('source'),
@@ -140,7 +175,7 @@ test('workflow passes only question and evidence; model request disables thinkin
     ava,
     { question_id: 0, db_id: 'demo', question: 'Question', evidence: 'Evidence', SQL: 'SECRET GOLD' },
     '/tmp',
-    { type: 'direct' }
+    strategy
   );
   assert.deepEqual(events, ['source', 'profile', 'analyze']);
   const { llmConfig } = await import('../ava-workflow/model.ts');
@@ -165,7 +200,7 @@ test('workflow passes only question and evidence; model request disables thinkin
       );
     };
     await generateText({ model: llmConfig().model, prompt: 'Query', maxRetries: 0 });
-    assert.equal(body.chat_template_kwargs.enable_thinking, false);
+    assert.equal(body.chat_template_kwargs, undefined);
   } finally {
     global.fetch = previous.fetch;
     if (previous.key === undefined) delete process.env.OPENAI_API_KEY;
@@ -197,6 +232,8 @@ for request in ({'action': 'check'}, {}):
 
 test('BIRD passes every table CSV including full column/value descriptions and legacy encoding', async () => {
   const { runSample } = await import('../ava-workflow/evals/bird.eval.ts');
+  const { prepareStrategy } = await import('../ava-workflow/strategies.ts');
+  const strategy = await prepareStrategy({ strategy: 'direct' }, { type: 'sqlite', paths: [] });
   const root = mkdtempSync(join(tmpdir(), 'bird-descriptions-'));
   try {
     const directory = join(root, 'dev_databases/demo/database_description');
@@ -206,7 +243,7 @@ test('BIRD passes every table CSV including full column/value descriptions and l
     writeFileSync(join(directory, 'table_b.csv'), Buffer.from('original_column_name,column_description,value_description\ny,second column,0\x96100', 'latin1'));
     let prompt;
     await runSample({ source: async () => {}, profile: async () => {}, analyze: async (question) => { prompt = question; return {}; } },
-      { question_id: 0, db_id: 'demo', question: 'Question', evidence: 'Evidence', SQL: 'SECRET GOLD' }, root, { type: 'direct' }, true);
+      { question_id: 0, db_id: 'demo', question: 'Question', evidence: 'Evidence', SQL: 'SECRET GOLD' }, root, strategy, true);
     assert.match(prompt, /Table: table_a/);
     assert.match(prompt, /Table: table_b/);
     assert(prompt.includes(longValue));

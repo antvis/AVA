@@ -1,0 +1,69 @@
+dialect: duckdb
+models:
+  - name: reviews
+    table: data
+    description: One row is one clothing review, not one product. Clothing IDs repeat. Manually curated using the full data
+      and DataBench question/answer definitions; reference-informed, not a schema-only baseline.
+    dimensions:
+      - name: clothing_id
+        column: Clothing ID
+        description: Product/clothing-item identifier. Most frequently reviewed item means this ID, not the department, division
+          or class label.
+        type: number
+      - name: title
+        column: Title
+        description: Review title, possibly missing.
+        type: string
+      - name: review
+        column: Review Text
+        description: Review text, possibly missing.
+        type: string
+      - name: recommended
+        column: Recommended IND
+        description: Original recommendation code 1/0. Frequency rankings return the code itself; review_count only determines
+          ordering.
+        type: number
+      - name: division
+        column: Division Name
+        description: Division Name category. Division, department and class are distinct levels; return the requested level and
+          group only at that level for its frequency.
+        type: string
+      - name: department
+        column: Department Name
+        description: Department of the product.
+        type: string
+      - name: class
+        column: Class Name
+        description: Product class, distinct from department.
+        type: string
+    measures:
+      - name: reviewer_age
+        column: Age
+        description: Reviewer age; top N oldest reviewers retain duplicate ages.
+        type: number
+      - name: rating
+        column: Rating
+        description: Rating category from 1 to 5. Highest rating levels refers to distinct categories, unlike oldest reviewer ages.
+        type: number
+      - name: positive_feedback
+        column: Positive Feedback Count
+        description: Positive votes received by a review, not review rating.
+        type: number
+    metrics:
+      - name: review_count
+        agg: count
+        description: Number of review rows, including reviews missing optional text. Use for category popularity and value
+          frequencies; retain frequencies for repeated-age lists.
+      - name: unique_products
+        agg: count_distinct
+        description: Number of distinct clothing products.
+        column: Clothing ID
+      - name: average_age
+        agg: avg
+        description: Arithmetic mean age over review rows.
+        column: Age
+      - name: maximum_feedback
+        agg: max
+        description: Largest positive feedback count.
+        column: Positive Feedback Count
+joins: []

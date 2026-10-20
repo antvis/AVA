@@ -1,0 +1,108 @@
+dialect: duckdb
+models:
+  - name: transactions
+    table: data
+    description: One row per transaction ID. Revenue equals quantity times unit price; the original Revenue field is
+      localized display text. Manually curated using the full data and DataBench question/answer definitions;
+      reference-informed, not a schema-only baseline.
+    dimensions:
+      - name: transaction_id
+        column: transaction_id
+        description: Unique transaction identifier; increasing IDs follow the recorded transaction sequence. Retain to preserve
+          equal top-N amounts.
+        type: number
+      - name: store_id
+        column: store_id
+        description: Store identifier.
+        type: number
+      - name: store_location
+        column: store_location
+        description: Store location name.
+        type: string
+      - name: product_id
+        column: product_id
+        description: Product identifier, repeated across transactions.
+        type: number
+      - name: category
+        column: product_category
+        description: Broad category label, including 'Coffee', 'Coffee beans', and 'Drinking Chocolate'. Category matching is
+          case-sensitive. Coffee-related products can include beans as well as brewed drinks.
+        type: string
+      - name: product_type
+        column: product_type
+        description: Product type within category, attached to this transaction. The type of a high-revenue transaction is
+          selected with its row revenue; total revenue by product type is a separate grouped comparison.
+        type: string
+      - name: product_detail
+        column: product_detail
+        description: Recorded detailed product name. Return the source label when asked which product or animal is named; do not
+          guess from a beverage category.
+        type: string
+      - name: month
+        column: Month
+        description: Calendar month number, January=1.
+        type: number
+      - name: month_name
+        column: Month_1
+        description: Abbreviated month name.
+        type: string
+      - name: weekday
+        column: Weekday
+        description: Weekday number, Monday=1 through Sunday=7.
+        type: number
+      - name: weekday_name
+        column: Weekday_1
+        description: Abbreviated weekday name.
+        type: string
+      - name: hour
+        column: Hour
+        description: Hour of day from 0 to 23.
+        type: number
+    measures:
+      - name: quantity
+        column: transaction_qty
+        description: Units purchased in this transaction, distinct from transaction count. Equal quantities on different
+          transaction_id records are separate purchase observations.
+        type: number
+      - name: unit_price
+        column: unit_price
+        description: USD price per item recorded on this transaction. Repeated transactions can carry the same product and
+          price; this row measure is separate from a distinct price-point catalog.
+        type: number
+      - name: revenue
+        expr: '{TABLE}."transaction_qty" * CAST({TABLE}."unit_price" AS DECIMAL(18, 2))'
+        description: Revenue for an individual transaction in USD. Most lucrative single purchase ranks this row value;
+          total_revenue is for combined revenue across transactions.
+        type: number
+    metrics:
+      - name: transaction_count
+        agg: count
+        description: Number of purchases; popularity rankings use transaction count unless quantity/revenue is requested.
+      - name: unique_products
+        agg: count_distinct
+        description: Distinct products.
+        column: product_id
+      - name: unique_stores
+        agg: count_distinct
+        description: Distinct active stores.
+        column: store_id
+      - name: average_unit_price
+        agg: avg
+        description: Mean unit price across transaction rows, not weighted by quantity.
+        column: unit_price
+      - name: average_quantity
+        agg: avg
+        description: "Mean transaction_qty across purchase rows: average items per transaction. It is not distinct product count
+          or total transactions."
+        column: transaction_qty
+      - name: maximum_quantity
+        agg: max
+        description: Largest item quantity in one transaction.
+        column: transaction_qty
+      - name: total_revenue
+        expr: SUM({TABLE}."transaction_qty" * CAST({TABLE}."unit_price" AS DECIMAL(18, 2)))
+        description: Combined transaction revenue in USD, with decimal cent arithmetic to avoid floating-point summation drift.
+      - name: maximum_revenue
+        expr: MAX({TABLE}."transaction_qty" * CAST({TABLE}."unit_price" AS DECIMAL(18, 2)))
+        description: Largest revenue from one transaction.
+joins: []

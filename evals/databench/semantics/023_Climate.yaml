@@ -1,0 +1,101 @@
+dialect: duckdb
+models:
+  - name: climate
+    table: data
+    description: One row per observed day at the Madrid Retiro station. Manually curated using the full data and DataBench
+      question/answer definitions; reference-informed, not a schema-only baseline.
+    dimensions:
+      - name: date
+        expr: CAST({TABLE}."fecha" AT TIME ZONE 'UTC' AS DATE)
+        description: Unique observation date; retain with extreme daily values.
+        type: time
+      - name: season
+        column: season
+        description: Recorded season labels are 'Spring', 'Summer', 'Autumn', 'Winter' with initial capitals.
+        type: string
+      - name: month
+        column: month_name
+        description: Existing month label.
+        type: string
+      - name: weekday
+        column: weekday_name
+        description: Existing weekday label.
+        type: string
+      - name: day_of_year
+        column: dayofyear
+        description: Ordinal day, including leap day; aggregate across years when ranking average temperature.
+        type: number
+      - name: year
+        column: year
+        description: Calendar year.
+        type: number
+    measures:
+      - name: minimum_temperature
+        column: tmin
+        description: Daily minimum Celsius.
+        type: number
+      - name: maximum_temperature
+        column: tmax
+        description: Daily maximum Celsius.
+        type: number
+      - name: mean_temperature
+        column: tmed
+        description: Recorded mean daily Celsius, not recomputed from extremes.
+        type: number
+      - name: sunshine
+        column: sol
+        description: Recorded sol measure, referred to as solar radiation in questions; preserve units and missing values.
+        type: number
+      - name: precipitation
+        column: prec
+        description: Precipitation; zero means recorded no rain, NULL unknown.
+        type: number
+      - name: mean_wind
+        column: velmedia
+        description: Daily average wind speed.
+        type: number
+      - name: gust
+        column: racha
+        description: Maximum wind/gust speed; distinct from mean wind.
+        type: number
+      - name: maximum_pressure
+        column: presMax
+        description: Daily maximum pressure.
+        type: number
+      - name: minimum_pressure
+        column: presMin
+        description: Daily minimum pressure.
+        type: number
+    metrics:
+      - name: day_count
+        agg: count
+        description: Number of observed days; filter measured fields IS NOT NULL when counting availability.
+      - name: average_minimum_temperature
+        agg: avg
+        description: Mean daily minimum temperature.
+        column: tmin
+      - name: average_maximum_temperature
+        agg: avg
+        description: Mean daily maximum temperature.
+        column: tmax
+      - name: average_temperature
+        agg: avg
+        description: Mean recorded daily average temperature.
+        column: tmed
+      - name: average_sunshine
+        agg: avg
+        description: Mean measured sol, ignoring missing values.
+        column: sol
+      - name: average_wind
+        agg: avg
+        description: Mean daily average wind.
+        column: velmedia
+      - name: total_rain
+        agg: sum
+        description: Total precipitation for grouped weekday/month.
+        column: prec
+      - name: maximum_gust
+        agg: max
+        description: Largest gust speed.
+        column: racha
+joins: []

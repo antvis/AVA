@@ -1,4 +1,4 @@
-import { semanticConfigSchema } from './schema';
+import { parseSemanticConfig } from './schema';
 
 import type { Schema } from '../types';
 import type {
@@ -7,6 +7,7 @@ import type {
   SemanticElement,
   SemanticJoin,
   SemanticMeasure,
+  SemanticMetric,
   SemanticModel,
 } from './types';
 
@@ -14,10 +15,11 @@ import type {
 export const ELEMENT_SEPARATOR = '__';
 
 export interface ResolvedElement {
-  kind: 'dimension' | 'measure';
+  kind: 'dimension' | 'measure' | 'metric';
   model: SemanticModel;
   dimension?: SemanticDimension;
   measure?: SemanticMeasure;
+  metric?: SemanticMetric;
 }
 
 /** Validated, explicitly defined semantic models and their join graph. */
@@ -27,15 +29,15 @@ export class SemanticRegistry {
   readonly dialect?: SemanticConfig['dialect'];
 
   constructor(config: SemanticConfig | string) {
-    const raw = typeof config === 'string' ? JSON.parse(config) : config;
-    const parsed = semanticConfigSchema.parse(raw) as SemanticConfig;
+    const parsed = parseSemanticConfig(config);
 
     for (const model of parsed.models) {
       if (this.models.has(model.name)) throw new Error(`Duplicate semantic model: ${model.name}`);
 
       const names = new Set<string>();
-      for (const element of [...(model.dimensions ?? []), ...(model.measures ?? [])]) {
-        if (names.has(element.name)) throw new Error(`Duplicate element ${model.name}${ELEMENT_SEPARATOR}${element.name}`);
+      for (const element of [...(model.dimensions ?? []), ...(model.measures ?? []), ...(model.metrics ?? [])]) {
+        if (names.has(element.name))
+          throw new Error(`Duplicate element ${model.name}${ELEMENT_SEPARATOR}${element.name}`);
         names.add(element.name);
       }
       this.models.set(model.name, model);
@@ -55,7 +57,17 @@ export class SemanticRegistry {
   /** Resolve a `<model>__<element>` reference. */
   resolve(reference: string): ResolvedElement {
     const index = reference.indexOf(ELEMENT_SEPARATOR);
-    if (index <= 0) throw new Error(`Invalid element reference "${reference}"; expected <model>${ELEMENT_SEPARATOR}<name>`);
+    if (index < 0) {
+      const matches = [...this.models.values()].flatMap((model) =>
+        (model.metrics ?? [])
+          .filter((metric) => metric.name === reference)
+          .map((metric) => ({ kind: 'metric' as const, model, metric }))
+      );
+      if (matches.length === 1) return matches[0];
+      if (matches.length > 1) throw new Error(`Ambiguous metric "${reference}"; use <model>__<name>`);
+      throw new Error(`Invalid element reference "${reference}"; use a unique metric name or <model>__<name>`);
+    }
+    if (index === 0) throw new Error(`Invalid element reference "${reference}"`);
 
     const modelName = reference.slice(0, index);
     const name = reference.slice(index + ELEMENT_SEPARATOR.length);
@@ -66,6 +78,8 @@ export class SemanticRegistry {
     if (dimension) return { kind: 'dimension', model, dimension };
     const measure = model.measures?.find((m) => m.name === name);
     if (measure) return { kind: 'measure', model, measure };
+    const metric = model.metrics?.find((m) => m.name === name);
+    if (metric) return { kind: 'metric', model, metric };
 
     throw new Error(`Unknown element "${reference}" in model ${modelName}`);
   }
@@ -84,7 +98,6 @@ export class SemanticRegistry {
           name: `${model.name}${ELEMENT_SEPARATOR}${d.name}`,
           kind: 'dimension',
           model: model.name,
-          table: model.table,
           type: d.type,
           description: d.description,
         });
@@ -93,7 +106,19 @@ export class SemanticRegistry {
           name: `${model.name}${ELEMENT_SEPARATOR}${m.name}`,
           kind: 'measure',
           model: model.name,
-          table: model.table,
+          type: m.type,
+          description: m.description,
+        });
+      for (const m of model.metrics ?? [])
+        result.push({
+          name:
+            !m.name.includes(ELEMENT_SEPARATOR) &&
+            [...this.models.values()].filter((candidate) => candidate.metrics?.some((metric) => metric.name === m.name))
+              .length === 1
+              ? m.name
+              : `${model.name}${ELEMENT_SEPARATOR}${m.name}`,
+          kind: 'metric',
+          model: model.name,
           description: m.description,
         });
     }

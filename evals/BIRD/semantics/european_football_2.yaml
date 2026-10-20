@@ -1,0 +1,3460 @@
+# Source-grounded BIRD dev_20251106 configuration; see README.md and provenance.json.
+dialect: duckdb
+models:
+  - name: country
+    table: Country
+    description: One country. Reference-informed from this database and its dev golden SQL. Preserve record identity
+      for top-N; joins may multiply rows.
+    dimensions:
+      - name: id
+        column: id
+        type: number
+        description: the unique id for countries Part of the declared primary key.
+      - name: name
+        column: name
+        type: string
+        description: country name
+    measures: []
+    metrics:
+      - name: record_count
+        agg: count
+        description: Count source/joined rows at the active query grain; not automatically distinct entities after joins.
+  - name: league
+    table: League
+    description: One league belonging to a country. Reference-informed from this database and its dev golden SQL.
+      Preserve record identity for top-N; joins may multiply rows.
+    dimensions:
+      - name: id
+        column: id
+        type: number
+        description: the unique id for leagues Part of the declared primary key.
+      - name: country_id
+        column: country_id
+        type: number
+        description: country id. the unique id for countries
+      - name: name
+        column: name
+        type: string
+        description: league name
+    measures: []
+    metrics:
+      - name: record_count
+        agg: count
+        description: Count source/joined rows at the active query grain; not automatically distinct entities after joins.
+  - name: match
+    table: Match
+    description: One match with home and away roles. Goals belong to teams, not to an individual player in a lineup
+      slot. Player slots reference Player.player_api_id, not Player.id. Season is a season label, not calendar
+      year. Reference-informed from this database and its dev golden SQL. Preserve record identity for top-N; joins
+      may multiply rows.
+    dimensions:
+      - name: id
+        column: id
+        type: number
+        description: the unique id for matches Part of the declared primary key.
+      - name: country_id
+        column: country_id
+        type: number
+        description: country id
+      - name: league_id
+        column: league_id
+        type: number
+        description: league id
+      - name: season
+        column: season
+        type: string
+        description: the season of the match
+      - name: stage
+        column: stage
+        type: number
+        description: the stage of the match
+      - name: date
+        column: date
+        type: string
+        description: the date of the match. e.g. 2008-08-17 00:00:00
+      - name: match_api_id
+        column: match_api_id
+        type: number
+        description: match api id. the id of the match api
+      - name: home_team_api_id
+        column: home_team_api_id
+        type: number
+        description: home team api id. the id of the home team api
+      - name: away_team_api_id
+        column: away_team_api_id
+        type: number
+        description: away team api id. the id of the away team api
+      - name: home_player_x1
+        column: home_player_X1
+        type: number
+        description: Source field Match.home_player_X1; no additional business definition supplied.
+      - name: home_player_x2
+        column: home_player_X2
+        type: number
+        description: Source field Match.home_player_X2; no additional business definition supplied.
+      - name: home_player_x3
+        column: home_player_X3
+        type: number
+        description: Source field Match.home_player_X3; no additional business definition supplied.
+      - name: home_player_x4
+        column: home_player_X4
+        type: number
+        description: Source field Match.home_player_X4; no additional business definition supplied.
+      - name: home_player_x5
+        column: home_player_X5
+        type: number
+        description: Source field Match.home_player_X5; no additional business definition supplied.
+      - name: home_player_x6
+        column: home_player_X6
+        type: number
+        description: Source field Match.home_player_X6; no additional business definition supplied.
+      - name: home_player_x7
+        column: home_player_X7
+        type: number
+        description: Source field Match.home_player_X7; no additional business definition supplied.
+      - name: home_player_x8
+        column: home_player_X8
+        type: number
+        description: Source field Match.home_player_X8; no additional business definition supplied.
+      - name: home_player_x9
+        column: home_player_X9
+        type: number
+        description: Source field Match.home_player_X9; no additional business definition supplied.
+      - name: home_player_x10
+        column: home_player_X10
+        type: number
+        description: Source field Match.home_player_X10; no additional business definition supplied.
+      - name: home_player_x11
+        column: home_player_X11
+        type: number
+        description: Source field Match.home_player_X11; no additional business definition supplied.
+      - name: away_player_x1
+        column: away_player_X1
+        type: number
+        description: Source field Match.away_player_X1; no additional business definition supplied.
+      - name: away_player_x2
+        column: away_player_X2
+        type: number
+        description: Source field Match.away_player_X2; no additional business definition supplied.
+      - name: away_player_x3
+        column: away_player_X3
+        type: number
+        description: Source field Match.away_player_X3; no additional business definition supplied.
+      - name: away_player_x4
+        column: away_player_X4
+        type: number
+        description: Source field Match.away_player_X4; no additional business definition supplied.
+      - name: away_player_x5
+        column: away_player_X5
+        type: number
+        description: Source field Match.away_player_X5; no additional business definition supplied.
+      - name: away_player_x6
+        column: away_player_X6
+        type: number
+        description: Source field Match.away_player_X6; no additional business definition supplied.
+      - name: away_player_x7
+        column: away_player_X7
+        type: number
+        description: Source field Match.away_player_X7; no additional business definition supplied.
+      - name: away_player_x8
+        column: away_player_X8
+        type: number
+        description: Source field Match.away_player_X8; no additional business definition supplied.
+      - name: away_player_x9
+        column: away_player_X9
+        type: number
+        description: Source field Match.away_player_X9; no additional business definition supplied.
+      - name: away_player_x10
+        column: away_player_X10
+        type: number
+        description: Source field Match.away_player_X10; no additional business definition supplied.
+      - name: away_player_x11
+        column: away_player_X11
+        type: number
+        description: Source field Match.away_player_X11; no additional business definition supplied.
+      - name: home_player_y1
+        column: home_player_Y1
+        type: number
+        description: Source field Match.home_player_Y1; no additional business definition supplied.
+      - name: home_player_y2
+        column: home_player_Y2
+        type: number
+        description: Source field Match.home_player_Y2; no additional business definition supplied.
+      - name: home_player_y3
+        column: home_player_Y3
+        type: number
+        description: Source field Match.home_player_Y3; no additional business definition supplied.
+      - name: home_player_y4
+        column: home_player_Y4
+        type: number
+        description: Source field Match.home_player_Y4; no additional business definition supplied.
+      - name: home_player_y5
+        column: home_player_Y5
+        type: number
+        description: Source field Match.home_player_Y5; no additional business definition supplied.
+      - name: home_player_y6
+        column: home_player_Y6
+        type: number
+        description: Source field Match.home_player_Y6; no additional business definition supplied.
+      - name: home_player_y7
+        column: home_player_Y7
+        type: number
+        description: Source field Match.home_player_Y7; no additional business definition supplied.
+      - name: home_player_y8
+        column: home_player_Y8
+        type: number
+        description: Source field Match.home_player_Y8; no additional business definition supplied.
+      - name: home_player_y9
+        column: home_player_Y9
+        type: number
+        description: Source field Match.home_player_Y9; no additional business definition supplied.
+      - name: home_player_y10
+        column: home_player_Y10
+        type: number
+        description: Source field Match.home_player_Y10; no additional business definition supplied.
+      - name: home_player_y11
+        column: home_player_Y11
+        type: number
+        description: Source field Match.home_player_Y11; no additional business definition supplied.
+      - name: away_player_y1
+        column: away_player_Y1
+        type: number
+        description: Source field Match.away_player_Y1; no additional business definition supplied.
+      - name: away_player_y2
+        column: away_player_Y2
+        type: number
+        description: Source field Match.away_player_Y2; no additional business definition supplied.
+      - name: away_player_y3
+        column: away_player_Y3
+        type: number
+        description: Source field Match.away_player_Y3; no additional business definition supplied.
+      - name: away_player_y4
+        column: away_player_Y4
+        type: number
+        description: Source field Match.away_player_Y4; no additional business definition supplied.
+      - name: away_player_y5
+        column: away_player_Y5
+        type: number
+        description: Source field Match.away_player_Y5; no additional business definition supplied.
+      - name: away_player_y6
+        column: away_player_Y6
+        type: number
+        description: Source field Match.away_player_Y6; no additional business definition supplied.
+      - name: away_player_y7
+        column: away_player_Y7
+        type: number
+        description: Source field Match.away_player_Y7; no additional business definition supplied.
+      - name: away_player_y8
+        column: away_player_Y8
+        type: number
+        description: Source field Match.away_player_Y8; no additional business definition supplied.
+      - name: away_player_y9
+        column: away_player_Y9
+        type: number
+        description: Source field Match.away_player_Y9; no additional business definition supplied.
+      - name: away_player_y10
+        column: away_player_Y10
+        type: number
+        description: Source field Match.away_player_Y10; no additional business definition supplied.
+      - name: away_player_y11
+        column: away_player_Y11
+        type: number
+        description: Source field Match.away_player_Y11; no additional business definition supplied.
+      - name: home_player_1
+        column: home_player_1
+        type: number
+        description: Source field Match.home_player_1; no additional business definition supplied.
+      - name: home_player_2
+        column: home_player_2
+        type: number
+        description: Source field Match.home_player_2; no additional business definition supplied.
+      - name: home_player_3
+        column: home_player_3
+        type: number
+        description: Source field Match.home_player_3; no additional business definition supplied.
+      - name: home_player_4
+        column: home_player_4
+        type: number
+        description: Source field Match.home_player_4; no additional business definition supplied.
+      - name: home_player_5
+        column: home_player_5
+        type: number
+        description: Source field Match.home_player_5; no additional business definition supplied.
+      - name: home_player_6
+        column: home_player_6
+        type: number
+        description: Source field Match.home_player_6; no additional business definition supplied.
+      - name: home_player_7
+        column: home_player_7
+        type: number
+        description: Source field Match.home_player_7; no additional business definition supplied.
+      - name: home_player_8
+        column: home_player_8
+        type: number
+        description: Source field Match.home_player_8; no additional business definition supplied.
+      - name: home_player_9
+        column: home_player_9
+        type: number
+        description: Source field Match.home_player_9; no additional business definition supplied.
+      - name: home_player_10
+        column: home_player_10
+        type: number
+        description: Source field Match.home_player_10; no additional business definition supplied.
+      - name: home_player_11
+        column: home_player_11
+        type: number
+        description: Source field Match.home_player_11; no additional business definition supplied.
+      - name: away_player_1
+        column: away_player_1
+        type: number
+        description: Source field Match.away_player_1; no additional business definition supplied.
+      - name: away_player_2
+        column: away_player_2
+        type: number
+        description: Source field Match.away_player_2; no additional business definition supplied.
+      - name: away_player_3
+        column: away_player_3
+        type: number
+        description: Source field Match.away_player_3; no additional business definition supplied.
+      - name: away_player_4
+        column: away_player_4
+        type: number
+        description: Source field Match.away_player_4; no additional business definition supplied.
+      - name: away_player_5
+        column: away_player_5
+        type: number
+        description: Source field Match.away_player_5; no additional business definition supplied.
+      - name: away_player_6
+        column: away_player_6
+        type: number
+        description: Source field Match.away_player_6; no additional business definition supplied.
+      - name: away_player_7
+        column: away_player_7
+        type: number
+        description: Source field Match.away_player_7; no additional business definition supplied.
+      - name: away_player_8
+        column: away_player_8
+        type: number
+        description: Source field Match.away_player_8; no additional business definition supplied.
+      - name: away_player_9
+        column: away_player_9
+        type: number
+        description: Source field Match.away_player_9; no additional business definition supplied.
+      - name: away_player_10
+        column: away_player_10
+        type: number
+        description: Source field Match.away_player_10; no additional business definition supplied.
+      - name: away_player_11
+        column: away_player_11
+        type: number
+        description: Source field Match.away_player_11; no additional business definition supplied.
+      - name: goal
+        column: goal
+        type: string
+        description: Raw match goal-event text/XML, distinct from numeric home_team_goal and away_team_goal.
+      - name: shoton
+        column: shoton
+        type: string
+        description: "shot on. the shot on goal of the match. commonsense reasoning: A shot on goal is a shot that enters
+          the goal or would have entered the goal if it had not been blocked by the goalkeeper or another defensive
+          player."
+      - name: shotoff
+        column: shotoff
+        type: string
+        description: shot off. the shot off goal of the match, which is the opposite of shot on
+      - name: foulcommit
+        column: foulcommit
+        type: string
+        description: foul commit. the fouls occurred in the match
+      - name: card
+        column: card
+        type: string
+        description: the cards given in the match
+      - name: cross
+        column: cross
+        type: string
+        description: Balls sent into the opposition team's area from a wide position in the match
+      - name: corner
+        column: corner
+        type: string
+        description: Ball goes out of play for a corner kick in the match
+      - name: possession
+        column: possession
+        type: string
+        description: The duration from a player taking over the ball in the match
+      - name: b365_h
+        column: B365H
+        type: number
+        description: Source field Match.B365H; no additional business definition supplied.
+      - name: b365_d
+        column: B365D
+        type: number
+        description: Source field Match.B365D; no additional business definition supplied.
+      - name: b365_a
+        column: B365A
+        type: number
+        description: Source field Match.B365A; no additional business definition supplied.
+      - name: bwh
+        column: BWH
+        type: number
+        description: Source field Match.BWH; no additional business definition supplied.
+      - name: bwd
+        column: BWD
+        type: number
+        description: Source field Match.BWD; no additional business definition supplied.
+      - name: bwa
+        column: BWA
+        type: number
+        description: Source field Match.BWA; no additional business definition supplied.
+      - name: iwh
+        column: IWH
+        type: number
+        description: Source field Match.IWH; no additional business definition supplied.
+      - name: iwd
+        column: IWD
+        type: number
+        description: Source field Match.IWD; no additional business definition supplied.
+      - name: iwa
+        column: IWA
+        type: number
+        description: Source field Match.IWA; no additional business definition supplied.
+      - name: lbh
+        column: LBH
+        type: number
+        description: Source field Match.LBH; no additional business definition supplied.
+      - name: lbd
+        column: LBD
+        type: number
+        description: Source field Match.LBD; no additional business definition supplied.
+      - name: lba
+        column: LBA
+        type: number
+        description: Source field Match.LBA; no additional business definition supplied.
+      - name: psh
+        column: PSH
+        type: number
+        description: Source field Match.PSH; no additional business definition supplied.
+      - name: psd
+        column: PSD
+        type: number
+        description: Source field Match.PSD; no additional business definition supplied.
+      - name: psa
+        column: PSA
+        type: number
+        description: Source field Match.PSA; no additional business definition supplied.
+      - name: whh
+        column: WHH
+        type: number
+        description: Source field Match.WHH; no additional business definition supplied.
+      - name: whd
+        column: WHD
+        type: number
+        description: Source field Match.WHD; no additional business definition supplied.
+      - name: wha
+        column: WHA
+        type: number
+        description: Source field Match.WHA; no additional business definition supplied.
+      - name: sjh
+        column: SJH
+        type: number
+        description: Source field Match.SJH; no additional business definition supplied.
+      - name: sjd
+        column: SJD
+        type: number
+        description: Source field Match.SJD; no additional business definition supplied.
+      - name: sja
+        column: SJA
+        type: number
+        description: Source field Match.SJA; no additional business definition supplied.
+      - name: vch
+        column: VCH
+        type: number
+        description: Source field Match.VCH; no additional business definition supplied.
+      - name: vcd
+        column: VCD
+        type: number
+        description: Source field Match.VCD; no additional business definition supplied.
+      - name: vca
+        column: VCA
+        type: number
+        description: Source field Match.VCA; no additional business definition supplied.
+      - name: gbh
+        column: GBH
+        type: number
+        description: Source field Match.GBH; no additional business definition supplied.
+      - name: gbd
+        column: GBD
+        type: number
+        description: Source field Match.GBD; no additional business definition supplied.
+      - name: gba
+        column: GBA
+        type: number
+        description: Source field Match.GBA; no additional business definition supplied.
+      - name: bsh
+        column: BSH
+        type: number
+        description: Source field Match.BSH; no additional business definition supplied.
+      - name: bsd
+        column: BSD
+        type: number
+        description: Source field Match.BSD; no additional business definition supplied.
+      - name: bsa
+        column: BSA
+        type: number
+        description: Source field Match.BSA; no additional business definition supplied.
+    measures:
+      - name: home_team_goal
+        column: home_team_goal
+        type: number
+        description: home team goal. the goal of the home team
+      - name: away_team_goal
+        column: away_team_goal
+        type: number
+        description: away team goal. the goal of the away team
+    metrics:
+      - name: record_count
+        agg: count
+        description: Count source/joined rows at the active query grain; not automatically distinct entities after joins.
+      - name: count_id
+        agg: count
+        column: id
+        description: count of id over the selected Match records. Apply filters and grouping explicitly; joins can repeat
+          records.
+      - name: sum_home_team_goal
+        agg: sum
+        column: home_team_goal
+        description: sum of home_team_goal over the selected Match records. Apply filters and grouping explicitly; joins
+          can repeat records.
+      - name: sum_away_team_goal
+        agg: sum
+        column: away_team_goal
+        description: sum of away_team_goal over the selected Match records. Apply filters and grouping explicitly; joins
+          can repeat records.
+      - name: count_distinct_id
+        agg: count_distinct
+        column: id
+        description: count distinct of id over the selected Match records. Apply filters and grouping explicitly; joins can
+          repeat records.
+      - name: max_home_team_goal
+        agg: max
+        column: home_team_goal
+        description: max of home_team_goal over the selected Match records. Apply filters and grouping explicitly; joins
+          can repeat records.
+  - name: player
+    table: Player
+    description: One player identified by player_api_id and player_fifa_api_id, with separate local row id. Attribute
+      records are historical, not one row per player. Reference-informed from this database and its dev golden SQL.
+      Preserve record identity for top-N; joins may multiply rows.
+    dimensions:
+      - name: id
+        column: id
+        type: number
+        description: the unique id for players Part of the declared primary key.
+      - name: player_api_id
+        column: player_api_id
+        type: number
+        description: player api id. the id of the player api
+      - name: player_name
+        column: player_name
+        type: string
+        description: player name
+      - name: player_fifa_api_id
+        column: player_fifa_api_id
+        type: number
+        description: player federation international football association api id. the id of the player fifa api
+      - name: birthday
+        column: birthday
+        type: string
+        description: "the player's birthday. e.g. 1992-02-29 00:00:00 commonsense reasoning: Player A is older than player
+          B means that A's birthday is earlier than B's"
+    measures:
+      - name: height
+        column: height
+        type: number
+        description: Player height in centimetres according to question evidence.
+      - name: weight
+        column: weight
+        type: number
+        description: Recorded player weight. Retain source units; no unit conversion is implied by column type.
+    metrics:
+      - name: record_count
+        agg: count
+        description: Count source/joined rows at the active query grain; not automatically distinct entities after joins.
+      - name: sum_height
+        agg: sum
+        column: height
+        description: sum of height over the selected Player records. Apply filters and grouping explicitly; joins can
+          repeat records.
+      - name: count_id
+        agg: count
+        column: id
+        description: count of id over the selected Player records. Apply filters and grouping explicitly; joins can repeat
+          records.
+      - name: count_distinct_player_api_id
+        agg: count_distinct
+        column: player_api_id
+        description: count distinct of player_api_id over the selected Player records. Apply filters and grouping
+          explicitly; joins can repeat records.
+      - name: count_distinct_id
+        agg: count_distinct
+        column: id
+        description: count distinct of id over the selected Player records. Apply filters and grouping explicitly; joins
+          can repeat records.
+      - name: max_height
+        agg: max
+        column: height
+        description: max of height over the selected Player records. Apply filters and grouping explicitly; joins can
+          repeat records.
+      - name: min_height
+        agg: min
+        column: height
+        description: min of height over the selected Player records. Apply filters and grouping explicitly; joins can
+          repeat records.
+      - name: count_distinct_player_name
+        agg: count_distinct
+        column: player_name
+        description: count distinct of player_name over the selected Player records. Apply filters and grouping explicitly;
+          joins can repeat records.
+      - name: avg_weight
+        agg: avg
+        column: weight
+        description: avg of weight over the selected Player records. Apply filters and grouping explicitly; joins can
+          repeat records.
+      - name: avg_height
+        agg: avg
+        column: height
+        description: avg of height over the selected Player records. Apply filters and grouping explicitly; joins can
+          repeat records.
+  - name: player_attributes
+    table: Player_Attributes
+    description: One dated player-attribute observation. Multiple dates per player; select an observation or aggregate
+      explicitly, and do not silently assume latest attributes. Reference-informed from this database and its dev
+      golden SQL. Preserve record identity for top-N; joins may multiply rows.
+    dimensions:
+      - name: id
+        column: id
+        type: number
+        description: the unique id for players Part of the declared primary key.
+      - name: player_fifa_api_id
+        column: player_fifa_api_id
+        type: number
+        description: player federation international football association api id. the id of the player fifa api
+      - name: player_api_id
+        column: player_api_id
+        type: number
+        description: player api id. the id of the player api
+      - name: date
+        column: date
+        type: string
+        description: date. e.g. 2016-02-18 00:00:00
+      - name: preferred_foot
+        column: preferred_foot
+        type: string
+        description: preferred foot. the player's preferred foot when attacking. right/ left
+      - name: attacking_work_rate
+        column: attacking_work_rate
+        type: string
+        description: "attacking work rate. the player's attacking work rate. commonsense reasoning: • high: implies that
+          the player is going to be in all of your attack moves• medium: implies that the player will select the
+          attack actions he will join in• low: remain in his position while the team attacks"
+      - name: defensive_work_rate
+        column: defensive_work_rate
+        type: string
+        description: "the player's defensive work rate. commonsense reasoning: • high: remain in his position and defense
+          while the team attacks • medium: implies that the player will select the defensive actions he will join
+          in• low: implies that the player is going to be in all of your attack moves instead of defensing"
+    measures:
+      - name: overall_rating
+        column: overall_rating
+        type: number
+        description: "the overall rating of the player. commonsense reasoning: The rating is between 0-100 which is
+          calculated by FIFA. Higher overall rating means the player has a stronger overall strength."
+      - name: potential
+        column: potential
+        type: number
+        description: "potential of the player. commonsense reasoning: The potential score is between 0-100 which is
+          calculated by FIFA. Higher potential score means that the player has more potential"
+      - name: crossing
+        column: crossing
+        type: number
+        description: "the player's crossing score. commonsense reasoning: Cross is a long pass into the opponent's goal
+          towards the header of sixth-yard teammate. The crossing score is between 0-100 which measures the
+          tendency/frequency of crosses in the box. Higher potential score means that the player performs better in
+          crossing actions."
+      - name: finishing
+        column: finishing
+        type: number
+        description: the player's finishing rate. 0-100 which is calculated by FIFA
+      - name: heading_accuracy
+        column: heading_accuracy
+        type: number
+        description: heading accuracy. the player's heading accuracy. 0-100 which is calculated by FIFA
+      - name: short_passing
+        column: short_passing
+        type: number
+        description: short passing. the player's short passing score. 0-100 which is calculated by FIFA
+      - name: volleys
+        column: volleys
+        type: number
+        description: the player's volley score. 0-100 which is calculated by FIFA
+      - name: dribbling
+        column: dribbling
+        type: number
+        description: the player's dribbling score. 0-100 which is calculated by FIFA
+      - name: curve
+        column: curve
+        type: number
+        description: the player's curve score. 0-100 which is calculated by FIFA
+      - name: free_kick_accuracy
+        column: free_kick_accuracy
+        type: number
+        description: free kick accuracy. the player's free kick accuracy. 0-100 which is calculated by FIFA
+      - name: long_passing
+        column: long_passing
+        type: number
+        description: long passing. the player's long passing score. 0-100 which is calculated by FIFA
+      - name: ball_control
+        column: ball_control
+        type: number
+        description: ball control. the player's ball control score. 0-100 which is calculated by FIFA
+      - name: acceleration
+        column: acceleration
+        type: number
+        description: the player's acceleration score. 0-100 which is calculated by FIFA
+      - name: sprint_speed
+        column: sprint_speed
+        type: number
+        description: sprint speed. the player's sprint speed. 0-100 which is calculated by FIFA
+      - name: agility
+        column: agility
+        type: number
+        description: the player's agility. 0-100 which is calculated by FIFA
+      - name: reactions
+        column: reactions
+        type: number
+        description: the player's reactions score. 0-100 which is calculated by FIFA
+      - name: balance
+        column: balance
+        type: number
+        description: the player's balance score. 0-100 which is calculated by FIFA
+      - name: shot_power
+        column: shot_power
+        type: number
+        description: shot power. the player's shot power. 0-100 which is calculated by FIFA
+      - name: jumping
+        column: jumping
+        type: number
+        description: the player's jumping score. 0-100 which is calculated by FIFA
+      - name: stamina
+        column: stamina
+        type: number
+        description: the player's stamina score. 0-100 which is calculated by FIFA
+      - name: strength
+        column: strength
+        type: number
+        description: the player's strength score. 0-100 which is calculated by FIFA
+      - name: long_shots
+        column: long_shots
+        type: number
+        description: long shots. the player's long shots score. 0-100 which is calculated by FIFA
+      - name: aggression
+        column: aggression
+        type: number
+        description: the player's aggression score. 0-100 which is calculated by FIFA
+      - name: interceptions
+        column: interceptions
+        type: number
+        description: the player's interceptions score. 0-100 which is calculated by FIFA
+      - name: positioning
+        column: positioning
+        type: number
+        description: the player's positioning score. 0-100 which is calculated by FIFA
+      - name: vision
+        column: vision
+        type: number
+        description: the player's vision score. 0-100 which is calculated by FIFA
+      - name: penalties
+        column: penalties
+        type: number
+        description: the player's penalties score. 0-100 which is calculated by FIFA
+      - name: marking
+        column: marking
+        type: number
+        description: the player's markingscore. 0-100 which is calculated by FIFA
+      - name: standing_tackle
+        column: standing_tackle
+        type: number
+        description: standing tackle. the player's standing tackle score. 0-100 which is calculated by FIFA
+      - name: sliding_tackle
+        column: sliding_tackle
+        type: number
+        description: sliding tackle. the player's sliding tackle score. 0-100 which is calculated by FIFA
+      - name: gk_diving
+        column: gk_diving
+        type: number
+        description: goalkeep diving. the player's goalkeep diving score. 0-100 which is calculated by FIFA
+      - name: gk_handling
+        column: gk_handling
+        type: number
+        description: Recorded goalkeeper handling rating; distinct from gk_diving.
+      - name: gk_kicking
+        column: gk_kicking
+        type: number
+        description: goalkeep kicking. the player's goalkeep kicking score. 0-100 which is calculated by FIFA
+      - name: gk_positioning
+        column: gk_positioning
+        type: number
+        description: goalkeep positioning. the player's goalkeep positioning score. 0-100 which is calculated by FIFA
+      - name: gk_reflexes
+        column: gk_reflexes
+        type: number
+        description: goalkeep reflexes. the player's goalkeep reflexes score. 0-100 which is calculated by FIFA
+    metrics:
+      - name: record_count
+        agg: count
+        description: Count source/joined rows at the active query grain; not automatically distinct entities after joins.
+      - name: count_id
+        agg: count
+        column: id
+        description: count of id over the selected Player_Attributes records. Apply filters and grouping explicitly; joins
+          can repeat records.
+      - name: max_crossing
+        agg: max
+        column: crossing
+        description: max of crossing over the selected Player_Attributes records. Apply filters and grouping explicitly;
+          joins can repeat records.
+      - name: max_penalties
+        agg: max
+        column: penalties
+        description: max of penalties over the selected Player_Attributes records. Apply filters and grouping explicitly;
+          joins can repeat records.
+      - name: sum_long_shots
+        agg: sum
+        column: long_shots
+        description: sum of long_shots over the selected Player_Attributes records. Apply filters and grouping explicitly;
+          joins can repeat records.
+      - name: count_long_shots
+        agg: count
+        column: long_shots
+        description: count of long_shots over the selected Player_Attributes records. Apply filters and grouping
+          explicitly; joins can repeat records.
+      - name: sum_heading_accuracy
+        agg: sum
+        column: heading_accuracy
+        description: sum of heading_accuracy over the selected Player_Attributes records. Apply filters and grouping
+          explicitly; joins can repeat records.
+      - name: count_player_fifa_api_id
+        agg: count
+        column: player_fifa_api_id
+        description: count of player_fifa_api_id over the selected Player_Attributes records. Apply filters and grouping
+          explicitly; joins can repeat records.
+      - name: max_potential
+        agg: max
+        column: potential
+        description: max of potential over the selected Player_Attributes records. Apply filters and grouping explicitly;
+          joins can repeat records.
+      - name: avg_finishing
+        agg: avg
+        column: finishing
+        description: avg of finishing over the selected Player_Attributes records. Apply filters and grouping explicitly;
+          joins can repeat records.
+      - name: sum_overall_rating
+        agg: sum
+        column: overall_rating
+        description: sum of overall_rating over the selected Player_Attributes records. Apply filters and grouping
+          explicitly; joins can repeat records.
+      - name: count_distinct_player_api_id
+        agg: count_distinct
+        column: player_api_id
+        description: count distinct of player_api_id over the selected Player_Attributes records. Apply filters and
+          grouping explicitly; joins can repeat records.
+      - name: sum_crossing
+        agg: sum
+        column: crossing
+        description: sum of crossing over the selected Player_Attributes records. Apply filters and grouping explicitly;
+          joins can repeat records.
+      - name: max_overall_rating
+        agg: max
+        column: overall_rating
+        description: max of overall_rating over the selected Player_Attributes records. Apply filters and grouping
+          explicitly; joins can repeat records.
+      - name: max_strength
+        agg: max
+        column: strength
+        description: max of strength over the selected Player_Attributes records. Apply filters and grouping explicitly;
+          joins can repeat records.
+  - name: team
+    table: Team
+    description: One team with local id, team_api_id and team_fifa_api_id; names are team_long_name or team_short_name.
+      Reference-informed from this database and its dev golden SQL. Preserve record identity for top-N; joins may
+      multiply rows.
+    dimensions:
+      - name: id
+        column: id
+        type: number
+        description: the unique id for teams Part of the declared primary key.
+      - name: team_api_id
+        column: team_api_id
+        type: number
+        description: team api id. the id of the team api
+      - name: team_fifa_api_id
+        column: team_fifa_api_id
+        type: number
+        description: FIFA team identifier. Actual data has three duplicated non-null IDs (two rows each); this key is not
+          unique. Prefer team_api_id for a unique team join unless the question requires FIFA ID.
+      - name: team_long_name
+        column: team_long_name
+        type: string
+        description: team long name. the team's long name
+      - name: team_short_name
+        column: team_short_name
+        type: string
+        description: team short name. the team's short name
+    measures: []
+    metrics:
+      - name: record_count
+        agg: count
+        description: Count source/joined rows at the active query grain; not automatically distinct entities after joins.
+      - name: count_id
+        agg: count
+        column: id
+        description: count of id over the selected Team records. Apply filters and grouping explicitly; joins can repeat
+          records.
+  - name: team_attributes
+    table: Team_Attributes
+    description: One dated team-tactics observation; teams have multiple historical observations. Reference-informed
+      from this database and its dev golden SQL. Preserve record identity for top-N; joins may multiply rows.
+    dimensions:
+      - name: id
+        column: id
+        type: number
+        description: the unique id for teams Part of the declared primary key.
+      - name: team_fifa_api_id
+        column: team_fifa_api_id
+        type: number
+        description: team federation international football association api id. the id of the team fifa api
+      - name: team_api_id
+        column: team_api_id
+        type: number
+        description: team api id. the id of the team api
+      - name: date
+        column: date
+        type: string
+        description: Date. e.g. 2010-02-22 00:00:00
+      - name: build_up_play_speed_class
+        column: buildUpPlaySpeedClass
+        type: string
+        description: "build Up Play Speed Class. the speed class. commonsense reasoning: • Slow: 1-33• Balanced: 34-66•
+          Fast: 66-100"
+      - name: build_up_play_dribbling_class
+        column: buildUpPlayDribblingClass
+        type: string
+        description: "build Up Play Dribbling Class. the dribbling class. commonsense reasoning: • Little: 1-33• Normal:
+          34-66• Lots: 66-100"
+      - name: build_up_play_passing_class
+        column: buildUpPlayPassingClass
+        type: string
+        description: "build Up Play Passing Class. the passing class. commonsense reasoning: • Short: 1-33• Mixed: 34-66•
+          Long: 66-100"
+      - name: build_up_play_positioning_class
+        column: buildUpPlayPositioningClass
+        type: string
+        description: build Up Play Positioning Class. A team's freedom of movement in the 1st two thirds of the pitch.
+          Organised / Free Form
+      - name: chance_creation_passing_class
+        column: chanceCreationPassingClass
+        type: string
+        description: "chance Creation Passing Class. the chance creation passing class. commonsense reasoning: • Safe:
+          1-33• Normal: 34-66• Risky: 66-100"
+      - name: chance_creation_crossing_class
+        column: chanceCreationCrossingClass
+        type: string
+        description: "chance Creation Crossing Class. the chance creation crossing class. commonsense reasoning: • Little:
+          1-33• Normal: 34-66• Lots: 66-100"
+      - name: chance_creation_shooting_class
+        column: chanceCreationShootingClass
+        type: string
+        description: "chance Creation Shooting Class. the chance creation shooting class. commonsense reasoning: • Little:
+          1-33• Normal: 34-66• Lots: 66-100"
+      - name: chance_creation_positioning_class
+        column: chanceCreationPositioningClass
+        type: string
+        description: chance Creation Positioning Class. A team’s freedom of movement in the final third of the pitch.
+          Organised / Free Form
+      - name: defence_pressure_class
+        column: defencePressureClass
+        type: string
+        description: "defence Pressure Class. the defence pressure class. commonsense reasoning: • Deep: 1-33• Medium:
+          34-66• High: 66-100"
+      - name: defence_aggression_class
+        column: defenceAggressionClass
+        type: string
+        description: "defence Aggression Class. the defence aggression class. commonsense reasoning: • Contain: 1-33•
+          Press: 34-66• Double: 66-100"
+      - name: defence_team_width_class
+        column: defenceTeamWidthClass
+        type: string
+        description: "defence Team Width Class. the defence team width class. commonsense reasoning: • Narrow: 1-33•
+          Normal: 34-66• Wide: 66-100"
+      - name: defence_defender_line_class
+        column: defenceDefenderLineClass
+        type: string
+        description: defence Defender Line Class. Affects the shape and strategy of the defence. Cover/ Offside Trap
+    measures:
+      - name: build_up_play_speed
+        column: buildUpPlaySpeed
+        type: number
+        description: build Up Play Speed. the speed in which attacks are put together. the score which is between 1-00 to
+          measure the team's attack speed
+      - name: build_up_play_dribbling
+        column: buildUpPlayDribbling
+        type: number
+        description: build Up Play Dribbling. the tendency/ frequency of dribbling
+      - name: build_up_play_passing
+        column: buildUpPlayPassing
+        type: number
+        description: build Up Play Passing. affects passing distance and support from teammates
+      - name: chance_creation_passing
+        column: chanceCreationPassing
+        type: number
+        description: chance Creation Passing. Amount of risk in pass decision and run support
+      - name: chance_creation_crossing
+        column: chanceCreationCrossing
+        type: number
+        description: chance Creation Crossing. The tendency / frequency of crosses into the box
+      - name: chance_creation_shooting
+        column: chanceCreationShooting
+        type: number
+        description: chance Creation Shooting. The tendency / frequency of shots taken
+      - name: defence_pressure
+        column: defencePressure
+        type: number
+        description: defence Pressure. Affects how high up the pitch the team will start pressuring
+      - name: defence_aggression
+        column: defenceAggression
+        type: number
+        description: defence Aggression. Affect the team’s approach to tackling the ball possessor
+      - name: defence_team_width
+        column: defenceTeamWidth
+        type: number
+        description: defence Team Width. Affects how much the team will shift to the ball side
+    metrics:
+      - name: record_count
+        agg: count
+        description: Count source/joined rows at the active query grain; not automatically distinct entities after joins.
+      - name: avg_build_up_play_passing
+        agg: avg
+        column: buildUpPlayPassing
+        description: avg of buildUpPlayPassing over the selected Team_Attributes records. Apply filters and grouping
+          explicitly; joins can repeat records.
+      - name: sum_chance_creation_passing
+        agg: sum
+        column: chanceCreationPassing
+        description: sum of chanceCreationPassing over the selected Team_Attributes records. Apply filters and grouping
+          explicitly; joins can repeat records.
+      - name: avg_build_up_play_speed
+        agg: avg
+        column: buildUpPlaySpeed
+        description: avg of buildUpPlaySpeed over the selected Team_Attributes records. Apply filters and grouping
+          explicitly; joins can repeat records.
+  - name: match_away_player_11_role
+    table: Player
+    description: Join role for Match.away_player_11 -> Player.player_api_id. Same physical table as player. One player
+      identified by player_api_id and player_fifa_api_id, with separate local row id. Attribute records are
+      historical, not one row per player. Reference-informed from this database and its dev golden SQL. Preserve
+      record identity for top-N; joins may multiply rows.
+    dimensions:
+      - name: id
+        column: id
+        type: number
+        description: the unique id for players Part of the declared primary key.
+      - name: player_api_id
+        column: player_api_id
+        type: number
+        description: player api id. the id of the player api
+      - name: player_name
+        column: player_name
+        type: string
+        description: player name
+      - name: player_fifa_api_id
+        column: player_fifa_api_id
+        type: number
+        description: player federation international football association api id. the id of the player fifa api
+      - name: birthday
+        column: birthday
+        type: string
+        description: "the player's birthday. e.g. 1992-02-29 00:00:00 commonsense reasoning: Player A is older than player
+          B means that A's birthday is earlier than B's"
+    measures:
+      - name: height
+        column: height
+        type: number
+        description: Player height in centimetres according to question evidence.
+      - name: weight
+        column: weight
+        type: number
+        description: Recorded player weight. Retain source units; no unit conversion is implied by column type.
+    metrics:
+      - name: record_count
+        agg: count
+        description: Count source/joined rows at the active query grain; not automatically distinct entities after joins.
+      - name: sum_height
+        agg: sum
+        column: height
+        description: sum of height over the selected Player records. Apply filters and grouping explicitly; joins can
+          repeat records.
+      - name: count_id
+        agg: count
+        column: id
+        description: count of id over the selected Player records. Apply filters and grouping explicitly; joins can repeat
+          records.
+      - name: count_distinct_player_api_id
+        agg: count_distinct
+        column: player_api_id
+        description: count distinct of player_api_id over the selected Player records. Apply filters and grouping
+          explicitly; joins can repeat records.
+      - name: count_distinct_id
+        agg: count_distinct
+        column: id
+        description: count distinct of id over the selected Player records. Apply filters and grouping explicitly; joins
+          can repeat records.
+      - name: max_height
+        agg: max
+        column: height
+        description: max of height over the selected Player records. Apply filters and grouping explicitly; joins can
+          repeat records.
+      - name: min_height
+        agg: min
+        column: height
+        description: min of height over the selected Player records. Apply filters and grouping explicitly; joins can
+          repeat records.
+      - name: count_distinct_player_name
+        agg: count_distinct
+        column: player_name
+        description: count distinct of player_name over the selected Player records. Apply filters and grouping explicitly;
+          joins can repeat records.
+      - name: avg_weight
+        agg: avg
+        column: weight
+        description: avg of weight over the selected Player records. Apply filters and grouping explicitly; joins can
+          repeat records.
+      - name: avg_height
+        agg: avg
+        column: height
+        description: avg of height over the selected Player records. Apply filters and grouping explicitly; joins can
+          repeat records.
+  - name: match_away_player_10_role
+    table: Player
+    description: Join role for Match.away_player_10 -> Player.player_api_id. Same physical table as player. One player
+      identified by player_api_id and player_fifa_api_id, with separate local row id. Attribute records are
+      historical, not one row per player. Reference-informed from this database and its dev golden SQL. Preserve
+      record identity for top-N; joins may multiply rows.
+    dimensions:
+      - name: id
+        column: id
+        type: number
+        description: the unique id for players Part of the declared primary key.
+      - name: player_api_id
+        column: player_api_id
+        type: number
+        description: player api id. the id of the player api
+      - name: player_name
+        column: player_name
+        type: string
+        description: player name
+      - name: player_fifa_api_id
+        column: player_fifa_api_id
+        type: number
+        description: player federation international football association api id. the id of the player fifa api
+      - name: birthday
+        column: birthday
+        type: string
+        description: "the player's birthday. e.g. 1992-02-29 00:00:00 commonsense reasoning: Player A is older than player
+          B means that A's birthday is earlier than B's"
+    measures:
+      - name: height
+        column: height
+        type: number
+        description: Player height in centimetres according to question evidence.
+      - name: weight
+        column: weight
+        type: number
+        description: Recorded player weight. Retain source units; no unit conversion is implied by column type.
+    metrics:
+      - name: record_count
+        agg: count
+        description: Count source/joined rows at the active query grain; not automatically distinct entities after joins.
+      - name: sum_height
+        agg: sum
+        column: height
+        description: sum of height over the selected Player records. Apply filters and grouping explicitly; joins can
+          repeat records.
+      - name: count_id
+        agg: count
+        column: id
+        description: count of id over the selected Player records. Apply filters and grouping explicitly; joins can repeat
+          records.
+      - name: count_distinct_player_api_id
+        agg: count_distinct
+        column: player_api_id
+        description: count distinct of player_api_id over the selected Player records. Apply filters and grouping
+          explicitly; joins can repeat records.
+      - name: count_distinct_id
+        agg: count_distinct
+        column: id
+        description: count distinct of id over the selected Player records. Apply filters and grouping explicitly; joins
+          can repeat records.
+      - name: max_height
+        agg: max
+        column: height
+        description: max of height over the selected Player records. Apply filters and grouping explicitly; joins can
+          repeat records.
+      - name: min_height
+        agg: min
+        column: height
+        description: min of height over the selected Player records. Apply filters and grouping explicitly; joins can
+          repeat records.
+      - name: count_distinct_player_name
+        agg: count_distinct
+        column: player_name
+        description: count distinct of player_name over the selected Player records. Apply filters and grouping explicitly;
+          joins can repeat records.
+      - name: avg_weight
+        agg: avg
+        column: weight
+        description: avg of weight over the selected Player records. Apply filters and grouping explicitly; joins can
+          repeat records.
+      - name: avg_height
+        agg: avg
+        column: height
+        description: avg of height over the selected Player records. Apply filters and grouping explicitly; joins can
+          repeat records.
+  - name: match_away_player_9_role
+    table: Player
+    description: Join role for Match.away_player_9 -> Player.player_api_id. Same physical table as player. One player
+      identified by player_api_id and player_fifa_api_id, with separate local row id. Attribute records are
+      historical, not one row per player. Reference-informed from this database and its dev golden SQL. Preserve
+      record identity for top-N; joins may multiply rows.
+    dimensions:
+      - name: id
+        column: id
+        type: number
+        description: the unique id for players Part of the declared primary key.
+      - name: player_api_id
+        column: player_api_id
+        type: number
+        description: player api id. the id of the player api
+      - name: player_name
+        column: player_name
+        type: string
+        description: player name
+      - name: player_fifa_api_id
+        column: player_fifa_api_id
+        type: number
+        description: player federation international football association api id. the id of the player fifa api
+      - name: birthday
+        column: birthday
+        type: string
+        description: "the player's birthday. e.g. 1992-02-29 00:00:00 commonsense reasoning: Player A is older than player
+          B means that A's birthday is earlier than B's"
+    measures:
+      - name: height
+        column: height
+        type: number
+        description: Player height in centimetres according to question evidence.
+      - name: weight
+        column: weight
+        type: number
+        description: Recorded player weight. Retain source units; no unit conversion is implied by column type.
+    metrics:
+      - name: record_count
+        agg: count
+        description: Count source/joined rows at the active query grain; not automatically distinct entities after joins.
+      - name: sum_height
+        agg: sum
+        column: height
+        description: sum of height over the selected Player records. Apply filters and grouping explicitly; joins can
+          repeat records.
+      - name: count_id
+        agg: count
+        column: id
+        description: count of id over the selected Player records. Apply filters and grouping explicitly; joins can repeat
+          records.
+      - name: count_distinct_player_api_id
+        agg: count_distinct
+        column: player_api_id
+        description: count distinct of player_api_id over the selected Player records. Apply filters and grouping
+          explicitly; joins can repeat records.
+      - name: count_distinct_id
+        agg: count_distinct
+        column: id
+        description: count distinct of id over the selected Player records. Apply filters and grouping explicitly; joins
+          can repeat records.
+      - name: max_height
+        agg: max
+        column: height
+        description: max of height over the selected Player records. Apply filters and grouping explicitly; joins can
+          repeat records.
+      - name: min_height
+        agg: min
+        column: height
+        description: min of height over the selected Player records. Apply filters and grouping explicitly; joins can
+          repeat records.
+      - name: count_distinct_player_name
+        agg: count_distinct
+        column: player_name
+        description: count distinct of player_name over the selected Player records. Apply filters and grouping explicitly;
+          joins can repeat records.
+      - name: avg_weight
+        agg: avg
+        column: weight
+        description: avg of weight over the selected Player records. Apply filters and grouping explicitly; joins can
+          repeat records.
+      - name: avg_height
+        agg: avg
+        column: height
+        description: avg of height over the selected Player records. Apply filters and grouping explicitly; joins can
+          repeat records.
+  - name: match_away_player_8_role
+    table: Player
+    description: Join role for Match.away_player_8 -> Player.player_api_id. Same physical table as player. One player
+      identified by player_api_id and player_fifa_api_id, with separate local row id. Attribute records are
+      historical, not one row per player. Reference-informed from this database and its dev golden SQL. Preserve
+      record identity for top-N; joins may multiply rows.
+    dimensions:
+      - name: id
+        column: id
+        type: number
+        description: the unique id for players Part of the declared primary key.
+      - name: player_api_id
+        column: player_api_id
+        type: number
+        description: player api id. the id of the player api
+      - name: player_name
+        column: player_name
+        type: string
+        description: player name
+      - name: player_fifa_api_id
+        column: player_fifa_api_id
+        type: number
+        description: player federation international football association api id. the id of the player fifa api
+      - name: birthday
+        column: birthday
+        type: string
+        description: "the player's birthday. e.g. 1992-02-29 00:00:00 commonsense reasoning: Player A is older than player
+          B means that A's birthday is earlier than B's"
+    measures:
+      - name: height
+        column: height
+        type: number
+        description: Player height in centimetres according to question evidence.
+      - name: weight
+        column: weight
+        type: number
+        description: Recorded player weight. Retain source units; no unit conversion is implied by column type.
+    metrics:
+      - name: record_count
+        agg: count
+        description: Count source/joined rows at the active query grain; not automatically distinct entities after joins.
+      - name: sum_height
+        agg: sum
+        column: height
+        description: sum of height over the selected Player records. Apply filters and grouping explicitly; joins can
+          repeat records.
+      - name: count_id
+        agg: count
+        column: id
+        description: count of id over the selected Player records. Apply filters and grouping explicitly; joins can repeat
+          records.
+      - name: count_distinct_player_api_id
+        agg: count_distinct
+        column: player_api_id
+        description: count distinct of player_api_id over the selected Player records. Apply filters and grouping
+          explicitly; joins can repeat records.
+      - name: count_distinct_id
+        agg: count_distinct
+        column: id
+        description: count distinct of id over the selected Player records. Apply filters and grouping explicitly; joins
+          can repeat records.
+      - name: max_height
+        agg: max
+        column: height
+        description: max of height over the selected Player records. Apply filters and grouping explicitly; joins can
+          repeat records.
+      - name: min_height
+        agg: min
+        column: height
+        description: min of height over the selected Player records. Apply filters and grouping explicitly; joins can
+          repeat records.
+      - name: count_distinct_player_name
+        agg: count_distinct
+        column: player_name
+        description: count distinct of player_name over the selected Player records. Apply filters and grouping explicitly;
+          joins can repeat records.
+      - name: avg_weight
+        agg: avg
+        column: weight
+        description: avg of weight over the selected Player records. Apply filters and grouping explicitly; joins can
+          repeat records.
+      - name: avg_height
+        agg: avg
+        column: height
+        description: avg of height over the selected Player records. Apply filters and grouping explicitly; joins can
+          repeat records.
+  - name: match_away_player_7_role
+    table: Player
+    description: Join role for Match.away_player_7 -> Player.player_api_id. Same physical table as player. One player
+      identified by player_api_id and player_fifa_api_id, with separate local row id. Attribute records are
+      historical, not one row per player. Reference-informed from this database and its dev golden SQL. Preserve
+      record identity for top-N; joins may multiply rows.
+    dimensions:
+      - name: id
+        column: id
+        type: number
+        description: the unique id for players Part of the declared primary key.
+      - name: player_api_id
+        column: player_api_id
+        type: number
+        description: player api id. the id of the player api
+      - name: player_name
+        column: player_name
+        type: string
+        description: player name
+      - name: player_fifa_api_id
+        column: player_fifa_api_id
+        type: number
+        description: player federation international football association api id. the id of the player fifa api
+      - name: birthday
+        column: birthday
+        type: string
+        description: "the player's birthday. e.g. 1992-02-29 00:00:00 commonsense reasoning: Player A is older than player
+          B means that A's birthday is earlier than B's"
+    measures:
+      - name: height
+        column: height
+        type: number
+        description: Player height in centimetres according to question evidence.
+      - name: weight
+        column: weight
+        type: number
+        description: Recorded player weight. Retain source units; no unit conversion is implied by column type.
+    metrics:
+      - name: record_count
+        agg: count
+        description: Count source/joined rows at the active query grain; not automatically distinct entities after joins.
+      - name: sum_height
+        agg: sum
+        column: height
+        description: sum of height over the selected Player records. Apply filters and grouping explicitly; joins can
+          repeat records.
+      - name: count_id
+        agg: count
+        column: id
+        description: count of id over the selected Player records. Apply filters and grouping explicitly; joins can repeat
+          records.
+      - name: count_distinct_player_api_id
+        agg: count_distinct
+        column: player_api_id
+        description: count distinct of player_api_id over the selected Player records. Apply filters and grouping
+          explicitly; joins can repeat records.
+      - name: count_distinct_id
+        agg: count_distinct
+        column: id
+        description: count distinct of id over the selected Player records. Apply filters and grouping explicitly; joins
+          can repeat records.
+      - name: max_height
+        agg: max
+        column: height
+        description: max of height over the selected Player records. Apply filters and grouping explicitly; joins can
+          repeat records.
+      - name: min_height
+        agg: min
+        column: height
+        description: min of height over the selected Player records. Apply filters and grouping explicitly; joins can
+          repeat records.
+      - name: count_distinct_player_name
+        agg: count_distinct
+        column: player_name
+        description: count distinct of player_name over the selected Player records. Apply filters and grouping explicitly;
+          joins can repeat records.
+      - name: avg_weight
+        agg: avg
+        column: weight
+        description: avg of weight over the selected Player records. Apply filters and grouping explicitly; joins can
+          repeat records.
+      - name: avg_height
+        agg: avg
+        column: height
+        description: avg of height over the selected Player records. Apply filters and grouping explicitly; joins can
+          repeat records.
+  - name: match_away_player_6_role
+    table: Player
+    description: Join role for Match.away_player_6 -> Player.player_api_id. Same physical table as player. One player
+      identified by player_api_id and player_fifa_api_id, with separate local row id. Attribute records are
+      historical, not one row per player. Reference-informed from this database and its dev golden SQL. Preserve
+      record identity for top-N; joins may multiply rows.
+    dimensions:
+      - name: id
+        column: id
+        type: number
+        description: the unique id for players Part of the declared primary key.
+      - name: player_api_id
+        column: player_api_id
+        type: number
+        description: player api id. the id of the player api
+      - name: player_name
+        column: player_name
+        type: string
+        description: player name
+      - name: player_fifa_api_id
+        column: player_fifa_api_id
+        type: number
+        description: player federation international football association api id. the id of the player fifa api
+      - name: birthday
+        column: birthday
+        type: string
+        description: "the player's birthday. e.g. 1992-02-29 00:00:00 commonsense reasoning: Player A is older than player
+          B means that A's birthday is earlier than B's"
+    measures:
+      - name: height
+        column: height
+        type: number
+        description: Player height in centimetres according to question evidence.
+      - name: weight
+        column: weight
+        type: number
+        description: Recorded player weight. Retain source units; no unit conversion is implied by column type.
+    metrics:
+      - name: record_count
+        agg: count
+        description: Count source/joined rows at the active query grain; not automatically distinct entities after joins.
+      - name: sum_height
+        agg: sum
+        column: height
+        description: sum of height over the selected Player records. Apply filters and grouping explicitly; joins can
+          repeat records.
+      - name: count_id
+        agg: count
+        column: id
+        description: count of id over the selected Player records. Apply filters and grouping explicitly; joins can repeat
+          records.
+      - name: count_distinct_player_api_id
+        agg: count_distinct
+        column: player_api_id
+        description: count distinct of player_api_id over the selected Player records. Apply filters and grouping
+          explicitly; joins can repeat records.
+      - name: count_distinct_id
+        agg: count_distinct
+        column: id
+        description: count distinct of id over the selected Player records. Apply filters and grouping explicitly; joins
+          can repeat records.
+      - name: max_height
+        agg: max
+        column: height
+        description: max of height over the selected Player records. Apply filters and grouping explicitly; joins can
+          repeat records.
+      - name: min_height
+        agg: min
+        column: height
+        description: min of height over the selected Player records. Apply filters and grouping explicitly; joins can
+          repeat records.
+      - name: count_distinct_player_name
+        agg: count_distinct
+        column: player_name
+        description: count distinct of player_name over the selected Player records. Apply filters and grouping explicitly;
+          joins can repeat records.
+      - name: avg_weight
+        agg: avg
+        column: weight
+        description: avg of weight over the selected Player records. Apply filters and grouping explicitly; joins can
+          repeat records.
+      - name: avg_height
+        agg: avg
+        column: height
+        description: avg of height over the selected Player records. Apply filters and grouping explicitly; joins can
+          repeat records.
+  - name: match_away_player_5_role
+    table: Player
+    description: Join role for Match.away_player_5 -> Player.player_api_id. Same physical table as player. One player
+      identified by player_api_id and player_fifa_api_id, with separate local row id. Attribute records are
+      historical, not one row per player. Reference-informed from this database and its dev golden SQL. Preserve
+      record identity for top-N; joins may multiply rows.
+    dimensions:
+      - name: id
+        column: id
+        type: number
+        description: the unique id for players Part of the declared primary key.
+      - name: player_api_id
+        column: player_api_id
+        type: number
+        description: player api id. the id of the player api
+      - name: player_name
+        column: player_name
+        type: string
+        description: player name
+      - name: player_fifa_api_id
+        column: player_fifa_api_id
+        type: number
+        description: player federation international football association api id. the id of the player fifa api
+      - name: birthday
+        column: birthday
+        type: string
+        description: "the player's birthday. e.g. 1992-02-29 00:00:00 commonsense reasoning: Player A is older than player
+          B means that A's birthday is earlier than B's"
+    measures:
+      - name: height
+        column: height
+        type: number
+        description: Player height in centimetres according to question evidence.
+      - name: weight
+        column: weight
+        type: number
+        description: Recorded player weight. Retain source units; no unit conversion is implied by column type.
+    metrics:
+      - name: record_count
+        agg: count
+        description: Count source/joined rows at the active query grain; not automatically distinct entities after joins.
+      - name: sum_height
+        agg: sum
+        column: height
+        description: sum of height over the selected Player records. Apply filters and grouping explicitly; joins can
+          repeat records.
+      - name: count_id
+        agg: count
+        column: id
+        description: count of id over the selected Player records. Apply filters and grouping explicitly; joins can repeat
+          records.
+      - name: count_distinct_player_api_id
+        agg: count_distinct
+        column: player_api_id
+        description: count distinct of player_api_id over the selected Player records. Apply filters and grouping
+          explicitly; joins can repeat records.
+      - name: count_distinct_id
+        agg: count_distinct
+        column: id
+        description: count distinct of id over the selected Player records. Apply filters and grouping explicitly; joins
+          can repeat records.
+      - name: max_height
+        agg: max
+        column: height
+        description: max of height over the selected Player records. Apply filters and grouping explicitly; joins can
+          repeat records.
+      - name: min_height
+        agg: min
+        column: height
+        description: min of height over the selected Player records. Apply filters and grouping explicitly; joins can
+          repeat records.
+      - name: count_distinct_player_name
+        agg: count_distinct
+        column: player_name
+        description: count distinct of player_name over the selected Player records. Apply filters and grouping explicitly;
+          joins can repeat records.
+      - name: avg_weight
+        agg: avg
+        column: weight
+        description: avg of weight over the selected Player records. Apply filters and grouping explicitly; joins can
+          repeat records.
+      - name: avg_height
+        agg: avg
+        column: height
+        description: avg of height over the selected Player records. Apply filters and grouping explicitly; joins can
+          repeat records.
+  - name: match_away_player_4_role
+    table: Player
+    description: Join role for Match.away_player_4 -> Player.player_api_id. Same physical table as player. One player
+      identified by player_api_id and player_fifa_api_id, with separate local row id. Attribute records are
+      historical, not one row per player. Reference-informed from this database and its dev golden SQL. Preserve
+      record identity for top-N; joins may multiply rows.
+    dimensions:
+      - name: id
+        column: id
+        type: number
+        description: the unique id for players Part of the declared primary key.
+      - name: player_api_id
+        column: player_api_id
+        type: number
+        description: player api id. the id of the player api
+      - name: player_name
+        column: player_name
+        type: string
+        description: player name
+      - name: player_fifa_api_id
+        column: player_fifa_api_id
+        type: number
+        description: player federation international football association api id. the id of the player fifa api
+      - name: birthday
+        column: birthday
+        type: string
+        description: "the player's birthday. e.g. 1992-02-29 00:00:00 commonsense reasoning: Player A is older than player
+          B means that A's birthday is earlier than B's"
+    measures:
+      - name: height
+        column: height
+        type: number
+        description: Player height in centimetres according to question evidence.
+      - name: weight
+        column: weight
+        type: number
+        description: Recorded player weight. Retain source units; no unit conversion is implied by column type.
+    metrics:
+      - name: record_count
+        agg: count
+        description: Count source/joined rows at the active query grain; not automatically distinct entities after joins.
+      - name: sum_height
+        agg: sum
+        column: height
+        description: sum of height over the selected Player records. Apply filters and grouping explicitly; joins can
+          repeat records.
+      - name: count_id
+        agg: count
+        column: id
+        description: count of id over the selected Player records. Apply filters and grouping explicitly; joins can repeat
+          records.
+      - name: count_distinct_player_api_id
+        agg: count_distinct
+        column: player_api_id
+        description: count distinct of player_api_id over the selected Player records. Apply filters and grouping
+          explicitly; joins can repeat records.
+      - name: count_distinct_id
+        agg: count_distinct
+        column: id
+        description: count distinct of id over the selected Player records. Apply filters and grouping explicitly; joins
+          can repeat records.
+      - name: max_height
+        agg: max
+        column: height
+        description: max of height over the selected Player records. Apply filters and grouping explicitly; joins can
+          repeat records.
+      - name: min_height
+        agg: min
+        column: height
+        description: min of height over the selected Player records. Apply filters and grouping explicitly; joins can
+          repeat records.
+      - name: count_distinct_player_name
+        agg: count_distinct
+        column: player_name
+        description: count distinct of player_name over the selected Player records. Apply filters and grouping explicitly;
+          joins can repeat records.
+      - name: avg_weight
+        agg: avg
+        column: weight
+        description: avg of weight over the selected Player records. Apply filters and grouping explicitly; joins can
+          repeat records.
+      - name: avg_height
+        agg: avg
+        column: height
+        description: avg of height over the selected Player records. Apply filters and grouping explicitly; joins can
+          repeat records.
+  - name: match_away_player_3_role
+    table: Player
+    description: Join role for Match.away_player_3 -> Player.player_api_id. Same physical table as player. One player
+      identified by player_api_id and player_fifa_api_id, with separate local row id. Attribute records are
+      historical, not one row per player. Reference-informed from this database and its dev golden SQL. Preserve
+      record identity for top-N; joins may multiply rows.
+    dimensions:
+      - name: id
+        column: id
+        type: number
+        description: the unique id for players Part of the declared primary key.
+      - name: player_api_id
+        column: player_api_id
+        type: number
+        description: player api id. the id of the player api
+      - name: player_name
+        column: player_name
+        type: string
+        description: player name
+      - name: player_fifa_api_id
+        column: player_fifa_api_id
+        type: number
+        description: player federation international football association api id. the id of the player fifa api
+      - name: birthday
+        column: birthday
+        type: string
+        description: "the player's birthday. e.g. 1992-02-29 00:00:00 commonsense reasoning: Player A is older than player
+          B means that A's birthday is earlier than B's"
+    measures:
+      - name: height
+        column: height
+        type: number
+        description: Player height in centimetres according to question evidence.
+      - name: weight
+        column: weight
+        type: number
+        description: Recorded player weight. Retain source units; no unit conversion is implied by column type.
+    metrics:
+      - name: record_count
+        agg: count
+        description: Count source/joined rows at the active query grain; not automatically distinct entities after joins.
+      - name: sum_height
+        agg: sum
+        column: height
+        description: sum of height over the selected Player records. Apply filters and grouping explicitly; joins can
+          repeat records.
+      - name: count_id
+        agg: count
+        column: id
+        description: count of id over the selected Player records. Apply filters and grouping explicitly; joins can repeat
+          records.
+      - name: count_distinct_player_api_id
+        agg: count_distinct
+        column: player_api_id
+        description: count distinct of player_api_id over the selected Player records. Apply filters and grouping
+          explicitly; joins can repeat records.
+      - name: count_distinct_id
+        agg: count_distinct
+        column: id
+        description: count distinct of id over the selected Player records. Apply filters and grouping explicitly; joins
+          can repeat records.
+      - name: max_height
+        agg: max
+        column: height
+        description: max of height over the selected Player records. Apply filters and grouping explicitly; joins can
+          repeat records.
+      - name: min_height
+        agg: min
+        column: height
+        description: min of height over the selected Player records. Apply filters and grouping explicitly; joins can
+          repeat records.
+      - name: count_distinct_player_name
+        agg: count_distinct
+        column: player_name
+        description: count distinct of player_name over the selected Player records. Apply filters and grouping explicitly;
+          joins can repeat records.
+      - name: avg_weight
+        agg: avg
+        column: weight
+        description: avg of weight over the selected Player records. Apply filters and grouping explicitly; joins can
+          repeat records.
+      - name: avg_height
+        agg: avg
+        column: height
+        description: avg of height over the selected Player records. Apply filters and grouping explicitly; joins can
+          repeat records.
+  - name: match_away_player_2_role
+    table: Player
+    description: Join role for Match.away_player_2 -> Player.player_api_id. Same physical table as player. One player
+      identified by player_api_id and player_fifa_api_id, with separate local row id. Attribute records are
+      historical, not one row per player. Reference-informed from this database and its dev golden SQL. Preserve
+      record identity for top-N; joins may multiply rows.
+    dimensions:
+      - name: id
+        column: id
+        type: number
+        description: the unique id for players Part of the declared primary key.
+      - name: player_api_id
+        column: player_api_id
+        type: number
+        description: player api id. the id of the player api
+      - name: player_name
+        column: player_name
+        type: string
+        description: player name
+      - name: player_fifa_api_id
+        column: player_fifa_api_id
+        type: number
+        description: player federation international football association api id. the id of the player fifa api
+      - name: birthday
+        column: birthday
+        type: string
+        description: "the player's birthday. e.g. 1992-02-29 00:00:00 commonsense reasoning: Player A is older than player
+          B means that A's birthday is earlier than B's"
+    measures:
+      - name: height
+        column: height
+        type: number
+        description: Player height in centimetres according to question evidence.
+      - name: weight
+        column: weight
+        type: number
+        description: Recorded player weight. Retain source units; no unit conversion is implied by column type.
+    metrics:
+      - name: record_count
+        agg: count
+        description: Count source/joined rows at the active query grain; not automatically distinct entities after joins.
+      - name: sum_height
+        agg: sum
+        column: height
+        description: sum of height over the selected Player records. Apply filters and grouping explicitly; joins can
+          repeat records.
+      - name: count_id
+        agg: count
+        column: id
+        description: count of id over the selected Player records. Apply filters and grouping explicitly; joins can repeat
+          records.
+      - name: count_distinct_player_api_id
+        agg: count_distinct
+        column: player_api_id
+        description: count distinct of player_api_id over the selected Player records. Apply filters and grouping
+          explicitly; joins can repeat records.
+      - name: count_distinct_id
+        agg: count_distinct
+        column: id
+        description: count distinct of id over the selected Player records. Apply filters and grouping explicitly; joins
+          can repeat records.
+      - name: max_height
+        agg: max
+        column: height
+        description: max of height over the selected Player records. Apply filters and grouping explicitly; joins can
+          repeat records.
+      - name: min_height
+        agg: min
+        column: height
+        description: min of height over the selected Player records. Apply filters and grouping explicitly; joins can
+          repeat records.
+      - name: count_distinct_player_name
+        agg: count_distinct
+        column: player_name
+        description: count distinct of player_name over the selected Player records. Apply filters and grouping explicitly;
+          joins can repeat records.
+      - name: avg_weight
+        agg: avg
+        column: weight
+        description: avg of weight over the selected Player records. Apply filters and grouping explicitly; joins can
+          repeat records.
+      - name: avg_height
+        agg: avg
+        column: height
+        description: avg of height over the selected Player records. Apply filters and grouping explicitly; joins can
+          repeat records.
+  - name: match_away_player_1_role
+    table: Player
+    description: Join role for Match.away_player_1 -> Player.player_api_id. Same physical table as player. One player
+      identified by player_api_id and player_fifa_api_id, with separate local row id. Attribute records are
+      historical, not one row per player. Reference-informed from this database and its dev golden SQL. Preserve
+      record identity for top-N; joins may multiply rows.
+    dimensions:
+      - name: id
+        column: id
+        type: number
+        description: the unique id for players Part of the declared primary key.
+      - name: player_api_id
+        column: player_api_id
+        type: number
+        description: player api id. the id of the player api
+      - name: player_name
+        column: player_name
+        type: string
+        description: player name
+      - name: player_fifa_api_id
+        column: player_fifa_api_id
+        type: number
+        description: player federation international football association api id. the id of the player fifa api
+      - name: birthday
+        column: birthday
+        type: string
+        description: "the player's birthday. e.g. 1992-02-29 00:00:00 commonsense reasoning: Player A is older than player
+          B means that A's birthday is earlier than B's"
+    measures:
+      - name: height
+        column: height
+        type: number
+        description: Player height in centimetres according to question evidence.
+      - name: weight
+        column: weight
+        type: number
+        description: Recorded player weight. Retain source units; no unit conversion is implied by column type.
+    metrics:
+      - name: record_count
+        agg: count
+        description: Count source/joined rows at the active query grain; not automatically distinct entities after joins.
+      - name: sum_height
+        agg: sum
+        column: height
+        description: sum of height over the selected Player records. Apply filters and grouping explicitly; joins can
+          repeat records.
+      - name: count_id
+        agg: count
+        column: id
+        description: count of id over the selected Player records. Apply filters and grouping explicitly; joins can repeat
+          records.
+      - name: count_distinct_player_api_id
+        agg: count_distinct
+        column: player_api_id
+        description: count distinct of player_api_id over the selected Player records. Apply filters and grouping
+          explicitly; joins can repeat records.
+      - name: count_distinct_id
+        agg: count_distinct
+        column: id
+        description: count distinct of id over the selected Player records. Apply filters and grouping explicitly; joins
+          can repeat records.
+      - name: max_height
+        agg: max
+        column: height
+        description: max of height over the selected Player records. Apply filters and grouping explicitly; joins can
+          repeat records.
+      - name: min_height
+        agg: min
+        column: height
+        description: min of height over the selected Player records. Apply filters and grouping explicitly; joins can
+          repeat records.
+      - name: count_distinct_player_name
+        agg: count_distinct
+        column: player_name
+        description: count distinct of player_name over the selected Player records. Apply filters and grouping explicitly;
+          joins can repeat records.
+      - name: avg_weight
+        agg: avg
+        column: weight
+        description: avg of weight over the selected Player records. Apply filters and grouping explicitly; joins can
+          repeat records.
+      - name: avg_height
+        agg: avg
+        column: height
+        description: avg of height over the selected Player records. Apply filters and grouping explicitly; joins can
+          repeat records.
+  - name: match_home_player_11_role
+    table: Player
+    description: Join role for Match.home_player_11 -> Player.player_api_id. Same physical table as player. One player
+      identified by player_api_id and player_fifa_api_id, with separate local row id. Attribute records are
+      historical, not one row per player. Reference-informed from this database and its dev golden SQL. Preserve
+      record identity for top-N; joins may multiply rows.
+    dimensions:
+      - name: id
+        column: id
+        type: number
+        description: the unique id for players Part of the declared primary key.
+      - name: player_api_id
+        column: player_api_id
+        type: number
+        description: player api id. the id of the player api
+      - name: player_name
+        column: player_name
+        type: string
+        description: player name
+      - name: player_fifa_api_id
+        column: player_fifa_api_id
+        type: number
+        description: player federation international football association api id. the id of the player fifa api
+      - name: birthday
+        column: birthday
+        type: string
+        description: "the player's birthday. e.g. 1992-02-29 00:00:00 commonsense reasoning: Player A is older than player
+          B means that A's birthday is earlier than B's"
+    measures:
+      - name: height
+        column: height
+        type: number
+        description: Player height in centimetres according to question evidence.
+      - name: weight
+        column: weight
+        type: number
+        description: Recorded player weight. Retain source units; no unit conversion is implied by column type.
+    metrics:
+      - name: record_count
+        agg: count
+        description: Count source/joined rows at the active query grain; not automatically distinct entities after joins.
+      - name: sum_height
+        agg: sum
+        column: height
+        description: sum of height over the selected Player records. Apply filters and grouping explicitly; joins can
+          repeat records.
+      - name: count_id
+        agg: count
+        column: id
+        description: count of id over the selected Player records. Apply filters and grouping explicitly; joins can repeat
+          records.
+      - name: count_distinct_player_api_id
+        agg: count_distinct
+        column: player_api_id
+        description: count distinct of player_api_id over the selected Player records. Apply filters and grouping
+          explicitly; joins can repeat records.
+      - name: count_distinct_id
+        agg: count_distinct
+        column: id
+        description: count distinct of id over the selected Player records. Apply filters and grouping explicitly; joins
+          can repeat records.
+      - name: max_height
+        agg: max
+        column: height
+        description: max of height over the selected Player records. Apply filters and grouping explicitly; joins can
+          repeat records.
+      - name: min_height
+        agg: min
+        column: height
+        description: min of height over the selected Player records. Apply filters and grouping explicitly; joins can
+          repeat records.
+      - name: count_distinct_player_name
+        agg: count_distinct
+        column: player_name
+        description: count distinct of player_name over the selected Player records. Apply filters and grouping explicitly;
+          joins can repeat records.
+      - name: avg_weight
+        agg: avg
+        column: weight
+        description: avg of weight over the selected Player records. Apply filters and grouping explicitly; joins can
+          repeat records.
+      - name: avg_height
+        agg: avg
+        column: height
+        description: avg of height over the selected Player records. Apply filters and grouping explicitly; joins can
+          repeat records.
+  - name: match_home_player_10_role
+    table: Player
+    description: Join role for Match.home_player_10 -> Player.player_api_id. Same physical table as player. One player
+      identified by player_api_id and player_fifa_api_id, with separate local row id. Attribute records are
+      historical, not one row per player. Reference-informed from this database and its dev golden SQL. Preserve
+      record identity for top-N; joins may multiply rows.
+    dimensions:
+      - name: id
+        column: id
+        type: number
+        description: the unique id for players Part of the declared primary key.
+      - name: player_api_id
+        column: player_api_id
+        type: number
+        description: player api id. the id of the player api
+      - name: player_name
+        column: player_name
+        type: string
+        description: player name
+      - name: player_fifa_api_id
+        column: player_fifa_api_id
+        type: number
+        description: player federation international football association api id. the id of the player fifa api
+      - name: birthday
+        column: birthday
+        type: string
+        description: "the player's birthday. e.g. 1992-02-29 00:00:00 commonsense reasoning: Player A is older than player
+          B means that A's birthday is earlier than B's"
+    measures:
+      - name: height
+        column: height
+        type: number
+        description: Player height in centimetres according to question evidence.
+      - name: weight
+        column: weight
+        type: number
+        description: Recorded player weight. Retain source units; no unit conversion is implied by column type.
+    metrics:
+      - name: record_count
+        agg: count
+        description: Count source/joined rows at the active query grain; not automatically distinct entities after joins.
+      - name: sum_height
+        agg: sum
+        column: height
+        description: sum of height over the selected Player records. Apply filters and grouping explicitly; joins can
+          repeat records.
+      - name: count_id
+        agg: count
+        column: id
+        description: count of id over the selected Player records. Apply filters and grouping explicitly; joins can repeat
+          records.
+      - name: count_distinct_player_api_id
+        agg: count_distinct
+        column: player_api_id
+        description: count distinct of player_api_id over the selected Player records. Apply filters and grouping
+          explicitly; joins can repeat records.
+      - name: count_distinct_id
+        agg: count_distinct
+        column: id
+        description: count distinct of id over the selected Player records. Apply filters and grouping explicitly; joins
+          can repeat records.
+      - name: max_height
+        agg: max
+        column: height
+        description: max of height over the selected Player records. Apply filters and grouping explicitly; joins can
+          repeat records.
+      - name: min_height
+        agg: min
+        column: height
+        description: min of height over the selected Player records. Apply filters and grouping explicitly; joins can
+          repeat records.
+      - name: count_distinct_player_name
+        agg: count_distinct
+        column: player_name
+        description: count distinct of player_name over the selected Player records. Apply filters and grouping explicitly;
+          joins can repeat records.
+      - name: avg_weight
+        agg: avg
+        column: weight
+        description: avg of weight over the selected Player records. Apply filters and grouping explicitly; joins can
+          repeat records.
+      - name: avg_height
+        agg: avg
+        column: height
+        description: avg of height over the selected Player records. Apply filters and grouping explicitly; joins can
+          repeat records.
+  - name: match_home_player_9_role
+    table: Player
+    description: Join role for Match.home_player_9 -> Player.player_api_id. Same physical table as player. One player
+      identified by player_api_id and player_fifa_api_id, with separate local row id. Attribute records are
+      historical, not one row per player. Reference-informed from this database and its dev golden SQL. Preserve
+      record identity for top-N; joins may multiply rows.
+    dimensions:
+      - name: id
+        column: id
+        type: number
+        description: the unique id for players Part of the declared primary key.
+      - name: player_api_id
+        column: player_api_id
+        type: number
+        description: player api id. the id of the player api
+      - name: player_name
+        column: player_name
+        type: string
+        description: player name
+      - name: player_fifa_api_id
+        column: player_fifa_api_id
+        type: number
+        description: player federation international football association api id. the id of the player fifa api
+      - name: birthday
+        column: birthday
+        type: string
+        description: "the player's birthday. e.g. 1992-02-29 00:00:00 commonsense reasoning: Player A is older than player
+          B means that A's birthday is earlier than B's"
+    measures:
+      - name: height
+        column: height
+        type: number
+        description: Player height in centimetres according to question evidence.
+      - name: weight
+        column: weight
+        type: number
+        description: Recorded player weight. Retain source units; no unit conversion is implied by column type.
+    metrics:
+      - name: record_count
+        agg: count
+        description: Count source/joined rows at the active query grain; not automatically distinct entities after joins.
+      - name: sum_height
+        agg: sum
+        column: height
+        description: sum of height over the selected Player records. Apply filters and grouping explicitly; joins can
+          repeat records.
+      - name: count_id
+        agg: count
+        column: id
+        description: count of id over the selected Player records. Apply filters and grouping explicitly; joins can repeat
+          records.
+      - name: count_distinct_player_api_id
+        agg: count_distinct
+        column: player_api_id
+        description: count distinct of player_api_id over the selected Player records. Apply filters and grouping
+          explicitly; joins can repeat records.
+      - name: count_distinct_id
+        agg: count_distinct
+        column: id
+        description: count distinct of id over the selected Player records. Apply filters and grouping explicitly; joins
+          can repeat records.
+      - name: max_height
+        agg: max
+        column: height
+        description: max of height over the selected Player records. Apply filters and grouping explicitly; joins can
+          repeat records.
+      - name: min_height
+        agg: min
+        column: height
+        description: min of height over the selected Player records. Apply filters and grouping explicitly; joins can
+          repeat records.
+      - name: count_distinct_player_name
+        agg: count_distinct
+        column: player_name
+        description: count distinct of player_name over the selected Player records. Apply filters and grouping explicitly;
+          joins can repeat records.
+      - name: avg_weight
+        agg: avg
+        column: weight
+        description: avg of weight over the selected Player records. Apply filters and grouping explicitly; joins can
+          repeat records.
+      - name: avg_height
+        agg: avg
+        column: height
+        description: avg of height over the selected Player records. Apply filters and grouping explicitly; joins can
+          repeat records.
+  - name: match_home_player_8_role
+    table: Player
+    description: Join role for Match.home_player_8 -> Player.player_api_id. Same physical table as player. One player
+      identified by player_api_id and player_fifa_api_id, with separate local row id. Attribute records are
+      historical, not one row per player. Reference-informed from this database and its dev golden SQL. Preserve
+      record identity for top-N; joins may multiply rows.
+    dimensions:
+      - name: id
+        column: id
+        type: number
+        description: the unique id for players Part of the declared primary key.
+      - name: player_api_id
+        column: player_api_id
+        type: number
+        description: player api id. the id of the player api
+      - name: player_name
+        column: player_name
+        type: string
+        description: player name
+      - name: player_fifa_api_id
+        column: player_fifa_api_id
+        type: number
+        description: player federation international football association api id. the id of the player fifa api
+      - name: birthday
+        column: birthday
+        type: string
+        description: "the player's birthday. e.g. 1992-02-29 00:00:00 commonsense reasoning: Player A is older than player
+          B means that A's birthday is earlier than B's"
+    measures:
+      - name: height
+        column: height
+        type: number
+        description: Player height in centimetres according to question evidence.
+      - name: weight
+        column: weight
+        type: number
+        description: Recorded player weight. Retain source units; no unit conversion is implied by column type.
+    metrics:
+      - name: record_count
+        agg: count
+        description: Count source/joined rows at the active query grain; not automatically distinct entities after joins.
+      - name: sum_height
+        agg: sum
+        column: height
+        description: sum of height over the selected Player records. Apply filters and grouping explicitly; joins can
+          repeat records.
+      - name: count_id
+        agg: count
+        column: id
+        description: count of id over the selected Player records. Apply filters and grouping explicitly; joins can repeat
+          records.
+      - name: count_distinct_player_api_id
+        agg: count_distinct
+        column: player_api_id
+        description: count distinct of player_api_id over the selected Player records. Apply filters and grouping
+          explicitly; joins can repeat records.
+      - name: count_distinct_id
+        agg: count_distinct
+        column: id
+        description: count distinct of id over the selected Player records. Apply filters and grouping explicitly; joins
+          can repeat records.
+      - name: max_height
+        agg: max
+        column: height
+        description: max of height over the selected Player records. Apply filters and grouping explicitly; joins can
+          repeat records.
+      - name: min_height
+        agg: min
+        column: height
+        description: min of height over the selected Player records. Apply filters and grouping explicitly; joins can
+          repeat records.
+      - name: count_distinct_player_name
+        agg: count_distinct
+        column: player_name
+        description: count distinct of player_name over the selected Player records. Apply filters and grouping explicitly;
+          joins can repeat records.
+      - name: avg_weight
+        agg: avg
+        column: weight
+        description: avg of weight over the selected Player records. Apply filters and grouping explicitly; joins can
+          repeat records.
+      - name: avg_height
+        agg: avg
+        column: height
+        description: avg of height over the selected Player records. Apply filters and grouping explicitly; joins can
+          repeat records.
+  - name: match_home_player_7_role
+    table: Player
+    description: Join role for Match.home_player_7 -> Player.player_api_id. Same physical table as player. One player
+      identified by player_api_id and player_fifa_api_id, with separate local row id. Attribute records are
+      historical, not one row per player. Reference-informed from this database and its dev golden SQL. Preserve
+      record identity for top-N; joins may multiply rows.
+    dimensions:
+      - name: id
+        column: id
+        type: number
+        description: the unique id for players Part of the declared primary key.
+      - name: player_api_id
+        column: player_api_id
+        type: number
+        description: player api id. the id of the player api
+      - name: player_name
+        column: player_name
+        type: string
+        description: player name
+      - name: player_fifa_api_id
+        column: player_fifa_api_id
+        type: number
+        description: player federation international football association api id. the id of the player fifa api
+      - name: birthday
+        column: birthday
+        type: string
+        description: "the player's birthday. e.g. 1992-02-29 00:00:00 commonsense reasoning: Player A is older than player
+          B means that A's birthday is earlier than B's"
+    measures:
+      - name: height
+        column: height
+        type: number
+        description: Player height in centimetres according to question evidence.
+      - name: weight
+        column: weight
+        type: number
+        description: Recorded player weight. Retain source units; no unit conversion is implied by column type.
+    metrics:
+      - name: record_count
+        agg: count
+        description: Count source/joined rows at the active query grain; not automatically distinct entities after joins.
+      - name: sum_height
+        agg: sum
+        column: height
+        description: sum of height over the selected Player records. Apply filters and grouping explicitly; joins can
+          repeat records.
+      - name: count_id
+        agg: count
+        column: id
+        description: count of id over the selected Player records. Apply filters and grouping explicitly; joins can repeat
+          records.
+      - name: count_distinct_player_api_id
+        agg: count_distinct
+        column: player_api_id
+        description: count distinct of player_api_id over the selected Player records. Apply filters and grouping
+          explicitly; joins can repeat records.
+      - name: count_distinct_id
+        agg: count_distinct
+        column: id
+        description: count distinct of id over the selected Player records. Apply filters and grouping explicitly; joins
+          can repeat records.
+      - name: max_height
+        agg: max
+        column: height
+        description: max of height over the selected Player records. Apply filters and grouping explicitly; joins can
+          repeat records.
+      - name: min_height
+        agg: min
+        column: height
+        description: min of height over the selected Player records. Apply filters and grouping explicitly; joins can
+          repeat records.
+      - name: count_distinct_player_name
+        agg: count_distinct
+        column: player_name
+        description: count distinct of player_name over the selected Player records. Apply filters and grouping explicitly;
+          joins can repeat records.
+      - name: avg_weight
+        agg: avg
+        column: weight
+        description: avg of weight over the selected Player records. Apply filters and grouping explicitly; joins can
+          repeat records.
+      - name: avg_height
+        agg: avg
+        column: height
+        description: avg of height over the selected Player records. Apply filters and grouping explicitly; joins can
+          repeat records.
+  - name: match_home_player_6_role
+    table: Player
+    description: Join role for Match.home_player_6 -> Player.player_api_id. Same physical table as player. One player
+      identified by player_api_id and player_fifa_api_id, with separate local row id. Attribute records are
+      historical, not one row per player. Reference-informed from this database and its dev golden SQL. Preserve
+      record identity for top-N; joins may multiply rows.
+    dimensions:
+      - name: id
+        column: id
+        type: number
+        description: the unique id for players Part of the declared primary key.
+      - name: player_api_id
+        column: player_api_id
+        type: number
+        description: player api id. the id of the player api
+      - name: player_name
+        column: player_name
+        type: string
+        description: player name
+      - name: player_fifa_api_id
+        column: player_fifa_api_id
+        type: number
+        description: player federation international football association api id. the id of the player fifa api
+      - name: birthday
+        column: birthday
+        type: string
+        description: "the player's birthday. e.g. 1992-02-29 00:00:00 commonsense reasoning: Player A is older than player
+          B means that A's birthday is earlier than B's"
+    measures:
+      - name: height
+        column: height
+        type: number
+        description: Player height in centimetres according to question evidence.
+      - name: weight
+        column: weight
+        type: number
+        description: Recorded player weight. Retain source units; no unit conversion is implied by column type.
+    metrics:
+      - name: record_count
+        agg: count
+        description: Count source/joined rows at the active query grain; not automatically distinct entities after joins.
+      - name: sum_height
+        agg: sum
+        column: height
+        description: sum of height over the selected Player records. Apply filters and grouping explicitly; joins can
+          repeat records.
+      - name: count_id
+        agg: count
+        column: id
+        description: count of id over the selected Player records. Apply filters and grouping explicitly; joins can repeat
+          records.
+      - name: count_distinct_player_api_id
+        agg: count_distinct
+        column: player_api_id
+        description: count distinct of player_api_id over the selected Player records. Apply filters and grouping
+          explicitly; joins can repeat records.
+      - name: count_distinct_id
+        agg: count_distinct
+        column: id
+        description: count distinct of id over the selected Player records. Apply filters and grouping explicitly; joins
+          can repeat records.
+      - name: max_height
+        agg: max
+        column: height
+        description: max of height over the selected Player records. Apply filters and grouping explicitly; joins can
+          repeat records.
+      - name: min_height
+        agg: min
+        column: height
+        description: min of height over the selected Player records. Apply filters and grouping explicitly; joins can
+          repeat records.
+      - name: count_distinct_player_name
+        agg: count_distinct
+        column: player_name
+        description: count distinct of player_name over the selected Player records. Apply filters and grouping explicitly;
+          joins can repeat records.
+      - name: avg_weight
+        agg: avg
+        column: weight
+        description: avg of weight over the selected Player records. Apply filters and grouping explicitly; joins can
+          repeat records.
+      - name: avg_height
+        agg: avg
+        column: height
+        description: avg of height over the selected Player records. Apply filters and grouping explicitly; joins can
+          repeat records.
+  - name: match_home_player_5_role
+    table: Player
+    description: Join role for Match.home_player_5 -> Player.player_api_id. Same physical table as player. One player
+      identified by player_api_id and player_fifa_api_id, with separate local row id. Attribute records are
+      historical, not one row per player. Reference-informed from this database and its dev golden SQL. Preserve
+      record identity for top-N; joins may multiply rows.
+    dimensions:
+      - name: id
+        column: id
+        type: number
+        description: the unique id for players Part of the declared primary key.
+      - name: player_api_id
+        column: player_api_id
+        type: number
+        description: player api id. the id of the player api
+      - name: player_name
+        column: player_name
+        type: string
+        description: player name
+      - name: player_fifa_api_id
+        column: player_fifa_api_id
+        type: number
+        description: player federation international football association api id. the id of the player fifa api
+      - name: birthday
+        column: birthday
+        type: string
+        description: "the player's birthday. e.g. 1992-02-29 00:00:00 commonsense reasoning: Player A is older than player
+          B means that A's birthday is earlier than B's"
+    measures:
+      - name: height
+        column: height
+        type: number
+        description: Player height in centimetres according to question evidence.
+      - name: weight
+        column: weight
+        type: number
+        description: Recorded player weight. Retain source units; no unit conversion is implied by column type.
+    metrics:
+      - name: record_count
+        agg: count
+        description: Count source/joined rows at the active query grain; not automatically distinct entities after joins.
+      - name: sum_height
+        agg: sum
+        column: height
+        description: sum of height over the selected Player records. Apply filters and grouping explicitly; joins can
+          repeat records.
+      - name: count_id
+        agg: count
+        column: id
+        description: count of id over the selected Player records. Apply filters and grouping explicitly; joins can repeat
+          records.
+      - name: count_distinct_player_api_id
+        agg: count_distinct
+        column: player_api_id
+        description: count distinct of player_api_id over the selected Player records. Apply filters and grouping
+          explicitly; joins can repeat records.
+      - name: count_distinct_id
+        agg: count_distinct
+        column: id
+        description: count distinct of id over the selected Player records. Apply filters and grouping explicitly; joins
+          can repeat records.
+      - name: max_height
+        agg: max
+        column: height
+        description: max of height over the selected Player records. Apply filters and grouping explicitly; joins can
+          repeat records.
+      - name: min_height
+        agg: min
+        column: height
+        description: min of height over the selected Player records. Apply filters and grouping explicitly; joins can
+          repeat records.
+      - name: count_distinct_player_name
+        agg: count_distinct
+        column: player_name
+        description: count distinct of player_name over the selected Player records. Apply filters and grouping explicitly;
+          joins can repeat records.
+      - name: avg_weight
+        agg: avg
+        column: weight
+        description: avg of weight over the selected Player records. Apply filters and grouping explicitly; joins can
+          repeat records.
+      - name: avg_height
+        agg: avg
+        column: height
+        description: avg of height over the selected Player records. Apply filters and grouping explicitly; joins can
+          repeat records.
+  - name: match_home_player_4_role
+    table: Player
+    description: Join role for Match.home_player_4 -> Player.player_api_id. Same physical table as player. One player
+      identified by player_api_id and player_fifa_api_id, with separate local row id. Attribute records are
+      historical, not one row per player. Reference-informed from this database and its dev golden SQL. Preserve
+      record identity for top-N; joins may multiply rows.
+    dimensions:
+      - name: id
+        column: id
+        type: number
+        description: the unique id for players Part of the declared primary key.
+      - name: player_api_id
+        column: player_api_id
+        type: number
+        description: player api id. the id of the player api
+      - name: player_name
+        column: player_name
+        type: string
+        description: player name
+      - name: player_fifa_api_id
+        column: player_fifa_api_id
+        type: number
+        description: player federation international football association api id. the id of the player fifa api
+      - name: birthday
+        column: birthday
+        type: string
+        description: "the player's birthday. e.g. 1992-02-29 00:00:00 commonsense reasoning: Player A is older than player
+          B means that A's birthday is earlier than B's"
+    measures:
+      - name: height
+        column: height
+        type: number
+        description: Player height in centimetres according to question evidence.
+      - name: weight
+        column: weight
+        type: number
+        description: Recorded player weight. Retain source units; no unit conversion is implied by column type.
+    metrics:
+      - name: record_count
+        agg: count
+        description: Count source/joined rows at the active query grain; not automatically distinct entities after joins.
+      - name: sum_height
+        agg: sum
+        column: height
+        description: sum of height over the selected Player records. Apply filters and grouping explicitly; joins can
+          repeat records.
+      - name: count_id
+        agg: count
+        column: id
+        description: count of id over the selected Player records. Apply filters and grouping explicitly; joins can repeat
+          records.
+      - name: count_distinct_player_api_id
+        agg: count_distinct
+        column: player_api_id
+        description: count distinct of player_api_id over the selected Player records. Apply filters and grouping
+          explicitly; joins can repeat records.
+      - name: count_distinct_id
+        agg: count_distinct
+        column: id
+        description: count distinct of id over the selected Player records. Apply filters and grouping explicitly; joins
+          can repeat records.
+      - name: max_height
+        agg: max
+        column: height
+        description: max of height over the selected Player records. Apply filters and grouping explicitly; joins can
+          repeat records.
+      - name: min_height
+        agg: min
+        column: height
+        description: min of height over the selected Player records. Apply filters and grouping explicitly; joins can
+          repeat records.
+      - name: count_distinct_player_name
+        agg: count_distinct
+        column: player_name
+        description: count distinct of player_name over the selected Player records. Apply filters and grouping explicitly;
+          joins can repeat records.
+      - name: avg_weight
+        agg: avg
+        column: weight
+        description: avg of weight over the selected Player records. Apply filters and grouping explicitly; joins can
+          repeat records.
+      - name: avg_height
+        agg: avg
+        column: height
+        description: avg of height over the selected Player records. Apply filters and grouping explicitly; joins can
+          repeat records.
+  - name: match_home_player_3_role
+    table: Player
+    description: Join role for Match.home_player_3 -> Player.player_api_id. Same physical table as player. One player
+      identified by player_api_id and player_fifa_api_id, with separate local row id. Attribute records are
+      historical, not one row per player. Reference-informed from this database and its dev golden SQL. Preserve
+      record identity for top-N; joins may multiply rows.
+    dimensions:
+      - name: id
+        column: id
+        type: number
+        description: the unique id for players Part of the declared primary key.
+      - name: player_api_id
+        column: player_api_id
+        type: number
+        description: player api id. the id of the player api
+      - name: player_name
+        column: player_name
+        type: string
+        description: player name
+      - name: player_fifa_api_id
+        column: player_fifa_api_id
+        type: number
+        description: player federation international football association api id. the id of the player fifa api
+      - name: birthday
+        column: birthday
+        type: string
+        description: "the player's birthday. e.g. 1992-02-29 00:00:00 commonsense reasoning: Player A is older than player
+          B means that A's birthday is earlier than B's"
+    measures:
+      - name: height
+        column: height
+        type: number
+        description: Player height in centimetres according to question evidence.
+      - name: weight
+        column: weight
+        type: number
+        description: Recorded player weight. Retain source units; no unit conversion is implied by column type.
+    metrics:
+      - name: record_count
+        agg: count
+        description: Count source/joined rows at the active query grain; not automatically distinct entities after joins.
+      - name: sum_height
+        agg: sum
+        column: height
+        description: sum of height over the selected Player records. Apply filters and grouping explicitly; joins can
+          repeat records.
+      - name: count_id
+        agg: count
+        column: id
+        description: count of id over the selected Player records. Apply filters and grouping explicitly; joins can repeat
+          records.
+      - name: count_distinct_player_api_id
+        agg: count_distinct
+        column: player_api_id
+        description: count distinct of player_api_id over the selected Player records. Apply filters and grouping
+          explicitly; joins can repeat records.
+      - name: count_distinct_id
+        agg: count_distinct
+        column: id
+        description: count distinct of id over the selected Player records. Apply filters and grouping explicitly; joins
+          can repeat records.
+      - name: max_height
+        agg: max
+        column: height
+        description: max of height over the selected Player records. Apply filters and grouping explicitly; joins can
+          repeat records.
+      - name: min_height
+        agg: min
+        column: height
+        description: min of height over the selected Player records. Apply filters and grouping explicitly; joins can
+          repeat records.
+      - name: count_distinct_player_name
+        agg: count_distinct
+        column: player_name
+        description: count distinct of player_name over the selected Player records. Apply filters and grouping explicitly;
+          joins can repeat records.
+      - name: avg_weight
+        agg: avg
+        column: weight
+        description: avg of weight over the selected Player records. Apply filters and grouping explicitly; joins can
+          repeat records.
+      - name: avg_height
+        agg: avg
+        column: height
+        description: avg of height over the selected Player records. Apply filters and grouping explicitly; joins can
+          repeat records.
+  - name: match_home_player_2_role
+    table: Player
+    description: Join role for Match.home_player_2 -> Player.player_api_id. Same physical table as player. One player
+      identified by player_api_id and player_fifa_api_id, with separate local row id. Attribute records are
+      historical, not one row per player. Reference-informed from this database and its dev golden SQL. Preserve
+      record identity for top-N; joins may multiply rows.
+    dimensions:
+      - name: id
+        column: id
+        type: number
+        description: the unique id for players Part of the declared primary key.
+      - name: player_api_id
+        column: player_api_id
+        type: number
+        description: player api id. the id of the player api
+      - name: player_name
+        column: player_name
+        type: string
+        description: player name
+      - name: player_fifa_api_id
+        column: player_fifa_api_id
+        type: number
+        description: player federation international football association api id. the id of the player fifa api
+      - name: birthday
+        column: birthday
+        type: string
+        description: "the player's birthday. e.g. 1992-02-29 00:00:00 commonsense reasoning: Player A is older than player
+          B means that A's birthday is earlier than B's"
+    measures:
+      - name: height
+        column: height
+        type: number
+        description: Player height in centimetres according to question evidence.
+      - name: weight
+        column: weight
+        type: number
+        description: Recorded player weight. Retain source units; no unit conversion is implied by column type.
+    metrics:
+      - name: record_count
+        agg: count
+        description: Count source/joined rows at the active query grain; not automatically distinct entities after joins.
+      - name: sum_height
+        agg: sum
+        column: height
+        description: sum of height over the selected Player records. Apply filters and grouping explicitly; joins can
+          repeat records.
+      - name: count_id
+        agg: count
+        column: id
+        description: count of id over the selected Player records. Apply filters and grouping explicitly; joins can repeat
+          records.
+      - name: count_distinct_player_api_id
+        agg: count_distinct
+        column: player_api_id
+        description: count distinct of player_api_id over the selected Player records. Apply filters and grouping
+          explicitly; joins can repeat records.
+      - name: count_distinct_id
+        agg: count_distinct
+        column: id
+        description: count distinct of id over the selected Player records. Apply filters and grouping explicitly; joins
+          can repeat records.
+      - name: max_height
+        agg: max
+        column: height
+        description: max of height over the selected Player records. Apply filters and grouping explicitly; joins can
+          repeat records.
+      - name: min_height
+        agg: min
+        column: height
+        description: min of height over the selected Player records. Apply filters and grouping explicitly; joins can
+          repeat records.
+      - name: count_distinct_player_name
+        agg: count_distinct
+        column: player_name
+        description: count distinct of player_name over the selected Player records. Apply filters and grouping explicitly;
+          joins can repeat records.
+      - name: avg_weight
+        agg: avg
+        column: weight
+        description: avg of weight over the selected Player records. Apply filters and grouping explicitly; joins can
+          repeat records.
+      - name: avg_height
+        agg: avg
+        column: height
+        description: avg of height over the selected Player records. Apply filters and grouping explicitly; joins can
+          repeat records.
+  - name: match_home_player_1_role
+    table: Player
+    description: Join role for Match.home_player_1 -> Player.player_api_id. Same physical table as player. One player
+      identified by player_api_id and player_fifa_api_id, with separate local row id. Attribute records are
+      historical, not one row per player. Reference-informed from this database and its dev golden SQL. Preserve
+      record identity for top-N; joins may multiply rows.
+    dimensions:
+      - name: id
+        column: id
+        type: number
+        description: the unique id for players Part of the declared primary key.
+      - name: player_api_id
+        column: player_api_id
+        type: number
+        description: player api id. the id of the player api
+      - name: player_name
+        column: player_name
+        type: string
+        description: player name
+      - name: player_fifa_api_id
+        column: player_fifa_api_id
+        type: number
+        description: player federation international football association api id. the id of the player fifa api
+      - name: birthday
+        column: birthday
+        type: string
+        description: "the player's birthday. e.g. 1992-02-29 00:00:00 commonsense reasoning: Player A is older than player
+          B means that A's birthday is earlier than B's"
+    measures:
+      - name: height
+        column: height
+        type: number
+        description: Player height in centimetres according to question evidence.
+      - name: weight
+        column: weight
+        type: number
+        description: Recorded player weight. Retain source units; no unit conversion is implied by column type.
+    metrics:
+      - name: record_count
+        agg: count
+        description: Count source/joined rows at the active query grain; not automatically distinct entities after joins.
+      - name: sum_height
+        agg: sum
+        column: height
+        description: sum of height over the selected Player records. Apply filters and grouping explicitly; joins can
+          repeat records.
+      - name: count_id
+        agg: count
+        column: id
+        description: count of id over the selected Player records. Apply filters and grouping explicitly; joins can repeat
+          records.
+      - name: count_distinct_player_api_id
+        agg: count_distinct
+        column: player_api_id
+        description: count distinct of player_api_id over the selected Player records. Apply filters and grouping
+          explicitly; joins can repeat records.
+      - name: count_distinct_id
+        agg: count_distinct
+        column: id
+        description: count distinct of id over the selected Player records. Apply filters and grouping explicitly; joins
+          can repeat records.
+      - name: max_height
+        agg: max
+        column: height
+        description: max of height over the selected Player records. Apply filters and grouping explicitly; joins can
+          repeat records.
+      - name: min_height
+        agg: min
+        column: height
+        description: min of height over the selected Player records. Apply filters and grouping explicitly; joins can
+          repeat records.
+      - name: count_distinct_player_name
+        agg: count_distinct
+        column: player_name
+        description: count distinct of player_name over the selected Player records. Apply filters and grouping explicitly;
+          joins can repeat records.
+      - name: avg_weight
+        agg: avg
+        column: weight
+        description: avg of weight over the selected Player records. Apply filters and grouping explicitly; joins can
+          repeat records.
+      - name: avg_height
+        agg: avg
+        column: height
+        description: avg of height over the selected Player records. Apply filters and grouping explicitly; joins can
+          repeat records.
+  - name: match_away_team_api_id_role
+    table: Team
+    description: Join role for Match.away_team_api_id -> Team.team_api_id. Same physical table as team. One team with
+      local id, team_api_id and team_fifa_api_id; names are team_long_name or team_short_name. Reference-informed
+      from this database and its dev golden SQL. Preserve record identity for top-N; joins may multiply rows.
+    dimensions:
+      - name: id
+        column: id
+        type: number
+        description: the unique id for teams Part of the declared primary key.
+      - name: team_api_id
+        column: team_api_id
+        type: number
+        description: team api id. the id of the team api
+      - name: team_fifa_api_id
+        column: team_fifa_api_id
+        type: number
+        description: FIFA team identifier. Actual data has three duplicated non-null IDs (two rows each); this key is not
+          unique. Prefer team_api_id for a unique team join unless the question requires FIFA ID.
+      - name: team_long_name
+        column: team_long_name
+        type: string
+        description: team long name. the team's long name
+      - name: team_short_name
+        column: team_short_name
+        type: string
+        description: team short name. the team's short name
+    measures: []
+    metrics:
+      - name: record_count
+        agg: count
+        description: Count source/joined rows at the active query grain; not automatically distinct entities after joins.
+      - name: count_id
+        agg: count
+        column: id
+        description: count of id over the selected Team records. Apply filters and grouping explicitly; joins can repeat
+          records.
+  - name: match_home_team_api_id_role
+    table: Team
+    description: Join role for Match.home_team_api_id -> Team.team_api_id. Same physical table as team. One team with
+      local id, team_api_id and team_fifa_api_id; names are team_long_name or team_short_name. Reference-informed
+      from this database and its dev golden SQL. Preserve record identity for top-N; joins may multiply rows.
+    dimensions:
+      - name: id
+        column: id
+        type: number
+        description: the unique id for teams Part of the declared primary key.
+      - name: team_api_id
+        column: team_api_id
+        type: number
+        description: team api id. the id of the team api
+      - name: team_fifa_api_id
+        column: team_fifa_api_id
+        type: number
+        description: FIFA team identifier. Actual data has three duplicated non-null IDs (two rows each); this key is not
+          unique. Prefer team_api_id for a unique team join unless the question requires FIFA ID.
+      - name: team_long_name
+        column: team_long_name
+        type: string
+        description: team long name. the team's long name
+      - name: team_short_name
+        column: team_short_name
+        type: string
+        description: team short name. the team's short name
+    measures: []
+    metrics:
+      - name: record_count
+        agg: count
+        description: Count source/joined rows at the active query grain; not automatically distinct entities after joins.
+      - name: count_id
+        agg: count
+        column: id
+        description: count of id over the selected Team records. Apply filters and grouping explicitly; joins can repeat
+          records.
+  - name: player_attributes_player_api_id_role
+    table: Player
+    description: Join role for Player_Attributes.player_api_id -> Player.player_api_id. Same physical table as player.
+      One player identified by player_api_id and player_fifa_api_id, with separate local row id. Attribute records
+      are historical, not one row per player. Reference-informed from this database and its dev golden SQL.
+      Preserve record identity for top-N; joins may multiply rows.
+    dimensions:
+      - name: id
+        column: id
+        type: number
+        description: the unique id for players Part of the declared primary key.
+      - name: player_api_id
+        column: player_api_id
+        type: number
+        description: player api id. the id of the player api
+      - name: player_name
+        column: player_name
+        type: string
+        description: player name
+      - name: player_fifa_api_id
+        column: player_fifa_api_id
+        type: number
+        description: player federation international football association api id. the id of the player fifa api
+      - name: birthday
+        column: birthday
+        type: string
+        description: "the player's birthday. e.g. 1992-02-29 00:00:00 commonsense reasoning: Player A is older than player
+          B means that A's birthday is earlier than B's"
+    measures:
+      - name: height
+        column: height
+        type: number
+        description: Player height in centimetres according to question evidence.
+      - name: weight
+        column: weight
+        type: number
+        description: Recorded player weight. Retain source units; no unit conversion is implied by column type.
+    metrics:
+      - name: record_count
+        agg: count
+        description: Count source/joined rows at the active query grain; not automatically distinct entities after joins.
+      - name: sum_height
+        agg: sum
+        column: height
+        description: sum of height over the selected Player records. Apply filters and grouping explicitly; joins can
+          repeat records.
+      - name: count_id
+        agg: count
+        column: id
+        description: count of id over the selected Player records. Apply filters and grouping explicitly; joins can repeat
+          records.
+      - name: count_distinct_player_api_id
+        agg: count_distinct
+        column: player_api_id
+        description: count distinct of player_api_id over the selected Player records. Apply filters and grouping
+          explicitly; joins can repeat records.
+      - name: count_distinct_id
+        agg: count_distinct
+        column: id
+        description: count distinct of id over the selected Player records. Apply filters and grouping explicitly; joins
+          can repeat records.
+      - name: max_height
+        agg: max
+        column: height
+        description: max of height over the selected Player records. Apply filters and grouping explicitly; joins can
+          repeat records.
+      - name: min_height
+        agg: min
+        column: height
+        description: min of height over the selected Player records. Apply filters and grouping explicitly; joins can
+          repeat records.
+      - name: count_distinct_player_name
+        agg: count_distinct
+        column: player_name
+        description: count distinct of player_name over the selected Player records. Apply filters and grouping explicitly;
+          joins can repeat records.
+      - name: avg_weight
+        agg: avg
+        column: weight
+        description: avg of weight over the selected Player records. Apply filters and grouping explicitly; joins can
+          repeat records.
+      - name: avg_height
+        agg: avg
+        column: height
+        description: avg of height over the selected Player records. Apply filters and grouping explicitly; joins can
+          repeat records.
+  - name: player_attributes_player_fifa_api_id_role
+    table: Player
+    description: Join role for Player_Attributes.player_fifa_api_id -> Player.player_fifa_api_id. Same physical table
+      as player. One player identified by player_api_id and player_fifa_api_id, with separate local row id.
+      Attribute records are historical, not one row per player. Reference-informed from this database and its dev
+      golden SQL. Preserve record identity for top-N; joins may multiply rows.
+    dimensions:
+      - name: id
+        column: id
+        type: number
+        description: the unique id for players Part of the declared primary key.
+      - name: player_api_id
+        column: player_api_id
+        type: number
+        description: player api id. the id of the player api
+      - name: player_name
+        column: player_name
+        type: string
+        description: player name
+      - name: player_fifa_api_id
+        column: player_fifa_api_id
+        type: number
+        description: player federation international football association api id. the id of the player fifa api
+      - name: birthday
+        column: birthday
+        type: string
+        description: "the player's birthday. e.g. 1992-02-29 00:00:00 commonsense reasoning: Player A is older than player
+          B means that A's birthday is earlier than B's"
+    measures:
+      - name: height
+        column: height
+        type: number
+        description: Player height in centimetres according to question evidence.
+      - name: weight
+        column: weight
+        type: number
+        description: Recorded player weight. Retain source units; no unit conversion is implied by column type.
+    metrics:
+      - name: record_count
+        agg: count
+        description: Count source/joined rows at the active query grain; not automatically distinct entities after joins.
+      - name: sum_height
+        agg: sum
+        column: height
+        description: sum of height over the selected Player records. Apply filters and grouping explicitly; joins can
+          repeat records.
+      - name: count_id
+        agg: count
+        column: id
+        description: count of id over the selected Player records. Apply filters and grouping explicitly; joins can repeat
+          records.
+      - name: count_distinct_player_api_id
+        agg: count_distinct
+        column: player_api_id
+        description: count distinct of player_api_id over the selected Player records. Apply filters and grouping
+          explicitly; joins can repeat records.
+      - name: count_distinct_id
+        agg: count_distinct
+        column: id
+        description: count distinct of id over the selected Player records. Apply filters and grouping explicitly; joins
+          can repeat records.
+      - name: max_height
+        agg: max
+        column: height
+        description: max of height over the selected Player records. Apply filters and grouping explicitly; joins can
+          repeat records.
+      - name: min_height
+        agg: min
+        column: height
+        description: min of height over the selected Player records. Apply filters and grouping explicitly; joins can
+          repeat records.
+      - name: count_distinct_player_name
+        agg: count_distinct
+        column: player_name
+        description: count distinct of player_name over the selected Player records. Apply filters and grouping explicitly;
+          joins can repeat records.
+      - name: avg_weight
+        agg: avg
+        column: weight
+        description: avg of weight over the selected Player records. Apply filters and grouping explicitly; joins can
+          repeat records.
+      - name: avg_height
+        agg: avg
+        column: height
+        description: avg of height over the selected Player records. Apply filters and grouping explicitly; joins can
+          repeat records.
+  - name: team_attributes_team_api_id_role
+    table: Team
+    description: Join role for Team_Attributes.team_api_id -> Team.team_api_id. Same physical table as team. One team
+      with local id, team_api_id and team_fifa_api_id; names are team_long_name or team_short_name.
+      Reference-informed from this database and its dev golden SQL. Preserve record identity for top-N; joins may
+      multiply rows.
+    dimensions:
+      - name: id
+        column: id
+        type: number
+        description: the unique id for teams Part of the declared primary key.
+      - name: team_api_id
+        column: team_api_id
+        type: number
+        description: team api id. the id of the team api
+      - name: team_fifa_api_id
+        column: team_fifa_api_id
+        type: number
+        description: FIFA team identifier. Actual data has three duplicated non-null IDs (two rows each); this key is not
+          unique. Prefer team_api_id for a unique team join unless the question requires FIFA ID.
+      - name: team_long_name
+        column: team_long_name
+        type: string
+        description: team long name. the team's long name
+      - name: team_short_name
+        column: team_short_name
+        type: string
+        description: team short name. the team's short name
+    measures: []
+    metrics:
+      - name: record_count
+        agg: count
+        description: Count source/joined rows at the active query grain; not automatically distinct entities after joins.
+      - name: count_id
+        agg: count
+        column: id
+        description: count of id over the selected Team records. Apply filters and grouping explicitly; joins can repeat
+          records.
+  - name: team_attributes_team_fifa_api_id_role
+    table: Team
+    description: Join role for Team_Attributes.team_fifa_api_id -> Team.team_fifa_api_id. Same physical table as team.
+      One team with local id, team_api_id and team_fifa_api_id; names are team_long_name or team_short_name.
+      Reference-informed from this database and its dev golden SQL. Preserve record identity for top-N; joins may
+      multiply rows.
+    dimensions:
+      - name: id
+        column: id
+        type: number
+        description: the unique id for teams Part of the declared primary key.
+      - name: team_api_id
+        column: team_api_id
+        type: number
+        description: team api id. the id of the team api
+      - name: team_fifa_api_id
+        column: team_fifa_api_id
+        type: number
+        description: FIFA team identifier. Actual data has three duplicated non-null IDs (two rows each); this key is not
+          unique. Prefer team_api_id for a unique team join unless the question requires FIFA ID.
+      - name: team_long_name
+        column: team_long_name
+        type: string
+        description: team long name. the team's long name
+      - name: team_short_name
+        column: team_short_name
+        type: string
+        description: team short name. the team's short name
+    measures: []
+    metrics:
+      - name: record_count
+        agg: count
+        description: Count source/joined rows at the active query grain; not automatically distinct entities after joins.
+      - name: count_id
+        agg: count
+        column: id
+        description: count of id over the selected Team records. Apply filters and grouping explicitly; joins can repeat
+          records.
+joins:
+  - from: league
+    to: country
+    type: left
+    keys:
+      - from: country_id
+        to: id
+  - from: match
+    to: match_away_player_11_role
+    type: left
+    keys:
+      - from: away_player_11
+        to: player_api_id
+  - from: match
+    to: match_away_player_10_role
+    type: left
+    keys:
+      - from: away_player_10
+        to: player_api_id
+  - from: match
+    to: match_away_player_9_role
+    type: left
+    keys:
+      - from: away_player_9
+        to: player_api_id
+  - from: match
+    to: match_away_player_8_role
+    type: left
+    keys:
+      - from: away_player_8
+        to: player_api_id
+  - from: match
+    to: match_away_player_7_role
+    type: left
+    keys:
+      - from: away_player_7
+        to: player_api_id
+  - from: match
+    to: match_away_player_6_role
+    type: left
+    keys:
+      - from: away_player_6
+        to: player_api_id
+  - from: match
+    to: match_away_player_5_role
+    type: left
+    keys:
+      - from: away_player_5
+        to: player_api_id
+  - from: match
+    to: match_away_player_4_role
+    type: left
+    keys:
+      - from: away_player_4
+        to: player_api_id
+  - from: match
+    to: match_away_player_3_role
+    type: left
+    keys:
+      - from: away_player_3
+        to: player_api_id
+  - from: match
+    to: match_away_player_2_role
+    type: left
+    keys:
+      - from: away_player_2
+        to: player_api_id
+  - from: match
+    to: match_away_player_1_role
+    type: left
+    keys:
+      - from: away_player_1
+        to: player_api_id
+  - from: match
+    to: match_home_player_11_role
+    type: left
+    keys:
+      - from: home_player_11
+        to: player_api_id
+  - from: match
+    to: match_home_player_10_role
+    type: left
+    keys:
+      - from: home_player_10
+        to: player_api_id
+  - from: match
+    to: match_home_player_9_role
+    type: left
+    keys:
+      - from: home_player_9
+        to: player_api_id
+  - from: match
+    to: match_home_player_8_role
+    type: left
+    keys:
+      - from: home_player_8
+        to: player_api_id
+  - from: match
+    to: match_home_player_7_role
+    type: left
+    keys:
+      - from: home_player_7
+        to: player_api_id
+  - from: match
+    to: match_home_player_6_role
+    type: left
+    keys:
+      - from: home_player_6
+        to: player_api_id
+  - from: match
+    to: match_home_player_5_role
+    type: left
+    keys:
+      - from: home_player_5
+        to: player_api_id
+  - from: match
+    to: match_home_player_4_role
+    type: left
+    keys:
+      - from: home_player_4
+        to: player_api_id
+  - from: match
+    to: match_home_player_3_role
+    type: left
+    keys:
+      - from: home_player_3
+        to: player_api_id
+  - from: match
+    to: match_home_player_2_role
+    type: left
+    keys:
+      - from: home_player_2
+        to: player_api_id
+  - from: match
+    to: match_home_player_1_role
+    type: left
+    keys:
+      - from: home_player_1
+        to: player_api_id
+  - from: match
+    to: match_away_team_api_id_role
+    type: left
+    keys:
+      - from: away_team_api_id
+        to: team_api_id
+  - from: match
+    to: match_home_team_api_id_role
+    type: left
+    keys:
+      - from: home_team_api_id
+        to: team_api_id
+  - from: match
+    to: league
+    type: left
+    keys:
+      - from: league_id
+        to: id
+  - from: match
+    to: country
+    type: left
+    keys:
+      - from: country_id
+        to: id
+  - from: player_attributes
+    to: player_attributes_player_api_id_role
+    type: left
+    keys:
+      - from: player_api_id
+        to: player_api_id
+  - from: player_attributes
+    to: player_attributes_player_fifa_api_id_role
+    type: left
+    keys:
+      - from: player_fifa_api_id
+        to: player_fifa_api_id
+  - from: team_attributes
+    to: team_attributes_team_api_id_role
+    type: left
+    keys:
+      - from: team_api_id
+        to: team_api_id
+  - from: team_attributes
+    to: team_attributes_team_fifa_api_id_role
+    type: left
+    keys:
+      - from: team_fifa_api_id
+        to: team_fifa_api_id

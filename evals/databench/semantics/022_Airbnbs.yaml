@@ -1,0 +1,95 @@
+dialect: duckdb
+models:
+  - name: listings
+    table: data
+    description: One row per New York listing; host-level values repeat across listings. Manually curated using the full
+      data and DataBench question/answer definitions; reference-informed, not a schema-only baseline.
+    dimensions:
+      - name: listing_id
+        column: listing_id
+        description: Unique listing key; preserve in record-level rankings.
+        type: number
+      - name: name
+        column: name
+        description: Listing title.
+        type: string
+      - name: host_id
+        column: host_id
+        description: Host identifier; distinct host counts differ from listing counts.
+        type: number
+      - name: host_location
+        column: host_location
+        description: Host location used by location population questions, not neighbourhood or district.
+        type: string
+      - name: property_type
+        column: property_type
+        description: Detailed property type.
+        type: string
+      - name: room_type
+        column: room_type
+        description: Room category.
+        type: string
+      - name: instant_bookable
+        column: instant_bookable
+        description: Text t or f.
+        type: string
+      - name: neighbourhood
+        column: neighbourhood
+        description: Listing neighbourhood.
+        type: string
+      - name: district
+        column: district
+        description: Listing borough.
+        type: string
+    measures:
+      - name: host_listing_count
+        column: host_total_listings_count
+        description: Recorded host total listing count, not count of rows in this extract.
+        type: number
+      - name: bedrooms
+        column: bedrooms
+        description: Known bedroom count. Explicit unique-bedroom lists deduplicate; listing-score lists do not.
+        type: number
+      - name: minimum_nights
+        column: minimum_nights
+        description: Minimum stay in nights required by this listing. Each listing_id has its own observation even when
+          several listings require the same stay length.
+        type: number
+      - name: maximum_nights
+        column: maximum_nights
+        description: Maximum allowed stay.
+        type: number
+      - name: rating
+        column: review_scores_rating
+        description: Overall rating of this listing on a 0–100 scale; NULL unreviewed. Equal scores on different listing_id
+          records remain separate listing ratings.
+        type: number
+      - name: location_score
+        column: review_scores_location
+        description: Location review score on a 0–10 scale.
+        type: number
+      - name: price
+        column: price
+        description: Numeric listing price.
+        type: number
+    metrics:
+      - name: listing_count
+        agg: count
+        description: Count listings; category frequencies are listing counts, not distinct host counts.
+      - name: unique_hosts
+        agg: count_distinct
+        description: Distinct hosts.
+        column: host_id
+      - name: unique_host_locations
+        agg: count_distinct
+        description: Distinct non-null host locations.
+        column: host_location
+      - name: maximum_host_listings
+        agg: max
+        description: Largest recorded host portfolio.
+        column: host_total_listings_count
+      - name: average_rating
+        agg: avg
+        description: Mean non-null overall rating, without filling missing ratings.
+        column: review_scores_rating
+joins: []

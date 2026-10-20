@@ -1,0 +1,234 @@
+# Source-grounded BIRD dev_20251106 configuration; see README.md and provenance.json.
+dialect: duckdb
+models:
+  - name: customers
+    table: customers
+    description: One customer account; customer Segment and gas-station Segment are unrelated categories.
+      Reference-informed from this database and its dev golden SQL. Preserve record identity for top-N; joins may
+      multiply rows.
+    dimensions:
+      - name: customer_id
+        column: CustomerID
+        type: number
+        description: identification of the customer Part of the declared primary key.
+      - name: segment
+        column: Segment
+        type: string
+        description: client segment
+      - name: currency
+        column: Currency
+        type: string
+        description: Currency
+    measures: []
+    metrics:
+      - name: record_count
+        agg: count
+        description: Count source/joined rows at the active query grain; not automatically distinct entities after joins.
+      - name: count_customer_id
+        agg: count
+        column: CustomerID
+        description: count of CustomerID over the selected customers records. Apply filters and grouping explicitly; joins
+          can repeat records.
+  - name: gasstations
+    table: gasstations
+    description: One gas station. Country uses CZE and SVK. Segment describes the station/chain, not customer segment.
+      Reference-informed from this database and its dev golden SQL. Preserve record identity for top-N; joins may
+      multiply rows.
+    dimensions:
+      - name: gas_station_id
+        column: GasStationID
+        type: number
+        description: Gas Station ID Part of the declared primary key.
+      - name: chain_id
+        column: ChainID
+        type: number
+        description: Chain ID
+      - name: country
+        column: Country
+        type: string
+        description: Source field gasstations.Country; no additional business definition supplied.
+      - name: segment
+        column: Segment
+        type: string
+        description: chain segment
+    measures: []
+    metrics:
+      - name: record_count
+        agg: count
+        description: Count source/joined rows at the active query grain; not automatically distinct entities after joins.
+      - name: count_gas_station_id
+        agg: count
+        column: GasStationID
+        description: count of GasStationID over the selected gasstations records. Apply filters and grouping explicitly;
+          joins can repeat records.
+  - name: products
+    table: products
+    description: One product dictionary entry. Reference-informed from this database and its dev golden SQL. Preserve
+      record identity for top-N; joins may multiply rows.
+    dimensions:
+      - name: product_id
+        column: ProductID
+        type: number
+        description: Product ID Part of the declared primary key.
+      - name: description
+        column: Description
+        type: string
+        description: Description
+    measures: []
+    metrics:
+      - name: record_count
+        agg: count
+        description: Count source/joined rows at the active query grain; not automatically distinct entities after joins.
+  - name: transactions_1k
+    table: transactions_1k
+    description: One transaction in the supplied 1000-row table. This is distinct from customer-month consumption in
+      yearmonth. Price is used directly for spending/price in many golden queries; Amount*Price is a separately
+      defined calculation, never an automatic substitution. Reference-informed from this database and its dev
+      golden SQL. Preserve record identity for top-N; joins may multiply rows.
+    dimensions:
+      - name: transaction_id
+        column: TransactionID
+        type: number
+        description: Transaction ID Part of the declared primary key.
+      - name: date
+        column: Date
+        type: time
+        description: "Date Source date/time: inspect stored representation and cast before DuckDB date functions."
+      - name: time
+        column: Time
+        type: string
+        description: Time
+      - name: customer_id
+        column: CustomerID
+        type: number
+        description: Customer ID
+      - name: card_id
+        column: CardID
+        type: number
+        description: Card ID
+      - name: gas_station_id
+        column: GasStationID
+        type: number
+        description: Gas Station ID
+      - name: product_id
+        column: ProductID
+        type: number
+        description: Product ID
+    measures:
+      - name: amount
+        column: Amount
+        type: number
+        description: Amount
+      - name: price
+        column: Price
+        type: number
+        description: Recorded Price. Golden spending queries often SUM/AVG this column directly. The official description
+          also defines Amount * Price as a separate total-price formula; do not substitute it silently.
+    metrics:
+      - name: record_count
+        agg: count
+        description: Count source/joined rows at the active query grain; not automatically distinct entities after joins.
+      - name: avg_price
+        agg: avg
+        column: Price
+        description: avg of Price over the selected transactions_1k records. Apply filters and grouping explicitly; joins
+          can repeat records.
+      - name: count_transaction_id
+        agg: count
+        column: TransactionID
+        description: count of TransactionID over the selected transactions_1k records. Apply filters and grouping
+          explicitly; joins can repeat records.
+      - name: sum_price
+        agg: sum
+        column: Price
+        description: sum of Price over the selected transactions_1k records. Apply filters and grouping explicitly; joins
+          can repeat records.
+      - name: count_distinct_customer_id
+        agg: count_distinct
+        column: CustomerID
+        description: count distinct of CustomerID over the selected transactions_1k records. Apply filters and grouping
+          explicitly; joins can repeat records.
+      - name: sum_amount
+        agg: sum
+        column: Amount
+        description: sum of Amount over the selected transactions_1k records. Apply filters and grouping explicitly; joins
+          can repeat records.
+  - name: yearmonth
+    table: yearmonth
+    description: One customer and calendar month, keyed by CustomerID and Date (YYYYMM text). Consumption is the stored
+      monthly quantity; joining to individual transactions on CustomerID repeats it. Reference-informed from this
+      database and its dev golden SQL. Preserve record identity for top-N; joins may multiply rows.
+    dimensions:
+      - name: customer_id
+        column: CustomerID
+        type: number
+        description: Customer ID Part of the declared primary key.
+      - name: date
+        column: Date
+        type: string
+        description: Calendar month in YYYYMM text, e.g. 201309. This is not an ISO transaction date. Part of the declared
+          primary key.
+    measures:
+      - name: consumption
+        column: Consumption
+        type: number
+        description: consumption
+    metrics:
+      - name: record_count
+        agg: count
+        description: Count source/joined rows at the active query grain; not automatically distinct entities after joins.
+      - name: sum_consumption
+        agg: sum
+        column: Consumption
+        description: sum of Consumption over the selected yearmonth records. Apply filters and grouping explicitly; joins
+          can repeat records.
+      - name: avg_consumption
+        agg: avg
+        column: Consumption
+        description: avg of Consumption over the selected yearmonth records. Apply filters and grouping explicitly; joins
+          can repeat records.
+      - name: min_consumption
+        agg: min
+        column: Consumption
+        description: min of Consumption over the selected yearmonth records. Apply filters and grouping explicitly; joins
+          can repeat records.
+      - name: count_customer_id
+        agg: count
+        column: CustomerID
+        description: count of CustomerID over the selected yearmonth records. Apply filters and grouping explicitly; joins
+          can repeat records.
+      - name: max_consumption
+        agg: max
+        column: Consumption
+        description: max of Consumption over the selected yearmonth records. Apply filters and grouping explicitly; joins
+          can repeat records.
+      - name: count_distinct_customer_id
+        agg: count_distinct
+        column: CustomerID
+        description: count distinct of CustomerID over the selected yearmonth records. Apply filters and grouping
+          explicitly; joins can repeat records.
+joins:
+  - from: yearmonth
+    to: customers
+    type: left
+    keys:
+      - from: CustomerID
+        to: CustomerID
+  - from: transactions_1k
+    to: customers
+    type: left
+    keys:
+      - from: CustomerID
+        to: CustomerID
+  - from: transactions_1k
+    to: gasstations
+    type: left
+    keys:
+      - from: GasStationID
+        to: GasStationID
+  - from: transactions_1k
+    to: products
+    type: left
+    keys:
+      - from: ProductID
+        to: ProductID

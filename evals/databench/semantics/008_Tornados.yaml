@@ -1,0 +1,96 @@
+dialect: duckdb
+models:
+  - name: tornadoes
+    table: data
+    description: One row is a recorded tornado event or event segment. Retain records when listing repeated measurements.
+      Manually curated using the full data and DataBench question/answer definitions; reference-informed, not a
+      schema-only baseline.
+    dimensions:
+      - name: year
+        column: yr
+        description: Recorded calendar year; 21st century starts in 2001.
+        type: number
+      - name: month
+        column: mo
+        description: Recorded month number 1–12. Return this numeric code unless the question explicitly asks for a month name.
+        type: number
+      - name: day
+        column: dy
+        description: Day of month.
+        type: number
+      - name: date
+        expr: CAST({TABLE}."date" AT TIME ZONE 'UTC' AS DATE)
+        description: Event date without machine timezone conversion.
+        type: time
+      - name: state
+        column: st
+        description: Recorded state or territory abbreviation.
+        type: string
+      - name: start_latitude
+        column: slat
+        description: Event starting latitude.
+        type: number
+      - name: start_longitude
+        column: slon
+        description: Event starting longitude.
+        type: number
+    measures:
+      - name: magnitude
+        column: mag
+        description: Magnitude observed on this tornado event or segment. Equal magnitudes on different records are
+          separate observations, not one magnitude category. The -9 missing/unknown code remains in the recorded column.
+        type: number
+      - name: injuries
+        column: inj
+        description: Number of injuries for the record. A statement saying no events exceed a threshold tests filtered count = 0.
+        type: number
+      - name: fatalities
+        column: fat
+        description: Fatalities in this individual tornado event. Highest fatalities means ordering event rows; use
+          total_fatalities only for explicitly combined totals.
+        type: number
+      - name: length
+        column: len
+        description: Path length in miles.
+        type: number
+      - name: width
+        column: wid
+        description: Recorded path width.
+        type: number
+    metrics:
+      - name: event_count
+        agg: count
+        description: Count event records. Equal measurement values from different events must remain repeated in record lists.
+      - name: unique_states
+        agg: count_distinct
+        description: Distinct state/territory codes.
+        column: st
+      - name: average_magnitude
+        agg: avg
+        description: Mean recorded magnitude by state.
+        column: mag
+      - name: average_length
+        agg: avg
+        description: Mean path length by state.
+        column: len
+      - name: total_injuries
+        agg: sum
+        description: Sum injuries by state; alphabetical state tie-break where requested.
+        column: inj
+      - name: total_fatalities
+        agg: sum
+        description: Sum fatalities by state.
+        column: fat
+      - name: maximum_magnitude
+        agg: max
+        description: Maximum magnitude.
+        column: mag
+      - name: maximum_length
+        agg: max
+        description: Longest path length.
+        column: len
+      - name: maximum_injuries
+        agg: max
+        description: Largest injury count for one record.
+        column: inj
+joins: []

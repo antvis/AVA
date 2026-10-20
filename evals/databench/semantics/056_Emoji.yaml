@@ -1,0 +1,62 @@
+dialect: duckdb
+models:
+  - name: foods
+    table: data
+    description: One row per named food emoji; use the small nutrient quantities exactly as stored, without rescaling to a
+      serving or 100 grams. Manually curated using the full data and DataBench question/answer definitions;
+      reference-informed, not a schema-only baseline.
+    dimensions:
+      - name: name
+        column: name
+        description: Textual food name. Return this for food-name questions; emoji is a separate pictorial label.
+        type: string
+      - name: emoji
+        column: emoji
+        description: Food emoji symbol.
+        type: string
+    measures:
+      - name: calories
+        column: Calories (kcal)
+        description: Stored calorie value in kcal; no implicit multiplication by 100.
+        type: number
+      - name: carbohydrates
+        column: Carbohydrates (g)
+        description: Stored carbohydrate grams.
+        type: number
+      - name: sugar
+        column: Total Sugar (g)
+        description: Total sugar grams, including zero.
+        type: number
+      - name: protein
+        column: Protein (g)
+        description: Protein grams, including zero.
+        type: number
+      - name: fat
+        column: Total Fat (g)
+        description: Total fat grams, not saturated fat.
+        type: number
+      - name: saturated_fat
+        column: Saturated Fat (g)
+        description: Saturated fat grams.
+        type: number
+      - name: fiber
+        column: Total Fiber (g)
+        description: Total fiber grams.
+        type: number
+      - name: sodium
+        column: Sodium (g)
+        description: Stored sodium grams, no milligram conversion.
+        type: number
+    metrics:
+      - name: food_count
+        agg: count
+        description: Number of food items matching the numeric conditions.
+      - name: average_fat
+        agg: avg
+        description: Mean total fat grams across foods.
+        column: Total Fat (g)
+      - name: maximum_protein
+        agg: max
+        description: Highest recorded protein grams.
+        column: Protein (g)
+joins: []

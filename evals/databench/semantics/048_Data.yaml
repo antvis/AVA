@@ -1,0 +1,101 @@
+dialect: duckdb
+models:
+  - name: jobs
+    table: data
+    description: One row is a job listing, not a unique company. Salary and company-age columns are precomputed source
+      values. Manually curated using the full data and DataBench question/answer definitions; reference-informed, not a
+      schema-only baseline.
+    dimensions:
+      - name: title
+        column: Job Title
+        description: Job title; may repeat.
+        type: string
+      - name: description
+        column: Job Description
+        description: Original listing description; combine title, company and location for listing context.
+        type: string
+      - name: company
+        column: Company Name
+        description: Original company display string including newline/rating suffix.
+        type: string
+      - name: location
+        column: Location
+        description: Job location.
+        type: string
+      - name: state
+        column: job_state
+        description: State label retains leading space; do not trim output labels.
+        type: string
+      - name: ownership
+        column: Type of ownership
+        description: Ownership category.
+        type: string
+      - name: industry
+        column: Industry
+        description: Industry label.
+        type: string
+      - name: sector
+        column: Sector
+        description: Sector label.
+        type: string
+      - name: size
+        column: Size
+        description: Company-size label; Unknown and -1 are source categories.
+        type: string
+      - name: founded
+        column: Founded
+        description: Founding year; -1 is unknown, exclude it when ranking oldest or most recent known companies.
+        type: number
+      - name: hourly
+        column: hourly
+        description: 1 means hourly listing; do not silently annualize.
+        type: number
+      - name: python_required
+        column: python_yn
+        description: 1 indicates Python skill detected.
+        type: number
+    measures:
+      - name: company_age
+        column: age
+        description: Precomputed snapshot company age; -1 unknown. Do not recompute using current year.
+        type: number
+      - name: rating
+        column: Rating
+        description: Company rating recorded on this job listing, with -1 sentinel retained in the raw field. Ratings repeat
+          across listings; company-level summaries require the company dimension rather than deduplication of rating values.
+        type: number
+      - name: average_salary
+        column: avg_salary
+        description: Precomputed average salary on this job listing, not an instruction to aggregate all jobs for a company.
+          Retain listing rows when returning salaries of newest/oldest listings.
+        type: number
+      - name: minimum_salary
+        column: min_salary
+        description: Source salary minimum.
+        type: number
+      - name: maximum_salary
+        column: max_salary
+        description: Source salary maximum.
+        type: number
+    metrics:
+      - name: listing_count
+        agg: count
+        description: Number of listings; rankings of sectors/states use row counts.
+      - name: unique_titles
+        agg: count_distinct
+        description: Distinct job titles.
+        column: Job Title
+      - name: mean_recorded_company_age
+        agg: avg
+        description: Mean of the supplied company-age values across job listing rows, including source sentinel -1. Do not
+          filter Founded for this raw-column mean; oldest-company comparisons separately require a known founded year.
+        column: age
+      - name: maximum_rating
+        agg: max
+        description: Highest recorded company rating.
+        column: Rating
+      - name: mean_salary
+        agg: avg
+        description: Mean precomputed salary across listings, for explicitly grouped job titles.
+        column: avg_salary
+joins: []

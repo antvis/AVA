@@ -1,0 +1,74 @@
+dialect: duckdb
+models:
+  - name: applicants
+    table: data
+    description: One row per application, identified by Serial No. Manually curated using the full data and DataBench
+      question/answer definitions; reference-informed, not a schema-only baseline.
+    dimensions:
+      - name: applicant_id
+        column: Serial No.
+        description: Unique application serial; retain in top-N score lists to preserve repeated scores.
+        type: number
+      - name: research
+        column: Research
+        description: 1 has prior research experience; 0 has none.
+        type: number
+    measures:
+      - name: gre
+        column: GRE Score
+        description: Graduate Record Examination score, on the recorded scale up to 340.
+        type: number
+      - name: toefl
+        column: TOEFL Score
+        description: English test score, perfect score 120.
+        type: number
+      - name: university_rating
+        column: University Rating
+        description: University rating from 1 (lowest) to 5 (highest).
+        type: number
+      - name: sop
+        column: SOP
+        description: Rating from 1 to 5 of the applicant's own statement of purpose or stated motivations. Separate from
+          recommendation letters written by other people; do not combine SOP and LOR as one score.
+        type: number
+      - name: lor
+        column: LOR
+        description: Rating from 1 to 5 of recommendation/endorsement letters from other people, not the applicant's own
+          statement of purpose or motivation.
+        type: number
+      - name: cgpa
+        column: CGPA
+        description: Cumulative grade point average.
+        type: number
+      - name: admission_chance
+        column: Chance of Admit
+        description: Admission probability on 0–1 scale; convert percentages to fractions in comparisons.
+        type: number
+    metrics:
+      - name: applicant_count
+        agg: count
+        description: Count applications; use record-level scores for top-N questions unless explicitly unique.
+      - name: maximum_gre
+        agg: max
+        description: Highest GRE score.
+        column: GRE Score
+      - name: average_english
+        agg: avg
+        description: Mean TOEFL score.
+        column: TOEFL Score
+      - name: total_english
+        agg: sum
+        description: Sum TOEFL scores.
+        column: TOEFL Score
+      - name: maximum_cgpa
+        agg: max
+        description: Highest CGPA.
+        column: CGPA
+      - name: minimum_lor
+        agg: min
+        description: Lowest recommendation letter rating.
+        column: LOR
+      - name: cgpa_stddev
+        expr: STDDEV_SAMP({TABLE}."CGPA")
+        description: Sample standard deviation of CGPA.
+joins: []

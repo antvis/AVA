@@ -1,0 +1,101 @@
+dialect: duckdb
+models:
+  - name: awards
+    table: data
+    description: One row per supplier contract award entry. Contract numbers can repeat across entries. Manually curated
+      using the full data and DataBench question/answer definitions; reference-informed, not a schema-only baseline.
+    dimensions:
+      - name: contract_number
+        column: WB Contract Number
+        description: World Bank contract number; not unique per supplier award.
+        type: number
+      - name: fiscal_year
+        column: Fiscal Year
+        description: Recorded fiscal-year number. After the end of a given fiscal year means later fiscal-year numbers, unless
+          calendar signing dates are explicitly requested.
+        type: number
+      - name: method
+        column: Procurement Method
+        description: Procurement method. To rank methods by frequency group only by method; category is a separate attribute.
+        type: string
+      - name: review_type
+        column: Review type
+        description: "Review timing categories: 'Prior' means before execution, 'Post' means afterwards. Labels do not include
+          the word Review."
+        type: string
+      - name: category
+        column: Procurement Category
+        description: Procurement category.
+        type: string
+      - name: region
+        column: Region
+        description: Recorded region label; central and west Africa corresponds to Western and Central Africa. Preserve separate
+          source labels.
+        type: string
+      - name: borrower_country
+        column: Borrower Country
+        description: Borrower country or regional entity, distinct from supplier country.
+        type: string
+      - name: supplier_country
+        column: Supplier Country
+        description: Supplier country; may be NULL.
+        type: string
+      - name: supplier_id
+        column: Supplier ID
+        description: Numeric supplier identifier, not contract ID.
+        type: number
+      - name: supplier
+        column: Supplier
+        description: Supplier name.
+        type: string
+      - name: project_id
+        column: Project ID
+        description: World Bank project identifier.
+        type: string
+      - name: project_name
+        column: Project Name
+        description: Project name.
+        type: string
+      - name: global_practice
+        column: Project Global Practice
+        description: Recorded global-practice label; semicolon combinations remain a single label unless explicitly split.
+        type: string
+      - name: signing_date
+        expr: CAST(TRY_STRPTIME({TABLE}."Contract Signing Date", '%b %d, %Y') AS DATE)
+        description: Contract signing date.
+        type: time
+    measures:
+      - name: amount_usd
+        column: Supplier Contract Amount (USD)
+        description: USD amount for this supplier-award row. Largest recorded contract amounts rank rows, not SUM by a repeated
+          contract_number; sum only for explicitly combined totals.
+        type: number
+    metrics:
+      - name: award_count
+        agg: count
+        description: Count award entries; benchmark contract counts use rows. No stored source row ordinal is available for
+          first-row questions.
+      - name: total_amount
+        agg: sum
+        description: Sum supplier award USD.
+        column: Supplier Contract Amount (USD)
+      - name: average_amount
+        agg: avg
+        description: Mean amount per award entry.
+        column: Supplier Contract Amount (USD)
+      - name: maximum_amount
+        agg: max
+        description: Largest supplier award amount.
+        column: Supplier Contract Amount (USD)
+      - name: amount_stddev
+        expr: STDDEV_SAMP({TABLE}."Supplier Contract Amount (USD)")
+        description: Sample standard deviation of award USD.
+      - name: unique_fiscal_years
+        agg: count_distinct
+        description: Distinct fiscal years.
+        column: Fiscal Year
+      - name: minimum_supplier_id
+        agg: min
+        description: Lowest known numeric supplier identifier.
+        column: Supplier ID
+joins: []

@@ -1,0 +1,93 @@
+dialect: duckdb
+models:
+  - name: incidents
+    table: data
+    description: One row is an incident report/category record; Row ID is unique while Incident ID can repeat. Benchmark
+      incident counts count rows. Manually curated using the full data and DataBench question/answer definitions;
+      reference-informed, not a schema-only baseline.
+    dimensions:
+      - name: row_id
+        column: Row ID
+        description: Unique report-row identity; include when retrieving attributes of an extreme record.
+        type: number
+      - name: incident_id
+        column: Incident ID
+        description: Incident identifier, not unique per row.
+        type: number
+      - name: incident_number
+        column: Incident Number
+        description: Published incident number, distinct from row identifier.
+        type: number
+      - name: year
+        column: Incident Year
+        description: Recorded incident year; use for annual counts.
+        type: number
+      - name: date
+        expr: CAST({TABLE}."Incident Date" AT TIME ZONE 'UTC' AS DATE)
+        description: Incident date.
+        type: time
+      - name: weekday
+        column: Incident Day of Week
+        description: Full weekday label.
+        type: string
+      - name: time
+        column: Incident Time
+        description: Incident time as HH:MM text.
+        type: string
+      - name: filed_online
+        column: Filed Online
+        description: TRUE means online. NULL is not a recorded online filing; use IS TRUE in yes/no output.
+        type: boolean
+      - name: category
+        column: Incident Category
+        description: Incident category; missing labels excluded from distinct-category counts.
+        type: string
+      - name: subcategory
+        column: Incident Subcategory
+        description: Detailed category.
+        type: string
+      - name: description
+        column: Incident Description
+        description: Recorded description.
+        type: string
+      - name: resolution
+        column: Resolution
+        description: Recorded resolution. The unresolved category is the exact label 'Open or Active', not separate 'Open' and
+          'Active' values.
+        type: string
+      - name: police_district
+        column: Police District
+        description: Named police district, not numeric Current Police Districts.
+        type: string
+      - name: supervisor_district
+        column: Supervisor District
+        description: Supervisor district number.
+        type: number
+      - name: latitude
+        column: Latitude
+        description: Latitude; compare pairs with longitude for repeat locations.
+        type: number
+      - name: longitude
+        column: Longitude
+        description: Longitude; missing coordinates do not establish a repeated location.
+        type: number
+    measures: []
+    metrics:
+      - name: incident_count
+        agg: count
+        description: Count report rows, not distinct incident IDs.
+      - name: unique_categories
+        agg: count_distinct
+        description: Distinct non-null incident categories; group by year for annual variety.
+        column: Incident Category
+      - name: unique_districts
+        agg: count_distinct
+        description: Distinct named police districts.
+        column: Police District
+      - name: online_count
+        expr: COUNT(*) FILTER (WHERE {TABLE}."Filed Online" IS TRUE)
+        description: Count online report rows.
+      - name: average_annual_count
+        expr: COUNT(*)::DOUBLE / NULLIF(COUNT(DISTINCT {TABLE}."Incident Year"), 0)
+        description: Average report count per observed year, including partial years in the snapshot.
+joins: []

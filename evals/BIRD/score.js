@@ -1,6 +1,7 @@
 const { execFile } = require('node:child_process');
 const { existsSync } = require('node:fs');
 const { join, resolve } = require('node:path');
+const { createHash } = require('node:crypto');
 const { parseArgs } = require('node:util');
 const { ROOT, selectSamples, databasePath, inspectResources } = require('./index');
 const { atomicJson, readJson, sha256 } = require('../_shared/files');
@@ -117,7 +118,14 @@ async function main(argv = process.argv.slice(2)) {
   const samples = selectSamples({ id: manifest.ids, limit: 'all' }, values.root);
   inspectResources(samples, values.root);
   for (const [file, hash] of Object.entries(manifest.resources)) {
-    if (sha256(join(values.root, file)) !== hash) throw new Error(`BIRD resource changed: ${file}`);
+    if (file.startsWith('semantic:')) {
+      const saved = readJson(join(input, 'semantic.json'))[file.slice('semantic:'.length)];
+      if (!saved?.config) throw new Error(`BIRD semantic snapshot missing: ${file}`);
+      const actual = saved?.source
+        ? sha256(saved.source)
+        : createHash('sha256').update(JSON.stringify(saved?.config)).digest('hex');
+      if (saved?.sha256 !== hash || actual !== hash) throw new Error(`BIRD semantic resource changed: ${file}`);
+    } else if (sha256(join(values.root, file)) !== hash) throw new Error(`BIRD resource changed: ${file}`);
   }
   const report = await scoreSamples({
     samples,

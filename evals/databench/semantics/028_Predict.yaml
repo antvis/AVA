@@ -1,0 +1,63 @@
+dialect: duckdb
+models:
+  - name: diabetes
+    table: data
+    description: One row is a patient observation, without a supplied patient ID; preserve recorded zero measurements.
+      Manually curated using the full data and DataBench question/answer definitions; reference-informed, not a
+      schema-only baseline.
+    dimensions:
+      - name: outcome
+        column: Outcome
+        description: "Original diabetes outcome code: 1 positive, 0 negative. Return numeric codes for outcome labels; do not
+          substitute diabetic/non-diabetic text."
+        type: number
+    measures:
+      - name: pregnancies
+        column: Pregnancies
+        description: Recorded number of pregnancies.
+        type: number
+      - name: glucose
+        column: Glucose
+        description: Recorded glucose, including zero.
+        type: number
+      - name: blood_pressure
+        column: BloodPressure
+        description: Recorded blood pressure; zero retained in benchmark statistics.
+        type: number
+      - name: skin_thickness
+        column: SkinThickness
+        description: Recorded skin thickness.
+        type: number
+      - name: insulin
+        column: Insulin
+        description: Recorded insulin level, including zero.
+        type: number
+      - name: bmi
+        column: BMI
+        description: Recorded BMI; do not discard zeros.
+        type: number
+      - name: pedigree
+        column: DiabetesPedigreeFunction
+        description: Numeric diabetes pedigree score.
+        type: number
+      - name: age
+        column: Age
+        description: Age in years.
+        type: number
+    metrics:
+      - name: patient_count
+        agg: count
+        description: Number of observations; preserve multiplicity for top-N patient lists and do not invent tie-break identities.
+      - name: maximum_pregnancies
+        agg: max
+        description: Maximum pregnancies.
+        column: Pregnancies
+      - name: minimum_blood_pressure
+        agg: min
+        description: Minimum pressure including zero.
+        column: BloodPressure
+      - name: average_bmi
+        agg: avg
+        description: Average BMI including recorded zero.
+        column: BMI
+joins: []

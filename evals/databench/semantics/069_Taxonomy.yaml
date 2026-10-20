@@ -1,0 +1,88 @@
+dialect: duckdb
+models:
+  - name: taxonomy
+    table: data
+    description: One row per named taxonomy node. Numeric Unique ID is missing for some nodes; Parent is text and may
+      contain alphanumeric IDs. Manually curated using the full data and DataBench question/answer definitions;
+      reference-informed, not a schema-only baseline.
+    dimensions:
+      - name: source_position
+        expr: ROW_NUMBER() OVER ()
+        description: One-based position in this source file scan, not a node ID or alphabetical rank. Materialize this with
+          the required row attributes in an unfiltered, ungrouped query before selecting source rows or first occurrences.
+          It is a snapshot-local ordinal, not a persistent key across files or joins.
+        type: number
+      - name: node_id
+        column: Unique ID
+        description: Source Unique ID field, numeric and nullable. Valid unique-value questions refer to this identifier, not
+          Name. Match non-null IDs with Parent by casting through BIGINT to text, avoiding a decimal .0 suffix.
+        type: number
+      - name: parent
+        column: Parent
+        description: Immediate parent identifier stored as text. Root rows may point to themselves; these self-links are not
+          children. Tier labels describe ancestor membership.
+        type: string
+      - name: name
+        column: Name
+        description: Exact catalog node label, case-sensitive, including ampersands. Vehicle body-style labels can be
+          singular, e.g. Convertible denotes convertible cars; wording in prose need not match the label's plurality.
+          Direct parent names require joining node_id to Parent; do not invent Node_ID.
+        type: string
+      - name: tier_1
+        column: Tier 1
+        description: Highest/root tier, not the deepest populated tier. Category membership is repeated on descendants. Rank
+          top-level category frequency by grouping this field across all nodes, including roots; do not filter to root
+          rows only. Preserve recorded capitalization.
+        type: string
+      - name: tier_2
+        column: Tier 2
+        description: Second-level label, NULL when not applicable.
+        type: string
+      - name: tier_3
+        column: Tier 3
+        description: Third-level membership; fourth-tier entries also carry this third-tier label. Third-or-fourth tier
+          membership is a union, not the sum of counts of both columns.
+        type: string
+      - name: tier_4
+        column: Tier 4
+        description: Fourth-level label, NULL when not applicable.
+        type: string
+    measures:
+      - name: direct_child_count
+        expr: CASE WHEN {TABLE}."Unique ID" IS NULL THEN NULL ELSE (SELECT COUNT(*) FROM "data" AS child WHERE child."Parent" =
+          CAST(CAST({TABLE}."Unique ID" AS BIGINT) AS VARCHAR) AND child."Unique ID" IS DISTINCT FROM {TABLE}."Unique
+          ID") END
+        description: Number of immediate child nodes of this node, matched by Parent to its numeric ID. Excludes root
+          self-links; returns zero for an identified leaf and NULL when this node has no ID. Counts children in the full
+          taxonomy even when filtering the selected parent nodes. Descendant counts are different.
+        type: number
+    metrics:
+      - name: node_count
+        agg: count
+        description: Count taxonomy nodes; filtering a tier label includes any root row carrying that label. Source-row
+          selection uses source_position before grouping; node IDs and category names do not define file order.
+      - name: unique_parents
+        agg: count_distinct
+        description: Distinct non-null immediate parent IDs.
+        column: Parent
+      - name: unique_names
+        agg: count_distinct
+        description: Distinct node names.
+        column: Name
+      - name: unique_top_levels
+        agg: count_distinct
+        description: Distinct top-level categories.
+        column: Tier 1
+      - name: tier_2_count
+        agg: count
+        description: Nodes with a non-null second-level label.
+        column: Tier 2
+      - name: tier_3_count
+        agg: count
+        description: Nodes with a non-null third-level label.
+        column: Tier 3
+      - name: tier_4_count
+        agg: count
+        description: Nodes with a non-null fourth-level label.
+        column: Tier 4
+joins: []

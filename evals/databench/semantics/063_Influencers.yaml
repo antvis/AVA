@@ -1,0 +1,65 @@
+dialect: duckdb
+models:
+  - name: entities
+    table: data
+    description: One row per network entity, identified by id; names can repeat. Manually curated using the full data and
+      DataBench question/answer definitions; reference-informed, not a schema-only baseline.
+    dimensions:
+      - name: entity_id
+        column: id
+        description: Unique entity ID, distinct from twitter profile ID.
+        type: number
+      - name: name
+        column: name
+        description: Display name, not unique.
+        type: string
+      - name: picture
+        column: pic
+        description: Picture URL; available means non-null/nonempty.
+        type: string
+      - name: organization
+        column: is_organization
+        description: Boolean organization flag.
+        type: boolean
+      - name: community
+        column: community
+        description: Community identifier.
+        type: number
+      - name: x
+        column: x
+        description: Layout x coordinate, not longitude.
+        type: number
+      - name: y
+        column: y
+        description: Layout y coordinate, not latitude.
+        type: number
+      - name: twitter_id
+        column: twitter_profile_id
+        description: 64-bit social profile identifier.
+        type: number
+    measures:
+      - name: page_rank
+        column: page_rank_norm
+        description: Normalized PageRank score.
+        type: number
+      - name: weight
+        column: weight
+        description: Recorded entity/network weight.
+        type: number
+    metrics:
+      - name: entity_count
+        agg: count
+        description: Count entities; retain entity_id to preserve equal weights/ranks in value lists.
+      - name: unique_communities
+        agg: count_distinct
+        description: Distinct communities.
+        column: community
+      - name: average_page_rank
+        agg: avg
+        description: Mean normalized PageRank.
+        column: page_rank_norm
+      - name: maximum_weight
+        agg: max
+        description: Largest entity weight.
+        column: weight
+joins: []

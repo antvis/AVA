@@ -1,0 +1,75 @@
+dialect: duckdb
+models:
+  - name: wines
+    table: data
+    description: One row is a wine sample. Measurements can repeat; no unique sample ID is provided. Manually curated using
+      the full data and DataBench question/answer definitions; reference-informed, not a schema-only baseline.
+    dimensions: []
+    measures:
+      - name: fixed_acidity
+        column: fixed acidity
+        description: Recorded fixed acidity.
+        type: number
+      - name: volatile_acidity
+        column: volatile acidity
+        description: Recorded volatile acidity.
+        type: number
+      - name: citric_acid
+        column: citric acid
+        description: Citric acid concentration.
+        type: number
+      - name: residual_sugar
+        column: residual sugar
+        description: Residual sugar g/dm^3.
+        type: number
+      - name: chlorides
+        column: chlorides
+        description: Chloride concentration.
+        type: number
+      - name: free_sulfur
+        column: free sulfur dioxide
+        description: Free sulfur dioxide mg/dm^3; NULL unknown.
+        type: number
+      - name: total_sulfur
+        column: total sulfur dioxide
+        description: Total sulfur dioxide mg/dm^3.
+        type: number
+      - name: density
+        column: density
+        description: Recorded sample density.
+        type: number
+      - name: ph
+        column: pH
+        description: pH level.
+        type: number
+      - name: sulphates
+        column: sulphates
+        description: Sulphate concentration.
+        type: number
+      - name: alcohol
+        column: alcohol
+        description: Alcohol content.
+        type: number
+      - name: quality
+        column: quality
+        description: Quality rating. For another attribute of a highest/lowest-rated sample, select that attribute together with
+          quality; do not aggregate independently.
+        type: number
+    metrics:
+      - name: sample_count
+        agg: count
+        description: Count wine samples. Preserve repeated records in top-N lists; a numeric quality level is not a unique
+          sample identity.
+      - name: unique_quality_ratings
+        agg: count_distinct
+        description: Distinct quality ratings.
+        column: quality
+      - name: maximum_fixed_acidity
+        agg: max
+        description: Largest fixed acidity.
+        column: fixed acidity
+      - name: minimum_volatile_acidity
+        agg: min
+        description: Smallest volatile acidity.
+        column: volatile acidity
+joins: []

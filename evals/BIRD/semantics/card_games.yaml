@@ -1,0 +1,656 @@
+# Source-grounded BIRD dev_20251106 configuration; see README.md and provenance.json.
+dialect: duckdb
+models:
+  - name: cards
+    table: cards
+    description: One card printing/face entry, identified by id and uuid; card names repeat across printings. Use uuid
+      to join language, legality and ruling records; setCode joins sets.code. Reference-informed from this database
+      and its dev golden SQL. Preserve record identity for top-N; joins may multiply rows.
+    dimensions:
+      - name: id
+        column: id
+        type: number
+        description: unique id number identifying the cards Part of the declared primary key.
+      - name: artist
+        column: artist
+        type: string
+        description: The name of the artist that illustrated the card art.
+      - name: ascii_name
+        column: asciiName
+        type: string
+        description: ascii Name. The ASCII(opens new window) (Basic/128) code formatted card name with no special unicode
+          characters.
+      - name: availability
+        column: availability
+        type: string
+        description: A list of the card's available printing types.. "arena", "dreamcast", "mtgo", "paper", "shandalar"
+      - name: border_color
+        column: borderColor
+        type: string
+        description: border Color. The color of the card border.. "black", "borderless", "gold", "silver", "white"
+      - name: card_kingdom_foil_id
+        column: cardKingdomFoilId
+        type: string
+        description: card Kingdom Foil Id. commonsense evidence:cardKingdomFoilId, when paired with cardKingdomId that is
+          not Null, is incredibly powerful.
+      - name: card_kingdom_id
+        column: cardKingdomId
+        type: string
+        description: card Kingdom Id. A list of all the colors in the color indicator
+      - name: color_identity
+        column: colorIdentity
+        type: string
+        description: color Identity. A list of all the colors found in manaCost, colorIndicator, and text
+      - name: color_indicator
+        column: colorIndicator
+        type: string
+        description: color Indicator. A list of all the colors in the color indicator (The symbol prefixed to a card's types).
+      - name: colors
+        column: colors
+        type: string
+        description: A list of all the colors in manaCost and colorIndicator.. Some cards may not have values, such as
+          cards with "Devoid" in its text.
+      - name: duel_deck
+        column: duelDeck
+        type: string
+        description: duel Deck. The indicator for which duel deck the card is in.
+      - name: face_name
+        column: faceName
+        type: string
+        description: face Name. The name on the face of the card.
+      - name: flavor_name
+        column: flavorName
+        type: string
+        description: flavor Name. The promotional card name printed above the true card name on special cards that has no
+          game function.
+      - name: flavor_text
+        column: flavorText
+        type: string
+        description: flavor Text. The italicized text found below the rules text that has no game function.
+      - name: frame_effects
+        column: frameEffects
+        type: string
+        description: frame Effects. The visual frame effects.. "colorshifted", "companion", "compasslanddfc", "devoid",
+          "draft", "etched", "extendedart", "fullart", "inverted", "legendary", "lesson", "miracle",
+          "mooneldrazidfc", "nyxtouched", "originpwdfc", "showcase", "snow", "sunmoondfc", "textless", "tombstone",
+          "waxingandwaningmoondfc"
+      - name: frame_version
+        column: frameVersion
+        type: string
+        description: frame Version. The version of the card frame style.. "1993", "1997", "2003", "2015", "future"
+      - name: hand
+        column: hand
+        type: string
+        description: "The starting maximum hand size total modifier.. A + or - character precedes an integer. commonsense
+          evidence:positive maximum hand size: +1, +2, ....negative maximum hand size: -1, ....neural maximum hand
+          size: 0...."
+      - name: has_alternative_deck_limit
+        column: hasAlternativeDeckLimit
+        type: number
+        description: "has Alternative Deck Limit. If the card allows a value other than 4 copies in a deck.. 0: disallow 1:
+          allow"
+      - name: has_content_warning
+        column: hasContentWarning
+        type: number
+        description: "has Content Warning. If the card marked by Wizards of the Coast (opens new window) for having
+          sensitive content. See this official article (opens new window) for more information.. 0: doesn't have 1:
+          has sensitve content or Wizards of the Coastcommonsense evidence:Cards with this property may have
+          missing or degraded properties and values."
+      - name: has_foil
+        column: hasFoil
+        type: number
+        description: "has Foil. If the card can be found in foil. 0: cannot be found 1: can be found"
+      - name: has_non_foil
+        column: hasNonFoil
+        type: number
+        description: "has Non Foil. If the card can be found in non-foil. 0: cannot be found 1: can be found"
+      - name: is_alternative
+        column: isAlternative
+        type: number
+        description: "is Alternative. If the card is an alternate variation to an original printing. 0: is not 1: is"
+      - name: is_full_art
+        column: isFullArt
+        type: number
+        description: "is Full Art. If the card has full artwork.. 0: doesn't have, 1: has full artwork"
+      - name: is_online_only
+        column: isOnlineOnly
+        type: number
+        description: "is Online Only. If the card is only available in online game variations.. 0: is not 1: is"
+      - name: is_oversized
+        column: isOversized
+        type: number
+        description: "is Oversized. If the card is oversized.. 0: is not 1: is"
+      - name: is_promo
+        column: isPromo
+        type: number
+        description: "is Promotion. If the card is a promotional printing.. 0: is not 1: is"
+      - name: is_reprint
+        column: isReprint
+        type: number
+        description: Recorded 0/1 reprint flag; 1 means reprinted in the reviewed question definitions.
+      - name: is_reserved
+        column: isReserved
+        type: number
+        description: "is Reserved. If the card is on the Magic: The Gathering Reserved List (opens new window). If the card
+          is on the Magic, it will appear in The Gathering Reserved List"
+      - name: is_starter
+        column: isStarter
+        type: number
+        description: "is Starter. If the card is found in a starter deck such as Planeswalker/Brawl decks.. 0: is not 1: is"
+      - name: is_story_spotlight
+        column: isStorySpotlight
+        type: number
+        description: "is Story Spotlight. If the card is a Story Spotlight card.. 0: is not 1: is"
+      - name: is_textless
+        column: isTextless
+        type: number
+        description: "is Text less. If the card does not have a text box.. commonsense evidence:0: has a text box;1:
+          doesn't have a text box;"
+      - name: is_timeshifted
+        column: isTimeshifted
+        type: number
+        description: is Time shifted. If the card is time shifted. commonsense evidence:If the card is "timeshifted", a
+          feature of certain sets where a card will have a different frameVersion.
+      - name: keywords
+        column: keywords
+        type: string
+        description: A list of keywords found on the card.
+      - name: layout
+        column: layout
+        type: string
+        description: The type of card layout. For a token card, this will be "token"
+      - name: leadership_skills
+        column: leadershipSkills
+        type: string
+        description: leadership Skills. A list of formats the card is legal to be a commander in
+      - name: life
+        column: life
+        type: string
+        description: The starting life total modifier. A plus or minus character precedes an integer.
+      - name: loyalty
+        column: loyalty
+        type: string
+        description: The starting loyalty value of the card.. Used only on cards with "Planeswalker" in its types. empty
+          means unkown
+      - name: mana_cost
+        column: manaCost
+        type: string
+        description: mana Cost. The mana cost of the card wrapped in brackets for each value.. commonsense
+          evidence:manaCost is unconverted mana cost
+      - name: mcm_id
+        column: mcmId
+        type: string
+        description: Source field cards.mcmId; no additional business definition supplied.
+      - name: mcm_meta_id
+        column: mcmMetaId
+        type: string
+        description: Source field cards.mcmMetaId; no additional business definition supplied.
+      - name: mtg_arena_id
+        column: mtgArenaId
+        type: string
+        description: Source field cards.mtgArenaId; no additional business definition supplied.
+      - name: mtgjson_v4_id
+        column: mtgjsonV4Id
+        type: string
+        description: Source field cards.mtgjsonV4Id; no additional business definition supplied.
+      - name: mtgo_foil_id
+        column: mtgoFoilId
+        type: string
+        description: Source field cards.mtgoFoilId; no additional business definition supplied.
+      - name: mtgo_id
+        column: mtgoId
+        type: string
+        description: Source field cards.mtgoId; no additional business definition supplied.
+      - name: multiverse_id
+        column: multiverseId
+        type: string
+        description: Source field cards.multiverseId; no additional business definition supplied.
+      - name: name
+        column: name
+        type: string
+        description: The name of the card.. Cards with multiple faces, like "Split" and "Meld" cards are given a delimiter.
+      - name: number
+        column: number
+        type: string
+        description: The number of the card
+      - name: original_release_date
+        column: originalReleaseDate
+        type: string
+        description: original Release Date. The original release date in ISO 8601(opens new window) format for a
+          promotional card printed outside of a cycle window, such as Secret Lair Drop promotions.
+      - name: original_text
+        column: originalText
+        type: string
+        description: original Text. The text on the card as originally printed.
+      - name: original_type
+        column: originalType
+        type: string
+        description: original Type. The type of the card as originally printed. Includes any supertypes and subtypes.
+      - name: other_face_ids
+        column: otherFaceIds
+        type: string
+        description: other Face Ids. A list of card UUID's to this card's counterparts, such as transformed or melded faces.
+      - name: power
+        column: power
+        type: string
+        description: Source text power, including *, infinity notation and NULL. Preserve source text; TRY_CAST only for
+          explicitly numeric comparisons.
+      - name: printings
+        column: printings
+        type: string
+        description: A list of set printing codes the card was printed in, formatted in uppercase.
+      - name: promo_types
+        column: promoTypes
+        type: string
+        description: promo Types. A list of promotional types for a card.. "arenaleague", "boosterfun", "boxtopper",
+          "brawldeck", "bundle", "buyabox", "convention", "datestamped", "draculaseries", "draftweekend", "duels",
+          "event", "fnm", "gameday", "gateway", "giftbox", "gilded", "godzillaseries", "instore", "intropack",
+          "jpwalker", "judgegift", "league", "mediainsert", "neonink", "openhouse", "planeswalkerstamped",
+          "playerrewards", "playpromo", "premiereshop", "prerelease", "promopack", "release", "setpromo",
+          "stamped", "textured", "themepack", "thick", "tourney", "wizardsplaynetwork"
+      - name: purchase_urls
+        column: purchaseUrls
+        type: string
+        description: purchase Urls. Links that navigate to websites where the card can be purchased.
+      - name: rarity
+        column: rarity
+        type: string
+        description: The card printing rarity.
+      - name: scryfall_id
+        column: scryfallId
+        type: string
+        description: Source field cards.scryfallId; no additional business definition supplied.
+      - name: scryfall_illustration_id
+        column: scryfallIllustrationId
+        type: string
+        description: Source field cards.scryfallIllustrationId; no additional business definition supplied.
+      - name: scryfall_oracle_id
+        column: scryfallOracleId
+        type: string
+        description: Source field cards.scryfallOracleId; no additional business definition supplied.
+      - name: set_code
+        column: setCode
+        type: string
+        description: Set Code. The set printing code that the card is from.
+      - name: side
+        column: side
+        type: string
+        description: The identifier of the card side.. Used on cards with multiple faces on the same card.commonsense
+          evidence:if this value is empty, then it means this card doesn't have multiple faces on the same card.
+      - name: subtypes
+        column: subtypes
+        type: string
+        description: A list of card subtypes found after em-dash.
+      - name: supertypes
+        column: supertypes
+        type: string
+        description: super types. A list of card supertypes found before em-dash.. commonsense evidence:list of all types
+          should be the union of subtypes and supertypes
+      - name: tcgplayer_product_id
+        column: tcgplayerProductId
+        type: string
+        description: tcg player ProductId
+      - name: text
+        column: text
+        type: string
+        description: The rules text of the card.
+      - name: toughness
+        column: toughness
+        type: string
+        description: The toughness of the card.
+      - name: type
+        column: type
+        type: string
+        description: The type of the card as visible, including any supertypes and subtypes.. "Artifact", "Card",
+          "Conspiracy", "Creature", "Dragon", "Dungeon", "Eaturecray", "Elemental", "Elite", "Emblem",
+          "Enchantment", "Ever", "Goblin", "Hero", "Instant", "Jaguar", "Knights", "Land", "Phenomenon", "Plane",
+          "Planeswalker", "Scariest", "Scheme", "See", "Sorcery", "Sticker", "Summon", "Token", "Tribal",
+          "Vanguard", "Wolf", "You’ll", "instant"
+      - name: types
+        column: types
+        type: string
+        description: A list of all card types of the card, including Un‑sets and gameplay variants.
+      - name: uuid
+        column: uuid
+        type: string
+        description: Card printing/face UUID used by foreign_data, legalities and rulings; do not join those tables to
+          numeric cards.id.
+      - name: variations
+        column: variations
+        type: string
+        description: Source field cards.variations; no additional business definition supplied.
+      - name: watermark
+        column: watermark
+        type: string
+        description: The name of the watermark on the card.
+    measures:
+      - name: converted_mana_cost
+        column: convertedManaCost
+        type: number
+        description: converted Mana Cost. The converted mana cost of the card. Use the manaValue property.. if value is
+          higher, it means that this card cost more converted mana
+      - name: edhrec_rank
+        column: edhrecRank
+        type: number
+        description: rec Rank in edh. The card rank on EDHRec
+      - name: face_converted_mana_cost
+        column: faceConvertedManaCost
+        type: number
+        description: face Converted Mana Cost. The converted mana cost or mana value for the face for either half or part
+          of the card.. if value is higher, it means that this card cost more converted mana for the face
+    metrics:
+      - name: record_count
+        agg: count
+        description: Count source/joined rows at the active query grain; not automatically distinct entities after joins.
+      - name: max_converted_mana_cost
+        agg: max
+        column: convertedManaCost
+        description: max of convertedManaCost over the selected cards records. Apply filters and grouping explicitly; joins
+          can repeat records.
+      - name: count_id
+        agg: count
+        column: id
+        description: count of id over the selected cards records. Apply filters and grouping explicitly; joins can repeat
+          records.
+      - name: count_type
+        agg: count
+        column: type
+        description: count of type over the selected cards records. Apply filters and grouping explicitly; joins can repeat
+          records.
+      - name: count_distinct_id
+        agg: count_distinct
+        column: id
+        description: count distinct of id over the selected cards records. Apply filters and grouping explicitly; joins can
+          repeat records.
+      - name: count_frame_effects
+        agg: count
+        column: frameEffects
+        description: count of frameEffects over the selected cards records. Apply filters and grouping explicitly; joins
+          can repeat records.
+  - name: foreign_data
+    table: foreign_data
+    description: One translated card entry for a language and card uuid. Multiple languages and printings may share a
+      name. Reference-informed from this database and its dev golden SQL. Preserve record identity for top-N; joins
+      may multiply rows.
+    dimensions:
+      - name: id
+        column: id
+        type: number
+        description: unique id number identifying this row of data Part of the declared primary key.
+      - name: flavor_text
+        column: flavorText
+        type: string
+        description: flavor Text. The foreign flavor text of the card.
+      - name: language
+        column: language
+        type: string
+        description: The foreign language of card.
+      - name: multiverseid
+        column: multiverseid
+        type: number
+        description: The foreign multiverse identifier of the card.
+      - name: name
+        column: name
+        type: string
+        description: The foreign name of the card.
+      - name: text
+        column: text
+        type: string
+        description: The foreign text ruling of the card.
+      - name: type
+        column: type
+        type: string
+        description: The foreign type of the card. Includes any supertypes and subtypes.
+      - name: uuid
+        column: uuid
+        type: string
+        description: Source field foreign_data.uuid; no additional business definition supplied.
+    measures: []
+    metrics:
+      - name: record_count
+        agg: count
+        description: Count source/joined rows at the active query grain; not automatically distinct entities after joins.
+  - name: legalities
+    table: legalities
+    description: One card uuid and play-format legality record. Preserve exact status spelling; no implicit legal-only
+      filter. Reference-informed from this database and its dev golden SQL. Preserve record identity for top-N;
+      joins may multiply rows.
+    dimensions:
+      - name: id
+        column: id
+        type: number
+        description: unique id identifying this legality Part of the declared primary key.
+      - name: format
+        column: format
+        type: string
+        description: format of play. each value refers to different rules to play
+      - name: status
+        column: status
+        type: string
+        description: Recorded legality label; observed/golden labels include Legal, Banned and Restricted. Preserve case
+          and inspect actual values.
+      - name: uuid
+        column: uuid
+        type: string
+        description: Source field legalities.uuid; no additional business definition supplied.
+    measures: []
+    metrics:
+      - name: record_count
+        agg: count
+        description: Count source/joined rows at the active query grain; not automatically distinct entities after joins.
+  - name: rulings
+    table: rulings
+    description: One dated ruling text for a card uuid; a card may have many rulings. Reference-informed from this
+      database and its dev golden SQL. Preserve record identity for top-N; joins may multiply rows.
+    dimensions:
+      - name: id
+        column: id
+        type: number
+        description: unique id identifying this ruling Part of the declared primary key.
+      - name: date
+        column: date
+        type: time
+        description: "date Source date/time: inspect stored representation and cast before DuckDB date functions."
+      - name: text
+        column: text
+        type: string
+        description: description about this ruling
+      - name: uuid
+        column: uuid
+        type: string
+        description: Source field rulings.uuid; no additional business definition supplied.
+    measures: []
+    metrics:
+      - name: record_count
+        agg: count
+        description: Count source/joined rows at the active query grain; not automatically distinct entities after joins.
+      - name: count_uuid
+        agg: count
+        column: uuid
+        description: count of uuid over the selected rulings records. Apply filters and grouping explicitly; joins can
+          repeat records.
+  - name: set_translations
+    table: set_translations
+    description: One translated set name for a language and setCode. Reference-informed from this database and its dev
+      golden SQL. Preserve record identity for top-N; joins may multiply rows.
+    dimensions:
+      - name: id
+        column: id
+        type: number
+        description: unique id identifying this set Part of the declared primary key.
+      - name: language
+        column: language
+        type: string
+        description: language of this card set
+      - name: set_code
+        column: setCode
+        type: string
+        description: set code. the set code for this set
+      - name: translation
+        column: translation
+        type: string
+        description: translation of this card set
+    measures: []
+    metrics:
+      - name: record_count
+        agg: count
+        description: Count source/joined rows at the active query grain; not automatically distinct entities after joins.
+      - name: count_distinct_translation
+        agg: count_distinct
+        column: translation
+        description: count distinct of translation over the selected set_translations records. Apply filters and grouping
+          explicitly; joins can repeat records.
+      - name: count_language
+        agg: count
+        column: language
+        description: count of language over the selected set_translations records. Apply filters and grouping explicitly;
+          joins can repeat records.
+  - name: sets
+    table: sets
+    description: One set record. baseSetSize and totalSetSize are stored quantities with different inclusion rules.
+      Reference-informed from this database and its dev golden SQL. Preserve record identity for top-N; joins may
+      multiply rows.
+    dimensions:
+      - name: id
+        column: id
+        type: number
+        description: unique id identifying this set Part of the declared primary key.
+      - name: block
+        column: block
+        type: string
+        description: The block name the set was in.
+      - name: booster
+        column: booster
+        type: string
+        description: A breakdown of possibilities and weights of cards in a booster pack.
+      - name: code
+        column: code
+        type: string
+        description: The set code for the set.
+      - name: is_foil_only
+        column: isFoilOnly
+        type: number
+        description: is Foil Only. If the set is only available in foil.
+      - name: is_foreign_only
+        column: isForeignOnly
+        type: number
+        description: is Foreign Only. If the set is available only outside the United States of America.
+      - name: is_non_foil_only
+        column: isNonFoilOnly
+        type: number
+        description: is Non Foil Only. If the set is only available in non-foil.
+      - name: is_online_only
+        column: isOnlineOnly
+        type: number
+        description: is Online Only. If the set is only available in online game variations.
+      - name: is_partial_preview
+        column: isPartialPreview
+        type: number
+        description: is Partial Preview. If the set is still in preview (spoiled). Preview sets do not have complete data.
+      - name: keyrune_code
+        column: keyruneCode
+        type: string
+        description: keyrune Code. The matching Keyrune code for set image icons.
+      - name: mcm_id
+        column: mcmId
+        type: number
+        description: magic card market id. The Magic Card Marketset identifier.
+      - name: mcm_id_extras
+        column: mcmIdExtras
+        type: number
+        description: magic card market ID Extras. The split Magic Card Market set identifier if a set is printed in two
+          sets. This identifier represents the second set's identifier.
+      - name: mcm_name
+        column: mcmName
+        type: string
+        description: magic card market name
+      - name: mtgo_code
+        column: mtgoCode
+        type: string
+        description: "magic the gathering online code. The set code for the set as it appears on Magic: The Gathering
+          Online. commonsense evidence:if the value is null or empty, then it doesn't appear on Magic: The
+          Gathering Online"
+      - name: name
+        column: name
+        type: string
+        description: The name of the set.
+      - name: parent_code
+        column: parentCode
+        type: string
+        description: parent Code. The parent set code for set variations like promotions, guild kits, etc.
+      - name: release_date
+        column: releaseDate
+        type: time
+        description: "release Date. The release date in ISO 8601 format for the set. Source date/time: inspect stored
+          representation and cast before DuckDB date functions."
+      - name: tcgplayer_group_id
+        column: tcgplayerGroupId
+        type: number
+        description: tcg player Group Id. The group identifier of the set on TCGplayer
+      - name: type
+        column: type
+        type: string
+        description: The expansion type of the set.. "alchemy", "archenemy", "arsenal", "box", "commander", "core",
+          "draft_innovation", "duel_deck", "expansion", "from_the_vault", "funny", "masterpiece", "masters",
+          "memorabilia", "planechase", "premium_deck", "promo", "spellbook", "starter", "token", "treasure_chest",
+          "vanguard"
+    measures:
+      - name: base_set_size
+        column: baseSetSize
+        type: number
+        description: base Set Size. The number of cards in the set.
+      - name: total_set_size
+        column: totalSetSize
+        type: number
+        description: total Set Size. The total number of cards in the set, including promotional and related supplemental
+          products but excluding Alchemy modifications - however those cards are included in the set itself.
+    metrics:
+      - name: record_count
+        agg: count
+        description: Count source/joined rows at the active query grain; not automatically distinct entities after joins.
+      - name: count_id
+        agg: count
+        column: id
+        description: count of id over the selected sets records. Apply filters and grouping explicitly; joins can repeat
+          records.
+      - name: max_total_set_size
+        agg: max
+        column: totalSetSize
+        description: max of totalSetSize over the selected sets records. Apply filters and grouping explicitly; joins can
+          repeat records.
+      - name: count_distinct_id
+        agg: count_distinct
+        column: id
+        description: count distinct of id over the selected sets records. Apply filters and grouping explicitly; joins can
+          repeat records.
+joins:
+  - from: foreign_data
+    to: cards
+    type: left
+    keys:
+      - from: uuid
+        to: uuid
+  - from: legalities
+    to: cards
+    type: left
+    keys:
+      - from: uuid
+        to: uuid
+  - from: rulings
+    to: cards
+    type: left
+    keys:
+      - from: uuid
+        to: uuid
+  - from: set_translations
+    to: sets
+    type: left
+    keys:
+      - from: setCode
+        to: code
+  - from: cards
+    to: sets
+    type: left
+    keys:
+      - from: setCode
+        to: code

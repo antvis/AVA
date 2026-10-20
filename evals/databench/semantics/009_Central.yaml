@@ -1,0 +1,54 @@
+dialect: duckdb
+models:
+  - name: weather
+    table: data
+    description: One row is one daily Central Park weather observation; date identifies records. Manually curated using the
+      full data and DataBench question/answer definitions; reference-informed, not a schema-only baseline.
+    dimensions:
+      - name: date
+        expr: CAST({TABLE}."DATE" AT TIME ZONE 'UTC' AS DATE)
+        description: Unique observation date; include with measurements to preserve equal values across days.
+        type: time
+    measures:
+      - name: precipitation
+        column: PRCP
+        description: Daily precipitation in inches.
+        type: number
+      - name: snowfall
+        column: SNOW
+        description: Daily snowfall in inches, distinct from snow depth.
+        type: number
+      - name: snow_depth
+        column: SNWD
+        description: Snow depth in inches; NULL means unrecorded.
+        type: number
+      - name: minimum_temperature
+        column: TMIN
+        description: Daily minimum in Fahrenheit; freezing is 32 F, not 0 F.
+        type: number
+      - name: maximum_temperature
+        column: TMAX
+        description: Daily maximum in Fahrenheit; retain date for extreme-date questions.
+        type: number
+    metrics:
+      - name: day_count
+        agg: count
+        description: Count days. No days meeting a condition means filtered count = 0; all days requires checking violations and
+          missing values.
+      - name: maximum_precipitation
+        agg: max
+        description: Largest daily precipitation.
+        column: PRCP
+      - name: lowest_temperature
+        agg: min
+        description: Lowest daily minimum, ignoring NULL.
+        column: TMIN
+      - name: highest_temperature
+        agg: max
+        description: Highest daily maximum.
+        column: TMAX
+      - name: maximum_snow_depth
+        agg: max
+        description: Deepest known snow cover.
+        column: SNWD
+joins: []

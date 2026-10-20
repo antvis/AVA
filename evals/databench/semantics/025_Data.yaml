@@ -1,0 +1,61 @@
+dialect: duckdb
+models:
+  - name: search_results
+    table: data
+    description: One row is a URL-keyword search result. URLs repeat across keywords and rankings. Manually curated using
+      the full data and DataBench question/answer definitions; reference-informed, not a schema-only baseline.
+    dimensions:
+      - name: url
+        column: URLs
+        description: URL; repeated URLs from separate results must remain in record lists.
+        type: string
+      - name: rank
+        column: Ranking
+        description: "Search placement: smaller numeric rank is a better/higher placement, larger is a worse/lower placement.
+          This differs from the numerical maximum or minimum; keep keyword and URL together for a search-result row."
+        type: number
+      - name: keyword
+        column: Keyword
+        description: Search keyword phrase.
+        type: string
+      - name: competition
+        column: Competition
+        description: Competition category with exact spellings 'Low', 'Medium', 'High', 'Unknown'. Capitalization matters in
+          equality filters.
+        type: string
+    measures:
+      - name: monthly_searches
+        column: Avg. monthly searches
+        description: Monthly search volume already recorded for a keyword/search-result row. The word average is part of the
+          source field name, not an instruction to group or average URLs. Use average_searches for explicit cross-row
+          means.
+        type: number
+    metrics:
+      - name: result_count
+        agg: count
+        description: Count result rows. Use URL+keyword+ranking to retain result context; a URL alone is not unique.
+      - name: unique_urls
+        agg: count_distinct
+        description: Distinct URLs.
+        column: URLs
+      - name: unique_keywords
+        agg: count_distinct
+        description: Distinct keywords.
+        column: Keyword
+      - name: lowest_placement
+        agg: max
+        description: Worst ranking position, largest numeric rank.
+        column: Ranking
+      - name: best_rank
+        agg: min
+        description: Best ranking position.
+        column: Ranking
+      - name: minimum_searches
+        agg: min
+        description: Minimum recorded monthly searches.
+        column: Avg. monthly searches
+      - name: average_searches
+        agg: avg
+        description: Mean searches when explicitly grouping URLs or keywords.
+        column: Avg. monthly searches
+joins: []

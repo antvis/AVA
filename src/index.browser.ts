@@ -15,6 +15,7 @@ export type {
   SemanticModel,
   SemanticDimension,
   SemanticMeasure,
+  SemanticMetric,
   SemanticJoin,
   SemanticAggregation,
   SemanticDialectName,

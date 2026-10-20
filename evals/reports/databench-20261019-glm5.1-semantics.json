@@ -1,0 +1,2368 @@
+{
+  "generatedAt": "2026-10-19T07:52:42.267Z",
+  "environment": {
+    "scoringNodeVersion": "v24.19.0",
+    "executionNodeVersion": "v24.19.0"
+  },
+  "evaluation": {
+    "benchmark": "DataBench full (080_Books excluded)",
+    "runner": "ava-workflow",
+    "engine": "duckdb",
+    "strategy": "semantic",
+    "maxSteps": 20,
+    "concurrency": 10,
+    "dataVariant": "full",
+    "dataset": "databench",
+    "model": "GLM-5.1",
+    "predictions": "evals/ava-workflow/results/databench-20261019-glm5.1-semantics.csv",
+    "predictionsSha256": "583f04f21f5b62cb99b6e49e500bf03f5c0d58aab0119d83ba677fa3090ac44d"
+  },
+  "summary": {
+    "samples": 1789,
+    "correct": 1626,
+    "wrong": 156,
+    "missing": 7,
+    "accuracy": 0.9088876467300168,
+    "timingSeconds": {
+      "average": 11.4,
+      "minimum": 3.21,
+      "maximum": 679.31,
+      "median": 5.52
+    },
+    "tokens": {
+      "prompt": 8119340,
+      "completion": 630471,
+      "total": 8749811,
+      "average": 4891
+    }
+  },
+  "provenance": {
+    "kind": "composite-semantic-placement-retry",
+    "manifest": "evals/ava-workflow/.runs/databench-20261019-glm5.1-semantics-daf305035936/manifest.json",
+    "latestRetryReport": "evals/ava-workflow/.runs/repair191-20261019T071549Z/final-summary.json",
+    "resultScope": "多轮合并结果：先对181道答案不匹配和10道执行失败各运行一次，再按用户要求撤回agent Top-N新增提示、补强19份YAML，并对受影响23题单轮核验（含1道已通过RFM题）。最初1598条通过记录原样保留；不是当前实现与语义配置下独立的全量评测，不能据此确认没有全量回归。",
+    "dataCondition": "后续失败题重试使用校验过的 full Parquet 无损重写副本，修复原文件统计元数据；London 使用较小行组。字段类型、记录值、重复次数与源行顺序均经核对。",
+    "comparisonScope": "两轮均使用GLM-5.1、full数据、semantic、DuckDB、并发10、max-steps20。首轮曾新增通用Top-N提示，后按用户要求恢复至任务开始版本；第二轮改动位于Dimension、Measure描述及Expr。通用SQL预绑定与列表标量行输出约定保留。成绩变化不能单独归因于语义YAML；历史轮次还涉及模型与数据读取条件变化。",
+    "timingScope": "CSV duration_ms 是逐题耗时；并发与多轮合并条件下不能将其总和视为整体墙钟耗时。",
+    "latestRetryManifest": "evals/ava-workflow/.runs/retry-e3d5bff4cf7d/manifest.json",
+    "configurationScope": "当前src/analysis/semantic.ts与本任务开始时逐字节一致。最新23题所用19份YAML及实现哈希见latestRetryManifest，其余题使用此前各轮快照；官方标答和评分规则未改动。逐题证据、仍存歧义、标答矛盾和4道新增执行失败见latestRetryReport。",
+    "statisticsScope": "Final retained CSV rows matching scored samples, including failed executions; excludes superseded attempts and retry overhead. Each timing/token statistic uses only rows with a recorded nonnegative finite value.",
+    "scoringScope": "Shared databench-answer metrics only; skill/tool assertions are separate. Summary uses databench-answer.",
+    "recordedRows": {
+      "duration": 1789,
+      "inputTokens": 1789,
+      "outputTokens": 1789,
+      "totalTokens": 1789
+    }
+  },
+  "errors": {
+    "execution": {
+      "count": 7,
+      "ids": [
+        "databench:044_IMDb:03",
+        "databench:044_IMDb:16",
+        "databench:046_120:02",
+        "databench:054_Joe:03",
+        "databench:069_Taxonomy:31",
+        "databench:070_OpenFoodFacts:23",
+        "databench:076_NBA:22"
+      ],
+      "details": [
+        {
+          "id": "databench:044_IMDb:03",
+          "error": "Semantic strategy reached the step limit (20) without executing a final SQL"
+        },
+        {
+          "id": "databench:044_IMDb:16",
+          "error": "Semantic strategy reached the step limit (20) without executing a final SQL"
+        },
+        {
+          "id": "databench:046_120:02",
+          "error": "Semantic strategy reached the step limit (20) without executing a final SQL"
+        },
+        {
+          "id": "databench:054_Joe:03",
+          "error": "Semantic strategy reached the step limit (20) without executing a final SQL"
+        },
+        {
+          "id": "databench:069_Taxonomy:31",
+          "error": "Semantic strategy reached the step limit (20) without executing a final SQL"
+        },
+        {
+          "id": "databench:070_OpenFoodFacts:23",
+          "error": "Semantic strategy reached the step limit (20) without executing a final SQL"
+        },
+        {
+          "id": "databench:076_NBA:22",
+          "error": "Semantic strategy reached the step limit (20) without executing a final SQL"
+        }
+      ]
+    }
+  },
+  "total": 1789,
+  "predicted": 1782,
+  "missing": 7,
+  "metrics": {
+    "databench-answer": {
+      "passed": 1626,
+      "total": 1789,
+      "score": 0.9088876467300168
+    }
+  },
+  "suites": {
+    "001_Forbes": {
+      "total": 25,
+      "predicted": 25,
+      "missing": 0,
+      "metrics": {
+        "databench-answer": {
+          "passed": 25,
+          "total": 25,
+          "score": 1
+        }
+      }
+    },
+    "002_Titanic": {
+      "total": 20,
+      "predicted": 20,
+      "missing": 0,
+      "metrics": {
+        "databench-answer": {
+          "passed": 20,
+          "total": 20,
+          "score": 1
+        }
+      }
+    },
+    "003_Love": {
+      "total": 20,
+      "predicted": 20,
+      "missing": 0,
+      "metrics": {
+        "databench-answer": {
+          "passed": 20,
+          "total": 20,
+          "score": 1
+        }
+      }
+    },
+    "004_Taxi": {
+      "total": 20,
+      "predicted": 20,
+      "missing": 0,
+      "metrics": {
+        "databench-answer": {
+          "passed": 19,
+          "total": 20,
+          "score": 0.95
+        }
+      }
+    },
+    "005_NYC": {
+      "total": 20,
+      "predicted": 20,
+      "missing": 0,
+      "metrics": {
+        "databench-answer": {
+          "passed": 18,
+          "total": 20,
+          "score": 0.9
+        }
+      }
+    },
+    "006_London": {
+      "total": 20,
+      "predicted": 20,
+      "missing": 0,
+      "metrics": {
+        "databench-answer": {
+          "passed": 18,
+          "total": 20,
+          "score": 0.9
+        }
+      }
+    },
+    "007_Fifa": {
+      "total": 20,
+      "predicted": 20,
+      "missing": 0,
+      "metrics": {
+        "databench-answer": {
+          "passed": 17,
+          "total": 20,
+          "score": 0.85
+        }
+      }
+    },
+    "008_Tornados": {
+      "total": 20,
+      "predicted": 20,
+      "missing": 0,
+      "metrics": {
+        "databench-answer": {
+          "passed": 17,
+          "total": 20,
+          "score": 0.85
+        }
+      }
+    },
+    "009_Central": {
+      "total": 20,
+      "predicted": 20,
+      "missing": 0,
+      "metrics": {
+        "databench-answer": {
+          "passed": 20,
+          "total": 20,
+          "score": 1
+        }
+      }
+    },
+    "010_ECommerce": {
+      "total": 20,
+      "predicted": 20,
+      "missing": 0,
+      "metrics": {
+        "databench-answer": {
+          "passed": 20,
+          "total": 20,
+          "score": 1
+        }
+      }
+    },
+    "011_SF": {
+      "total": 20,
+      "predicted": 20,
+      "missing": 0,
+      "metrics": {
+        "databench-answer": {
+          "passed": 19,
+          "total": 20,
+          "score": 0.95
+        }
+      }
+    },
+    "012_Heart": {
+      "total": 20,
+      "predicted": 20,
+      "missing": 0,
+      "metrics": {
+        "databench-answer": {
+          "passed": 20,
+          "total": 20,
+          "score": 1
+        }
+      }
+    },
+    "013_Roller": {
+      "total": 20,
+      "predicted": 20,
+      "missing": 0,
+      "metrics": {
+        "databench-answer": {
+          "passed": 15,
+          "total": 20,
+          "score": 0.75
+        }
+      }
+    },
+    "014_Airbnb": {
+      "total": 20,
+      "predicted": 20,
+      "missing": 0,
+      "metrics": {
+        "databench-answer": {
+          "passed": 17,
+          "total": 20,
+          "score": 0.85
+        }
+      }
+    },
+    "015_Food": {
+      "total": 20,
+      "predicted": 20,
+      "missing": 0,
+      "metrics": {
+        "databench-answer": {
+          "passed": 20,
+          "total": 20,
+          "score": 1
+        }
+      }
+    },
+    "016_Holiday": {
+      "total": 20,
+      "predicted": 20,
+      "missing": 0,
+      "metrics": {
+        "databench-answer": {
+          "passed": 20,
+          "total": 20,
+          "score": 1
+        }
+      }
+    },
+    "017_Hacker": {
+      "total": 20,
+      "predicted": 20,
+      "missing": 0,
+      "metrics": {
+        "databench-answer": {
+          "passed": 19,
+          "total": 20,
+          "score": 0.95
+        }
+      }
+    },
+    "018_Staff": {
+      "total": 20,
+      "predicted": 20,
+      "missing": 0,
+      "metrics": {
+        "databench-answer": {
+          "passed": 17,
+          "total": 20,
+          "score": 0.85
+        }
+      }
+    },
+    "019_Aircraft": {
+      "total": 20,
+      "predicted": 20,
+      "missing": 0,
+      "metrics": {
+        "databench-answer": {
+          "passed": 16,
+          "total": 20,
+          "score": 0.8
+        }
+      }
+    },
+    "020_Real": {
+      "total": 20,
+      "predicted": 20,
+      "missing": 0,
+      "metrics": {
+        "databench-answer": {
+          "passed": 19,
+          "total": 20,
+          "score": 0.95
+        }
+      }
+    },
+    "021_Telco": {
+      "total": 20,
+      "predicted": 20,
+      "missing": 0,
+      "metrics": {
+        "databench-answer": {
+          "passed": 16,
+          "total": 20,
+          "score": 0.8
+        }
+      }
+    },
+    "022_Airbnbs": {
+      "total": 20,
+      "predicted": 20,
+      "missing": 0,
+      "metrics": {
+        "databench-answer": {
+          "passed": 17,
+          "total": 20,
+          "score": 0.85
+        }
+      }
+    },
+    "023_Climate": {
+      "total": 20,
+      "predicted": 20,
+      "missing": 0,
+      "metrics": {
+        "databench-answer": {
+          "passed": 20,
+          "total": 20,
+          "score": 1
+        }
+      }
+    },
+    "024_Salary": {
+      "total": 20,
+      "predicted": 20,
+      "missing": 0,
+      "metrics": {
+        "databench-answer": {
+          "passed": 19,
+          "total": 20,
+          "score": 0.95
+        }
+      }
+    },
+    "025_Data": {
+      "total": 20,
+      "predicted": 20,
+      "missing": 0,
+      "metrics": {
+        "databench-answer": {
+          "passed": 14,
+          "total": 20,
+          "score": 0.7
+        }
+      }
+    },
+    "026_Predicting": {
+      "total": 20,
+      "predicted": 20,
+      "missing": 0,
+      "metrics": {
+        "databench-answer": {
+          "passed": 20,
+          "total": 20,
+          "score": 1
+        }
+      }
+    },
+    "027_Supermarket": {
+      "total": 20,
+      "predicted": 20,
+      "missing": 0,
+      "metrics": {
+        "databench-answer": {
+          "passed": 20,
+          "total": 20,
+          "score": 1
+        }
+      }
+    },
+    "028_Predict": {
+      "total": 20,
+      "predicted": 20,
+      "missing": 0,
+      "metrics": {
+        "databench-answer": {
+          "passed": 12,
+          "total": 20,
+          "score": 0.6
+        }
+      }
+    },
+    "029_NYTimes": {
+      "total": 20,
+      "predicted": 20,
+      "missing": 0,
+      "metrics": {
+        "databench-answer": {
+          "passed": 10,
+          "total": 20,
+          "score": 0.5
+        }
+      }
+    },
+    "030_Professionals": {
+      "total": 20,
+      "predicted": 20,
+      "missing": 0,
+      "metrics": {
+        "databench-answer": {
+          "passed": 18,
+          "total": 20,
+          "score": 0.9
+        }
+      }
+    },
+    "031_Trustpilot": {
+      "total": 20,
+      "predicted": 20,
+      "missing": 0,
+      "metrics": {
+        "databench-answer": {
+          "passed": 17,
+          "total": 20,
+          "score": 0.85
+        }
+      }
+    },
+    "032_Delicatessen": {
+      "total": 20,
+      "predicted": 20,
+      "missing": 0,
+      "metrics": {
+        "databench-answer": {
+          "passed": 20,
+          "total": 20,
+          "score": 1
+        }
+      }
+    },
+    "033_Employee": {
+      "total": 20,
+      "predicted": 20,
+      "missing": 0,
+      "metrics": {
+        "databench-answer": {
+          "passed": 14,
+          "total": 20,
+          "score": 0.7
+        }
+      }
+    },
+    "034_World": {
+      "total": 20,
+      "predicted": 20,
+      "missing": 0,
+      "metrics": {
+        "databench-answer": {
+          "passed": 20,
+          "total": 20,
+          "score": 1
+        }
+      }
+    },
+    "035_Billboard": {
+      "total": 24,
+      "predicted": 24,
+      "missing": 0,
+      "metrics": {
+        "databench-answer": {
+          "passed": 20,
+          "total": 24,
+          "score": 0.8333333333333334
+        }
+      }
+    },
+    "036_US": {
+      "total": 20,
+      "predicted": 20,
+      "missing": 0,
+      "metrics": {
+        "databench-answer": {
+          "passed": 19,
+          "total": 20,
+          "score": 0.95
+        }
+      }
+    },
+    "037_Ted": {
+      "total": 20,
+      "predicted": 20,
+      "missing": 0,
+      "metrics": {
+        "databench-answer": {
+          "passed": 19,
+          "total": 20,
+          "score": 0.95
+        }
+      }
+    },
+    "038_Stroke": {
+      "total": 20,
+      "predicted": 20,
+      "missing": 0,
+      "metrics": {
+        "databench-answer": {
+          "passed": 19,
+          "total": 20,
+          "score": 0.95
+        }
+      }
+    },
+    "039_Happy": {
+      "total": 20,
+      "predicted": 20,
+      "missing": 0,
+      "metrics": {
+        "databench-answer": {
+          "passed": 16,
+          "total": 20,
+          "score": 0.8
+        }
+      }
+    },
+    "040_Speed": {
+      "total": 20,
+      "predicted": 20,
+      "missing": 0,
+      "metrics": {
+        "databench-answer": {
+          "passed": 16,
+          "total": 20,
+          "score": 0.8
+        }
+      }
+    },
+    "041_Airline": {
+      "total": 20,
+      "predicted": 20,
+      "missing": 0,
+      "metrics": {
+        "databench-answer": {
+          "passed": 19,
+          "total": 20,
+          "score": 0.95
+        }
+      }
+    },
+    "042_Predict": {
+      "total": 20,
+      "predicted": 20,
+      "missing": 0,
+      "metrics": {
+        "databench-answer": {
+          "passed": 18,
+          "total": 20,
+          "score": 0.9
+        }
+      }
+    },
+    "043_Predict": {
+      "total": 20,
+      "predicted": 20,
+      "missing": 0,
+      "metrics": {
+        "databench-answer": {
+          "passed": 18,
+          "total": 20,
+          "score": 0.9
+        }
+      }
+    },
+    "044_IMDb": {
+      "total": 20,
+      "predicted": 18,
+      "missing": 2,
+      "metrics": {
+        "databench-answer": {
+          "passed": 13,
+          "total": 20,
+          "score": 0.65
+        }
+      }
+    },
+    "045_Predict": {
+      "total": 20,
+      "predicted": 20,
+      "missing": 0,
+      "metrics": {
+        "databench-answer": {
+          "passed": 14,
+          "total": 20,
+          "score": 0.7
+        }
+      }
+    },
+    "046_120": {
+      "total": 20,
+      "predicted": 19,
+      "missing": 1,
+      "metrics": {
+        "databench-answer": {
+          "passed": 11,
+          "total": 20,
+          "score": 0.55
+        }
+      }
+    },
+    "047_Bank": {
+      "total": 20,
+      "predicted": 20,
+      "missing": 0,
+      "metrics": {
+        "databench-answer": {
+          "passed": 17,
+          "total": 20,
+          "score": 0.85
+        }
+      }
+    },
+    "048_Data": {
+      "total": 20,
+      "predicted": 20,
+      "missing": 0,
+      "metrics": {
+        "databench-answer": {
+          "passed": 17,
+          "total": 20,
+          "score": 0.85
+        }
+      }
+    },
+    "049_Boris": {
+      "total": 19,
+      "predicted": 19,
+      "missing": 0,
+      "metrics": {
+        "databench-answer": {
+          "passed": 16,
+          "total": 19,
+          "score": 0.8421052631578947
+        }
+      }
+    },
+    "050_ING": {
+      "total": 20,
+      "predicted": 20,
+      "missing": 0,
+      "metrics": {
+        "databench-answer": {
+          "passed": 18,
+          "total": 20,
+          "score": 0.9
+        }
+      }
+    },
+    "051_Pokemon": {
+      "total": 20,
+      "predicted": 20,
+      "missing": 0,
+      "metrics": {
+        "databench-answer": {
+          "passed": 19,
+          "total": 20,
+          "score": 0.95
+        }
+      }
+    },
+    "052_Professional": {
+      "total": 20,
+      "predicted": 20,
+      "missing": 0,
+      "metrics": {
+        "databench-answer": {
+          "passed": 20,
+          "total": 20,
+          "score": 1
+        }
+      }
+    },
+    "053_Patents": {
+      "total": 20,
+      "predicted": 20,
+      "missing": 0,
+      "metrics": {
+        "databench-answer": {
+          "passed": 19,
+          "total": 20,
+          "score": 0.95
+        }
+      }
+    },
+    "054_Joe": {
+      "total": 20,
+      "predicted": 19,
+      "missing": 1,
+      "metrics": {
+        "databench-answer": {
+          "passed": 15,
+          "total": 20,
+          "score": 0.75
+        }
+      }
+    },
+    "055_German": {
+      "total": 20,
+      "predicted": 20,
+      "missing": 0,
+      "metrics": {
+        "databench-answer": {
+          "passed": 15,
+          "total": 20,
+          "score": 0.75
+        }
+      }
+    },
+    "056_Emoji": {
+      "total": 20,
+      "predicted": 20,
+      "missing": 0,
+      "metrics": {
+        "databench-answer": {
+          "passed": 20,
+          "total": 20,
+          "score": 1
+        }
+      }
+    },
+    "057_Spain": {
+      "total": 20,
+      "predicted": 20,
+      "missing": 0,
+      "metrics": {
+        "databench-answer": {
+          "passed": 20,
+          "total": 20,
+          "score": 1
+        }
+      }
+    },
+    "058_US": {
+      "total": 20,
+      "predicted": 20,
+      "missing": 0,
+      "metrics": {
+        "databench-answer": {
+          "passed": 19,
+          "total": 20,
+          "score": 0.95
+        }
+      }
+    },
+    "059_Second": {
+      "total": 20,
+      "predicted": 20,
+      "missing": 0,
+      "metrics": {
+        "databench-answer": {
+          "passed": 19,
+          "total": 20,
+          "score": 0.95
+        }
+      }
+    },
+    "060_Bakery": {
+      "total": 20,
+      "predicted": 20,
+      "missing": 0,
+      "metrics": {
+        "databench-answer": {
+          "passed": 17,
+          "total": 20,
+          "score": 0.85
+        }
+      }
+    },
+    "061_Disneyland": {
+      "total": 20,
+      "predicted": 20,
+      "missing": 0,
+      "metrics": {
+        "databench-answer": {
+          "passed": 18,
+          "total": 20,
+          "score": 0.9
+        }
+      }
+    },
+    "062_Trump": {
+      "total": 20,
+      "predicted": 20,
+      "missing": 0,
+      "metrics": {
+        "databench-answer": {
+          "passed": 20,
+          "total": 20,
+          "score": 1
+        }
+      }
+    },
+    "063_Influencers": {
+      "total": 20,
+      "predicted": 20,
+      "missing": 0,
+      "metrics": {
+        "databench-answer": {
+          "passed": 19,
+          "total": 20,
+          "score": 0.95
+        }
+      }
+    },
+    "064_Clustering": {
+      "total": 20,
+      "predicted": 20,
+      "missing": 0,
+      "metrics": {
+        "databench-answer": {
+          "passed": 20,
+          "total": 20,
+          "score": 1
+        }
+      }
+    },
+    "065_RFM": {
+      "total": 20,
+      "predicted": 20,
+      "missing": 0,
+      "metrics": {
+        "databench-answer": {
+          "passed": 20,
+          "total": 20,
+          "score": 1
+        }
+      }
+    },
+    "066_IBM_HR": {
+      "total": 39,
+      "predicted": 39,
+      "missing": 0,
+      "metrics": {
+        "databench-answer": {
+          "passed": 39,
+          "total": 39,
+          "score": 1
+        }
+      }
+    },
+    "067_TripAdvisor": {
+      "total": 29,
+      "predicted": 29,
+      "missing": 0,
+      "metrics": {
+        "databench-answer": {
+          "passed": 29,
+          "total": 29,
+          "score": 1
+        }
+      }
+    },
+    "068_WorldBank_Awards": {
+      "total": 34,
+      "predicted": 34,
+      "missing": 0,
+      "metrics": {
+        "databench-answer": {
+          "passed": 34,
+          "total": 34,
+          "score": 1
+        }
+      }
+    },
+    "069_Taxonomy": {
+      "total": 35,
+      "predicted": 34,
+      "missing": 1,
+      "metrics": {
+        "databench-answer": {
+          "passed": 33,
+          "total": 35,
+          "score": 0.9428571428571428
+        }
+      }
+    },
+    "070_OpenFoodFacts": {
+      "total": 29,
+      "predicted": 28,
+      "missing": 1,
+      "metrics": {
+        "databench-answer": {
+          "passed": 28,
+          "total": 29,
+          "score": 0.9655172413793104
+        }
+      }
+    },
+    "071_COL": {
+      "total": 36,
+      "predicted": 36,
+      "missing": 0,
+      "metrics": {
+        "databench-answer": {
+          "passed": 36,
+          "total": 36,
+          "score": 1
+        }
+      }
+    },
+    "072_Admissions": {
+      "total": 39,
+      "predicted": 39,
+      "missing": 0,
+      "metrics": {
+        "databench-answer": {
+          "passed": 39,
+          "total": 39,
+          "score": 1
+        }
+      }
+    },
+    "073_Med_Cost": {
+      "total": 32,
+      "predicted": 32,
+      "missing": 0,
+      "metrics": {
+        "databench-answer": {
+          "passed": 32,
+          "total": 32,
+          "score": 1
+        }
+      }
+    },
+    "074_Lift": {
+      "total": 35,
+      "predicted": 35,
+      "missing": 0,
+      "metrics": {
+        "databench-answer": {
+          "passed": 29,
+          "total": 35,
+          "score": 0.8285714285714286
+        }
+      }
+    },
+    "075_Mortality": {
+      "total": 29,
+      "predicted": 29,
+      "missing": 0,
+      "metrics": {
+        "databench-answer": {
+          "passed": 29,
+          "total": 29,
+          "score": 1
+        }
+      }
+    },
+    "076_NBA": {
+      "total": 36,
+      "predicted": 35,
+      "missing": 1,
+      "metrics": {
+        "databench-answer": {
+          "passed": 31,
+          "total": 36,
+          "score": 0.8611111111111112
+        }
+      }
+    },
+    "077_Gestational": {
+      "total": 31,
+      "predicted": 31,
+      "missing": 0,
+      "metrics": {
+        "databench-answer": {
+          "passed": 30,
+          "total": 31,
+          "score": 0.967741935483871
+        }
+      }
+    },
+    "078_Fires": {
+      "total": 39,
+      "predicted": 39,
+      "missing": 0,
+      "metrics": {
+        "databench-answer": {
+          "passed": 38,
+          "total": 39,
+          "score": 0.9743589743589743
+        }
+      }
+    },
+    "079_Coffee": {
+      "total": 38,
+      "predicted": 38,
+      "missing": 0,
+      "metrics": {
+        "databench-answer": {
+          "passed": 36,
+          "total": 38,
+          "score": 0.9473684210526315
+        }
+      }
+    }
+  },
+  "failures": [
+    {
+      "id": "databench:004_Taxi:19",
+      "prediction": "[80, 80, 80, 80, 79.55]",
+      "gold": "[80.0, 80.0, 80.0, 80.0, 80.0]",
+      "scores": {
+        "databench-answer": false
+      }
+    },
+    {
+      "id": "databench:005_NYC:15",
+      "prediction": "[Wood Pole Damaged, Winter Health and Safety Tips Guide]",
+      "gold": "['Booting Company', 'Ready NY - Businesses', 'Animal']",
+      "scores": {
+        "databench-answer": false
+      }
+    },
+    {
+      "id": "databench:005_NYC:19",
+      "prediction": "[4, 5]",
+      "gold": "[6, 2]",
+      "scores": {
+        "databench-answer": false
+      }
+    },
+    {
+      "id": "databench:006_London:06",
+      "prediction": "75241",
+      "gold": "0",
+      "scores": {
+        "databench-answer": false
+      }
+    },
+    {
+      "id": "databench:006_London:19",
+      "prediction": "[288, 281, 260, 258, 224]",
+      "gold": "[288, 288, 288, 288, 288]",
+      "scores": {
+        "databench-answer": false
+      }
+    },
+    {
+      "id": "databench:007_Fifa:11",
+      "prediction": "Lazio",
+      "gold": "Crystal Palace",
+      "scores": {
+        "databench-answer": false
+      }
+    },
+    {
+      "id": "databench:007_Fifa:13",
+      "prediction": "[Tanzania, Syria, Mozambique, Chad, Central African Republic]",
+      "gold": "['Tanzania', 'Syria', 'Mozambique', 'Chad', 'Central African Rep.']",
+      "scores": {
+        "databench-answer": false
+      }
+    },
+    {
+      "id": "databench:007_Fifa:16",
+      "prediction": "[FC Bayern München, Real Madrid, FC Barcelona, Liverpool, Manchester City, Chelsea]",
+      "gold": "['FC Bayern München', 'Real Madrid', 'FC Barcelona', 'Paris Saint-Germain', 'Juventus', 'Manchester City']",
+      "scores": {
+        "databench-answer": false
+      }
+    },
+    {
+      "id": "databench:008_Tornados:03",
+      "prediction": "false",
+      "gold": "True",
+      "scores": {
+        "databench-answer": false
+      }
+    },
+    {
+      "id": "databench:008_Tornados:04",
+      "prediction": "false",
+      "gold": "True",
+      "scores": {
+        "databench-answer": false
+      }
+    },
+    {
+      "id": "databench:008_Tornados:18",
+      "prediction": "[5, 4, 3, 2, 1]",
+      "gold": "[5, 5, 5, 5, 5]",
+      "scores": {
+        "databench-answer": false
+      }
+    },
+    {
+      "id": "databench:011_SF:03",
+      "prediction": "true",
+      "gold": "False",
+      "scores": {
+        "databench-answer": false
+      }
+    },
+    {
+      "id": "databench:013_Roller:01",
+      "prediction": "false",
+      "gold": "True",
+      "scores": {
+        "databench-answer": false
+      }
+    },
+    {
+      "id": "databench:013_Roller:14",
+      "prediction": "[The Smiler, 10 Inversion Roller Coaster]",
+      "gold": "[The Smiler, Colossus (Thorpe Park)]",
+      "scores": {
+        "databench-answer": false
+      }
+    },
+    {
+      "id": "databench:013_Roller:15",
+      "prediction": "[Sea Lion Park, Fuji-Q Highland, Six Flags Over Texas, Nürburgring, Galaxyland]",
+      "gold": "[Sea Lion Park, Fuji-Q Highland, Six Flags Over Texas, Nürburgring, Morey's Piers]",
+      "scores": {
+        "databench-answer": false
+      }
+    },
+    {
+      "id": "databench:013_Roller:16",
+      "prediction": "[Switchback Railway, Flip Flap Railway, Switchback Railway (Euclid Beach Park), Loop the Loop (Coney Island)]",
+      "gold": "[Switchback Railway, Flip Flap Railway, Loop the Loop (Coney Island), Loop the Loop (Young's Pier)]",
+      "scores": {
+        "databench-answer": false
+      }
+    },
+    {
+      "id": "databench:013_Roller:20",
+      "prediction": "[1884, 1895, 1896, 1901, 1901, 1902]",
+      "gold": "[1884, 1895, 1901, 1901, 1902, 1902]",
+      "scores": {
+        "databench-answer": false
+      }
+    },
+    {
+      "id": "databench:014_Airbnb:04",
+      "prediction": "true",
+      "gold": "False",
+      "scores": {
+        "databench-answer": false
+      }
+    },
+    {
+      "id": "databench:014_Airbnb:14",
+      "prediction": "[0, 5]",
+      "gold": "['0%', '0%']",
+      "scores": {
+        "databench-answer": false
+      }
+    },
+    {
+      "id": "databench:014_Airbnb:15",
+      "prediction": "[100%, 99%, 98%, 97%]",
+      "gold": "['99%', '99%', '99%', '99%']",
+      "scores": {
+        "databench-answer": false
+      }
+    },
+    {
+      "id": "databench:017_Hacker:18",
+      "prediction": "[1, 2, 3, 4, 5]",
+      "gold": "[1.0, 2.0, 2.0, 2.0, 2.0]",
+      "scores": {
+        "databench-answer": false
+      }
+    },
+    {
+      "id": "databench:018_Staff:14",
+      "prediction": "[sales, management, marketing]",
+      "gold": "['hr', 'accounting', 'IT']",
+      "scores": {
+        "databench-answer": false
+      }
+    },
+    {
+      "id": "databench:018_Staff:18",
+      "prediction": "[0.92, 0.91, 0.9]",
+      "gold": "[0.92, 0.92, 0.92]",
+      "scores": {
+        "databench-answer": false
+      }
+    },
+    {
+      "id": "databench:018_Staff:19",
+      "prediction": "[100, 100, 102, 102, 106]",
+      "gold": "[215, 133, 159, 241, 247]",
+      "scores": {
+        "databench-answer": false
+      }
+    },
+    {
+      "id": "databench:019_Aircraft:08",
+      "prediction": "9231",
+      "gold": "0",
+      "scores": {
+        "databench-answer": false
+      }
+    },
+    {
+      "id": "databench:019_Aircraft:10",
+      "prediction": "Security - Hijack, Security - Suicide",
+      "gold": "Airplane - Pressurization, Airplane - Pressurization - Bulkhead failure, Airplane - Pressurization - Explosive decompression, Maintenance - (repair of) previous damage, Result - Loss of control",
+      "scores": {
+        "databench-answer": false
+      }
+    },
+    {
+      "id": "databench:019_Aircraft:14",
+      "prediction": "[None, unknown, Havana-José ..., Miami Intern..., Rio de Janei...]",
+      "gold": "['Arnhem', 'Beirut International Airport (BEY)', 'Glasgow-Preswick Airport', 'Havana-José Martí International Airport (HAV)', 'Miami International Airport, FL (MIA)']",
+      "scores": {
+        "databench-answer": false
+      }
+    },
+    {
+      "id": "databench:019_Aircraft:20",
+      "prediction": "[1600, 900, 237, 125, 107, 88]",
+      "gold": "[1600, 900, 237, 107, 88, 87]",
+      "scores": {
+        "databench-answer": false
+      }
+    },
+    {
+      "id": "databench:020_Real:20",
+      "prediction": "[20, 19, 18, 16, 15, 14]",
+      "gold": "[20, 20, 20, 20, 20, 20]",
+      "scores": {
+        "databench-answer": false
+      }
+    },
+    {
+      "id": "databench:021_Telco:02",
+      "prediction": "false",
+      "gold": "True",
+      "scores": {
+        "databench-answer": false
+      }
+    },
+    {
+      "id": "databench:021_Telco:16",
+      "prediction": "[Fiber optic, DSL]",
+      "gold": "['No', 'Yes']",
+      "scores": {
+        "databench-answer": false
+      }
+    },
+    {
+      "id": "databench:021_Telco:18",
+      "prediction": "[118.75, 118.65, 118.6, 118.35]",
+      "gold": "[118.75, 118.65, 118.6, 118.6]",
+      "scores": {
+        "databench-answer": false
+      }
+    },
+    {
+      "id": "databench:021_Telco:19",
+      "prediction": "[72, 71, 70, 69, 68, 67]",
+      "gold": "[72, 72, 72, 72, 72, 72]",
+      "scores": {
+        "databench-answer": false
+      }
+    },
+    {
+      "id": "databench:022_Airbnbs:15",
+      "prediction": "[Entire apartment, Private room in apartment, Private room in house, Private room in townhouse]",
+      "gold": "['Entire apartment', 'Private room in apartment', 'Entire condominium', 'Entire house']",
+      "scores": {
+        "databench-answer": false
+      }
+    },
+    {
+      "id": "databench:022_Airbnbs:17",
+      "prediction": "[100, 99, 98]",
+      "gold": "[100, 100, 100]",
+      "scores": {
+        "databench-answer": false
+      }
+    },
+    {
+      "id": "databench:022_Airbnbs:18",
+      "prediction": "[1, 2, 3, 4, 5]",
+      "gold": "[1, 1, 1, 1, 1]",
+      "scores": {
+        "databench-answer": false
+      }
+    },
+    {
+      "id": "databench:024_Salary:16",
+      "prediction": "[Cluster 73, Cluster 70]",
+      "gold": "['Cluster 71', 'Cluster 73']",
+      "scores": {
+        "databench-answer": false
+      }
+    },
+    {
+      "id": "databench:025_Data:04",
+      "prediction": "false",
+      "gold": "True",
+      "scores": {
+        "databench-answer": false
+      }
+    },
+    {
+      "id": "databench:025_Data:11",
+      "prediction": "Medium",
+      "gold": "Low",
+      "scores": {
+        "databench-answer": false
+      }
+    },
+    {
+      "id": "databench:025_Data:12",
+      "prediction": "no code analytics",
+      "gold": "no code data science",
+      "scores": {
+        "databench-answer": false
+      }
+    },
+    {
+      "id": "databench:025_Data:13",
+      "prediction": "[https://www.obviously.ai/, https://venturebeat.com/2021/10/12/no-code-ai-analytics-may-soon-automate-data-science-jobs/, https://hbr.org/2021/11/how-no-code-platforms-can-bring-ai-to-small-and-midsize-businesses]",
+      "gold": "['https://www.obviously.ai/', 'https://venturebeat.com/2021/10/12/no-code-ai-startup-obviously-ai-raises-4-7m/', 'https://hbr.org/2021/11/how-no-code-platforms-could-disrupt-the-it-industry']",
+      "scores": {
+        "databench-answer": false
+      }
+    },
+    {
+      "id": "databench:025_Data:15",
+      "prediction": "[no code analytics, no code data science tools, no code data analytics, no code analytics]",
+      "gold": "['no code data science', 'no code data analytics', 'no code data science', 'no code data science']",
+      "scores": {
+        "databench-answer": false
+      }
+    },
+    {
+      "id": "databench:025_Data:16",
+      "prediction": "[https://www.obviously.ai/, https://venturebeat.com/2021/10/12/no-code-ai-analytics-may-soon-automate-data-science-jobs/, https://hbr.org/2021/11/how-no-code-platforms-can-bring-ai-to-small-and-midsize-businesses]",
+      "gold": "['https://www.obviously.ai/', 'https://www.obviously.ai/', 'https://venturebeat.com/2021/10/12/no-code-ai-startup-obviously-ai-raises-4-7m/']",
+      "scores": {
+        "databench-answer": false
+      }
+    },
+    {
+      "id": "databench:028_Predict:01",
+      "prediction": "true",
+      "gold": "False",
+      "scores": {
+        "databench-answer": false
+      }
+    },
+    {
+      "id": "databench:028_Predict:08",
+      "prediction": "153",
+      "gold": "187",
+      "scores": {
+        "databench-answer": false
+      }
+    },
+    {
+      "id": "databench:028_Predict:14",
+      "prediction": "[1, 0]",
+      "gold": "[0, 0]",
+      "scores": {
+        "databench-answer": false
+      }
+    },
+    {
+      "id": "databench:028_Predict:15",
+      "prediction": "[1, 0, 0, 1, 1]",
+      "gold": "[1, 1, 1, 1, 1]",
+      "scores": {
+        "databench-answer": false
+      }
+    },
+    {
+      "id": "databench:028_Predict:16",
+      "prediction": "[0, 1, 0, 0]",
+      "gold": "[0, 0, 0, 0]",
+      "scores": {
+        "databench-answer": false
+      }
+    },
+    {
+      "id": "databench:028_Predict:17",
+      "prediction": "[47, 43, 46, 38]",
+      "gold": "[51, 67, 67, 67]",
+      "scores": {
+        "databench-answer": false
+      }
+    },
+    {
+      "id": "databench:028_Predict:18",
+      "prediction": "[24.7, 27.7, 32]",
+      "gold": "[32.0, 32.0, 32.0]",
+      "scores": {
+        "databench-answer": false
+      }
+    },
+    {
+      "id": "databench:028_Predict:19",
+      "prediction": "[78, 70, 40, 82, 66]",
+      "gold": "[0, 0, 0, 0, 0]",
+      "scores": {
+        "databench-answer": false
+      }
+    },
+    {
+      "id": "databench:029_NYTimes:06",
+      "prediction": "145",
+      "gold": "147",
+      "scores": {
+        "databench-answer": false
+      }
+    },
+    {
+      "id": "databench:029_NYTimes:07",
+      "prediction": "56",
+      "gold": "52",
+      "scores": {
+        "databench-answer": false
+      }
+    },
+    {
+      "id": "databench:029_NYTimes:09",
+      "prediction": "Interactive Feature",
+      "gold": "News",
+      "scores": {
+        "databench-answer": false
+      }
+    },
+    {
+      "id": "databench:029_NYTimes:10",
+      "prediction": "Interactive Feature",
+      "gold": "Slideshow",
+      "scores": {
+        "databench-answer": false
+      }
+    },
+    {
+      "id": "databench:029_NYTimes:13",
+      "prediction": "[Interactive Feature, News, News]",
+      "gold": "['News', 'News', 'News']",
+      "scores": {
+        "databench-answer": false
+      }
+    },
+    {
+      "id": "databench:029_NYTimes:16",
+      "prediction": "[Video, Video, Video, Video]",
+      "gold": "['News', 'News', 'News', 'News']",
+      "scores": {
+        "databench-answer": false
+      }
+    },
+    {
+      "id": "databench:029_NYTimes:17",
+      "prediction": "[52, 59, 61, 67]",
+      "gold": "[86, 85, 84, 84]",
+      "scores": {
+        "databench-answer": false
+      }
+    },
+    {
+      "id": "databench:029_NYTimes:18",
+      "prediction": "[0, 4, 0]",
+      "gold": "[1, 1, 1]",
+      "scores": {
+        "databench-answer": false
+      }
+    },
+    {
+      "id": "databench:029_NYTimes:19",
+      "prediction": "[145, 143, 143, 138, 137]",
+      "gold": "[96, 96, 95, 95, 95]",
+      "scores": {
+        "databench-answer": false
+      }
+    },
+    {
+      "id": "databench:029_NYTimes:20",
+      "prediction": "[0]",
+      "gold": "[1, 1]",
+      "scores": {
+        "databench-answer": false
+      }
+    },
+    {
+      "id": "databench:030_Professionals:04",
+      "prediction": "True",
+      "gold": "False",
+      "scores": {
+        "databench-answer": false
+      }
+    },
+    {
+      "id": "databench:030_Professionals:18",
+      "prediction": "[20, 15, 7.5]",
+      "gold": "[19.83, 19.74, 19.68]",
+      "scores": {
+        "databench-answer": false
+      }
+    },
+    {
+      "id": "databench:031_Trustpilot:11",
+      "prediction": "AI",
+      "gold": "CW",
+      "scores": {
+        "databench-answer": false
+      }
+    },
+    {
+      "id": "databench:031_Trustpilot:15",
+      "prediction": "[AI, AW, AZ, BB]",
+      "gold": "['CW', 'FO', 'KZ', 'NE']",
+      "scores": {
+        "databench-answer": false
+      }
+    },
+    {
+      "id": "databench:031_Trustpilot:19",
+      "prediction": "[5, 4, 3, 2]",
+      "gold": "[5, 4, 2, 1]",
+      "scores": {
+        "databench-answer": false
+      }
+    },
+    {
+      "id": "databench:033_Employee:09",
+      "prediction": "low",
+      "gold": "Graduation",
+      "scores": {
+        "databench-answer": false
+      }
+    },
+    {
+      "id": "databench:033_Employee:10",
+      "prediction": "Together",
+      "gold": "Married",
+      "scores": {
+        "databench-answer": false
+      }
+    },
+    {
+      "id": "databench:033_Employee:12",
+      "prediction": "medium",
+      "gold": "low",
+      "scores": {
+        "databench-answer": false
+      }
+    },
+    {
+      "id": "databench:033_Employee:13",
+      "prediction": "[1, 0.99, 0.98]",
+      "gold": "[1, 1, 1]",
+      "scores": {
+        "databench-answer": false
+      }
+    },
+    {
+      "id": "databench:033_Employee:16",
+      "prediction": "[10, 8, 7]",
+      "gold": "[10, 10, 10]",
+      "scores": {
+        "databench-answer": false
+      }
+    },
+    {
+      "id": "databench:033_Employee:18",
+      "prediction": "[low, medium]",
+      "gold": "['low', 'low']",
+      "scores": {
+        "databench-answer": false
+      }
+    },
+    {
+      "id": "databench:035_Billboard:13",
+      "prediction": "[  the mysterians, 3 doors down, 50 cent, ace of base, adele, alicia keys, all4one, andy gibb, ashanti, baauer, barbra streisand, bee gees, bell biv devoe, beyonce, beyonce featuring jayz, bj thomas, blondie, bobbie gentry, bobby brown, bobby goldsboro, boyz ii men, brandy and monica, britney spears, bryan adams, captain  tennille, carly rae jepsen, carole king, cc music factory, celine dion, chaka khan, cher, chic, chicago, ciara and missy elliott, color me badd, coolio featuring lv, daniel powter, debby boone, diana ross  lionel richie, dionne and friends dionne warwick gladys knight elton john and stevie wonder, don mclean, donna summer, ed sheeran, edwin starr, ellie goulding, elton john, elton john  kiki dee, exile, faith hill, fergie, fetty wap, flo rida featuring tpain, foreigner, four tops, frankie valli, freddy fender, fun featuring janelle mon'ae, george harrison, george michael, gilbert osullivan, glen campbell, gotye featuring kimbra, gregory abbott, guns n roses, gwen stefani, gwen stefani featuring akon, harry nilsson, heart, hot, iggy azalea featuring charli xcx, imagine dragons, inxs, irene cara, james blunt, janet, janet jackson, jennifer lopez featuring ja rule, jewel, jim croce, joan jett and the blackhearts, joe, john legend, john lennon, johnnie taylor, katy perry, katy perry featuring juicy j, katy perry featuring kanye west, katy perry featuring snoop dogg, keha, kelly clarkson, kenny loggins, kenny rogers, kim carnes, klymaxx, kris kross, lady antebellum, lady gaga, lady gaga featuring colby odonis, leann rimes, leona lewis, lifehouse, lil wayne featuring static major, lionel richie, lmfao featuring lauren bennett and goonrock, los del r'io, love unlimited orchestra, lulu, macklemore and ryan lewis featuring ray dalton, macklemore and ryan lewis featuring wanz, madonna, mariah carey, mariah carey and boyz ii men, mario, mark ronson featuring bruno mars, maroon 5, maroon 5 featuring wiz khalifa, marvin gaye, men at work, michael jackson, monica, mr mister, nelly, nelly featuring kelly rowland, nelly furtado featuring timbaland, next, nickelback, olivia newtonjohn, onerepublic, otis redding, outkast featuring sleepy brown, patti labelle and michael mcdonald, paul mauriat, paul mccartney  wings, paul mccartney and michael jackson, paul mccartney and stevie wonder, paula abdul, peaches  herb, pharrell williams, phil collins, pink floyd, pitbull featuring neyo afrojack and nayer, poison, prince, puff daddy featuring faith evans and 112, puff daddy featuring mase, r kelly, redbone, rick astley, rick springfield, rihanna featuring jayz, roberta flack, robin thicke featuring ti and pharrell williams, rod stewart, roxette, sam the sham and the pharaohs, sammy davis jr, santana featuring rob thomas, santana featuring the product gb, savage garden, seal, sean paul, shakira featuring wyclef jean, shania twain, silk, simon  garfunkel, sinead oconnor, sir mixalot, sly  the family stone, ssgt barry sadler, starship, survivor, tag team, taylor swift, terry jacks, the 5th dimension, the archies, the association, the bangles, the beatles, the black eyed peas, the box tops, the calling, the carpenters, the emotions, the four seasons, the four tops, the guess who, the j geils band, the jackson 5, the knack, the monkees, the osmonds, the police, the rascals, the righteous brothers, the rolling stones, the temptations, the tony rich project, three dog night, timbaland featuring onerepublic]",
+      "gold": "['sam the sham and the pharaohs', 'ssgt barry sadler', 'the beach boys', 'the beatles', 'the beatles']",
+      "scores": {
+        "databench-answer": false
+      }
+    },
+    {
+      "id": "databench:035_Billboard:14",
+      "prediction": "[girl youll be a woman soon, papa dont preach, gloria]",
+      "gold": "['girl youll be a woman soon', 'papa dont preach', 'breathe']",
+      "scores": {
+        "databench-answer": false
+      }
+    },
+    {
+      "id": "databench:035_Billboard:16",
+      "prediction": "[marvin gaye, wilson pickett, neil diamond, jerry butler, the box tops]",
+      "gold": "['marvin gaye', 'wilson pickett', 'neil diamond', 'jerry butler', 'the beatles']",
+      "scores": {
+        "databench-answer": false
+      }
+    },
+    {
+      "id": "databench:035_Billboard:23",
+      "prediction": "[sam the sham and the pharaohs, four tops, the rolling stones]",
+      "gold": "['sam the sham and the pharaohs', 'four tops', 'the beach boys']",
+      "scores": {
+        "databench-answer": false
+      }
+    },
+    {
+      "id": "databench:036_US:11",
+      "prediction": "GuÃ¡nica",
+      "gold": "Guáanica",
+      "scores": {
+        "databench-answer": false
+      }
+    },
+    {
+      "id": "databench:037_Ted:16",
+      "prediction": "[TED-Ed, TED2017]",
+      "gold": "['TED-Ed', 'TED2018']",
+      "scores": {
+        "databench-answer": false
+      }
+    },
+    {
+      "id": "databench:038_Stroke:17",
+      "prediction": "[82, 81, 80, 79, 78]",
+      "gold": "[82.0, 82.0, 82.0, 82.0, 82.0]",
+      "scores": {
+        "databench-answer": false
+      }
+    },
+    {
+      "id": "databench:039_Happy:17",
+      "prediction": "[1, 2, 3, 4]",
+      "gold": "[1, 1, 1, 1]",
+      "scores": {
+        "databench-answer": false
+      }
+    },
+    {
+      "id": "databench:039_Happy:18",
+      "prediction": "[233, 227, 98]",
+      "gold": "[233.0, 233.0, 233.0]",
+      "scores": {
+        "databench-answer": false
+      }
+    },
+    {
+      "id": "databench:039_Happy:19",
+      "prediction": "[69, 60, 58, 56, 53]",
+      "gold": "[69, 60, 58, 56, 53, 51]",
+      "scores": {
+        "databench-answer": false
+      }
+    },
+    {
+      "id": "databench:039_Happy:20",
+      "prediction": "[2, 2, 2, 3, 3, 3]",
+      "gold": "[2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0]",
+      "scores": {
+        "databench-answer": false
+      }
+    },
+    {
+      "id": "databench:040_Speed:03",
+      "prediction": "false",
+      "gold": "True",
+      "scores": {
+        "databench-answer": false
+      }
+    },
+    {
+      "id": "databench:040_Speed:17",
+      "prediction": "[42, 39, 38, 36, 35]",
+      "gold": "[42.0, 42.0, 42.0, 42.0, 39.0]",
+      "scores": {
+        "databench-answer": false
+      }
+    },
+    {
+      "id": "databench:040_Speed:19",
+      "prediction": "[55, 42, 39, 38]",
+      "gold": "[55.0, 55.0, 55.0, 42.0]",
+      "scores": {
+        "databench-answer": false
+      }
+    },
+    {
+      "id": "databench:040_Speed:20",
+      "prediction": "[18, 19, 21, 22, 23, 24]",
+      "gold": "[18.0, 18.0, 18.0, 18.0, 18.0, 18.0]",
+      "scores": {
+        "databench-answer": false
+      }
+    },
+    {
+      "id": "databench:041_Airline:17",
+      "prediction": "[569972097453137920, 568092537786748928, 568028183267639297, 568993773277069312]",
+      "gold": "[570306133677760513, 570301031407624196, 570300817074462722, 570300767074181121]",
+      "scores": {
+        "databench-answer": false
+      }
+    },
+    {
+      "id": "databench:042_Predict:18",
+      "prediction": "[4, 5, 5]",
+      "gold": "[4, 14, 17]",
+      "scores": {
+        "databench-answer": false
+      }
+    },
+    {
+      "id": "databench:042_Predict:20",
+      "prediction": "[0, 0, 0, 0, 0, 0]",
+      "gold": "[8, 10, 12, 9, 7, 13]",
+      "scores": {
+        "databench-answer": false
+      }
+    },
+    {
+      "id": "databench:043_Predict:18",
+      "prediction": "[5294366, 4656672, 4000048]",
+      "gold": "[50000.0, 100000.0, 10000.0]",
+      "scores": {
+        "databench-answer": false
+      }
+    },
+    {
+      "id": "databench:043_Predict:20",
+      "prediction": "[1112786, 933368, 832460, 812400, 791676, 702780]",
+      "gold": "[0.0, 50000.0, 25000.0, 100000.0, 35000.0, 10000.0]",
+      "scores": {
+        "databench-answer": false
+      }
+    },
+    {
+      "id": "databench:044_IMDb:03",
+      "prediction": null,
+      "gold": "True",
+      "scores": {
+        "databench-answer": false
+      }
+    },
+    {
+      "id": "databench:044_IMDb:06",
+      "prediction": "97.9",
+      "gold": "96.07926963408374",
+      "scores": {
+        "databench-answer": false
+      }
+    },
+    {
+      "id": "databench:044_IMDb:15",
+      "prediction": "[English, French, Russian, German]",
+      "gold": "['English', 'English, Spanish', 'English, Russian', 'English, Hungarian']",
+      "scores": {
+        "databench-answer": false
+      }
+    },
+    {
+      "id": "databench:044_IMDb:16",
+      "prediction": null,
+      "gold": "['Drama', 'Crime, Drama']",
+      "scores": {
+        "databench-answer": false
+      }
+    },
+    {
+      "id": "databench:044_IMDb:17",
+      "prediction": "[2017, 2016, 2015, 2018, 2014]",
+      "gold": "[2017.0, 2016.0, 2015.0, 2013.0, 2018.0]",
+      "scores": {
+        "databench-answer": false
+      }
+    },
+    {
+      "id": "databench:044_IMDb:18",
+      "prediction": "[175, 165, 128]",
+      "gold": "[102, 119, 112]",
+      "scores": {
+        "databench-answer": false
+      }
+    },
+    {
+      "id": "databench:044_IMDb:20",
+      "prediction": "[100, 99, 98, 97, 96, 95]",
+      "gold": "[49.0, 55.0, 57.0, 48.0, 54.0, 52.0]",
+      "scores": {
+        "databench-answer": false
+      }
+    },
+    {
+      "id": "databench:045_Predict:01",
+      "prediction": "false",
+      "gold": "True",
+      "scores": {
+        "databench-answer": false
+      }
+    },
+    {
+      "id": "databench:045_Predict:02",
+      "prediction": "true",
+      "gold": "False",
+      "scores": {
+        "databench-answer": false
+      }
+    },
+    {
+      "id": "databench:045_Predict:05",
+      "prediction": "14774",
+      "gold": "13056",
+      "scores": {
+        "databench-answer": false
+      }
+    },
+    {
+      "id": "databench:045_Predict:06",
+      "prediction": "228986.69315420894",
+      "gold": "228998.0798095238",
+      "scores": {
+        "databench-answer": false
+      }
+    },
+    {
+      "id": "databench:045_Predict:10",
+      "prediction": "3",
+      "gold": "3.0",
+      "scores": {
+        "databench-answer": false
+      }
+    },
+    {
+      "id": "databench:045_Predict:19",
+      "prediction": "[2021, 2020, 2019, 2018]",
+      "gold": "[2021, 2021, 2021, 2021]",
+      "scores": {
+        "databench-answer": false
+      }
+    },
+    {
+      "id": "databench:046_120:01",
+      "prediction": "false",
+      "gold": "True",
+      "scores": {
+        "databench-answer": false
+      }
+    },
+    {
+      "id": "databench:046_120:02",
+      "prediction": null,
+      "gold": "False",
+      "scores": {
+        "databench-answer": false
+      }
+    },
+    {
+      "id": "databench:046_120:08",
+      "prediction": "11183",
+      "gold": "2536",
+      "scores": {
+        "databench-answer": false
+      }
+    },
+    {
+      "id": "databench:046_120:09",
+      "prediction": "Ricardo Blas, Jr.",
+      "gold": "Ricardo Blas Jr.",
+      "scores": {
+        "databench-answer": false
+      }
+    },
+    {
+      "id": "databench:046_120:10",
+      "prediction": "Sydney, Athina, Beijing",
+      "gold": "London",
+      "scores": {
+        "databench-answer": false
+      }
+    },
+    {
+      "id": "databench:046_120:11",
+      "prediction": "Ian Millar",
+      "gold": "Robert Tait McKenzie",
+      "scores": {
+        "databench-answer": false
+      }
+    },
+    {
+      "id": "databench:046_120:12",
+      "prediction": "Swimming",
+      "gold": "Art Competitions",
+      "scores": {
+        "databench-answer": false
+      }
+    },
+    {
+      "id": "databench:046_120:14",
+      "prediction": "[Ricardo Blas, Jr., Ricardo Blas, Jr., Aytami Ruano Vega]",
+      "gold": "[Ricardo Blas Jr., Shinichi Shinohara, Emmanuel Yarborough]",
+      "scores": {
+        "databench-answer": false
+      }
+    },
+    {
+      "id": "databench:046_120:16",
+      "prediction": "[Ian Millar, Afanasijs Kuzmins]",
+      "gold": "[Robert Tait McKenzie, Heikki Ilmari Savolainen]",
+      "scores": {
+        "databench-answer": false
+      }
+    },
+    {
+      "id": "databench:047_Bank:18",
+      "prediction": "[6142, 8479, 1571, 6788, 2933]",
+      "gold": "[34516.0, 34516.0, 34516.0, 34516.0, 34516.0]",
+      "scores": {
+        "databench-answer": false
+      }
+    },
+    {
+      "id": "databench:047_Bank:19",
+      "prediction": "[9667, 6883, 5578, 4026, 5500, 1160]",
+      "gold": "[18484, 17744, 17634, 17498, 17437, 17350]",
+      "scores": {
+        "databench-answer": false
+      }
+    },
+    {
+      "id": "databench:047_Bank:20",
+      "prediction": "[4257, 5256, 9909, 1714, 2471, 5437]",
+      "gold": "[2517, 2517, 2517, 2517, 2517, 2517]",
+      "scores": {
+        "databench-answer": false
+      }
+    },
+    {
+      "id": "databench:048_Data:18",
+      "prediction": "[1744, 1781, 1812]",
+      "gold": "[1744, 1781, 1781]",
+      "scores": {
+        "databench-answer": false
+      }
+    },
+    {
+      "id": "databench:048_Data:19",
+      "prediction": "[5, 4.8, 4.7]",
+      "gold": "[5.0, 5.0, 5.0]",
+      "scores": {
+        "databench-answer": false
+      }
+    },
+    {
+      "id": "databench:048_Data:20",
+      "prediction": "[88.5, 78, 40.5, 20.5, 225, 132.5]",
+      "gold": "[78.0, 88.5, 110.0, 40.5, 132.5, 20.5]",
+      "scores": {
+        "databench-answer": false
+      }
+    },
+    {
+      "id": "databench:049_Boris:09",
+      "prediction": "Boris Johnson",
+      "gold": "3131144855",
+      "scores": {
+        "databench-answer": false
+      }
+    },
+    {
+      "id": "databench:049_Boris:13",
+      "prediction": "[3131144855]",
+      "gold": "[3131144855, 3131144855, 3131144855]",
+      "scores": {
+        "databench-answer": false
+      }
+    },
+    {
+      "id": "databench:049_Boris:16",
+      "prediction": "[3543402, 3543401]",
+      "gold": "[3543402, 3543402, 3543402]",
+      "scores": {
+        "databench-answer": false
+      }
+    },
+    {
+      "id": "databench:050_ING:13",
+      "prediction": "[Lavincompae, #NI UNA MENOS  ♐ ✊ 🚺, SFC The World]",
+      "gold": "['Lavincompae', '#NI UNA MENOS \\xa0♐\\xa0✊\\xa0🚺', 'SFC The World']",
+      "scores": {
+        "databench-answer": false
+      }
+    },
+    {
+      "id": "databench:050_ING:15",
+      "prediction": "[Correctorada, El Joker, Xenia Viladas, DrJaus  🇪🇸]",
+      "gold": "['Correctorada', 'El Joker', 'Xenia Viladas', 'DrJaus \\xa0🇪🇸']",
+      "scores": {
+        "databench-answer": false
+      }
+    },
+    {
+      "id": "databench:051_Pokemon:14",
+      "prediction": "[Shedinja, Diglett, Alolan Diglett, Pichu, Shuckle]",
+      "gold": "['Shedinja', 'Diglett', 'Alolan Diglett', 'Magikarp', 'Pichu']",
+      "scores": {
+        "databench-answer": false
+      }
+    },
+    {
+      "id": "databench:053_Patents:20",
+      "prediction": "[9480195, 9480194, 9480193]",
+      "gold": "[9479476.0, 9479477.0, 9479478.0]",
+      "scores": {
+        "databench-answer": false
+      }
+    },
+    {
+      "id": "databench:054_Joe:03",
+      "prediction": null,
+      "gold": "False",
+      "scores": {
+        "databench-answer": false
+      }
+    },
+    {
+      "id": "databench:054_Joe:08",
+      "prediction": "22",
+      "gold": "383",
+      "scores": {
+        "databench-answer": false
+      }
+    },
+    {
+      "id": "databench:054_Joe:11",
+      "prediction": "KamalaHarris",
+      "gold": "Joe Biden",
+      "scores": {
+        "databench-answer": false
+      }
+    },
+    {
+      "id": "databench:054_Joe:17",
+      "prediction": "[30308047, 30308045, 30308044]",
+      "gold": "[30308047, 30308047, 30308045]",
+      "scores": {
+        "databench-answer": false
+      }
+    },
+    {
+      "id": "databench:054_Joe:19",
+      "prediction": "[22, 17, 6, 5, 3]",
+      "gold": "[16, 10, 6, 5, 5]",
+      "scores": {
+        "databench-answer": false
+      }
+    },
+    {
+      "id": "databench:055_German:13",
+      "prediction": "[Highly Skilled, Skilled, Unemployed / Unskilled  - Non-Resident]",
+      "gold": "['Highly Skilled', 'Skilled', 'Highly Skilled']",
+      "scores": {
+        "databench-answer": false
+      }
+    },
+    {
+      "id": "databench:055_German:14",
+      "prediction": "[Skilled, Unskilled - Resident, Highly Skilled, Unemployed / Unskilled  - Non-Resident]",
+      "gold": "['Skilled', 'Skilled', 'Skilled', 'Unskilled - Resident']",
+      "scores": {
+        "databench-answer": false
+      }
+    },
+    {
+      "id": "databench:055_German:15",
+      "prediction": "[Skilled, Unskilled - Resident, Highly Skilled]",
+      "gold": "['Skilled', 'Skilled', 'Unskilled - Resident', 'Highly Skilled', 'Skilled']",
+      "scores": {
+        "databench-answer": false
+      }
+    },
+    {
+      "id": "databench:055_German:18",
+      "prediction": "[72, 60, 54, 48]",
+      "gold": "[72, 60, 60, 60]",
+      "scores": {
+        "databench-answer": false
+      }
+    },
+    {
+      "id": "databench:055_German:19",
+      "prediction": "[4, 3, 2]",
+      "gold": "[4, 4, 4]",
+      "scores": {
+        "databench-answer": false
+      }
+    },
+    {
+      "id": "databench:058_US:07",
+      "prediction": "1093",
+      "gold": "0",
+      "scores": {
+        "databench-answer": false
+      }
+    },
+    {
+      "id": "databench:059_Second:19",
+      "prediction": "[54, 53, 52, 51, 50]",
+      "gold": "[54, 54, 54, 54, 54]",
+      "scores": {
+        "databench-answer": false
+      }
+    },
+    {
+      "id": "databench:060_Bakery:08",
+      "prediction": "5089",
+      "gold": "2478",
+      "scores": {
+        "databench-answer": false
+      }
+    },
+    {
+      "id": "databench:060_Bakery:09",
+      "prediction": "afternoon",
+      "gold": "morning",
+      "scores": {
+        "databench-answer": false
+      }
+    },
+    {
+      "id": "databench:060_Bakery:11",
+      "prediction": "The BART",
+      "gold": "Adjustment",
+      "scores": {
+        "databench-answer": false
+      }
+    },
+    {
+      "id": "databench:061_Disneyland:11",
+      "prediction": "2010-5",
+      "gold": "2010-12",
+      "scores": {
+        "databench-answer": false
+      }
+    },
+    {
+      "id": "databench:061_Disneyland:20",
+      "prediction": "[1, 2]",
+      "gold": "[1, 1]",
+      "scores": {
+        "databench-answer": false
+      }
+    },
+    {
+      "id": "databench:063_Influencers:09",
+      "prediction": "David McCandless",
+      "gold": "Christophe Viau",
+      "scores": {
+        "databench-answer": false
+      }
+    },
+    {
+      "id": "databench:069_Taxonomy:27",
+      "prediction": "[0]",
+      "gold": "[0, 0]",
+      "scores": {
+        "databench-answer": false
+      }
+    },
+    {
+      "id": "databench:069_Taxonomy:31",
+      "prediction": null,
+      "gold": "['Amusement and Theme Parks', 'Bars & Restaurants', 'Casinos', 'Parks']",
+      "scores": {
+        "databench-answer": false
+      }
+    },
+    {
+      "id": "databench:070_OpenFoodFacts:23",
+      "prediction": null,
+      "gold": "['Seitán a la plancha' ,'Seitán a la piastra' ,'Hamburguesa de seitán' ,'Seitán a la plancha' ,'Seitán' ,'Seitan' ,'Seitán a la plancha']",
+      "scores": {
+        "databench-answer": false
+      }
+    },
+    {
+      "id": "databench:074_Lift:15",
+      "prediction": "105 kg",
+      "gold": "5",
+      "scores": {
+        "databench-answer": false
+      }
+    },
+    {
+      "id": "databench:074_Lift:16",
+      "prediction": "0",
+      "gold": "5",
+      "scores": {
+        "databench-answer": false
+      }
+    },
+    {
+      "id": "databench:074_Lift:19",
+      "prediction": "Jane Smith",
+      "gold": "Sarah Thomas",
+      "scores": {
+        "databench-answer": false
+      }
+    },
+    {
+      "id": "databench:074_Lift:30",
+      "prediction": "[]",
+      "gold": "['Emily Davis', 'Jessica Wilson', 'Jane Smith', 'Laura Taylor', 'Sarah Thomas']",
+      "scores": {
+        "databench-answer": false
+      }
+    },
+    {
+      "id": "databench:074_Lift:31",
+      "prediction": "[Chris Brown, Daniel Lee, Emily Davis, Jane Smith, Jessica Wilson, John Doe, Laura Taylor, Matthew Anderson, Michael Johnson, Sarah Thomas]",
+      "gold": "['Chris Brown', 'John Doe', 'Michael Johnson', 'Daniel Lee', 'Matthew Anderson']",
+      "scores": {
+        "databench-answer": false
+      }
+    },
+    {
+      "id": "databench:074_Lift:33",
+      "prediction": "[Laura Taylor, Sarah Thomas, Matthew Anderson, Jane Smith, John Doe]",
+      "gold": "['Laura Taylor', 'Sarah Thomas', 'Matthew Anderson', 'Jane Smith', 'Laura Taylor']",
+      "scores": {
+        "databench-answer": false
+      }
+    },
+    {
+      "id": "databench:076_NBA:12",
+      "prediction": "Kevin Garnett",
+      "gold": "Steve Nash",
+      "scores": {
+        "databench-answer": false
+      }
+    },
+    {
+      "id": "databench:076_NBA:19",
+      "prediction": "23.79",
+      "gold": "76.210",
+      "scores": {
+        "databench-answer": false
+      }
+    },
+    {
+      "id": "databench:076_NBA:22",
+      "prediction": null,
+      "gold": "0",
+      "scores": {
+        "databench-answer": false
+      }
+    },
+    {
+      "id": "databench:076_NBA:30",
+      "prediction": "[Matt Carroll, Josh Powell, Darko Milicic, Duje Dukan, Trey McKinney-Jones]",
+      "gold": "['Harrison Barnes', 'DeMar DeRozan', 'Jeff Green', 'P.J. Tucker', 'Andre Drummond']",
+      "scores": {
+        "databench-answer": false
+      }
+    },
+    {
+      "id": "databench:076_NBA:31",
+      "prediction": "[Andre Drummond, Rudy Gobert, DeAndre Jordan]",
+      "gold": "[Andre Drummond, Nikola Vucevic, Rudy Gobert]",
+      "scores": {
+        "databench-answer": false
+      }
+    },
+    {
+      "id": "databench:077_Gestational:26",
+      "prediction": "[49, 50, 55, 66, 61, 71, 95, 55, 67, 69, 89, 55, 90, 58, 61, 78, 80]",
+      "gold": "[49.0, 50.0, 55.0, 66.0, 61.0]",
+      "scores": {
+        "databench-answer": false
+      }
+    },
+    {
+      "id": "databench:078_Fires:37",
+      "prediction": "[August, December, February]",
+      "gold": "['December', 'August']",
+      "scores": {
+        "databench-answer": false
+      }
+    },
+    {
+      "id": "databench:079_Coffee:26",
+      "prediction": "[8, 6, 4]",
+      "gold": "[8, 8, 8]",
+      "scores": {
+        "databench-answer": false
+      }
+    },
+    {
+      "id": "databench:079_Coffee:28",
+      "prediction": "[0.8, 2, 2.1, 2.2]",
+      "gold": "[0.8, 0.8, 0.8, 0.8]",
+      "scores": {
+        "databench-answer": false
+      }
+    }
+  ]
+}

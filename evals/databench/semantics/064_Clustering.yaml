@@ -1,0 +1,101 @@
+dialect: duckdb
+models:
+  - name: animals
+    table: data
+    description: One row per animal entry; animal_name is not unique. Binary features use 1/0. Manually curated using the
+      full data and DataBench question/answer definitions; reference-informed, not a schema-only baseline.
+    dimensions:
+      - name: name
+        column: animal_name
+        description: Animal name; repeated names may describe different records.
+        type: string
+      - name: hair
+        column: hair
+        description: 1 has hair.
+        type: number
+      - name: feathers
+        column: feathers
+        description: 1 has feathers.
+        type: number
+      - name: eggs
+        column: eggs
+        description: 1 lays eggs.
+        type: number
+      - name: milk
+        column: milk
+        description: 1 produces milk.
+        type: number
+      - name: airborne
+        column: airborne
+        description: 1 airborne.
+        type: number
+      - name: aquatic
+        column: aquatic
+        description: 1 aquatic.
+        type: number
+      - name: predator
+        column: predator
+        description: 1 predator.
+        type: number
+      - name: toothed
+        column: toothed
+        description: 1 has teeth.
+        type: number
+      - name: backbone
+        column: backbone
+        description: 1 has backbone.
+        type: number
+      - name: breathes
+        column: breathes
+        description: Recorded breathing indicator.
+        type: number
+      - name: venomous
+        column: venomous
+        description: 1 venomous.
+        type: number
+      - name: fins
+        column: fins
+        description: 1 has fins.
+        type: number
+      - name: tail
+        column: tail
+        description: 1 has tail.
+        type: number
+      - name: domestic
+        column: domestic
+        description: 1 domesticated.
+        type: number
+      - name: cat_sized
+        column: catsize
+        description: Recorded cat-size indicator.
+        type: number
+      - name: class
+        column: class_type
+        description: Numeric animal class, used for unique types and class rankings.
+        type: number
+    measures:
+      - name: legs
+        column: legs
+        description: Recorded leg count including zero.
+        type: number
+    metrics:
+      - name: animal_count
+        agg: count
+        description: Count entries, not distinct names; use requested alphabetical name tie-break.
+      - name: unique_classes
+        agg: count_distinct
+        description: Distinct class codes.
+        column: class_type
+      - name: average_legs
+        agg: avg
+        description: Mean legs per entry.
+        column: legs
+      - name: maximum_legs
+        agg: max
+        description: Largest leg count.
+        column: legs
+      - name: total_legs
+        agg: sum
+        description: Combined legs across a class, distinct from animal count.
+        column: legs
+joins: []

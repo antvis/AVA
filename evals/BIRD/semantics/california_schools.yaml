@@ -1,0 +1,585 @@
+# Source-grounded BIRD dev_20251106 configuration; see README.md and provenance.json.
+dialect: duckdb
+models:
+  - name: frpm
+    table: frpm
+    description: One school free/reduced-price meal eligibility record for its academic year. K-12 and ages 5-17 are
+      distinct populations. Reference-informed from this database and its dev golden SQL. Preserve record identity
+      for top-N; joins may multiply rows.
+    dimensions:
+      - name: cdscode
+        column: CDSCode
+        type: string
+        description: CDSCode Part of the declared primary key.
+      - name: academic_year
+        column: Academic Year
+        type: string
+        description: Academic Year
+      - name: county_code
+        column: County Code
+        type: string
+        description: County Code
+      - name: district_code
+        column: District Code
+        type: number
+        description: District Code
+      - name: school_code
+        column: School Code
+        type: string
+        description: School Code
+      - name: county_name
+        column: County Name
+        type: string
+        description: County name; official CSV mistakenly calls it County Code. Preserve actual name text.
+      - name: district_name
+        column: District Name
+        type: string
+        description: District Name
+      - name: school_name
+        column: School Name
+        type: string
+        description: School Name
+      - name: district_type
+        column: District Type
+        type: string
+        description: District Type
+      - name: school_type
+        column: School Type
+        type: string
+        description: School Type
+      - name: educational_option_type
+        column: Educational Option Type
+        type: string
+        description: Educational Option Type
+      - name: nslp_provision_status
+        column: NSLP Provision Status
+        type: string
+        description: NSLP Provision Status
+      - name: charter_school_y_n
+        column: Charter School (Y/N)
+        type: number
+        description: "Charter School (Y/N). 0: N;1: Y"
+      - name: charter_school_number
+        column: Charter School Number
+        type: string
+        description: Charter School Number
+      - name: charter_funding_type
+        column: Charter Funding Type
+        type: string
+        description: Charter Funding Type
+      - name: irc
+        column: IRC
+        type: number
+        description: Source field frpm.IRC; no additional business definition supplied.
+      - name: low_grade
+        column: Low Grade
+        type: string
+        description: Low Grade
+      - name: high_grade
+        column: High Grade
+        type: string
+        description: High Grade
+      - name: n_2013_14_calpads_fall_1_certification_status
+        column: 2013-14 CALPADS Fall 1 Certification Status
+        type: number
+        description: 2013-14 CALPADS Fall 1 Certification Status
+    measures:
+      - name: enrollment_k_12
+        column: Enrollment (K-12)
+        type: number
+        description: "Enrollment (K-12). commonsense evidence:K-12: 1st grade - 12nd grade"
+      - name: free_meal_count_k_12
+        column: Free Meal Count (K-12)
+        type: number
+        description: Free Meal Count (K-12). commonsense evidence:eligible free rate = Free Meal Count / Enrollment
+      - name: percent_eligible_free_k_12
+        column: Percent (%) Eligible Free (K-12)
+        type: number
+        description: Source field frpm.Percent (%) Eligible Free (K-12); no additional business definition supplied.
+      - name: frpm_count_k_12
+        column: FRPM Count (K-12)
+        type: number
+        description: Free or Reduced Price Meal Count (K-12). commonsense evidence:eligible FRPM rate = FRPM / Enrollment
+      - name: percent_eligible_frpm_k_12
+        column: Percent (%) Eligible FRPM (K-12)
+        type: number
+        description: Source field frpm.Percent (%) Eligible FRPM (K-12); no additional business definition supplied.
+      - name: enrollment_ages_5_17
+        column: Enrollment (Ages 5-17)
+        type: number
+        description: Enrollment (Ages 5-17)
+      - name: free_meal_count_ages_5_17
+        column: Free Meal Count (Ages 5-17)
+        type: number
+        description: Free Meal Count (Ages 5-17). commonsense evidence:eligible free rate = Free Meal Count / Enrollment
+      - name: percent_eligible_free_ages_5_17
+        column: Percent (%) Eligible Free (Ages 5-17)
+        type: number
+        description: Source field frpm.Percent (%) Eligible Free (Ages 5-17); no additional business definition supplied.
+      - name: frpm_count_ages_5_17
+        column: FRPM Count (Ages 5-17)
+        type: number
+        description: Source field frpm.FRPM Count (Ages 5-17); no additional business definition supplied.
+      - name: percent_eligible_frpm_ages_5_17
+        column: Percent (%) Eligible FRPM (Ages 5-17)
+        type: number
+        description: Source field frpm.Percent (%) Eligible FRPM (Ages 5-17); no additional business definition supplied.
+      - name: free_meal_rate_k12
+        expr: '{TABLE}."Free Meal Count (K-12)" / NULLIF({TABLE}."Enrollment (K-12)", 0)'
+        type: number
+        description: Per-school free-meal rate as a fraction, not percent. Zero enrollment returns NULL. Average school
+          rates and ratio of total counts are different.
+      - name: frpm_rate_k12
+        expr: '{TABLE}."FRPM Count (K-12)" / NULLIF({TABLE}."Enrollment (K-12)", 0)'
+        type: number
+        description: Per-school free/reduced-price meal rate as a fraction; multiply by 100 only for a percentage.
+      - name: free_meal_rate_ages_5_17
+        expr: '{TABLE}."Free Meal Count (Ages 5-17)" / NULLIF({TABLE}."Enrollment (Ages 5-17)", 0)'
+        type: number
+        description: Per-school free-meal rate as a fraction, not percent. Zero enrollment returns NULL. Average school
+          rates and ratio of total counts are different.
+      - name: frpm_rate_ages_5_17
+        expr: '{TABLE}."FRPM Count (Ages 5-17)" / NULLIF({TABLE}."Enrollment (Ages 5-17)", 0)'
+        type: number
+        description: Per-school free/reduced-price meal rate as a fraction; multiply by 100 only for a percentage.
+    metrics:
+      - name: record_count
+        agg: count
+        description: Count source/joined rows at the active query grain; not automatically distinct entities after joins.
+      - name: count_school_code
+        agg: count
+        column: School Code
+        description: count of School Code over the selected frpm records. Apply filters and grouping explicitly; joins can
+          repeat records.
+      - name: sum_enrollment_k_12
+        agg: sum
+        column: Enrollment (K-12)
+        description: sum of Enrollment (K-12) over the selected frpm records. Apply filters and grouping explicitly; joins
+          can repeat records.
+      - name: sum_frpm_count_k_12
+        agg: sum
+        column: FRPM Count (K-12)
+        description: sum of FRPM Count (K-12) over the selected frpm records. Apply filters and grouping explicitly; joins
+          can repeat records.
+  - name: satscores
+    table: satscores
+    description: One SAT reporting record keyed by cds, with school-level counts and average section scores; row-level
+      averages are not student-level observations. Reference-informed from this database and its dev golden SQL.
+      Preserve record identity for top-N; joins may multiply rows.
+    dimensions:
+      - name: cds
+        column: cds
+        type: string
+        description: California Department Schools Part of the declared primary key.
+      - name: rtype
+        column: rtype
+        type: string
+        description: rtype
+      - name: sname
+        column: sname
+        type: string
+        description: school name
+      - name: dname
+        column: dname
+        type: string
+        description: district name. district segment
+      - name: cname
+        column: cname
+        type: string
+        description: county name
+    measures:
+      - name: enroll12
+        column: enroll12
+        type: number
+        description: Stored grade-12 enrollment field; do not substitute frpm Enrollment (K-12). Official CSV expansion is
+          ambiguous.
+      - name: num_tst_takr
+        column: NumTstTakr
+        type: number
+        description: Number of Test Takers. Number of Test Takers in this school. number of test takers in each school
+      - name: avg_scr_read
+        column: AvgScrRead
+        type: number
+        description: average scores in Reading
+      - name: avg_scr_math
+        column: AvgScrMath
+        type: number
+        description: average scores in Math
+      - name: avg_scr_write
+        column: AvgScrWrite
+        type: number
+        description: average scores in writing
+      - name: num_ge1500
+        column: NumGE1500
+        type: number
+        description: Number of Test Takers Whose Total SAT Scores Are Greater or Equal to 1500. Number of Test Takers Whose
+          Total SAT Scores Are Greater or Equal to 1500commonsense evidence:Excellence Rate = NumGE1500 /
+          NumTstTakr
+      - name: excellence_rate
+        expr: CAST({TABLE}."NumGE1500" AS DOUBLE) / NULLIF({TABLE}."NumTstTakr", 0)
+        type: number
+        description: Fraction of test takers scoring at least 1500; not a percent until multiplied by 100.
+      - name: total_average_sat
+        expr: '{TABLE}."AvgScrRead" + {TABLE}."AvgScrMath" + {TABLE}."AvgScrWrite"'
+        type: number
+        description: Sum of the three average SAT section scores for this record; NULL propagates.
+    metrics:
+      - name: record_count
+        agg: count
+        description: Count source/joined rows at the active query grain; not automatically distinct entities after joins.
+      - name: avg_avg_scr_read
+        agg: avg
+        column: AvgScrRead
+        description: avg of AvgScrRead over the selected satscores records. Apply filters and grouping explicitly; joins
+          can repeat records.
+      - name: count_distinct_cds
+        agg: count_distinct
+        column: cds
+        description: count distinct of cds over the selected satscores records. Apply filters and grouping explicitly;
+          joins can repeat records.
+      - name: avg_avg_scr_math
+        agg: avg
+        column: AvgScrMath
+        description: avg of AvgScrMath over the selected satscores records. Apply filters and grouping explicitly; joins
+          can repeat records.
+      - name: sum_avg_scr_math
+        agg: sum
+        column: AvgScrMath
+        description: sum of AvgScrMath over the selected satscores records. Apply filters and grouping explicitly; joins
+          can repeat records.
+      - name: count_cds
+        agg: count
+        column: cds
+        description: count of cds over the selected satscores records. Apply filters and grouping explicitly; joins can
+          repeat records.
+      - name: avg_num_tst_takr
+        agg: avg
+        column: NumTstTakr
+        description: avg of NumTstTakr over the selected satscores records. Apply filters and grouping explicitly; joins
+          can repeat records.
+      - name: avg_avg_scr_write
+        agg: avg
+        column: AvgScrWrite
+        description: avg of AvgScrWrite over the selected satscores records. Apply filters and grouping explicitly; joins
+          can repeat records.
+      - name: sum_num_tst_takr
+        agg: sum
+        column: NumTstTakr
+        description: sum of NumTstTakr over the selected satscores records. Apply filters and grouping explicitly; joins
+          can repeat records.
+  - name: schools
+    table: schools
+    description: One school or education authority directory entry keyed by CDSCode. Mailing address and physical
+      address are separate. Reference-informed from this database and its dev golden SQL. Preserve record identity
+      for top-N; joins may multiply rows.
+    dimensions:
+      - name: cdscode
+        column: CDSCode
+        type: string
+        description: CDSCode Part of the declared primary key.
+      - name: ncesdist
+        column: NCESDist
+        type: string
+        description: National Center for Educational Statistics school district identification number. This field
+          represents the 7-digit National Center for Educational Statistics (NCES) school district identification
+          number. The first 2 digits identify the state and the last 5 digits identify the school district.
+          Combined, they make a unique 7-digit ID for each school district.
+      - name: ncesschool
+        column: NCESSchool
+        type: string
+        description: National Center for Educational Statistics school identification number. This field represents the
+          5-digit NCES school identification number. The NCESSchool combined with the NCESDist form a unique
+          12-digit ID for each school.
+      - name: status_type
+        column: StatusType
+        type: string
+        description: "This field identifies the status of the district.. Definitions of the valid status types are listed
+          below:· Active: The district is in operation and providing instructional services.· Closed: The district
+          is not in operation and no longer providing instructional services.· Merged: The district has combined
+          with another district or districts.· Pending: The district has not opened for operation and instructional
+          services yet, but plans to open within the next 9–12 months."
+      - name: county
+        column: County
+        type: string
+        description: County name
+      - name: district
+        column: District
+        type: string
+        description: District
+      - name: school
+        column: School
+        type: string
+        description: School
+      - name: street
+        column: Street
+        type: string
+        description: Street
+      - name: street_abr
+        column: StreetAbr
+        type: string
+        description: "street address. The abbreviated street address of the school, district, or administrative authority’s
+          physical location.. The abbreviated street address of the school, district, or administrative authority’s
+          physical location. Note: Some records (primarily records of closed or retired schools) may not have data
+          in this field."
+      - name: city
+        column: City
+        type: string
+        description: City
+      - name: zip
+        column: Zip
+        type: string
+        description: Zip
+      - name: state
+        column: State
+        type: string
+        description: State
+      - name: mail_street
+        column: MailStreet
+        type: string
+        description: "MailStreet. The unabbreviated mailing address of the school, district, or administrative authority.
+          Note: 1) Some entities (primarily closed or retired schools) may not have data in this field; 2) Many
+          active entities have not provided a mailing street address. For your convenience we have filled the
+          unpopulated MailStreet cells with Street data."
+      - name: mail_str_abr
+        column: MailStrAbr
+        type: string
+        description: "mailing street address. the abbreviated mailing street address of the school, district, or
+          administrative authority.Note: Many active entities have not provided a mailing street address. For your
+          convenience we have filled the unpopulated MailStrAbr cells with StreetAbr data."
+      - name: mail_city
+        column: MailCity
+        type: string
+        description: "mailing city. The city associated with the mailing address of the school, district, or administrative
+          authority. Note: Many entities have not provided a mailing address city. For your convenience we have
+          filled the unpopulated MailCity cells with City data."
+      - name: mail_zip
+        column: MailZip
+        type: string
+        description: "mailing zip. The zip code associated with the mailing address of the school, district, or
+          administrative authority. Note: Many entities have not provided a mailing address zip code. For your
+          convenience we have filled the unpopulated MailZip cells with Zip data."
+      - name: mail_state
+        column: MailState
+        type: string
+        description: mailing state. The state within the mailing address. For your convenience we have filled the
+          unpopulated MailState cells with State data.
+      - name: phone
+        column: Phone
+        type: string
+        description: Phone
+      - name: ext
+        column: Ext
+        type: string
+        description: extension. The phone number extension of the school, district, or administrative authority.
+      - name: website
+        column: Website
+        type: string
+        description: The website address of the school, district, or administrative authority.
+      - name: open_date
+        column: OpenDate
+        type: time
+        description: "The date the school opened. Source date/time: inspect stored representation and cast before DuckDB
+          date functions."
+      - name: closed_date
+        column: ClosedDate
+        type: time
+        description: "The date the school closed. Source date/time: inspect stored representation and cast before DuckDB
+          date functions."
+      - name: charter
+        column: Charter
+        type: number
+        description: This field identifies a charter school.. The field is coded as follows:· 1 = The school is a charter·
+          0 = The school is not a charter
+      - name: charter_num
+        column: CharterNum
+        type: string
+        description: The charter school number,. 4-digit number assigned to a charter school.
+      - name: funding_type
+        column: FundingType
+        type: string
+        description: Indicates the charter school funding type. Values are as follows:· Not in CS (California School)
+          funding model· Locally funded· Directly funded
+      - name: doc
+        column: DOC
+        type: string
+        description: District Ownership Code. The District Ownership Code (DOC) is the numeric code used to identify the
+          category of the Administrative Authority.• 00 - County Office of Education• 02 – State Board of
+          Education• 03 – Statewide Benefit Charter• 31 – State Special Schools• 34 – Non-school Location*• 52 –
+          Elementary School District• 54 – Unified School District• 56 – High School District• 98 – Regional
+          Occupational Center/Program (ROC/P)commonsense evidence:*Only the California Education Authority has been
+          included in the non-school location category.
+      - name: doctype
+        column: DOCType
+        type: string
+        description: The District Ownership Code Type. The District Ownership Code Type is the text description of the DOC
+          category.. (See text values in DOC field description above)
+      - name: soc
+        column: SOC
+        type: string
+        description: School Ownership Code. The School Ownership Code is a numeric code used to identify the type of
+          school.. • 08 - Preschool • 09 – Special Education Schools (Public)• 11 – Youth Authority Facilities
+          (CEA)• 13 – Opportunity Schools• 14 – Juvenile Court Schools• 15 – Other County or District Programs• 31
+          – State Special Schools• 60 – Elementary School (Public)• 61 – Elementary School in 1 School District
+          (Public)• 62 – Intermediate/Middle Schools (Public)• 63 – Alternative Schools of Choice• 64 – Junior High
+          Schools (Public)• 65 – K-12 Schools (Public)• 66 – High Schools (Public)• 67 – High Schools in 1 School
+          District (Public)• 68 – Continuation High Schools• 69 – District Community Day Schools• 70 – Adult
+          Education Centers• 98 – Regional Occupational Center/Program (ROC/P)
+      - name: soctype
+        column: SOCType
+        type: string
+        description: School Ownership Code Type. The School Ownership Code Type is the text description of the type of school.
+      - name: ed_ops_code
+        column: EdOpsCode
+        type: string
+        description: Education Option Code. The Education Option Code is a short text description of the type of education
+          offered.. • ALTSOC – Alternative School of Choice• COMM – County Community School• COMMDAY – Community
+          Day School• CON – Continuation School• JUV – Juvenile Court School• OPP – Opportunity School• YTH – Youth
+          Authority School• SSS – State Special School• SPEC – Special Education School• TRAD – Traditional• ROP –
+          Regional Occupational Program• HOMHOS – Home and Hospital• SPECON – District Consortia Special Education
+          School
+      - name: ed_ops_name
+        column: EdOpsName
+        type: string
+        description: Educational Option Name. The Educational Option Name is the long text description of the type of
+          education being offered.
+      - name: eilcode
+        column: EILCode
+        type: string
+        description: Educational Instruction Level Code. The Educational Instruction Level Code is a short text description
+          of the institution's type relative to the grade range served.. • A – Adult• ELEM – Elementary• ELEMHIGH –
+          Elementary-High Combination• HS – High School• INTMIDJR – Intermediate/Middle/Junior High• PS –
+          Preschool• UG – Ungraded
+      - name: eilname
+        column: EILName
+        type: string
+        description: Educational Instruction Level Name. The Educational Instruction Level Name is the long text
+          description of the institution’s type relative to the grade range served.
+      - name: gsoffered
+        column: GSoffered
+        type: string
+        description: grade span offered. The grade span offered is the lowest grade and the highest grade offered or
+          supported by the school, district, or administrative authority. This field might differ from the grade
+          span served as reported in the most recent certified California Longitudinal Pupil Achievement (CALPADS)
+          Fall 1 data collection.. For example XYZ School might display the following data:GSoffered =
+          P–AdultGSserved = K–12
+      - name: gsserved
+        column: GSserved
+        type: string
+        description: "grade span served.. It is the lowest grade and the highest grade of student enrollment as reported in
+          the most recent certified CALPADS Fall 1 data collection. Only K–12 enrollment is reported through
+          CALPADS. This field may differ from the grade span offered.. commonsense evidence:1. Only K–12 enrollment
+          is reported through CALPADS2. Note: Special programs at independent study, alternative education, and
+          special education schools will often exceed the typical grade span for schools of that type"
+      - name: virtual
+        column: Virtual
+        type: string
+        description: "This field identifies the type of virtual instruction offered by the school. Virtual instruction is
+          instruction in which students and teachers are separated by time and/or location, and interaction occurs
+          via computers and/or telecommunications technologies.. The field is coded as follows:· F = Exclusively
+          Virtual – The school has no physical building where students meet with each other or with teachers, all
+          instruction is virtual.· V = Primarily Virtual – The school focuses on a systematic program of virtual
+          instruction but includes some physical meetings among students or with teachers.· C = Primarily Classroom
+          – The school offers virtual courses but virtual instruction is not the primary means of instruction.· N =
+          Not Virtual – The school does not offer any virtual instruction.· P = Partial Virtual – The school offers
+          some, but not all, instruction through virtual instruction. Note: This value was retired and replaced
+          with the Primarily Virtual and Primarily Classroom values beginning with the 2016–17 school year."
+      - name: magnet
+        column: Magnet
+        type: number
+        description: "This field identifies whether a school is a magnet school and/or provides a magnet program.. The
+          field is coded as follows:· 1 = Magnet - The school is a magnet school and/or offers a magnet program.· 0
+          = Not Magnet - The school is not a magnet school and/or does not offer a magnet program.commonsense
+          evidence:Note: Preschools and adult education centers do not contain a magnet school indicator."
+      - name: adm_fname1
+        column: AdmFName1
+        type: string
+        description: administrator's first name. The superintendent’s or principal’s first name.commonsense evidence:Only
+          active and pending districts and schools will display administrator information, if applicable.
+      - name: adm_lname1
+        column: AdmLName1
+        type: string
+        description: administrator's last name. The superintendent’s or principal’s last name.commonsense evidence:Only
+          active and pending districts and schools will display administrator information, if applicable.
+      - name: adm_email1
+        column: AdmEmail1
+        type: string
+        description: administrator's email address. The superintendent’s or principal’s email address.commonsense
+          evidence:Only active and pending districts and schools will display administrator information, if
+          applicable.
+      - name: adm_fname2
+        column: AdmFName2
+        type: string
+        description: SAME as 1
+      - name: adm_lname2
+        column: AdmLName2
+        type: string
+        description: Source field schools.AdmLName2; no additional business definition supplied.
+      - name: adm_email2
+        column: AdmEmail2
+        type: string
+        description: Source field schools.AdmEmail2; no additional business definition supplied.
+      - name: adm_fname3
+        column: AdmFName3
+        type: string
+        description: Source field schools.AdmFName3; no additional business definition supplied.
+      - name: adm_lname3
+        column: AdmLName3
+        type: string
+        description: Source field schools.AdmLName3; no additional business definition supplied.
+      - name: adm_email3
+        column: AdmEmail3
+        type: string
+        description: Source field schools.AdmEmail3; no additional business definition supplied.
+      - name: last_update
+        column: LastUpdate
+        type: time
+        description: "when is this record updated last time Source date/time: inspect stored representation and cast before
+          DuckDB date functions."
+    measures:
+      - name: latitude
+        column: Latitude
+        type: number
+        description: The angular distance (expressed in degrees) between the location of the school, district, or
+          administrative authority and the equator measured north to south.
+      - name: longitude
+        column: Longitude
+        type: number
+        description: The angular distance (expressed in degrees) between the location of the school, district, or
+          administrative authority and the prime meridian (Greenwich, England) measured from west to east.
+    metrics:
+      - name: record_count
+        agg: count
+        description: Count source/joined rows at the active query grain; not automatically distinct entities after joins.
+      - name: count_cdscode
+        agg: count
+        column: CDSCode
+        description: count of CDSCode over the selected schools records. Apply filters and grouping explicitly; joins can
+          repeat records.
+      - name: count_distinct_district
+        agg: count_distinct
+        column: District
+        description: count distinct of District over the selected schools records. Apply filters and grouping explicitly;
+          joins can repeat records.
+      - name: count_school
+        agg: count
+        column: School
+        description: count of School over the selected schools records. Apply filters and grouping explicitly; joins can
+          repeat records.
+      - name: count_adm_fname1
+        agg: count
+        column: AdmFName1
+        description: count of AdmFName1 over the selected schools records. Apply filters and grouping explicitly; joins can
+          repeat records.
+joins:
+  - from: frpm
+    to: schools
+    type: left
+    keys:
+      - from: CDSCode
+        to: CDSCode
+  - from: satscores
+    to: schools
+    type: left
+    keys:
+      - from: cds
+        to: CDSCode

@@ -1,0 +1,83 @@
+dialect: duckdb
+models:
+  - name: movies
+    table: data
+    description: One row per IMDb title. Genre, country and language are comma-separated text credits; whole-label counts
+      differ from membership filters. Manually curated using the full data and DataBench question/answer definitions;
+      reference-informed, not a schema-only baseline.
+    dimensions:
+      - name: movie_id
+        column: imdb_title_id
+        description: Unique title key; retain for per-movie rankings.
+        type: string
+      - name: title
+        column: title
+        description: Recorded title.
+        type: string
+      - name: original_title
+        column: original_title
+        description: Original-language title.
+        type: string
+      - name: year
+        column: year
+        description: Release year; NULL excluded from oldest/latest.
+        type: number
+      - name: genre
+        column: genre
+        description: Original comma-separated genre label. Group this field to count complete combinations; use genre_members
+          to test whether a film belongs to a genre, including films with multiple genres.
+        type: string
+      - name: genre_members
+        expr: STRING_SPLIT({TABLE}."genre", ', ')
+        description: List of genre labels. Use list_contains for membership; a film can belong to several genres.
+      - name: country
+        column: country
+        description: Original comma-separated production-country label. Equality selects the complete label; membership in
+          string_split(country, ', ') also includes coproductions. State this scope when it affects an ambiguous question.
+        type: string
+      - name: language
+        column: language
+        description: Original comma-separated language label. Equality selects a complete language combination; language_members
+          includes multilingual films that use a requested language. SQL NULL is unknown; the literal label None is distinct.
+        type: string
+      - name: language_members
+        expr: STRING_SPLIT({TABLE}."language", ', ')
+        description: List of recorded languages. Use list_contains for films using a language, including multilingual films.
+      - name: director
+        column: director
+        description: Original director credit.
+        type: string
+    measures:
+      - name: duration
+        column: duration
+        description: Runtime in minutes.
+        type: number
+      - name: average_vote
+        column: avg_vote
+        description: Average viewer rating, distinct from number of votes.
+        type: number
+      - name: votes
+        column: votes
+        description: Number of votes.
+        type: number
+      - name: metascore
+        column: metascore
+        description: Critic metascore, NULL unknown.
+        type: number
+    metrics:
+      - name: movie_count
+        agg: count
+        description: Count titles. Frequency of years/durations/scores ranks this count; numeric largest values rank the dimension.
+      - name: average_duration
+        agg: avg
+        description: Mean runtime for filtered films.
+        column: duration
+      - name: latest_year
+        agg: max
+        description: Latest known release year.
+        column: year
+      - name: unique_language_labels
+        agg: count_distinct
+        description: Distinct non-null full language strings, not individual languages.
+        column: language
+joins: []

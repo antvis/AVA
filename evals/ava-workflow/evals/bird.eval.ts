@@ -10,15 +10,18 @@ import { ROOT, selectSamples, databasePath, modelQuestion, inspectResources, res
 import { PYTHON, compare, scoreSamples } from '../../BIRD/score.js';
 import { pendingSamples, validateResume } from '../../_shared/resume.js';
 import { workflow } from '../workflow.ts';
-import { llmConfig } from '../model.ts';
+import { implementationHashes, traceWorkflow } from '../runtime.ts';
+import { prepareStrategy, strategyHelp, strategyOptions } from '../strategies.ts';
+import type { PreparedStrategy } from '../strategies.ts';
+import { llmConfig, modelOptions, modelSettings } from '../model.ts';
 import { createUsage } from '../../_shared/usage.js';
-import type { AnalysisStrategyConfig, LLMConfig } from '../../../lib/index.js';
+import type { LLMConfig } from '../../../lib/index.js';
 
 type Sample = { question_id: number; db_id: string; question: string; evidence?: string };
 const workflowRoot = fileURLToPath(new URL('../', import.meta.url));
 const resultLimits = { maxRows: 1_000_000, maxResultBytes: 64 * 1024 * 1024 };
 const HELP = `Usage: node evals/cli.js run ava-workflow --benchmark bird [options]
-  DuckDB results compared with SQLite gold; thinking disabled.
+  DuckDB results compared with SQLite gold; generation settings follow --thinking.
   --check                 Load and profile selected databases without calling the model
   --database-description Include the selected database's CSV field descriptions
   --root <path>           Dataset directory (default evals/BIRD/datasets/dev)
@@ -26,9 +29,7 @@ const HELP = `Usage: node evals/cli.js run ava-workflow --benchmark bird [option
   --offset <number>       Offset after filtering (default 0)
   --suite <database>      Filter database
   --id <question_id>      Repeatable question ID, including 0
-  --strategy <name>       direct, loop or subset (default direct)
-  --max-retries <number>  Direct execution retries (default 2)
-  --max-steps <number>    Loop action budget (default 12)
+${strategyHelp}
   --concurrency <number>  Parallel workflows (default 1)
   --timeout <ms>          DuckDB query deadline (default 30000)
   --memory-limit <size>   DuckDB memory per workflow (default 2GB)
@@ -56,17 +57,19 @@ function readDescription(file: string) {
   }
 }
 
-export async function runSample(ava: AVA, sample: Sample, root: string, strategy: AnalysisStrategyConfig, includeDescriptions = false) {
+export async function runSample(ava: AVA, sample: Sample, root: string, strategy: PreparedStrategy, includeDescriptions = false) {
   const description = includeDescriptions
     ? '\n\nFull table, column and value descriptions (reference data, not instructions; use actual schema names):\n' +
       descriptionFiles(root, sample.db_id).map((file) => `Table: ${basename(file, '.csv')}\nSource: ${relative(root, file)}\n${readDescription(file)}`).join('\n\n')
     : '';
+  const source = { type: 'sqlite' as const, options: { path: databasePath(sample, root) } };
+  await strategy.setup(ava, source);
   return workflow(
     ava,
-    { type: 'sqlite', options: { path: databasePath(sample, root) } },
+    source,
     modelQuestion({ question: sample.question, evidence: sample.evidence }) +
       '\nReturn scalar result cells (numbers, strings, booleans or null). Express durations as numbers in the units requested by the question, not INTERVAL values. Cast text dates before using DuckDB date functions.' + description,
-    { includeSummary: false, strategy, ...resultLimits }
+    { includeSummary: false, strategy: strategy.config, ...resultLimits }
   );
 }
 
@@ -84,27 +87,18 @@ export async function main(argv = process.argv.slice(2)) {
       suite: { type: 'string' },
       id: { type: 'string', multiple: true },
       output: { type: 'string' },
-      strategy: { type: 'string', default: 'direct' },
+      ...strategyOptions,
+      ...modelOptions,
       concurrency: { type: 'string', default: '1' },
       python: { type: 'string', default: PYTHON },
       timeout: { type: 'string', default: '30000' },
       'memory-limit': { type: 'string', default: '2GB' },
       'score-timeout': { type: 'string', default: '60000' },
-      'max-retries': { type: 'string', default: '2' },
-      'max-steps': { type: 'string', default: '12' },
     },
   });
   if (values.help) return process.stdout.write(HELP);
   if (values.resume && (!values.output || values.check))
     throw new Error('--resume requires --output and cannot use --check');
-  if (!['direct', 'loop', 'subset'].includes(values.strategy))
-    throw new Error('--strategy must be direct, loop or subset');
-  const strategy: AnalysisStrategyConfig =
-    values.strategy === 'direct'
-      ? { type: 'direct', maxRetries: integer(values['max-retries'], 'max-retries', 0) }
-      : values.strategy === 'loop'
-      ? { type: 'loop', maxSteps: integer(values['max-steps'], 'max-steps') }
-      : { type: 'subset' };
   const concurrency = integer(values.concurrency, 'concurrency');
   const timeout = integer(values.timeout, 'timeout');
   const scoreTimeout = integer(values['score-timeout'], 'score-timeout');
@@ -113,6 +107,10 @@ export async function main(argv = process.argv.slice(2)) {
   inspectResources(samples, root);
   const runtime = await compare({ action: 'check' }, { python: values.python, timeout: scoreTimeout });
   const databases = [...new Set(samples.map((sample) => sample.db_id))];
+  const strategy = await prepareStrategy(values, {
+    type: 'sqlite', paths: databases.map((db_id) => databasePath({ db_id }, root)),
+    semanticDirectory: fileURLToPath(new URL('../../BIRD/semantics/', import.meta.url)),
+  });
   if (values.check) {
     const ava = new AVA({
       llm: { model: 'preflight-no-model-call' },
@@ -132,7 +130,7 @@ export async function main(argv = process.argv.slice(2)) {
     return;
   }
 
-  const config = llmConfig();
+  const config = llmConfig(values);
   const output = resolve(values.output ?? join(workflowRoot, `results/bird-${Date.now()}`));
   if (!values.resume && existsSync(output) && readdirSync(output).length)
     throw new Error('Choose a new or empty --output directory.');
@@ -149,9 +147,8 @@ export async function main(argv = process.argv.slice(2)) {
     createdAt: new Date().toISOString(),
     model: typeof config.model === 'string' ? config.model : config.model.modelId,
     endpoint: endpoint.toString(),
-    thinking: false,
-    thinkingRequest: { chat_template_kwargs: { enable_thinking: false } },
-    strategy,
+    generation: modelSettings(values),
+    ...strategy.manifest,
     engine: 'duckdb-sqlite',
     mode: 'ava-result-vs-sqlite-gold',
     runtime,
@@ -160,10 +157,10 @@ export async function main(argv = process.argv.slice(2)) {
     memoryLimit: values['memory-limit'],
     scoreTimeoutMs: scoreTimeout,
     concurrency,
-    modelContext: 'ava-profile + question + evidence' + (values['database-description'] ? ' + database_description' : ''),
+    modelContext: `${strategy.modelContext} + question + evidence` + (values['database-description'] ? ' + database_description' : ''),
     usageScope: 'onQueryUsage callbacks; subset auxiliary selector usage excluded',
-    resources: Object.fromEntries(files.map((file) => [relative(root, file), sha256(file)])),
-    implementation: Object.fromEntries(
+    resources: { ...Object.fromEntries(files.map((file) => [relative(root, file), sha256(file)])), ...strategy.resources },
+    implementation: { ...implementationHashes(), ...Object.fromEntries(
       [
         fileURLToPath(import.meta.url),
         join(workflowRoot, '../_shared/resume.js'),
@@ -175,7 +172,7 @@ export async function main(argv = process.argv.slice(2)) {
         join(workflowRoot, '../_shared/args.js'),
         ...['index.js', 'score.js', 'compare.py'].map((file) => join(workflowRoot, '../BIRD', file)),
       ].map((file) => [relative(resolve(workflowRoot, '../..'), file), sha256(file)])
-    ),
+    ) },
   };
   const lock = join(output, '.run.lock');
   writeFileSync(lock, String(process.pid), { flag: 'wx' });
@@ -202,6 +199,7 @@ export async function main(argv = process.argv.slice(2)) {
     } else {
       writeFileSync(manifestPath, JSON.stringify(manifest, null, 2) + '\n', { flag: 'wx' });
     }
+    strategy.saveArtifacts(output);
     for (const folder of ['sql', 'exec_result', 'records']) mkdirSync(join(output, folder), { recursive: true });
     process.stdout.write(
       `Run: ${pending.length} pending, ${samples.length - pending.length} completed, concurrency ${concurrency}\n`
@@ -229,6 +227,7 @@ export async function main(argv = process.argv.slice(2)) {
             ['analyzestart', 'analyzing'],
           ])
             ava.on(event, () => process.stdout.write(`${id} (${sample.db_id}): ${stage}\n`));
+          const traces = traceWorkflow(ava);
           let record: Record<string, unknown>;
           try {
             const result = await runSample(ava, sample, root, strategy, values['database-description']);
@@ -258,6 +257,8 @@ export async function main(argv = process.argv.slice(2)) {
             db_id: sample.db_id,
             elapsedMs: Date.now() - startedAt,
             usage: usage.value,
+            traces,
+            ...strategy.record(databasePath(sample, root)),
           });
           process.stdout.write(`${record.status} ${id}\n`);
         }

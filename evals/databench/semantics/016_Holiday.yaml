@@ -1,0 +1,77 @@
+dialect: duckdb
+models:
+  - name: customers
+    table: data
+    description: One row per customer, identified by CustomerID. Manually curated using the full data and DataBench
+      question/answer definitions; reference-informed, not a schema-only baseline.
+    dimensions:
+      - name: customer_id
+        column: CustomerID
+        description: Unique customer key; retain for lists of customer ages or incomes.
+        type: number
+      - name: occupation
+        column: Occupation
+        description: Recorded occupation label.
+        type: string
+      - name: designation
+        column: Designation
+        description: Job designation.
+        type: string
+      - name: marital_status
+        column: MaritalStatus
+        description: Recorded marital status. Single and Unmarried remain different labels.
+        type: string
+      - name: product
+        column: ProductPitched
+        description: Product pitched, not necessarily purchased.
+        type: string
+      - name: product_taken
+        column: ProdTaken
+        description: 1 purchased, 0 did not purchase.
+        type: number
+      - name: contact_type
+        column: TypeofContact
+        description: Source of customer contact.
+        type: string
+      - name: gender
+        column: Gender
+        description: Source labels including Fe Male; do not silently merge spelling variants.
+        type: string
+      - name: city_tier
+        column: CityTier
+        description: City tier code.
+        type: number
+    measures:
+      - name: age
+        column: Age
+        description: Age in years; exclude unknown ages from youngest/oldest rankings.
+        type: number
+      - name: pitch_duration
+        column: DurationOfPitch
+        description: Recorded pitch duration; NULL is unknown.
+        type: number
+      - name: monthly_income
+        column: MonthlyIncome
+        description: Monthly income in recorded units, not annual income.
+        type: number
+      - name: trips
+        column: NumberOfTrips
+        description: Recorded number of trips.
+        type: number
+    metrics:
+      - name: customer_count
+        agg: count
+        description: Count customer records; category frequency means this count.
+      - name: unique_occupations
+        agg: count_distinct
+        description: Distinct occupations.
+        column: Occupation
+      - name: unique_designations
+        agg: count_distinct
+        description: Distinct job designations.
+        column: Designation
+      - name: unique_marital_statuses
+        agg: count_distinct
+        description: Distinct original marital-status labels.
+        column: MaritalStatus
+joins: []

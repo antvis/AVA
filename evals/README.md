@@ -6,7 +6,7 @@
 
 | 执行方式 | 说明 | 可比较的条件 | 环境要求 |
 | --- | --- | --- | --- |
-| [AVA Workflow](ava-workflow/README.md) | 按固定步骤加载数据、生成画像并分析 | `direct`、`loop`、`subset` 策略 | Node.js 22.18+ |
+| [AVA Workflow](ava-workflow/README.md) | 按固定步骤加载数据、生成画像并分析 | `direct`、`loop`、`subset`、`semantic` 策略 | Node.js 22.18+ |
 | [AVA Agent](ava-agent/README.md) | 由模型选择工具和执行步骤 | 使用／不使用 AVA Skill | Node.js 24+、Docker |
 
 目前支持 [Spider 2.0-Lite 的 SQLite 子集](spider2lite/README.md)（Workflow／Agent、官方结果评分）、[BIRD 开发集](BIRD/README.md)（Workflow／Agent、执行结果与 SQLite 参考结果比较）及 [DataBench](databench/README.md)。DataBench 用于评测表格问答的答案准确率。它提供两种数据版本：`databench-lite` 使用采样表，`databench` 使用完整表。
@@ -29,7 +29,7 @@ npm --prefix evals/ava-agent install
 npm --prefix evals/ava-agent run sandbox:build
 ```
 
-在所选方式对应的 `.env` 文件中配置模型：Workflow 使用 `evals/ava-workflow/.env`，Agent 使用 `evals/ava-agent/.env`。
+在所选方式对应的 `.env` 文件中配置模型：Workflow 使用仓库根目录 `.env`，Agent 使用 `evals/ava-agent/.env`。
 
 ```env
 OPENAI_API_KEY=your-api-key
@@ -37,7 +37,7 @@ OPENAI_MODEL=your-model
 OPENAI_BASE_URL=https://your-provider.example.com/v1
 ```
 
-Agent 要求以上三项均填写；Workflow 可省略 `OPENAI_BASE_URL`，默认使用 OpenAI。更多配置见各执行方式的说明。
+两种方式均要求以上三项填写。Workflow 只读取根目录 `.env`，忽略进程环境变量。更多配置见各执行方式的说明。
 
 下载评测数据（需要 `curl`，只需下载一次）：
 
