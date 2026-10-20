@@ -96,16 +96,16 @@ Map actual fields to the fields below. Unless noted otherwise, fields belong to 
 | `column`, `bar` | `category`, `value`, optional `group`; `stack` or `group true` |
 | `line` | `time`, `value`, optional `group` |
 | `area` | `time`, `value`, optional `group`; only `area` supports `stack` |
-| `pie` | `category`, `value`; `innerRadius 0.6` creates a donut chart |
+| `pie` | `category`, `value`; `innerRadius` 0.6 creates a donut chart |
 | `scatter` | `x`, `y`, optional `group` |
 | `histogram` | Array of raw numeric observations |
 | `boxplot`, `violin` | `category`, `value`; multiple observations per category |
 | `radar` | `name`, `value` |
 | `funnel` | `category`, `value`, ordered by stage |
-| `waterfall` | `category`, `value`; mark the total item with `isTotal true` |
+| `waterfall` | `category`, `value`; mark the total item with `"isTotal": true` |
 | `liquid` | Top-level `percent`, from 0 to 1; no `data` array |
 | `word-cloud` | `text`, `value` |
-| `venn` | `sets`, `value`; write intersections as `sets A,B` |
+| `venn` | `sets`, `value`; `sets` is an array; write intersections as `["A", "B"]` |
 | `treemap` | `name`, `value`, optionally nested in a `children` array |
 | `sankey` | `source`, `target`, `value` |
 | `table` | Fields from the original rows |
@@ -125,63 +125,54 @@ Optional properties, supported only where listed:
 | `style.palette` order `[increase, decrease, total]` | `waterfall` |
 | `style.startAtZero` | `dual-axes`, `boxplot`, `violin` |
 
-Syntax patterns for the less obvious structures:
+JSON patterns for the less obvious structures:
 
-```
-vis histogram
-data
-  - 68
-  - 72
-binNumber 10
+```json
+{ "type": "histogram", "data": [68, 72, 85], "binNumber": 10 }
 ```
 
-```
-vis dual-axes
-categories
-  - Jan
-  - Feb
-series
-  - type column
-    axisYTitle Sales
-    data
-      - 820
-      - 650
-  - type line
-    axisYTitle Profit
-    data
-      - 12
-      - 10
+```json
+{
+  "type": "dual-axes",
+  "categories": ["Jan", "Feb"],
+  "series": [
+    { "type": "column", "axisYTitle": "Sales", "data": [820, 650] },
+    { "type": "line", "axisYTitle": "Profit", "data": [12, 10] }
+  ]
+}
 ```
 
-```
-vis table
-data
-  - Product Laptop
-    Region "East China"
-    "Sales Amount" 3200
+```json
+{ "type": "table", "data": [{ "Product": "Laptop", "Region": "East China", "Sales Amount": 3200 }] }
 ```
 
-For `table`, every row is one `data` item and each original column is a key; quote keys and values that contain spaces. For `waterfall`, the total item has `category` and `isTotal true` but no `value`. For `treemap`, put nested items under `children` with the same `name`/`value` fields.
+For `table`, every row is one `data` item and each original column is a key. For `waterfall`, the total item has `category` and `isTotal` but no `value`. For `treemap`, put nested items under `children` with the same `name`/`value` fields.
 
 Then build the Spec:
 
-A Spec contains exactly two strings: `chartType`, the chart type, and `syntax`, the GPT-Vis syntax text.
+A Spec is a JSON object with exactly two keys: `chartType`, the chart type string, and `config`, the GPT-Vis JSON config object.
 
-- The first line must be `vis <chartType>` and match the Spec's chart type.
-- Write properties as `key value`, without colons. Indent nested content by two spaces and start array items with `- `.
-- Put data before title and axis properties. Use plain numbers for numeric values; put units in the title or axis title.
-- Quote field names or strings that contain spaces. The chart size adapts to its container, so do not set `width` or `height`.
+- `config.type` must equal `chartType`.
+- Put the fields from the table above directly in `config`. Use plain numbers for numeric values; put units in the title or axis title.
+- The chart size adapts to its container, so do not set `width` or `height`.
 
 For example, given regional totals `[{"region":"East","total":25},{"region":"West","total":20}]`, map `region → category` and `total → value`, then save as `chart.json`:
 
 ```json
 {
   "chartType": "column",
-  "syntax": "vis column\ndata\n  - category East\n    value 25\n  - category West\n    value 20\ntitle \"Total by region\"\naxisXTitle Region\naxisYTitle Total"
+  "config": {
+    "type": "column",
+    "data": [
+      { "category": "East", "value": 25 },
+      { "category": "West", "value": 20 }
+    ],
+    "title": "Total by region",
+    "axisXTitle": "Region",
+    "axisYTitle": "Total"
+  }
 }
 ```
-
-Use a JSON serializer to escape newlines, quotes, and backslashes in `syntax`.
 
 ### Step 6: Render and inspect
 
@@ -191,6 +182,6 @@ ava viz --spec @chart.json --output chart.html
 
 The returned `output` is the absolute path to the HTML file. Existing files are not overwritten. The HTML requires an internet connection to load GPT-Vis.
 
-The CLI validates only the Spec structure and chart type; it does not verify that the syntax renders correctly. If a browser is available, preview the chart and check the field mappings, ordering, title, units, and data range. If you do not preview it, say so. Label Top N selections and aggregated categories in the chart.
+The CLI validates only the Spec structure and chart type; it does not verify that the config renders correctly. If a browser is available, preview the chart and check the field mappings, ordering, title, units, and data range. If you do not preview it, say so. Label Top N selections and aggregated categories in the chart.
 
 If rendering fails, fix the error and retry up to two times. If it still fails, provide the results table and explain why the chart could not be rendered.

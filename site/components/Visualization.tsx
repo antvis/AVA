@@ -223,10 +223,10 @@ const Visualization: React.FC<VisualizationProps> = ({ avaInstance, data, isInit
         </div>
       )}
 
-      {/* Visualization Area - Only show when chart syntax exists */}
-      {vizResult?.syntax && (
+      {/* Visualization Area - Only show when chart config exists */}
+      {vizResult?.config && (
         <div className="relative min-h-[400px] border-2 border-dashed border-[color:var(--color-primary)]/20 rounded-xl overflow-hidden bg-gradient-to-b from-gray-50 to-white">
-          <GPTVisRenderer syntax={vizResult.syntax} />
+          <GPTVisRenderer config={vizResult.config} />
         </div>
       )}
 

@@ -19,7 +19,7 @@ const POINTS = [
   },
   {
     title: 'Built with AntV',
-    desc: 'Visualizations are powered by the GPT-Vis-compatible syntax from the AntV ecosystem — the same stack behind G2, G6, and more.',
+    desc: 'Visualizations are powered by the GPT-Vis-compatible JSON config from the AntV ecosystem — the same stack behind G2, G6, and more.',
   },
 ];
 
