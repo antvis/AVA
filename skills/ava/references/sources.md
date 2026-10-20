@@ -73,21 +73,26 @@ Use authorized read-only credentials. Restrict temporary credential files to the
 
 ## Feishu Bitable
 
-`feishu-bitable` is read-only. Pass it in an `@file` or stdin config. It is not
-inferred from a file extension, and `--type` cannot supply it. The session engine is DuckDB.
-Python and Javascript cannot load this source. The loaded rows are one view named `data`.
+`feishu-bitable` is read-only and uses DuckDB; the Python and JavaScript engines cannot load it. Rows are exposed as one view named `data`. The `view` parameter in the URL is ignored and the whole table is loaded, not one view.
 
-`appId` and `appSecret` are required. They are the internal app credentials used to request a tenant access token. Provide `url`, or both `appToken` and `tableId`. When both the URL and those ids are set, they must name the same table.
+The CLI detects Bitable `/base/` links automatically (Node.js 22.13+):
+
+```sh
+ava source "https://<tenant>.feishu.cn/base/<app_token>?table=<table_id>" > session.json
+```
+
+Wiki (`/wiki/`) and Docx/Sheets-hosted links are not supported yet: open the Bitable itself and copy its `/base/` link. For non-URL configs, pass `feishu-bitable` through an `@file` or stdin config; `--type` cannot supply it.
+
+`appId` and `appSecret` are required. They are the internal app credentials used to request a tenant access token, and the app must be added as a collaborator on the table. A `bitable:app:readonly` scope is enough unless the table enables advanced permissions, which require manage rights. Credentials are resolved from the source config first, then `AVA_FEISHU_APP_ID` / `AVA_FEISHU_APP_SECRET`, then `~/.ava/feishu.json`. In a terminal, AVA prompts for the pair, verifies it, and saves it to `~/.ava/feishu.json`.
 
 ```json
 {
-    "type":"feishu-bitable",
-    "options":{
-      "url":"https://my.feishu.cn/base/AXuDbVoV7aKqzpslXwscP41Wncc?
-      table=tblehsChh5T3X69i&view=vewfxHhZEb",
-      "appId":"cli_a91d00b31ff81cee",
-      "appSecret":"h32fMrkYRT0scbfIeeNTjfNSYgnyqRd1"
-      }
+  "type": "feishu-bitable",
+  "options": {
+    "url": "https://<tenant>.feishu.cn/base/<app_token>?table=<table_id>",
+    "appId": "<app-id>",
+    "appSecret": "<app-secret>"
+  }
 }
 ```
 
@@ -95,24 +100,23 @@ Python and Javascript cannot load this source. The loaded rows are one view name
 ava source @feishu.json > session.json
 ```
 
-The path segment after `base` is `appToken`. The `table` query parameter is `tableId`.
-The `view` parameter is ignored; the whole table is loaded, not one view. Do not put `appSecret` in deliverables or logs.
+Provide `url`, or both `appToken` and `tableId`; when both are set they must name the same table. The path segment after `base` is `appToken`, and the `table` query parameter is `tableId`. Never commit `appSecret` or put it in deliverables, logs, or screenshots; rotate it if it leaks.
 
-Supported filed types become columns. Other types are omitted.
+Supported field types become columns. Other types are omitted.
 
-| type | Field | Cell value | 
+| type | Field | Cell value |
 | --- | --- | --- |
-|1| Text | string,or null when empty |
+|1| Text | string, or null when empty |
 |2| Number | number, or null when empty |
 |3| Single select | option name, or null |
 |4| Multi select | array of option names, or null |
 |5| Date | ISO string, or null |
-|7| Checkbox | boolean|
-|13| Phone | string, or null|
-|15| URL | link text, or the URL, or null
+|7| Checkbox | boolean |
+|13| Phone | string, or null |
+|15| URL | link text, or the URL, or null |
 |1001| Created time | ISO string |
 |1002| Last modified time | ISO string |
-|1005| Auto number | string,or null|
+|1005| Auto number | string, or null |
 
 People, attachments, links to other records, locations, groups, created-by,
 modified-by, formulas, and lookups are skipped.

@@ -153,6 +153,57 @@ describe('source', () => {
     }
   );
 
+  it('detects a Feishu Bitable URL and resolves credentials from the environment', async () => {
+    vi.stubEnv('AVA_FEISHU_APP_ID', 'cli_test_app');
+    vi.stubEnv('AVA_FEISHU_APP_SECRET', 'test-secret');
+    const url = 'https://my.feishu.cn/base/appToken123?table=tbl123&view=vew1';
+
+    expect(JSON.parse(await execute(['source', url]))).toEqual({ datasetId });
+    expect(createSession).toHaveBeenCalledExactlyOnceWith(
+      { type: 'feishu-bitable', options: { url, appId: 'cli_test_app', appSecret: 'test-secret' } },
+      { model: 'gpt-4o-mini' },
+      undefined
+    );
+  });
+
+  it('loads a Feishu Bitable config file and appends credentials', async () => {
+    vi.stubEnv('AVA_FEISHU_APP_ID', 'cli_test_app');
+    vi.stubEnv('AVA_FEISHU_APP_SECRET', 'test-secret');
+    const directory = await mkdtemp(join(tmpdir(), 'ava-cli-test-'));
+    try {
+      const url = 'https://my.feishu.cn/base/appToken123?table=tbl123';
+      const file = join(directory, 'feishu.json');
+      await writeFile(file, JSON.stringify({ type: 'feishu-bitable', options: { url } }));
+
+      await execute(['source', `@${file}`]);
+      expect(createSession).toHaveBeenCalledExactlyOnceWith(
+        { type: 'feishu-bitable', options: { url, appId: 'cli_test_app', appSecret: 'test-secret' } },
+        { model: 'gpt-4o-mini' },
+        undefined
+      );
+    } finally {
+      await rm(directory, { recursive: true, force: true });
+    }
+  });
+
+  it('rejects --type with a Feishu Bitable URL', async () => {
+    await expect(
+      run(['source', 'https://my.feishu.cn/base/appToken123?table=tbl123', '--type', 'feishu-bitable'])
+    ).rejects.toThrow('--type cannot be combined with a feishu-bitable source.');
+    expect(createSession).not.toHaveBeenCalled();
+  });
+
+  it('rejects Feishu links that are not /base/ tables', async () => {
+    for (const url of [
+      'https://my.feishu.cn/wiki/wikcn123?table=tbl123',
+      'https://my.feishu.cn/docx/doccn123',
+      'https://my.feishu.cn/base/appToken123',
+    ]) {
+      await expect(run(['source', url])).rejects.toThrow('Only Feishu Bitable /base/ links');
+    }
+    expect(createSession).not.toHaveBeenCalled();
+  });
+
   it('shows the dataset ID and next command in a terminal', async () => {
     Object.defineProperty(process.stdout, 'isTTY', { configurable: true, value: true });
     const output = await execute(['source', 'sales.csv']);

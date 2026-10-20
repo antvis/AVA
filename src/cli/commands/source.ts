@@ -38,7 +38,7 @@ export async function run([dataset]: string[], options: Options): Promise<{ data
     if(options.type!== undefined) throw new Error('--type cannot be combined with a feishu-bitable source.');
     input = { type: 'feishu-bitable', options: { url: dataset }} ;
   }else if(isFeishuHostUrl(dataset)){
-    throw new Error('Feishu host URLs are not supported. Use a feishu-bitable URL instead.');}
+    throw new Error('Only Feishu Bitable /base/ links with a ?table= query are supported. Open wiki-hosted tables from their /base/ link.');}
   else {
     const pathname = /^https?:\/\//i.test(dataset) ? new URL(dataset).pathname : dataset;
     const type = option(options, 'type') ?? sourceTypes[extname(pathname).toLowerCase()];
@@ -83,24 +83,35 @@ Arguments:
 Options:
   -t, --type <type>  Override the type inferred from the file extension.
                     Types: csv-file, json-file, parquet, excel, sqlite.
-                    Cannot be used with @file or stdin configs.
-                    feishu-bitable is not inferred from an extension.
-                    Pass it in an @file or stdin config, not with --type.
+                    Cannot be used with @file, stdin configs, or Feishu URLs.
   --engine <type>    duckdb, python, javascript, supabase, or clickhouse.
                     Default: supabase/clickhouse for those sources, otherwise duckdb.
                     Fixed for the session; source support depends on the engine.
                     feishu-bitable uses duckdb. The loaded view is named data.
   -h, --help         Show help.
 
+Feishu Bitable:
+  A /base/ link from feishu.cn or larksuite.com is detected automatically:
+    ava source "https://my.feishu.cn/base/<appToken>?table=<tableId>"
+  Or pass a "feishu-bitable" config via @file or stdin.
+  appId and appSecret are required. They are resolved from the config first,
+  then AVA_FEISHU_APP_ID / AVA_FEISHU_APP_SECRET, then ~/.ava/feishu.json;
+  in a terminal AVA offers to bind and save them.
+  The whole table is loaded as one view named data; the view query is ignored.
+  Wiki (/wiki/) and Docx/Sheets-hosted tables are not supported yet.
+
 Environment:
   OPENAI_API_KEY     Required for text sources and subsequent AI commands.
   OPENAI_MODEL       Model name (default: gpt-4o-mini).
   OPENAI_BASE_URL    Optional API base URL.
+  AVA_FEISHU_APP_ID      Feishu app credentials for feishu-bitable sources.
+  AVA_FEISHU_APP_SECRET
   Model settings are fixed when the dataset is loaded.
 
 In a terminal, shows the dataset ID and suggested next commands.
 When piped or redirected, returns JSON containing datasetId.
-IDs use a sanitized source name plus a random suffix. Requires macOS or Linux.
+IDs use a sanitized source name plus a random suffix.
+Requires Node.js 22.13+ on macOS or Linux.
 Sessions expire after 30 idle minutes; dispose releases them immediately.
 Python requires python3 and pandas; local Python execution is not sandboxed.
 JavaScript accepts inline csv/json/text configs. Use ava schema to inspect the query language.
@@ -110,16 +121,18 @@ Examples:
   ava source sales.csv --engine python
   ava source @source.json
   echo '{ "type": "json", "options": { "data": [{ "sales": 10 }] } }' | ava source -
-  
+  ava source "https://my.feishu.cn/base/<appToken>?table=<tableId>"
   ava source @feishu.json
-feishu.json:{
-  "type":"feishu-vitable",
-  "options":{
-    "url":"https://my.feishu.cn/base/AXuDbVoV7aKqzpslXwscP41Wncc?table=tblehsChh5T3X69i&view=vewfxHhZEb",
-    "appId":"your_id",
-    "appSecret":"your_secret"
-    }
+
+feishu.json:
+{
+  "type": "feishu-bitable",
+  "options": {
+    "url": "https://my.feishu.cn/base/<appToken>?table=<tableId>",
+    "appId": "<app-id>",
+    "appSecret": "<app-secret>"
   }
-    appId and appSecret are required.
-    Provide url or both appToken and tableId.  
+}
+    Provide url or both appToken and tableId; they must name the same table.
+    Keep appSecret out of version control and logs.
 `;

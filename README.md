@@ -249,6 +249,8 @@ ava dispose '<your-dataset-id>'
 
 `analyze` returns the answer as JSON. `dispose` releases the dataset. See [all CLI commands](https://ava.antv.vision/documentation/).
 
+Feishu Bitable links are detected automatically: `ava source "https://<tenant>.feishu.cn/base/<app_token>?table=<table_id>"`. Provide credentials through the source config, `AVA_FEISHU_APP_ID`/`AVA_FEISHU_APP_SECRET`, or `~/.ava/feishu.json`; see the [data source guide](skills/ava/references/sources.md#feishu-bitable).
+
 ## 📚 Resources
 
 - [Documentation](https://ava.antv.vision/documentation/) — Guides and examples
