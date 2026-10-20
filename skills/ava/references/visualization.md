@@ -1,76 +1,116 @@
 # Visualization
 
-Build charts from user-provided data or the `data` in query results. All engines use the same charting workflow.
+Build charts from user-provided data or the `data` in query results. All engines use the same charting workflow. Follow the steps in order; at each `IF`, take the first branch that matches.
 
-## Recommend a Chart
+## Workflow
 
-Work through these four steps before picking a `chartType`. If the user names a chart type, honor it unless the data cannot support it; then explain and suggest an alternative.
+```
+Step 1 Get data → Step 2 Pick intent → Step 3 Check data shape → Step 4 Choose chart → Step 5 Map fields & build Spec → Step 6 Render & inspect
+```
 
-### 1. Identify the intent
+### Step 1: Get usable data
 
-| User asks about | Intent | Candidates |
-| --- | --- | --- |
-| Compare, rank, top N, which is highest | Comparison | `column`, `bar` |
-| Trend, change over time, growth | Trend | `line`, `area` |
-| Share, proportion, composition | Part-to-whole | `pie`, `treemap`, stacked `column` |
-| Correlation, relationship, impact of A on B | Relationship | `scatter` |
-| Distribution, spread, outliers | Distribution | `histogram`, `boxplot`, `violin` |
-| Conversion, drop-off by stage | Funnel | `funnel` |
-| Increase and decrease contributions to a total | Change breakdown | `waterfall` |
-| Flow between nodes | Flow | `sankey` |
-| Overlap between sets | Intersection | `venn` |
-| Look up exact values, many columns, details | Lookup | `table` |
+- IF the user supplied a chart type: use it, and go to Step 3 only to verify the data fits. If it does not fit, say why and use the Step 4 alternative.
+- ELSE IF there is no data yet: run a query first (see queries.md) and come back with the result.
+- ELSE IF the data has more than about 100 rows and the chart is not `scatter`, `histogram`, `boxplot`, `violin` or `table`: aggregate (`GROUP BY`) or take Top N (usually 10) sorted by value first, and label this in the chart.
+- ELSE: continue.
 
-### 2. Analyze the data
+### Step 2: Identify the intent
 
-- Classify each field: time (dates, years, months), category (text, codes), numeric (measures), or text for frequency analysis. Numeric IDs and year-like numbers are not measures.
-- Count rows, distinct categories, series, and numeric fields. Note negatives, zeros, nulls, and ordering.
-- Aggregate first when needed. Query results with many raw rows should be grouped (`GROUP BY`) or binned before charting; keep raw rows only for `scatter`, `histogram`, `boxplot`, `violin`, and `table`.
-- Fields to choose from: one time + one numeric → `line`; one category + one numeric → `column`/`bar`; two numerics → `scatter`; one numeric alone → `histogram`; two categorical/time dimensions + one numeric → grouped or stacked `column`/`line` using `group`; two numerics on different scales over one dimension → `dual-axes`.
+- IF the question is about change over time (trend, growth, by month/year): intent = **trend**.
+- ELSE IF it is about comparing or ranking categories (which is highest, top N): intent = **comparison**.
+- ELSE IF it is about share or composition (proportion, breakdown): intent = **part-to-whole**.
+- ELSE IF it is about correlation or the effect of one variable on another: intent = **relationship**.
+- ELSE IF it is about spread, shape, or outliers: intent = **distribution**.
+- ELSE IF it is about stage conversion or drop-off: intent = **funnel**.
+- ELSE IF it is about what increases or decreases a total: intent = **change breakdown**.
+- ELSE IF it is about flow between nodes: intent = **flow**.
+- ELSE IF it is about overlap between sets: intent = **intersection**.
+- ELSE IF it is about exact values or details: intent = **lookup** (use `table`).
+- ELSE: intent unclear; infer from the data shape in Step 3, or ask the user.
 
-### 3. Match the scenario and apply limits
+### Step 3: Check the data shape
 
-- `pie`: at most about 5 categories, all values non-negative, values must sum meaningfully to a whole. Merge the tail into "Other" or use `bar` otherwise. Never use it for trends. Values must be plain numbers, not percentage strings.
-- `line`/`area`: use for ordered time or sequence data only; never for unordered categories. Use `area` with `stack` only when the total matters.
-- `column` vs `bar`: use `bar` for long labels or more than about 8 categories. Show Top N (usually 10) sorted by value for large category sets and label it.
-- `histogram`: continuous values (salary, age, score) need raw observations, not pre-aggregated counts.
-- `boxplot`/`violin`: need many observations per category; with only one value per category use `column`.
-- `scatter`: both axes numeric; add `group` for a third categorical dimension. For many categories prefer a table.
-- `radar`: 3-8 dimensions and few series; otherwise use `column`.
-- `funnel`: ordered stages with monotonically decreasing values.
-- `waterfall`: signed changes; mark the total with `isTotal true`.
-- `dual-axes`: only when scales differ greatly; do not mix unrelated measures.
-- `liquid`: one percentage only; `treemap`: hierarchy with non-negative values; `sankey`: needs `source`/`target` pairs without cycles.
-- Fall back to `table` when no chart fits, there are more than two measures with no clear intent, or the user wants exact values.
+Classify each field as time, category, numeric measure, or text. Numeric IDs and year-like numbers are not measures. Note row count, distinct categories, series count, negatives, nulls, and ordering.
 
-### 4. Check before rendering
+- IF a field that must be numeric is a string (for example `"12%"`, `"1,200"`): convert it to a plain number first.
+- IF the time field is unsorted: sort it ascending.
+- IF there is only one row and the intent is trend, comparison or distribution: stop and use `table`, or ask for more data.
 
-Confirm the chosen chart answers the question asked, numeric fields really are numbers, the time axis is sorted ascending, and the title and axis titles (with units) are set. Do not invent data; if the data is insufficient (e.g. one row for a trend), say so and suggest a `table` or ask for more data.
+### Step 4: Choose the chart
 
-## Choose a Chart and Map Fields
+Use the branch for the intent from Step 2.
 
-Map actual fields to the required fields below. Unless noted otherwise, fields belong to each item in the `data` array; `value`, `x`, and `y` are numeric. Optional `group` splits series for `line`, `area`, `column`, `bar`, `scatter`, `boxplot`, and `violin`; when there are two dimensions, put the primary axis dimension in `time`/`category` and the other in `group`. `column`, `bar` also support `stack` or `group true`.
+**Trend**
+- IF there are two measures on very different scales: `dual-axes`.
+- ELSE IF the total matters and the series add up: `area` with `stack true`.
+- ELSE: `line` (use `group` for multiple series).
+- Never use `line` for unordered categories; use Comparison instead.
 
-| Use case | `chartType` | Data fields or structure |
-| --- | --- | --- |
-| Category comparison | `column`, `bar` | `category`, `value`; prefer `bar` for long labels |
-| Time trend | `line`, `area` | `time`, `value`; only `area` supports `stack` |
-| Part-to-whole | `pie` | `category`, `value`; use for a small number of non-negative values; `innerRadius 0.6` creates a donut chart |
-| Relationship between two numeric variables | `scatter` | `x`, `y` |
-| Numeric distribution | `histogram` | Array of raw numeric observations |
-| Grouped distribution | `boxplot`, `violin` | `category`, `value`; include multiple observations per category |
-| Compare multiple metrics | `radar` | `name`, `value` |
-| Stage conversion | `funnel` | `category`, `value`, ordered by stage |
-| Cumulative increase or decrease | `waterfall` | `category`, `value`; mark the total item with `category` and `isTotal true` |
-| Single progress value | `liquid` | Top-level `percent`, from 0 to 1; no `data` array |
-| Word frequency | `word-cloud` | `text`, `value` |
-| Set intersections | `venn` | `sets`, `value`; write intersections as `sets A,B` |
-| Hierarchical composition | `treemap` | `name`, `value`, optionally nested in a `children` array |
-| Flow | `sankey` | `source`, `target`, `value` |
-| Exact value lookup | `table` | Fields from the original rows |
-| Series with different scales | `dual-axes` | Top-level `categories` and `series` arrays; each series has `type` (`column` or `line`), `axisYTitle`, and numeric `data` aligned with `categories` |
+**Comparison**
+- IF labels are long or there are more than about 8 categories: `bar`.
+- ELSE: `column`.
+- IF there is a second dimension: add `group` (`stack` or `group true` for `column`/`bar`).
+- IF there are many categories: sort by value and keep Top N.
 
-## Build the Spec
+**Part-to-whole**
+- IF the data is hierarchical (parent/child): `treemap`.
+- ELSE IF there are 5 or fewer categories and all values are non-negative: `pie` (`innerRadius 0.6` for a donut). Values must be plain numbers, not percentages.
+- ELSE IF there are more than 5 categories: merge the tail into "Other" and use `pie`, or use `bar`.
+- ELSE IF the data is a single percentage or progress: `liquid`.
+- ELSE IF any value is negative: `bar` (pie is invalid).
+
+**Relationship**
+- IF both fields are numeric: `scatter` (`group` for a third categorical dimension).
+- ELSE: use Comparison.
+
+**Distribution**
+- IF one numeric field of raw observations: `histogram`.
+- ELSE IF comparing distributions across categories and each category has many observations: `boxplot` (outliers, quartiles) or `violin` (density).
+- ELSE IF each category has only one value: `column`.
+
+**Funnel**
+- IF ordered stages with decreasing values: `funnel`. ELSE: `column`.
+
+**Change breakdown**
+- IF signed changes that sum to a total: `waterfall` (mark the total with `isTotal true`). ELSE: `column`.
+
+**Flow**
+- IF `source`/`target`/`value` pairs: `sankey`. ELSE: `table`.
+
+**Intersection**
+- IF set sizes and overlaps: `venn`. ELSE: `table`.
+
+**Other**
+- IF the text data is about word frequency: `word-cloud`.
+- IF comparing a few entities across 3-8 dimensions: `radar`.
+- IF none of the above fits, there are more than two measures with no clear intent, or the user wants exact values: `table`.
+
+### Step 5: Map fields and build the Spec
+
+Map actual fields to the fields below. Unless noted otherwise, fields belong to each item in the `data` array; `value`, `x`, and `y` are numeric. When there are two dimensions, put the axis dimension in `time`/`category` and the other in `group`.
+
+| `chartType` | Data fields or structure |
+| --- | --- |
+| `column`, `bar` | `category`, `value`, optional `group`; `stack` or `group true` |
+| `line` | `time`, `value`, optional `group` |
+| `area` | `time`, `value`, optional `group`; only `area` supports `stack` |
+| `pie` | `category`, `value`; `innerRadius 0.6` creates a donut chart |
+| `scatter` | `x`, `y`, optional `group` |
+| `histogram` | Array of raw numeric observations |
+| `boxplot`, `violin` | `category`, `value`; multiple observations per category |
+| `radar` | `name`, `value` |
+| `funnel` | `category`, `value`, ordered by stage |
+| `waterfall` | `category`, `value`; mark the total item with `isTotal true` |
+| `liquid` | Top-level `percent`, from 0 to 1; no `data` array |
+| `word-cloud` | `text`, `value` |
+| `venn` | `sets`, `value`; write intersections as `sets A,B` |
+| `treemap` | `name`, `value`, optionally nested in a `children` array |
+| `sankey` | `source`, `target`, `value` |
+| `table` | Fields from the original rows |
+| `dual-axes` | Top-level `categories` and `series` arrays; each series has `type` (`column` or `line`), `axisYTitle`, and numeric `data` aligned with `categories` |
+
+Then build the Spec:
 
 A Spec contains exactly two strings: `chartType`, the chart type, and `syntax`, the GPT-Vis syntax text.
 
@@ -90,7 +130,7 @@ For example, given regional totals `[{"region":"East","total":25},{"region":"Wes
 
 Use a JSON serializer to escape newlines, quotes, and backslashes in `syntax`.
 
-## Render and Inspect
+### Step 6: Render and inspect
 
 ```sh
 ava viz --spec @chart.json --output chart.html
