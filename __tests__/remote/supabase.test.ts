@@ -120,11 +120,8 @@ describe('SupabaseEngine', () => {
       const engine = new SupabaseEngine(getLLMConfig());
       await engine.load({ type: 'supabase', options: CONNECTION });
       const pending = expect(engine.schema()).rejects.toMatchObject({
-        name: 'SupabaseApiError',
-        message: 'Supabase API request timed out',
-        status: 0,
-        code: 'timeout',
-        retryable: true,
+        name: 'AbortError',
+        message: 'aborted',
       });
       await vi.advanceTimersByTimeAsync(29_999);
       expect(bodyStarted).toBe(true);
@@ -151,192 +148,49 @@ describe('SupabaseEngine', () => {
         name: 'SupabaseApiError',
         message: 'Supabase API request failed (403)',
         status: 403,
-        code: 'forbidden',
         detail: 'denied',
-        retryable: false,
       });
       expect(vi.getTimerCount()).toBe(0);
     });
 
-    it.each([
-      [401, 'unauthorized', false],
-      [403, 'forbidden', false],
-      [404, 'not_found', false],
-      [408, 'timeout', true],
-      [504, 'timeout', true],
-      [429, 'rate_limited', true],
-      [400, 'bad_query', false],
-      [422, 'bad_query', false],
-      [503, 'server_error', true],
-      [418, 'unknown', false],
-    ] as const)('classifies HTTP %s errors and preserves the complete JSON payload', async (status, code, retryable) => {
-      const detail = { message: 'request failed', context: 'x'.repeat(300) };
-      vi.stubGlobal(
-        'fetch',
-        vi.fn(async () => ({
-          ok: false,
-          status,
-          text: async () => JSON.stringify(detail),
-        }))
-      );
+    it('preserves the raw HTTP error body without parsing it', async () => {
+      const detail = JSON.stringify({ code: '42601', message: 'invalid query' });
+      vi.stubGlobal('fetch', vi.fn(async () => ({ ok: false, status: 400, text: async () => detail })));
       const engine = new SupabaseEngine(getLLMConfig());
       await engine.load({ type: 'supabase', options: CONNECTION });
 
       await expect(engine.schema()).rejects.toMatchObject({
         name: 'SupabaseApiError',
-        status,
-        code,
+        status: 400,
         detail,
-        retryable,
       });
     });
 
-    it.each([
-      [{ code: '22012', message: 'ignored text' }, 'bad_query', false],
-      [{ code: '23505', message: 'ignored text' }, 'bad_query', false],
-      [{ code: '42601', message: 'ignored text' }, 'bad_query', false],
-      [{ code: '08006', message: 'ignored text' }, 'network', true],
-      [{ code: '57014', message: 'ignored text' }, 'timeout', true],
-      [{ code: 'not-a-sqlstate', message: 'ignored text' }, 'unknown', false],
-    ] as const)('classifies structured SQL errors without inspecting their message', async (detail, code, retryable) => {
-      vi.stubGlobal(
-        'fetch',
-        vi.fn(async () => ({
-          ok: false,
-          status: 499,
-          text: async () => JSON.stringify(detail),
-        }))
-      );
-      const engine = new SupabaseEngine(getLLMConfig());
-      await engine.load({ type: 'supabase', options: CONNECTION });
-
-      await expect(engine.schema()).rejects.toMatchObject({ code, detail, retryable });
-    });
-
-    it('preserves the full plain-text error body', async () => {
-      const detail = 'x'.repeat(300);
-      vi.stubGlobal('fetch', vi.fn(async () => ({ ok: false, status: 403, text: async () => detail })));
-      const engine = new SupabaseEngine(getLLMConfig());
-      await engine.load({ type: 'supabase', options: CONNECTION });
-
-      const error = await engine.schema().catch((caught) => caught);
-      expect(error).toMatchObject({ code: 'forbidden', detail, retryable: false });
-      expect(Object.keys(error)).not.toContain('detail');
-      expect(JSON.stringify(error)).not.toContain(detail);
-    });
-
-    it('preserves HTTP status classification when reading the error body fails', async () => {
-      const bodyError = new TypeError('connection reset');
-      vi.stubGlobal(
-        'fetch',
-        vi.fn(async () => ({
-          ok: false,
-          status: 403,
-          text: async () => {
-            throw bodyError;
-          },
-        }))
-      );
-      const engine = new SupabaseEngine(getLLMConfig());
-      await engine.load({ type: 'supabase', options: CONNECTION });
-
-      await expect(engine.schema()).rejects.toMatchObject({
-        status: 403,
-        code: 'forbidden',
-        detail: bodyError,
-        retryable: false,
-      });
-    });
-
-    it.each([
-      [400, { code: '08006' }, 'bad_query', false],
-      [503, { code: '42601' }, 'server_error', true],
-    ] as const)('prioritizes actionable HTTP status %s over SQLSTATE details', async (status, detail, code, retryable) => {
-      vi.stubGlobal(
-        'fetch',
-        vi.fn(async () => ({
-          ok: false,
-          status,
-          text: async () => JSON.stringify(detail),
-        }))
-      );
-      const engine = new SupabaseEngine(getLLMConfig());
-      await engine.load({ type: 'supabase', options: CONNECTION });
-
-      await expect(engine.schema()).rejects.toMatchObject({ code, detail, retryable });
-    });
-
-    it('wraps malformed successful JSON responses in a non-retryable structured error', async () => {
-      vi.stubGlobal(
-        'fetch',
-        vi.fn(async () => ({
-          ok: true,
-          status: 200,
-          json: async () => {
-            throw new SyntaxError('unexpected token');
-          },
-        }))
-      );
-      const engine = new SupabaseEngine(getLLMConfig());
-      await engine.load({ type: 'supabase', options: CONNECTION });
-
-      await expect(engine.schema()).rejects.toMatchObject({
-        name: 'SupabaseApiError',
-        message: 'Supabase API returned an invalid JSON response',
-        status: 200,
-        code: 'unknown',
-        retryable: false,
-        detail: expect.any(SyntaxError),
-      });
-    });
-
-    it('wraps network failures in a structured Supabase API error', async () => {
+    it('lets network failures propagate unchanged', async () => {
       const networkError = new TypeError('fetch failed');
       vi.stubGlobal('fetch', vi.fn().mockRejectedValue(networkError));
       const engine = new SupabaseEngine(getLLMConfig());
       await engine.load({ type: 'supabase', options: CONNECTION });
 
-      await expect(engine.schema()).rejects.toMatchObject({
-        name: 'SupabaseApiError',
-        message: 'Supabase API network error',
-        status: 0,
-        code: 'network',
-        detail: networkError,
-        retryable: true,
-      });
+      await expect(engine.schema()).rejects.toBe(networkError);
     });
 
-    it('classifies response-body transport failures as network errors', async () => {
-      const networkError = new TypeError('connection reset');
+    it('lets successful response JSON parsing errors propagate unchanged', async () => {
+      const parseError = new SyntaxError('unexpected token');
       vi.stubGlobal(
         'fetch',
         vi.fn(async () => ({
           ok: true,
           status: 200,
           json: async () => {
-            throw networkError;
+            throw parseError;
           },
         }))
       );
       const engine = new SupabaseEngine(getLLMConfig());
       await engine.load({ type: 'supabase', options: CONNECTION });
 
-      await expect(engine.schema()).rejects.toMatchObject({
-        name: 'SupabaseApiError',
-        status: 0,
-        code: 'network',
-        detail: networkError,
-        retryable: true,
-      });
-    });
-
-    it('does not misclassify unexpected failures as network errors', async () => {
-      const unexpectedError = new Error('unexpected failure');
-      vi.stubGlobal('fetch', vi.fn().mockRejectedValue(unexpectedError));
-      const engine = new SupabaseEngine(getLLMConfig());
-      await engine.load({ type: 'supabase', options: CONNECTION });
-
-      await expect(engine.schema()).rejects.toBe(unexpectedError);
+      await expect(engine.schema()).rejects.toBe(parseError);
     });
 
     it('discovers multiple tables and relations in one request and passes them to SQL generation', async () => {
