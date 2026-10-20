@@ -116,3 +116,7 @@ docs/
 /evals/BIRD/.venv/
 /evals/reports/BIRD/
 task/
+
+# AVA × Feishu batch test artifacts
+/.ava-feishu-test/
+
