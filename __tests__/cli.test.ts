@@ -93,7 +93,7 @@ describe('metadata files', () => {
   it.each(['schema', 'profile'])('sets %s from a plain file path', async (kind) => {
     const directory = await mkdtemp(join(tmpdir(), 'ava-cli-test-'));
     try {
-      const value = kind === 'schema' ? { tables: [] } : { tables: [], generatedAt: 1234 };
+      const value = kind === 'schema' ? { models: [] } : { models: [] };
       const file = join(directory, 'metadata.json');
       await writeFile(file, JSON.stringify(value));
       await execute([kind, datasetId, '--file', file]);
@@ -257,7 +257,10 @@ describe('dataset commands', () => {
 
 describe('chart commands', () => {
   const data = [{ city: 'Hangzhou', sales: 10 }];
-  const spec = { chartType: 'column' as const, config: { type: 'column', data: [{ category: 'Hangzhou', value: 10 }] } };
+  const spec = {
+    chartType: 'column' as const,
+    config: { type: 'column', data: [{ category: 'Hangzhou', value: 10 }] },
+  };
   const html = '<!DOCTYPE html><html>chart</html>';
 
   it.each(['recommend', 'visualize'] as const)(

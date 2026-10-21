@@ -26,28 +26,28 @@ describe('loaders/csv-file', () => {
     const schema = await engine.schema();
 
     expect(schema).toEqual({
-      tables: [
+      models: [
         {
           name: 'data',
-          columnCount: 12,
-          fields: [
-            { name: 'order_id', type: 'VARCHAR', nullable: true },
-            { name: 'order_date', type: 'DATE', nullable: true },
-            { name: 'region', type: 'VARCHAR', nullable: true },
-            { name: 'category', type: 'VARCHAR', nullable: true },
-            { name: 'product', type: 'VARCHAR', nullable: true },
-            { name: 'channel', type: 'VARCHAR', nullable: true },
-            { name: 'quantity', type: 'BIGINT', nullable: true },
-            { name: 'unit_price', type: 'DOUBLE', nullable: true },
-            { name: 'discount', type: 'DOUBLE', nullable: true },
-            { name: 'sales', type: 'DOUBLE', nullable: true },
-            { name: 'cost', type: 'DOUBLE', nullable: true },
-            { name: 'profit', type: 'DOUBLE', nullable: true },
+          columns: [
+            { name: 'order_id', type: 'VARCHAR', notNull: false },
+            { name: 'order_date', type: 'DATE', notNull: false },
+            { name: 'region', type: 'VARCHAR', notNull: false },
+            { name: 'category', type: 'VARCHAR', notNull: false },
+            { name: 'product', type: 'VARCHAR', notNull: false },
+            { name: 'channel', type: 'VARCHAR', notNull: false },
+            { name: 'quantity', type: 'BIGINT', notNull: false },
+            { name: 'unit_price', type: 'DOUBLE', notNull: false },
+            { name: 'discount', type: 'DOUBLE', notNull: false },
+            { name: 'sales', type: 'DOUBLE', notNull: false },
+            { name: 'cost', type: 'DOUBLE', notNull: false },
+            { name: 'profit', type: 'DOUBLE', notNull: false },
           ],
-          indexes: [],
+          tableReference: { catalog: 'memory', schema: 'main', table: 'data' },
         },
       ],
-      relations: [],
+      relationships: [],
+      views: schema.models.map(({ name }) => ({ name, statement: expect.any(String) })),
     });
   });
 

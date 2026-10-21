@@ -26,59 +26,54 @@ describe.skipIf(process.env.AVA_POSTGRESQL_TEST !== '1')('loaders/postgresql', (
     const schema = await engine.schema();
 
     expect(schema).toEqual({
-      tables: [
+      models: [
         {
           name: 'customers',
-          columnCount: 6,
-          fields: [
-            { name: 'tenant_id', type: 'integer', nullable: false },
-            { name: 'customer_id', type: 'integer', nullable: false },
-            { name: 'name', type: 'character varying(100)', nullable: false },
-            { name: 'email', type: 'character varying(150)', nullable: true },
-            { name: 'created_on', type: 'date', nullable: false },
-            { name: 'profile', type: 'jsonb', nullable: true },
+          columns: [
+            { name: 'tenant_id', type: 'integer', notNull: true },
+            { name: 'customer_id', type: 'integer', notNull: true },
+            { name: 'name', type: 'character varying(100)', notNull: true },
+            { name: 'email', type: 'character varying(150)', notNull: false },
+            { name: 'created_on', type: 'date', notNull: true },
+            { name: 'profile', type: 'jsonb', notNull: false },
           ],
-          indexes: [
-            { name: 'customers_pkey', columns: ['tenant_id', 'customer_id'], unique: true, primary: true },
-            { name: 'uq_customers_email', columns: ['tenant_id', 'email'], unique: true, primary: false },
-          ],
+          primaryKey: ['tenant_id', 'customer_id'],
+          uniqueKeys: [['tenant_id', 'email']],
+          tableReference: { table: 'customers' },
         },
         {
           name: 'order notes',
-          columnCount: 2,
-          fields: [
-            { name: 'order_id', type: 'bigint', nullable: true },
-            { name: 'note"text', type: 'text', nullable: true },
+          columns: [
+            { name: 'order_id', type: 'bigint', notNull: false },
+            { name: 'note"text', type: 'text', notNull: false },
           ],
-          indexes: [],
+          tableReference: { table: 'order notes' },
         },
         {
           name: 'orders',
-          columnCount: 7,
-          fields: [
-            { name: 'order_id', type: 'bigint', nullable: false },
-            { name: 'tenant_id', type: 'integer', nullable: false },
-            { name: 'customer_id', type: 'integer', nullable: false },
-            { name: 'amount', type: 'numeric(10,2)', nullable: false },
-            { name: 'status', type: 'order_status', nullable: false },
-            { name: 'placed_at', type: 'timestamp without time zone', nullable: false },
-            { name: 'note', type: 'text', nullable: true },
+          columns: [
+            { name: 'order_id', type: 'bigint', notNull: true },
+            { name: 'tenant_id', type: 'integer', notNull: true },
+            { name: 'customer_id', type: 'integer', notNull: true },
+            { name: 'amount', type: 'numeric(10,2)', notNull: true },
+            { name: 'status', type: 'order_status', notNull: true },
+            { name: 'placed_at', type: 'timestamp without time zone', notNull: true },
+            { name: 'note', type: 'text', notNull: false },
           ],
-          indexes: [
-            { name: 'idx_orders_customer', columns: ['tenant_id', 'customer_id'], unique: false, primary: false },
-            { name: 'idx_orders_status_time', columns: ['status', 'placed_at'], unique: false, primary: false },
-            { name: 'orders_pkey', columns: ['order_id'], unique: true, primary: true },
-          ],
+          primaryKey: 'order_id',
+          tableReference: { table: 'orders' },
         },
       ],
-      relations: [
+      relationships: [
         {
           name: 'fk_orders_customer',
-          kind: 'foreign-key',
-          from: { table: 'orders', columns: ['tenant_id', 'customer_id'] },
-          to: { table: 'customers', columns: ['tenant_id', 'customer_id'] },
+          models: ['orders', 'customers'],
+          joinType: 'MANY_TO_ONE',
+          condition:
+            '"orders"."tenant_id" = "customers"."tenant_id" AND "orders"."customer_id" = "customers"."customer_id"',
         },
       ],
+      views: [],
     });
   }, 30000);
 });

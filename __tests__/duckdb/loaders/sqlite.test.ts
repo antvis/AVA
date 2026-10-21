@@ -18,108 +18,95 @@ describe('loaders/sqlite', () => {
   it('loads a SQLite file with a complete schema and queryable data', async () => {
     ava = new AVA({ llm: getLLMConfig() });
     const discover = vi.spyOn(DuckDBEngine.prototype, 'schema');
-    await ava.source({
-      type: 'sqlite',
-      options: { path: join(__dirname, '../../datasets/sales.sqlite') },
-    });
+    await ava.source({ type: 'sqlite', options: { path: join(__dirname, '../../datasets/sales.sqlite') } });
 
     const schema = await ava.schema();
     discover.mockRestore();
 
     expect(schema).toEqual({
-      tables: [
+      models: [
         {
           name: 'customers',
-          columnCount: 4,
-          fields: [
-            { name: 'id', type: 'INTEGER', nullable: false },
-            { name: 'name', type: 'TEXT', nullable: false },
-            { name: 'email', type: 'TEXT', nullable: true },
-            { name: 'referrer_id', type: 'INTEGER', nullable: true },
+          columns: [
+            { name: 'id', type: 'INTEGER', notNull: true },
+            { name: 'name', type: 'TEXT', notNull: true },
+            { name: 'email', type: 'TEXT', notNull: false },
+            { name: 'referrer_id', type: 'INTEGER', notNull: false },
           ],
-          indexes: [
-            { name: 'PRIMARY', columns: ['name'], unique: false, primary: false },
-            { name: 'sqlite_autoindex_customers_1', columns: ['email'], unique: true, primary: false },
-            { name: 'sqlite_primary_key_customers', columns: ['id'], unique: true, primary: true },
-          ],
+          primaryKey: 'id',
+          uniqueKeys: ['email'],
+          tableReference: { table: 'customers' },
         },
         {
           name: 'order notes',
-          columnCount: 3,
-          fields: [
-            { name: 'id', type: 'INTEGER', nullable: true },
-            { name: 'order_id', type: 'TEXT', nullable: true },
-            { name: 'note"text', type: 'TEXT', nullable: true },
+          columns: [
+            { name: 'id', type: 'INTEGER', notNull: false },
+            { name: 'order_id', type: 'TEXT', notNull: false },
+            { name: 'note"text', type: 'TEXT', notNull: false },
           ],
-          indexes: [
-            { name: "idx_notes'order", columns: ['order_id'], unique: false, primary: false },
-            { name: 'sqlite_autoindex_order notes_1', columns: ['id'], unique: true, primary: true },
-          ],
+          primaryKey: 'id',
+          tableReference: { table: 'order notes' },
         },
         {
           name: 'products',
-          columnCount: 4,
-          fields: [
-            { name: 'category', type: 'TEXT', nullable: false },
-            { name: 'product', type: 'TEXT', nullable: false },
-            { name: 'label', type: 'TEXT', nullable: true },
-            { name: 'image', type: 'BLOB', nullable: true },
+          columns: [
+            { name: 'category', type: 'TEXT', notNull: true },
+            { name: 'product', type: 'TEXT', notNull: true },
+            { name: 'label', type: 'TEXT', notNull: false },
+            { name: 'image', type: 'BLOB', notNull: false },
           ],
-          indexes: [
-            { name: 'sqlite_autoindex_products_1', columns: ['product', 'category'], unique: true, primary: true },
-          ],
+          primaryKey: ['product', 'category'],
+          tableReference: { table: 'products' },
         },
         {
           name: 'sales',
-          columnCount: 14,
-          fields: [
-            { name: 'order_id', type: 'TEXT', nullable: false },
-            { name: 'order_date', type: 'TEXT', nullable: false },
-            { name: 'region', type: 'TEXT', nullable: true },
-            { name: 'category', type: 'TEXT', nullable: false },
-            { name: 'product', type: 'TEXT', nullable: false },
-            { name: 'channel', type: 'TEXT', nullable: true },
-            { name: 'quantity', type: 'INTEGER', nullable: true },
-            { name: 'unit_price', type: 'REAL', nullable: true },
-            { name: 'discount', type: 'REAL', nullable: true },
-            { name: 'sales', type: 'REAL', nullable: true },
-            { name: 'cost', type: 'REAL', nullable: true },
-            { name: 'profit', type: 'REAL', nullable: true },
-            { name: 'customer_id', type: 'INTEGER', nullable: true },
-            { name: 'calculated_profit', type: 'REAL', nullable: true },
+          columns: [
+            { name: 'order_id', type: 'TEXT', notNull: true },
+            { name: 'order_date', type: 'TEXT', notNull: true },
+            { name: 'region', type: 'TEXT', notNull: false },
+            { name: 'category', type: 'TEXT', notNull: true },
+            { name: 'product', type: 'TEXT', notNull: true },
+            { name: 'channel', type: 'TEXT', notNull: false },
+            { name: 'quantity', type: 'INTEGER', notNull: false },
+            { name: 'unit_price', type: 'REAL', notNull: false },
+            { name: 'discount', type: 'REAL', notNull: false },
+            { name: 'sales', type: 'REAL', notNull: false },
+            { name: 'cost', type: 'REAL', notNull: false },
+            { name: 'profit', type: 'REAL', notNull: false },
+            { name: 'customer_id', type: 'INTEGER', notNull: false },
+            { name: 'calculated_profit', type: 'REAL', notNull: false },
           ],
-          indexes: [
-            { name: 'idx_sales_region_date', columns: ['region', 'order_date'], unique: false, primary: false },
-            { name: 'sqlite_autoindex_sales_1', columns: ['order_id'], unique: true, primary: true },
-          ],
+          primaryKey: 'order_id',
+          tableReference: { table: 'sales' },
         },
       ],
-      relations: [
+      relationships: [
         {
           name: 'fk_0',
-          kind: 'foreign-key',
-          from: { table: 'customers', columns: ['referrer_id'] },
-          to: { table: 'customers', columns: ['id'] },
+          models: ['customers', 'customers'],
+          joinType: 'MANY_TO_ONE',
+          condition: '"customers"."referrer_id" = "customers"."id"',
         },
         {
-          name: 'fk_0',
-          kind: 'foreign-key',
-          from: { table: 'order notes', columns: ['order_id'] },
-          to: { table: 'sales', columns: ['order_id'] },
+          name: 'fk_0_2',
+          models: ['order notes', 'sales'],
+          joinType: 'MANY_TO_ONE',
+          condition: '"order notes"."order_id" = "sales"."order_id"',
         },
         {
-          name: 'fk_0',
-          kind: 'foreign-key',
-          from: { table: 'sales', columns: ['product', 'category'] },
-          to: { table: 'products', columns: ['product', 'category'] },
+          name: 'fk_0_3',
+          models: ['sales', 'products'],
+          joinType: 'MANY_TO_ONE',
+          condition: '"sales"."product" = "products"."product" AND "sales"."category" = "products"."category"',
         },
         {
           name: 'fk_1',
-          kind: 'foreign-key',
-          from: { table: 'sales', columns: ['customer_id'] },
-          to: { table: 'customers', columns: ['id'] },
+          models: ['sales', 'customers'],
+          joinType: 'MANY_TO_ONE',
+          condition: '"sales"."customer_id" = "customers"."id"',
         },
       ],
+      views: [],
     });
 
     const result = await ava.engine!.execute('SELECT * FROM sales ORDER BY order_id', { maxRows: 240 });
@@ -182,18 +169,15 @@ it('profiles and queries actual storage types without dropping mixed values', as
   try {
     await ava.source({ type: 'sqlite', options: { path } });
     const profile = await ava.profile();
-    const table = profile.tables.find((table) => table.name === 'measurements')!;
-    expect(table.fields.find((field) => field.name === 'amount')).toMatchObject({
-      type: 'VARCHAR',
-      logicalType: 'string',
+    const table = profile.models.find((table) => table.name === 'measurements')!;
+    expect(table.columns.find((field) => field.name === 'amount')).toMatchObject({
+      properties: { logicalType: 'string' },
     });
-    expect(table.fields.find((field) => field.name === 'location')).toMatchObject({
-      type: 'VARCHAR',
-      logicalType: 'string',
+    expect(table.columns.find((field) => field.name === 'location')).toMatchObject({
+      properties: { logicalType: 'string' },
     });
-    expect(table.fields.find((field) => field.name === 'flexible')).toMatchObject({
-      type: 'BIGINT',
-      logicalType: 'numeric',
+    expect(table.columns.find((field) => field.name === 'flexible')).toMatchObject({
+      properties: { logicalType: 'numeric' },
     });
     expect(
       (

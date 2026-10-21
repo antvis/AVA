@@ -45,7 +45,7 @@ try {
 
   const schema = await ava.schema();
   const profile = await ava.profile();
-  console.log(schema.tables, profile.tables[0].metrics);
+  console.log(schema.models, profile.models[0].metrics);
 
   const result = await ava.analyze('Show total revenue by region');
   console.log(result.text, result.data);

@@ -1,12 +1,13 @@
-import { column, logicalTypes, table, TOP_VALUES_OPTIONS, validateMetricConfig } from '../../util/profile';
+import { column, logicalTypes, table, TOP_VALUES_OPTIONS, resolveMetric } from '../../util/profile';
 import { sqlIdentifier } from '../../util/sql';
 
-import type { FieldProfile, LogicalType, Metric, ParsedProfileOptions, Profile, Schema, TableProfile } from '../../types';
+import type { MetricField } from '../../util/profile';
+import type { LogicalType, Metric, ParsedProfileOptions, Profile, Schema } from '../../types';
 
 interface Context {
   table: string;
   column?: string;
-  field?: FieldProfile;
+  field?: MetricField;
   metric: ParsedProfileOptions['metrics'][number];
 }
 
@@ -53,7 +54,8 @@ export const BUILTIN_METRICS: ClickHouseMetric[] = [
   {
     id: 'duplicate_count',
     enable: column,
-    expression: ({ column }) => `countIf(isNotNull(${column})) - uniqExactIf(toString(${column}), isNotNull(${column}))`,
+    expression: ({ column }) =>
+      `countIf(isNotNull(${column})) - uniqExactIf(toString(${column}), isNotNull(${column}))`,
   },
   {
     id: 'top_values',
@@ -61,6 +63,7 @@ export const BUILTIN_METRICS: ClickHouseMetric[] = [
     options: TOP_VALUES_OPTIONS,
     expression: ({ table, column, metric }) => {
       const { limit = 3, maxDistinctRatio = 0.5 } = metric;
+      // ClickHouse cannot wrap Array in Nullable; JSON distinguishes omitted metrics from empty lists.
       return `if(uniqExactIf(${column}, isNotNull(${column})) > count() * ${maxDistinctRatio}, NULL,
         (SELECT toJSONString(groupArray((v, n))) FROM (
           SELECT ${column} AS v, count() AS n
@@ -74,48 +77,44 @@ export const BUILTIN_METRICS: ClickHouseMetric[] = [
   },
   {
     id: 'min',
-    enable: logicalTypes('numeric'),
-    expression: ({ column }) => `min(${numeric(column!)})`,
-  },
-  {
-    id: 'min',
-    enable: logicalTypes('date'),
-    expression: ({ column, field }) => `min(${timestampExpression(column!, field!.type)})`,
+    enable: logicalTypes('numeric', 'date'),
+    expression: ({ column, field }) =>
+      `min(${field!.logicalType === 'date' ? timestampExpression(column!, field!.type) : numeric(column!)})`,
   },
   {
     id: 'max',
-    enable: logicalTypes('numeric'),
-    expression: ({ column }) => `max(${numeric(column!)})`,
+    enable: logicalTypes('numeric', 'date'),
+    expression: ({ column, field }) =>
+      `max(${field!.logicalType === 'date' ? timestampExpression(column!, field!.type) : numeric(column!)})`,
   },
   {
-    id: 'max',
-    enable: logicalTypes('date'),
-    expression: ({ column, field }) => `max(${timestampExpression(column!, field!.type)})`,
+    id: 'min_length',
+    enable: logicalTypes('string'),
+    expression: ({ column }) => `min(lengthUTF8(toString(${column})))`,
   },
-  { id: 'min_length', enable: logicalTypes('string'), expression: ({ column }) => `min(lengthUTF8(toString(${column})))` },
-  { id: 'max_length', enable: logicalTypes('string'), expression: ({ column }) => `max(lengthUTF8(toString(${column})))` },
+  {
+    id: 'max_length',
+    enable: logicalTypes('string'),
+    expression: ({ column }) => `max(lengthUTF8(toString(${column})))`,
+  },
   { id: 'mean', enable: logicalTypes('numeric'), expression: ({ column }) => `avg(${numeric(column!)})` },
   { id: 'sum', enable: logicalTypes('numeric'), expression: ({ column }) => `sum(${numeric(column!)})` },
   { id: 'stddev', enable: logicalTypes('numeric'), expression: ({ column }) => `stddevSamp(${numeric(column!)})` },
   { id: 'median', enable: logicalTypes('numeric'), expression: ({ column }) => `median(${numeric(column!)})` },
 ];
 
-function parseTopValues(raw: unknown): Array<{ value: unknown; count: number }> | null {
-  if (raw == null) return null;
-  const parsed = typeof raw === 'string' ? JSON.parse(raw) : raw;
-  if (!Array.isArray(parsed)) return null;
-  return parsed
-    .map((entry) => {
-      if (Array.isArray(entry) && entry.length >= 2) {
-        return { value: entry[0], count: Number(entry[1]) };
-      }
-      if (entry && typeof entry === 'object' && 'value' in entry && 'count' in entry) {
-        const record = entry as { value: unknown; count: unknown };
-        return { value: record.value, count: Number(record.count) };
-      }
-      return null;
-    })
-    .filter((entry): entry is { value: unknown; count: number } => !!entry && Number.isFinite(entry.count));
+function parseTopValues(raw: unknown): Array<{ value: unknown; count: number }> {
+  if (typeof raw !== 'string') throw new Error('Invalid ClickHouse top_values result');
+  const entries = JSON.parse(raw);
+  if (!Array.isArray(entries)) throw new Error('Invalid ClickHouse top_values result');
+  return entries.map((entry) => {
+    if (!Array.isArray(entry) || entry.length !== 2) {
+      throw new Error('Invalid ClickHouse top_values entry');
+    }
+    const count = Number(entry[1]);
+    if (!Number.isFinite(count)) throw new Error('Invalid ClickHouse top_values count');
+    return { value: entry[0], count };
+  });
 }
 
 export async function profileTables(
@@ -123,24 +122,20 @@ export async function profileTables(
   schema: Schema,
   options: ParsedProfileOptions
 ): Promise<Profile> {
-  const metrics = options.metrics.map((metric) => {
-    validateMetricConfig(metric, BUILTIN_METRICS);
-    return { metric, definitions: BUILTIN_METRICS.filter(({ id }) => id === metric.id) };
-  });
-  const tables: TableProfile[] = [];
-  for (const source of schema.tables) {
-    const profile: TableProfile = {
-      ...source,
+  const metrics = options.metrics.map((metric) => ({ metric, definition: resolveMetric(metric, BUILTIN_METRICS) }));
+  const models: Profile['models'] = [];
+  for (const source of schema.models) {
+    const profile: Profile['models'][number] = {
+      name: source.name,
       metrics: {},
-      fields: source.fields.map((field) => ({ ...field, logicalType: logicalType(field.type), metrics: {} })),
+      columns: [],
     };
-    tables.push(profile);
+    models.push(profile);
     const pending: { expression: string; id: string; output: Record<string, unknown> }[] = [];
     const table = sqlIdentifier(source.name);
-    const add = (output: Record<string, unknown>, field?: FieldProfile) => {
-      for (const { metric, definitions } of metrics) {
-        const definition = definitions.find(({ enable }) => enable({ target: field ? 'column' : 'table', field }));
-        if (!definition) continue;
+    const add = (output: Record<string, unknown>, field?: MetricField) => {
+      for (const { metric, definition } of metrics) {
+        if (!definition.enable({ target: field ? 'column' : 'table', field })) continue;
         pending.push({
           id: metric.id,
           output,
@@ -154,23 +149,29 @@ export async function profileTables(
       }
     };
     add(profile.metrics);
-    profile.fields.forEach((field) => add(field.metrics, field));
+    profile.columns = source.columns.map((column) => {
+      const field = { ...column, logicalType: logicalType(column.type) };
+      const metrics = {};
+      add(metrics, field);
+      return { name: field.name, properties: { logicalType: field.logicalType }, metrics };
+    });
     if (!pending.length) continue;
     const [row] = await runQuery(
-      `SELECT ${pending.map(({ expression }, i) => `${expression} AS ${sqlIdentifier(`m${i}`)}`).join(', ')} FROM ${table}`
+      `SELECT ${pending
+        .map(({ expression }, i) => `${expression} AS ${sqlIdentifier(`m${i}`)}`)
+        .join(', ')} FROM ${table}`
     );
     if (!row) throw new Error(`Missing profile result for table: ${source.name}`);
     pending.forEach(({ id, output }, i) => {
       const raw = row[`m${i}`];
       delete output[id];
       if (id === 'top_values') {
-        const value = parseTopValues(raw);
-        if (value != null) output[id] = value;
+        if (raw != null) output[id] = parseTopValues(raw);
       } else {
         const value = raw == null ? null : Number(raw);
         output[id] = value === null || Number.isFinite(value) ? value : null;
       }
     });
   }
-  return { ...schema, tables, generatedAt: Date.now() };
+  return { models };
 }

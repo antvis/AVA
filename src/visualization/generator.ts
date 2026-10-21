@@ -127,14 +127,3 @@ ${JSON.stringify(data, null, 2)}
 
   return { ...(config as ChartConfig), type: chartType };
 }
-
-/** Generate a GPT-Vis JSON config and render it as standalone HTML. */
-export async function generateVisualizationHTML(
-  chartType: ChartType,
-  data: any,
-  query: string,
-  llmConfig: LLMConfig
-): Promise<{ config: ChartConfig; html: string }> {
-  const config = await generateVisualizationConfig(chartType, data, query, llmConfig);
-  return { config, html: wrapConfigInHTML(config) };
-}

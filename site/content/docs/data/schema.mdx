@@ -1,4 +1,4 @@
-`Schema` describes the structure of your data. `Profile` adds statistics such as row counts, minimums, and averages. Both belong to the currently loaded source.
+`Schema` describes the structure of your data. `Profile` contains independent statistics such as row counts, minimums, and averages. Both belong to the currently loaded source.
 
 ## Read the schema
 
@@ -11,7 +11,7 @@ await ava.source({
 });
 
 const schema = await ava.schema();
-console.log(schema.tables);
+console.log(schema.models);
 ```
 
 `source()` only loads the data. The first `schema()` call reads the structure through the engine and saves it; later calls return the saved schema. Analysis and profiling also obtain the schema when needed.
@@ -20,12 +20,14 @@ console.log(schema.tables);
 
 | Property | Meaning |
 | --- | --- |
-| `tables` | Tables or views available for queries |
-| `tables[].name` | Table name |
-| `tables[].columnCount` | Number of columns |
-| `tables[].fields` | Column names, types, and optional nullability |
-| `tables[].indexes` | Index definitions, including primary keys when available |
-| `relations` | Foreign-key relationships, when available |
+| `models` | Tables or views available for queries |
+| `models[].name` | Table name |
+| `models[].columns.length` | Number of columns |
+| `models[].columns` | Column names, types, and optional nullability |
+| `models[].tableReference` | Source catalog, schema and table identifiers |
+| `models[].primaryKey`, `models[].uniqueKeys` | Declared primary and unique keys |
+| `views` | Named view queries |
+| `relationships` | Foreign-key relationships, when available |
 
 The available details depend on the source and engine. A query result's `schema` describes only its output columns; it is not a source `Schema`.
 
@@ -35,8 +37,8 @@ Call `profile()` to calculate statistics through the engine:
 
 ```typescript
 const profile = await ava.profile({ metrics: ['row_count', 'mean'] });
-console.log(profile.tables[0].metrics);
-console.log(profile.tables[0].fields);
+console.log(profile.models[0].metrics);
+console.log(profile.models[0].columns);
 ```
 
 Each call calculates fresh statistics and saves the returned profile. Analysis, translation, and suggestions can then use it. Profiling requires engine support and does not call an LLM.
@@ -56,14 +58,13 @@ Metrics apply to compatible tables or columns. A supplied list replaces the defa
 
 ## Profile format
 
-A profile includes the schema and these additional fields:
+A profile matches the schema by model and column names and contains only observations:
 
 | Property | Meaning |
 | --- | --- |
-| `tables[].metrics` | Table statistics, such as `row_count` |
-| `tables[].fields[].metrics` | Column statistics, such as `mean` |
-| `tables[].fields[].logicalType` | Column category, such as `numeric` or `string` |
-| `generatedAt` | Creation time in Unix milliseconds |
+| `models[].metrics` | Table statistics, such as `row_count` |
+| `models[].columns[].metrics` | Column statistics, such as `mean` |
+| `models[].columns[].properties.logicalType` | Column category, such as `numeric` or `string` |
 
 A missing metric means it was not computed. It does not mean zero.
 

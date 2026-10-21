@@ -23,7 +23,7 @@ function columnsSQL(): string {
 SELECT 'column' AS kind, c.table_name,
   json_object(
     'name', c.name, 'type', c.type, 'position', c.cid,
-    'nullable', NOT (c."notnull" OR (c.pk > 0 AND NOT EXISTS (
+    'notNull', (c."notnull" OR (c.pk > 0 AND NOT EXISTS (
       SELECT 1 FROM indexes i WHERE i.table_name = c.table_name AND i.origin = 'pk'
     )))
   ) AS metadata
@@ -186,8 +186,8 @@ export async function loadSQLite(options: SQLiteSourceOptions): Promise<LoadedSo
     getSchema: async (conn) => {
       const reader = await conn.runAndReadAll(`SELECT * FROM ${sqliteQuerySQL(schemaSQL(tableNames))}`);
       const schema = rowObjects2Schema(reader.getRowObjectsJson());
-      for (const table of schema.tables) {
-        for (const field of table.fields) {
+      for (const table of schema.models) {
+        for (const field of table.columns) {
           const column = columnsByTable.get(table.name)!.find((column) => column.name === field.name)!;
           // Retain native spelling only when it describes the exposed execution type.
           if (duckDBType(field.type) !== column.resolvedType) field.type = column.resolvedType;

@@ -532,80 +532,6 @@ export interface LoadedSource {
 }
 
 /**
- * Data field metadata
- */
-export interface FieldMetadata {
-  /** Field name */
-  name: string;
-  /** Column type from the engine (e.g. DuckDB's BIGINT/VARCHAR) */
-  type: string;
-  /** Whether the column allows NULL (engine-reported). */
-  nullable?: boolean;
-}
-
-/**
- * A single index (or constraint-backed index) on a table.
- *
- * DuckDB: duckdb_constraints() for PK/UNIQUE + duckdb_indexes() for secondary indexes.
- * MySQL: INFORMATION_SCHEMA.STATISTICS (one row per column, grouped by index name).
- * PostgreSQL / Supabase: pg_index + pg_constraint (source catalog metadata).
- */
-export interface TableIndex {
-  /** Index name (e.g. "users_pkey", "idx_orders_user_id") */
-  name: string;
-  /** Indexed columns in order */
-  columns: string[];
-  /** Whether the index enforces uniqueness */
-  unique: boolean;
-  /**
-   * Whether this index backs a PRIMARY KEY constraint.
-   * DuckDB: duckdb_constraints().constraint_type = 'PRIMARY KEY'.
-   * MySQL: INDEX_NAME = 'PRIMARY'.
-   * PostgreSQL: pg_index.indisprimary.
-   */
-  primary?: boolean;
-}
-
-/**
- * A database foreign-key relation between tables exposed by a Schema.
- * Supports composite keys, self-relations and multiple relations between tables.
- */
-export interface TableRelation {
-  /** Foreign-key constraint name, when available. */
-  name?: string;
-  /** Currently only database foreign-key constraints are supported. */
-  kind: 'foreign-key';
-  /** Referencing side for a foreign key; table is the exact TableSchema.name. */
-  from: { table: string; columns: string[] };
-  /** Referenced side for a foreign key; columns pair with from.columns by position. */
-  to: { table: string; columns: string[] };
-}
-
-/**
- * Schema of a single table/view in the loaded data source
- */
-export interface TableSchema {
-  /** Table/view name as registered in the engine */
-  name: string;
-  /** Number of columns */
-  columnCount: number;
-  /** Field metadata */
-  fields: FieldMetadata[];
-  /** Indexes on this table. Empty array for tables with no indexes (file-based sources). */
-  indexes: TableIndex[];
-}
-
-/**
- * The overall schema of the loaded data source.
- */
-export interface Schema {
-  /** All tables/views exposed by the data source */
-  tables: TableSchema[];
-  /** Relations between tables */
-  relations?: TableRelation[];
-}
-
-/**
  * A field type shared by all engines.
  */
 export type LogicalType = 'numeric' | 'string' | 'boolean' | 'date' | 'unknown';
@@ -657,46 +583,6 @@ export type MetricConfig =
       [name: string]: unknown;
     };
 
-/**
- * A category value and its count.
- */
-export interface MetricFrequency {
-  /** The category value. */
-  value: string | boolean;
-  /** The number of times the value occurs. */
-  count: number;
-}
-
-/**
- * A field and its metric results.
- */
-export type FieldProfile = FieldMetadata & {
-  /** The field type shared by all engines. */
-  logicalType: LogicalType;
-  /** Results keyed by metric name. Missing results were not computed. */
-  metrics: Record<string, unknown>;
-};
-
-/**
- * A table and its metric results.
- */
-export type TableProfile = Omit<TableSchema, 'fields'> & {
-  /** Fields with their metric results. */
-  fields: FieldProfile[];
-  /** Table results keyed by metric name. */
-  metrics: Record<string, unknown>;
-};
-
-/**
- * The schema with metric results.
- */
-export type Profile = Omit<Schema, 'tables'> & {
-  /** Tables with their metric results. */
-  tables: TableProfile[];
-  /** The creation time in milliseconds since the Unix epoch. */
-  generatedAt: number;
-};
-
 /** Schema discovery currently has no configurable options. */
 export type SchemaOptions = Record<string, never>;
 
@@ -744,7 +630,7 @@ export interface AnalysisEngine {
   /** Compute statistics for the loaded data. */
   profile?(schema: Schema, options?: ProfileOptions): Promise<Profile>;
   /** Generate the executable DSL (SQL) for a natural-language query */
-  getDSL(query: string, context: DataContext): Promise<string>;
+  getDSL(query: string, dataModel: DataModel): Promise<string>;
   /** Execute one DSL statement with a bounded result. */
   execute<T = Record<string, unknown>>(dsl: string, options?: ExecutionOptions): Promise<ExecutionResult<T>>;
   /** Release resources (temp files, database connections) */
@@ -787,18 +673,177 @@ export type AnalysisStrategyConfig =
   | { type: 'loop'; maxSteps?: number }
   | { type: 'subset' };
 
-/** Dataset metadata supplied to model-facing consumers. */
-export interface DataContext {
-  schema: Schema;
-  /** Complete structural metadata with optional statistics. */
-  profile: Profile | null;
+/** Unified data structure, profiling results and semantics for AVA. */
+
+/** Serializable metadata values; numeric finiteness must be checked at runtime. */
+export type JsonValue = string | number | boolean | null | JsonValue[] | { [key: string]: JsonValue };
+
+/** Extensible metadata whose keys and meanings are agreed on by producers and consumers. */
+export type Properties = Record<string, JsonValue>;
+
+export interface Column {
+  /** Name exposed within the model; expressions can map it to a different source field. */
+  name: string;
+  /** Declared data type, or the target model name for a relationship column. */
+  type: string;
+  /** Name of the Relationship used for model navigation; not a foreign-key column name. */
+  relationship?: string;
+  /** Marks a column derived from an expression; execution is the engine's responsibility. */
+  isCalculated?: boolean;
+  /** Declared non-null constraint; omission is unspecified, not inferred from observed null counts. */
+  notNull?: boolean;
+  /** SQL mapping or calculation over the model source; null or omission supplies no expression. */
+  expression?: string | null;
+  /**
+   * Column observations keyed by metric name, e.g. null_count or min.
+   * Missing means uncomputed/omitted; null means no usable aggregate; zero and [] are actual results.
+   */
+  metrics?: Record<string, JsonValue>;
+  /** Column-level context such as descriptions or units; statistical results belong in metrics. */
+  properties?: Properties;
+}
+
+export interface TableReference {
+  /** Source catalog/database qualifier; omission leaves resolution to the execution context. */
+  catalog?: string;
+  /** Source schema qualifier; omission leaves resolution to the execution context. */
+  schema?: string;
+  /** Source table or view identifier, independent of the logical Model.name. */
+  table: string;
+  /** Source-specific attributes; consumers must validate their values before use. */
+  [key: string]: unknown;
+}
+
+/** A single column or a nonempty, ordered composite key. */
+export type PrimaryKey = string | [string, ...string[]];
+
+/** Exactly one of refSql, baseObject or tableReference identifies the source. */
+export type Model = {
+  /** Logical dataset name referenced by relationships, base objects and modeled queries. */
+  name: string;
+  /** Exposed physical, calculated and relationship columns; omission does not describe a zero-column source. */
+  columns?: Column[];
+  /** Declared row identifier; observed uniqueness alone does not establish a primary key. */
+  primaryKey?: PrimaryKey;
+  /** Alternative unique column sets; each array is one composite key, not several independent keys. */
+  uniqueKeys?: PrimaryKey[];
+  /**
+   * Model-wide observations keyed by metric name, e.g. row_count.
+   * Missing means uncomputed/omitted; null means no usable aggregate; zero and [] are actual results.
+   */
+  metrics?: Record<string, JsonValue>;
+  /** Model-level context such as business descriptions or source annotations. */
+  properties?: Properties;
+} & (
+  | {
+      /** SQL defining the model's source rows, before its column mappings and calculations. */
+      refSql: string;
+      /** Excluded when the source is SQL. */
+      baseObject?: never;
+      /** Excluded when the source is SQL. */
+      tableReference?: never;
+    }
+  | {
+      /** Excluded when the source is another modeled object. */
+      refSql?: never;
+      /** Name of the model or view supplying this model's source rows. */
+      baseObject: string;
+      /** Excluded when the source is another modeled object. */
+      tableReference?: never;
+    }
+  | {
+      /** Excluded when the source is a physical table reference. */
+      refSql?: never;
+      /** Excluded when the source is a physical table reference. */
+      baseObject?: never;
+      /** Physical table or view to resolve through the engine's connection. */
+      tableReference: TableReference;
+    }
+);
+
+/** Relationship cardinality, not a SQL join operator such as LEFT or INNER. */
+export type JoinType = 'ONE_TO_ONE' | 'ONE_TO_MANY' | 'MANY_TO_ONE' | 'MANY_TO_MANY';
+
+export interface Relationship {
+  /** Relationship identifier referenced by Column.relationship; distinguishes multiple joins between models. */
+  name: string;
+  /** Ordered model names; joinType describes the first model relative to the second. */
+  models: [string, string];
+  /** Declared relationship cardinality; does not select INNER/LEFT JOIN or derive from a data sample. */
+  joinType: JoinType;
+  /** SQL join predicate with qualified columns; composite relationships must include every column pair. */
+  condition: string;
+  /** Context for interpreting the relationship, such as its business meaning or declaration source. */
+  properties?: Properties;
+  /** Additional attributes with consumer-defined meaning; validate unknown values before use. */
+  [key: string]: unknown;
+}
+
+export interface View {
+  /** Logical name used to reference this reusable query. */
+  name: string;
+  /** SQL defining the view's result; declaring it here does not execute or materialize it. */
+  statement: string;
+  /** Context describing the view's purpose or business conventions. */
+  properties?: Properties;
+  /** Additional attributes with consumer-defined meaning; validate unknown values before use. */
+  [key: string]: unknown;
+}
+
+/** Schema, profiling and semantics enrich the same data model. */
+export interface DataModel {
+  /** Context shared across models; per-model and per-column metadata stays with its owning object. */
+  properties?: Properties;
+  /** Logical datasets, source mappings, columns and their computed observations. */
+  models?: Model[];
+  /** Declared joins between models; omission provides no evidence that models are unrelated. */
+  relationships?: Relationship[];
+  /** Reusable named queries; discovering a database view does not automatically supply its SQL definition. */
+  views?: View[];
+}
+
+/** Catalog-discoverable structure; excludes observations and application-defined semantics. */
+export interface Schema extends Pick<DataModel, 'models' | 'relationships' | 'views'> {
+  /** Physical tables and views with their catalog identity, exposed columns and declared unique keys. */
+  models: (Pick<Model, 'name' | 'primaryKey' | 'uniqueKeys'> & {
+    /** Source identity; catalog and schema are included when the engine exposes them. */
+    tableReference: Pick<TableReference, 'catalog' | 'schema' | 'table'>;
+    /** Catalog-reported types and nullability; no inferred business roles or calculation expressions. */
+    columns: Pick<Column, 'name' | 'type' | 'notNull'>[];
+  })[];
+  /** Foreign-key joins; include only when both endpoints are exposed and key constraints establish cardinality. */
+  relationships?: (Pick<Relationship, 'name' | 'models' | 'condition'> & {
+    /** Referencing model first; uniqueness of its foreign-key columns determines one-to-one versus many-to-one. */
+    joinType: Extract<JoinType, 'ONE_TO_ONE' | 'MANY_TO_ONE'>;
+  })[];
+  /** Named view queries; extract the query body from catalog DDL before assigning statement. */
+  views?: Pick<View, 'name' | 'statement'>[];
+}
+
+/** Observations matched to DataModel by model and column names, independently of structural discovery. */
+export interface Profile {
+  /** Model names identify the existing objects to enrich with observations. */
+  models: (Pick<Model, 'name'> & {
+    /** Model observations; an empty object means no model-level results were produced. */
+    metrics: NonNullable<Model['metrics']>;
+    /** Column names are resolved within the enclosing model. */
+    columns: (Pick<Column, 'name'> & {
+      /** Column observations; absent metric keys differ from null, zero and empty-array results. */
+      metrics: NonNullable<Column['metrics']>;
+      /** Profiling annotations needed to interpret engine-specific values. */
+      properties: {
+        /** Normalized value category; date bounds use Unix milliseconds and unknown preserves unsupported types. */
+        logicalType: 'numeric' | 'string' | 'boolean' | 'date' | 'unknown';
+      };
+    })[];
+  })[];
 }
 
 /** Runtime dependencies available to an analysis strategy. */
 export interface AnalysisRuntime {
   /** Dispatch an analysis stage event. */
   emit: (event: AnalysisEvent) => void;
-  context: DataContext;
+  dataModel: DataModel;
   engine: AnalysisEngine;
   llm: LLMConfig;
 }
@@ -815,7 +860,7 @@ export type AnalysisStrategy = (
  */
 export interface QueryDialect<TContext = void> {
   /** Generate the executable DSL (SQL) for a natural-language query. */
-  getDSL(query: string, context: DataContext): Promise<string>;
+  getDSL(query: string, dataModel: DataModel): Promise<string>;
   /** Validate one read-only statement and return the DSL to execute, normalized if needed. */
   validateDSL(dsl: string, context: TContext): Promise<string>;
 }

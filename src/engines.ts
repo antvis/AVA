@@ -25,13 +25,6 @@ export function registerEngine(type: EngineConfig['type'], engineClass: EngineCl
 }
 
 /**
- * Check whether an engine type has been registered.
- */
-export function hasEngine(type: EngineConfig['type']): boolean {
-  return registry.has(type);
-}
-
-/**
  * Look up the engine class for the given type. Throws if the type was not
  * registered in the current environment (e.g. DuckDB in a browser bundle).
  */

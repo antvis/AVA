@@ -26,10 +26,10 @@ describe.skipIf(process.env.AVA_PYTHON_DOCKER_TEST !== '1')('python Docker integ
       ]);
       expect((await ava.engine!.execute('result = df')).data).toEqual([{ value: 2 }, { value: 4 }, { value: null }]);
       const profile = await ava.profile({ metrics: ['row_count', 'null_count', 'min', 'max', 'mean'] });
-      expect(profile.tables[0].metrics).toEqual({ row_count: 3 });
-      expect(profile.tables[0].fields[0]).toMatchObject({
+      expect(profile.models[0].metrics).toEqual({ row_count: 3 });
+      expect(profile.models[0].columns[0]).toMatchObject({
         name: 'value',
-        logicalType: 'numeric',
+        properties: { logicalType: 'numeric' },
         metrics: { null_count: 1, min: 2, max: 4, mean: 3 },
       });
     } finally {
@@ -48,8 +48,8 @@ describe.skipIf(process.env.AVA_PYTHON_DOCKER_TEST !== '1')('python Docker integ
       try {
         await engine.load(config);
         const schema = await engine.schema();
-        expect(schema.tables.map((table) => table.name)).toEqual(kind === 'Excel' ? ['First', 'Second'] : ['data']);
-        expect(schema.tables[0].fields[0].name).toBe('value');
+        expect(schema.models.map((table) => table.name)).toEqual(kind === 'Excel' ? ['First', 'Second'] : ['data']);
+        expect(schema.models[0].columns[0].name).toBe('value');
         const result = await engine.execute(
           kind === 'Excel' ? "assert 'df' not in globals()\nresult = tables['Second']" : 'result = df'
         );

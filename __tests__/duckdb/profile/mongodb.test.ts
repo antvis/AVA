@@ -35,22 +35,17 @@ describe.skipIf(process.env.AVA_MONGODB_TEST !== '1')('profile/mongodb', () => {
 
     const profile = await engine.profile(await engine.schema());
 
-    expect(profile.tables.map(({ name, metrics }) => ({ name, metrics }))).toEqual([
+    expect(profile.models.map(({ name, metrics }) => ({ name, metrics }))).toEqual([
       { name: 'customers', metrics: { row_count: 3 } },
       { name: 'order notes', metrics: { row_count: 2 } },
       { name: 'orders', metrics: { row_count: 4 } },
     ]);
-    expect(profile.tables[0].fields.find(({ name }) => name === 'created_on')).toMatchObject({
-      logicalType: 'date',
-      metrics: {
-        null_count: 0,
-        distinct_count: 2,
-        min: Date.UTC(2024, 0, 10),
-        max: Date.UTC(2024, 1, 20),
-      },
+    expect(profile.models[0].columns.find(({ name }) => name === 'created_on')).toMatchObject({
+      properties: { logicalType: 'date' },
+      metrics: { null_count: 0, distinct_count: 2, min: Date.UTC(2024, 0, 10), max: Date.UTC(2024, 1, 20) },
     });
-    expect(profile.tables[2].fields.find(({ name }) => name === 'amount')).toMatchObject({
-      logicalType: 'numeric',
+    expect(profile.models[2].columns.find(({ name }) => name === 'amount')).toMatchObject({
+      properties: { logicalType: 'numeric' },
       metrics: { null_count: 0, distinct_count: 4, min: 10, max: 35.5, mean: 25 },
     });
   }, 30000);

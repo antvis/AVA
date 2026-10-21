@@ -1,0 +1,55 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`stringifyDataModel > renders model sources, constraints, columns and metadata as Markdown tables 1`] = `
+"# Data Model
+
+## Properties
+
+| Attribute | Value |
+| --- | --- |
+| description | Sales data |
+
+## Models
+
+### orders
+
+| Attribute | Value |
+| --- | --- |
+| tableReference | {"schema":"public","table":"raw&#95;orders"} |
+| primaryKey | &#91;"id","customer&#95;id"&#93; |
+| uniqueKeys | &#91;"id"&#93; |
+| metrics | {"row&#95;count":0} |
+| properties | {"description":"Confirmed orders"} |
+
+#### Columns
+
+| name | type | notNull | isCalculated | expression | metrics | properties | relationship |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| id | INTEGER | true |  |  |  |  |  |
+| amount | DOUBLE | false | true | price &#42; quantity | {"min":null,"max":0,"top&#95;values":&#91;&#93;} | {"unit":"USD"} |  |
+| customer | customers |  |  | null |  |  | order&#95;customer |
+
+### customers
+
+| Attribute | Value |
+| --- | --- |
+| baseObject | raw&#95;customers |
+
+### recent&#95;orders
+
+| Attribute | Value |
+| --- | --- |
+| refSql | SELECT &#42; FROM orders<br>WHERE id &#62; 0 |
+
+## Relationships
+
+| name | models | joinType | condition | properties | custom |
+| --- | --- | --- | --- | --- | --- |
+| order&#95;customer | &#91;"orders","customers"&#93; | MANY&#95;TO&#95;ONE | orders.customer&#95;id = customers.id | {"description":"Buyer"} | false |
+
+## Views
+
+| name | statement | custom |
+| --- | --- | --- |
+| all&#95;orders | SELECT &#42; FROM orders | {"enabled":true} |"
+`;

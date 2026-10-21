@@ -1,0 +1,339 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`getDuckDBSchema > discovers qualified models, ordered columns, composite keys and constraint-backed cardinalities 1`] = `
+{
+  "models": [
+    {
+      "columns": [
+        {
+          "name": "tenant_id",
+          "notNull": true,
+          "type": "INTEGER",
+        },
+        {
+          "name": "id",
+          "notNull": true,
+          "type": "INTEGER",
+        },
+        {
+          "name": "email",
+          "notNull": false,
+          "type": "VARCHAR",
+        },
+      ],
+      "name": "customers",
+      "primaryKey": [
+        "tenant_id",
+        "id",
+      ],
+      "tableReference": {
+        "catalog": "memory",
+        "schema": "analytics",
+        "table": "customers",
+      },
+      "uniqueKeys": [
+        "email",
+      ],
+    },
+    {
+      "columns": [
+        {
+          "name": "order_id",
+          "notNull": false,
+          "type": "INTEGER",
+        },
+        {
+          "name": "note",
+          "notNull": false,
+          "type": "VARCHAR",
+        },
+      ],
+      "name": "details",
+      "tableReference": {
+        "catalog": "memory",
+        "schema": "analytics",
+        "table": "details",
+      },
+      "uniqueKeys": [
+        "order_id",
+      ],
+    },
+    {
+      "columns": [
+        {
+          "name": "id",
+          "notNull": true,
+          "type": "INTEGER",
+        },
+        {
+          "name": "tenant_id",
+          "notNull": false,
+          "type": "INTEGER",
+        },
+        {
+          "name": "customer_id",
+          "notNull": false,
+          "type": "INTEGER",
+        },
+        {
+          "name": "amount",
+          "notNull": false,
+          "type": "DOUBLE",
+        },
+      ],
+      "name": "orders",
+      "primaryKey": "id",
+      "tableReference": {
+        "catalog": "memory",
+        "schema": "analytics",
+        "table": "orders",
+      },
+    },
+  ],
+  "relationships": [
+    {
+      "condition": ""details"."order_id" = "orders"."id"",
+      "joinType": "ONE_TO_ONE",
+      "models": [
+        "details",
+        "orders",
+      ],
+      "name": "details_order_id_id_fkey",
+    },
+    {
+      "condition": ""orders"."tenant_id" = "customers"."tenant_id" AND "orders"."customer_id" = "customers"."id"",
+      "joinType": "MANY_TO_ONE",
+      "models": [
+        "orders",
+        "customers",
+      ],
+      "name": "orders_tenant_id_customer_id_tenant_id_id_fkey",
+    },
+  ],
+  "views": [],
+}
+`;
+
+exports[`getDuckDBSchema > discovers replaced view definitions and preserves columns when the query returns no rows 1`] = `
+{
+  "after": {
+    "models": [
+      {
+        "columns": [
+          {
+            "name": "empty, value",
+            "notNull": false,
+            "type": "INTEGER",
+          },
+          {
+            "name": "label AS text",
+            "notNull": false,
+            "type": "VARCHAR",
+          },
+        ],
+        "name": "current_view",
+        "tableReference": {
+          "catalog": "memory",
+          "schema": "main",
+          "table": "current_view",
+        },
+      },
+    ],
+    "relationships": [],
+    "views": [
+      {
+        "name": "current_view",
+        "statement": "SELECT * FROM (WITH RECURSIVE "sequence" (n) AS ((SELECT 1) UNION  ALL (SELECT (n + 1) FROM "sequence" WHERE (n < 3)))SELECT n, 'AS ;' FROM "sequence" WHERE (n > 10)) AS "__ava_view"("empty, value", "label AS text")",
+      },
+    ],
+  },
+  "before": {
+    "models": [
+      {
+        "columns": [
+          {
+            "name": "original",
+            "notNull": false,
+            "type": "INTEGER",
+          },
+        ],
+        "name": "current_view",
+        "tableReference": {
+          "catalog": "memory",
+          "schema": "main",
+          "table": "current_view",
+        },
+      },
+    ],
+    "relationships": [],
+    "views": [
+      {
+        "name": "current_view",
+        "statement": "SELECT 1 AS original",
+      },
+    ],
+  },
+}
+`;
+
+exports[`getDuckDBSchema > preserves CTEs, joins, aggregates, windows and nested views in a qualified namespace 1`] = `
+{
+  "schema": {
+    "models": [
+      {
+        "columns": [
+          {
+            "name": "id",
+            "notNull": true,
+            "type": "INTEGER",
+          },
+          {
+            "name": "name",
+            "notNull": false,
+            "type": "VARCHAR",
+          },
+        ],
+        "name": "customers",
+        "primaryKey": "id",
+        "tableReference": {
+          "catalog": "memory",
+          "schema": "analytics",
+          "table": "customers",
+        },
+      },
+      {
+        "columns": [
+          {
+            "name": "customer_id",
+            "notNull": false,
+            "type": "INTEGER",
+          },
+          {
+            "name": "amount",
+            "notNull": false,
+            "type": "INTEGER",
+          },
+          {
+            "name": "status",
+            "notNull": false,
+            "type": "VARCHAR",
+          },
+        ],
+        "name": "orders",
+        "tableReference": {
+          "catalog": "memory",
+          "schema": "analytics",
+          "table": "orders",
+        },
+      },
+      {
+        "columns": [
+          {
+            "name": "customer, name",
+            "notNull": false,
+            "type": "VARCHAR",
+          },
+          {
+            "name": "total AS "net",
+            "notNull": false,
+            "type": "INTEGER",
+          },
+          {
+            "name": "position",
+            "notNull": false,
+            "type": "INTEGER",
+          },
+        ],
+        "name": "sales.report AS "quoted",
+        "tableReference": {
+          "catalog": "memory",
+          "schema": "analytics",
+          "table": "sales.report AS "quoted",
+        },
+      },
+      {
+        "columns": [
+          {
+            "name": "customer, name",
+            "notNull": false,
+            "type": "VARCHAR",
+          },
+          {
+            "name": "total AS "net",
+            "notNull": false,
+            "type": "INTEGER",
+          },
+          {
+            "name": "position",
+            "notNull": false,
+            "type": "INTEGER",
+          },
+        ],
+        "name": "top customers",
+        "tableReference": {
+          "catalog": "memory",
+          "schema": "analytics",
+          "table": "top customers",
+        },
+      },
+    ],
+    "relationships": [
+      {
+        "condition": ""orders"."customer_id" = "customers"."id"",
+        "joinType": "MANY_TO_ONE",
+        "models": [
+          "orders",
+          "customers",
+        ],
+        "name": "orders_customer_id_id_fkey",
+      },
+    ],
+    "views": [
+      {
+        "name": "sales.report AS "quoted",
+        "statement": "SELECT * FROM (WITH totals AS (SELECT c."name", CAST(COALESCE(sum(o.amount) FILTER (WHERE (o.status = 'paid')), 0) AS INTEGER) AS total FROM customers AS c LEFT JOIN orders AS o ON ((c.id = o.customer_id)) GROUP BY c."name")SELECT "name", total, CAST(row_number() OVER (ORDER BY total DESC, "name") AS INTEGER) FROM totals) AS "__ava_view"("customer, name", "total AS ""net", "position")",
+      },
+      {
+        "name": "top customers",
+        "statement": "(SELECT * FROM "sales.report AS ""quoted" WHERE ("total AS ""net" >= 50)) UNION ALL (SELECT 'literal AS ; --', 0, 99)",
+      },
+    ],
+  },
+  "selected": {
+    "models": [
+      {
+        "columns": [
+          {
+            "name": "customer, name",
+            "notNull": false,
+            "type": "VARCHAR",
+          },
+          {
+            "name": "total AS "net",
+            "notNull": false,
+            "type": "INTEGER",
+          },
+          {
+            "name": "position",
+            "notNull": false,
+            "type": "INTEGER",
+          },
+        ],
+        "name": "top customers",
+        "tableReference": {
+          "catalog": "memory",
+          "schema": "analytics",
+          "table": "top customers",
+        },
+      },
+    ],
+    "relationships": [],
+    "views": [
+      {
+        "name": "top customers",
+        "statement": "(SELECT * FROM "sales.report AS ""quoted" WHERE ("total AS ""net" >= 50)) UNION ALL (SELECT 'literal AS ; --', 0, 99)",
+      },
+    ],
+  },
+}
+`;

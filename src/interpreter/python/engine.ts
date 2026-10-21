@@ -4,7 +4,7 @@ import { generateText } from 'ai';
 import { z } from 'zod';
 
 import { languageModel } from '../../util/model';
-import { stringifyProfile, stringifySchema } from '../../util/context';
+import { stringifyDataModel } from '../../util/data-model';
 import { executionResult, maxRows, maxResultBytes } from '../../util/result';
 import { DEFAULT_METRICS, parseProfileOptions, profileMetadataSchema } from '../../util/profile';
 import { runWithTimeout } from '../../util/timeout';
@@ -16,7 +16,7 @@ import { executionCode } from './util/code';
 
 import type {
   AnalysisEngine,
-  DataContext,
+  DataModel,
   DataSourceConfig,
   ExecutionOptions,
   ExecutionResult,
@@ -71,13 +71,13 @@ Do not read files, access the network, install packages, or print the answer.`,
     if (new Set(tables.map((table) => table.name)).size !== tables.length) {
       throw new Error('Python source returned duplicate table names');
     }
-    return { tables } as Schema;
+    return { models: tables } as Schema;
   }
 
-  async getDSL(query: string, context: DataContext): Promise<string> {
+  async getDSL(query: string, dataModel: DataModel): Promise<string> {
     if (!this.source) throw new Error('No data loaded. Please call source() first.');
 
-    const dataset = context.profile ? stringifyProfile(context.profile) : stringifySchema(context.schema);
+    const dataset = stringifyDataModel(dataModel);
 
     const response = await generateText({
       model: languageModel(this.llmConfig),
@@ -105,7 +105,7 @@ Return ONLY executable Python code without explanation.`,
     if (!this.source) throw new Error('No data loaded. Please call source() first.');
 
     const tables = await this.metadata(profileCode(parseProfileOptions(options, { metrics: DEFAULT_METRICS }), schema));
-    return profileMetadataSchema.parse({ ...schema, tables, generatedAt: Date.now() });
+    return profileMetadataSchema.parse({ models: tables });
   }
 
   async execute<T = Record<string, unknown>>(code: string, options?: ExecutionOptions): Promise<ExecutionResult<T>> {

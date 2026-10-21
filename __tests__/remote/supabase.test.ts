@@ -21,32 +21,22 @@ const DISCOVERY_ROWS = [
   {
     kind: 'column',
     table_name: 'users',
-    metadata: JSON.stringify({ name: 'id', type: 'bigint', nullable: false, position: 1 }),
+    metadata: { name: 'id', type: 'bigint', notNull: true, position: 1 },
   },
   {
     kind: 'column',
     table_name: 'users',
-    metadata: JSON.stringify({ name: 'name', type: 'text', nullable: true, position: 2 }),
+    metadata: { name: 'name', type: 'text', notNull: false, position: 2 },
   },
   {
     kind: 'index',
     table_name: 'users',
-    metadata: JSON.stringify({
+    metadata: {
       name: 'users_pkey',
       unique: true,
       primary: true,
-      definition: 'CREATE UNIQUE INDEX users_pkey ON public.users USING btree (id)',
-    }),
-  },
-  {
-    kind: 'index',
-    table_name: 'users',
-    metadata: JSON.stringify({
-      name: 'idx_users_name',
-      unique: false,
-      primary: false,
-      definition: 'CREATE INDEX idx_users_name ON public.users USING btree (name)',
-    }),
+      columns: ['id'],
+    },
   },
 ];
 
@@ -119,10 +109,7 @@ describe('SupabaseEngine', () => {
       );
       const engine = new SupabaseEngine(getLLMConfig());
       await engine.load({ type: 'supabase', options: CONNECTION });
-      const pending = expect(engine.schema()).rejects.toMatchObject({
-        name: 'AbortError',
-        message: 'aborted',
-      });
+      const pending = expect(engine.schema()).rejects.toMatchObject({ name: 'AbortError', message: 'aborted' });
       await vi.advanceTimersByTimeAsync(29_999);
       expect(bodyStarted).toBe(true);
       expect(vi.getTimerCount()).toBe(1);
@@ -130,7 +117,7 @@ describe('SupabaseEngine', () => {
       await pending;
       expect(vi.getTimerCount()).toBe(0);
       await engine.dispose();
-      await expect(engine.profile({ tables: [] })).rejects.toThrow('No data loaded');
+      await expect(engine.profile({ models: [] })).rejects.toThrow('No data loaded');
     });
 
     it('clears request timers on success and preserves HTTP errors', async () => {
@@ -155,15 +142,14 @@ describe('SupabaseEngine', () => {
 
     it('preserves the raw HTTP error body without parsing it', async () => {
       const detail = JSON.stringify({ code: '42601', message: 'invalid query' });
-      vi.stubGlobal('fetch', vi.fn(async () => ({ ok: false, status: 400, text: async () => detail })));
+      vi.stubGlobal(
+        'fetch',
+        vi.fn(async () => ({ ok: false, status: 400, text: async () => detail }))
+      );
       const engine = new SupabaseEngine(getLLMConfig());
       await engine.load({ type: 'supabase', options: CONNECTION });
 
-      await expect(engine.schema()).rejects.toMatchObject({
-        name: 'SupabaseApiError',
-        status: 400,
-        detail,
-      });
+      await expect(engine.schema()).rejects.toMatchObject({ name: 'SupabaseApiError', status: 400, detail });
     });
 
     it('lets network failures propagate unchanged', async () => {
@@ -201,18 +187,18 @@ describe('SupabaseEngine', () => {
             {
               kind: 'column',
               table_name: 'orders',
-              metadata: JSON.stringify({ name: 'buyer_id', type: 'bigint', nullable: true, position: 1 }),
+              metadata: { name: 'buyer_id', type: 'bigint', notNull: false, position: 1 },
             },
             {
               kind: 'foreign-key-column',
               table_name: 'orders',
-              metadata: JSON.stringify({
+              metadata: {
                 name: 'buyer_fk',
                 column: 'buyer_id',
                 referencedTable: 'users',
                 referencedColumn: 'id',
                 position: 1,
-              }),
+              },
             },
           ],
         },
@@ -225,27 +211,36 @@ describe('SupabaseEngine', () => {
       expect(parsed.stmts).toHaveLength(1);
       expect(parsed.stmts![0].stmt).toHaveProperty('SelectStmt');
       expect(requests[0].body.read_only).toBe(true);
-      expect(schema.tables.find(({ name }) => name === 'users')).toMatchObject({
-        fields: [
-          { name: 'id', type: 'bigint', nullable: false },
-          { name: 'name', type: 'text', nullable: true },
+      expect(schema).toEqual({
+        models: [
+          {
+            name: 'orders',
+            tableReference: { table: 'orders' },
+            columns: [{ name: 'buyer_id', type: 'bigint', notNull: false }],
+          },
+          {
+            name: 'users',
+            tableReference: { table: 'users' },
+            columns: [
+              { name: 'id', type: 'bigint', notNull: true },
+              { name: 'name', type: 'text', notNull: false },
+            ],
+            primaryKey: 'id',
+          },
         ],
-        indexes: [
-          { name: 'idx_users_name', columns: ['name'], unique: false, primary: false },
-          { name: 'users_pkey', columns: ['id'], unique: true, primary: true },
+        relationships: [
+          {
+            name: 'buyer_fk',
+            models: ['orders', 'users'],
+            joinType: 'MANY_TO_ONE',
+            condition: '"orders"."buyer_id" = "users"."id"',
+          },
         ],
+        views: [],
       });
-      expect(schema.relations).toEqual([
-        {
-          name: 'buyer_fk',
-          kind: 'foreign-key',
-          from: { table: 'orders', columns: ['buyer_id'] },
-          to: { table: 'users', columns: ['id'] },
-        },
-      ]);
       const generate = vi.spyOn(PostgreSQLQueryDialect.prototype, 'getDSL').mockResolvedValue('SELECT 1');
-      await engine.getDSL('Orders by buyer', { schema });
-      expect(generate).toHaveBeenCalledWith('Orders by buyer', { schema });
+      await engine.getDSL('Orders by buyer', schema);
+      expect(generate).toHaveBeenCalledWith('Orders by buyer', schema);
       expect(requests).toHaveLength(1);
     });
   });
@@ -290,17 +285,16 @@ describe('SupabaseEngine', () => {
   describe('profile', () => {
     const metrics = PG_METRICS.map(({ id }) => ({ id }));
     const schema: Schema = {
-      tables: [
+      models: [
         {
           name: 'order notes',
-          columnCount: 4,
-          indexes: [],
-          fields: [
+          columns: [
             { name: 'n', type: 'double precision' },
             { name: 'note"text', type: 'text' },
             { name: 'day', type: 'timestamp(3) without time zone' },
             { name: 'extra', type: 'json' },
           ],
+          tableReference: { table: 'order notes' },
         },
       ],
     };
@@ -312,9 +306,24 @@ describe('SupabaseEngine', () => {
       const selected = { metrics: [{ id: 'row_count' }, { id: 'mean' }, { id: 'top_values' }] };
       const result = await pgProfile(run, schema, selected);
       expect(run).toHaveBeenCalledTimes(1);
-      expect(result.tables[0].metrics.row_count).toBe(4);
-      expect(result.tables[0].fields[0].metrics.mean).toBeNull();
-      expect(result.tables[0].fields[1].metrics.top_values).toEqual([{ value: 'A', count: 2 }]);
+      expect(result).toEqual({
+        models: [
+          {
+            name: 'order notes',
+            metrics: { row_count: 4 },
+            columns: [
+              { name: 'n', properties: { logicalType: 'numeric' }, metrics: { mean: null } },
+              {
+                name: 'note"text',
+                properties: { logicalType: 'string' },
+                metrics: { top_values: [{ value: 'A', count: 2 }] },
+              },
+              { name: 'day', properties: { logicalType: 'date' }, metrics: {} },
+              { name: 'extra', properties: { logicalType: 'unknown' }, metrics: {} },
+            ],
+          },
+        ],
+      });
       const query = run.mock.calls[0][0];
       expect(query).toContain('"public"."order notes"');
       expect(query).toContain('"note""text"');
@@ -329,8 +338,24 @@ describe('SupabaseEngine', () => {
         schema,
         { metrics }
       );
-      run.mockClear();
-      await pgProfile(run, schema, { metrics: [] });
+    });
+
+    it('skips queries for empty selections and propagates query failures', async () => {
+      const run = vi.fn();
+      expect(await pgProfile(run, schema, { metrics: [] })).toEqual({
+        models: [
+          {
+            name: 'order notes',
+            metrics: {},
+            columns: [
+              { name: 'n', properties: { logicalType: 'numeric' }, metrics: {} },
+              { name: 'note"text', properties: { logicalType: 'string' }, metrics: {} },
+              { name: 'day', properties: { logicalType: 'date' }, metrics: {} },
+              { name: 'extra', properties: { logicalType: 'unknown' }, metrics: {} },
+            ],
+          },
+        ],
+      });
       expect(run).not.toHaveBeenCalled();
       await expect(
         pgProfile(
@@ -338,7 +363,7 @@ describe('SupabaseEngine', () => {
             throw new Error('query failed');
           },
           schema,
-          selected
+          { metrics: [{ id: 'row_count' }] }
         )
       ).rejects.toThrow('query failed');
     });
@@ -348,14 +373,14 @@ describe('SupabaseEngine', () => {
         .fn()
         .mockResolvedValueOnce({
           ok: true,
-          json: async () => [{ kind: 'table', table_name: 'orders', metadata: '{}' }],
+          json: async () => [{ kind: 'table', table_name: 'orders', metadata: {} }],
         })
         .mockResolvedValueOnce({ ok: true, json: async () => [{ m0: '4' }] });
       vi.stubGlobal('fetch', fetch);
       const ava = new AVA({ llm: getLLMConfig(), engine: { type: 'supabase' } });
       try {
         await ava.source({ type: 'supabase', options: { accessToken: 'test', projectRef: 'test' } });
-        expect((await ava.profile()).tables[0].metrics).toEqual({ row_count: 4 });
+        expect((await ava.profile()).models[0].metrics).toEqual({ row_count: 4 });
         expect(fetch).toHaveBeenCalledTimes(2);
         expect(JSON.parse(fetch.mock.calls[1][1].body)).toMatchObject({ read_only: true });
         expect(fetch.mock.calls[1][1].signal).toBeInstanceOf(AbortSignal);
@@ -370,7 +395,7 @@ describe('SupabaseEngine', () => {
       stubApi([{ rows: [] }]);
       const engine = new SupabaseEngine(getLLMConfig());
       const config = { type: 'supabase' as const, options: CONNECTION };
-      await expect(engine.profile({ tables: [] })).rejects.toThrow('No data loaded');
+      await expect(engine.profile({ models: [] })).rejects.toThrow('No data loaded');
       await engine.load(config);
       for (const limit of [NaN, -1]) {
         await expect(engine.profile(await engine.schema(), { metrics: [{ id: 'top_values', limit }] })).rejects.toThrow(
@@ -382,10 +407,10 @@ describe('SupabaseEngine', () => {
         'Unknown option'
       );
       await engine.dispose();
-      await expect(engine.profile({ tables: [] })).rejects.toThrow('No data loaded');
+      await expect(engine.profile({ models: [] })).rejects.toThrow('No data loaded');
       await engine.load(config);
       await expect(engine.load({ type: 'csv-file', options: { path: 'unused' } })).rejects.toThrow('only supports');
-      await expect(engine.profile({ tables: [] })).rejects.toThrow('No data loaded');
+      await expect(engine.profile({ models: [] })).rejects.toThrow('No data loaded');
     });
   });
 });

@@ -6,7 +6,7 @@ import EventEmitter from '@antv/event-emitter';
 import { getEngineClass } from './engines';
 import { extractDataSchema, schemaMetadataSchema } from './util/schema';
 import { profileMetadataSchema } from './util/profile';
-import { stringifySchema } from './util/context';
+import { buildDataModel, stringifyDataModel } from './util/data-model';
 import { adviseChartType, generateVisualizationConfig, wrapConfigInHTML } from './visualization';
 import { generateSuggestions } from './suggest';
 import { analyze } from './analysis';
@@ -22,12 +22,12 @@ import {
 import { serializeError } from './util/error';
 
 import type {
+  DataModel,
   AVAConfig,
   LLMConfig,
   EngineConfig,
   DataSourceConfig,
   SchemaOptions,
-  DataContext,
   Schema,
   AnalysisEngine,
   AnalysisResponse,
@@ -70,20 +70,15 @@ export class AVA extends EventEmitter {
     this.engineConfig = config.engine ?? { type: 'duckdb' };
   }
 
-  /**
-   * Data context.
-   */
-  private async getContext(needProfile = false): Promise<DataContext> {
+  /** Assemble the dataset model when a model-facing operation needs it. */
+  private async getDataModel(needProfile = false): Promise<DataModel> {
     this.dataSchema ??= await this.engine!.schema();
 
     if (needProfile && !this.dataProfile && this.engine?.profile) {
-      this.dataProfile = await this.engine!.profile!(this.dataSchema);
+      this.dataProfile = await this.engine.profile(this.dataSchema);
     }
 
-    return {
-      schema: this.dataSchema,
-      profile: this.dataProfile,
-    };
+    return buildDataModel({ schema: this.dataSchema, profile: this.dataProfile ?? undefined });
   }
 
   /**
@@ -229,7 +224,7 @@ export class AVA extends EventEmitter {
     try {
       const runtime = {
         emit: (event: AnalysisEvent) => emit(this, event),
-        context: await this.getContext(config.strategy?.type === 'subset'),
+        dataModel: await this.getDataModel(config.strategy?.type === 'subset'),
         engine: this.engine,
         llm: this.llmConfig,
       };
@@ -258,7 +253,7 @@ export class AVA extends EventEmitter {
 
     let dsl: string;
     try {
-      dsl = await this.engine.getDSL(query, await this.getContext());
+      dsl = await this.engine.getDSL(query, await this.getDataModel());
     } catch (error) {
       emit(this, new AnalysisEvent(AnalysisEventType.TRANSLATE_END, { error: serializeError(error) }));
 
@@ -328,7 +323,7 @@ export class AVA extends EventEmitter {
     const { data, query } = analysisResult;
     if (!hasData(data)) return null;
 
-    const dataInfo = Array.isArray(data) ? stringifySchema(extractDataSchema(data)) : JSON.stringify(data);
+    const dataInfo = Array.isArray(data) ? stringifyDataModel(extractDataSchema(data)) : JSON.stringify(data);
     const chartType = await adviseChartType(query, dataInfo, this.llmConfig);
     if (!chartType) return null;
 
@@ -355,7 +350,7 @@ export class AVA extends EventEmitter {
 
     let result: SuggestResult[];
     try {
-      result = await generateSuggestions(this.llmConfig, await this.getContext(), count);
+      result = await generateSuggestions(this.llmConfig, await this.getDataModel(), count);
     } catch (error) {
       emit(this, new ExecutionEvent(ExecutionEventType.SUGGEST_END, { error: serializeError(error) }));
 

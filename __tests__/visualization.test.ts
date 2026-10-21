@@ -28,7 +28,11 @@ describe('chart recommendation', () => {
     reply(`\`\`\`json\n${json}\n\`\`\``);
     expect(await ava['recommend'](result)).toEqual({ chartType: 'column', config });
     expect(generateText).toHaveBeenCalledTimes(2);
-    expect(vi.mocked(generateText).mock.calls[0][0].prompt).toContain(result.query);
+    const prompt = vi.mocked(generateText).mock.calls[0][0].prompt;
+    expect(prompt).toContain(result.query);
+    expect(prompt).toContain('# Data Model');
+    expect(prompt).toContain('| city | string |');
+    expect(prompt).toContain('| revenue | number |');
     expect(vi.mocked(generateText).mock.calls[1][0].prompt).toContain('Hangzhou');
   });
 

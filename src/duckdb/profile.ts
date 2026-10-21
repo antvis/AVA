@@ -1,18 +1,8 @@
 import { sqlIdentifier } from '../util/sql';
-import { validateMetricConfig, table, column, logicalTypes, TOP_VALUES_OPTIONS } from '../util/profile';
+import { resolveMetric, table, column, logicalTypes, TOP_VALUES_OPTIONS } from '../util/profile';
 
-import type {
-  DuckDBConnection,
-  Schema,
-  ParsedProfileOptions,
-  FieldProfile,
-  LogicalType,
-  Metric,
-  MetricId,
-  Profile,
-  TableProfile,
-  TableSchema,
-} from '../types';
+import type { MetricField } from '../util/profile';
+import type { DuckDBConnection, Schema, ParsedProfileOptions, LogicalType, Metric, MetricId, Profile } from '../types';
 
 /** Map a database type to a profile type. */
 export function logicalType(nativeType: string): LogicalType {
@@ -26,14 +16,13 @@ export function logicalType(nativeType: string): LogicalType {
   if (/^(VARCHAR|CHAR|BPCHAR|TEXT|STRING|UUID|ENUM\(.*\))$/i.test(nativeType)) return 'string';
   if (/^BOOLEAN$/i.test(nativeType)) return 'boolean';
   if (/^(DATE|TIMESTAMP(?:_S|_MS|_NS|TZ| WITH TIME ZONE)?)$/i.test(nativeType)) return 'date';
-  // Other types are unknown.
   return 'unknown';
 }
 
 interface ExpressionContext {
   readonly table: string;
   readonly column?: string;
-  readonly field?: FieldProfile;
+  readonly field?: MetricField;
   readonly metric: ParsedProfileOptions['metrics'][number];
 }
 
@@ -52,7 +41,6 @@ function range(fn: string, context: ExpressionContext): string {
   return context.field?.logicalType === 'date' ? `epoch_ms(${expression})` : expression;
 }
 
-// TODO(profile): Add histograms and quartiles with clear result formats and boundary tests.
 export const BUILTIN_METRICS: DuckDBMetric[] = [
   { id: 'row_count', enable: table, expression: () => 'COUNT(*)' },
   { id: 'null_count', enable: column, expression: ({ column }) => `COUNT(*) - COUNT(${column})` },
@@ -103,15 +91,7 @@ export const BUILTIN_METRICS: DuckDBMetric[] = [
 
 export { DEFAULT_METRICS } from '../util/profile';
 
-function getMetric(id: MetricId): DuckDBMetric {
-  const metric = BUILTIN_METRICS.find((definition) => definition.id === id);
-  if (!metric) throw new Error(`Unknown metric: ${id}`);
-  return metric;
-}
-
-/**
- * Add query values to the metric results.
- */
+/** Decode aggregate values into profile metrics. */
 function postProcessMetrics(
   row: Record<string, unknown>,
   pending: { metricId: MetricId; output: Record<string, unknown> }[]
@@ -119,56 +99,40 @@ function postProcessMetrics(
   for (let i = 0; i < pending.length; i += 1) {
     const { metricId, output } = pending[i];
     const raw = row[`m${i}`];
+    delete output[metricId];
     if (metricId === 'top_values' && raw == null) continue;
     if (Array.isArray(raw)) {
       output[metricId] = raw;
     } else {
-      // Keep numeric metrics usable in JavaScript.
-      // TODO(profile): Add a lossless format if exact large numbers are needed.
+      // Profile numbers use JavaScript precision, including BIGINT and DECIMAL results.
       const number = raw == null ? null : Number(raw);
       output[metricId] = number === null || Number.isFinite(number) ? number : null;
     }
   }
 }
 
-function initTableProfile(table: TableSchema): TableProfile {
-  return {
-    ...table,
-    metrics: {},
-    fields: table.fields.map((field) => ({
-      ...field,
-      logicalType: logicalType(field.type),
-      metrics: {},
-    })),
-  };
-}
-
-/**
- * Build profiles for all tables.
- */
+/** Compute requested metrics for each model and column. */
 export async function profileTables(
   connection: DuckDBConnection,
   schema: Schema,
   options: ParsedProfileOptions
 ): Promise<Profile> {
-  const { metrics } = options;
-  const profiles: TableProfile[] = [];
+  const metrics = options.metrics.map((metric) => ({ metric, definition: resolveMetric(metric, BUILTIN_METRICS) }));
+  const profiles: Profile['models'] = [];
 
-  for (const table of schema.tables) {
+  for (const table of schema.models) {
     const { name } = table;
-    const profile = initTableProfile(table);
+    const profile: Profile['models'][number] = {
+      name,
+      metrics: {},
+      columns: [],
+    };
     profiles.push(profile);
 
     const pending: Array<{ expression: string; metricId: MetricId; output: Record<string, unknown> }> = [];
 
-    const addMetrics = (output: Record<string, unknown>, field?: FieldProfile) => {
-      for (const metric of metrics) {
-        if (!validateMetricConfig(metric, BUILTIN_METRICS)) {
-          continue;
-        }
-
-        const definition = getMetric(metric.id);
-
+    const addMetrics = (output: Record<string, unknown>, field?: MetricField) => {
+      for (const { metric, definition } of metrics) {
         const target = field ? 'column' : 'table';
         if (!definition.enable({ target, field })) {
           continue;
@@ -187,21 +151,16 @@ export async function profileTables(
       }
     };
 
-    const addTableMetrics = (table: TableProfile) => {
-      addMetrics(table.metrics);
-    };
-    const addFieldMetrics = (field: FieldProfile) => {
-      addMetrics(field.metrics, field);
-    };
-
-    // Add metrics for the table.
-    addTableMetrics(profile);
-    // Add metrics for each field (column) in the table.
-    profile.fields.forEach(addFieldMetrics);
+    addMetrics(profile.metrics);
+    profile.columns = table.columns.map((column) => {
+      const field = { ...column, logicalType: logicalType(column.type) };
+      const metrics = {};
+      addMetrics(metrics, field);
+      return { name: field.name, properties: { logicalType: field.logicalType }, metrics };
+    });
 
     if (!pending.length) continue;
 
-    // Collect the requested statistics.
     const sql = `SELECT ${pending
       .map(({ expression }, i) => `${expression} AS ${sqlIdentifier(`m${i}`)}`)
       .join(', ')} FROM ${sqlIdentifier(name)}`;
@@ -209,5 +168,5 @@ export async function profileTables(
     postProcessMetrics(row, pending);
   }
 
-  return { ...schema, tables: profiles, generatedAt: Date.now() };
+  return { models: profiles };
 }

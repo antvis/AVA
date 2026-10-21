@@ -1,4 +1,4 @@
-import { column, logicalTypes, table, TOP_VALUES_OPTIONS, validateMetricConfig } from '../../util/profile';
+import { column, logicalTypes, table, TOP_VALUES_OPTIONS, resolveMetric } from '../../util/profile';
 
 import type { LogicalType, Metric, ParsedProfileOptions, Schema } from '../../types';
 
@@ -35,9 +35,7 @@ export function profileCode(options: ParsedProfileOptions, schema: Schema): stri
   const kinds: LogicalType[] = ['numeric', 'string', 'boolean', 'date', 'unknown'];
 
   const metrics = options.metrics.map((metric) => {
-    validateMetricConfig(metric, BUILTIN_METRICS);
-
-    const definition = BUILTIN_METRICS.find(({ id }) => id === metric.id)!;
+    const definition = resolveMetric(metric, BUILTIN_METRICS);
     const targets = definition.enable({ target: 'table' })
       ? ['table']
       : kinds.filter((logicalType) => definition.enable({ target: 'column', field: { logicalType } }));
@@ -50,7 +48,11 @@ export function profileCode(options: ParsedProfileOptions, schema: Schema): stri
     .join(',\n    ');
 
   return `import json
-result = json.loads(${JSON.stringify(JSON.stringify(schema.tables))})
+models = json.loads(${JSON.stringify(
+    JSON.stringify(
+      schema.models.map((model) => ({ name: model.name, columns: model.columns.map(({ name }) => ({ name })) }))
+    )
+  )})
 import math
 from collections import Counter
 from functools import cached_property
@@ -78,10 +80,10 @@ def logical_type(series):
     return 'unknown'
 
 class Context:
-    def __init__(self, frame, field):
+    def __init__(self, frame, name, kind):
         self.row_count = len(frame)
-        self.series = frame[field['name']] if field is not None else None
-        self.kind = field['logicalType'] if field is not None else 'table'
+        self.series = frame[name] if name is not None else None
+        self.kind = kind
         self.metric = None
 
     # Compute each intermediate only when requested, once per target.
@@ -106,31 +108,32 @@ class Context:
 
         return Counter(values)
 
-for table in result:
-    frame = tables[table['name']]
-    table['metrics'] = {}
+def compute(frame, name=None, kind='table'):
+    output = {}
+    ctx = Context(frame, name, kind)
+    for metric in metrics:
+        if ctx.kind not in metric['targets']:
+            continue
 
-    for field in table['fields']:
-        field.update(logicalType=logical_type(frame[field['name']]), metrics={})
+        ctx.metric = metric
+        value = expressions[metric['id']](ctx)
 
-    targets = [(table['metrics'], None)] + [(field['metrics'], field) for field in table['fields']]
+        # The last configuration for a metric determines its result.
+        output.pop(metric['id'], None)
+        if value is not SKIP:
+            if hasattr(value, 'item'):
+                value = value.item()
+            output[metric['id']] = None if isinstance(value, float) and not math.isfinite(value) else value
+    return output
 
-    for output, field in targets:
-        ctx = Context(frame, field)
-        for metric in metrics:
-            if ctx.kind not in metric['targets']:
-                continue
-
-            ctx.metric = metric
-            value = expressions[metric['id']](ctx)
-
-            # A later request replaces the earlier result, even when skipped.
-            output.pop(metric['id'], None)
-
-            if value is not SKIP:
-                if hasattr(value, 'item'):
-                    value = value.item()
-
-                output[metric['id']] = None if isinstance(value, float) and not math.isfinite(value) else value
+result = []
+for model in models:
+    frame = tables[model['name']]
+    columns = []
+    for column in model['columns']:
+        name = column['name']
+        kind = logical_type(frame[name])
+        columns.append({'name': name, 'properties': {'logicalType': kind}, 'metrics': compute(frame, name, kind)})
+    result.append({'name': model['name'], 'metrics': compute(frame), 'columns': columns})
 `;
 }

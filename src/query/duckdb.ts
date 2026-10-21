@@ -2,19 +2,19 @@ import { generateText } from 'ai';
 import { StatementType } from '@duckdb/node-api';
 
 import { languageModel } from '../util/model';
-import { stringifyProfile, stringifySchema } from '../util/context';
+import { stringifyDataModel } from '../util/data-model';
 
 import type { DuckDBConnection } from '@duckdb/node-api';
-import type { LLMConfig, QueryDialect, DataContext } from '../types';
+import type { LLMConfig, QueryDialect, DataModel } from '../types';
 
 export class DuckDBQueryDialect implements QueryDialect<DuckDBConnection> {
   constructor(private readonly llmConfig: LLMConfig) {}
 
-  async getDSL(query: string, { schema, profile }: DataContext): Promise<string> {
+  async getDSL(query: string, dataModel: DataModel): Promise<string> {
     const prompt = `You are a SQL expert. Given the following dataset profile and user query, generate a SQL query to answer the question.
 
 Dataset Context:
-${profile ? stringifyProfile(profile) : stringifySchema(schema)}
+${stringifyDataModel(dataModel)}
 
 User Query: ${query}
 

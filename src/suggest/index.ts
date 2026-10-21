@@ -5,23 +5,23 @@
 import { generateText } from 'ai';
 
 import { languageModel } from '../util/model';
-import { stringifyProfile, stringifySchema } from '../util/context';
+import { stringifyDataModel } from '../util/data-model';
 
-import type { LLMConfig, DataContext, SuggestResult } from '../types';
+import type { LLMConfig, DataModel, SuggestResult } from '../types';
 
 /**
  * Generate suggested analysis queries based on dataset
  */
 export async function generateSuggestions(
   llmConfig: LLMConfig,
-  { schema, profile }: DataContext,
+  dataModel: DataModel,
   count: number = 3
 ): Promise<SuggestResult[]> {
-  const profileStr = profile ? stringifyProfile(profile) : stringifySchema(schema);
+  const dataModelStr = stringifyDataModel(dataModel);
 
   const prompt = `You are a data analysis expert. Based on the following dataset information, suggest ${count} most meaningful analysis queries that would provide valuable insights.
 
-${profileStr}
+${dataModelStr}
 
 IMPORTANT: Detect the language of the dataset (from column names and sample values). You MUST write the "query" and "reason" fields in the SAME language as the dataset. For example, if column names or sample values are in Chinese, write queries and reasons in Chinese; if in English, write in English; if in Japanese, write in Japanese. If the dataset language is ambiguous, default to English.
 

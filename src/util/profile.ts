@@ -1,44 +1,52 @@
 import { z } from 'zod';
 
-import { jsonValue, schemaStructure } from './schema';
+import { jsonValue } from './schema';
 
-import type { Metric, MetricConfig, ProfileOptions, ParsedProfileOptions, LogicalType, Profile } from '../types';
+import type {
+  Metric,
+  MetricConfig,
+  ProfileOptions,
+  ParsedProfileOptions,
+  LogicalType,
+  Profile,
+  Schema,
+} from '../types';
 
-const tableStructure = schemaStructure.shape.tables.element;
-export const profileMetadataSchema = schemaStructure
-  .extend({
-    generatedAt: z.number().int().min(0).max(8_640_000_000_000_000),
-    tables: z.array(
-      tableStructure.extend({
+export type MetricField = Schema['models'][number]['columns'][number] & { logicalType: LogicalType };
+
+export const profileMetadataSchema = z
+  .object({
+    models: z.array(
+      z.object({
+        name: z.string(),
         metrics: z.record(jsonValue),
-        fields: z.array(
-          tableStructure.shape.fields.element.extend({
-            logicalType: z.enum(['numeric', 'string', 'boolean', 'date', 'unknown']),
+        columns: z.array(
+          z.object({
+            name: z.string(),
             metrics: z.record(jsonValue),
+            properties: z.object({ logicalType: z.enum(['numeric', 'string', 'boolean', 'date', 'unknown']) }),
           })
         ),
       })
     ),
   })
-  .transform((value) => value as Profile);
+  .strict() as z.ZodType<Profile>;
 
 export function parseMetricConfig(config: MetricConfig): Exclude<MetricConfig, string> {
   return typeof config === 'string' ? { id: config } : config;
 }
 
-export function validateMetricConfig(config: Exclude<MetricConfig, string>, definitions: Metric[]) {
-  // Check if the metric is available
+/** Resolve a metric definition and validate its supplied options. */
+export function resolveMetric<T extends Metric>(config: Exclude<MetricConfig, string>, definitions: T[]): T {
   const definition = definitions.find((metric) => metric.id === config.id);
   if (!definition) throw new Error(`Unknown metric: ${config.id}`);
 
-  // Check if option names are valid for the metric
   const options = definition.options ?? {};
   const unknown = Object.keys(config).find(
     (name) => name !== 'id' && !Object.prototype.hasOwnProperty.call(options, name)
   );
   if (unknown) throw new Error(`Unknown option for ${definition.id}: ${unknown}`);
 
-  // Check option value types and constraints after applying defaults
   for (const [name, option] of Object.entries(options)) {
     const value = config[name] as number;
     if (value !== undefined) {
@@ -46,18 +54,16 @@ export function validateMetricConfig(config: Exclude<MetricConfig, string>, defi
     }
   }
 
-  return true;
+  return definition;
 }
 
-/**
- * Resolve defaults and validate options before any metric computation.
- */
+/** Normalize metric selections, using defaults when no selection is supplied. */
 export function parseProfileOptions(
   options: ProfileOptions = {},
   defaultOptions: ProfileOptions
 ): ParsedProfileOptions {
   return {
-    metrics: (options.metrics ?? defaultOptions.metrics ?? []).map((config) => parseMetricConfig(config)),
+    metrics: (options.metrics ?? defaultOptions.metrics ?? []).map(parseMetricConfig),
   };
 }
 
