@@ -21,6 +21,18 @@ export { executionResult } from './util/result';
 
 export type { JavaScriptEngine } from './interpreter';
 export type {
+  DataModel,
+  Model,
+  Column,
+  Relationship,
+  JoinType,
+  View,
+  TableReference,
+  PrimaryKey,
+  Properties,
+  JsonValue,
+} from './data-model.types';
+export type {
   LLMConfig,
   AVAConfig,
   AnalysisConfig,

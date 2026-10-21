@@ -11,6 +11,18 @@ registerEngine('javascript', JavaScriptEngine);
 export { AVA } from './ava';
 export type { JavaScriptEngine } from './interpreter/javascript';
 export type {
+  DataModel,
+  Model,
+  Column,
+  Relationship,
+  JoinType,
+  View,
+  TableReference,
+  PrimaryKey,
+  Properties,
+  JsonValue,
+} from './data-model.types';
+export type {
   LLMConfig,
   AVAConfig,
   AnalysisConfig,
