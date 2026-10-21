@@ -2,15 +2,20 @@ import { tool } from 'ai';
 import { z } from 'zod';
 import type { AnalysisResponse, AVA } from '@antv/ava/browser';
 import type { AIDataset } from './types';
+import { loadDataset } from './dataset';
 
 export function createTools({ ava, dataset }: { ava: AVA; dataset: AIDataset }) {
   return {
     source: tool({
-      description: 'Load the user-selected dataset into AVA. This resets previous query results.',
+      description: 'Load the selected dataset and its optional semantics. This resets previous query results.',
       inputSchema: z.object({}),
       execute: async () => {
-        await ava.source({ type: 'json', options: { data: dataset.rows } });
-        return { name: dataset.name, rows: dataset.rows.length, engine: 'javascript' };
+        await loadDataset(ava, dataset);
+        return {
+          name: dataset.name,
+          rows: dataset.rows.length,
+          engine: 'javascript',
+        };
       },
     }),
 
@@ -24,6 +29,13 @@ export function createTools({ ava, dataset }: { ava: AVA; dataset: AIDataset }) 
       description: 'Inspect column statistics, distributions and missing values.',
       inputSchema: z.object({}),
       execute: () => ava.profile(),
+    }),
+
+    semantic: tool({
+      description:
+        'Read the user-provided metric definitions, field meanings and drill-down hierarchies. Returns an empty definition when no semantics are supplied. This tool cannot change the definitions.',
+      inputSchema: z.object({}),
+      execute: () => ava.semantic(),
     }),
 
     analyze: tool({

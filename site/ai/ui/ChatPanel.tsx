@@ -12,6 +12,7 @@ import AttachmentChip from './AttachmentChip';
 import ArtifactChip from './ArtifactChip';
 import PromptBar from './PromptBar';
 import ResponseLoading from './ResponseLoading';
+import DatasetContext from './DatasetContext';
 
 const ChatPanel: React.FC<{
   onArtifact: (m: Message) => void;
@@ -285,14 +286,7 @@ const ChatPanel: React.FC<{
         </div>
 
         <footer className="shrink-0 border-t border-zinc-50 px-5 pt-4 pb-2">
-          {live && (
-            <div
-              className="mb-2 flex min-w-0"
-              aria-label={`Current dataset: ${live.dataset.name}, ${live.dataset.rowCount} rows`}
-            >
-              <AttachmentChip file={live.dataset.name} rowCount={live.dataset.rowCount} />
-            </div>
-          )}
+          {live && <DatasetContext live={live} />}
           {live?.error && (
             <p role="alert" className="mb-3 text-xs text-red-700">
               {live.error}

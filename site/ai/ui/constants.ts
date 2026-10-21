@@ -15,6 +15,7 @@ export const TOOL_STEPS: Record<string, Omit<ToolStep, 'detail'>> = {
   source: { icon: 'read', label: 'Load dataset', chip: 'ava.source()', mono: true },
   schema: { icon: 'read', label: 'Inspect schema', chip: 'ava.schema()', mono: true },
   profile: { icon: 'read', label: 'Inspect data quality', chip: 'ava.profile()', mono: true },
+  semantic: { icon: 'read', label: 'Read semantics', chip: 'ava.semantic()', mono: true },
   analyze: { icon: 'run', label: 'Analyze data', chip: 'ava.analyze(query)', mono: true },
   visualize: { icon: 'write', label: 'Create visualization', chip: 'ava.visualize(result)', mono: true },
   suggest: { icon: 'think', label: 'Suggest analysis questions', chip: 'ava.suggest(3)', mono: true },
@@ -37,6 +38,7 @@ export const PROMPT_COMMANDS = [
   { key: 'source', name: '/source', desc: 'Reload the selected dataset' },
   { key: 'schema', name: '/schema', desc: 'Inspect field names and types' },
   { key: 'profile', name: '/profile', desc: 'Inspect statistics and data quality' },
+  { key: 'semantic', name: '/semantic', desc: 'Read metric definitions and drill-down hierarchies' },
   { key: 'visualize', name: '/visualize', desc: 'Chart supplied data or the latest analysis' },
   { key: 'suggest', name: '/suggest', desc: 'Suggest questions about the loaded data' },
 ];

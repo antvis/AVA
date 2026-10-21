@@ -17,13 +17,7 @@ import { toDisplayMessage } from './utils';
 import type { AIDataset } from '../core/types';
 import { parseCSV, parseExcel } from '../../components/utils';
 
-export default function useChat({
-  config,
-  onConfigure,
-}: {
-  config: LLMConfig;
-  onConfigure: () => void;
-}): LiveChat {
+export default function useChat({ config, onConfigure }: { config: LLMConfig; onConfigure: () => void }): LiveChat {
   const ready = !!config.apiKey?.trim() && (typeof config.model !== 'string' || !!config.model.trim());
   const [workingSessionId, setWorkingSessionId] = useState<string | null>(null);
   const [error, setError] = useState('');
@@ -126,7 +120,7 @@ export default function useChat({
       for (const row of rows) for (const key of Object.keys(row)) columns.add(key);
       const message: Message = {
         role: 'assistant',
-        text: 'Your next questions will use this dataset. Ask for a summary, compare values, or explore a trend.',
+        text: 'Your dataset is ready. Ask a question or add optional semantics to refine the analysis.',
         dataset: {
           name: file.name,
           rowCount: rows.length,
@@ -144,7 +138,31 @@ export default function useChat({
       }
     }
   }
-  // Suggestions run after the new dataset has its own agent and AVA instance.
+  async function updateSemantic(json: string) {
+    if (lifecycle.locked || busy) throw new Error('Wait for the current operation to finish.');
+    if (new TextEncoder().encode(json).length > MAX_UPLOAD_SIZE_BYTES)
+      throw new Error(`Maximum semantic JSON size is ${MAX_UPLOAD_SIZE_MB} MB.`);
+    const value: unknown = json.trim() ? JSON.parse(json) : undefined;
+    lifecycle.locked = true;
+    setWorkingSessionId(session.id);
+    try {
+      const semantic = value === undefined ? undefined : await session.validateSemantic(value);
+      if (!lifecycle.active) throw new Error('The dataset changed. Reopen semantics and try again.');
+      if (JSON.stringify(semantic) === JSON.stringify(dataset.semantic)) return;
+      setDataset({ ...dataset, semantic });
+      patchUpload((message) => ({
+        ...message,
+        suggestions: undefined,
+        suggestionsError: undefined,
+        suggestionsLoading: false,
+      }));
+      setError('');
+    } finally {
+      lifecycle.locked = false;
+      if (lifecycle.active) setWorkingSessionId(null);
+    }
+  }
+  // Generate questions with the new session after data or semantics change.
   useEffect(() => {
     if (uploadMessage && ready) void suggest();
   }, [dataset]);
@@ -160,7 +178,7 @@ export default function useChat({
     busy,
     ready,
     error: error || chat.error?.message || '',
-    dataset: { name: dataset.name, rowCount: dataset.rows.length },
+    dataset: { name: dataset.name, rowCount: dataset.rows.length, semantic: dataset.semantic },
     model: typeof config.model === 'string' ? config.model : config.model.modelId,
     onSend: (text) => {
       void send(text);
@@ -173,5 +191,6 @@ export default function useChat({
     onSuggest: () => {
       void suggest();
     },
+    onSemanticChange: updateSemantic,
   };
 }
