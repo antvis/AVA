@@ -1,8 +1,13 @@
 import { describe, expect, it } from 'vitest';
 
-import { buildDataModel, dataModelMetadataSchema, stringifyDataModel } from '../../src/util/data-model';
+import {
+  buildDataModel,
+  dataModelMetadataSchema,
+  semanticMetadataSchema,
+  stringifyDataModel,
+} from '../../src/util/data-model';
 
-import type { DataModel, Profile, Schema } from '../../src/types';
+import type { DataModel, Profile, Schema, Semantic } from '../../src/types';
 
 describe('stringifyDataModel', () => {
   it('renders model sources, constraints, columns and metadata as Markdown tables', () => {
@@ -54,7 +59,9 @@ describe('stringifyDataModel', () => {
 
   it('accepts empty and partial descriptions without inventing metadata', () => {
     expect(stringifyDataModel({})).toBe('# Data Model');
-    expect(stringifyDataModel({ properties: {}, models: [], relationships: [], views: [], cubes: [] })).toBe('# Data Model');
+    expect(stringifyDataModel({ properties: {}, models: [], relationships: [], views: [], cubes: [] })).toBe(
+      '# Data Model'
+    );
     expect(stringifyDataModel({ models: [{ name: 'data', baseObject: 'source' }] })).toBe(
       '# Data Model\n\n## Models\n\n### data\n\n| Attribute | Value |\n| --- | --- |\n| baseObject | source |'
     );
@@ -153,7 +160,7 @@ describe('dataModelMetadataSchema', () => {
 });
 
 describe('semantic metadata', () => {
-  const input: DataModel = {
+  const input: Semantic = {
     description: 'Governed sales definitions',
     models: [
       {
@@ -209,11 +216,25 @@ describe('semantic metadata', () => {
   };
 
   it('validates and copies semantic definitions without filling defaults or mixing them with observations', () => {
-    const result = dataModelMetadataSchema.parse(input);
+    const result = semanticMetadataSchema.parse(input);
     expect(result).toEqual(input);
     expect(result.cubes[0].measures).not.toBe(input.cubes[0].measures);
     expect(result.models[0].rowLevelAccessControls).not.toBe(input.models[0].rowLevelAccessControls);
-    expect(result.models[0].metrics).toBeUndefined();
+    expect(result.models[0]).not.toHaveProperty('metrics');
+  });
+
+  it.each([
+    { name: 'orders', baseObject: 'raw_orders', metrics: { row_count: 2 } },
+    {
+      name: 'orders',
+      baseObject: 'raw_orders',
+      columns: [{ name: 'amount', type: 'DOUBLE', metrics: { mean: 3 } }],
+    },
+  ])('rejects profiling observations in semantic definitions: %j', (model) => {
+    const value = { models: [model] };
+    expect(() => semanticMetadataSchema.parse(value)).toThrow();
+    expect(() => buildDataModel({ schema: { models: [] }, semantic: value })).toThrow();
+    expect(dataModelMetadataSchema.parse(value)).toEqual(value);
   });
 
   it('includes description, cubes and access declarations in model context without mutating it', () => {
@@ -235,6 +256,8 @@ describe('semantic metadata', () => {
   });
 
   it.each([
+    { models: [{ name: 'missing_source' }] },
+    { models: [{ ...input.models[0], refSql: 'SELECT 1' }] },
     { cubes: [{ name: 'empty', baseObject: 'orders', measures: [] }] },
     { cubes: [{ name: 'invalid', measures: [{ name: 'total', expression: 'SUM(amount)', type: 'DOUBLE' }] }] },
     { cubes: [{ ...input.cubes[0], measures: [{ name: 'total', type: 'DOUBLE' }] }] },
@@ -246,7 +269,7 @@ describe('semantic metadata', () => {
       models: [{ name: 'orders', baseObject: 'raw_orders', columns: [{ name: 'id', type: 'INT', isHidden: 'true' }] }],
     },
   ])('rejects malformed semantic metadata: %j', (value) => {
-    expect(() => dataModelMetadataSchema.parse(value)).toThrow();
+    expect(() => semanticMetadataSchema.parse(value)).toThrow();
   });
 
   it.each([
@@ -262,7 +285,7 @@ describe('semantic metadata', () => {
     { threshold: { value: '1', dataType: 'BOOLEAN' } },
   ])('rejects malformed column access rules: %j', (rule) => {
     expect(() =>
-      dataModelMetadataSchema.parse({
+      semanticMetadataSchema.parse({
         models: [
           {
             name: 'orders',
@@ -416,6 +439,87 @@ describe('buildDataModel', () => {
     };
 
     expect(buildDataModel({ schema: input })).toEqual(input);
+  });
+
+  it('merges semantic models and columns by name while retaining structure and observations', () => {
+    const semantic: Semantic = {
+      description: 'Sales definitions',
+      properties: { currency: 'USD' },
+      models: [
+        {
+          name: 'orders',
+          tableReference: { catalog: 'sales', schema: 'public', table: 'raw_orders' },
+          properties: { description: 'Customer orders' },
+          columns: [
+            { name: 'amount', type: 'DOUBLE', properties: { unit: 'USD' } },
+            { name: 'amount_with_tax', type: 'DOUBLE', isCalculated: true, expression: 'amount * 1.1' },
+          ],
+        },
+        { name: 'order_totals', refSql: 'SELECT SUM(amount) AS total FROM orders' },
+      ],
+      relationships: [],
+      views: [{ name: 'all_orders', statement: 'SELECT * FROM orders' }],
+      cubes: [
+        {
+          name: 'revenue',
+          baseObject: 'orders',
+          measures: [{ name: 'total', type: 'DOUBLE', expression: 'SUM(amount)' }],
+        },
+      ],
+    };
+    const original = structuredClone({ schema, profile, semantic });
+    const result = buildDataModel({ schema, profile, semantic });
+
+    expect(result.description).toBe('Sales definitions');
+    expect(result.properties).toEqual({ currency: 'USD' });
+    expect(result.models.map((model) => model.name)).toEqual(['orders', 'customers', 'order_totals']);
+    expect(result.models[0]).toMatchObject({
+      primaryKey: ['id', 'customer_id'],
+      uniqueKeys: ['id'],
+      metrics: { row_count: 0 },
+      properties: { description: 'Customer orders' },
+    });
+    expect(result.models[0].columns.map((column) => column.name)).toEqual([
+      'id',
+      'customer_id',
+      'amount',
+      'amount_with_tax',
+    ]);
+    expect(result.models[0].columns[2]).toEqual({
+      name: 'amount',
+      type: 'DOUBLE',
+      notNull: false,
+      metrics: { min: null, max: 0, top_values: [], custom: [{ value: false, count: 1 }] },
+      properties: { logicalType: 'numeric', unit: 'USD' },
+    });
+    expect(result.models[2]).toEqual(semantic.models[1]);
+    expect(result.relationships).toEqual([]);
+    expect(result.views).toEqual(semantic.views);
+    expect(result.cubes).toEqual(semantic.cubes);
+
+    result.models[0].columns[2].properties.unit = 'changed';
+    result.cubes[0].measures[0].expression = 'COUNT(*)';
+    expect({ schema, profile, semantic }).toEqual(original);
+  });
+
+  it('replaces a discovered model source without retaining a conflicting table reference', () => {
+    const result = buildDataModel({
+      schema,
+      semantic: { models: [{ name: 'orders', refSql: 'SELECT * FROM raw_orders' }] },
+    });
+
+    expect(result.models[0].refSql).toBe('SELECT * FROM raw_orders');
+    expect(result.models[0]).not.toHaveProperty('tableReference');
+    expect(result.models[0].columns).toEqual(schema.models[0].columns);
+  });
+
+  it.each(['model', 'column'])('rejects duplicate semantic %ss', (kind) => {
+    const model = { ...schema.models[0] };
+    if (kind === 'column') model.columns = [model.columns[0], model.columns[0]];
+
+    expect(() => buildDataModel({ schema, semantic: { models: kind === 'model' ? [model, model] : [model] } })).toThrow(
+      `Duplicate semantic ${kind}`
+    );
   });
 
   it('does not mutate or retain nested references to either input', () => {

@@ -26,6 +26,8 @@ export class ExecutionEvent extends BaseEvent {
       | ExecutionEventType.SCHEMA_END
       | ExecutionEventType.PROFILE_START
       | ExecutionEventType.PROFILE_END
+      | ExecutionEventType.SEMANTIC_START
+      | ExecutionEventType.SEMANTIC_END
       | ExecutionEventType.ANALYZE_START
       | ExecutionEventType.ANALYZE_END
       | ExecutionEventType.VISUALIZE_START

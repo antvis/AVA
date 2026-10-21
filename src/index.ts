@@ -22,6 +22,7 @@ export { executionResult } from './util/result';
 export type { JavaScriptEngine } from './interpreter';
 export type {
   DataModel,
+  Semantic,
   Model,
   Column,
   Relationship,
@@ -49,6 +50,7 @@ export type {
   PythonEngineOptions,
   DataSourceConfig,
   SchemaOptions,
+  SemanticOptions,
   JSONReadOptions,
   ClickHouseSourceOptions,
   AnalysisEngine,

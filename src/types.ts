@@ -586,6 +586,9 @@ export type MetricConfig =
 /** Schema discovery currently has no configurable options. */
 export type SchemaOptions = Record<string, never>;
 
+/** Semantic metadata currently has no configurable options. */
+export type SemanticOptions = Record<string, never>;
+
 /**
  * Options for a profile run.
  */
@@ -777,7 +780,9 @@ export type Model = {
   metrics?: Record<string, JsonValue>;
   /** Model-level context such as business descriptions or source annotations. */
   properties?: Properties;
-} & (
+} & ModelSource;
+
+type ModelSource =
   | {
       /** SQL defining the model's source rows, before its column mappings and calculations. */
       refSql: string;
@@ -801,8 +806,7 @@ export type Model = {
       baseObject?: never;
       /** Physical table or view to resolve through the engine's connection. */
       tableReference: TableReference;
-    }
-);
+    };
 
 /** Relationship cardinality, not a SQL join operator such as LEFT or INNER. */
 export type JoinType = 'ONE_TO_ONE' | 'ONE_TO_MANY' | 'MANY_TO_ONE' | 'MANY_TO_MANY';
@@ -875,6 +879,14 @@ export interface DataModel {
   views?: View[];
   /** Reusable business aggregations, dimensions and drill-down paths. */
   cubes?: Cube[];
+}
+
+/** Business definitions supplied independently of catalog discovery and profiling observations. */
+export interface Semantic extends Pick<DataModel, 'description' | 'properties' | 'relationships' | 'views' | 'cubes'> {
+  models?: (Omit<Model, 'columns' | 'metrics'> &
+    ModelSource & {
+      columns?: Omit<Column, 'metrics'>[];
+    })[];
 }
 
 /** Catalog-discoverable structure; excludes observations and application-defined semantics. */

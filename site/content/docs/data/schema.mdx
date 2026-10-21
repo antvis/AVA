@@ -90,4 +90,23 @@ The first argument is options. `undefined` uses the default `{}`. If the setter 
 
 Setting a schema replaces the saved schema and clears the saved profile, so set the schema first when supplying both. Setting a profile replaces only the profile. AVA validates and copies each returned value; a thrown error or invalid value leaves the previous metadata unchanged.
 
-Use metadata that matches the loaded data. Loading another source or calling `dispose()` clears both saved values.
+Use metadata that matches the loaded data. Loading another source or calling `dispose()` clears the saved schema, profile, and semantic definitions.
+
+## Supply semantic definitions
+
+Use `semantic(options?, setter?)` to read or supply a `Semantic`: business descriptions, model and column metadata, relationships, views, and cubes. Statistical `metrics` belong in `Profile`.
+
+```typescript
+await ava.semantic(undefined, () => ({
+  description: 'Revenue is measured in USD.',
+  cubes: [{
+    name: 'sales',
+    baseObject: 'data',
+    measures: [{ name: 'total_revenue', expression: 'SUM(revenue)', type: 'DOUBLE' }],
+  }],
+}));
+
+const definitions = await ava.semantic();
+```
+
+The setter replaces the saved definitions. Analysis, translation, and suggestions combine them with the schema and profile, matching models and columns by name. This provides query-generation context; it does not materialize cubes or views. See the [API reference](/documentation/reference/api/#semantic) for merge behavior.

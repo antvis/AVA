@@ -6,7 +6,7 @@ import EventEmitter from '@antv/event-emitter';
 import { getEngineClass } from './engines';
 import { extractDataSchema, schemaMetadataSchema } from './util/schema';
 import { profileMetadataSchema } from './util/profile';
-import { buildDataModel, stringifyDataModel } from './util/data-model';
+import { buildDataModel, semanticMetadataSchema, stringifyDataModel } from './util/data-model';
 import { adviseChartType, generateVisualizationConfig, wrapConfigInHTML } from './visualization';
 import { generateSuggestions } from './suggest';
 import { analyze } from './analysis';
@@ -28,6 +28,8 @@ import type {
   EngineConfig,
   DataSourceConfig,
   SchemaOptions,
+  SemanticOptions,
+  Semantic,
   Schema,
   AnalysisEngine,
   AnalysisResponse,
@@ -63,6 +65,7 @@ export class AVA extends EventEmitter {
   engine: AnalysisEngine | null = null;
   private dataSchema: Schema | null = null;
   private dataProfile: Profile | null = null;
+  private dataSemantic: Semantic = {};
 
   constructor(config: AVAConfig) {
     super();
@@ -78,7 +81,11 @@ export class AVA extends EventEmitter {
       this.dataProfile = await this.engine.profile(this.dataSchema);
     }
 
-    return buildDataModel({ schema: this.dataSchema, profile: this.dataProfile ?? undefined });
+    return buildDataModel({
+      schema: this.dataSchema,
+      profile: this.dataProfile ?? undefined,
+      semantic: this.dataSemantic,
+    });
   }
 
   /**
@@ -206,6 +213,29 @@ export class AVA extends EventEmitter {
     emit(this, new ExecutionEvent(ExecutionEventType.PROFILE_END));
 
     return this.dataProfile!;
+  }
+
+  /** Read or replace semantic definitions used in model-facing operations. */
+  async semantic(options: SemanticOptions = {}, setter?: (options: SemanticOptions) => Semantic): Promise<Semantic> {
+    if (!this.engine) {
+      throw new Error('No data loaded. Please call source() first.');
+    }
+
+    if (!setter) return this.dataSemantic;
+
+    emit(this, new ExecutionEvent(ExecutionEventType.SEMANTIC_START));
+
+    try {
+      this.dataSemantic = semanticMetadataSchema.parse(await setter(options));
+    } catch (error) {
+      emit(this, new ExecutionEvent(ExecutionEventType.SEMANTIC_END, { error: serializeError(error) }));
+
+      throw error;
+    }
+
+    emit(this, new ExecutionEvent(ExecutionEventType.SEMANTIC_END));
+
+    return this.dataSemantic;
   }
 
   /**
@@ -372,6 +402,7 @@ export class AVA extends EventEmitter {
       this.engine = null;
       this.dataSchema = null;
       this.dataProfile = null;
+      this.dataSemantic = {};
     }
   }
 }

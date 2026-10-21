@@ -3,7 +3,7 @@ import { z } from 'zod';
 import { escapeMarkdown, markdownTable } from './markdown';
 import { jsonValue, schemaStructure } from './schema';
 
-import type { Column, DataModel, Model, Profile, Schema } from '../types';
+import type { DataModel, Model, Profile, Schema, Semantic } from '../types';
 
 const name = z.string().min(1);
 const properties = z.record(jsonValue);
@@ -54,7 +54,7 @@ const tableReference = z
   .object({ catalog: z.string().optional(), schema: z.string().optional(), table: name })
   .catchall(jsonValue);
 
-const model = z
+const modelStructure = z
   .object({
     name,
     columns: z.array(column).optional(),
@@ -70,12 +70,12 @@ const model = z
     baseObject: name.optional(),
     tableReference: tableReference.optional(),
   })
-  .strict()
-  .refine(
-    (value) =>
-      [value.refSql, value.baseObject, value.tableReference].filter((source) => source !== undefined).length === 1,
-    'A model must specify exactly one of refSql, baseObject or tableReference'
-  );
+  .strict();
+
+const hasSingleSource = (value: z.infer<typeof modelStructure>) =>
+  [value.refSql, value.baseObject, value.tableReference].filter((source) => source !== undefined).length === 1;
+const modelSourceMessage = 'A model must specify exactly one of refSql, baseObject or tableReference';
+const model = modelStructure.refine(hasSingleSource, modelSourceMessage);
 
 const relationship = z
   .object({
@@ -108,8 +108,7 @@ const cube = z
   })
   .strict();
 
-/** Validate and copy metadata without stripping semantic extensions or observations. */
-export const dataModelMetadataSchema = z
+const dataModelStructure = z
   .object({
     description: z.string().optional(),
     models: z.array(model).optional(),
@@ -118,7 +117,22 @@ export const dataModelMetadataSchema = z
     cubes: z.array(cube).optional(),
     properties: properties.optional(),
   })
-  .strict() as unknown as z.ZodType<DataModel>;
+  .strict();
+
+/** Validate and copy metadata without stripping semantic extensions or observations. */
+export const dataModelMetadataSchema = dataModelStructure as unknown as z.ZodType<DataModel>;
+
+/** Semantic definitions exclude model and column profiling metrics. */
+export const semanticMetadataSchema = dataModelStructure.extend({
+  models: z
+    .array(
+      modelStructure
+        .omit({ metrics: true })
+        .extend({ columns: z.array(column.omit({ metrics: true })).optional() })
+        .refine(hasSingleSource, modelSourceMessage)
+    )
+    .optional(),
+}) as unknown as z.ZodType<Semantic>;
 
 const dataModelInputSchema = z.object({
   schema: schemaStructure.strict(),
@@ -146,7 +160,8 @@ const dataModelInputSchema = z.object({
     })
     .strict()
     .optional(),
-}) as unknown as z.ZodType<{ schema: Schema; profile?: Profile }>;
+  semantic: semanticMetadataSchema.optional(),
+}) as unknown as z.ZodType<{ schema: Schema; profile?: Profile; semantic?: Semantic }>;
 
 function indexByName<T extends { name: string }>(values: T[], label: string): Map<string, T> {
   const index = new Map<string, T>();
@@ -160,13 +175,13 @@ function indexByName<T extends { name: string }>(values: T[], label: string): Ma
   return index;
 }
 
-/** Build an independent snapshot; partial profiles enrich only the named models and columns. */
-export function buildDataModel(input: { schema: Schema; profile?: Profile }): DataModel {
-  const { schema, profile } = dataModelInputSchema.parse(input);
+/** Build an independent snapshot, enriching schema and observations with named semantic definitions. */
+export function buildDataModel(input: { schema: Schema; profile?: Profile; semantic?: Semantic }): DataModel {
+  const { schema, profile, semantic } = dataModelInputSchema.parse(input);
 
-  const models = indexByName<Model & { columns: Column[] }>(schema.models, 'schema model');
+  const models = indexByName<Model>(schema.models, 'schema model');
   const columns = new Map(
-    [...models].map(([name, model]) => [name, indexByName(model.columns, `schema column in model "${name}"`)])
+    [...models].map(([name, model]) => [name, indexByName(model.columns ?? [], `schema column in model "${name}"`)])
   );
 
   for (const observation of indexByName(profile?.models ?? [], 'profile model').values()) {
@@ -184,7 +199,31 @@ export function buildDataModel(input: { schema: Schema; profile?: Profile }): Da
     }
   }
 
-  return dataModelMetadataSchema.parse(schema);
+  for (const definition of indexByName(semantic?.models ?? [], 'semantic model').values()) {
+    const current = models.get(definition.name);
+    const model = { ...current, ...definition } as Model;
+    if (definition.refSql !== undefined || definition.baseObject !== undefined) delete model.tableReference;
+    if (current?.properties || definition.properties) {
+      model.properties = { ...current?.properties, ...definition.properties };
+    }
+
+    if (definition.columns) {
+      const fields = indexByName(current?.columns ?? [], `schema column in model "${definition.name}"`);
+      for (const field of indexByName(definition.columns, `semantic column in model "${definition.name}"`).values()) {
+        const original = fields.get(field.name);
+        const column = { ...original, ...field };
+        if (original?.properties || field.properties) {
+          column.properties = { ...original?.properties, ...field.properties };
+        }
+        fields.set(field.name, column);
+      }
+      model.columns = [...fields.values()];
+    }
+
+    models.set(definition.name, model);
+  }
+
+  return dataModelMetadataSchema.parse({ ...schema, ...semantic, models: [...models.values()] });
 }
 
 /** Render model metadata as Markdown, keeping optional attributes with their owning objects. */

@@ -92,7 +92,7 @@ await ava.source({ type: 'json', options: { data: [{ revenue: 120 }] } });
 | `config.type` | `SourceType` | Yes | [Source type](/documentation/data/sources/#connect-a-source), such as `json` or `csv-file`. |
 | `config.options` | Source-specific object | Yes | [Reader or connection settings](/documentation/data/sources/#connect-a-source) for that type. |
 
-Loading a source disposes the previous engine and clears the saved schema and profile. A failed load leaves no active source. Await pending operations before replacing a source.
+Loading a source disposes the previous engine and clears the saved schema, profile, and semantic definitions. A failed load leaves no active source. Await pending operations before replacing a source.
 
 ## schema
 
@@ -170,6 +170,41 @@ await ava.profile({
 Other built-in metrics accept no additional options. Unknown metrics and unknown option names are rejected when the engine computes the profile. Availability depends on the engine and field type.
 
 `metrics: []` produces empty metric objects. A new profile replaces previous statistics; metrics are not accumulated.
+
+## semantic
+
+```typescript
+semantic(options?: SemanticOptions, setter?: (options: SemanticOptions) => Semantic): Promise<Semantic>
+```
+
+Reads or replaces the semantic definitions for the loaded source. Without a setter, returns the saved definitions, initially `{}`. This call does not discover the schema, compute a profile, or call an LLM.
+
+```typescript
+await ava.semantic(undefined, () => ({
+  description: 'Sales reporting; amounts are in USD.',
+  cubes: [{
+    name: 'revenue',
+    baseObject: 'data',
+    measures: [{ name: 'total', expression: 'SUM(revenue)', type: 'DOUBLE' }],
+  }],
+}));
+
+const definitions = await ava.semantic();
+await ava.semantic(undefined, () => ({})); // Clear the saved definitions.
+```
+
+| Parameter | Type | Required | Meaning / default |
+| --- | --- | --- | --- |
+| `options` | `SemanticOptions` | No | `{}`; currently has no configurable fields. |
+| `setter` | `(options: SemanticOptions) => Semantic` | No | Returns the semantic definitions to save, replacing the previous definitions. |
+
+The setter receives the options object and returns a `Semantic` synchronously. AVA validates and copies the result; invalid results or thrown errors leave the previous definitions unchanged. Requires a loaded source. Source replacement and disposal clear these definitions; schema and profile updates retain them.
+
+`Semantic` contains business definitions and excludes model and column `metrics`; supply statistical observations through `profile()`. The combined context passed to engines remains a `DataModel`.
+
+Definitions can contain `description`, `properties`, `models`, `relationships`, `views`, and `cubes`. For `analyze()`, `translate()`, and `suggest()`, AVA merges models and columns by name with the schema and profile. Unspecified models, columns, and observations remain available; semantic properties enrich existing properties. A supplied relationship or view list replaces its discovered counterpart. Each semantic model must declare exactly one source: `tableReference`, `refSql`, or `baseObject`.
+
+These definitions provide context for query generation. Declaring a cube, view, calculated column, or access rule does not create database objects or enforce policies; generated queries must work with the configured engine.
 
 ## analyze
 

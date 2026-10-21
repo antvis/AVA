@@ -12,6 +12,7 @@ export { AVA } from './ava';
 export type { JavaScriptEngine } from './interpreter/javascript';
 export type {
   DataModel,
+  Semantic,
   Model,
   Column,
   Relationship,
@@ -38,6 +39,7 @@ export type {
   DuckDBEngineOptions,
   DataSourceConfig,
   SchemaOptions,
+  SemanticOptions,
   JSONReadOptions,
   ClickHouseSourceOptions,
   AnalysisEngine,
