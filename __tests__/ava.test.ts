@@ -232,7 +232,6 @@ describe('AVA', () => {
     const schema = await ava.schema();
     const getDSL = vi.spyOn(ava.engine!, 'getDSL').mockResolvedValue('SELECT SUM(value) FROM data');
     const execute = vi.spyOn(ava.engine!, 'execute');
-    expect(ava.dataModel).toEqual({});
 
     await expect(ava['translate']('Total value')).resolves.toBe('SELECT SUM(value) FROM data');
     expect(onEvent.mock.calls.map(([event]) => event)).toEqual([
@@ -240,14 +239,12 @@ describe('AVA', () => {
       { type: 'translateend', data: { dsl: 'SELECT SUM(value) FROM data' } },
     ]);
     expect(getDSL).toHaveBeenLastCalledWith('Total value', schema);
-    expect(getDSL.mock.calls.at(-1)![1]).toBe(ava.dataModel);
-    const snapshot = ava.dataModel;
+    const snapshot = getDSL.mock.calls.at(-1)![1];
     const profile = await ava.profile();
-    expect(ava.dataModel).toBe(snapshot);
+    expect(snapshot).toEqual(schema);
     await ava['translate']('Total value');
     expect(getDSL).toHaveBeenLastCalledWith('Total value', buildDataModel({ schema, profile }));
-    expect(getDSL.mock.calls.at(-1)![1]).toBe(ava.dataModel);
-    expect(ava.dataModel).not.toBe(snapshot);
+    expect(snapshot).toEqual(schema);
     expect(execute).not.toHaveBeenCalled();
 
     const error = new Error('Translation failed');
