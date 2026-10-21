@@ -53,7 +53,6 @@ export type {
   AnalysisStrategy,
   AnalysisStrategyConfig,
   AnalysisRuntime,
-  DataContext,
   VisualizeResponse,
   ChartConfig,
   ChartSpec,

@@ -12,7 +12,7 @@
 import { generateText } from 'ai';
 
 import { languageModel } from '../util/model';
-import { stringifyProfile, stringifySchema } from '../util/context';
+import { stringifyDataModel } from '../util/data-model';
 import { AnalysisEvent, AnalysisEventType } from '../event';
 import { serializeError } from '../util/error';
 
@@ -175,12 +175,8 @@ const transcriptPrompt = (transcript: string[]) => {
 /**
  * Explore, refine, execute, and verify SQL before returning an answer.
  */
-export const loopAnalysis: AnalysisStrategy = async (
-  query,
-  config,
-  { context: { schema, profile }, engine, llm, emit }
-) => {
-  const context = stringifySchema(schema) + (profile ? '\n' + stringifyProfile(profile) : '');
+export const loopAnalysis: AnalysisStrategy = async (query, config, { dataModel, engine, llm, emit }) => {
+  const dataset = stringifyDataModel(dataModel);
   const transcript: string[] = [];
   let sql: string | undefined;
   let result: ExecutionResult | undefined;
@@ -192,7 +188,7 @@ export const loopAnalysis: AnalysisStrategy = async (
 
     # DATABASE CONTEXT
 
-    ${context}
+    ${dataset}
 
     User Question: ${query}
 
@@ -323,7 +319,7 @@ export const loopAnalysis: AnalysisStrategy = async (
 
     # DATABASE CONTEXT
 
-    ${context}
+    ${dataset}
 
     User Question: ${query}
 

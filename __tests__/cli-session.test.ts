@@ -5,6 +5,7 @@ import { rm } from 'fs/promises';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { createSession } from '../src/cli/session/client';
+import { buildDataModel } from '../src/util/data-model';
 import { sessionDirectory, startupSchema, requestSchema } from '../src/cli/session/protocol';
 
 import type { DataSourceConfig, EngineConfig, Schema } from '../src/types';
@@ -126,6 +127,6 @@ describe('dataset engine and language', () => {
       vi.spyOn(ava.engine!, 'getDSL').mockResolvedValue('const result = data;')
     );
     await datasets.withDataset((ava) => ava.translate('Sales'));
-    expect(getDSL).toHaveBeenLastCalledWith('Sales', { schema, profile });
+    expect(getDSL).toHaveBeenLastCalledWith('Sales', buildDataModel({ schema, profile }));
   });
 });

@@ -30,26 +30,23 @@ export const profileMetadataSchema = z
       })
     ),
   })
-  .strict()
-  .transform((value) => value as Profile);
+  .strict() as z.ZodType<Profile>;
 
 export function parseMetricConfig(config: MetricConfig): Exclude<MetricConfig, string> {
   return typeof config === 'string' ? { id: config } : config;
 }
 
-export function validateMetricConfig(config: Exclude<MetricConfig, string>, definitions: Metric[]) {
-  // Check if the metric is available
+/** Resolve a metric definition and validate its supplied options. */
+export function resolveMetric<T extends Metric>(config: Exclude<MetricConfig, string>, definitions: T[]): T {
   const definition = definitions.find((metric) => metric.id === config.id);
   if (!definition) throw new Error(`Unknown metric: ${config.id}`);
 
-  // Check if option names are valid for the metric
   const options = definition.options ?? {};
   const unknown = Object.keys(config).find(
     (name) => name !== 'id' && !Object.prototype.hasOwnProperty.call(options, name)
   );
   if (unknown) throw new Error(`Unknown option for ${definition.id}: ${unknown}`);
 
-  // Check option value types and constraints after applying defaults
   for (const [name, option] of Object.entries(options)) {
     const value = config[name] as number;
     if (value !== undefined) {
@@ -57,18 +54,16 @@ export function validateMetricConfig(config: Exclude<MetricConfig, string>, defi
     }
   }
 
-  return true;
+  return definition;
 }
 
-/**
- * Resolve defaults and validate options before any metric computation.
- */
+/** Normalize metric selections, using defaults when no selection is supplied. */
 export function parseProfileOptions(
   options: ProfileOptions = {},
   defaultOptions: ProfileOptions
 ): ParsedProfileOptions {
   return {
-    metrics: (options.metrics ?? defaultOptions.metrics ?? []).map((config) => parseMetricConfig(config)),
+    metrics: (options.metrics ?? defaultOptions.metrics ?? []).map(parseMetricConfig),
   };
 }
 

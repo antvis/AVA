@@ -56,24 +56,22 @@ describe('ClickHouse query generation', () => {
     ["SELECT '```' AS value", "SELECT '```' AS value"],
   ])('extracts SQL without corrupting literals: %s', async (text, expected) => {
     vi.mocked(generateText).mockResolvedValue({ text, usage: {} } as never);
-    await expect(dialect.getDSL('query', { schema: { models: [] } })).resolves.toBe(expected);
+    await expect(dialect.getDSL('query', { models: [] })).resolves.toBe(expected);
   });
 
-  it('passes schema context, retries, and token usage through', async () => {
+  it('passes the data model, retries, and token usage through', async () => {
     const onQueryUsage = vi.fn();
     const config = { model: 'test', maxRetries: 0, onQueryUsage };
     const usage = { totalTokens: 12 };
     vi.mocked(generateText).mockResolvedValue({ text: 'SELECT 1', usage } as never);
     await new ClickHouseQueryDialect(config).getDSL('count rows', {
-      schema: {
-        models: [
-          {
-            name: 'orders',
-            columns: [{ name: 'amount', type: 'UInt32' }],
-            tableReference: { catalog: 'default', table: 'orders' },
-          },
-        ],
-      },
+      models: [
+        {
+          name: 'orders',
+          columns: [{ name: 'amount', type: 'UInt32' }],
+          tableReference: { catalog: 'default', table: 'orders' },
+        },
+      ],
     });
     expect(generateText).toHaveBeenCalledWith(
       expect.objectContaining({ maxRetries: 0, prompt: expect.stringContaining('orders') })
@@ -81,14 +79,13 @@ describe('ClickHouse query generation', () => {
     expect(onQueryUsage).toHaveBeenCalledWith(usage);
   });
 
-  it('uses the profile when supplied', async () => {
+  it('uses model metrics when supplied', async () => {
     vi.mocked(generateText).mockResolvedValue({ text: 'SELECT 1', usage: {} } as never);
     await dialect.getDSL('count rows', {
-      schema: { models: [] },
-      profile: { models: [{ name: 'profile_table', columns: [], metrics: { row_count: 42 } }] },
+      models: [{ name: 'profile_table', baseObject: 'profile_table', columns: [], metrics: { row_count: 42 } }],
     });
     expect(generateText).toHaveBeenCalledWith(
-      expect.objectContaining({ maxRetries: 3, prompt: expect.stringContaining('profile_table') })
+      expect.objectContaining({ maxRetries: 3, prompt: expect.stringContaining('42') })
     );
   });
 });

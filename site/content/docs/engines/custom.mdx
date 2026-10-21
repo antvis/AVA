@@ -26,20 +26,20 @@ The browser SDK exports the same `registerEngine` API from `@antv/ava/browser`; 
 
 Implement the exported [AnalysisEngine interface](https://github.com/antvis/AVA/blob/ai/src/types.ts). AVA's [lifecycle coordinator](https://github.com/antvis/AVA/blob/ai/src/ava.ts) calls these members:
 
-| Member | Input parameters | Returns / behavior |
-| --- | --- | --- |
-| Constructor | `llmConfig: LLMConfig`, `options?: Record<string, unknown>` | Receives model configuration and engine fields except `type`. |
-| `language` | Readonly property | `QueryLanguage`, used by analysis prompts. |
-| `load(config)` | `DataSourceConfig` | `Promise<void>`; prepare data and connections for execution. |
-| `schema()` | None | `Promise<Schema>`; discover the loaded source structure. |
-| `profile(schema, options?)` | Required `Schema`, optional `ProfileOptions` | Optional method returning `Promise<Profile>`; compute against the supplied structure. |
-| `getDSL(query, context)` | Required query string and `DataContext` | `Promise<string>` in the engine's language. |
-| `execute(dsl, options?)` | Required DSL string; optional [ExecutionOptions](/documentation/reference/api/#executionoptions) | `Promise<ExecutionResult<T>>`; enforce validation and result bounds. |
-| `dispose()` | None | `Promise<void>`; release connections, files, and other resources. |
+| Member                      | Input parameters                                                                                 | Returns / behavior                                                                    |
+| --------------------------- | ------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------- |
+| Constructor                 | `llmConfig: LLMConfig`, `options?: Record<string, unknown>`                                      | Receives model configuration and engine fields except `type`.                         |
+| `language`                  | Readonly property                                                                                | `QueryLanguage`, used by analysis prompts.                                            |
+| `load(config)`              | `DataSourceConfig`                                                                               | `Promise<void>`; prepare data and connections for execution.                          |
+| `schema()`                  | None                                                                                             | `Promise<Schema>`; discover the loaded source structure.                              |
+| `profile(schema, options?)` | Required `Schema`, optional `ProfileOptions`                                                     | Optional method returning `Promise<Profile>`; compute against the supplied structure. |
+| `getDSL(query, dataModel)`  | Required query string and `DataModel`                                                            | `Promise<string>` in the engine's language.                                           |
+| `execute(dsl, options?)`    | Required DSL string; optional [ExecutionOptions](/documentation/reference/api/#executionoptions) | `Promise<ExecutionResult<T>>`; enforce validation and result bounds.                  |
+| `dispose()`                 | None                                                                                             | `Promise<void>`; release connections, files, and other resources.                     |
 
-AVA owns schema/profile caching. `load()` prepares resources; `schema()` discovers structure on demand. `execute()` must work without prior discovery. Profiling uses the supplied schema; query generation uses the supplied context. Discovery failure leaves the engine available for retry or queries.
+AVA owns schema/profile caching. `load()` prepares resources; `schema()` discovers structure on demand. `execute()` must work without prior discovery. Profiling uses the supplied schema; query generation uses the supplied data model. Discovery failure leaves the engine available for retry or queries.
 
-To migrate an older engine, move discovery out of `load()` into `schema()`, change `load()` to return `Promise<void>`, and add the required schema/context parameters. Keep `dispose()` safe after partial loading.
+To migrate an older engine, move discovery out of `load()` into `schema()`, change `load()` to return `Promise<void>`, and add the required schema/data-model parameters. Keep `dispose()` safe after partial loading.
 
 | `QueryLanguage` field | Type     | Required | Meaning                                                  |
 | --------------------- | -------- | -------- | -------------------------------------------------------- |
@@ -47,10 +47,14 @@ To migrate an older engine, move discovery out of `load()` into `schema()`, chan
 | `fence`               | `string` | Yes      | Markdown code-fence language, such as `sql` or `python`. |
 | `instructions`        | `string` | No       | Available bindings and result conventions.               |
 
-| `DataContext` field | Type      | Required | Meaning                                     |
-| ------------------- | --------- | -------- | ------------------------------------------- |
-| `schema`            | `Schema`  | Yes      | Models, columns, keys, and relationships. |
-| `profile`           | `Profile` | No       | Cached statistics, when available.          |
+`DataModel` combines structural metadata, optional statistics, and semantic annotations. AVA assembles it from cached schema/profile metadata when analysis, translation, or suggestions need it. Engines receive the model directly, without a context wrapper.
+
+| `DataModel` field | Type             | Required | Meaning                                                        |
+| ----------------- | ---------------- | -------- | -------------------------------------------------------------- |
+| `models`          | `Model[]`        | No       | Models and columns, including optional metrics and properties. |
+| `relationships`   | `Relationship[]` | No       | Joins between models.                                          |
+| `views`           | `View[]`         | No       | Named queries.                                                 |
+| `properties`      | `Properties`     | No       | Dataset annotations.                                           |
 
 ## Example: a sales metrics engine
 
@@ -65,7 +69,15 @@ Create `sales-engine.ts` in **your application**. This example uses `ai` for mod
 ```typescript
 import { generateText, type LanguageModel } from 'ai';
 import { executionResult } from '@antv/ava';
-import type { AnalysisEngine, DataContext, DataSourceConfig, ExecutionOptions, ExecutionResult, LLMConfig, Schema } from '@antv/ava';
+import type {
+  AnalysisEngine,
+  DataModel,
+  DataSourceConfig,
+  ExecutionOptions,
+  ExecutionResult,
+  LLMConfig,
+  Schema,
+} from '@antv/ava';
 
 type Sale = { region: string; revenue: number };
 
@@ -122,7 +134,7 @@ export class SalesEngine implements AnalysisEngine {
     };
   }
 
-  async getDSL(query: string, _context: DataContext): Promise<string> {
+  async getDSL(query: string, _dataModel: DataModel): Promise<string> {
     if (!this.sales) throw new Error('Load a source first.');
     const { text, usage } = await generateText({
       model: this.model,
@@ -178,7 +190,7 @@ Return raw JSON without Markdown. If neither metric answers the question, return
 
 `execute()` validates commands even when called directly through `query()`. The exported `executionResult(rows, schema, options?)` helper applies AVA's row and byte limits; its [parameters](/documentation/reference/api/#executionresult-helper) are also listed in the API reference.
 
-This engine has a fixed command vocabulary, so its `getDSL()` accepts but does not use the supplied context. It omits `profile()`; `analyze()`, `suggest()`, and `query()` still work, but `ava.profile()` reports that profiling is unsupported. The sample holds all input rows in memory; result limits bound the returned data, not the input size or aggregation work.
+This engine has a fixed command vocabulary, so its `getDSL()` accepts but does not use the supplied data model. It omits `profile()`; `analyze()`, `suggest()`, and `query()` still work, but `ava.profile()` reports that profiling is unsupported. The sample holds all input rows in memory; result limits bound the returned data, not the input size or aggregation work.
 
 ### Register and use it
 

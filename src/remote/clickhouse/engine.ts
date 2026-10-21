@@ -11,7 +11,7 @@ import type { ClickHouseClient, ClickHouseClientConfigOptions } from '@clickhous
 import type {
   AnalysisEngine,
   ClickHouseSourceOptions,
-  DataContext,
+  DataModel,
   DataSourceConfig,
   ExecutionOptions,
   ExecutionResult,
@@ -80,9 +80,9 @@ export class ClickHouseEngine implements AnalysisEngine {
     );
   }
 
-  async getDSL(query: string, context: DataContext): Promise<string> {
+  async getDSL(query: string, dataModel: DataModel): Promise<string> {
     if (!this.client) throw new Error('No data loaded. Please call source() first.');
-    return this.queryDialect.getDSL(query, context);
+    return this.queryDialect.getDSL(query, dataModel);
   }
 
   async execute<T = Record<string, unknown>>(dsl: string, options?: ExecutionOptions): Promise<ExecutionResult<T>> {

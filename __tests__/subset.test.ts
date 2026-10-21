@@ -3,9 +3,10 @@ import { experimental_evaluate as evaluate, generateText } from 'ai';
 
 import { analyze } from '../src/analysis';
 import { AVA } from '../src';
-import { selectSubsetContext } from '../src/analysis/subset';
+import { selectSubsetDataModel } from '../src/analysis/subset';
 import { DuckDBQueryDialect } from '../src/query/duckdb';
-import { stringifyProfile, stringifySchema } from '../src/util/context';
+import { buildDataModel, stringifyDataModel } from '../src/util/data-model';
+import { escapeMarkdown } from '../src/util/markdown';
 
 import type { Experimental_EvaluationResult } from 'ai';
 import type { AnalysisEngine, Profile, Schema } from '../src/types';
@@ -62,55 +63,74 @@ beforeEach(() => vi.resetAllMocks());
 afterEach(() => vi.restoreAllMocks());
 
 describe('Subset strategy', () => {
-  it('selects only statistics while preserving all profile structure without mutating context', async () => {
+  it('selects only statistics while preserving all profile structure without mutating the data model', async () => {
     vi.mocked(evaluate).mockResolvedValue(selection(['t0f1', 't1f1']));
-    const before = JSON.stringify({ schema, profile });
-    const context = await selectSubsetContext('Total amount by customer name', { schema, profile });
+    const dataModel = buildDataModel({ schema, profile });
+    dataModel.properties = { description: 'Sales' };
+    dataModel.views = [{ name: 'totals', statement: 'SELECT SUM(amount) FROM orders' }];
+    const before = structuredClone(dataModel);
+    const selected = await selectSubsetDataModel('Total amount by customer name', dataModel);
     expect(evaluate).toHaveBeenCalledWith(
       expect.objectContaining({
         model: 'typesafe-ai/jev',
-        state: { question: 'Total amount by customer name', schema: expect.not.stringContaining('123') },
+        state: { question: 'Total amount by customer name', dataModel: expect.not.stringContaining('123') },
       })
     );
-    expect(context.schema).toBe(schema);
-    expect(context.schema).toBe(schema);
-    expect(context.profile?.models.map((table) => table.metrics)).toEqual([{ row_count: 2 }, { row_count: 2 }, {}]);
-    expect(context.profile?.models.map((table) => table.columns.map((field) => field.metrics))).toEqual([
+    expect(selected.relationships).toBe(dataModel.relationships);
+    expect(selected.properties).toBe(dataModel.properties);
+    expect(selected.views).toBe(dataModel.views);
+    dataModel.models.forEach((model, i) => {
+      expect(selected.models[i]).toMatchObject({
+        ...model,
+        metrics: expect.any(Object),
+        columns: model.columns.map((column) => ({ ...column, metrics: expect.any(Object) })),
+      });
+    });
+    expect(selected.models.map((table) => table.metrics)).toEqual([{ row_count: 2 }, { row_count: 2 }, {}]);
+    expect(selected.models.map((table) => table.columns.map((field) => field.metrics))).toEqual([
       [{}, { max: 123 }, {}],
       [{}, { max: 123 }, {}],
       [{}],
     ]);
-    expect(context.profile).not.toHaveProperty('relationships');
-    expect(JSON.stringify({ schema, profile })).toBe(before);
+    expect(dataModel).toEqual(before);
   });
 
   it('keeps a selected table for COUNT(*) and falls back when nothing is selected', async () => {
     vi.mocked(evaluate)
       .mockResolvedValueOnce(selection(['t0']))
       .mockResolvedValueOnce(selection([]));
-    const context = { schema, profile };
-    const selected = await selectSubsetContext('Count orders', context);
-    expect(selected.schema).toBe(schema);
-    expect(selected.profile?.models[0].metrics).toEqual({ row_count: 2 });
-    expect(
-      selected.profile?.models.flatMap((table) => table.columns).every((field) => !Object.keys(field.metrics).length)
-    ).toBe(true);
-    expect(await selectSubsetContext('Unknown question', context)).toBe(context);
+    const dataModel = buildDataModel({ schema, profile });
+    const selected = await selectSubsetDataModel('Count orders', dataModel);
+    expect(selected.relationships).toBe(dataModel.relationships);
+    expect(selected.models[0].metrics).toEqual({ row_count: 2 });
+    expect(selected.models.flatMap((table) => table.columns).every((field) => !Object.keys(field.metrics).length)).toBe(
+      true
+    );
+    expect(await selectSubsetDataModel('Unknown question', dataModel)).toBe(dataModel);
   });
 
   it('preserves schema without calling the evaluator when no profile is available', async () => {
-    const context = { schema };
-    expect(await selectSubsetContext('Question', context)).toBe(context);
+    const dataModel = buildDataModel({ schema });
+    expect(await selectSubsetDataModel('Question', dataModel)).toBe(dataModel);
     expect(evaluate).not.toHaveBeenCalled();
+  });
+
+  it('selects model metrics when columns are omitted', async () => {
+    const dataModel = { models: [{ name: 'orders', baseObject: 'orders', metrics: { row_count: 2 } }] };
+    vi.mocked(evaluate).mockResolvedValue({ answers: { t0: { type: 'boolean', probability: 1 } } } as never);
+    expect(await selectSubsetDataModel('Count orders', dataModel)).toEqual(dataModel);
   });
 
   it('rejects missing answers and propagates evaluator failures', async () => {
     vi.mocked(evaluate)
       .mockResolvedValueOnce({ answers: {} } as never)
       .mockRejectedValueOnce(new Error('Unavailable'));
-    await expect(selectSubsetContext('Question', { schema, profile })).rejects.toThrow('Invalid subset selection');
-    await expect(selectSubsetContext('Question', { schema, profile })).rejects.toThrow('Unavailable');
-    await expect(selectSubsetContext('Question', { schema: { models: [] } })).rejects.toThrow('non-empty schema');
+    await expect(selectSubsetDataModel('Question', buildDataModel({ schema, profile }))).rejects.toThrow(
+      'Invalid subset selection'
+    );
+    await expect(selectSubsetDataModel('Question', buildDataModel({ schema, profile }))).rejects.toThrow('Unavailable');
+    await expect(selectSubsetDataModel('Question', { models: [] })).rejects.toThrow('non-empty data model');
+    await expect(selectSubsetDataModel('Question', {})).rejects.toThrow('non-empty data model');
   });
 
   it.each([true, false])('passes reduced profile through direct with includeSummary=%s', async (includeSummary) => {
@@ -122,27 +142,33 @@ describe('Subset strategy', () => {
       language: { name: 'DuckDB SQL', fence: 'sql' },
       profile: vi.fn().mockResolvedValue(profile),
       execute: vi.fn().mockResolvedValue({ data: [{ total: 246 }], schema: [{ name: 'total' }] }),
-      getDSL: vi.fn((query, context) => dialect.getDSL(query, context)),
+      getDSL: vi.fn((query, dataModel) => dialect.getDSL(query, dataModel)),
     } as unknown as AnalysisEngine;
     const emit = vi.fn();
     const result = await analyze(
       'Total amount',
       { strategy: { type: 'subset' }, maxRows: 10, includeSummary },
-      { emit, context: { schema, profile }, engine, llm: { provider: 'gateway', model: 'openai/gpt-5.5' } }
+      {
+        emit,
+        dataModel: buildDataModel({ schema, profile }),
+        engine,
+        llm: { provider: 'gateway', model: 'openai/gpt-5.5' },
+      }
     );
     expect(emit.mock.calls.slice(0, 2).map(([event]) => event)).toEqual([
       { type: 'selectcontextstart', data: {} },
       { type: 'selectcontextend', data: {} },
     ]);
     const prompt = vi.mocked(generateText).mock.calls[0][0].prompt as string;
-    expect(prompt).toContain('Dataset Profile: 3 model(s)');
-    expect(prompt).toContain('Maximum: 123');
-    expect(prompt).toContain(stringifySchema(schema));
-    expect(prompt).toContain('private_note');
+    expect(prompt).toContain('# Data Model');
+    expect(prompt).toContain('max');
+    expect(prompt).toContain('tableReference');
+    expect(prompt).toContain(escapeMarkdown('MANY_TO_ONE'));
+    expect(prompt).toContain(escapeMarkdown('private_note'));
     expect(prompt).toContain('customers');
     expect(prompt).toContain('unrelated');
-    expect(prompt.match(/Maximum: 123/g)).toHaveLength(1);
-    expect(prompt).toContain(stringifyProfile((engine.getDSL as ReturnType<typeof vi.fn>).mock.calls[0][1].profile));
+    expect(prompt.match(/123/g)).toHaveLength(1);
+    expect(prompt).toContain(stringifyDataModel((engine.getDSL as ReturnType<typeof vi.fn>).mock.calls[0][1]));
     expect(engine.profile).not.toHaveBeenCalled();
     expect(engine.getDSL).toHaveBeenCalledOnce();
     expect(engine.execute).toHaveBeenCalledOnce();
@@ -194,10 +220,13 @@ describe('AVA subset profiling', () => {
       expect(onProfile).not.toHaveBeenCalled();
       const full = await compute.mock.results[0].value;
       expect(full.models[0].columns[1].metrics).toHaveProperty('mean', 6);
-      const selected = getDSL.mock.calls[0][1].profile!;
+      const selected = getDSL.mock.calls[0][1];
       expect(selected.models[0].columns[1].metrics).toEqual({});
       await ava.translate('All fields');
-      expect(getDSL).toHaveBeenLastCalledWith('All fields', { schema: await ava.schema(), profile: full });
+      expect(getDSL).toHaveBeenLastCalledWith(
+        'All fields',
+        buildDataModel({ schema: await ava.schema(), profile: full })
+      );
 
       const refreshed = await ava.profile({ metrics: ['sum'] });
       await ava.analyze('Values after refresh', config);
@@ -206,12 +235,15 @@ describe('AVA subset profiling', () => {
         { type: 'profileend', data: {} },
       ]);
       expect(compute).toHaveBeenCalledTimes(2);
-      expect(getDSL.mock.calls.at(-1)![1].profile!.models[0].columns[0].metrics).toEqual({ sum: 6 });
+      expect(getDSL.mock.calls.at(-1)![1].models[0].columns[0].metrics).toEqual({ sum: 6 });
       await ava.translate('Full refreshed profile');
-      expect(getDSL).toHaveBeenLastCalledWith('Full refreshed profile', {
-        schema: await ava.schema(),
-        profile: refreshed,
-      });
+      expect(getDSL).toHaveBeenLastCalledWith(
+        'Full refreshed profile',
+        buildDataModel({
+          schema: await ava.schema(),
+          profile: refreshed,
+        })
+      );
 
       await ava.source(source);
       await ava.profile(undefined, () => full);
@@ -259,7 +291,7 @@ describe('AVA subset profiling', () => {
       vi.mocked(evaluate).mockClear();
       onEnd.mockClear();
       await ava.analyze('Without profiling', config);
-      expect(nextDSL).toHaveBeenCalledWith('Without profiling', { schema: await ava.schema(), profile: null });
+      expect(nextDSL).toHaveBeenCalledWith('Without profiling', await ava.schema());
       expect(evaluate).not.toHaveBeenCalled();
       expect(onEnd).toHaveBeenCalledExactlyOnceWith({ type: 'analyzeend', data: {} });
       expect(onProfile).not.toHaveBeenCalled();

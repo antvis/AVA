@@ -1,19 +1,19 @@
 import { generateText } from 'ai';
 
 import { languageModel } from '../util/model';
-import { stringifyProfile, stringifySchema } from '../util/context';
+import { stringifyDataModel } from '../util/data-model';
 
 import type { ClickHouseClient } from '@clickhouse/client';
-import type { DataContext, LLMConfig, QueryDialect } from '../types';
+import type { DataModel, LLMConfig, QueryDialect } from '../types';
 
 export class ClickHouseQueryDialect implements QueryDialect<ClickHouseClient> {
   constructor(private readonly llmConfig: LLMConfig) {}
 
-  async getDSL(query: string, { schema, profile }: DataContext): Promise<string> {
+  async getDSL(query: string, dataModel: DataModel): Promise<string> {
     const prompt = `You are a SQL expert. Given the following dataset profile and user query, generate a SQL query to answer the question.
 
 Dataset Context:
-${stringifySchema(schema) + (profile ? '\n' + stringifyProfile(profile) : '')}
+${stringifyDataModel(dataModel)}
 
 User Query: ${query}
 

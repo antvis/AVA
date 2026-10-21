@@ -66,6 +66,13 @@ describe('profile/csv-file', () => {
       properties: { logicalType: 'date' },
       metrics: { min: Date.UTC(2025, 0, 1), max: Date.UTC(2025, 11, 31) },
     });
+    const repeated = await engine.profile(await engine.schema(), {
+      metrics: [
+        { id: 'top_values', maxDistinctRatio: 1 },
+        { id: 'top_values', maxDistinctRatio: 0 },
+      ],
+    });
+    expect(repeated.models[0].columns.find(({ name }) => name === 'region')!.metrics).toEqual({});
     await expect(engine.profile(await engine.schema(), { metrics: ['custom_metric'] })).rejects.toThrow(
       'Unknown metric: custom_metric'
     );

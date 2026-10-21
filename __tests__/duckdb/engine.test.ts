@@ -8,6 +8,7 @@ import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 import { DuckDBInstance } from '@duckdb/node-api';
 
 import { DuckDBEngine } from '../../src/duckdb';
+import { buildDataModel } from '../../src/util/data-model';
 import { QueryTimeoutError } from '../../src/duckdb/engine';
 import { DuckDBQueryDialect } from '../../src/query/duckdb';
 import { maxRows } from '../../src/util/result';
@@ -39,23 +40,23 @@ describe('DuckDBEngine', () => {
     const compute = vi.spyOn(engine, 'profile');
     await engine.load({ type: 'json', options: { data: [{ value: 1 }] } });
     const schema = await engine.schema();
-    await engine.getDSL('One', { schema });
-    expect(generate).toHaveBeenLastCalledWith('One', { schema, profile: undefined });
+    await engine.getDSL('One', schema);
+    expect(generate).toHaveBeenLastCalledWith('One', schema);
     expect(compute).not.toHaveBeenCalled();
 
     const profile = await engine.profile(schema, { metrics: ['row_count'] });
-    await engine.getDSL('One', { schema, profile });
-    expect(generate).toHaveBeenLastCalledWith('One', { schema, profile });
+    await engine.getDSL('One', buildDataModel({ schema, profile }));
+    expect(generate).toHaveBeenLastCalledWith('One', buildDataModel({ schema, profile }));
     expect(compute).toHaveBeenCalledTimes(1);
-    await engine.getDSL('One', { schema });
-    expect(generate).toHaveBeenLastCalledWith('One', { schema });
+    await engine.getDSL('One', schema);
+    expect(generate).toHaveBeenLastCalledWith('One', schema);
 
     await engine.dispose();
-    await expect(engine.getDSL('One', { schema })).rejects.toThrow('No data loaded');
+    await expect(engine.getDSL('One', schema)).rejects.toThrow('No data loaded');
     await engine.load({ type: 'json', options: { data: [{ other: 2 }] } });
     const nextSchema = await engine.schema();
-    await engine.getDSL('Two', { schema: nextSchema });
-    expect(generate).toHaveBeenLastCalledWith('Two', { schema: nextSchema, profile: undefined });
+    await engine.getDSL('Two', nextSchema);
+    expect(generate).toHaveBeenLastCalledWith('Two', nextSchema);
   });
 
   it('should load data and execute queries', async () => {
@@ -201,7 +202,7 @@ describe('DuckDBEngine', () => {
     it('should generate SQL from a natural language query', async () => {
       await engine.load({ type: 'json', options: { data: [{ company: 'A', region: 'East', revenue: 100 }] } });
 
-      const sql = await engine.getDSL('Show all companies', { schema: await engine.schema() });
+      const sql = await engine.getDSL('Show all companies', await engine.schema());
 
       expect(typeof sql).toBe('string');
       expect(sql.toLowerCase()).toContain('select');

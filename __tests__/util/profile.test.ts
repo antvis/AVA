@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 
 import { BUILTIN_METRICS } from '../../src/duckdb/profile';
-import { validateMetricConfig, profileMetadataSchema } from '../../src/util/profile';
+import { resolveMetric, profileMetadataSchema } from '../../src/util/profile';
 
 import type { Profile, Schema } from '../../src/types';
 
@@ -21,12 +21,12 @@ const profile: Profile = {
 };
 
 it('validates metric options without treating the metric id as an option', () => {
-  expect(validateMetricConfig({ id: 'row_count' }, BUILTIN_METRICS)).toBe(true);
-  expect(validateMetricConfig({ id: 'top_values', limit: 2 }, BUILTIN_METRICS)).toBe(true);
-  expect(() => validateMetricConfig({ id: 'row_count', limit: 2 }, BUILTIN_METRICS)).toThrow(
+  expect(resolveMetric({ id: 'row_count' }, BUILTIN_METRICS)).toBe(BUILTIN_METRICS[0]);
+  expect(resolveMetric({ id: 'top_values', limit: 2 }, BUILTIN_METRICS).id).toBe('top_values');
+  expect(() => resolveMetric({ id: 'row_count', limit: 2 }, BUILTIN_METRICS)).toThrow(
     'Unknown option for row_count: limit'
   );
-  expect(() => validateMetricConfig({ id: 'top_values', limit: -1 }, BUILTIN_METRICS)).toThrow(
+  expect(() => resolveMetric({ id: 'top_values', limit: -1 }, BUILTIN_METRICS)).toThrow(
     'top_values.limit must be a non-negative safe integer'
   );
 });
@@ -40,7 +40,7 @@ describe('profileMetadataSchema', () => {
     expect(snapshot.models[0].columns[0].metrics.custom).not.toBe(profile.models[0].columns[0].metrics.custom);
   });
 
-  it('rejects the obsolete profile shape', () => {
+  it('requires models and rejects unknown profile properties', () => {
     expect(() => profileMetadataSchema.parse({ tables: [] })).toThrow();
     expect(() => profileMetadataSchema.parse({ ...profile, generatedAt: 0 })).toThrow();
   });

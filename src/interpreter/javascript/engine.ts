@@ -10,7 +10,7 @@ import { generateText } from 'ai';
 
 import { languageModel } from '../../util/model';
 import { extractDataSchema } from '../../util/schema';
-import { stringifyProfile, stringifySchema } from '../../util/context';
+import { stringifyDataModel } from '../../util/data-model';
 import { executionResult, inferQuerySchema } from '../../util/result';
 import { DEFAULT_METRICS, parseProfileOptions } from '../../util/profile';
 
@@ -23,7 +23,7 @@ import type {
   Profile,
   ProfileOptions,
   AnalysisEngine,
-  DataContext,
+  DataModel,
   DataSourceConfig,
   LLMConfig,
   Schema,
@@ -69,18 +69,17 @@ export class JavaScriptEngine implements AnalysisEngine {
     return profileTables(this.data, schema, parseProfileOptions(options, { metrics: DEFAULT_METRICS }));
   }
 
-  async getDSL(query: string, context: DataContext): Promise<string> {
+  async getDSL(query: string, dataModel: DataModel): Promise<string> {
     if (!this.data) {
       throw new Error('No data loaded. Please call source() first.');
     }
 
-    const datasetContext =
-      stringifySchema(context.schema) + (context.profile ? '\n' + stringifyProfile(context.profile) : '');
+    const dataset = stringifyDataModel(dataModel);
 
     const prompt = `You are a data analysis expert. Given the following dataset information and user query, generate JavaScript code to answer the question.
 
 Dataset Information:
-${datasetContext}
+${dataset}
 
 User Query: ${query}
 

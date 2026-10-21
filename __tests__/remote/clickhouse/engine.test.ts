@@ -211,6 +211,19 @@ describe('ClickHouseEngine', () => {
     expect(query).toContain('"note""text"');
   });
 
+  it.each([{}, 'null', '[{"value":"A","count":2}]', '[["A","invalid"]]'])(
+    'rejects malformed top-values results %#',
+    async (raw) => {
+      const run = vi.fn().mockResolvedValue([{ m0: raw }]);
+      const schema: Schema = {
+        models: [{ name: 'data', tableReference: { table: 'data' }, columns: [{ name: 'value', type: 'String' }] }],
+      };
+      await expect(clickhouseProfile(run, schema, { metrics: [{ id: 'top_values' }] })).rejects.toThrow(
+        'Invalid ClickHouse top_values'
+      );
+    }
+  );
+
   it('rejects unloaded engines and incompatible sources', async () => {
     stubClient((query) => {
       if (query.includes('FROM system.tables')) return TABLE_ROWS;

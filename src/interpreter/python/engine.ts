@@ -4,7 +4,7 @@ import { generateText } from 'ai';
 import { z } from 'zod';
 
 import { languageModel } from '../../util/model';
-import { stringifyProfile, stringifySchema } from '../../util/context';
+import { stringifyDataModel } from '../../util/data-model';
 import { executionResult, maxRows, maxResultBytes } from '../../util/result';
 import { DEFAULT_METRICS, parseProfileOptions, profileMetadataSchema } from '../../util/profile';
 import { runWithTimeout } from '../../util/timeout';
@@ -16,7 +16,7 @@ import { executionCode } from './util/code';
 
 import type {
   AnalysisEngine,
-  DataContext,
+  DataModel,
   DataSourceConfig,
   ExecutionOptions,
   ExecutionResult,
@@ -74,10 +74,10 @@ Do not read files, access the network, install packages, or print the answer.`,
     return { models: tables } as Schema;
   }
 
-  async getDSL(query: string, context: DataContext): Promise<string> {
+  async getDSL(query: string, dataModel: DataModel): Promise<string> {
     if (!this.source) throw new Error('No data loaded. Please call source() first.');
 
-    const dataset = stringifySchema(context.schema) + (context.profile ? '\n' + stringifyProfile(context.profile) : '');
+    const dataset = stringifyDataModel(dataModel);
 
     const response = await generateText({
       model: languageModel(this.llmConfig),

@@ -640,7 +640,7 @@ export interface AnalysisEngine {
   /** Compute statistics for the loaded data. */
   profile?(schema: Schema, options?: ProfileOptions): Promise<Profile>;
   /** Generate the executable DSL (SQL) for a natural-language query */
-  getDSL(query: string, context: DataContext): Promise<string>;
+  getDSL(query: string, dataModel: DataModel): Promise<string>;
   /** Execute one DSL statement with a bounded result. */
   execute<T = Record<string, unknown>>(dsl: string, options?: ExecutionOptions): Promise<ExecutionResult<T>>;
   /** Release resources (temp files, database connections) */
@@ -682,13 +682,6 @@ export type AnalysisStrategyConfig =
     }
   | { type: 'loop'; maxSteps?: number }
   | { type: 'subset' };
-
-/** Dataset metadata supplied to model-facing consumers. */
-export interface DataContext {
-  schema: Schema;
-  /** Complete structural metadata with optional statistics. */
-  profile: Profile | null;
-}
 
 /** Unified data structure, profiling results and semantics for AVA. */
 
@@ -860,7 +853,7 @@ export interface Profile {
 export interface AnalysisRuntime {
   /** Dispatch an analysis stage event. */
   emit: (event: AnalysisEvent) => void;
-  context: DataContext;
+  dataModel: DataModel;
   engine: AnalysisEngine;
   llm: LLMConfig;
 }
@@ -877,7 +870,7 @@ export type AnalysisStrategy = (
  */
 export interface QueryDialect<TContext = void> {
   /** Generate the executable DSL (SQL) for a natural-language query. */
-  getDSL(query: string, context: DataContext): Promise<string>;
+  getDSL(query: string, dataModel: DataModel): Promise<string>;
   /** Validate one read-only statement and return the DSL to execute, normalized if needed. */
   validateDSL(dsl: string, context: TContext): Promise<string>;
 }

@@ -22,7 +22,7 @@ import type {
   AnalysisEngine,
   Profile,
   ProfileOptions,
-  DataContext,
+  DataModel,
   DataSourceConfig,
   LoadedSource,
   DuckDBEngineOptions,
@@ -152,10 +152,10 @@ export class DuckDBEngine implements AnalysisEngine {
     return profileTables(this.connection, schema, parsedOptions);
   }
 
-  async getDSL(query: string, context: DataContext): Promise<string> {
+  async getDSL(query: string, dataModel: DataModel): Promise<string> {
     if (!this.source) throw new Error('No data loaded. Please call source() first.');
 
-    return this.queryDialect.getDSL(query, context);
+    return this.queryDialect.getDSL(query, dataModel);
   }
 
   async execute<T = Record<string, unknown>>(sql: string, options?: ExecutionOptions): Promise<ExecutionResult<T>> {

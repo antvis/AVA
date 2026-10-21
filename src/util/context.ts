@@ -34,7 +34,7 @@ function stringifyMetrics(metrics: Record<string, unknown>, logicalType?: Logica
     .join('');
 }
 
-/** Describe catalog structure without converting it to a legacy table format. */
+/** Serialize catalog structure for analysis prompts. */
 export function stringifySchema(schema: Schema): string {
   return `Dataset Info: ${schema.models.length} model(s)\n${JSON.stringify(schema, null, 2)}`;
 }

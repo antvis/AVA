@@ -39,7 +39,6 @@ const DISCOVERY_ROWS = [
       columns: ['id'],
     },
   },
-
 ];
 
 /** Stub global fetch to answer Management API calls; records request shapes */
@@ -230,8 +229,8 @@ describe('SupabaseEngine', () => {
         },
       ]);
       const generate = vi.spyOn(PostgreSQLQueryDialect.prototype, 'getDSL').mockResolvedValue('SELECT 1');
-      await engine.getDSL('Orders by buyer', { schema });
-      expect(generate).toHaveBeenCalledWith('Orders by buyer', { schema });
+      await engine.getDSL('Orders by buyer', schema);
+      expect(generate).toHaveBeenCalledWith('Orders by buyer', schema);
       expect(requests).toHaveLength(1);
     });
   });

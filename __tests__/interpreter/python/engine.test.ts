@@ -59,7 +59,7 @@ describe('python/engine', () => {
     const expectUnloaded = async () => {
       await expect(engine.execute('result = 1')).rejects.toThrow('No data loaded');
       await expect(engine.profile({ models: [] })).rejects.toThrow('No data loaded');
-      await expect(engine.getDSL('sum', { schema: { models: [] } })).rejects.toThrow('No data loaded');
+      await expect(engine.getDSL('sum', { models: [] })).rejects.toThrow('No data loaded');
     };
     await expectUnloaded();
     await engine.load(source);

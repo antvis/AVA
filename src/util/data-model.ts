@@ -65,38 +65,35 @@ export const dataModelMetadataSchema = z
     views: z.array(view).optional(),
     properties: properties.optional(),
   })
-  .strict()
-  .transform((value) => value as DataModel);
+  .strict() as z.ZodType<DataModel>;
 
-const dataModelInputSchema = z
-  .object({
-    schema: schemaStructure.strict(),
-    profile: z
-      .object({
-        models: z.array(
-          z
-            .object({
-              name,
-              metrics: properties,
-              columns: z.array(
-                z
-                  .object({
-                    name,
-                    metrics: properties,
-                    properties: z
-                      .object({ logicalType: z.enum(['numeric', 'string', 'boolean', 'date', 'unknown']) })
-                      .strict(),
-                  })
-                  .strict()
-              ),
-            })
-            .strict()
-        ),
-      })
-      .strict()
-      .optional(),
-  })
-  .transform((value) => value as { schema: Schema; profile?: Profile });
+const dataModelInputSchema = z.object({
+  schema: schemaStructure.strict(),
+  profile: z
+    .object({
+      models: z.array(
+        z
+          .object({
+            name,
+            metrics: properties,
+            columns: z.array(
+              z
+                .object({
+                  name,
+                  metrics: properties,
+                  properties: z
+                    .object({ logicalType: z.enum(['numeric', 'string', 'boolean', 'date', 'unknown']) })
+                    .strict(),
+                })
+                .strict()
+            ),
+          })
+          .strict()
+      ),
+    })
+    .strict()
+    .optional(),
+}) as z.ZodType<{ schema: Schema; profile?: Profile }>;
 
 function indexByName<T extends { name: string }>(values: T[], label: string): Map<string, T> {
   const index = new Map<string, T>();

@@ -30,7 +30,7 @@ Provide a natural language summary of the result. If the result is tabular data,
 }
 
 /** Generate and execute a query with bounded error correction, then summarize its data. */
-export const directAnalysis: AnalysisStrategy = async (query, config, { context, engine, llm, emit }) => {
+export const directAnalysis: AnalysisStrategy = async (query, config, { dataModel, engine, llm, emit }) => {
   const maxRetries = Math.max(config.strategy?.type === 'direct' ? config.strategy.maxRetries ?? 2 : 10, 0);
 
   let translationQuery = query;
@@ -41,7 +41,7 @@ export const directAnalysis: AnalysisStrategy = async (query, config, { context,
     emit(new AnalysisEvent(AnalysisEventType.TRANSLATE_START, { query, attempt }));
 
     try {
-      sql = await engine.getDSL(translationQuery, context);
+      sql = await engine.getDSL(translationQuery, dataModel);
     } catch (error) {
       emit(new AnalysisEvent(AnalysisEventType.TRANSLATE_END, { error: serializeError(error) }));
 

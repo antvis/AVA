@@ -26,7 +26,7 @@ describe('directAnalysis', () => {
     const result = await analyze(
       'Give me one',
       { strategy: { type: 'direct' }, maxRows: 5, maxResultBytes: 1024 },
-      { emit, context: { schema: { models: [] } }, engine, llm: { model: 'test', apiKey: 'test' } }
+      { emit, dataModel: { models: [] }, engine, llm: { model: 'test', apiKey: 'test' } }
     );
 
     expect(engine.getDSL).toHaveBeenCalledOnce();
@@ -38,7 +38,7 @@ describe('directAnalysis', () => {
       { type: 'summarizestart', data: {} },
       { type: 'summarizeend', data: { text: result.text } },
     ]);
-    expect(engine.getDSL).toHaveBeenCalledWith('Give me one', { schema: { models: [] } });
+    expect(engine.getDSL).toHaveBeenCalledWith('Give me one', { models: [] });
     expect(engine.execute).toHaveBeenCalledWith('SELECT 1', {
       strategy: { type: 'direct' },
       maxRows: 5,
@@ -64,7 +64,7 @@ it.each([undefined, true, false])('direct includeSummary=%s controls the summary
   const result = await analyze(
     'Give me one',
     { includeSummary },
-    { emit: vi.fn(), context: { schema: { models: [] } }, engine, llm: { model: 'test' } }
+    { emit: vi.fn(), dataModel: { models: [] }, engine, llm: { model: 'test' } }
   );
   expect(result).toMatchObject({ ...execution, sql: 'SELECT 1', text: includeSummary === false ? '' : 'One result.' });
   expect(engine.execute).toHaveBeenCalledOnce();
@@ -82,7 +82,7 @@ it.each([0, 1, 2])('loop omits summary with maxSteps=%s, retaining verification 
   const result = await analyze(
     'Give me one',
     { strategy: { type: 'loop', maxSteps }, includeSummary: false },
-    { emit, context: { schema: { models: [] } }, engine, llm: { model: 'test' } }
+    { emit, dataModel: { models: [] }, engine, llm: { model: 'test' } }
   );
   expect(result).toMatchObject({ data: [{ value: 1 }], sql: 'SELECT 1', text: '' });
   expect(emit.mock.calls.find(([event]) => event.type === 'querystart')?.[0].data).toEqual({ dsl: 'SELECT 1' });

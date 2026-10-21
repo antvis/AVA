@@ -1,5 +1,5 @@
 import { sqlIdentifier } from '../util/sql';
-import { validateMetricConfig, table, column, logicalTypes, TOP_VALUES_OPTIONS } from '../util/profile';
+import { resolveMetric, table, column, logicalTypes, TOP_VALUES_OPTIONS } from '../util/profile';
 
 import type { MetricField } from '../util/profile';
 import type { DuckDBConnection, Schema, ParsedProfileOptions, LogicalType, Metric, MetricId, Profile } from '../types';
@@ -16,7 +16,6 @@ export function logicalType(nativeType: string): LogicalType {
   if (/^(VARCHAR|CHAR|BPCHAR|TEXT|STRING|UUID|ENUM\(.*\))$/i.test(nativeType)) return 'string';
   if (/^BOOLEAN$/i.test(nativeType)) return 'boolean';
   if (/^(DATE|TIMESTAMP(?:_S|_MS|_NS|TZ| WITH TIME ZONE)?)$/i.test(nativeType)) return 'date';
-  // Other types are unknown.
   return 'unknown';
 }
 
@@ -42,7 +41,6 @@ function range(fn: string, context: ExpressionContext): string {
   return context.field?.logicalType === 'date' ? `epoch_ms(${expression})` : expression;
 }
 
-// TODO(profile): Add histograms and quartiles with clear result formats and boundary tests.
 export const BUILTIN_METRICS: DuckDBMetric[] = [
   { id: 'row_count', enable: table, expression: () => 'COUNT(*)' },
   { id: 'null_count', enable: column, expression: ({ column }) => `COUNT(*) - COUNT(${column})` },
@@ -93,9 +91,7 @@ export const BUILTIN_METRICS: DuckDBMetric[] = [
 
 export { DEFAULT_METRICS } from '../util/profile';
 
-/**
- * Add query values to the metric results.
- */
+/** Decode aggregate values into profile metrics. */
 function postProcessMetrics(
   row: Record<string, unknown>,
   pending: { metricId: MetricId; output: Record<string, unknown> }[]
@@ -103,30 +99,25 @@ function postProcessMetrics(
   for (let i = 0; i < pending.length; i += 1) {
     const { metricId, output } = pending[i];
     const raw = row[`m${i}`];
+    delete output[metricId];
     if (metricId === 'top_values' && raw == null) continue;
     if (Array.isArray(raw)) {
       output[metricId] = raw;
     } else {
-      // Keep numeric metrics usable in JavaScript.
-      // TODO(profile): Add a lossless format if exact large numbers are needed.
+      // Profile numbers use JavaScript precision, including BIGINT and DECIMAL results.
       const number = raw == null ? null : Number(raw);
       output[metricId] = number === null || Number.isFinite(number) ? number : null;
     }
   }
 }
 
-/**
- * Build profiles for all tables.
- */
+/** Compute requested metrics for each model and column. */
 export async function profileTables(
   connection: DuckDBConnection,
   schema: Schema,
   options: ParsedProfileOptions
 ): Promise<Profile> {
-  const metrics = options.metrics.map((metric) => {
-    validateMetricConfig(metric, BUILTIN_METRICS);
-    return { metric, definition: BUILTIN_METRICS.find(({ id }) => id === metric.id)! };
-  });
+  const metrics = options.metrics.map((metric) => ({ metric, definition: resolveMetric(metric, BUILTIN_METRICS) }));
   const profiles: Profile['models'] = [];
 
   for (const table of schema.models) {
@@ -170,7 +161,6 @@ export async function profileTables(
 
     if (!pending.length) continue;
 
-    // Collect the requested statistics.
     const sql = `SELECT ${pending
       .map(({ expression }, i) => `${expression} AS ${sqlIdentifier(`m${i}`)}`)
       .join(', ')} FROM ${sqlIdentifier(name)}`;

@@ -3,9 +3,9 @@ import { z } from 'zod';
 
 import { sqlIdentifier } from './sql';
 
-import type { Schema } from '../types';
+import type { JsonValue, Schema } from '../types';
 
-export const jsonValue: z.ZodType<unknown> = z.lazy(() =>
+export const jsonValue: z.ZodType<JsonValue> = z.lazy(() =>
   z.union([z.string(), z.number().finite(), z.boolean(), z.null(), z.array(jsonValue), z.record(jsonValue)])
 );
 const name = z.string();
@@ -32,7 +32,7 @@ export const schemaStructure = z.object({
     .optional(),
   views: z.array(z.object({ name, statement: name })).optional(),
 });
-export const schemaMetadataSchema = schemaStructure.transform((value) => value as Schema);
+export const schemaMetadataSchema = schemaStructure as unknown as z.ZodType<Schema>;
 
 function inferType(values: any[]): 'number' | 'string' | 'date' | 'boolean' | 'unknown' {
   const nonNullValues = values.filter((v) => v != null && v !== '');
@@ -41,17 +41,14 @@ function inferType(values: any[]): 'number' | 'string' | 'date' | 'boolean' | 'u
 
   if (nonNullValues.some((v) => typeof v === 'object')) return 'unknown';
 
-  // Check if all values are booleans
   const allBooleans = nonNullValues.every(
     (v) => typeof v === 'boolean' || v === 'true' || v === 'false' || v === 'TRUE' || v === 'FALSE'
   );
   if (allBooleans) return 'boolean';
 
-  // Check if all values are numbers
   const allNumbers = nonNullValues.every((v) => typeof v === 'number' || !Number.isNaN(Number(v)));
   if (allNumbers) return 'number';
 
-  // Check if values look like dates
   const allDates = nonNullValues.every((v) => {
     if (typeof v === 'string') {
       const date = new Date(v);
@@ -64,7 +61,7 @@ function inferType(values: any[]): 'number' | 'string' | 'date' | 'boolean' | 'u
   return 'string';
 }
 
-/** Infer a single in-memory model without inventing a database namespace. */
+/** Infer column types for an in-memory model. */
 export function extractDataSchema(data: any[]): Schema {
   return {
     models: [
@@ -117,7 +114,7 @@ function viewStatement(sql: string): string {
 type Metadata = Record<string, any>;
 const bool = (value: unknown): boolean => value === true || value === 1 || value === '1';
 
-/** Build the new Schema directly from tagged catalog rows. */
+/** Assemble models, keys and relationships from tagged catalog rows. */
 export function rowObjects2Schema(rows: Record<string, unknown>[]): Schema {
   const models = new Map<string, Schema['models'][number]>();
   const columns = new Map<string, Metadata[]>();

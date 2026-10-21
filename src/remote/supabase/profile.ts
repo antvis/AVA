@@ -1,4 +1,4 @@
-import { column, logicalTypes, table, TOP_VALUES_OPTIONS, validateMetricConfig } from '../../util/profile';
+import { column, logicalTypes, table, TOP_VALUES_OPTIONS, resolveMetric } from '../../util/profile';
 import { sqlIdentifier } from '../../util/sql';
 
 import { SUPABASE_SCHEMA } from './schema';
@@ -77,10 +77,7 @@ export async function profileTables(
   schema: Schema,
   options: ParsedProfileOptions
 ): Promise<Profile> {
-  const metrics = options.metrics.map((metric) => {
-    validateMetricConfig(metric, BUILTIN_METRICS);
-    return { metric, definition: BUILTIN_METRICS.find(({ id }) => id === metric.id)! };
-  });
+  const metrics = options.metrics.map((metric) => ({ metric, definition: resolveMetric(metric, BUILTIN_METRICS) }));
   const models: Profile['models'] = [];
   for (const source of schema.models) {
     const profile: Profile['models'][number] = {
