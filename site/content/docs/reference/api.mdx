@@ -235,7 +235,7 @@ Start with [Define data semantics](/documentation/data/semantic/) for the author
 
 For `analyze()`, `translate()`, and `suggest()`, AVA merges models and columns by name with the schema and profile. Unspecified models, columns, and observations remain available; model and column properties merge by key, with semantic values taking precedence. A supplied relationship or view list replaces its discovered counterpart, including when the list is empty. Each semantic model must declare exactly one source: `tableReference`, `refSql`, or `baseObject`.
 
-These definitions provide context for query generation. Declaring a cube, view, calculated column, or access rule does not create database objects or enforce policies; generated queries must work with the configured engine.
+These definitions provide context for query generation. Declaring a cube, view, or calculated column does not create database objects; generated queries must work with the configured engine.
 
 ### Semantic fields
 
@@ -263,9 +263,6 @@ All six top-level fields are optional. Supply only the sections your application
 | `uniqueKeys` | No | Array of keys, each a column name or a nonempty composite-key array. |
 | `dialect` | No | SQL dialect for `refSql`; otherwise use the execution context. |
 | `properties` | No | Model annotations, especially row grain and business purpose. |
-| `cached` | No | Boolean cache declaration; storing it starts no cache. |
-| `refreshTime` | No | Duration-shaped string such as `'1h'` or `'30m'`; starts no refresh job. |
-| `rowLevelAccessControls` | No | Access declarations described below; no built-in enforcement. |
 
 A primary or unique key is a declaration, not an observed statistic. Verify it against the source. `primaryKey: ['tenant_id', 'order_id']` is one composite key. `uniqueKeys: ['email', ['tenant_id', 'external_id']]` declares two alternative unique keys.
 
@@ -281,8 +278,6 @@ A primary or unique key is a declaration, not an observed statistic. Verify it a
 | `isPrimaryKey` | No | Boolean marking membership in the declared primary key. |
 | `notNull` | No | Declared non-null constraint; omission is unspecified. |
 | `relationship` | No | Relationship identifier for navigation, not a foreign-key column name. |
-| `isHidden` | No | Visibility declaration; does not hide a field from the model or restrict queries. |
-| `columnLevelAccessControl` | No | Access declaration described below; no built-in enforcement. |
 
 ### Semantic relationships and views
 
@@ -310,7 +305,6 @@ Relationships and views accept additional JSON-valued attributes whose meaning i
 | `dimensions` | No | Grouping definitions. |
 | `timeDimensions` | No | Date/time grouping definitions; granularity is chosen at query time. |
 | `hierarchies` | No | Map of names to nonempty dimension-name arrays, ordered coarsest to finest. |
-| `refreshTime` | No | Duration-shaped declaration; no refresh job is created. |
 | `properties` | No | Cube annotations. |
 
 Each entry in `measures`, `dimensions`, and `timeDimensions` uses the same fields:
@@ -323,23 +317,9 @@ Each entry in `measures`, `dimensions`, and `timeDimensions` uses the same field
 | `description` | No | Business meaning of the expression. |
 | `properties` | No | Annotations such as units or synonyms. |
 
-For a calendar drill-down, define dimension expressions for `year`, `month`, and `order_date`, then declare `hierarchies: { calendar: ['year', 'month', 'order_date'] }`. A hierarchy describes a path; it does not generate those fields. `refreshTime` accepts a number followed by letters, but AVA does not validate a scheduler's units or schedule work from it.
+For a calendar drill-down, define dimension expressions for `year`, `month`, and `order_date`, then declare `hierarchies: { calendar: ['year', 'month', 'order_date'] }`. A hierarchy describes a path; it does not generate those fields.
 
-### Semantic access declarations
-
-Use these fields only when your application or execution layer implements their meaning. They are retained in the model context. They are **not** an authorization boundary, and `isHidden` does not redact metadata. Enforce permissions and remove sensitive context before it reaches AVA or the LLM.
-
-| Field | Required | Meaning |
-| --- | --- | --- |
-| `rowLevelAccessControls[].name` | Yes | Rule identifier. |
-| `rowLevelAccessControls[].requiredProperties` | Yes | Array of session property declarations. |
-| `rowLevelAccessControls[].condition` | Yes | SQL predicate over model fields and session properties. |
-| `columnLevelAccessControl.name` | Yes | Rule identifier. |
-| `columnLevelAccessControl.operator` | Yes | `EQUALS`, `NOT_EQUALS`, `GREATER_THAN`, `LESS_THAN`, `GREATER_THAN_OR_EQUALS`, or `LESS_THAN_OR_EQUALS`. |
-| `columnLevelAccessControl.requiredProperties` | Yes | Exactly one session property, wrapped in an array. |
-| `columnLevelAccessControl.threshold` | No | `{ value: string, dataType: 'NUMERIC' \| 'STRING' }`. Numeric threshold values are also strings. |
-
-Every session property requires `name: string` and `required: boolean`, with optional `defaultExpr: string | null` for a SQL fallback. AVA does not supply session values, bind predicate placeholders, or evaluate these rules. Model, column, cube, expression, and access-rule objects reject unknown fields; put application annotations in `properties` where supported.
+Model, column, cube, and expression objects reject unknown fields; put application annotations in `properties` where supported.
 
 ### Semantic model sources
 

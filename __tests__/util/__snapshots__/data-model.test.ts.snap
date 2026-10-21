@@ -10,7 +10,6 @@ exports[`stringifyDataModel > describes cube members and drill-down paths withou
 | Attribute | Value |
 | --- | --- |
 | baseObject | orders |
-| refreshTime | 1h |
 
 Properties:
 

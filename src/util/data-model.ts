@@ -8,31 +8,6 @@ import type { DataModel, Model, Profile, Properties, Schema, Semantic } from '..
 const name = z.string().min(1);
 const properties = z.record(jsonValue);
 const key = z.union([name, z.array(name).nonempty()]);
-const refreshTime = z.string().regex(/^\s*(\d+(?:\.\d+)?)\s*([a-zA-Z]+)\s*$/);
-const sessionProperty = z
-  .object({ name, required: z.boolean(), defaultExpr: z.string().nullable().optional() })
-  .strict();
-const rowLevelAccessControl = z
-  .object({ name, requiredProperties: z.array(sessionProperty), condition: name })
-  .strict();
-const columnLevelAccessControl = z
-  .object({
-    name,
-    operator: z.enum([
-      'EQUALS',
-      'NOT_EQUALS',
-      'GREATER_THAN',
-      'LESS_THAN',
-      'GREATER_THAN_OR_EQUALS',
-      'LESS_THAN_OR_EQUALS',
-    ]),
-    requiredProperties: z.tuple([sessionProperty]),
-    threshold: z
-      .object({ value: z.string(), dataType: z.enum(['NUMERIC', 'STRING']) })
-      .strict()
-      .optional(),
-  })
-  .strict();
 
 const column = z
   .object({
@@ -41,8 +16,6 @@ const column = z
     relationship: name.optional(),
     isCalculated: z.boolean().optional(),
     isPrimaryKey: z.boolean().optional(),
-    isHidden: z.boolean().optional(),
-    columnLevelAccessControl: columnLevelAccessControl.optional(),
     notNull: z.boolean().optional(),
     expression: z.string().nullable().optional(),
     metrics: properties.optional(),
@@ -61,9 +34,6 @@ const modelStructure = z
     primaryKey: key.optional(),
     uniqueKeys: z.array(key).optional(),
     dialect: name.optional(),
-    cached: z.boolean().optional(),
-    refreshTime: refreshTime.optional(),
-    rowLevelAccessControls: z.array(rowLevelAccessControl).optional(),
     metrics: properties.optional(),
     properties: properties.optional(),
     refSql: name.optional(),
@@ -103,7 +73,6 @@ const cube = z
     dimensions: z.array(measure).optional(),
     timeDimensions: z.array(measure).optional(),
     hierarchies: z.record(z.array(name).nonempty()).optional(),
-    refreshTime: refreshTime.optional(),
     properties: properties.optional(),
   })
   .strict();

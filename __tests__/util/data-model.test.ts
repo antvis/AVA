@@ -148,7 +148,6 @@ describe('stringifyDataModel', () => {
           timeDimensions: [{ name: 'month', type: 'DATE', expression: "DATE_TRUNC('month', ordered_at)" }],
           hierarchies: { calendar: ['year', 'month'] },
           properties: { description: 'Sales reporting' },
-          refreshTime: '1h',
         },
         { name: 'counts', baseObject: 'orders', measures: [{ name: 'count', type: 'BIGINT', expression: 'COUNT(*)' }] },
       ],
@@ -288,34 +287,15 @@ describe('dataModelMetadataSchema', () => {
 
 describe('semantic metadata', () => {
   const input: Semantic = {
-    description: 'Governed sales definitions',
+    description: 'Sales definitions',
     models: [
       {
         name: 'orders',
         tableReference: { catalog: 'warehouse', schema: 'public', table: 'raw_orders' },
         dialect: 'duckdb',
-        cached: false,
-        refreshTime: '1h',
-        rowLevelAccessControls: [
-          {
-            name: 'tenant_filter',
-            requiredProperties: [{ name: 'tenant_id', required: true, defaultExpr: null }],
-            condition: 'tenant_id = @tenant_id',
-          },
-        ],
         columns: [
           { name: 'id', type: 'INTEGER', isPrimaryKey: true },
-          {
-            name: 'cost',
-            type: 'DOUBLE',
-            isHidden: true,
-            columnLevelAccessControl: {
-              name: 'cost_access',
-              operator: 'GREATER_THAN_OR_EQUALS',
-              requiredProperties: [{ name: 'access_level', required: false, defaultExpr: '0' }],
-              threshold: { value: '2', dataType: 'NUMERIC' },
-            },
-          },
+          { name: 'cost', type: 'DOUBLE' },
         ],
       },
     ],
@@ -336,7 +316,6 @@ describe('semantic metadata', () => {
         dimensions: [{ name: 'status', expression: 'status', type: 'VARCHAR' }],
         timeDimensions: [{ name: 'ordered_at', expression: 'ordered_at', type: 'TIMESTAMP' }],
         hierarchies: { calendar: ['ordered_at'] },
-        refreshTime: '30m',
         properties: { description: 'Revenue by order status' },
       },
     ],
@@ -346,7 +325,7 @@ describe('semantic metadata', () => {
     const result = semanticMetadataSchema.parse(input);
     expect(result).toEqual(input);
     expect(result.cubes[0].measures).not.toBe(input.cubes[0].measures);
-    expect(result.models[0].rowLevelAccessControls).not.toBe(input.models[0].rowLevelAccessControls);
+    expect(result.models[0].columns).not.toBe(input.models[0].columns);
     expect(result.models[0]).not.toHaveProperty('metrics');
   });
 
@@ -364,19 +343,10 @@ describe('semantic metadata', () => {
     expect(dataModelMetadataSchema.parse(value)).toEqual(value);
   });
 
-  it('includes description, cubes and access declarations in model context without mutating it', () => {
+  it('includes description and cubes in model context without mutating it', () => {
     const original = structuredClone(input);
     const result = stringifyDataModel(input);
-    for (const value of [
-      'Governed sales definitions',
-      '## Cubes',
-      'total&#95;revenue',
-      'SUM(amount)',
-      'ordered&#95;at',
-      'rowLevelAccessControls',
-      'columnLevelAccessControl',
-      'isHidden',
-    ]) {
+    for (const value of ['Sales definitions', '## Cubes', 'total&#95;revenue', 'SUM(amount)', 'ordered&#95;at']) {
       expect(result).toContain(value);
     }
     expect(input).toEqual(original);
@@ -389,48 +359,40 @@ describe('semantic metadata', () => {
     { cubes: [{ name: 'invalid', measures: [{ name: 'total', expression: 'SUM(amount)', type: 'DOUBLE' }] }] },
     { cubes: [{ ...input.cubes[0], measures: [{ name: 'total', type: 'DOUBLE' }] }] },
     { cubes: [{ ...input.cubes[0], hierarchies: { calendar: [] } }] },
-    { models: [{ ...input.models[0], cached: 'true' }] },
-    { models: [{ ...input.models[0], refreshTime: 'tomorrow' }] },
-    { models: [{ ...input.models[0], rowLevelAccessControls: [{ name: 'invalid', condition: 'true' }] }] },
-    {
-      models: [{ name: 'orders', baseObject: 'raw_orders', columns: [{ name: 'id', type: 'INT', isHidden: 'true' }] }],
-    },
   ])('rejects malformed semantic metadata: %j', (value) => {
     expect(() => semanticMetadataSchema.parse(value)).toThrow();
   });
 
   it.each([
-    { requiredProperties: [{ name: 'role' }] },
-    { operator: 'LIKE' },
-    { requiredProperties: [] },
+    { models: [{ ...input.models[0], cached: false }] },
+    { models: [{ ...input.models[0], refreshTime: '1h' }] },
+    { models: [{ ...input.models[0], rowLevelAccessControls: [] }] },
+    { cubes: [{ ...input.cubes[0], refreshTime: '30m' }] },
     {
-      requiredProperties: [
-        { name: 'role', required: true },
-        { name: 'level', required: true },
+      models: [{ ...input.models[0], columns: [{ name: 'cost', type: 'DOUBLE', isHidden: true }] }],
+    },
+    {
+      models: [
+        {
+          ...input.models[0],
+          columns: [
+            {
+              name: 'cost',
+              type: 'DOUBLE',
+              columnLevelAccessControl: {
+                name: 'cost_access',
+                operator: 'EQUALS',
+                requiredProperties: [{ name: 'role', required: true }],
+              },
+            },
+          ],
+        },
       ],
     },
-    { threshold: { value: '1', dataType: 'BOOLEAN' } },
-  ])('rejects malformed column access rules: %j', (rule) => {
-    expect(() =>
-      semanticMetadataSchema.parse({
-        models: [
-          {
-            name: 'orders',
-            baseObject: 'raw_orders',
-            columns: [
-              {
-                name: 'cost',
-                type: 'DOUBLE',
-                columnLevelAccessControl: {
-                  ...input.models[0].columns[1].columnLevelAccessControl,
-                  ...rule,
-                },
-              },
-            ],
-          },
-        ],
-      })
-    ).toThrow();
+  ])('rejects unsupported execution metadata: %j', (value) => {
+    expect(() => semanticMetadataSchema.parse(value)).toThrow();
+    expect(() => dataModelMetadataSchema.parse(value)).toThrow();
+    expect(() => buildDataModel({ schema: { models: [] }, semantic: value })).toThrow();
   });
 });
 
