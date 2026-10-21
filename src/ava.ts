@@ -61,8 +61,6 @@ export class AVA extends EventEmitter {
   private readonly llmConfig: LLMConfig;
   private readonly engineConfig: EngineConfig;
   engine: AnalysisEngine | null = null;
-  /** Last assembled dataset model; reset on source replacement or disposal. */
-  dataModel: DataModel = {};
   private dataSchema: Schema | null = null;
   private dataProfile: Profile | null = null;
 
@@ -80,8 +78,7 @@ export class AVA extends EventEmitter {
       this.dataProfile = await this.engine.profile(this.dataSchema);
     }
 
-    this.dataModel = buildDataModel({ schema: this.dataSchema, profile: this.dataProfile ?? undefined });
-    return this.dataModel;
+    return buildDataModel({ schema: this.dataSchema, profile: this.dataProfile ?? undefined });
   }
 
   /**
@@ -373,7 +370,6 @@ export class AVA extends EventEmitter {
       await this.disposeEngine();
     } finally {
       this.engine = null;
-      this.dataModel = {};
       this.dataSchema = null;
       this.dataProfile = null;
     }
