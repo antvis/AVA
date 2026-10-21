@@ -30,7 +30,10 @@ describe('getDuckDBSchema', () => {
       CREATE TABLE details(order_id INTEGER UNIQUE REFERENCES orders(id), note VARCHAR);
       CREATE INDEX idx_orders_customer ON orders(customer_id);
     `);
+    const query = vi.spyOn(connection, 'runAndReadAll');
     const schema = await getDuckDBSchema(connection);
+    const rows = (await query.mock.results[0].value).getRowObjectsJson();
+    expect(rows.every((row) => typeof row.metadata === 'object' && row.metadata !== null)).toBe(true);
     expect(schema).toMatchSnapshot();
     expect(schema.models.map((model) => model.name)).toEqual(['customers', 'details', 'orders']);
     expect(schema.models.find((model) => model.name === 'orders')).toEqual({

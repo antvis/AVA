@@ -23,7 +23,7 @@ function columnsSQL(): string {
 SELECT 'column' AS kind, c.table_name,
   json_object(
     'name', c.name, 'type', c.type, 'position', c.cid,
-    'nullable', NOT (c."notnull" OR (c.pk > 0 AND NOT EXISTS (
+    'notNull', (c."notnull" OR (c.pk > 0 AND NOT EXISTS (
       SELECT 1 FROM indexes i WHERE i.table_name = c.table_name AND i.origin = 'pk'
     )))
   ) AS metadata

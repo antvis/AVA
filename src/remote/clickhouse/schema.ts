@@ -9,7 +9,6 @@ interface ColumnRow {
   name: string;
   type: string;
   nullable?: number | boolean | string;
-  position?: number | string;
 }
 
 function bool(value: unknown): boolean {
@@ -35,8 +34,7 @@ export async function getClickHouseSchema(
       table AS table_name,
       name,
       type,
-      startsWith(type, 'Nullable(') AS nullable,
-      position
+      startsWith(type, 'Nullable(') AS nullable
     FROM system.columns
     WHERE database = '${database.replace(/'/g, "''")}'
     ORDER BY table_name, position
@@ -46,7 +44,6 @@ export async function getClickHouseSchema(
     models: tables.map((source) => {
       const fields = columns
         .filter(({ table_name }) => table_name === source.table_name)
-        .sort((a, b) => Number(a.position ?? 0) - Number(b.position ?? 0))
         .map((column) => ({ name: column.name, type: column.type, notNull: !bool(column.nullable) }));
       return {
         name: source.table_name,

@@ -22,33 +22,24 @@ const DISCOVERY_ROWS = [
   {
     kind: 'column',
     table_name: 'users',
-    metadata: JSON.stringify({ name: 'id', type: 'bigint', nullable: false, position: 1 }),
+    metadata: { name: 'id', type: 'bigint', notNull: true, position: 1 },
   },
   {
     kind: 'column',
     table_name: 'users',
-    metadata: JSON.stringify({ name: 'name', type: 'text', nullable: true, position: 2 }),
+    metadata: { name: 'name', type: 'text', notNull: false, position: 2 },
   },
   {
     kind: 'index',
     table_name: 'users',
-    metadata: JSON.stringify({
+    metadata: {
       name: 'users_pkey',
       unique: true,
       primary: true,
-      definition: 'CREATE UNIQUE INDEX users_pkey ON public.users USING btree (id)',
-    }),
+      columns: ['id'],
+    },
   },
-  {
-    kind: 'index',
-    table_name: 'users',
-    metadata: JSON.stringify({
-      name: 'idx_users_name',
-      unique: false,
-      primary: false,
-      definition: 'CREATE INDEX idx_users_name ON public.users USING btree (name)',
-    }),
-  },
+
 ];
 
 /** Stub global fetch to answer Management API calls; records request shapes */
@@ -199,18 +190,18 @@ describe('SupabaseEngine', () => {
             {
               kind: 'column',
               table_name: 'orders',
-              metadata: JSON.stringify({ name: 'buyer_id', type: 'bigint', nullable: true, position: 1 }),
+              metadata: { name: 'buyer_id', type: 'bigint', notNull: false, position: 1 },
             },
             {
               kind: 'foreign-key-column',
               table_name: 'orders',
-              metadata: JSON.stringify({
+              metadata: {
                 name: 'buyer_fk',
                 column: 'buyer_id',
                 referencedTable: 'users',
                 referencedColumn: 'id',
                 position: 1,
-              }),
+              },
             },
           ],
         },

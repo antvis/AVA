@@ -137,8 +137,8 @@ export function rowObjects2Schema(rows: Record<string, unknown>[]): Schema {
     const meta: Metadata = typeof row.metadata === 'string' ? JSON.parse(row.metadata) : row.metadata;
     const model = models.get(table) ?? { name: table, tableReference: { table }, columns: [] };
     models.set(table, model);
-    if (meta.catalog !== undefined) model.tableReference.catalog = meta.catalog;
-    if (meta.schema !== undefined) model.tableReference.schema = meta.schema;
+    if (meta.catalog != null) model.tableReference.catalog = meta.catalog;
+    if (meta.schema != null) model.tableReference.schema = meta.schema;
     if (row.kind === 'column') columns.set(table, [...(columns.get(table) ?? []), meta]);
     else if (row.kind === 'index' && bool(meta.unique)) {
       const names = meta.columns ?? indexColumns(meta.definition ?? '');
@@ -181,7 +181,7 @@ export function rowObjects2Schema(rows: Record<string, unknown>[]): Schema {
       .map((column) => ({
         name: column.name,
         type: column.type,
-        ...(column.nullable === undefined || column.nullable === null ? {} : { notNull: !bool(column.nullable) }),
+        ...(column.notNull == null ? {} : { notNull: bool(column.notNull) }),
       }));
   }
   for (const model of models.values()) {

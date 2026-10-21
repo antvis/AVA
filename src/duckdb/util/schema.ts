@@ -11,13 +11,13 @@ function objectsSQL(tableNames?: string[]): string {
     AND ${names === undefined ? 'TRUE' : `${name} IN (${names || 'NULL'})`}`;
   return sqlUnionAll([
     `SELECT 'table' AS kind, table_name,
-      json_object('catalog', database_name, 'schema', schema_name)::VARCHAR AS metadata
+      struct_pack(catalog := database_name, schema := schema_name) AS metadata
       FROM duckdb_tables() WHERE ${scope('table_name')} AND NOT internal`,
     `SELECT 'view' AS kind, view_name AS table_name,
-      json_object('catalog', database_name, 'schema', schema_name, 'sql', sql)::VARCHAR AS metadata
+      struct_pack(catalog := database_name, schema := schema_name, sql := sql) AS metadata
       FROM duckdb_views() WHERE ${scope('view_name')} AND NOT internal`,
     `SELECT 'index' AS kind, table_name,
-      json_object('unique', true, 'definition', sql)::VARCHAR AS metadata
+      struct_pack("unique" := true, definition := sql) AS metadata
       FROM duckdb_indexes() WHERE ${scope('table_name')} AND is_unique`,
   ]);
 }
@@ -29,12 +29,12 @@ function columnsSQL(tableNames?: string[]): string {
 SELECT
   'column' AS kind,
   table_name,
-  json_object(
-    'name', column_name,
-    'type', data_type,
-    'nullable', is_nullable,
-    'position', column_index
-  )::VARCHAR AS metadata
+  struct_pack(
+    name := column_name,
+    type := data_type,
+    notNull := NOT is_nullable,
+    "position" := column_index
+  ) AS metadata
 FROM duckdb_columns()
 WHERE database_name = current_database()
   AND schema_name = current_schema()
@@ -48,14 +48,14 @@ function constraintsSQL(tableNames?: string[]): string {
 SELECT
   CASE WHEN constraint_type = 'FOREIGN KEY' THEN 'foreign-key' ELSE 'index' END AS kind,
   table_name,
-  json_object(
-    'name', constraint_name,
-    'columns', constraint_column_names,
-    'unique', true,
-    'primary', constraint_type = 'PRIMARY KEY',
-    'referencedTable', referenced_table,
-    'referencedColumns', referenced_column_names
-  )::VARCHAR AS metadata
+  struct_pack(
+    name := constraint_name,
+    "columns" := constraint_column_names,
+    "unique" := true,
+    "primary" := constraint_type = 'PRIMARY KEY',
+    referencedTable := referenced_table,
+    referencedColumns := referenced_column_names
+  ) AS metadata
 FROM duckdb_constraints()
 WHERE database_name = current_database()
   AND schema_name = current_schema()

@@ -102,7 +102,7 @@ describe('loaders/mongodb (unit)', () => {
         {
           kind: 'column',
           table_name: 'orders',
-          metadata: JSON.stringify({ name: 'amount', type: 'DOUBLE', nullable: true, position: 0 }),
+          metadata: { name: 'amount', type: 'DOUBLE', notNull: false, position: 0 },
         },
       ],
     });

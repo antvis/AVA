@@ -142,11 +142,7 @@ export async function profileTables(
     const profile: Profile['models'][number] = {
       name: source.name,
       metrics: {},
-      columns: source.columns.map((field) => ({
-        name: field.name,
-        properties: { logicalType: logicalType(field.type) },
-        metrics: {},
-      })),
+      columns: [],
     };
     models.push(profile);
     const pending: { expression: string; id: string; output: Record<string, unknown> }[] = [];
@@ -168,9 +164,12 @@ export async function profileTables(
       }
     };
     add(profile.metrics);
-    profile.columns.forEach((field, i) =>
-      add(field.metrics, { ...source.columns[i], logicalType: field.properties.logicalType })
-    );
+    profile.columns = source.columns.map((column) => {
+      const field = { ...column, logicalType: logicalType(column.type) };
+      const metrics = {};
+      add(metrics, field);
+      return { name: field.name, properties: { logicalType: field.logicalType }, metrics };
+    });
     if (!pending.length) continue;
     const [row] = await runQuery(
       `SELECT ${pending

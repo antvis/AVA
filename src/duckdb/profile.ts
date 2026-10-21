@@ -93,12 +93,6 @@ export const BUILTIN_METRICS: DuckDBMetric[] = [
 
 export { DEFAULT_METRICS } from '../util/profile';
 
-function getMetric(id: MetricId): DuckDBMetric {
-  const metric = BUILTIN_METRICS.find((definition) => definition.id === id);
-  if (!metric) throw new Error(`Unknown metric: ${id}`);
-  return metric;
-}
-
 /**
  * Add query values to the metric results.
  */
@@ -129,7 +123,10 @@ export async function profileTables(
   schema: Schema,
   options: ParsedProfileOptions
 ): Promise<Profile> {
-  const { metrics } = options;
+  const metrics = options.metrics.map((metric) => {
+    validateMetricConfig(metric, BUILTIN_METRICS);
+    return { metric, definition: BUILTIN_METRICS.find(({ id }) => id === metric.id)! };
+  });
   const profiles: Profile['models'] = [];
 
   for (const table of schema.models) {
@@ -137,24 +134,14 @@ export async function profileTables(
     const profile: Profile['models'][number] = {
       name,
       metrics: {},
-      columns: table.columns.map((field) => ({
-        name: field.name,
-        properties: { logicalType: logicalType(field.type) },
-        metrics: {},
-      })),
+      columns: [],
     };
     profiles.push(profile);
 
     const pending: Array<{ expression: string; metricId: MetricId; output: Record<string, unknown> }> = [];
 
     const addMetrics = (output: Record<string, unknown>, field?: MetricField) => {
-      for (const metric of metrics) {
-        if (!validateMetricConfig(metric, BUILTIN_METRICS)) {
-          continue;
-        }
-
-        const definition = getMetric(metric.id);
-
+      for (const { metric, definition } of metrics) {
         const target = field ? 'column' : 'table';
         if (!definition.enable({ target, field })) {
           continue;
@@ -174,9 +161,12 @@ export async function profileTables(
     };
 
     addMetrics(profile.metrics);
-    profile.columns.forEach((field, i) =>
-      addMetrics(field.metrics, { ...table.columns[i], logicalType: field.properties.logicalType })
-    );
+    profile.columns = table.columns.map((column) => {
+      const field = { ...column, logicalType: logicalType(column.type) };
+      const metrics = {};
+      addMetrics(metrics, field);
+      return { name: field.name, properties: { logicalType: field.logicalType }, metrics };
+    });
 
     if (!pending.length) continue;
 

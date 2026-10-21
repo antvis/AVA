@@ -31,7 +31,7 @@ SELECT
   JSON_OBJECT(
     'name', COLUMN_NAME,
     'type', COLUMN_TYPE,
-    'nullable', IS_NULLABLE = 'YES',
+    'notNull', IS_NULLABLE = 'NO',
     'position', ORDINAL_POSITION
   ) AS metadata
 FROM information_schema.COLUMNS

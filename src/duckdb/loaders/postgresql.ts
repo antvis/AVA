@@ -41,7 +41,7 @@ SELECT
   json_build_object(
     'name', a.attname,
     'type', pg_catalog.format_type(a.atttypid, a.atttypmod),
-    'nullable', NOT a.attnotnull,
+    'notNull', a.attnotnull,
     'position', a.attnum
   )::text AS metadata
 FROM exposed t
@@ -49,7 +49,7 @@ JOIN pg_catalog.pg_attribute a ON a.attrelid = t.oid
 WHERE a.attnum > 0 AND NOT a.attisdropped`.trim();
 }
 
-/** Preserve index DDL and primary/unique flags. */
+/** Read only complete, unconditional unique keys directly from the catalog. */
 function indexesSQL(): string {
   return `
 SELECT
@@ -59,11 +59,18 @@ SELECT
     'name', ic.relname,
     'unique', i.indisunique,
     'primary', i.indisprimary,
-    'definition', pg_catalog.pg_get_indexdef(i.indexrelid)
+    'columns', ARRAY(
+      SELECT a.attname
+      FROM unnest(i.indkey) WITH ORDINALITY AS k(attnum, position)
+      JOIN pg_catalog.pg_attribute a ON a.attrelid = t.oid AND a.attnum = k.attnum
+      WHERE k.position <= i.indnkeyatts
+      ORDER BY k.position
+    )
   )::text AS metadata
 FROM exposed t
 JOIN pg_catalog.pg_index i ON i.indrelid = t.oid
-JOIN pg_catalog.pg_class ic ON ic.oid = i.indexrelid`.trim();
+JOIN pg_catalog.pg_class ic ON ic.oid = i.indexrelid
+WHERE i.indisunique AND i.indisvalid AND i.indpred IS NULL AND i.indexprs IS NULL`.trim();
 }
 
 /** Pair composite FK columns by position; both tables must be exposed. */
