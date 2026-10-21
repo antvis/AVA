@@ -4,7 +4,7 @@ import { PythonEngine } from '../../../src/interpreter/python/engine';
 import * as pythonExecutor from '../../../src/interpreter/python/util/execute';
 import { schemaMetadataSchema } from '../../../src/util/schema';
 
-import type { Schema } from '../../../src/types';
+import type { OldSchema } from '../../../src/types';
 
 const source = { type: 'json' as const, options: { data: [{ value: 2 }] } };
 const table = { name: 'data', columnCount: 1, indexes: [], fields: [{ name: 'value', type: 'int64' }] };
@@ -100,7 +100,7 @@ describe('python/engine', () => {
 describe('python/engine metadata', () => {
   const llm = { model: 'unused' };
   const source = { type: 'json' as const, options: { data: [{ value: 2 }, { value: 4 }] } };
-  const schema: Schema = {
+  const schema: OldSchema = {
     tables: [{ name: 'data', columnCount: 1, fields: [{ name: 'value', type: 'number' }], indexes: [] }],
   };
 

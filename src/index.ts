@@ -31,8 +31,8 @@ export type {
   PrimaryKey,
   Properties,
   JsonValue,
-} from './data-model.types';
-export type {
+  Schema,
+  Profile,
   LLMConfig,
   AVAConfig,
   AnalysisConfig,
@@ -43,7 +43,7 @@ export type {
   SchemaOptions,
   JSONReadOptions,
   ClickHouseSourceOptions,
-  Schema,
+  OldSchema,
   TableSchema,
   TableIndex,
   TableRelation,
@@ -64,7 +64,7 @@ export type {
   ChartSpec,
   SuggestResult,
   ChartType,
-  Profile,
+  OldProfile,
   TableProfile,
   FieldProfile,
   ProfileOptions,

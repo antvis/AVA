@@ -16,9 +16,9 @@ import type {
   ExecutionOptions,
   ExecutionResult,
   LLMConfig,
-  Profile,
+  OldProfile,
   ProfileOptions,
-  Schema,
+  OldSchema,
 } from '../../types';
 
 function normalizeUrl(hostOrUrl: string, port?: number): string {
@@ -66,12 +66,12 @@ export class ClickHouseEngine implements AnalysisEngine {
     this.database = config.options.database;
   }
 
-  async schema(): Promise<Schema> {
+  async schema(): Promise<OldSchema> {
     if (!this.client) throw new Error('No data loaded. Please call source() first.');
     return getClickHouseSchema((sql) => this.runQuery(sql), this.database!);
   }
 
-  async profile(schema: Schema, options: ProfileOptions = {}): Promise<Profile> {
+  async profile(schema: OldSchema, options: ProfileOptions = {}): Promise<OldProfile> {
     if (!this.client) throw new Error('No data loaded. Please call source() first.');
     return profileTables(
       (sql) => this.runQuery(sql),

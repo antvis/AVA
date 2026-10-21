@@ -8,8 +8,8 @@ import type {
   LogicalType,
   Metric,
   ParsedProfileOptions,
-  Profile,
-  Schema,
+  OldProfile,
+  OldSchema,
   TableProfile,
 } from '../../types';
 
@@ -81,9 +81,9 @@ export const BUILTIN_METRICS: PostgreSQLMetric[] = [
 
 export async function profileTables(
   runQuery: (sql: string) => Promise<Record<string, unknown>[]>,
-  schema: Schema,
+  schema: OldSchema,
   options: ParsedProfileOptions
-): Promise<Profile> {
+): Promise<OldProfile> {
   const metrics = options.metrics.map((metric) => {
     validateMetricConfig(metric, BUILTIN_METRICS);
     return { metric, definition: BUILTIN_METRICS.find(({ id }) => id === metric.id)! };

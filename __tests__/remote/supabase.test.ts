@@ -12,7 +12,7 @@ import { SupabaseEngine } from '../../src/remote';
 import { PostgreSQLQueryDialect } from '../../src/query/postgresql';
 import { getLLMConfig } from '../test-utils';
 
-import type { Schema } from '../../src/types';
+import type { OldSchema } from '../../src/types';
 
 const CONNECTION = { accessToken: 'token-123', projectRef: 'demo-ref' };
 
@@ -155,7 +155,10 @@ describe('SupabaseEngine', () => {
 
     it('preserves the raw HTTP error body without parsing it', async () => {
       const detail = JSON.stringify({ code: '42601', message: 'invalid query' });
-      vi.stubGlobal('fetch', vi.fn(async () => ({ ok: false, status: 400, text: async () => detail })));
+      vi.stubGlobal(
+        'fetch',
+        vi.fn(async () => ({ ok: false, status: 400, text: async () => detail }))
+      );
       const engine = new SupabaseEngine(getLLMConfig());
       await engine.load({ type: 'supabase', options: CONNECTION });
 
@@ -289,7 +292,7 @@ describe('SupabaseEngine', () => {
 
   describe('profile', () => {
     const metrics = PG_METRICS.map(({ id }) => ({ id }));
-    const schema: Schema = {
+    const schema: OldSchema = {
       tables: [
         {
           name: 'order notes',

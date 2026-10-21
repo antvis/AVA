@@ -20,13 +20,13 @@ import { loadSource } from './loaders';
 import { STAT_OPS_PROMPT, STAT_OPS_EXAMPLE } from './stat';
 
 import type {
-  Profile,
+  OldProfile,
   ProfileOptions,
   AnalysisEngine,
   DataContext,
   DataSourceConfig,
   LLMConfig,
-  Schema,
+  OldSchema,
   ExecutionOptions,
   ExecutionResult,
 } from '../../types';
@@ -50,7 +50,7 @@ export class JavaScriptEngine implements AnalysisEngine {
     this.data = await loadSource(config as any, this.llmConfig);
   }
 
-  async schema(): Promise<Schema> {
+  async schema(): Promise<OldSchema> {
     if (!this.data) throw new Error('No data loaded. Please call source() first.');
     return extractDataSchema(this.data);
   }
@@ -64,7 +64,7 @@ export class JavaScriptEngine implements AnalysisEngine {
     return this.data;
   }
 
-  async profile(schema: Schema, options: ProfileOptions = {}): Promise<Profile> {
+  async profile(schema: OldSchema, options: ProfileOptions = {}): Promise<OldProfile> {
     if (!this.data) throw new Error('No data loaded. Please call source() first.');
     return profileTables(this.data, schema, parseProfileOptions(options, { metrics: DEFAULT_METRICS }));
   }

@@ -2,7 +2,7 @@ import { z } from 'zod';
 
 import { jsonValue } from './schema';
 
-import type { DataModel } from '../data-model.types';
+import type { DataModel } from '../types';
 
 const name = z.string().min(1);
 const properties = z.record(jsonValue);

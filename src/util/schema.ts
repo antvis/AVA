@@ -5,7 +5,7 @@
 
 import { z } from 'zod';
 
-import type { Schema, TableIndex, TableRelation, TableSchema } from '../types';
+import type { OldSchema, TableIndex, TableRelation, TableSchema } from '../types';
 
 /** Metadata snapshots must survive JSON persistence and process boundaries. */
 export const jsonValue: z.ZodType<unknown> = z.lazy(() =>
@@ -36,7 +36,7 @@ const table = z.object({
 export const schemaStructure = z.object({ tables: z.array(table), relations: z.array(relation).optional() });
 
 // Object parsing also projects profiles (and CLI schema output) to pure structure.
-export const schemaMetadataSchema = schemaStructure.transform((value) => value as Schema);
+export const schemaMetadataSchema = schemaStructure.transform((value) => value as OldSchema);
 
 /**
  * Infer field type from sample values
@@ -74,7 +74,7 @@ function inferType(values: any[]): 'number' | 'string' | 'date' | 'boolean' | 'u
 /**
  * Extract metadata from in-memory rows as a single `data` table.
  */
-export function extractDataSchema(data: any[]): Schema {
+export function extractDataSchema(data: any[]): OldSchema {
   const table: TableSchema = {
     name: 'data',
     columnCount: 0,
@@ -121,7 +121,7 @@ type Metadata = Record<string, any>;
 const bool = (value: unknown): boolean => value === true || value === 1 || value === '1';
 
 /** Build a schema from metadata rows. */
-export function rowObjects2Schema(rows: Record<string, unknown>[]): Schema {
+export function rowObjects2Schema(rows: Record<string, unknown>[]): OldSchema {
   const names = [...new Set(rows.map((row) => String(row.table_name)))].sort();
   const tables = new Map<string, TableSchema>(
     names.map((name) => [name, { name, columnCount: 0, fields: [], indexes: [] }])

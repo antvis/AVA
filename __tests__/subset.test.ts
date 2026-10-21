@@ -8,11 +8,11 @@ import { DuckDBQueryDialect } from '../src/query/duckdb';
 import { stringifyProfile, stringifySchema } from '../src/util/context';
 
 import type { Experimental_EvaluationResult } from 'ai';
-import type { AnalysisEngine, Profile, Schema } from '../src/types';
+import type { AnalysisEngine, OldProfile, OldSchema } from '../src/types';
 
 vi.mock('ai', () => ({ experimental_evaluate: vi.fn(), generateText: vi.fn(), createGateway: vi.fn(() => vi.fn()) }));
 
-const schema: Schema = {
+const schema: OldSchema = {
   tables: [
     {
       name: 'orders',
@@ -39,7 +39,7 @@ const schema: Schema = {
     },
   ],
 };
-const profile: Profile = {
+const profile: OldProfile = {
   ...schema,
   generatedAt: 0,
   tables: schema.tables.map((table) => ({

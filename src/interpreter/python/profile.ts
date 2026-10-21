@@ -1,6 +1,6 @@
 import { column, logicalTypes, table, TOP_VALUES_OPTIONS, validateMetricConfig } from '../../util/profile';
 
-import type { LogicalType, Metric, ParsedProfileOptions, Schema } from '../../types';
+import type { LogicalType, Metric, ParsedProfileOptions, OldSchema } from '../../types';
 
 /** Python expressions receive the same per-target context as JavaScript interpreter metrics. */
 export const BUILTIN_METRICS: Metric<string>[] = [
@@ -31,7 +31,7 @@ export const BUILTIN_METRICS: Metric<string>[] = [
 ];
 
 /** Build fixed pandas statistics; only metadata is returned to AVA. */
-export function profileCode(options: ParsedProfileOptions, schema: Schema): string {
+export function profileCode(options: ParsedProfileOptions, schema: OldSchema): string {
   const kinds: LogicalType[] = ['numeric', 'string', 'boolean', 'date', 'unknown'];
 
   const metrics = options.metrics.map((metric) => {

@@ -2,7 +2,7 @@
 import { sqlStringLiteral, sqlUnionAll } from '../../util/sql';
 import { rowObjects2Schema } from '../../util/schema';
 
-import type { DuckDBConnection, Schema } from '../../types';
+import type { DuckDBConnection, OldSchema } from '../../types';
 
 /** Preserve column order. */
 function columnsSQL(tableNames?: string[]): string {
@@ -65,7 +65,7 @@ WHERE database_name = current_database()
 }
 
 /** Read the current namespace; tableNames limits scope and preserves order ([] skips querying). */
-export async function getDuckDBSchema(conn: DuckDBConnection, tableNames?: string[]): Promise<Schema> {
+export async function getDuckDBSchema(conn: DuckDBConnection, tableNames?: string[]): Promise<OldSchema> {
   if (tableNames?.length === 0) return { tables: [], relations: [] };
 
   const sql = sqlUnionAll([columnsSQL(tableNames), constraintsSQL(tableNames), indexesSQL(tableNames)]);

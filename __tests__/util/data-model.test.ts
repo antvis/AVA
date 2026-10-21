@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest';
 
 import { dataModelMetadataSchema } from '../../src/util/data-model';
 
-import type { DataModel } from '../../src/data-model.types';
+import type { DataModel } from '../../src/types';
 
 describe('dataModelMetadataSchema', () => {
   it('preserves and snapshots structure, observations and semantic metadata together', () => {

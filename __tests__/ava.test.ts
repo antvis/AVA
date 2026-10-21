@@ -14,7 +14,7 @@ import * as memorySchema from '../src/util/schema';
 
 import { getLLMConfig, skipLLMTests } from './test-utils';
 
-import type { DataSourceConfig, Profile, Schema } from '../src';
+import type { DataSourceConfig, OldProfile, OldSchema } from '../src';
 
 describe('AVA', () => {
   let ava: AVA;
@@ -428,10 +428,10 @@ describe('AVA', () => {
 describe('AVA metadata setters', () => {
   const llm = { model: 'unused' };
   const source: DataSourceConfig = { type: 'json', options: { data: [{ value: 2 }, { value: 4 }] } };
-  const schema: Schema = {
+  const schema: OldSchema = {
     tables: [{ name: 'data', columnCount: 1, fields: [{ name: 'value', type: 'number' }], indexes: [] }],
   };
-  const profile: Profile = {
+  const profile: OldProfile = {
     generatedAt: 1234,
     tables: [
       {

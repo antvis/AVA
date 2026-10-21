@@ -1,6 +1,6 @@
 import { sqlIdentifier } from './sql';
 
-import type { LogicalType, Profile, Schema, TableProfile, TableRelation, TableSchema } from '../types';
+import type { LogicalType, OldProfile, OldSchema, TableProfile, TableRelation, TableSchema } from '../types';
 
 const METRIC_LABELS: Record<string, string> = {
   row_count: 'Observed rows',
@@ -108,14 +108,14 @@ Notes:
 }
 
 /** Describe a dataset for the language model. */
-export function stringifySchema({ tables, relations = [] }: Schema): string {
+export function stringifySchema({ tables, relations = [] }: OldSchema): string {
   return `Dataset Info: ${tables.length} table(s)
 ${stringifyTables(tables)}
 ${stringifyRelations(relations, tables)}`;
 }
 
 /** Format structural metadata and computed statistics for the model. */
-export function stringifyProfile(profile: Profile): string {
+export function stringifyProfile(profile: OldProfile): string {
   return `Dataset Profile: ${profile.tables.length} table(s)
 Observed at: ${new Date(profile.generatedAt).toISOString()}
 ${stringifyTables(profile.tables, true)}

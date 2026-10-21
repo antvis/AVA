@@ -1,6 +1,6 @@
 import { column, logicalTypes, table, TOP_VALUES_OPTIONS, validateMetricConfig } from '../../util/profile';
 
-import type { LogicalType, Metric, ParsedProfileOptions, Profile, Schema } from '../../types';
+import type { LogicalType, Metric, ParsedProfileOptions, OldProfile, OldSchema } from '../../types';
 
 interface Context {
   rowCount: number;
@@ -95,7 +95,11 @@ function logicalType(type: string): LogicalType {
   return 'unknown';
 }
 
-export function profileTables(data: Record<string, unknown>[], schema: Schema, options: ParsedProfileOptions): Profile {
+export function profileTables(
+  data: Record<string, unknown>[],
+  schema: OldSchema,
+  options: ParsedProfileOptions
+): OldProfile {
   const metrics = options.metrics.map((metric) => {
     validateMetricConfig(metric, BUILTIN_METRICS);
     return { metric, definition: BUILTIN_METRICS.find(({ id }) => id === metric.id)! };

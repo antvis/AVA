@@ -1,7 +1,15 @@
 import { column, logicalTypes, table, TOP_VALUES_OPTIONS, validateMetricConfig } from '../../util/profile';
 import { sqlIdentifier } from '../../util/sql';
 
-import type { FieldProfile, LogicalType, Metric, ParsedProfileOptions, Profile, Schema, TableProfile } from '../../types';
+import type {
+  FieldProfile,
+  LogicalType,
+  Metric,
+  ParsedProfileOptions,
+  OldProfile,
+  OldSchema,
+  TableProfile,
+} from '../../types';
 
 interface Context {
   table: string;
@@ -53,7 +61,8 @@ export const BUILTIN_METRICS: ClickHouseMetric[] = [
   {
     id: 'duplicate_count',
     enable: column,
-    expression: ({ column }) => `countIf(isNotNull(${column})) - uniqExactIf(toString(${column}), isNotNull(${column}))`,
+    expression: ({ column }) =>
+      `countIf(isNotNull(${column})) - uniqExactIf(toString(${column}), isNotNull(${column}))`,
   },
   {
     id: 'top_values',
@@ -92,8 +101,16 @@ export const BUILTIN_METRICS: ClickHouseMetric[] = [
     enable: logicalTypes('date'),
     expression: ({ column, field }) => `max(${timestampExpression(column!, field!.type)})`,
   },
-  { id: 'min_length', enable: logicalTypes('string'), expression: ({ column }) => `min(lengthUTF8(toString(${column})))` },
-  { id: 'max_length', enable: logicalTypes('string'), expression: ({ column }) => `max(lengthUTF8(toString(${column})))` },
+  {
+    id: 'min_length',
+    enable: logicalTypes('string'),
+    expression: ({ column }) => `min(lengthUTF8(toString(${column})))`,
+  },
+  {
+    id: 'max_length',
+    enable: logicalTypes('string'),
+    expression: ({ column }) => `max(lengthUTF8(toString(${column})))`,
+  },
   { id: 'mean', enable: logicalTypes('numeric'), expression: ({ column }) => `avg(${numeric(column!)})` },
   { id: 'sum', enable: logicalTypes('numeric'), expression: ({ column }) => `sum(${numeric(column!)})` },
   { id: 'stddev', enable: logicalTypes('numeric'), expression: ({ column }) => `stddevSamp(${numeric(column!)})` },
@@ -120,9 +137,9 @@ function parseTopValues(raw: unknown): Array<{ value: unknown; count: number }> 
 
 export async function profileTables(
   runQuery: (sql: string) => Promise<Record<string, unknown>[]>,
-  schema: Schema,
+  schema: OldSchema,
   options: ParsedProfileOptions
-): Promise<Profile> {
+): Promise<OldProfile> {
   const metrics = options.metrics.map((metric) => {
     validateMetricConfig(metric, BUILTIN_METRICS);
     return { metric, definitions: BUILTIN_METRICS.filter(({ id }) => id === metric.id) };
@@ -157,7 +174,9 @@ export async function profileTables(
     profile.fields.forEach((field) => add(field.metrics, field));
     if (!pending.length) continue;
     const [row] = await runQuery(
-      `SELECT ${pending.map(({ expression }, i) => `${expression} AS ${sqlIdentifier(`m${i}`)}`).join(', ')} FROM ${table}`
+      `SELECT ${pending
+        .map(({ expression }, i) => `${expression} AS ${sqlIdentifier(`m${i}`)}`)
+        .join(', ')} FROM ${table}`
     );
     if (!row) throw new Error(`Missing profile result for table: ${source.name}`);
     pending.forEach(({ id, output }, i) => {

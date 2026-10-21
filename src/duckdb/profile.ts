@@ -3,13 +3,13 @@ import { validateMetricConfig, table, column, logicalTypes, TOP_VALUES_OPTIONS }
 
 import type {
   DuckDBConnection,
-  Schema,
+  OldSchema,
   ParsedProfileOptions,
   FieldProfile,
   LogicalType,
   Metric,
   MetricId,
-  Profile,
+  OldProfile,
   TableProfile,
   TableSchema,
 } from '../types';
@@ -148,9 +148,9 @@ function initTableProfile(table: TableSchema): TableProfile {
  */
 export async function profileTables(
   connection: DuckDBConnection,
-  schema: Schema,
+  schema: OldSchema,
   options: ParsedProfileOptions
-): Promise<Profile> {
+): Promise<OldProfile> {
   const { metrics } = options;
   const profiles: TableProfile[] = [];
 

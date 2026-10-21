@@ -9,7 +9,7 @@ import { stringifySchema, stringifyProfile } from '../../src/util/context';
 import { extractDataSchema } from '../../src/util/schema';
 import { sqlStringLiteral } from '../../src/util/sql';
 
-import type { Schema, Profile } from '../../src/types';
+import type { OldSchema, OldProfile } from '../../src/types';
 
 describe('stringifySchema', () => {
   it('stringifies the sales CSV schema as a structural description', async () => {
@@ -50,7 +50,7 @@ Fields:
 
   it('formats a complex multi-table schema with indexes and only valid declared relations', () => {
     // Explicit metadata keeps this formatter test independent of database discovery.
-    const schema: Schema = {
+    const schema: OldSchema = {
       tables: [
         {
           name: 'customer"accounts',
@@ -298,7 +298,7 @@ Observation notes:
 });
 
 it('preserves missing, null, zero and empty observations alongside declared constraints', () => {
-  const profile: Profile = {
+  const profile: OldProfile = {
     generatedAt: 0,
     tables: [
       {

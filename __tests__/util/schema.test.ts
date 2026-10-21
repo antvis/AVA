@@ -2,15 +2,15 @@ import { describe, it, expect } from 'vitest';
 
 import { extractDataSchema, schemaMetadataSchema } from '../../src/util/schema';
 
-import type { Profile, Schema } from '../../src/types';
+import type { OldProfile, OldSchema } from '../../src/types';
 
-const schema: Schema = {
+const schema: OldSchema = {
   tables: [{ name: 'data', columnCount: 1, fields: [{ name: 'value', type: 'number' }], indexes: [] }],
   relations: [
     { kind: 'foreign-key', from: { table: 'data', columns: ['value'] }, to: { table: 'data', columns: ['value'] } },
   ],
 };
-const profile: Profile = {
+const profile: OldProfile = {
   ...schema,
   generatedAt: 1234,
   tables: schema.tables.map((table) => ({

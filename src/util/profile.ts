@@ -2,7 +2,7 @@ import { z } from 'zod';
 
 import { jsonValue, schemaStructure } from './schema';
 
-import type { Metric, MetricConfig, ProfileOptions, ParsedProfileOptions, LogicalType, Profile } from '../types';
+import type { Metric, MetricConfig, ProfileOptions, ParsedProfileOptions, LogicalType, OldProfile } from '../types';
 
 const tableStructure = schemaStructure.shape.tables.element;
 export const profileMetadataSchema = schemaStructure
@@ -20,7 +20,7 @@ export const profileMetadataSchema = schemaStructure
       })
     ),
   })
-  .transform((value) => value as Profile);
+  .transform((value) => value as OldProfile);
 
 export function parseMetricConfig(config: MetricConfig): Exclude<MetricConfig, string> {
   return typeof config === 'string' ? { id: config } : config;

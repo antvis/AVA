@@ -7,7 +7,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { createSession } from '../src/cli/session/client';
 import { sessionDirectory, startupSchema, requestSchema } from '../src/cli/session/protocol';
 
-import type { DataSourceConfig, EngineConfig, Schema } from '../src/types';
+import type { DataSourceConfig, EngineConfig, OldSchema } from '../src/types';
 
 vi.mock('child_process', async (importOriginal) => ({
   ...(await importOriginal<typeof import('child_process')>()),
@@ -16,7 +16,7 @@ vi.mock('child_process', async (importOriginal) => ({
 
 const source: DataSourceConfig = { type: 'json', options: { data: [{ sales: 10 }] } };
 const llm = { model: 'unused' };
-const schema: Schema = {
+const schema: OldSchema = {
   tables: [{ name: 'data', columnCount: 1, fields: [{ name: 'sales', type: 'number' }], indexes: [] }],
   relations: [],
 };

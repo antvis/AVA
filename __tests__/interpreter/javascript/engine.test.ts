@@ -9,7 +9,7 @@ import { BUILTIN_METRICS, profileTables as memoryProfile } from '../../../src/in
 import { JavaScriptEngine } from '../../../src/interpreter/javascript/engine';
 import { getLLMConfig } from '../../test-utils';
 
-import type { Schema } from '../../../src/types';
+import type { OldSchema } from '../../../src/types';
 
 describe('interpreter/javascript/engine', () => {
   it('requires a loaded source for schema discovery', async () => {
@@ -120,7 +120,7 @@ describe('interpreter/javascript/engine', () => {
     });
 
     it('handles empty, non-finite, singleton and Unicode values', () => {
-      const local: Schema = {
+      const local: OldSchema = {
         tables: [
           {
             name: 'data',
@@ -161,7 +161,7 @@ describe('interpreter/javascript/engine', () => {
     });
 
     it('builds only the intermediates requested by metrics and reuses them within a field', () => {
-      const local: Schema = {
+      const local: OldSchema = {
         tables: [{ name: 'data', columnCount: 1, indexes: [], fields: [{ name: 'n', type: 'number' }] }],
       };
       let reads = 0;

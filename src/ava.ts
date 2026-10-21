@@ -22,20 +22,21 @@ import {
 import { serializeError } from './util/error';
 
 import type {
+  DataModel,
   AVAConfig,
   LLMConfig,
   EngineConfig,
   DataSourceConfig,
   SchemaOptions,
   DataContext,
-  Schema,
+  OldSchema,
   AnalysisEngine,
   AnalysisResponse,
   AnalysisConfig,
   VisualizeResponse,
   ChartSpec,
   SuggestResult,
-  Profile,
+  OldProfile,
   ProfileOptions,
   ExecutionOptions,
   ExecutionResult,
@@ -61,8 +62,10 @@ export class AVA extends EventEmitter {
   private readonly llmConfig: LLMConfig;
   private readonly engineConfig: EngineConfig;
   engine: AnalysisEngine | null = null;
-  private dataSchema: Schema | null = null;
-  private dataProfile: Profile | null = null;
+  /** Dataset model for the current source; reset on source replacement or disposal. */
+  dataModel: DataModel = {};
+  private dataSchema: OldSchema | null = null;
+  private dataProfile: OldProfile | null = null;
 
   constructor(config: AVAConfig) {
     super();
@@ -161,7 +164,7 @@ export class AVA extends EventEmitter {
    * Describe the data source structure.
    * Include tables, fields, types, indexes, and relations.
    */
-  async schema(options: SchemaOptions = {}, setter?: (options: SchemaOptions) => Schema): Promise<Schema> {
+  async schema(options: SchemaOptions = {}, setter?: (options: SchemaOptions) => OldSchema): Promise<OldSchema> {
     if (!this.engine) {
       throw new Error('No data loaded. Please call source() first.');
     }
@@ -188,7 +191,7 @@ export class AVA extends EventEmitter {
   /**
    * Compute a statistical profile of the data source.
    */
-  async profile(options: ProfileOptions = {}, setter?: (options: ProfileOptions) => Profile): Promise<Profile> {
+  async profile(options: ProfileOptions = {}, setter?: (options: ProfileOptions) => OldProfile): Promise<OldProfile> {
     if (!this.engine) {
       throw new Error('No data loaded. Please call source() first.');
     }
@@ -375,6 +378,7 @@ export class AVA extends EventEmitter {
       await this.disposeEngine();
     } finally {
       this.engine = null;
+      this.dataModel = {};
       this.dataSchema = null;
       this.dataProfile = null;
     }

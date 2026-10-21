@@ -6,7 +6,7 @@ import { ClickHouseEngine } from '../../../src/remote/clickhouse';
 import { profileTables as clickhouseProfile } from '../../../src/remote/clickhouse/profile';
 import { getLLMConfig } from '../../test-utils';
 
-import type { Schema } from '../../../src/types';
+import type { OldSchema } from '../../../src/types';
 
 vi.mock('@clickhouse/client', () => ({
   createClient: vi.fn(),
@@ -65,7 +65,7 @@ describe('ClickHouseEngine', () => {
   });
 
   it('skips ClickHouse catalog requests while still creating and disposing its client', async () => {
-    const schema: Schema = {
+    const schema: OldSchema = {
       tables: [{ name: 'data', columnCount: 1, fields: [{ name: 'value', type: 'number' }], indexes: [] }],
     };
     const client = { query: vi.fn(), close: vi.fn() };
@@ -180,7 +180,7 @@ describe('ClickHouseEngine', () => {
     const run = vi
       .fn<(sql: string) => Promise<Record<string, unknown>[]>>()
       .mockResolvedValue([{ m0: '4', m1: '25', m2: '35.5', m3: '[["gift wrap",2]]', m4: '1709283600000' }]);
-    const schema: Schema = {
+    const schema: OldSchema = {
       tables: [
         {
           name: 'order notes',

@@ -21,10 +21,10 @@ import type {
   ExecutionOptions,
   ExecutionResult,
   LLMConfig,
-  Profile,
+  OldProfile,
   ProfileOptions,
   PythonEngineOptions,
-  Schema,
+  OldSchema,
 } from '../../types';
 
 const DEFAULT_QUERY_TIMEOUT_MS = 30_000;
@@ -64,14 +64,14 @@ Do not read files, access the network, install packages, or print the answer.`,
     this.source = sourceSchema.parse(config) as DataSourceConfig;
   }
 
-  async schema(): Promise<Schema> {
+  async schema(): Promise<OldSchema> {
     if (!this.source) throw new Error('No data loaded. Please call source() first.');
 
     const tables = z.array(tableSchema).parse(await this.metadata(SCHEMA_CODE));
     if (new Set(tables.map((table) => table.name)).size !== tables.length) {
       throw new Error('Python source returned duplicate table names');
     }
-    return { tables } as Schema;
+    return { tables } as OldSchema;
   }
 
   async getDSL(query: string, context: DataContext): Promise<string> {
@@ -101,7 +101,7 @@ Return ONLY executable Python code without explanation.`,
       .trim();
   }
 
-  async profile(schema: Schema, options: ProfileOptions = {}): Promise<Profile> {
+  async profile(schema: OldSchema, options: ProfileOptions = {}): Promise<OldProfile> {
     if (!this.source) throw new Error('No data loaded. Please call source() first.');
 
     const tables = await this.metadata(profileCode(parseProfileOptions(options, { metrics: DEFAULT_METRICS }), schema));

@@ -1,4 +1,4 @@
-`Schema` describes the structure of your data. `Profile` adds statistics such as row counts, minimums, and averages. Both belong to the currently loaded source.
+`OldSchema` describes the structure of your data. `OldProfile` adds statistics such as row counts, minimums, and averages. Both belong to the currently loaded source.
 
 ## Read the schema
 
@@ -27,7 +27,7 @@ console.log(schema.tables);
 | `tables[].indexes` | Index definitions, including primary keys when available |
 | `relations` | Foreign-key relationships, when available |
 
-The available details depend on the source and engine. A query result's `schema` describes only its output columns; it is not a source `Schema`.
+The available details depend on the source and engine. A query result's `schema` describes only its output columns; it is not a source `OldSchema`.
 
 ## Profile a dataset
 

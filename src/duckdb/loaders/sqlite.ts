@@ -32,7 +32,7 @@ FROM columns c`.trim();
 
 /** Read ordinary and constraint-backed indexes in key order. */
 function indexesSQL(): string {
-  // ponytail: Schema has no predicates/expressions; skip partial/expression indexes until it does.
+  // ponytail: OldSchema has no predicates/expressions; skip partial/expression indexes until it does.
   return `
 SELECT 'index-column' AS kind, i.table_name,
   json_object(

@@ -1,4 +1,4 @@
-import type { Schema, TableIndex } from '../../types';
+import type { OldSchema, TableIndex } from '../../types';
 
 interface TableRow {
   table_name: string;
@@ -98,7 +98,7 @@ function makeIndex(name: string, expression: string | undefined, primary: boolea
 export async function getClickHouseSchema(
   runQuery: (sql: string) => Promise<Record<string, unknown>[]>,
   database: string
-): Promise<Schema> {
+): Promise<OldSchema> {
   const tables = (await runQuery(`
     SELECT
       name AS table_name,

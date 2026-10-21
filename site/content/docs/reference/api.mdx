@@ -97,7 +97,7 @@ Loading a source disposes the previous engine and clears the saved schema and pr
 ## schema
 
 ```typescript
-schema(options?: SchemaOptions, setter?: (options: SchemaOptions) => Schema): Promise<Schema>
+schema(options?: SchemaOptions, setter?: (options: SchemaOptions) => OldSchema): Promise<OldSchema>
 ```
 
 Returns the structure of the loaded source. Without a setter, AVA returns the saved schema or discovers it through the engine and saves it.
@@ -115,16 +115,16 @@ await ava.schema(undefined, () => savedSchema);
 | Parameter | Type | Required | Meaning / default |
 | --- | --- | --- | --- |
 | `options` | `SchemaOptions` | No | `{}`; currently has no configurable fields. |
-| `setter` | `(options: SchemaOptions) => Schema` | No | Returns the schema to save instead of discovering it through the engine. |
+| `setter` | `(options: SchemaOptions) => OldSchema` | No | Returns the schema to save instead of discovering it through the engine. |
 
-A setter receives the options object (default `{}`) and returns a `Schema` synchronously. Its result replaces the saved schema and clears the saved profile. AVA validates and copies the result; invalid results or thrown errors reject the call without changing previous metadata.
+A setter receives the options object (default `{}`) and returns a `OldSchema` synchronously. Its result replaces the saved schema and clears the saved profile. AVA validates and copies the result; invalid results or thrown errors reject the call without changing previous metadata.
 
 Requires a loaded source. Analysis and profiling obtain the schema when needed; direct `query()` does not. See [schema structure](/documentation/data/schema/#schema-structure).
 
 ## profile
 
 ```typescript
-profile(options?: ProfileOptions, setter?: (options: ProfileOptions) => Profile): Promise<Profile>
+profile(options?: ProfileOptions, setter?: (options: ProfileOptions) => OldProfile): Promise<OldProfile>
 ```
 
 Calculates and saves statistics for the loaded source through the engine. Each call without a setter computes a fresh profile and requires engine profiling support.
@@ -143,9 +143,9 @@ await ava.profile(undefined, () => savedProfile);
 | --- | --- | --- | --- |
 | `options` | `ProfileOptions` | No | `{}`; uses the default metrics below. |
 | `options.metrics` | `MetricConfig[]` | No | Metrics for engine computation. A supplied list replaces the defaults. |
-| `setter` | `(options: ProfileOptions) => Profile` | No | Returns the profile to save instead of computing it through the engine. |
+| `setter` | `(options: ProfileOptions) => OldProfile` | No | Returns the profile to save instead of computing it through the engine. |
 
-A setter receives the options object (default `{}`) and returns a `Profile` synchronously. It does not require engine profiling support. AVA validates and copies its result; invalid results or thrown errors reject the call without changing previous metadata. The options are passed to the setter; AVA does not calculate or filter metrics on its behalf.
+A setter receives the options object (default `{}`) and returns a `OldProfile` synchronously. It does not require engine profiling support. AVA validates and copies its result; invalid results or thrown errors reject the call without changing previous metadata. The options are passed to the setter; AVA does not calculate or filter metrics on its behalf.
 
 Requires a loaded source. Both paths replace the saved profile, which analysis, translation, and suggestions can reuse. Setting a profile does not replace the saved schema. See [profile format](/documentation/data/schema/#profile-format).
 

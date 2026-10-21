@@ -1,8 +1,8 @@
-import type { Profile, Schema } from '@antv/ava/browser';
+import type { OldProfile, OldSchema } from '@antv/ava/browser';
 import MetadataTable from './MetadataTable';
 
 /** Show schema fields and profile metrics grouped by source table. */
-export default function SchemaTable({ result }: { result: Schema | Profile }) {
+export default function SchemaTable({ result }: { result: OldSchema | OldProfile }) {
   if (!result.tables.length) return <p className="py-2 text-xs text-ink-2">No tables.</p>;
 
   return (
