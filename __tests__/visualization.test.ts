@@ -31,8 +31,8 @@ describe('chart recommendation', () => {
     const prompt = vi.mocked(generateText).mock.calls[0][0].prompt;
     expect(prompt).toContain(result.query);
     expect(prompt).toContain('# Data Model');
-    expect(prompt).toContain('| city | string |');
-    expect(prompt).toContain('| revenue | number |');
+    expect(prompt).toContain('- city (string)');
+    expect(prompt).toContain('- revenue (number)');
     expect(vi.mocked(generateText).mock.calls[1][0].prompt).toContain('Hangzhou');
   });
 
