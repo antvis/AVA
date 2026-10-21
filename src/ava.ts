@@ -6,8 +6,7 @@ import EventEmitter from '@antv/event-emitter';
 import { getEngineClass } from './engines';
 import { extractDataSchema, schemaMetadataSchema } from './util/schema';
 import { profileMetadataSchema } from './util/profile';
-import { buildDataModel } from './util/data-model';
-import { stringifySchema } from './util/context';
+import { buildDataModel, stringifyDataModel } from './util/data-model';
 import { adviseChartType, generateVisualizationConfig, wrapConfigInHTML } from './visualization';
 import { generateSuggestions } from './suggest';
 import { analyze } from './analysis';
@@ -327,7 +326,7 @@ export class AVA extends EventEmitter {
     const { data, query } = analysisResult;
     if (!hasData(data)) return null;
 
-    const dataInfo = Array.isArray(data) ? stringifySchema(extractDataSchema(data)) : JSON.stringify(data);
+    const dataInfo = Array.isArray(data) ? stringifyDataModel(extractDataSchema(data)) : JSON.stringify(data);
     const chartType = await adviseChartType(query, dataInfo, this.llmConfig);
     if (!chartType) return null;
 

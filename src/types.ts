@@ -583,16 +583,6 @@ export type MetricConfig =
       [name: string]: unknown;
     };
 
-/**
- * A category value and its count.
- */
-export interface MetricFrequency {
-  /** The category value. */
-  value: string | boolean;
-  /** The number of times the value occurs. */
-  count: number;
-}
-
 /** Schema discovery currently has no configurable options. */
 export type SchemaOptions = Record<string, never>;
 
