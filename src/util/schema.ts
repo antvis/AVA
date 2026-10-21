@@ -128,14 +128,18 @@ export function rowObjects2Schema(rows: Record<string, unknown>[]): Schema {
     referencedColumns: string[];
   }[] = [];
   const views: NonNullable<Schema['views']> = [];
+
   const addKey = (table: string, metadata: Metadata) => keys.set(table, [...(keys.get(table) ?? []), metadata]);
+
   for (const row of rows) {
     const table = String(row.table_name);
     const meta: Metadata = typeof row.metadata === 'string' ? JSON.parse(row.metadata) : row.metadata;
     const model = models.get(table) ?? { name: table, tableReference: { table }, columns: [] };
     models.set(table, model);
+
     if (meta.catalog != null) model.tableReference.catalog = meta.catalog;
     if (meta.schema != null) model.tableReference.schema = meta.schema;
+
     if (row.kind === 'column') columns.set(table, [...(columns.get(table) ?? []), meta]);
     else if (row.kind === 'index' && bool(meta.unique)) {
       const names = meta.columns ?? indexColumns(meta.definition ?? '');
@@ -151,9 +155,11 @@ export function rowObjects2Schema(rows: Record<string, unknown>[]): Schema {
       if (statement) views.push({ name: table, statement });
     }
   }
+
   for (const { table, kind, rows } of parts.values()) {
     rows.sort((a, b) => Number(a.position) - Number(b.position));
     if (rows.some((row, i) => !row.column || Number(row.position) !== i + 1)) continue;
+
     const first = rows[0];
     if (kind === 'index-column' && bool(first.unique))
       addKey(table, { ...first, columns: rows.map((row) => row.column) });
@@ -166,12 +172,14 @@ export function rowObjects2Schema(rows: Record<string, unknown>[]): Schema {
         referencedColumns: rows.map((row) => row.referencedColumn),
       });
   }
+
   const validColumns = (table: string, names: string[]) =>
     Array.isArray(names) &&
     names.length > 0 &&
     new Set(names).size === names.length &&
     names.every((name) => models.get(table)?.columns.some((column) => column.name === name));
   const key = (names: string[]) => (names.length === 1 ? names[0] : (names as [string, ...string[]]));
+
   for (const model of models.values()) {
     model.columns = (columns.get(model.name) ?? [])
       .sort((a, b) => Number(a.position) - Number(b.position))
@@ -181,13 +189,16 @@ export function rowObjects2Schema(rows: Record<string, unknown>[]): Schema {
         ...(column.notNull == null ? {} : { notNull: bool(column.notNull) }),
       }));
   }
+
   for (const model of models.values()) {
     const declared = (keys.get(model.name) ?? []).filter((key) => validColumns(model.name, key.columns));
     const primary = declared.find((key) => bool(key.primary));
     if (primary) model.primaryKey = key(primary.columns);
+
     const alternatives = declared.filter((key) => !bool(key.primary));
     if (alternatives.length) model.uniqueKeys = alternatives.map((entry) => key(entry.columns));
   }
+
   const uniqueOn = (table: string, columns: string[]) => {
     const model = models.get(table);
     return (
@@ -198,8 +209,10 @@ export function rowObjects2Schema(rows: Record<string, unknown>[]): Schema {
       )
     );
   };
+
   const relationships: NonNullable<Schema['relationships']> = [];
   const usedNames = new Set<string>();
+
   for (const fk of foreignKeys.sort(
     (a, b) => a.table.localeCompare(b.table) || (a.name ?? '').localeCompare(b.name ?? '')
   )) {
@@ -210,10 +223,12 @@ export function rowObjects2Schema(rows: Record<string, unknown>[]): Schema {
       !uniqueOn(fk.referencedTable, fk.referencedColumns)
     )
       continue;
+
     const base = fk.name ?? `fk:${JSON.stringify([fk.table, fk.columns, fk.referencedTable, fk.referencedColumns])}`;
     let name = base;
     for (let i = 2; usedNames.has(name); i += 1) name = `${base}_${i}`;
     usedNames.add(name);
+
     relationships.push({
       name,
       models: [fk.table, fk.referencedTable],
@@ -228,6 +243,7 @@ export function rowObjects2Schema(rows: Record<string, unknown>[]): Schema {
         .join(' AND '),
     });
   }
+
   return schemaMetadataSchema.parse({
     models: [...models.values()].sort((a, b) => a.name.localeCompare(b.name)),
     relationships,

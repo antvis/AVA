@@ -65,7 +65,7 @@ export const dataModelMetadataSchema = z
     views: z.array(view).optional(),
     properties: properties.optional(),
   })
-  .strict() as z.ZodType<DataModel>;
+  .strict() as unknown as z.ZodType<DataModel>;
 
 const dataModelInputSchema = z.object({
   schema: schemaStructure.strict(),
@@ -93,7 +93,7 @@ const dataModelInputSchema = z.object({
     })
     .strict()
     .optional(),
-}) as z.ZodType<{ schema: Schema; profile?: Profile }>;
+}) as unknown as z.ZodType<{ schema: Schema; profile?: Profile }>;
 
 function indexByName<T extends { name: string }>(values: T[], label: string): Map<string, T> {
   const index = new Map<string, T>();
