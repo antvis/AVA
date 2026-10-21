@@ -7,7 +7,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { createSession } from '../src/cli/session/client';
 import { sessionDirectory, startupSchema, requestSchema } from '../src/cli/session/protocol';
 
-import type { DataSourceConfig, EngineConfig, OldSchema } from '../src/types';
+import type { DataSourceConfig, EngineConfig, Schema } from '../src/types';
 
 vi.mock('child_process', async (importOriginal) => ({
   ...(await importOriginal<typeof import('child_process')>()),
@@ -16,9 +16,9 @@ vi.mock('child_process', async (importOriginal) => ({
 
 const source: DataSourceConfig = { type: 'json', options: { data: [{ sales: 10 }] } };
 const llm = { model: 'unused' };
-const schema: OldSchema = {
-  tables: [{ name: 'data', columnCount: 1, fields: [{ name: 'sales', type: 'number' }], indexes: [] }],
-  relations: [],
+const schema: Schema = {
+  models: [{ name: 'data', columns: [{ name: 'sales', type: 'number' }], tableReference: { table: 'data' } }],
+  relationships: [],
 };
 
 describe('session startup protocol', () => {
@@ -33,11 +33,7 @@ describe('session startup protocol', () => {
     vi.mocked(fork).mockReturnValueOnce(worker as unknown as ReturnType<typeof fork>);
     const { datasetId } = await createSession(source, llm, 'python');
     try {
-      expect(startupSchema.parse(worker.send.mock.calls[0][0])).toEqual({
-        source,
-        llm,
-        engine: 'python',
-      });
+      expect(startupSchema.parse(worker.send.mock.calls[0][0])).toEqual({ source, llm, engine: 'python' });
       expect(worker.disconnect).toHaveBeenCalledOnce();
       expect(worker.unref).toHaveBeenCalledOnce();
     } finally {
@@ -54,8 +50,8 @@ describe('session startup protocol', () => {
 
   it('validates metadata in command requests and rejects it at startup', () => {
     expect(requestSchema.parse({ command: 'schema', schema })).toEqual({ command: 'schema', schema });
-    expect(() => requestSchema.parse({ command: 'schema', schema: { tables: null } })).toThrow();
-    expect(() => requestSchema.parse({ command: 'profile', profile: { tables: [] } })).toThrow();
+    expect(() => requestSchema.parse({ command: 'schema', schema: { models: null } })).toThrow();
+    expect(() => requestSchema.parse({ command: 'profile', profile: { models: null } })).toThrow();
     expect(() => startupSchema.parse({ source, llm, metadata: { schema } })).toThrow();
   });
 });
@@ -109,15 +105,19 @@ describe('dataset engine and language', () => {
 
   it('forwards imported profiles through the dataset session to model context', async () => {
     const profile = {
-      generatedAt: 1234,
-      tables: [
+      models: [
         {
-          ...schema.tables[0],
+          name: schema.models[0].name,
           metrics: { row_count: 1 },
-          fields: [{ ...schema.tables[0].fields[0], logicalType: 'numeric' as const, metrics: { sum: 10 } }],
+          columns: [
+            {
+              name: schema.models[0].columns[0].name,
+              properties: { logicalType: 'numeric' as const },
+              metrics: { sum: 10 },
+            },
+          ],
         },
       ],
-      relations: [],
     };
     await datasets.createDataset(source, llm, 'javascript');
     expect(await datasets.describeDataset(schema)).toMatchObject(schema);

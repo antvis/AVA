@@ -2,23 +2,26 @@ import { describe, it, expect } from 'vitest';
 
 import { extractDataSchema, schemaMetadataSchema } from '../../src/util/schema';
 
-import type { OldProfile, OldSchema } from '../../src/types';
+import type { Profile, Schema } from '../../src/types';
 
-const schema: OldSchema = {
-  tables: [{ name: 'data', columnCount: 1, fields: [{ name: 'value', type: 'number' }], indexes: [] }],
-  relations: [
-    { kind: 'foreign-key', from: { table: 'data', columns: ['value'] }, to: { table: 'data', columns: ['value'] } },
+const schema: Schema = {
+  models: [{ name: 'data', columns: [{ name: 'value', type: 'number' }], tableReference: { table: 'data' } }],
+  relationships: [
+    {
+      name: 'fk:["data",["value"],"data",["value"]]',
+      models: ['data', 'data'],
+      joinType: 'MANY_TO_ONE',
+      condition: '"data"."value" = "data"."value"',
+    },
   ],
 };
-const profile: OldProfile = {
-  ...schema,
-  generatedAt: 1234,
-  tables: schema.tables.map((table) => ({
-    ...table,
+const profile: Profile = {
+  models: schema.models.map((table) => ({
+    name: table.name,
     metrics: { row_count: 2 },
-    fields: table.fields.map((field) => ({
-      ...field,
-      logicalType: 'numeric',
+    columns: table.columns.map((field) => ({
+      name: field.name,
+      properties: { logicalType: 'numeric' },
       metrics: { mean: null, min: 0, custom: [false, { example: 'a' }] },
     })),
   })),
@@ -33,11 +36,11 @@ describe('extractDataSchema', () => {
 
     const schema = extractDataSchema(data);
 
-    expect(schema.tables).toHaveLength(1);
-    const table = schema.tables[0];
+    expect(schema.models).toHaveLength(1);
+    const table = schema.models[0];
     expect(table.name).toBe('data');
-    expect(table.columnCount).toBe(3);
-    expect(table.fields).toEqual([
+    expect(table.columns).toHaveLength(3);
+    expect(table.columns).toEqual([
       { name: 'company', type: 'string' },
       { name: 'region', type: 'string' },
       { name: 'revenue', type: 'number' },
@@ -46,24 +49,26 @@ describe('extractDataSchema', () => {
 
   it('should handle empty data', () => {
     expect(extractDataSchema([])).toEqual({
-      tables: [{ name: 'data', columnCount: 0, fields: [], indexes: [] }],
+      models: [{ name: 'data', columns: [], tableReference: { table: 'data' } }],
     });
   });
 });
 
 describe('schemaMetadataSchema', () => {
-  it('extracts pure structure from profiles and CLI schema output', () => {
-    expect(schemaMetadataSchema.parse(profile)).toEqual(schema);
+  it('rejects independent profiles and accepts CLI schema output', () => {
+    expect(() => schemaMetadataSchema.parse(profile)).toThrow();
     expect(schemaMetadataSchema.parse({ ...schema, language: { name: 'JavaScript', fence: 'js' } })).toEqual(schema);
-    expect(schemaMetadataSchema.parse({ tables: [] })).toEqual({ tables: [] });
+    expect(schemaMetadataSchema.parse({ models: [] })).toEqual({ models: [] });
   });
 
   it('checks field formats without verifying schema consistency', () => {
     const input = structuredClone(schema);
-    input.tables[0].columnCount = 100;
-    input.relations![0].to.table = 'not verified';
+    input.models[0].columns[0].name = 'renamed';
+    input.relationships![0].models[1] = 'not verified';
     expect(schemaMetadataSchema.parse(input)).toEqual(input);
-    expect(() => schemaMetadataSchema.parse({ tables: [{ ...schema.tables[0], fields: 'invalid' }] })).toThrow();
-    expect(() => schemaMetadataSchema.parse({ tables: [{ ...schema.tables[0], columnCount: -1 }] })).toThrow();
+    expect(() => schemaMetadataSchema.parse({ models: [{ ...schema.models[0], columns: 'invalid' }] })).toThrow();
+    expect(() =>
+      schemaMetadataSchema.parse({ models: [{ ...schema.models[0], tableReference: undefined }] })
+    ).toThrow();
   });
 });

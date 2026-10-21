@@ -3,20 +3,13 @@ import { sqlIdentifier } from '../../util/sql';
 
 import { SUPABASE_SCHEMA } from './schema';
 
-import type {
-  FieldProfile,
-  LogicalType,
-  Metric,
-  ParsedProfileOptions,
-  OldProfile,
-  OldSchema,
-  TableProfile,
-} from '../../types';
+import type { MetricField } from '../../util/profile';
+import type { LogicalType, Metric, ParsedProfileOptions, Profile, Schema } from '../../types';
 
 interface Context {
   table: string;
   column?: string;
-  field?: FieldProfile;
+  field?: MetricField;
   metric: ParsedProfileOptions['metrics'][number];
 }
 
@@ -81,24 +74,28 @@ export const BUILTIN_METRICS: PostgreSQLMetric[] = [
 
 export async function profileTables(
   runQuery: (sql: string) => Promise<Record<string, unknown>[]>,
-  schema: OldSchema,
+  schema: Schema,
   options: ParsedProfileOptions
-): Promise<OldProfile> {
+): Promise<Profile> {
   const metrics = options.metrics.map((metric) => {
     validateMetricConfig(metric, BUILTIN_METRICS);
     return { metric, definition: BUILTIN_METRICS.find(({ id }) => id === metric.id)! };
   });
-  const tables: TableProfile[] = [];
-  for (const source of schema.tables) {
-    const profile: TableProfile = {
-      ...source,
+  const models: Profile['models'] = [];
+  for (const source of schema.models) {
+    const profile: Profile['models'][number] = {
+      name: source.name,
       metrics: {},
-      fields: source.fields.map((field) => ({ ...field, logicalType: logicalType(field.type), metrics: {} })),
+      columns: source.columns.map((field) => ({
+        name: field.name,
+        properties: { logicalType: logicalType(field.type) },
+        metrics: {},
+      })),
     };
-    tables.push(profile);
+    models.push(profile);
     const pending: { expression: string; id: string; output: Record<string, unknown> }[] = [];
     const table = `${sqlIdentifier(SUPABASE_SCHEMA)}.${sqlIdentifier(source.name)}`;
-    const add = (output: Record<string, unknown>, field?: FieldProfile) => {
+    const add = (output: Record<string, unknown>, field?: MetricField) => {
       for (const { metric, definition } of metrics) {
         if (!definition.enable({ target: field ? 'column' : 'table', field })) continue;
         pending.push({
@@ -114,7 +111,9 @@ export async function profileTables(
       }
     };
     add(profile.metrics);
-    profile.fields.forEach((field) => add(field.metrics, field));
+    profile.columns.forEach((field, i) =>
+      add(field.metrics, { ...source.columns[i], logicalType: field.properties.logicalType })
+    );
     if (!pending.length) continue;
     const [row] = await runQuery(
       `SELECT ${pending
@@ -133,5 +132,5 @@ export async function profileTables(
       }
     });
   }
-  return { ...schema, tables, generatedAt: Date.now() };
+  return { models };
 }

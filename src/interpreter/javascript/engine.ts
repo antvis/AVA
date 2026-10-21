@@ -20,13 +20,13 @@ import { loadSource } from './loaders';
 import { STAT_OPS_PROMPT, STAT_OPS_EXAMPLE } from './stat';
 
 import type {
-  OldProfile,
+  Profile,
   ProfileOptions,
   AnalysisEngine,
   DataContext,
   DataSourceConfig,
   LLMConfig,
-  OldSchema,
+  Schema,
   ExecutionOptions,
   ExecutionResult,
 } from '../../types';
@@ -50,7 +50,7 @@ export class JavaScriptEngine implements AnalysisEngine {
     this.data = await loadSource(config as any, this.llmConfig);
   }
 
-  async schema(): Promise<OldSchema> {
+  async schema(): Promise<Schema> {
     if (!this.data) throw new Error('No data loaded. Please call source() first.');
     return extractDataSchema(this.data);
   }
@@ -64,7 +64,7 @@ export class JavaScriptEngine implements AnalysisEngine {
     return this.data;
   }
 
-  async profile(schema: OldSchema, options: ProfileOptions = {}): Promise<OldProfile> {
+  async profile(schema: Schema, options: ProfileOptions = {}): Promise<Profile> {
     if (!this.data) throw new Error('No data loaded. Please call source() first.');
     return profileTables(this.data, schema, parseProfileOptions(options, { metrics: DEFAULT_METRICS }));
   }
@@ -74,7 +74,8 @@ export class JavaScriptEngine implements AnalysisEngine {
       throw new Error('No data loaded. Please call source() first.');
     }
 
-    const datasetContext = context.profile ? stringifyProfile(context.profile) : stringifySchema(context.schema);
+    const datasetContext =
+      stringifySchema(context.schema) + (context.profile ? '\n' + stringifyProfile(context.profile) : '');
 
     const prompt = `You are a data analysis expert. Given the following dataset information and user query, generate JavaScript code to answer the question.
 

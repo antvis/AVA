@@ -30,37 +30,36 @@ describe('loaders/excel', () => {
     const schema = await engine.schema();
 
     expect(schema).toEqual({
-      tables: [
+      models: [
         {
           name: 'Costs',
-          columnCount: 2,
-          fields: [
-            { name: 'order_id', type: 'VARCHAR', nullable: true },
-            { name: 'cost', type: 'DOUBLE', nullable: true },
+          columns: [
+            { name: 'order_id', type: 'VARCHAR', notNull: false },
+            { name: 'cost', type: 'DOUBLE', notNull: false },
           ],
-          indexes: [],
+          tableReference: { catalog: 'memory', schema: 'main', table: 'Costs' },
         },
         {
           name: 'Sales',
-          columnCount: 12,
-          fields: [
-            { name: 'order_id', type: 'VARCHAR', nullable: true },
-            { name: 'order_date', type: 'DATE', nullable: true },
-            { name: 'region', type: 'VARCHAR', nullable: true },
-            { name: 'category', type: 'VARCHAR', nullable: true },
-            { name: 'product', type: 'VARCHAR', nullable: true },
-            { name: 'channel', type: 'VARCHAR', nullable: true },
-            { name: 'quantity', type: 'DOUBLE', nullable: true },
-            { name: 'unit_price', type: 'DOUBLE', nullable: true },
-            { name: 'discount', type: 'DOUBLE', nullable: true },
-            { name: 'sales', type: 'DOUBLE', nullable: true },
-            { name: 'cost', type: 'DOUBLE', nullable: true },
-            { name: 'profit', type: 'DOUBLE', nullable: true },
+          columns: [
+            { name: 'order_id', type: 'VARCHAR', notNull: false },
+            { name: 'order_date', type: 'DATE', notNull: false },
+            { name: 'region', type: 'VARCHAR', notNull: false },
+            { name: 'category', type: 'VARCHAR', notNull: false },
+            { name: 'product', type: 'VARCHAR', notNull: false },
+            { name: 'channel', type: 'VARCHAR', notNull: false },
+            { name: 'quantity', type: 'DOUBLE', notNull: false },
+            { name: 'unit_price', type: 'DOUBLE', notNull: false },
+            { name: 'discount', type: 'DOUBLE', notNull: false },
+            { name: 'sales', type: 'DOUBLE', notNull: false },
+            { name: 'cost', type: 'DOUBLE', notNull: false },
+            { name: 'profit', type: 'DOUBLE', notNull: false },
           ],
-          indexes: [],
+          tableReference: { catalog: 'memory', schema: 'main', table: 'Sales' },
         },
       ],
-      relations: [],
+      relationships: [],
+      views: schema.models.map(({ name }) => ({ name, statement: expect.any(String) })),
     });
 
     const sales = await engine.execute('SELECT * FROM "Sales" ORDER BY order_id', { maxRows: 240 });
@@ -108,14 +107,11 @@ describe('loaders/excel', () => {
     engine = new DuckDBEngine(getLLMConfig());
     await engine.load({
       type: 'excel',
-      options: {
-        path: xlsxPath,
-        sheets: [{ sheet: 'Sales', range: 'A1:B3', header: true }],
-      },
+      options: { path: xlsxPath, sheets: [{ sheet: 'Sales', range: 'A1:B3', header: true }] },
     });
     const schema = await engine.schema();
-    expect(schema.tables.map((table) => table.name)).toEqual(['Sales']);
-    expect(schema.tables[0].fields.map((field) => field.name)).toEqual(['order_id', 'order_date']);
+    expect(schema.models.map((table) => table.name)).toEqual(['Sales']);
+    expect(schema.models[0].columns.map((field) => field.name)).toEqual(['order_id', 'order_date']);
     expect((await engine.execute('SELECT * FROM "Sales"')).data).toHaveLength(2);
     await expect(engine.execute('SELECT * FROM "Costs"')).rejects.toThrow();
   });
@@ -124,10 +120,7 @@ describe('loaders/excel', () => {
     engine = new DuckDBEngine(getLLMConfig());
     await engine.load({
       type: 'excel',
-      options: {
-        path: xlsxPath,
-        sheets: [{ sheet: 'Costs', range: 'A2:B3', header: false }],
-      },
+      options: { path: xlsxPath, sheets: [{ sheet: 'Costs', range: 'A2:B3', header: false }] },
     });
     const result = await engine.execute('SELECT * FROM "Costs"');
     expect(result.data.map((row) => Object.values(row))).toEqual([
@@ -181,7 +174,7 @@ describe('loaders/excel', () => {
       engine = new DuckDBEngine(getLLMConfig());
       await engine.load({ type: 'excel', options: { path: file, sheets: [{ sheet: name }] } });
       const schema = await engine.schema();
-      expect(schema.tables.map((table) => table.name)).toEqual([name]);
+      expect(schema.models.map((table) => table.name)).toEqual([name]);
       expect((await engine.execute(`SELECT * FROM "${name.replace(/"/g, '""')}" LIMIT 1`)).data).toHaveLength(1);
     } finally {
       await engine?.dispose();
@@ -248,8 +241,8 @@ describe('loaders/excel', () => {
         const options: ExcelSourceOptions = { path: file, sheets: [{ sheet: 'Sales', range: 'b3:c6', header }] };
         await instance.load({ type: 'excel', options });
         const schema = await instance.schema();
-        expect(schema.tables.map((table) => table.name)).toEqual(['Sales']);
-        if (header !== false) expect(schema.tables[0].fields.map((field) => field.name)).toEqual(['101', '202']);
+        expect(schema.models.map((table) => table.name)).toEqual(['Sales']);
+        if (header !== false) expect(schema.models[0].columns.map((field) => field.name)).toEqual(['101', '202']);
         const result = await instance.execute('SELECT * FROM "Sales"');
         expect(result.data.map((row) => Object.values(row))).toEqual([
           ...(header === false ? [[101, 202]] : []),
@@ -266,10 +259,7 @@ describe('loaders/excel', () => {
       engine = new DuckDBEngine(getLLMConfig());
       await engine.load({
         type: 'excel',
-        options: {
-          path: file,
-          sheets: [{ sheet: 'Sales', range: 'B3:C6', stop_at_empty }],
-        },
+        options: { path: file, sheets: [{ sheet: 'Sales', range: 'B3:C6', stop_at_empty }] },
       });
       const result = await engine.execute('SELECT * FROM "Sales"');
       expect(result.data.map((row) => Object.values(row))).toEqual(
@@ -287,13 +277,10 @@ describe('loaders/excel', () => {
       engine = new DuckDBEngine(getLLMConfig());
       await engine.load({
         type: 'excel',
-        options: {
-          path: file,
-          sheets: [{ sheet: 'Sales', range: 'B3:C7', all_varchar: true }],
-        },
+        options: { path: file, sheets: [{ sheet: 'Sales', range: 'B3:C7', all_varchar: true }] },
       });
       const schema = await engine.schema();
-      expect(schema.tables[0].fields.map((field) => field.type)).toEqual(['VARCHAR', 'VARCHAR']);
+      expect(schema.models[0].columns.map((field) => field.type)).toEqual(['VARCHAR', 'VARCHAR']);
       const result = await engine.execute('SELECT * FROM "Sales"');
       expect(result.data.map((row) => Object.values(row))).toEqual([
         ['1', '2'],
@@ -307,10 +294,7 @@ describe('loaders/excel', () => {
       engine = new DuckDBEngine(getLLMConfig());
       await engine.load({
         type: 'excel',
-        options: {
-          path: file,
-          sheets: [{ sheet: 'Sales', range: 'B3:C7', ignore_errors }],
-        },
+        options: { path: file, sheets: [{ sheet: 'Sales', range: 'B3:C7', ignore_errors }] },
       });
       const result = engine.execute('SELECT * FROM "Sales"');
       if (ignore_errors) {
@@ -331,13 +315,10 @@ describe('loaders/excel', () => {
         engine = new DuckDBEngine(getLLMConfig());
         await engine.load({
           type: 'excel',
-          options: {
-            path: file,
-            sheets: [{ sheet: 'Sales', range: 'B7:C7', header: false, empty_as_varchar }],
-          },
+          options: { path: file, sheets: [{ sheet: 'Sales', range: 'B7:C7', header: false, empty_as_varchar }] },
         });
         const schema = await engine.schema();
-        expect(schema.tables[0].fields.map((field) => field.type)).toEqual(
+        expect(schema.models[0].columns.map((field) => field.type)).toEqual(
           empty_as_varchar ? ['VARCHAR', 'VARCHAR'] : ['VARCHAR', 'DOUBLE']
         );
       }
@@ -357,7 +338,7 @@ describe('loaders/excel', () => {
           },
         });
         const schema = await instance.schema();
-        expect(schema.tables.map((table) => table.name).sort()).toEqual(['Costs', 'Sales']);
+        expect(schema.models.map((table) => table.name).sort()).toEqual(['Costs', 'Sales']);
         const sales = await instance.execute('SELECT * FROM "Sales"');
         expect(sales.data).toEqual([{ '101': 1, '202': 2 }]);
         const costs = await instance.execute('SELECT * FROM "Costs"');

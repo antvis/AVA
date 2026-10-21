@@ -14,7 +14,7 @@ import * as memorySchema from '../src/util/schema';
 
 import { getLLMConfig, skipLLMTests } from './test-utils';
 
-import type { DataSourceConfig, OldProfile, OldSchema } from '../src';
+import type { DataSourceConfig, Profile, Schema } from '../src';
 
 describe('AVA', () => {
   let ava: AVA;
@@ -37,15 +37,15 @@ describe('AVA', () => {
     await ava.source({ type: 'json', options: { data: [{ first: 1 }] } });
     expect(onEnd).toHaveBeenLastCalledWith({ type: 'sourceend', data: {} });
     const first = await ava.schema();
-    expect(first.tables[0].fields.map((field) => field.name)).toEqual(['first']);
+    expect(first.models[0].columns.map((field) => field.name)).toEqual(['first']);
     const before = JSON.stringify(first);
     await ava.profile();
     expect(JSON.stringify(await ava.schema())).toBe(before);
     expect(first).not.toHaveProperty('generatedAt');
-    expect(first.tables[0].fields[0]).not.toHaveProperty('metrics');
+    expect(first.models[0].columns[0]).not.toHaveProperty('metrics');
 
     await ava.source({ type: 'json', options: { data: [{ second: 'value' }] } });
-    expect((await ava.schema()).tables[0].fields.map((field) => field.name)).toEqual(['second']);
+    expect((await ava.schema()).models[0].columns.map((field) => field.name)).toEqual(['second']);
     await expect(ava.source({ type: 'json', options: { data: null } })).rejects.toThrow();
     await expect(ava.schema()).rejects.toThrow(message);
 
@@ -79,11 +79,11 @@ describe('AVA', () => {
       if (operation !== 'profile') expect(computeProfile).not.toHaveBeenCalled();
       expect(discover).toHaveBeenCalledOnce();
       const schema = await ava.schema();
-      expect(schema.tables[0].fields[0].name).toBe('value');
+      expect(schema.models[0].columns[0].name).toBe('value');
       expect(discover).toHaveBeenCalledOnce();
       await ava.source({ type: 'json', options: { data: [{ next: 3 }] } });
       expect(discover).toHaveBeenCalledOnce();
-      expect((await ava.schema()).tables[0].fields[0].name).toBe('next');
+      expect((await ava.schema()).models[0].columns[0].name).toBe('next');
       expect(discover).toHaveBeenCalledTimes(2);
     }
   );
@@ -154,22 +154,21 @@ describe('AVA', () => {
     await ava.source({ type: 'json', options: { data: [{ value: 2 }, { value: 4 }, { value: null }] } });
 
     const profile = await ava.profile();
-    expect(profile.generatedAt).toEqual(expect.any(Number));
-    expect(profile.tables[0].metrics).toEqual({ row_count: 3 });
-    expect(profile.tables[0].fields[0].metrics).toMatchObject({ null_count: 1, min: 2, max: 4, mean: 3 });
+    expect(profile.models[0].metrics).toEqual({ row_count: 3 });
+    expect(profile.models[0].columns[0].metrics).toMatchObject({ null_count: 1, min: 2, max: 4, mean: 3 });
 
     const selected = await ava.profile({ metrics: ['row_count', 'sum'] });
     expect(onStart).toHaveBeenLastCalledWith({ type: 'profilestart', data: {} });
     expect(onEnd).toHaveBeenLastCalledWith({ type: 'profileend', data: {} });
-    expect(selected.tables[0].metrics).toEqual({ row_count: 3 });
-    expect(selected.tables[0].fields[0].metrics).toEqual({ sum: 6 });
+    expect(selected.models[0].metrics).toEqual({ row_count: 3 });
+    expect(selected.models[0].columns[0].metrics).toEqual({ sum: 6 });
     const empty = await ava.profile({ metrics: [] });
-    expect(empty.tables[0].metrics).toEqual({});
-    expect(empty.tables[0].fields[0].metrics).toEqual({});
+    expect(empty.models[0].metrics).toEqual({});
+    expect(empty.models[0].columns[0].metrics).toEqual({});
     await expect(ava.profile({ metrics: ['missing'] })).rejects.toThrow('Unknown metric');
 
     await ava.source({ type: 'json', options: { data: [{ value: 10 }] } });
-    expect((await ava.profile({ metrics: ['sum'] })).tables[0].fields[0].metrics).toEqual({ sum: 10 });
+    expect((await ava.profile({ metrics: ['sum'] })).models[0].columns[0].metrics).toEqual({ sum: 10 });
     await ava.dispose();
     await expect(ava.profile()).rejects.toThrow(message);
   });
@@ -303,11 +302,11 @@ describe('AVA', () => {
       await expect(ava.source({ type: 'csv-file', options: { path: testDataPath } })).resolves.toBeUndefined();
       const schema = await ava.schema();
 
-      expect(schema.tables).toHaveLength(1);
-      const table = schema.tables[0];
+      expect(schema.models).toHaveLength(1);
+      const table = schema.models[0];
       expect(table).not.toHaveProperty('rowCount');
-      expect(table.columnCount).toBe(3);
-      expect(table.fields.find((f) => f.name === 'revenue')?.type).toBe('BIGINT');
+      expect(table.columns).toHaveLength(3);
+      expect(table.columns.find((f) => f.name === 'revenue')?.type).toBe('BIGINT');
     });
 
     it('should throw when analyzing without loading data', async () => {
@@ -401,7 +400,7 @@ describe('AVA', () => {
       expect(dispose).not.toHaveBeenCalled();
       expect((await ava.query('const result = data;')).data).toEqual([{ value: 2 }]);
       const schema = await ava.schema();
-      expect(schema.tables[0].fields[0].name).toBe('value');
+      expect(schema.models[0].columns[0].name).toBe('value');
       expect(await ava.schema()).toBe(schema);
       expect(discover).toHaveBeenCalledTimes(2);
     });
@@ -428,16 +427,17 @@ describe('AVA', () => {
 describe('AVA metadata setters', () => {
   const llm = { model: 'unused' };
   const source: DataSourceConfig = { type: 'json', options: { data: [{ value: 2 }, { value: 4 }] } };
-  const schema: OldSchema = {
-    tables: [{ name: 'data', columnCount: 1, fields: [{ name: 'value', type: 'number' }], indexes: [] }],
+  const schema: Schema = {
+    models: [{ name: 'data', columns: [{ name: 'value', type: 'number' }], tableReference: { table: 'data' } }],
   };
-  const profile: OldProfile = {
-    generatedAt: 1234,
-    tables: [
+  const profile: Profile = {
+    models: [
       {
-        ...schema.tables[0],
+        name: schema.models[0].name,
         metrics: { row_count: 2 },
-        fields: [{ ...schema.tables[0].fields[0], logicalType: 'numeric', metrics: { mean: 3 } }],
+        columns: [
+          { name: schema.models[0].columns[0].name, properties: { logicalType: 'numeric' }, metrics: { mean: 3 } },
+        ],
       },
     ],
   };
@@ -465,7 +465,7 @@ describe('AVA metadata setters', () => {
         expect(onProfile).toHaveBeenCalledOnce();
         expect(await restored.schema()).toEqual(expectedSchema);
         expect(await restored.schema()).not.toHaveProperty('generatedAt');
-        expect((await restored.schema()).tables[0].fields[0]).not.toHaveProperty('metrics');
+        expect((await restored.schema()).models[0].columns[0]).not.toHaveProperty('metrics');
         const dsl =
           type === 'duckdb'
             ? 'SELECT SUM(value) AS total FROM data'
@@ -473,8 +473,8 @@ describe('AVA metadata setters', () => {
         const getDSL = vi.spyOn(restored.engine!, 'getDSL').mockResolvedValue(dsl);
         const suggest = vi.spyOn(suggestions, 'generateSuggestions').mockResolvedValue([]);
         const compute = vi.spyOn(restored.engine!, 'profile');
-        exported.tables[0].fields[0].name = 'changed by caller';
-        exported.tables[0].metrics.row_count = 999;
+        exported.models[0].columns[0].name = 'changed by caller';
+        exported.models[0].metrics.row_count = 999;
         await restored.translate('Total');
         expect(getDSL).toHaveBeenLastCalledWith('Total', { schema: expectedSchema, profile: expectedProfile });
         const analysis = await restored.analyze('Total', {
@@ -487,7 +487,7 @@ describe('AVA metadata setters', () => {
         expect(suggest).toHaveBeenLastCalledWith(llm, { schema: expectedSchema, profile: expectedProfile }, 3);
         expect(compute).not.toHaveBeenCalled();
         const recomputed = await restored.profile({ metrics: ['sum'] });
-        expect(recomputed.tables[0].fields[0].metrics).toEqual({ sum: 6 });
+        expect(recomputed.models[0].columns[0].metrics).toEqual({ sum: 6 });
         await restored.translate('Total');
         expect(getDSL).toHaveBeenLastCalledWith('Total', { schema: expectedSchema, profile: recomputed });
         expect(compute).toHaveBeenCalledExactlyOnceWith(expectedSchema, { metrics: ['sum'] });
@@ -568,8 +568,8 @@ describe('AVA metadata setters', () => {
           throw error;
         })
       ).rejects.toBe(error);
-      await expect(ava.schema(undefined, () => ({ tables: 'invalid' } as never))).rejects.toThrow();
-      await expect(ava.profile(undefined, () => ({ ...profile, generatedAt: -1 }))).rejects.toThrow();
+      await expect(ava.schema(undefined, () => ({ models: 'invalid' } as never))).rejects.toThrow();
+      await expect(ava.profile(undefined, () => ({ models: 'invalid' } as never))).rejects.toThrow();
       expect(schemaEnd.mock.calls[0][0].data.error.message).toBe('setter failed');
       expect(profileEnd.mock.calls[0][0].data.error.message).toBe('setter failed');
       expect(await ava.schema()).toEqual(schema);

@@ -29,14 +29,14 @@ import type {
   DataSourceConfig,
   SchemaOptions,
   DataContext,
-  OldSchema,
+  Schema,
   AnalysisEngine,
   AnalysisResponse,
   AnalysisConfig,
   VisualizeResponse,
   ChartSpec,
   SuggestResult,
-  OldProfile,
+  Profile,
   ProfileOptions,
   ExecutionOptions,
   ExecutionResult,
@@ -64,8 +64,8 @@ export class AVA extends EventEmitter {
   engine: AnalysisEngine | null = null;
   /** Dataset model for the current source; reset on source replacement or disposal. */
   dataModel: DataModel = {};
-  private dataSchema: OldSchema | null = null;
-  private dataProfile: OldProfile | null = null;
+  private dataSchema: Schema | null = null;
+  private dataProfile: Profile | null = null;
 
   constructor(config: AVAConfig) {
     super();
@@ -164,7 +164,7 @@ export class AVA extends EventEmitter {
    * Describe the data source structure.
    * Include tables, fields, types, indexes, and relations.
    */
-  async schema(options: SchemaOptions = {}, setter?: (options: SchemaOptions) => OldSchema): Promise<OldSchema> {
+  async schema(options: SchemaOptions = {}, setter?: (options: SchemaOptions) => Schema): Promise<Schema> {
     if (!this.engine) {
       throw new Error('No data loaded. Please call source() first.');
     }
@@ -191,7 +191,7 @@ export class AVA extends EventEmitter {
   /**
    * Compute a statistical profile of the data source.
    */
-  async profile(options: ProfileOptions = {}, setter?: (options: ProfileOptions) => OldProfile): Promise<OldProfile> {
+  async profile(options: ProfileOptions = {}, setter?: (options: ProfileOptions) => Profile): Promise<Profile> {
     if (!this.engine) {
       throw new Error('No data loaded. Please call source() first.');
     }

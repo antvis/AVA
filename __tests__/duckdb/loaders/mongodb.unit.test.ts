@@ -16,10 +16,7 @@ function createConnection(rows: Record<string, unknown>[] = []): DuckDBConnectio
 
 describe('loaders/mongodb (unit)', () => {
   it('installs the mongo community extension, attaches the database, and exposes collections as views', async () => {
-    const source = await loadMongoDB({
-      connection: 'host=localhost port=27017',
-      database: 'sales',
-    });
+    const source = await loadMongoDB({ connection: 'host=localhost port=27017', database: 'sales' });
     const conn = createConnection([{ table_name: 'orders' }, { table_name: 'users' }]);
 
     await expect(source.register(conn)).resolves.toEqual(['orders', 'users']);
@@ -34,11 +31,7 @@ describe('loaders/mongodb (unit)', () => {
   });
 
   it('builds a key-value connection string from structured fields', async () => {
-    const source = await loadMongoDB({
-      host: 'localhost',
-      port: 27017,
-      database: 'sales',
-    });
+    const source = await loadMongoDB({ host: 'localhost', port: 27017, database: 'sales' });
     const conn = createConnection([]);
 
     await source.register(conn);
@@ -100,10 +93,7 @@ describe('loaders/mongodb (unit)', () => {
   });
 
   it('returns structural schema from the created views', async () => {
-    const source = await loadMongoDB({
-      connection: 'host=localhost port=27017',
-      database: 'sales',
-    });
+    const source = await loadMongoDB({ connection: 'host=localhost port=27017', database: 'sales' });
     const conn = createConnection([{ table_name: 'orders' }]);
 
     await source.register(conn);
@@ -118,15 +108,15 @@ describe('loaders/mongodb (unit)', () => {
     });
 
     await expect(source.getSchema(conn)).resolves.toEqual({
-      tables: [
+      models: [
         {
           name: 'orders',
-          columnCount: 1,
-          fields: [{ name: 'amount', type: 'DOUBLE', nullable: true }],
-          indexes: [],
+          columns: [{ name: 'amount', type: 'DOUBLE', notNull: false }],
+          tableReference: { table: 'orders' },
         },
       ],
-      relations: [],
+      relationships: [],
+      views: [],
     });
   });
 });

@@ -10,19 +10,13 @@ vi.mock('ai', () => ({
   experimental_evaluate: vi.fn(),
 }));
 
-vi.mock('@ai-sdk/openai', () => ({
-  createOpenAI: vi.fn(() => ({ chat: vi.fn() })),
-}));
+vi.mock('@ai-sdk/openai', () => ({ createOpenAI: vi.fn(() => ({ chat: vi.fn() })) }));
 
 beforeEach(() => vi.clearAllMocks());
 
 describe('directAnalysis', () => {
   it('generates and executes exactly one DSL statement', async () => {
-    const queryResult = {
-      data: [{ value: 1 }],
-      schema: [{ name: 'value', type: 'INTEGER' }],
-      rowCount: 1,
-    };
+    const queryResult = { data: [{ value: 1 }], schema: [{ name: 'value', type: 'INTEGER' }], rowCount: 1 };
     const engine = {
       getDSL: vi.fn().mockResolvedValue('SELECT 1'),
       execute: vi.fn().mockResolvedValue(queryResult),
@@ -32,12 +26,7 @@ describe('directAnalysis', () => {
     const result = await analyze(
       'Give me one',
       { strategy: { type: 'direct' }, maxRows: 5, maxResultBytes: 1024 },
-      {
-        emit,
-        context: { schema: { tables: [] } },
-        engine,
-        llm: { model: 'test', apiKey: 'test' },
-      }
+      { emit, context: { schema: { models: [] } }, engine, llm: { model: 'test', apiKey: 'test' } }
     );
 
     expect(engine.getDSL).toHaveBeenCalledOnce();
@@ -49,7 +38,7 @@ describe('directAnalysis', () => {
       { type: 'summarizestart', data: {} },
       { type: 'summarizeend', data: { text: result.text } },
     ]);
-    expect(engine.getDSL).toHaveBeenCalledWith('Give me one', { schema: { tables: [] } });
+    expect(engine.getDSL).toHaveBeenCalledWith('Give me one', { schema: { models: [] } });
     expect(engine.execute).toHaveBeenCalledWith('SELECT 1', {
       strategy: { type: 'direct' },
       maxRows: 5,
@@ -75,12 +64,7 @@ it.each([undefined, true, false])('direct includeSummary=%s controls the summary
   const result = await analyze(
     'Give me one',
     { includeSummary },
-    {
-      emit: vi.fn(),
-      context: { schema: { tables: [] } },
-      engine,
-      llm: { model: 'test' },
-    }
+    { emit: vi.fn(), context: { schema: { models: [] } }, engine, llm: { model: 'test' } }
   );
   expect(result).toMatchObject({ ...execution, sql: 'SELECT 1', text: includeSummary === false ? '' : 'One result.' });
   expect(engine.execute).toHaveBeenCalledOnce();
@@ -98,17 +82,10 @@ it.each([0, 1, 2])('loop omits summary with maxSteps=%s, retaining verification 
   const result = await analyze(
     'Give me one',
     { strategy: { type: 'loop', maxSteps }, includeSummary: false },
-    {
-      emit,
-      context: { schema: { tables: [] } },
-      engine,
-      llm: { model: 'test' },
-    }
+    { emit, context: { schema: { models: [] } }, engine, llm: { model: 'test' } }
   );
   expect(result).toMatchObject({ data: [{ value: 1 }], sql: 'SELECT 1', text: '' });
-  expect(emit.mock.calls.find(([event]) => event.type === 'querystart')?.[0].data).toEqual({
-    dsl: 'SELECT 1',
-  });
+  expect(emit.mock.calls.find(([event]) => event.type === 'querystart')?.[0].data).toEqual({ dsl: 'SELECT 1' });
   expect(emit.mock.calls.find(([event]) => event.type === 'reasonend')?.[0].data).toMatchObject({
     step: 0,
     action: 'SQL',

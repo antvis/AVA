@@ -21,10 +21,10 @@ import type {
   ExecutionOptions,
   ExecutionResult,
   LLMConfig,
-  OldProfile,
+  Profile,
   ProfileOptions,
   PythonEngineOptions,
-  OldSchema,
+  Schema,
 } from '../../types';
 
 const DEFAULT_QUERY_TIMEOUT_MS = 30_000;
@@ -64,20 +64,20 @@ Do not read files, access the network, install packages, or print the answer.`,
     this.source = sourceSchema.parse(config) as DataSourceConfig;
   }
 
-  async schema(): Promise<OldSchema> {
+  async schema(): Promise<Schema> {
     if (!this.source) throw new Error('No data loaded. Please call source() first.');
 
     const tables = z.array(tableSchema).parse(await this.metadata(SCHEMA_CODE));
     if (new Set(tables.map((table) => table.name)).size !== tables.length) {
       throw new Error('Python source returned duplicate table names');
     }
-    return { tables } as OldSchema;
+    return { models: tables } as Schema;
   }
 
   async getDSL(query: string, context: DataContext): Promise<string> {
     if (!this.source) throw new Error('No data loaded. Please call source() first.');
 
-    const dataset = context.profile ? stringifyProfile(context.profile) : stringifySchema(context.schema);
+    const dataset = stringifySchema(context.schema) + (context.profile ? '\n' + stringifyProfile(context.profile) : '');
 
     const response = await generateText({
       model: languageModel(this.llmConfig),
@@ -101,11 +101,11 @@ Return ONLY executable Python code without explanation.`,
       .trim();
   }
 
-  async profile(schema: OldSchema, options: ProfileOptions = {}): Promise<OldProfile> {
+  async profile(schema: Schema, options: ProfileOptions = {}): Promise<Profile> {
     if (!this.source) throw new Error('No data loaded. Please call source() first.');
 
     const tables = await this.metadata(profileCode(parseProfileOptions(options, { metrics: DEFAULT_METRICS }), schema));
-    return profileMetadataSchema.parse({ ...schema, tables, generatedAt: Date.now() });
+    return profileMetadataSchema.parse({ models: tables });
   }
 
   async execute<T = Record<string, unknown>>(code: string, options?: ExecutionOptions): Promise<ExecutionResult<T>> {

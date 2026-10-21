@@ -1,0 +1,115 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`getDuckDBSchema > discovers qualified models, ordered columns, composite keys and constraint-backed cardinalities 1`] = `
+{
+  "models": [
+    {
+      "columns": [
+        {
+          "name": "tenant_id",
+          "notNull": true,
+          "type": "INTEGER",
+        },
+        {
+          "name": "id",
+          "notNull": true,
+          "type": "INTEGER",
+        },
+        {
+          "name": "email",
+          "notNull": false,
+          "type": "VARCHAR",
+        },
+      ],
+      "name": "customers",
+      "primaryKey": [
+        "tenant_id",
+        "id",
+      ],
+      "tableReference": {
+        "catalog": "memory",
+        "schema": "analytics",
+        "table": "customers",
+      },
+      "uniqueKeys": [
+        "email",
+      ],
+    },
+    {
+      "columns": [
+        {
+          "name": "order_id",
+          "notNull": false,
+          "type": "INTEGER",
+        },
+        {
+          "name": "note",
+          "notNull": false,
+          "type": "VARCHAR",
+        },
+      ],
+      "name": "details",
+      "tableReference": {
+        "catalog": "memory",
+        "schema": "analytics",
+        "table": "details",
+      },
+      "uniqueKeys": [
+        "order_id",
+      ],
+    },
+    {
+      "columns": [
+        {
+          "name": "id",
+          "notNull": true,
+          "type": "INTEGER",
+        },
+        {
+          "name": "tenant_id",
+          "notNull": false,
+          "type": "INTEGER",
+        },
+        {
+          "name": "customer_id",
+          "notNull": false,
+          "type": "INTEGER",
+        },
+        {
+          "name": "amount",
+          "notNull": false,
+          "type": "DOUBLE",
+        },
+      ],
+      "name": "orders",
+      "primaryKey": "id",
+      "tableReference": {
+        "catalog": "memory",
+        "schema": "analytics",
+        "table": "orders",
+      },
+    },
+  ],
+  "relationships": [
+    {
+      "condition": ""details"."order_id" = "orders"."id"",
+      "joinType": "ONE_TO_ONE",
+      "models": [
+        "details",
+        "orders",
+      ],
+      "name": "details_order_id_id_fkey",
+    },
+    {
+      "condition": ""orders"."tenant_id" = "customers"."tenant_id" AND "orders"."customer_id" = "customers"."id"",
+      "joinType": "MANY_TO_ONE",
+      "models": [
+        "orders",
+        "customers",
+      ],
+      "name": "orders_tenant_id_customer_id_tenant_id_id_fkey",
+    },
+  ],
+  "views": [],
+}
+`;

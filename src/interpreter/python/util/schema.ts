@@ -113,21 +113,18 @@ def field_type(series):
     return dtype + ' (observed cell types, up to 32 non-null cells: ' + ', '.join(sorted(observed)) + ')' if has_arrays else dtype
 
 result = [
-    {'name': name, 'columnCount': len(frame.columns), 'indexes': [],
-     'fields': [{'name': column, 'type': field_type(frame[column])} for column in frame.columns]}
+    {'name': name, 'tableReference': {'table': name},
+     'columns': [{'name': column, 'type': field_type(frame[column])} for column in frame.columns]}
     for name, frame in tables.items()
 ]`;
 
 export const tableSchema = z
   .object({
     name: z.string(),
-    columnCount: z.number().int().nonnegative(),
-    indexes: z.array(z.never()),
-    fields: z.array(z.object({ name: z.string(), type: z.string() })),
+    tableReference: z.object({ table: z.string() }),
+    columns: z.array(z.object({ name: z.string(), type: z.string() })),
   })
   .refine(
-    (table) =>
-      table.columnCount === table.fields.length &&
-      new Set(table.fields.map((f) => f.name)).size === table.fields.length,
+    (table) => new Set(table.columns.map((f) => f.name)).size === table.columns.length,
     'Invalid Python table columns'
   );

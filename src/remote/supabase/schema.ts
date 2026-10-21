@@ -2,7 +2,7 @@
 import { rowObjects2Schema } from '../../util/schema';
 import { sqlStringLiteral, sqlUnionAll } from '../../util/sql';
 
-import type { OldSchema } from '../../types';
+import type { Schema } from '../../types';
 
 /** Only the public schema is read — Supabase user tables live there by default. */
 export const SUPABASE_SCHEMA = 'public';
@@ -86,7 +86,7 @@ WHERE c.contype = 'f'`.trim();
 /** One read-only catalog query for fields, indexes and foreign keys. */
 export async function getSupabaseSchema(
   runQuery: (sql: string) => Promise<Record<string, unknown>[]>
-): Promise<OldSchema> {
+): Promise<Schema> {
   const sql = `WITH exposed AS (\n${exposedSQL(SUPABASE_SCHEMA)}\n)\n${sqlUnionAll([
     tablesSQL(),
     columnsSQL(),

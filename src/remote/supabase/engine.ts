@@ -16,13 +16,13 @@ import { profileTables } from './profile';
 import { getSupabaseSchema } from './schema';
 
 import type {
-  OldProfile,
+  Profile,
   ProfileOptions,
   AnalysisEngine,
   DataContext,
   DataSourceConfig,
   LLMConfig,
-  OldSchema,
+  Schema,
   ExecutionOptions,
   ExecutionResult,
 } from '../../types';
@@ -62,12 +62,12 @@ export class SupabaseEngine implements AnalysisEngine {
     this.connection = config.options;
   }
 
-  async schema(): Promise<OldSchema> {
+  async schema(): Promise<Schema> {
     if (!this.connection) throw new Error('No data loaded. Please call source() first.');
     return getSupabaseSchema((sql) => this.runQuery(sql));
   }
 
-  async profile(schema: OldSchema, options: ProfileOptions = {}): Promise<OldProfile> {
+  async profile(schema: Schema, options: ProfileOptions = {}): Promise<Profile> {
     if (!this.connection) throw new Error('No data loaded. Please call source() first.');
     return profileTables(
       (sql) => this.runQuery(sql),

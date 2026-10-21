@@ -1,26 +1,37 @@
 import { z } from 'zod';
 
-import { jsonValue, schemaStructure } from './schema';
+import { jsonValue } from './schema';
 
-import type { Metric, MetricConfig, ProfileOptions, ParsedProfileOptions, LogicalType, OldProfile } from '../types';
+import type {
+  Metric,
+  MetricConfig,
+  ProfileOptions,
+  ParsedProfileOptions,
+  LogicalType,
+  Profile,
+  Schema,
+} from '../types';
 
-const tableStructure = schemaStructure.shape.tables.element;
-export const profileMetadataSchema = schemaStructure
-  .extend({
-    generatedAt: z.number().int().min(0).max(8_640_000_000_000_000),
-    tables: z.array(
-      tableStructure.extend({
+export type MetricField = Schema['models'][number]['columns'][number] & { logicalType: LogicalType };
+
+export const profileMetadataSchema = z
+  .object({
+    models: z.array(
+      z.object({
+        name: z.string(),
         metrics: z.record(jsonValue),
-        fields: z.array(
-          tableStructure.shape.fields.element.extend({
-            logicalType: z.enum(['numeric', 'string', 'boolean', 'date', 'unknown']),
+        columns: z.array(
+          z.object({
+            name: z.string(),
             metrics: z.record(jsonValue),
+            properties: z.object({ logicalType: z.enum(['numeric', 'string', 'boolean', 'date', 'unknown']) }),
           })
         ),
       })
     ),
   })
-  .transform((value) => value as OldProfile);
+  .strict()
+  .transform((value) => value as Profile);
 
 export function parseMetricConfig(config: MetricConfig): Exclude<MetricConfig, string> {
   return typeof config === 'string' ? { id: config } : config;

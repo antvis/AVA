@@ -32,7 +32,7 @@ FROM columns c`.trim();
 
 /** Read ordinary and constraint-backed indexes in key order. */
 function indexesSQL(): string {
-  // ponytail: OldSchema has no predicates/expressions; skip partial/expression indexes until it does.
+  // ponytail: Schema has no predicates/expressions; skip partial/expression indexes until it does.
   return `
 SELECT 'index-column' AS kind, i.table_name,
   json_object(
@@ -186,8 +186,8 @@ export async function loadSQLite(options: SQLiteSourceOptions): Promise<LoadedSo
     getSchema: async (conn) => {
       const reader = await conn.runAndReadAll(`SELECT * FROM ${sqliteQuerySQL(schemaSQL(tableNames))}`);
       const schema = rowObjects2Schema(reader.getRowObjectsJson());
-      for (const table of schema.tables) {
-        for (const field of table.fields) {
+      for (const table of schema.models) {
+        for (const field of table.columns) {
           const column = columnsByTable.get(table.name)!.find((column) => column.name === field.name)!;
           // Retain native spelling only when it describes the exposed execution type.
           if (duckDBType(field.type) !== column.resolvedType) field.type = column.resolvedType;

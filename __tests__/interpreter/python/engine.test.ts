@@ -2,12 +2,11 @@ import { afterEach, describe, expect, it, vi } from 'vitest';
 
 import { PythonEngine } from '../../../src/interpreter/python/engine';
 import * as pythonExecutor from '../../../src/interpreter/python/util/execute';
-import { schemaMetadataSchema } from '../../../src/util/schema';
 
-import type { OldSchema } from '../../../src/types';
+import type { Schema } from '../../../src/types';
 
 const source = { type: 'json' as const, options: { data: [{ value: 2 }] } };
-const table = { name: 'data', columnCount: 1, indexes: [], fields: [{ name: 'value', type: 'int64' }] };
+const table = { name: 'data', columns: [{ name: 'value', type: 'int64' }], tableReference: { table: 'data' } };
 const metadata = { data: [table], schema: [], rowCount: 1 };
 const answer = { data: [{ value: 2 }], schema: [{ name: 'value', type: 'int64' }], rowCount: 1 };
 
@@ -32,13 +31,7 @@ describe('python/engine', () => {
       const execute = vi.fn();
       const engine = new PythonEngine({ model: 'unused' }, { execute });
       await expect(
-        engine.load({
-          type: 'excel',
-          options: {
-            path: 'data.xlsx',
-            sheets: [{ sheet: 'Sales', [key]: false }],
-          },
-        })
+        engine.load({ type: 'excel', options: { path: 'data.xlsx', sheets: [{ sheet: 'Sales', [key]: false }] } })
       ).rejects.toThrow('Unrecognized key');
       expect(execute).not.toHaveBeenCalled();
     }
@@ -65,8 +58,8 @@ describe('python/engine', () => {
     const engine = new PythonEngine({ model: 'unused' }, { execute });
     const expectUnloaded = async () => {
       await expect(engine.execute('result = 1')).rejects.toThrow('No data loaded');
-      await expect(engine.profile({ tables: [] })).rejects.toThrow('No data loaded');
-      await expect(engine.getDSL('sum', { schema: { tables: [] } })).rejects.toThrow('No data loaded');
+      await expect(engine.profile({ models: [] })).rejects.toThrow('No data loaded');
+      await expect(engine.getDSL('sum', { schema: { models: [] } })).rejects.toThrow('No data loaded');
     };
     await expectUnloaded();
     await engine.load(source);
@@ -100,8 +93,8 @@ describe('python/engine', () => {
 describe('python/engine metadata', () => {
   const llm = { model: 'unused' };
   const source = { type: 'json' as const, options: { data: [{ value: 2 }, { value: 4 }] } };
-  const schema: OldSchema = {
-    tables: [{ name: 'data', columnCount: 1, fields: [{ name: 'value', type: 'number' }], indexes: [] }],
+  const schema: Schema = {
+    models: [{ name: 'data', columns: [{ name: 'value', type: 'number' }], tableReference: { table: 'data' } }],
   };
 
   it.skipIf(process.env.AVA_PYTHON_LOCAL_TEST !== '1')(
@@ -111,20 +104,22 @@ describe('python/engine metadata', () => {
       try {
         await engine.load(source);
         const savedSchema = await engine.schema();
-        savedSchema.tables[0].fields[0].nullable = false;
-        savedSchema.tables[0].indexes = [{ name: 'idx', columns: ['value'], unique: true }];
-        savedSchema.relations = [
+        savedSchema.models[0].columns[0].notNull = true;
+        savedSchema.models[0].uniqueKeys = ['value'];
+        savedSchema.relationships = [
           {
-            kind: 'foreign-key',
-            from: { table: 'data', columns: ['value'] },
-            to: { table: 'data', columns: ['value'] },
+            name: 'fk:["data",["value"],"data",["value"]]',
+            models: ['data', 'data'],
+            joinType: 'MANY_TO_ONE',
+            condition: '"data"."value" = "data"."value"',
           },
         ];
         await engine.load(source);
         const computed = await engine.profile(savedSchema, { metrics: ['row_count', 'mean'] });
-        expect(schemaMetadataSchema.parse(computed)).toEqual(savedSchema);
-        expect(computed.tables[0].metrics).toEqual({ row_count: 2 });
-        expect(computed.tables[0].fields[0].metrics).toEqual({ mean: 3 });
+        expect(savedSchema.models[0].uniqueKeys).toEqual(['value']);
+        expect(computed).not.toHaveProperty('tableReference');
+        expect(computed.models[0].metrics).toEqual({ row_count: 2 });
+        expect(computed.models[0].columns[0].metrics).toEqual({ mean: 3 });
       } finally {
         await engine.dispose();
       }
@@ -134,10 +129,15 @@ describe('python/engine metadata', () => {
 
   it('skips Python metadata execution and retains supplied structure when profiling', async () => {
     const input = structuredClone(schema);
-    input.tables[0].fields[0].nullable = false;
-    input.tables[0].indexes.push({ name: 'idx', columns: ['value'], unique: true });
-    input.relations = [
-      { kind: 'foreign-key', from: { table: 'data', columns: ['value'] }, to: { table: 'data', columns: ['value'] } },
+    input.models[0].columns[0].notNull = true;
+    input.models[0].uniqueKeys = ['value'];
+    input.relationships = [
+      {
+        name: 'fk:["data",["value"],"data",["value"]]',
+        models: ['data', 'data'],
+        joinType: 'MANY_TO_ONE',
+        condition: '"data"."value" = "data"."value"',
+      },
     ];
     const execute = vi.fn();
     const engine = new PythonEngine(llm, { execute });
@@ -146,14 +146,15 @@ describe('python/engine metadata', () => {
       expect(execute).not.toHaveBeenCalled();
       const tables = [
         {
-          ...input.tables[0],
+          name: input.models[0].name,
           metrics: { row_count: 2 },
-          fields: [{ ...input.tables[0].fields[0], logicalType: 'numeric', metrics: {} }],
+          columns: [{ name: input.models[0].columns[0].name, properties: { logicalType: 'numeric' }, metrics: {} }],
         },
       ];
       execute.mockResolvedValue({ schema: [], data: tables, rowCount: 1 });
       const computed = await engine.profile(input, { metrics: ['row_count'] });
-      expect(schemaMetadataSchema.parse(computed)).toEqual(input);
+      expect(computed).toEqual({ models: tables });
+      expect(input.models[0].uniqueKeys).toEqual(['value']);
       expect(execute).toHaveBeenCalledOnce();
       expect(execute.mock.calls[0][0]).not.toContain('def field_type');
       execute.mockResolvedValue({ schema: [{ name: 'value' }], data: [{ value: 2 }], rowCount: 1 });

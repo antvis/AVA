@@ -6,7 +6,7 @@
  *
  * Known limitations:
  * - **No indexes or constraints**: The extension does not map MongoDB indexes to
- *   duckdb_indexes()/duckdb_constraints(), so schema.indexes and schema.relations
+ *   duckdb_indexes()/duckdb_constraints(), so schema keys and relationships
  *   are always empty. Pushed-down filters still use indexes server-side; the gap
  *   is that the LLM cannot see them for query planning.
  * - **No remote catalog query**: The extension exposes only mongo_scan (data) and
@@ -72,9 +72,7 @@ export async function loadMongoDB(options: MongoDBSourceOptions): Promise<Loaded
       await conn.run('INSTALL mongo FROM community');
       await conn.run('LOAD mongo');
       await conn.run('SET mongo_enable_direct_scan = false');
-      await conn.run(
-        `ATTACH ${sqlStringLiteral(buildConnectionString(options))} AS ${ATTACH_ALIAS} (TYPE MONGO)`
-      );
+      await conn.run(`ATTACH ${sqlStringLiteral(buildConnectionString(options))} AS ${ATTACH_ALIAS} (TYPE MONGO)`);
 
       const tablesReader = await conn.runAndReadAll(
         `SELECT table_name FROM information_schema.tables

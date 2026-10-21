@@ -1,46 +1,39 @@
-/**
- * Schema helpers: assemble structural metadata and infer in-memory schemas.
- * Database queries belong to the engines; prompt formatting belongs to context.
- */
-
+/** Catalog discovery and structural validation. */
 import { z } from 'zod';
 
-import type { OldSchema, TableIndex, TableRelation, TableSchema } from '../types';
+import { sqlIdentifier } from './sql';
 
-/** Metadata snapshots must survive JSON persistence and process boundaries. */
+import type { Schema } from '../types';
+
 export const jsonValue: z.ZodType<unknown> = z.lazy(() =>
   z.union([z.string(), z.number().finite(), z.boolean(), z.null(), z.array(jsonValue), z.record(jsonValue)])
 );
-
-const field = z.object({ name: z.string(), type: z.string(), nullable: z.boolean().optional() });
-const columns = z.array(z.string());
-const index = z.object({
-  name: z.string(),
-  columns,
-  unique: z.boolean(),
-  primary: z.boolean().optional(),
+const name = z.string();
+const key = z.union([name, z.array(name).nonempty()]);
+export const schemaStructure = z.object({
+  models: z.array(
+    z.object({
+      name,
+      tableReference: z.object({ catalog: name.optional(), schema: name.optional(), table: name }),
+      columns: z.array(z.object({ name, type: name, notNull: z.boolean().optional() })),
+      primaryKey: key.optional(),
+      uniqueKeys: z.array(key).optional(),
+    })
+  ),
+  relationships: z
+    .array(
+      z.object({
+        name,
+        models: z.tuple([name, name]),
+        joinType: z.enum(['ONE_TO_ONE', 'MANY_TO_ONE']),
+        condition: name,
+      })
+    )
+    .optional(),
+  views: z.array(z.object({ name, statement: name })).optional(),
 });
-const endpoint = z.object({ table: z.string(), columns });
-const relation = z.object({
-  name: z.string().optional(),
-  kind: z.literal('foreign-key'),
-  from: endpoint,
-  to: endpoint,
-});
-const table = z.object({
-  name: z.string(),
-  columnCount: z.number().int().nonnegative(),
-  fields: z.array(field),
-  indexes: z.array(index),
-});
-export const schemaStructure = z.object({ tables: z.array(table), relations: z.array(relation).optional() });
+export const schemaMetadataSchema = schemaStructure.transform((value) => value as Schema);
 
-// Object parsing also projects profiles (and CLI schema output) to pure structure.
-export const schemaMetadataSchema = schemaStructure.transform((value) => value as OldSchema);
-
-/**
- * Infer field type from sample values
- */
 function inferType(values: any[]): 'number' | 'string' | 'date' | 'boolean' | 'unknown' {
   const nonNullValues = values.filter((v) => v != null && v !== '');
 
@@ -71,32 +64,21 @@ function inferType(values: any[]): 'number' | 'string' | 'date' | 'boolean' | 'u
   return 'string';
 }
 
-/**
- * Extract metadata from in-memory rows as a single `data` table.
- */
-export function extractDataSchema(data: any[]): OldSchema {
-  const table: TableSchema = {
-    name: 'data',
-    columnCount: 0,
-    fields: [],
-    indexes: [],
+/** Infer a single in-memory model without inventing a database namespace. */
+export function extractDataSchema(data: any[]): Schema {
+  return {
+    models: [
+      {
+        name: 'data',
+        tableReference: { table: 'data' },
+        columns: Object.keys(data?.[0] ?? {}).map((name) => ({ name, type: inferType(data.map((row) => row[name])) })),
+      },
+    ],
   };
-  if (!data || data.length === 0) {
-    return { tables: [table] };
-  }
-
-  const columns = Object.keys(data[0]);
-  table.columnCount = columns.length;
-  table.fields = columns.map((name) => ({
-    name,
-    type: inferType(data.map((row) => row[name])),
-  }));
-  return { tables: [table] };
 }
 
-/** Read column names from a plain index. */
+/** Extract plain index keys; expression indexes are not model identifiers. */
 function indexColumns(definition: string): string[] | undefined {
-  // Capture the index key list after ON table [USING method], not parentheses in index/table names.
   const identifier = '(?:"(?:[^"]|"")*"|[^\\s"().]+)';
   const match = definition.match(
     new RegExp(`\\bON\\s+(?:ONLY\\s+)?${identifier}(?:\\.${identifier})*(?:\\s+USING\\s+\\w+)?\\s*\\((.*)`, 'i')
@@ -105,7 +87,6 @@ function indexColumns(definition: string): string[] | undefined {
   const columns: string[] = [];
   let rest = match[1];
   while (rest) {
-    // Quoted names can contain commas/parentheses. ASC/DESC and NULLS order are not part of the name.
     const column = rest.match(
       /^\s*("(?:[^"]|"")*"|[\w$]+)(?:\s+(?:ASC|DESC))?(?:\s+NULLS\s+(?:FIRST|LAST))?\s*([,)])/i
     );
@@ -117,95 +98,142 @@ function indexColumns(definition: string): string[] | undefined {
   return undefined;
 }
 
+/** Extract the query from canonical catalog DDL without interpreting the query's SQL dialect. */
+function viewStatement(sql: string): string {
+  const identifier = '(?:"(?:[^"]|"")*"|[^\\s"().,]+)';
+  const qualified = `${identifier}(?:\\.${identifier})*`;
+  const columns = `(?:\\s*\\(\\s*(${identifier}(?:\\s*,\\s*${identifier})*)\\s*\\))?`;
+  const match = sql.match(
+    new RegExp(
+      `^CREATE\\s+(?:OR\\s+REPLACE\\s+)?(?:TEMP(?:ORARY)?\\s+)?VIEW\\s+(?:IF\\s+NOT\\s+EXISTS\\s+)?${qualified}${columns}\\s+AS\\s+([\\s\\S]+)$`,
+      'i'
+    )
+  );
+  if (!match) throw new Error('Unsupported catalog view definition');
+  const query = match[2].trim().replace(/;$/, '').trimEnd();
+  return match[1] ? `SELECT * FROM (${query}) AS "__ava_view"(${match[1]})` : query;
+}
+
 type Metadata = Record<string, any>;
 const bool = (value: unknown): boolean => value === true || value === 1 || value === '1';
 
-/** Build a schema from metadata rows. */
-export function rowObjects2Schema(rows: Record<string, unknown>[]): OldSchema {
-  const names = [...new Set(rows.map((row) => String(row.table_name)))].sort();
-  const tables = new Map<string, TableSchema>(
-    names.map((name) => [name, { name, columnCount: 0, fields: [], indexes: [] }])
-  );
-  const relations: TableRelation[] = [];
+/** Build the new Schema directly from tagged catalog rows. */
+export function rowObjects2Schema(rows: Record<string, unknown>[]): Schema {
+  const models = new Map<string, Schema['models'][number]>();
   const columns = new Map<string, Metadata[]>();
-  const parts = new Map<string, { table: TableSchema; kind: string; rows: Metadata[] }>();
+  const keys = new Map<string, Metadata[]>();
+  const parts = new Map<string, { table: string; kind: string; rows: Metadata[] }>();
+  const foreignKeys: {
+    name?: string;
+    table: string;
+    columns: string[];
+    referencedTable: string;
+    referencedColumns: string[];
+  }[] = [];
+  const views: NonNullable<Schema['views']> = [];
+  const addKey = (table: string, metadata: Metadata) => keys.set(table, [...(keys.get(table) ?? []), metadata]);
   for (const row of rows) {
-    const table = tables.get(String(row.table_name));
-    if (!table) continue;
+    const table = String(row.table_name);
     const meta: Metadata = typeof row.metadata === 'string' ? JSON.parse(row.metadata) : row.metadata;
-    if (row.kind === 'column') {
-      const fields = columns.get(table.name) ?? [];
-      fields.push(meta);
-      columns.set(table.name, fields);
-    } else if (row.kind === 'index') {
-      const indexed = meta.columns ?? indexColumns(meta.definition ?? '');
-      // Skip indexes that do not contain plain columns.
-      if (!indexed) continue;
-      table.indexes.push({
-        name: meta.name,
-        columns: indexed,
-        unique: bool(meta.unique),
-        primary: bool(meta.primary),
-      });
-    } else if (row.kind === 'foreign-key') {
-      relations.push({
-        name: meta.name,
-        kind: 'foreign-key',
-        from: { table: table.name, columns: meta.columns },
-        to: { table: meta.referencedTable, columns: meta.referencedColumns },
-      });
-    } else if (row.kind === 'index-column' || row.kind === 'foreign-key-column') {
-      const key = JSON.stringify([table.name, row.kind, meta.name]);
-      const group = parts.get(key) ?? { table, kind: String(row.kind), rows: [] };
-      group.rows.push(meta);
-      parts.set(key, group);
+    const model = models.get(table) ?? { name: table, tableReference: { table }, columns: [] };
+    models.set(table, model);
+    if (meta.catalog !== undefined) model.tableReference.catalog = meta.catalog;
+    if (meta.schema !== undefined) model.tableReference.schema = meta.schema;
+    if (row.kind === 'column') columns.set(table, [...(columns.get(table) ?? []), meta]);
+    else if (row.kind === 'index' && bool(meta.unique)) {
+      const names = meta.columns ?? indexColumns(meta.definition ?? '');
+      if (names) addKey(table, { ...meta, columns: names });
+    } else if (row.kind === 'foreign-key') foreignKeys.push({ ...meta, table } as (typeof foreignKeys)[number]);
+    else if (row.kind === 'index-column' || row.kind === 'foreign-key-column') {
+      const id = JSON.stringify([table, row.kind, meta.name]);
+      const part = parts.get(id) ?? { table, kind: String(row.kind), rows: [] };
+      part.rows.push(meta);
+      parts.set(id, part);
+    } else if (row.kind === 'view') {
+      const statement = meta.statement ?? (meta.sql ? viewStatement(meta.sql) : undefined);
+      if (statement) views.push({ name: table, statement });
     }
   }
-  for (const { table, kind, rows: entries } of parts.values()) {
-    entries.sort((a, b) => Number(a.position) - Number(b.position));
-    if (entries.some((entry, i) => !entry.column || Number(entry.position) !== i + 1)) continue;
-    const first = entries[0];
-    if (kind === 'index-column') {
-      const index: TableIndex = {
+  for (const { table, kind, rows } of parts.values()) {
+    rows.sort((a, b) => Number(a.position) - Number(b.position));
+    if (rows.some((row, i) => !row.column || Number(row.position) !== i + 1)) continue;
+    const first = rows[0];
+    if (kind === 'index-column' && bool(first.unique))
+      addKey(table, { ...first, columns: rows.map((row) => row.column) });
+    else if (kind === 'foreign-key-column')
+      foreignKeys.push({
         name: first.name,
-        columns: entries.map((e) => e.column),
-        unique: bool(first.unique),
-        primary: bool(first.primary),
-      };
-      table.indexes.push(index);
-    } else {
-      relations.push({
-        name: first.name,
-        kind: 'foreign-key',
-        from: { table: table.name, columns: entries.map((e) => e.column) },
-        to: { table: first.referencedTable, columns: entries.map((e) => e.referencedColumn) },
+        table,
+        columns: rows.map((row) => row.column),
+        referencedTable: first.referencedTable,
+        referencedColumns: rows.map((row) => row.referencedColumn),
       });
-    }
   }
-  for (const table of tables.values()) {
-    table.fields = (columns.get(table.name) ?? [])
+  const validColumns = (table: string, names: string[]) =>
+    Array.isArray(names) &&
+    names.length > 0 &&
+    new Set(names).size === names.length &&
+    names.every((name) => models.get(table)?.columns.some((column) => column.name === name));
+  const key = (names: string[]) => (names.length === 1 ? names[0] : (names as [string, ...string[]]));
+  for (const model of models.values()) {
+    model.columns = (columns.get(model.name) ?? [])
       .sort((a, b) => Number(a.position) - Number(b.position))
-      .map((field) => ({ name: field.name, type: field.type, nullable: bool(field.nullable) }));
-    table.columnCount = table.fields.length;
-    table.indexes.sort((a, b) => a.name.localeCompare(b.name));
+      .map((column) => ({
+        name: column.name,
+        type: column.type,
+        ...(column.nullable === undefined || column.nullable === null ? {} : { notNull: !bool(column.nullable) }),
+      }));
   }
-  const exposedRelations = relations
-    .filter((relation) => {
-      const source = tables.get(relation.from.table);
-      const target = tables.get(relation.to.table);
-      const from = relation.from.columns;
-      const to = relation.to.columns;
-      return (
-        source &&
-        target &&
-        Array.isArray(from) &&
-        Array.isArray(to) &&
-        from.length > 0 &&
-        from.length === to.length &&
-        from.every((name) => source.fields.some((field) => field.name === name)) &&
-        to.every((name) => target.fields.some((field) => field.name === name))
-      );
-    })
-    .sort((a, b) => a.from.table.localeCompare(b.from.table) || (a.name ?? '').localeCompare(b.name ?? ''));
-  return { tables: [...tables.values()], relations: exposedRelations };
+  for (const model of models.values()) {
+    const declared = (keys.get(model.name) ?? []).filter((key) => validColumns(model.name, key.columns));
+    const primary = declared.find((key) => bool(key.primary));
+    if (primary) model.primaryKey = key(primary.columns);
+    const alternatives = declared.filter((key) => !bool(key.primary));
+    if (alternatives.length) model.uniqueKeys = alternatives.map((entry) => key(entry.columns));
+  }
+  const uniqueOn = (table: string, columns: string[]) => {
+    const model = models.get(table);
+    return (
+      model &&
+      [model.primaryKey, ...(model.uniqueKeys ?? [])].some(
+        (key) =>
+          key !== undefined && (typeof key === 'string' ? [key] : key).every((column) => columns.includes(column))
+      )
+    );
+  };
+  const relationships: NonNullable<Schema['relationships']> = [];
+  const usedNames = new Set<string>();
+  for (const fk of foreignKeys.sort(
+    (a, b) => a.table.localeCompare(b.table) || (a.name ?? '').localeCompare(b.name ?? '')
+  )) {
+    if (
+      !validColumns(fk.table, fk.columns) ||
+      !validColumns(fk.referencedTable, fk.referencedColumns) ||
+      fk.columns.length !== fk.referencedColumns.length ||
+      !uniqueOn(fk.referencedTable, fk.referencedColumns)
+    )
+      continue;
+    const base = fk.name ?? `fk:${JSON.stringify([fk.table, fk.columns, fk.referencedTable, fk.referencedColumns])}`;
+    let name = base;
+    for (let i = 2; usedNames.has(name); i += 1) name = `${base}_${i}`;
+    usedNames.add(name);
+    relationships.push({
+      name,
+      models: [fk.table, fk.referencedTable],
+      joinType: uniqueOn(fk.table, fk.columns) ? 'ONE_TO_ONE' : 'MANY_TO_ONE',
+      condition: fk.columns
+        .map(
+          (column, i) =>
+            `${sqlIdentifier(fk.table)}.${sqlIdentifier(column)} = ${sqlIdentifier(fk.referencedTable)}.${sqlIdentifier(
+              fk.referencedColumns[i]
+            )}`
+        )
+        .join(' AND '),
+    });
+  }
+  return schemaMetadataSchema.parse({
+    models: [...models.values()].sort((a, b) => a.name.localeCompare(b.name)),
+    relationships,
+    views,
+  });
 }

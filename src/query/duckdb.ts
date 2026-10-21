@@ -14,7 +14,7 @@ export class DuckDBQueryDialect implements QueryDialect<DuckDBConnection> {
     const prompt = `You are a SQL expert. Given the following dataset profile and user query, generate a SQL query to answer the question.
 
 Dataset Context:
-${profile ? stringifyProfile(profile) : stringifySchema(schema)}
+${stringifySchema(schema) + (profile ? '\n' + stringifyProfile(profile) : '')}
 
 User Query: ${query}
 

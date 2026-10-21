@@ -23,10 +23,7 @@ describe('ClickHouse validation requests', () => {
     await expect(dialect.validateDSL(sql, client)).resolves.toBe("SELECT * FROM (SELECT ';' AS value)");
     expect(query).toHaveBeenNthCalledWith(
       1,
-      expect.objectContaining({
-        query_params: { sql },
-        clickhouse_settings: { readonly: '1' },
-      })
+      expect.objectContaining({ query_params: { sql }, clickhouse_settings: { readonly: '1' } })
     );
     expect(query.mock.calls[0][0].query).not.toContain(sql);
     expect(query).toHaveBeenLastCalledWith(
@@ -59,7 +56,7 @@ describe('ClickHouse query generation', () => {
     ["SELECT '```' AS value", "SELECT '```' AS value"],
   ])('extracts SQL without corrupting literals: %s', async (text, expected) => {
     vi.mocked(generateText).mockResolvedValue({ text, usage: {} } as never);
-    await expect(dialect.getDSL('query', { schema: { tables: [] } })).resolves.toBe(expected);
+    await expect(dialect.getDSL('query', { schema: { models: [] } })).resolves.toBe(expected);
   });
 
   it('passes schema context, retries, and token usage through', async () => {
@@ -69,14 +66,17 @@ describe('ClickHouse query generation', () => {
     vi.mocked(generateText).mockResolvedValue({ text: 'SELECT 1', usage } as never);
     await new ClickHouseQueryDialect(config).getDSL('count rows', {
       schema: {
-        tables: [{ name: 'orders', indexes: [], fields: [{ name: 'amount', type: 'UInt32' }], columnCount: 1 }],
+        models: [
+          {
+            name: 'orders',
+            columns: [{ name: 'amount', type: 'UInt32' }],
+            tableReference: { catalog: 'default', table: 'orders' },
+          },
+        ],
       },
     });
     expect(generateText).toHaveBeenCalledWith(
-      expect.objectContaining({
-        maxRetries: 0,
-        prompt: expect.stringContaining('orders'),
-      })
+      expect.objectContaining({ maxRetries: 0, prompt: expect.stringContaining('orders') })
     );
     expect(onQueryUsage).toHaveBeenCalledWith(usage);
   });
@@ -84,17 +84,11 @@ describe('ClickHouse query generation', () => {
   it('uses the profile when supplied', async () => {
     vi.mocked(generateText).mockResolvedValue({ text: 'SELECT 1', usage: {} } as never);
     await dialect.getDSL('count rows', {
-      schema: { tables: [] },
-      profile: {
-        tables: [{ name: 'profile_table', indexes: [], fields: [], columnCount: 0, metrics: { row_count: 42 } }],
-        generatedAt: 0,
-      },
+      schema: { models: [] },
+      profile: { models: [{ name: 'profile_table', columns: [], metrics: { row_count: 42 } }] },
     });
     expect(generateText).toHaveBeenCalledWith(
-      expect.objectContaining({
-        maxRetries: 3,
-        prompt: expect.stringContaining('profile_table'),
-      })
+      expect.objectContaining({ maxRetries: 3, prompt: expect.stringContaining('profile_table') })
     );
   });
 });

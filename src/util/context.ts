@@ -1,6 +1,6 @@
 import { sqlIdentifier } from './sql';
 
-import type { LogicalType, OldProfile, OldSchema, TableProfile, TableRelation, TableSchema } from '../types';
+import type { LogicalType, Profile, Schema } from '../types';
 
 const METRIC_LABELS: Record<string, string> = {
   row_count: 'Observed rows',
@@ -34,92 +34,29 @@ function stringifyMetrics(metrics: Record<string, unknown>, logicalType?: Logica
     .join('');
 }
 
-function isValidRelation({ from, to, kind }: TableRelation, tables: TableSchema[]): boolean {
-  const validEndpoints = [from, to].every((endpoint) => {
-    const table = tables.find((table) => table.name === endpoint?.table);
-    const columns = endpoint?.columns;
-
-    return (
-      !!table &&
-      Array.isArray(columns) &&
-      columns.length > 0 &&
-      new Set(columns).size === columns.length &&
-      columns.every((column) => table.fields.some((field) => field.name === column))
-    );
-  });
-
-  return validEndpoints && kind === 'foreign-key' && from.columns.length === to.columns.length;
+/** Describe catalog structure without converting it to a legacy table format. */
+export function stringifySchema(schema: Schema): string {
+  return `Dataset Info: ${schema.models.length} model(s)\n${JSON.stringify(schema, null, 2)}`;
 }
 
-/** Describe tables, fields, and indexes. */
-function stringifyTables(tables: (TableSchema | TableProfile)[], includeObservations = false): string {
-  return tables
-    .map((table) => {
-      const fields = table.fields
+/** Observations are independent of catalog structure and accompany it in prompts. */
+export function stringifyProfile(profile: Profile): string {
+  return `Dataset Profile: ${profile.models.length} model(s)
+${profile.models
+  .map(
+    (model) =>
+      `Model ${sqlIdentifier(model.name)}:\n${stringifyMetrics(model.metrics)}Columns:\n${model.columns
         .map(
-          (field) =>
-            `- ${sqlIdentifier(field.name)} (${field.type})${field.nullable === false ? ' NOT NULL' : ''}\n` +
-            (includeObservations && 'logicalType' in field
-              ? `  Logical type: ${field.logicalType}\n${stringifyMetrics(field.metrics, field.logicalType)}`
-              : '')
+          (column) =>
+            `- ${sqlIdentifier(column.name)}\n  Logical type: ${column.properties.logicalType}\n${stringifyMetrics(
+              column.metrics,
+              column.properties.logicalType
+            )}`
         )
-        .join('');
-      const indexes = table.indexes
-        .map((index) => {
-          const prefix = index.primary ? 'PRIMARY KEY ' : index.unique ? 'UNIQUE ' : '';
-          return `  - ${prefix}${sqlIdentifier(index.name)} (${index.columns.map(sqlIdentifier).join(', ')})\n`;
-        })
-        .join('');
-
-      return `Table ${sqlIdentifier(table.name)}:
-- Columns: ${table.columnCount}
-${includeObservations && 'metrics' in table ? stringifyMetrics(table.metrics) : ''}Fields:
-${fields}${indexes ? `Indexes:\n${indexes}` : ''}`;
-    })
-    .join('');
-}
-
-/** Describe valid table relations. */
-function stringifyRelations(relations: TableRelation[], tables: TableSchema[]): string {
-  if (!relations.length) return '';
-
-  const validRelations = relations.filter((relation) => isValidRelation(relation, tables));
-  if (validRelations.length === 0) return '';
-
-  const relationText = validRelations
-    .map((relation) => {
-      const label = relation.name ? `${sqlIdentifier(relation.name)}: ` : '';
-      const endpoints = [relation.from, relation.to].map(
-        ({ table, columns }) => `${sqlIdentifier(table)} (${columns.map(sqlIdentifier).join(', ')})`
-      );
-      return `  - [${relation.kind}] ${label}${endpoints.join(' REFERENCES ')}\n`;
-    })
-    .join('');
-
-  return `Relations (declared; pair columns by position):
-${relationText}
-Notes:
-- For joins, prefer the declared relations and match ALL paired columns of composite relations.
-- These relations describe database foreign-key constraints, which do not imply one-to-one cardinality; avoid double-counting when aggregating across joins.
-- Choose the JOIN type according to the question and nullability.
-- Missing declarations mean relations are unknown, not that same-named columns are related.
-- Only reference tables exposed in this schema.
-`;
-}
-
-/** Describe a dataset for the language model. */
-export function stringifySchema({ tables, relations = [] }: OldSchema): string {
-  return `Dataset Info: ${tables.length} table(s)
-${stringifyTables(tables)}
-${stringifyRelations(relations, tables)}`;
-}
-
-/** Format structural metadata and computed statistics for the model. */
-export function stringifyProfile(profile: OldProfile): string {
-  return `Dataset Profile: ${profile.tables.length} table(s)
-Observed at: ${new Date(profile.generatedAt).toISOString()}
-${stringifyTables(profile.tables, true)}
-${stringifyRelations(profile.relations ?? [], profile.tables)}Observation notes:
+        .join('')}`
+  )
+  .join('')}
+Observation notes:
 - Field names and logical types help interpret the data; business meaning, units, and categorical roles are not declared by these statistics. Verify them when needed.
 - Missing metrics were not computed or were omitted; null means no usable aggregate value. Zero and empty arrays are actual results.
 - Frequent values are observed examples, not an exhaustive list or an enum constraint. Their counts exclude nulls.

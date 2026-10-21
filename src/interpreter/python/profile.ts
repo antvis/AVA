@@ -1,6 +1,6 @@
 import { column, logicalTypes, table, TOP_VALUES_OPTIONS, validateMetricConfig } from '../../util/profile';
 
-import type { LogicalType, Metric, ParsedProfileOptions, OldSchema } from '../../types';
+import type { LogicalType, Metric, ParsedProfileOptions, Schema } from '../../types';
 
 /** Python expressions receive the same per-target context as JavaScript interpreter metrics. */
 export const BUILTIN_METRICS: Metric<string>[] = [
@@ -31,7 +31,7 @@ export const BUILTIN_METRICS: Metric<string>[] = [
 ];
 
 /** Build fixed pandas statistics; only metadata is returned to AVA. */
-export function profileCode(options: ParsedProfileOptions, schema: OldSchema): string {
+export function profileCode(options: ParsedProfileOptions, schema: Schema): string {
   const kinds: LogicalType[] = ['numeric', 'string', 'boolean', 'date', 'unknown'];
 
   const metrics = options.metrics.map((metric) => {
@@ -50,7 +50,11 @@ export function profileCode(options: ParsedProfileOptions, schema: OldSchema): s
     .join(',\n    ');
 
   return `import json
-result = json.loads(${JSON.stringify(JSON.stringify(schema.tables))})
+result = json.loads(${JSON.stringify(
+    JSON.stringify(
+      schema.models.map((model) => ({ name: model.name, columns: model.columns.map(({ name }) => ({ name })) }))
+    )
+  )})
 import math
 from collections import Counter
 from functools import cached_property
@@ -81,7 +85,7 @@ class Context:
     def __init__(self, frame, field):
         self.row_count = len(frame)
         self.series = frame[field['name']] if field is not None else None
-        self.kind = field['logicalType'] if field is not None else 'table'
+        self.kind = field['properties']['logicalType'] if field is not None else 'table'
         self.metric = None
 
     # Compute each intermediate only when requested, once per target.
@@ -110,10 +114,10 @@ for table in result:
     frame = tables[table['name']]
     table['metrics'] = {}
 
-    for field in table['fields']:
-        field.update(logicalType=logical_type(frame[field['name']]), metrics={})
+    for field in table['columns']:
+        field.update(properties={'logicalType': logical_type(frame[field['name']])}, metrics={})
 
-    targets = [(table['metrics'], None)] + [(field['metrics'], field) for field in table['fields']]
+    targets = [(table['metrics'], None)] + [(field['metrics'], field) for field in table['columns']]
 
     for output, field in targets:
         ctx = Context(frame, field)

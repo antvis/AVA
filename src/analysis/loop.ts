@@ -180,7 +180,7 @@ export const loopAnalysis: AnalysisStrategy = async (
   config,
   { context: { schema, profile }, engine, llm, emit }
 ) => {
-  const context = profile ? stringifyProfile(profile) : stringifySchema(schema);
+  const context = stringifySchema(schema) + (profile ? '\n' + stringifyProfile(profile) : '');
   const transcript: string[] = [];
   let sql: string | undefined;
   let result: ExecutionResult | undefined;

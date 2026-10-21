@@ -20,13 +20,13 @@ import { loadSource } from './loaders';
 import type { DuckDBConnection } from '@duckdb/node-api';
 import type {
   AnalysisEngine,
-  OldProfile,
+  Profile,
   ProfileOptions,
   DataContext,
   DataSourceConfig,
   LoadedSource,
   DuckDBEngineOptions,
-  OldSchema,
+  Schema,
   LLMConfig,
   ExecutionOptions,
   ExecutionResult,
@@ -135,13 +135,13 @@ export class DuckDBEngine implements AnalysisEngine {
     }
   }
 
-  async schema(): Promise<OldSchema> {
+  async schema(): Promise<Schema> {
     if (!this.source || !this.connection) throw new Error('No data loaded. Please call source() first.');
 
     return this.source.getSchema(this.connection);
   }
 
-  async profile(schema: OldSchema, options: ProfileOptions = {}): Promise<OldProfile> {
+  async profile(schema: Schema, options: ProfileOptions = {}): Promise<Profile> {
     if (!this.source || !this.connection) {
       throw new Error('No data loaded. Please call source() first.');
     }

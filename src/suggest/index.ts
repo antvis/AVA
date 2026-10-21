@@ -17,7 +17,7 @@ export async function generateSuggestions(
   { schema, profile }: DataContext,
   count: number = 3
 ): Promise<SuggestResult[]> {
-  const profileStr = profile ? stringifyProfile(profile) : stringifySchema(schema);
+  const profileStr = stringifySchema(schema) + (profile ? '\n' + stringifyProfile(profile) : '');
 
   const prompt = `You are a data analysis expert. Based on the following dataset information, suggest ${count} most meaningful analysis queries that would provide valuable insights.
 

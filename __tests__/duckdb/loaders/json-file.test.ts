@@ -44,31 +44,28 @@ describe('loaders/json-file', () => {
 
   it('loads a JSON file with a complete schema and original column order', async () => {
     engine = new DuckDBEngine(getLLMConfig());
-    await engine.load({
-      type: 'json-file',
-      options: { path: path.join(__dirname, '../../datasets/customers.json') },
-    });
+    await engine.load({ type: 'json-file', options: { path: path.join(__dirname, '../../datasets/customers.json') } });
     const schema = await engine.schema();
 
     expect(schema).toEqual({
-      tables: [
+      models: [
         {
           name: 'data',
-          columnCount: 8,
-          fields: [
-            { name: 'customer_id', type: 'BIGINT', nullable: true },
-            { name: 'name', type: 'VARCHAR', nullable: true },
-            { name: 'active', type: 'BOOLEAN', nullable: true },
-            { name: 'balance', type: 'DOUBLE', nullable: true },
-            { name: 'created_on', type: 'DATE', nullable: true },
-            { name: 'tags', type: 'VARCHAR[]', nullable: true },
-            { name: 'profile', type: 'STRUCT(city VARCHAR, score BIGINT)', nullable: true },
-            { name: 'note', type: 'VARCHAR', nullable: true },
+          columns: [
+            { name: 'customer_id', type: 'BIGINT', notNull: false },
+            { name: 'name', type: 'VARCHAR', notNull: false },
+            { name: 'active', type: 'BOOLEAN', notNull: false },
+            { name: 'balance', type: 'DOUBLE', notNull: false },
+            { name: 'created_on', type: 'DATE', notNull: false },
+            { name: 'tags', type: 'VARCHAR[]', notNull: false },
+            { name: 'profile', type: 'STRUCT(city VARCHAR, score BIGINT)', notNull: false },
+            { name: 'note', type: 'VARCHAR', notNull: false },
           ],
-          indexes: [],
+          tableReference: { catalog: 'memory', schema: 'main', table: 'data' },
         },
       ],
-      relations: [],
+      relationships: [],
+      views: schema.models.map(({ name }) => ({ name, statement: expect.any(String) })),
     });
   });
 });

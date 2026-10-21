@@ -15,10 +15,7 @@ describe('profile/csv-file', () => {
 
   it('profiles a loaded CSV file through the engine', async () => {
     engine = new DuckDBEngine(getLLMConfig());
-    await engine.load({
-      type: 'csv-file',
-      options: { path: path.join(__dirname, '../../datasets/sales.csv') },
-    });
+    await engine.load({ type: 'csv-file', options: { path: path.join(__dirname, '../../datasets/sales.csv') } });
 
     const profile = await engine.profile(await engine.schema(), {
       metrics: [
@@ -37,17 +34,11 @@ describe('profile/csv-file', () => {
         'median',
       ],
     });
-    const table = profile.tables[0];
+    const table = profile.models[0];
 
-    expect(profile.generatedAt).toEqual(expect.any(Number));
-    expect(table).toMatchObject({
-      name: 'data',
-      columnCount: 12,
-      metrics: { row_count: 240 },
-    });
-    expect(table.fields.find(({ name }) => name === 'region')).toMatchObject({
-      type: 'VARCHAR',
-      logicalType: 'string',
+    expect(table).toMatchObject({ name: 'data', metrics: { row_count: 240 } });
+    expect(table.columns.find(({ name }) => name === 'region')).toMatchObject({
+      properties: { logicalType: 'string' },
       metrics: {
         null_count: 1,
         distinct_count: 4,
@@ -61,32 +52,19 @@ describe('profile/csv-file', () => {
         ],
       },
     });
-    const quantity = table.fields.find(({ name }) => name === 'quantity')!;
+    const quantity = table.columns.find(({ name }) => name === 'quantity')!;
     expect(quantity).toMatchObject({
-      type: 'BIGINT',
-      logicalType: 'numeric',
-      metrics: {
-        null_count: 1,
-        distinct_count: 15,
-        duplicate_count: 224,
-        min: 1,
-        max: 15,
-        sum: 1814,
-        median: 7,
-      },
+      properties: { logicalType: 'numeric' },
+      metrics: { null_count: 1, distinct_count: 15, duplicate_count: 224, min: 1, max: 15, sum: 1814, median: 7 },
     });
     expect(quantity.metrics.mean).toBeCloseTo(1814 / 239, 10);
     // The non-null quantities have sum 1814 and sum of squares 18380.
     expect(quantity.metrics.stddev).toBeCloseTo(Math.sqrt((18380 - 1814 ** 2 / 239) / 238), 10);
     expect(quantity.metrics).not.toHaveProperty('top_values');
-    expect(table.fields.find(({ name }) => name === 'order_id')!.metrics).not.toHaveProperty('top_values');
-    expect(table.fields.find(({ name }) => name === 'order_date')).toMatchObject({
-      type: 'DATE',
-      logicalType: 'date',
-      metrics: {
-        min: Date.UTC(2025, 0, 1),
-        max: Date.UTC(2025, 11, 31),
-      },
+    expect(table.columns.find(({ name }) => name === 'order_id')!.metrics).not.toHaveProperty('top_values');
+    expect(table.columns.find(({ name }) => name === 'order_date')).toMatchObject({
+      properties: { logicalType: 'date' },
+      metrics: { min: Date.UTC(2025, 0, 1), max: Date.UTC(2025, 11, 31) },
     });
     await expect(engine.profile(await engine.schema(), { metrics: ['custom_metric'] })).rejects.toThrow(
       'Unknown metric: custom_metric'

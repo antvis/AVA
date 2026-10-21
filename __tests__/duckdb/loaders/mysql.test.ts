@@ -26,59 +26,54 @@ describe.skipIf(process.env.AVA_MYSQL_TEST !== '1')('loaders/mysql', () => {
     const schema = await engine.schema();
 
     expect(schema).toEqual({
-      tables: [
+      models: [
         {
           name: 'customers',
-          columnCount: 6,
-          fields: [
-            { name: 'tenant_id', type: 'int', nullable: false },
-            { name: 'customer_id', type: 'int', nullable: false },
-            { name: 'name', type: 'varchar(100)', nullable: false },
-            { name: 'email', type: 'varchar(150)', nullable: true },
-            { name: 'created_on', type: 'date', nullable: false },
-            { name: 'profile', type: 'json', nullable: true },
+          columns: [
+            { name: 'tenant_id', type: 'int', notNull: true },
+            { name: 'customer_id', type: 'int', notNull: true },
+            { name: 'name', type: 'varchar(100)', notNull: true },
+            { name: 'email', type: 'varchar(150)', notNull: false },
+            { name: 'created_on', type: 'date', notNull: true },
+            { name: 'profile', type: 'json', notNull: false },
           ],
-          indexes: [
-            { name: 'PRIMARY', columns: ['tenant_id', 'customer_id'], unique: true, primary: true },
-            { name: 'uq_customers_email', columns: ['tenant_id', 'email'], unique: true, primary: false },
-          ],
+          primaryKey: ['tenant_id', 'customer_id'],
+          uniqueKeys: [['tenant_id', 'email']],
+          tableReference: { table: 'customers' },
         },
         {
           name: 'order notes',
-          columnCount: 2,
-          fields: [
-            { name: 'order_id', type: 'bigint unsigned', nullable: true },
-            { name: 'note"text', type: 'text', nullable: true },
+          columns: [
+            { name: 'order_id', type: 'bigint unsigned', notNull: false },
+            { name: 'note"text', type: 'text', notNull: false },
           ],
-          indexes: [],
+          tableReference: { table: 'order notes' },
         },
         {
           name: 'orders',
-          columnCount: 7,
-          fields: [
-            { name: 'order_id', type: 'bigint unsigned', nullable: false },
-            { name: 'tenant_id', type: 'int', nullable: false },
-            { name: 'customer_id', type: 'int', nullable: false },
-            { name: 'amount', type: 'decimal(10,2)', nullable: false },
-            { name: 'status', type: "enum('pending','paid','cancelled')", nullable: false },
-            { name: 'placed_at', type: 'datetime', nullable: false },
-            { name: 'note', type: 'text', nullable: true },
+          columns: [
+            { name: 'order_id', type: 'bigint unsigned', notNull: true },
+            { name: 'tenant_id', type: 'int', notNull: true },
+            { name: 'customer_id', type: 'int', notNull: true },
+            { name: 'amount', type: 'decimal(10,2)', notNull: true },
+            { name: 'status', type: "enum('pending','paid','cancelled')", notNull: true },
+            { name: 'placed_at', type: 'datetime', notNull: true },
+            { name: 'note', type: 'text', notNull: false },
           ],
-          indexes: [
-            { name: 'idx_orders_customer', columns: ['tenant_id', 'customer_id'], unique: false, primary: false },
-            { name: 'idx_orders_status_time', columns: ['status', 'placed_at'], unique: false, primary: false },
-            { name: 'PRIMARY', columns: ['order_id'], unique: true, primary: true },
-          ],
+          primaryKey: 'order_id',
+          tableReference: { table: 'orders' },
         },
       ],
-      relations: [
+      relationships: [
         {
           name: 'fk_orders_customer',
-          kind: 'foreign-key',
-          from: { table: 'orders', columns: ['tenant_id', 'customer_id'] },
-          to: { table: 'customers', columns: ['tenant_id', 'customer_id'] },
+          models: ['orders', 'customers'],
+          joinType: 'MANY_TO_ONE',
+          condition:
+            '"orders"."tenant_id" = "customers"."tenant_id" AND "orders"."customer_id" = "customers"."customer_id"',
         },
       ],
+      views: [],
     });
   }, 30000);
 });

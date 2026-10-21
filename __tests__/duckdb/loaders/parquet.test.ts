@@ -27,31 +27,31 @@ describe('loaders/parquet', () => {
     const schema = await engine.schema();
 
     expect(schema).toEqual({
-      tables: [
+      models: [
         {
           name: 'data',
-          columnCount: 15,
-          fields: [
-            { name: 'tweet_id', type: 'BIGINT', nullable: true },
-            { name: 'airline_sentiment', type: 'VARCHAR', nullable: true },
-            { name: 'airline_sentiment_confidence', type: 'DOUBLE', nullable: true },
-            { name: 'negativereason', type: 'VARCHAR', nullable: true },
-            { name: 'negativereason_confidence', type: 'DOUBLE', nullable: true },
-            { name: 'airline', type: 'VARCHAR', nullable: true },
-            { name: 'airline_sentiment_gold', type: 'VARCHAR', nullable: true },
-            { name: 'name', type: 'VARCHAR', nullable: true },
-            { name: 'negativereason_gold', type: 'VARCHAR', nullable: true },
-            { name: 'retweet_count', type: 'UTINYINT', nullable: true },
-            { name: 'text', type: 'VARCHAR', nullable: true },
-            { name: 'tweet_coord', type: 'DOUBLE[]', nullable: true },
-            { name: 'tweet_created', type: 'TIMESTAMP WITH TIME ZONE', nullable: true },
-            { name: 'tweet_location', type: 'VARCHAR', nullable: true },
-            { name: 'user_timezone', type: 'VARCHAR', nullable: true },
+          columns: [
+            { name: 'tweet_id', type: 'BIGINT', notNull: false },
+            { name: 'airline_sentiment', type: 'VARCHAR', notNull: false },
+            { name: 'airline_sentiment_confidence', type: 'DOUBLE', notNull: false },
+            { name: 'negativereason', type: 'VARCHAR', notNull: false },
+            { name: 'negativereason_confidence', type: 'DOUBLE', notNull: false },
+            { name: 'airline', type: 'VARCHAR', notNull: false },
+            { name: 'airline_sentiment_gold', type: 'VARCHAR', notNull: false },
+            { name: 'name', type: 'VARCHAR', notNull: false },
+            { name: 'negativereason_gold', type: 'VARCHAR', notNull: false },
+            { name: 'retweet_count', type: 'UTINYINT', notNull: false },
+            { name: 'text', type: 'VARCHAR', notNull: false },
+            { name: 'tweet_coord', type: 'DOUBLE[]', notNull: false },
+            { name: 'tweet_created', type: 'TIMESTAMP WITH TIME ZONE', notNull: false },
+            { name: 'tweet_location', type: 'VARCHAR', notNull: false },
+            { name: 'user_timezone', type: 'VARCHAR', notNull: false },
           ],
-          indexes: [],
+          tableReference: { catalog: 'memory', schema: 'main', table: 'data' },
         },
       ],
-      relations: [],
+      relationships: [],
+      views: schema.models.map(({ name }) => ({ name, statement: expect.any(String) })),
     });
   });
 });

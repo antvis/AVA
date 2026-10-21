@@ -1,18 +1,8 @@
 import { sqlIdentifier } from '../util/sql';
 import { validateMetricConfig, table, column, logicalTypes, TOP_VALUES_OPTIONS } from '../util/profile';
 
-import type {
-  DuckDBConnection,
-  OldSchema,
-  ParsedProfileOptions,
-  FieldProfile,
-  LogicalType,
-  Metric,
-  MetricId,
-  OldProfile,
-  TableProfile,
-  TableSchema,
-} from '../types';
+import type { MetricField } from '../util/profile';
+import type { DuckDBConnection, Schema, ParsedProfileOptions, LogicalType, Metric, MetricId, Profile } from '../types';
 
 /** Map a database type to a profile type. */
 export function logicalType(nativeType: string): LogicalType {
@@ -33,7 +23,7 @@ export function logicalType(nativeType: string): LogicalType {
 interface ExpressionContext {
   readonly table: string;
   readonly column?: string;
-  readonly field?: FieldProfile;
+  readonly field?: MetricField;
   readonly metric: ParsedProfileOptions['metrics'][number];
 }
 
@@ -131,37 +121,33 @@ function postProcessMetrics(
   }
 }
 
-function initTableProfile(table: TableSchema): TableProfile {
-  return {
-    ...table,
-    metrics: {},
-    fields: table.fields.map((field) => ({
-      ...field,
-      logicalType: logicalType(field.type),
-      metrics: {},
-    })),
-  };
-}
-
 /**
  * Build profiles for all tables.
  */
 export async function profileTables(
   connection: DuckDBConnection,
-  schema: OldSchema,
+  schema: Schema,
   options: ParsedProfileOptions
-): Promise<OldProfile> {
+): Promise<Profile> {
   const { metrics } = options;
-  const profiles: TableProfile[] = [];
+  const profiles: Profile['models'] = [];
 
-  for (const table of schema.tables) {
+  for (const table of schema.models) {
     const { name } = table;
-    const profile = initTableProfile(table);
+    const profile: Profile['models'][number] = {
+      name,
+      metrics: {},
+      columns: table.columns.map((field) => ({
+        name: field.name,
+        properties: { logicalType: logicalType(field.type) },
+        metrics: {},
+      })),
+    };
     profiles.push(profile);
 
     const pending: Array<{ expression: string; metricId: MetricId; output: Record<string, unknown> }> = [];
 
-    const addMetrics = (output: Record<string, unknown>, field?: FieldProfile) => {
+    const addMetrics = (output: Record<string, unknown>, field?: MetricField) => {
       for (const metric of metrics) {
         if (!validateMetricConfig(metric, BUILTIN_METRICS)) {
           continue;
@@ -187,17 +173,10 @@ export async function profileTables(
       }
     };
 
-    const addTableMetrics = (table: TableProfile) => {
-      addMetrics(table.metrics);
-    };
-    const addFieldMetrics = (field: FieldProfile) => {
-      addMetrics(field.metrics, field);
-    };
-
-    // Add metrics for the table.
-    addTableMetrics(profile);
-    // Add metrics for each field (column) in the table.
-    profile.fields.forEach(addFieldMetrics);
+    addMetrics(profile.metrics);
+    profile.columns.forEach((field, i) =>
+      addMetrics(field.metrics, { ...table.columns[i], logicalType: field.properties.logicalType })
+    );
 
     if (!pending.length) continue;
 
@@ -209,5 +188,5 @@ export async function profileTables(
     postProcessMetrics(row, pending);
   }
 
-  return { ...schema, tables: profiles, generatedAt: Date.now() };
+  return { models: profiles };
 }

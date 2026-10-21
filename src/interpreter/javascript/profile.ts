@@ -1,6 +1,6 @@
 import { column, logicalTypes, table, TOP_VALUES_OPTIONS, validateMetricConfig } from '../../util/profile';
 
-import type { LogicalType, Metric, ParsedProfileOptions, OldProfile, OldSchema } from '../../types';
+import type { LogicalType, Metric, ParsedProfileOptions, Profile, Schema } from '../../types';
 
 interface Context {
   rowCount: number;
@@ -95,30 +95,29 @@ function logicalType(type: string): LogicalType {
   return 'unknown';
 }
 
-export function profileTables(
-  data: Record<string, unknown>[],
-  schema: OldSchema,
-  options: ParsedProfileOptions
-): OldProfile {
+export function profileTables(data: Record<string, unknown>[], schema: Schema, options: ParsedProfileOptions): Profile {
   const metrics = options.metrics.map((metric) => {
     validateMetricConfig(metric, BUILTIN_METRICS);
     return { metric, definition: BUILTIN_METRICS.find(({ id }) => id === metric.id)! };
   });
   return {
-    ...schema,
-    tables: schema.tables.map((source) => {
+    models: schema.models.map((source) => {
       const result = {
-        ...source,
+        name: source.name,
         metrics: {},
-        fields: source.fields.map((field) => ({ ...field, logicalType: logicalType(field.type), metrics: {} })),
+        columns: source.columns.map((field) => ({
+          name: field.name,
+          properties: { logicalType: logicalType(field.type) },
+          metrics: {},
+        })),
       };
       const targets = [
         { output: result.metrics, field: undefined },
-        ...result.fields.map((field) => ({ output: field.metrics, field })),
+        ...result.columns.map((field) => ({ output: field.metrics, field })),
       ];
       for (const { output, field } of targets) {
         const applicable = metrics.filter(({ definition }) =>
-          definition.enable({ target: field ? 'column' : 'table', field })
+          definition.enable({ target: field ? 'column' : 'table', field: field?.properties })
         );
         if (!applicable.length) continue;
         let values: unknown[] | undefined;
@@ -134,10 +133,10 @@ export function profileTables(
                   .map((row) => row[field.name])
                   .filter((value) => value != null)
                   .map((value) => {
-                    if (field.logicalType === 'string') return String(value);
-                    if (field.logicalType === 'numeric') return Number(value);
-                    if (field.logicalType === 'date') return new Date(value as string).getTime();
-                    if (field.logicalType === 'boolean')
+                    if (field.properties.logicalType === 'string') return String(value);
+                    if (field.properties.logicalType === 'numeric') return Number(value);
+                    if (field.properties.logicalType === 'date') return new Date(value as string).getTime();
+                    if (field.properties.logicalType === 'boolean')
                       return value === true || String(value).toLowerCase() === 'true';
                     return value;
                   })
@@ -151,7 +150,7 @@ export function profileTables(
               distinct = new Map<unknown, number>();
               for (const value of this.values) {
                 // ponytail: JSON equality is key-order sensitive; canonicalize if unordered object equality is needed.
-                const key = field?.logicalType === 'unknown' ? JSON.stringify(value) : value;
+                const key = field?.properties.logicalType === 'unknown' ? JSON.stringify(value) : value;
                 distinct.set(key, (distinct.get(key) ?? 0) + 1);
               }
             }
@@ -169,6 +168,5 @@ export function profileTables(
       }
       return result;
     }),
-    generatedAt: Date.now(),
   };
 }

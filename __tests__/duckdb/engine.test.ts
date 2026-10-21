@@ -67,19 +67,18 @@ describe('DuckDBEngine', () => {
 
     await engine.load({ type: 'json', options: { data: testData } });
     const schema = await engine.schema();
-    expect(schema.tables).toEqual([
+    expect(schema.models).toEqual([
       {
         name: 'data',
-        columnCount: 3,
-        fields: [
-          { name: 'name', type: 'VARCHAR', nullable: true },
-          { name: 'age', type: 'BIGINT', nullable: true },
-          { name: 'city', type: 'VARCHAR', nullable: true },
+        columns: [
+          { name: 'name', type: 'VARCHAR', notNull: false },
+          { name: 'age', type: 'BIGINT', notNull: false },
+          { name: 'city', type: 'VARCHAR', notNull: false },
         ],
-        indexes: [],
+        tableReference: { catalog: 'memory', schema: 'main', table: 'data' },
       },
     ]);
-    expect(schema.relations).toEqual([]);
+    expect(schema.relationships).toEqual([]);
 
     const all = await engine.execute('SELECT * FROM data');
     expect(all.data).toHaveLength(3);
@@ -99,13 +98,10 @@ describe('DuckDBEngine', () => {
       });
       const schema = await engine.schema();
 
-      expect(schema.tables[0]).toMatchObject({ name: 'data', columnCount: 15 });
-      expect(schema.tables[0]).not.toHaveProperty('rowCount');
-      const field = schema.tables[0].fields.find(({ name }) => name === 'tweet_coord');
-      expect(field).toMatchObject({
-        name: 'tweet_coord',
-        type: 'DOUBLE[]',
-      });
+      expect(schema.models[0]).toMatchObject({ name: 'data' });
+      expect(schema.models[0]).not.toHaveProperty('rowCount');
+      const field = schema.models[0].columns.find(({ name }) => name === 'tweet_coord');
+      expect(field).toMatchObject({ name: 'tweet_coord', type: 'DOUBLE[]' });
       expect(field).not.toHaveProperty('min');
       expect(field).not.toHaveProperty('max');
     });
@@ -114,19 +110,14 @@ describe('DuckDBEngine', () => {
       await engine.load({ type: 'json', options: { data: [{ values: ['a', 'b'] }] } });
       const schema = await engine.schema();
 
-      expect(schema.tables[0].fields[0]).toMatchObject({ type: 'VARCHAR[]' });
+      expect(schema.models[0].columns[0]).toMatchObject({ type: 'VARCHAR[]' });
     });
   });
 
   it('should bound large query results', async () => {
-    await engine.load({
-      type: 'json',
-      options: { data: Array.from({ length: 5 }, (_, id) => ({ id })) },
-    });
+    await engine.load({ type: 'json', options: { data: Array.from({ length: 5 }, (_, id) => ({ id })) } });
 
-    const result = await engine.execute<{ id: number }>('SELECT * FROM data ORDER BY id', {
-      maxRows: 2,
-    });
+    const result = await engine.execute<{ id: number }>('SELECT * FROM data ORDER BY id', { maxRows: 2 });
 
     expect(result.data).toEqual([{ id: 0 }, { id: 1 }]);
     expect(result.truncated).toBe(true);
@@ -208,10 +199,7 @@ describe('DuckDBEngine', () => {
 
   describe.skipIf(skipLLMTests)('getDSL', () => {
     it('should generate SQL from a natural language query', async () => {
-      await engine.load({
-        type: 'json',
-        options: { data: [{ company: 'A', region: 'East', revenue: 100 }] },
-      });
+      await engine.load({ type: 'json', options: { data: [{ company: 'A', region: 'East', revenue: 100 }] } });
 
       const sql = await engine.getDSL('Show all companies', { schema: await engine.schema() });
 

@@ -521,7 +521,7 @@ export interface LoadedSource {
   /** Register the source's table(s)/view(s) and return their exposed names. */
   register: (conn: DuckDBConnection) => Promise<string[]>;
   /** */
-  getSchema: (conn: DuckDBConnection) => Promise<OldSchema>;
+  getSchema: (conn: DuckDBConnection) => Promise<Schema>;
   /**
    * Directories the engine whitelists for file access after registering
    * (the data file's directory for file sources; empty for in-memory/remote sources).
@@ -529,80 +529,6 @@ export interface LoadedSource {
   allowedDirectories: string[];
   /** Release resources (temp files, attached databases, tunnels) */
   cleanup: () => Promise<void>;
-}
-
-/**
- * Data field metadata
- */
-export interface FieldMetadata {
-  /** Field name */
-  name: string;
-  /** Column type from the engine (e.g. DuckDB's BIGINT/VARCHAR) */
-  type: string;
-  /** Whether the column allows NULL (engine-reported). */
-  nullable?: boolean;
-}
-
-/**
- * A single index (or constraint-backed index) on a table.
- *
- * DuckDB: duckdb_constraints() for PK/UNIQUE + duckdb_indexes() for secondary indexes.
- * MySQL: INFORMATION_SCHEMA.STATISTICS (one row per column, grouped by index name).
- * PostgreSQL / Supabase: pg_index + pg_constraint (source catalog metadata).
- */
-export interface TableIndex {
-  /** Index name (e.g. "users_pkey", "idx_orders_user_id") */
-  name: string;
-  /** Indexed columns in order */
-  columns: string[];
-  /** Whether the index enforces uniqueness */
-  unique: boolean;
-  /**
-   * Whether this index backs a PRIMARY KEY constraint.
-   * DuckDB: duckdb_constraints().constraint_type = 'PRIMARY KEY'.
-   * MySQL: INDEX_NAME = 'PRIMARY'.
-   * PostgreSQL: pg_index.indisprimary.
-   */
-  primary?: boolean;
-}
-
-/**
- * A database foreign-key relation between tables exposed by an OldSchema.
- * Supports composite keys, self-relations and multiple relations between tables.
- */
-export interface TableRelation {
-  /** Foreign-key constraint name, when available. */
-  name?: string;
-  /** Currently only database foreign-key constraints are supported. */
-  kind: 'foreign-key';
-  /** Referencing side for a foreign key; table is the exact TableSchema.name. */
-  from: { table: string; columns: string[] };
-  /** Referenced side for a foreign key; columns pair with from.columns by position. */
-  to: { table: string; columns: string[] };
-}
-
-/**
- * Schema of a single table/view in the loaded data source
- */
-export interface TableSchema {
-  /** Table/view name as registered in the engine */
-  name: string;
-  /** Number of columns */
-  columnCount: number;
-  /** Field metadata */
-  fields: FieldMetadata[];
-  /** Indexes on this table. Empty array for tables with no indexes (file-based sources). */
-  indexes: TableIndex[];
-}
-
-/**
- * The overall schema of the loaded data source.
- */
-export interface OldSchema {
-  /** All tables/views exposed by the data source */
-  tables: TableSchema[];
-  /** Relations between tables */
-  relations?: TableRelation[];
 }
 
 /**
@@ -667,36 +593,6 @@ export interface MetricFrequency {
   count: number;
 }
 
-/**
- * A field and its metric results.
- */
-export type FieldProfile = FieldMetadata & {
-  /** The field type shared by all engines. */
-  logicalType: LogicalType;
-  /** Results keyed by metric name. Missing results were not computed. */
-  metrics: Record<string, unknown>;
-};
-
-/**
- * A table and its metric results.
- */
-export type TableProfile = Omit<TableSchema, 'fields'> & {
-  /** Fields with their metric results. */
-  fields: FieldProfile[];
-  /** Table results keyed by metric name. */
-  metrics: Record<string, unknown>;
-};
-
-/**
- * The schema with metric results.
- */
-export type OldProfile = Omit<OldSchema, 'tables'> & {
-  /** Tables with their metric results. */
-  tables: TableProfile[];
-  /** The creation time in milliseconds since the Unix epoch. */
-  generatedAt: number;
-};
-
 /** Schema discovery currently has no configurable options. */
 export type SchemaOptions = Record<string, never>;
 
@@ -740,9 +636,9 @@ export interface AnalysisEngine {
   /** Load a data source and prepare it for execution. */
   load(config: DataSourceConfig): Promise<void>;
   /** Discover the loaded source structure. */
-  schema(): Promise<OldSchema>;
+  schema(): Promise<Schema>;
   /** Compute statistics for the loaded data. */
-  profile?(schema: OldSchema, options?: ProfileOptions): Promise<OldProfile>;
+  profile?(schema: Schema, options?: ProfileOptions): Promise<Profile>;
   /** Generate the executable DSL (SQL) for a natural-language query */
   getDSL(query: string, context: DataContext): Promise<string>;
   /** Execute one DSL statement with a bounded result. */
@@ -789,9 +685,9 @@ export type AnalysisStrategyConfig =
 
 /** Dataset metadata supplied to model-facing consumers. */
 export interface DataContext {
-  schema: OldSchema;
+  schema: Schema;
   /** Complete structural metadata with optional statistics. */
-  profile: OldProfile | null;
+  profile: Profile | null;
 }
 
 /** Unified data structure, profiling results and semantics for AVA. */
@@ -927,8 +823,8 @@ export interface DataModel {
 export interface Schema extends Pick<DataModel, 'models' | 'relationships' | 'views'> {
   /** Physical tables and views with their catalog identity, exposed columns and declared unique keys. */
   models: (Pick<Model, 'name' | 'primaryKey' | 'uniqueKeys'> & {
-    /** Fully qualified source identity reported by the database catalog. */
-    tableReference: Required<Pick<TableReference, 'catalog' | 'schema' | 'table'>>;
+    /** Source identity; catalog and schema are included when the engine exposes them. */
+    tableReference: Pick<TableReference, 'catalog' | 'schema' | 'table'>;
     /** Catalog-reported types and nullability; no inferred business roles or calculation expressions. */
     columns: Pick<Column, 'name' | 'type' | 'notNull'>[];
   })[];

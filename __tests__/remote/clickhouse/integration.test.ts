@@ -29,22 +29,20 @@ describe.skipIf(process.env.AVA_CLICKHOUSE_TEST !== '1')('clickhouse/engine', ()
     await load();
     const schema = await engine!.schema();
 
-    expect(schema.tables.map(({ name }) => name)).toEqual(['customers', 'order notes', 'orders']);
-    expect(schema.tables.find(({ name }) => name === 'customers')).toMatchObject({
-      fields: expect.arrayContaining([
-        { name: 'tenant_id', type: 'UInt32', nullable: false },
-        { name: 'email', type: 'Nullable(String)', nullable: true },
+    expect(schema.models.map(({ name }) => name)).toEqual(['customers', 'order notes', 'orders']);
+    expect(schema.models.find(({ name }) => name === 'customers')).toMatchObject({
+      columns: expect.arrayContaining([
+        { name: 'tenant_id', type: 'UInt32', notNull: true },
+        { name: 'email', type: 'Nullable(String)', notNull: false },
       ]),
-      indexes: [{ name: 'primary_key', columns: ['tenant_id', 'customer_id'], unique: false, primary: true }],
     });
-    expect(schema.tables.find(({ name }) => name === 'orders')).toMatchObject({
-      fields: expect.arrayContaining([
-        { name: 'amount', type: expect.stringContaining('Decimal(10'), nullable: false },
-        { name: 'status', type: expect.stringContaining("Enum8('pending'"), nullable: false },
+    expect(schema.models.find(({ name }) => name === 'orders')).toMatchObject({
+      columns: expect.arrayContaining([
+        { name: 'amount', type: expect.stringContaining('Decimal(10'), notNull: true },
+        { name: 'status', type: expect.stringContaining("Enum8('pending'"), notNull: true },
       ]),
-      indexes: [{ name: 'primary_key', columns: ['order_id'], unique: false, primary: true }],
     });
-    expect(schema.relations).toEqual([]);
+    expect(schema.relationships).toEqual([]);
   }, 30000);
 
   it('executes bounded read-only queries', async () => {
@@ -95,26 +93,21 @@ describe.skipIf(process.env.AVA_CLICKHOUSE_TEST !== '1')('clickhouse/engine', ()
     await load();
     const profile = await engine!.profile(await engine!.schema());
 
-    expect(profile.tables.map(({ name, metrics }) => ({ name, metrics }))).toEqual([
+    expect(profile.models.map(({ name, metrics }) => ({ name, metrics }))).toEqual([
       { name: 'customers', metrics: { row_count: 3 } },
       { name: 'order notes', metrics: { row_count: 2 } },
       { name: 'orders', metrics: { row_count: 4 } },
     ]);
     expect(
-      profile.tables.find(({ name }) => name === 'customers')?.fields.find(({ name }) => name === 'created_on')
+      profile.models.find(({ name }) => name === 'customers')?.columns.find(({ name }) => name === 'created_on')
     ).toMatchObject({
-      logicalType: 'date',
-      metrics: {
-        null_count: 0,
-        distinct_count: 2,
-        min: Date.UTC(2024, 0, 10),
-        max: Date.UTC(2024, 1, 20),
-      },
+      properties: { logicalType: 'date' },
+      metrics: { null_count: 0, distinct_count: 2, min: Date.UTC(2024, 0, 10), max: Date.UTC(2024, 1, 20) },
     });
     expect(
-      profile.tables.find(({ name }) => name === 'orders')?.fields.find(({ name }) => name === 'amount')
+      profile.models.find(({ name }) => name === 'orders')?.columns.find(({ name }) => name === 'amount')
     ).toMatchObject({
-      logicalType: 'numeric',
+      properties: { logicalType: 'numeric' },
       metrics: { null_count: 0, distinct_count: 4, min: 10, max: 35.5, mean: 25 },
     });
   }, 30000);
