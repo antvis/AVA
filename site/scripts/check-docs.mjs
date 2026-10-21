@@ -18,6 +18,11 @@ async function files(directory) {
 
 const sources = (await files(join(site, 'content/docs'))).filter((path) => path.endsWith('.mdx'));
 const sourceText = (await Promise.all(sources.map((path) => readFile(path, 'utf8')))).join('\n');
+const semantic = await readFile(join(site, 'content/docs/data/semantic.mdx'), 'utf8');
+const schemaGuide = await readFile(join(site, 'content/docs/data/schema.mdx'), 'utf8');
+const orderTable = semantic.match(/\| order_id \|[\s\S]*?(?=\n\n)/)?.[0];
+assert.ok(orderTable, 'Semantic guide starts with a concrete order table');
+assert.ok(schemaGuide.includes(orderTable), 'Schema and semantic guides use the same order table');
 const api = await readFile(join(site, '../src/ava.ts'), 'utf8');
 const methods = [...api.matchAll(/^  async (\w+)\(/gm)].map((match) => match[1]);
 for (const method of methods) {

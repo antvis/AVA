@@ -18,7 +18,8 @@ DuckDB is the default Node.js engine. JavaScript supports browsers and Node.js; 
 ## Data, analysis, and visualization
 
 - [Data sources](https://ava.antv.vision/documentation/data/sources/): Source types and parameters for inline data, files, and databases.
-- [Schema and profiling](https://ava.antv.vision/documentation/data/schema/): Inspect tables and relationships and compute deterministic profiling metrics.
+- [Inspect your data](https://ava.antv.vision/documentation/data/schema/): AVA discovers the structural starting point automatically; optionally compute statistics, then supply business meaning through semantic definitions. No schema needs to be authored for ordinary use.
+- [Define data semantics](https://ava.antv.vision/documentation/data/semantic/): Author business context, model and column mappings, relationships, views, and cubes; includes a worked sales example and links to the complete API fields. Definitions guide query generation and do not materialize objects or enforce access policies.
 - [Analyze data](https://ava.antv.vision/documentation/analysis/overview/): Ask questions, get suggestions, and translate or execute queries separately.
 - [Analysis strategies](https://ava.antv.vision/documentation/analysis/strategies/): Choose direct analysis, iterative reasoning, or selected profile context.
 - [Generate visualizations](https://ava.antv.vision/documentation/visualization/overview/): Recommend charts and generate GPT-Vis syntax and HTML.
@@ -36,7 +37,7 @@ DuckDB is the default Node.js engine. JavaScript supports browsers and Node.js; 
 
 ## API reference
 
-- [AVA API](https://ava.antv.vision/documentation/reference/api/): Constructor options, method signatures, parameters, defaults, and return values.
+- [AVA API](https://ava.antv.vision/documentation/reference/api/): Constructor options, method signatures, parameters, defaults, return values, and complete semantic fields and merge rules.
 - [Events and lifecycle](https://ava.antv.vision/documentation/reference/events/): Observe source loading, model work, query execution, and cleanup.
 
 ## Optional

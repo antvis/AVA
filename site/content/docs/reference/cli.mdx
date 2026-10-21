@@ -29,7 +29,7 @@ ava profile "$DATASET_ID" --file profile.json
 
 Pass a plain file path, without `@`. AVA validates the file and saves its contents in the session. Setting schema clears the saved profile, so set schema first when supplying both. Setting profile only replaces the statistics; it does not replace schema. Use metadata matching the loaded source.
 
-Without `--file`, schema uses the cached structure or discovers it through the engine, and profile computes fresh statistics. `--file` cannot be combined with `--metrics`. See [metadata behavior](/documentation/data/schema/#supply-metadata).
+Without `--file`, schema uses the cached structure or discovers it through the engine, and profile computes fresh statistics. `--file` cannot be combined with `--metrics`. See [schema behavior](/documentation/reference/api/#schema) and [profile behavior](/documentation/reference/api/#profile).
 
 ## Explore and analyze
 

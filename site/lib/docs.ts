@@ -25,9 +25,15 @@ export const docs = [
   },
   {
     slug: 'data/schema',
-    title: 'Understand your data',
+    title: 'Inspect your data',
     group: 'Working with data',
-    description: 'Inspect schema and relationships, then compute profiling metrics.',
+    description: 'Let AVA discover the structure, inspect statistics when useful, then add business meaning.',
+  },
+  {
+    slug: 'data/semantic',
+    title: 'Define data semantics',
+    group: 'Working with data',
+    description: 'Write business definitions, model mappings, and reusable measures, with a worked sales example.',
   },
   {
     slug: 'analysis/overview',

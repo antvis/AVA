@@ -119,7 +119,22 @@ await ava.schema(undefined, () => savedSchema);
 
 A setter receives the options object (default `{}`) and returns a `Schema` synchronously. Its result replaces the saved schema and clears the saved profile. AVA validates and copies the result; invalid results or thrown errors reject the call without changing previous metadata.
 
-Requires a loaded source. Analysis and profiling obtain the schema when needed; direct `query()` does not. See [schema structure](/documentation/data/schema/#schema-structure).
+Requires a loaded source. Analysis and profiling obtain the schema when needed; direct `query()` does not. For the walkthrough, see [Inspect your data](/documentation/data/schema/).
+
+### Schema structure
+
+| Field | Meaning |
+| --- | --- |
+| `models` | Tables or views available for queries; required. |
+| `models[].name` | Model name. |
+| `models[].tableReference` | Physical source identity: `table`, with optional `catalog` and `schema`. |
+| `models[].columns` | Columns, each with `name`, `type`, and optional `notNull`. |
+| `models[].primaryKey` | One column name, or a nonempty ordered array for a composite key. |
+| `models[].uniqueKeys` | Array of alternative keys; each entry is a column name or a composite-key array. |
+| `relationships` | Discovered foreign-key relationships, when available. |
+| `views` | Named view queries with `name` and `statement`, when available. |
+
+The details depend on the source and engine. A query result's `schema` describes its output columns and is not a source `Schema`.
 
 ## profile
 
@@ -147,7 +162,21 @@ await ava.profile(undefined, () => savedProfile);
 
 A setter receives the options object (default `{}`) and returns a `Profile` synchronously. It does not require engine profiling support. AVA validates and copies its result; invalid results or thrown errors reject the call without changing previous metadata. The options are passed to the setter; AVA does not calculate or filter metrics on its behalf.
 
-Requires a loaded source. Both paths replace the saved profile, which analysis, translation, and suggestions can reuse. Setting a profile does not replace the saved schema. See [profile format](/documentation/data/schema/#profile-format).
+Requires a loaded source. Both paths replace the saved profile, which analysis, translation, and suggestions can reuse. Setting a profile does not replace the saved schema.
+
+### Profile format
+
+A profile attaches observations to existing schema models and columns by name:
+
+| Field | Meaning |
+| --- | --- |
+| `models[].name` | Model to enrich. |
+| `models[].metrics` | Table statistics such as `row_count`. |
+| `models[].columns[].name` | Column to enrich within that model. |
+| `models[].columns[].metrics` | Column statistics such as `mean`. |
+| `models[].columns[].properties.logicalType` | Normalized category: `numeric`, `string`, `boolean`, `date`, or `unknown`. |
+
+A missing metric means it was not computed, not zero. Setting a schema clears the saved profile, so supply the schema first when providing both manually. Loading another source or calling `dispose()` clears schema, profile, and semantic definitions. Updating schema or profile retains semantic definitions.
 
 ### Metrics
 
@@ -202,9 +231,238 @@ The setter receives the options object and returns a `Semantic` synchronously. A
 
 `Semantic` contains business definitions and excludes model and column `metrics`; supply statistical observations through `profile()`. The combined context passed to engines remains a `DataModel`.
 
-Definitions can contain `description`, `properties`, `models`, `relationships`, `views`, and `cubes`. For `analyze()`, `translate()`, and `suggest()`, AVA merges models and columns by name with the schema and profile. Unspecified models, columns, and observations remain available; semantic properties enrich existing properties. A supplied relationship or view list replaces its discovered counterpart. Each semantic model must declare exactly one source: `tableReference`, `refSql`, or `baseObject`.
+Start with [Define data semantics](/documentation/data/semantic/) for the authoring walkthrough and sales example. The fields and behavior are documented below.
+
+For `analyze()`, `translate()`, and `suggest()`, AVA merges models and columns by name with the schema and profile. Unspecified models, columns, and observations remain available; model and column properties merge by key, with semantic values taking precedence. A supplied relationship or view list replaces its discovered counterpart, including when the list is empty. Each semantic model must declare exactly one source: `tableReference`, `refSql`, or `baseObject`.
 
 These definitions provide context for query generation. Declaring a cube, view, calculated column, or access rule does not create database objects or enforce policies; generated queries must work with the configured engine.
+
+### Semantic fields
+
+All six top-level fields are optional. Supply only the sections your application needs. Names and required expressions must be nonempty strings. `properties` contains JSON values with finite numbers; keys such as `description`, `unit`, `synonyms`, and `owner` are application conventions, not built-in SDK behaviors.
+
+| Field | Shape | Purpose |
+| --- | --- | --- |
+| `description` | `string` | Shared business context, terminology, eligibility, and time conventions. |
+| `properties` | `Record<string, JsonValue>` | Shared annotations. |
+| `models` | Model definitions below | Physical and logical datasets, column meanings, and source mappings. |
+| `relationships` | Relationship definitions below | Joins between named models. |
+| `views` | View definitions below | Reusable named SQL queries. |
+| `cubes` | Cube definitions below | Measures, grouping expressions, and drill-down paths. |
+
+### Semantic models
+
+| Field | Required | Meaning |
+| --- | --- | --- |
+| `name` | Yes | Logical model name; matches a schema model by name or adds a new one. |
+| `tableReference` | One source selector | `{ table, schema?, catalog? }`; physical identifiers, independent of the logical name. Extra source attributes must be JSON values. |
+| `refSql` | One source selector | SQL defining the source rows before column mappings and calculations. |
+| `baseObject` | One source selector | Name of another model or view supplying the rows. |
+| `columns` | No | Column definitions below; unlisted existing columns are retained. |
+| `primaryKey` | No | One column name or a nonempty ordered array for a composite key. |
+| `uniqueKeys` | No | Array of keys, each a column name or a nonempty composite-key array. |
+| `dialect` | No | SQL dialect for `refSql`; otherwise use the execution context. |
+| `properties` | No | Model annotations, especially row grain and business purpose. |
+| `cached` | No | Boolean cache declaration; storing it starts no cache. |
+| `refreshTime` | No | Duration-shaped string such as `'1h'` or `'30m'`; starts no refresh job. |
+| `rowLevelAccessControls` | No | Access declarations described below; no built-in enforcement. |
+
+A primary or unique key is a declaration, not an observed statistic. Verify it against the source. `primaryKey: ['tenant_id', 'order_id']` is one composite key. `uniqueKeys: ['email', ['tenant_id', 'external_id']]` declares two alternative unique keys.
+
+### Semantic columns
+
+| Field | Required | Meaning |
+| --- | --- | --- |
+| `name` | Yes | Name within the owning model; used to match existing columns. |
+| `type` | Yes | Declared type, or target model name for a relationship column. |
+| `properties` | No | Column context such as description, units, enum meanings, or null conventions. |
+| `expression` | No | SQL mapping or calculation over the source; `null` or omission supplies none. |
+| `isCalculated` | No | Boolean marking a derived column; does not compute it. |
+| `isPrimaryKey` | No | Boolean marking membership in the declared primary key. |
+| `notNull` | No | Declared non-null constraint; omission is unspecified. |
+| `relationship` | No | Relationship identifier for navigation, not a foreign-key column name. |
+| `isHidden` | No | Visibility declaration; does not hide a field from the model or restrict queries. |
+| `columnLevelAccessControl` | No | Access declaration described below; no built-in enforcement. |
+
+### Semantic relationships and views
+
+| Field | Required | Meaning |
+| --- | --- | --- |
+| `relationships[].name` | Yes | Identifier, also used by column navigation. |
+| `relationships[].models` | Yes | Exactly two model names, ordered first to second. |
+| `relationships[].joinType` | Yes | `ONE_TO_ONE`, `ONE_TO_MANY`, `MANY_TO_ONE`, or `MANY_TO_MANY`. |
+| `relationships[].condition` | Yes | SQL join predicate with qualified columns. |
+| `relationships[].properties` | No | Business context for the relationship. |
+| `views[].name` | Yes | Logical name for the query. |
+| `views[].statement` | Yes | SQL defining the result; saving it does not execute it. |
+| `views[].dialect` | No | SQL dialect; otherwise use the execution context. |
+| `views[].properties` | No | Purpose and business conventions. |
+
+Relationships and views accept additional JSON-valued attributes whose meaning is agreed on by your application and consumers.
+
+### Semantic cubes and expressions
+
+| Field | Required | Meaning |
+| --- | --- | --- |
+| `name` | Yes | Cube identifier. |
+| `baseObject` | Yes | Model or view supplying rows to aggregate. |
+| `measures` | Yes | Nonempty array of aggregation definitions. |
+| `dimensions` | No | Grouping definitions. |
+| `timeDimensions` | No | Date/time grouping definitions; granularity is chosen at query time. |
+| `hierarchies` | No | Map of names to nonempty dimension-name arrays, ordered coarsest to finest. |
+| `refreshTime` | No | Duration-shaped declaration; no refresh job is created. |
+| `properties` | No | Cube annotations. |
+
+Each entry in `measures`, `dimensions`, and `timeDimensions` uses the same fields:
+
+| Field | Required | Meaning |
+| --- | --- | --- |
+| `name` | Yes | Expression identifier within the cube. |
+| `expression` | Yes | SQL aggregation for a measure, grouping expression for a dimension. |
+| `type` | Yes | Declared result type. |
+| `description` | No | Business meaning of the expression. |
+| `properties` | No | Annotations such as units or synonyms. |
+
+For a calendar drill-down, define dimension expressions for `year`, `month`, and `order_date`, then declare `hierarchies: { calendar: ['year', 'month', 'order_date'] }`. A hierarchy describes a path; it does not generate those fields. `refreshTime` accepts a number followed by letters, but AVA does not validate a scheduler's units or schedule work from it.
+
+### Semantic access declarations
+
+Use these fields only when your application or execution layer implements their meaning. They are retained in the model context. They are **not** an authorization boundary, and `isHidden` does not redact metadata. Enforce permissions and remove sensitive context before it reaches AVA or the LLM.
+
+| Field | Required | Meaning |
+| --- | --- | --- |
+| `rowLevelAccessControls[].name` | Yes | Rule identifier. |
+| `rowLevelAccessControls[].requiredProperties` | Yes | Array of session property declarations. |
+| `rowLevelAccessControls[].condition` | Yes | SQL predicate over model fields and session properties. |
+| `columnLevelAccessControl.name` | Yes | Rule identifier. |
+| `columnLevelAccessControl.operator` | Yes | `EQUALS`, `NOT_EQUALS`, `GREATER_THAN`, `LESS_THAN`, `GREATER_THAN_OR_EQUALS`, or `LESS_THAN_OR_EQUALS`. |
+| `columnLevelAccessControl.requiredProperties` | Yes | Exactly one session property, wrapped in an array. |
+| `columnLevelAccessControl.threshold` | No | `{ value: string, dataType: 'NUMERIC' \| 'STRING' }`. Numeric threshold values are also strings. |
+
+Every session property requires `name: string` and `required: boolean`, with optional `defaultExpr: string | null` for a SQL fallback. AVA does not supply session values, bind predicate placeholders, or evaluate these rules. Model, column, cube, expression, and access-rule objects reject unknown fields; put application annotations in `properties` where supported.
+
+### Semantic model sources
+
+Call `schema()` and inspect model names, source references, and column types before writing mappings. Names match exactly within their owning model. The inline JSON source in the sales example is exposed as `data`; other sources can have different names and catalog or schema qualifiers.
+
+Every entry in `models` needs a `name` and **exactly one** source selector, even when you only want to add a description to an existing model:
+
+| Selector | Use it when | Example |
+| --- | --- | --- |
+| `tableReference` | The model maps to a physical table or database view. Retain the discovered qualifiers. | `{ tableReference: { schema: 'public', table: 'orders' } }` |
+| `refSql` | SQL defines the source rows of a logical model. | `{ refSql: "SELECT * FROM orders WHERE status = 'paid'" }` |
+| `baseObject` | Another model or declared view supplies the source rows. | `{ baseObject: 'paid_orders' }` |
+
+Use the existing schema model's `name` to enrich it. A different name adds a logical model; it does not rename the underlying table. A column needs both `name` and `type`, including when adding only a description. Copy the discovered type for physical columns; specify the result type for calculations.
+
+`baseObject`, `refSql`, and column `expression` describe mappings for the query generator. A logical name is not automatically executable in `query()`. For example, a query using a calculated `net_amount` must inline its expression or define it in a subquery or CTE.
+
+### Semantic join and view examples
+
+Add relationships when analysis spans more than one model. Add views when a reusable SQL definition makes business logic clearer. These snippets assume an existing source exposing `orders` and `customers`; they are separate from the single-table sales example.
+
+#### Relationship example
+
+```typescript
+import type { Semantic } from '@antv/ava';
+
+const semantic = {
+  relationships: [{
+    name: 'order_customer',
+    models: ['orders', 'customers'],
+    joinType: 'MANY_TO_ONE',
+    condition: 'orders.customer_id = customers.id',
+    properties: { description: 'Each order belongs to one customer.' },
+  }],
+} satisfies Semantic;
+```
+
+`models` is an ordered pair. `MANY_TO_ONE` means many rows in the first model can match one row in the second. `joinType` describes cardinality; it does not choose `LEFT JOIN` or `INNER JOIN`. The join condition must include all parts of a composite key.
+
+If you expose a relationship navigation column, set its `relationship` to the relationship's **name**, and its `type` to the target model name, for example `{ name: 'customer', type: 'customers', relationship: 'order_customer' }`. The physical foreign-key column remains `customer_id`.
+
+Check grain before aggregating across a join. Joining one order to many line items can repeat the order amount. A cardinality declaration supplies context; AVA does not verify uniqueness or automatically prevent double counting.
+
+#### View and derived model example
+
+```typescript
+import type { Semantic } from '@antv/ava';
+
+const semantic = {
+  views: [{
+    name: 'paid_orders',
+    statement: "SELECT * FROM orders WHERE status = 'paid'",
+    dialect: 'duckdb',
+    properties: { description: 'Paid orders only; this excludes fully refunded orders.' },
+  }],
+  models: [{
+    name: 'paid_sales',
+    baseObject: 'paid_orders',
+    properties: { description: 'One row per paid order.' },
+  }],
+} satisfies Semantic;
+```
+
+Here a logical model references a named query. A generator can expand that query as a CTE or subquery. `await ava.query('SELECT * FROM paid_orders')` only works if that name already exists in the execution engine; saving this definition does not create it. A model's `refSql` can describe its source query directly when a separate named view is unnecessary.
+
+### Save and combine semantic definitions
+
+Keep one complete definition in your application, version it alongside the source it describes, and pass it to AVA after `source()`. Calling the setter replaces the saved semantic object. It does not append definitions or patch the previous object.
+
+```typescript
+await ava.semantic(undefined, () => completeDefinitions);
+const saved = await ava.semantic();
+await ava.semantic(undefined, () => ({})); // Clear all saved semantics.
+```
+
+Definitions can live in code or in an application-owned JSON file. For example, after loading a source in Node.js:
+
+```javascript
+const { readFile } = require('node:fs/promises');
+const definitions = JSON.parse(await readFile('./sales-semantic.json', 'utf8'));
+await ava.semantic(undefined, () => definitions);
+```
+
+The JSON file contains the definition object, without the JavaScript variable declaration or setter. AVA accepts an object, not a file path; if you store YAML, parse it in your application before calling the setter. Reading and parsing the file can happen asynchronously before the setter returns the object.
+
+When an operation needs its data model, AVA combines the inputs in this order:
+
+| Combination | Behavior |
+| --- | --- |
+| Schema, then profile | Observations attach to existing models and columns by name. |
+| Semantic models | Matching names enrich the model; new names add logical models. A supplied source selector takes precedence. |
+| Semantic columns | Matching names enrich columns; new names add columns. Unlisted models, columns, and profile metrics remain available. An empty column list does not remove discovered columns. |
+| Model and column `properties` | Merge by key; semantic values win for matching keys. Nested JSON values are replaced as values, not recursively merged. |
+| Other supplied model and column fields | Semantic values replace corresponding fields, including types and key declarations. |
+| Top-level fields | Supplied values replace their counterparts. In particular, relationship and view arrays are replaced as complete lists; `[]` clears that list in the combined context. |
+
+Omitting a section retains the corresponding schema context. If adding a relationship alongside discovered foreign keys, include the discovered relationships you want to keep in the supplied list. Reading `schema()`, `profile()`, or `semantic()` still returns that input, not the combined model; there is no public method to read the merged `DataModel`.
+
+Changing the schema clears the saved profile and retains semantic definitions. Profiling replaces observations and retains semantic definitions. Loading another source or calling `dispose()` clears all three. Reapply your saved definition after loading a new source, and review mappings if its structure changed. Calls require a loaded source; a failed source replacement leaves no active source.
+
+The setter validates and copies its returned object. A validation failure or thrown error leaves the previous semantic definition in place. A setter emits `semanticstart` and `semanticend`; a plain read emits neither. See [Events & lifecycle](/documentation/reference/events/).
+
+### Semantic validation
+
+Structural validation checks field shapes, required fields, source-selector exclusivity, and nonempty measure lists. It does **not** prove that SQL is valid, referenced objects exist, key declarations hold, units are consistent, or business rules are correct. Duplicate semantic model names and duplicate column names within a model are rejected when building the combined model for analysis, translation, or suggestions, rather than by the setter alone.
+
+Use the sales example’s pattern for your own definition:
+
+1. Inspect `schema()` and map exact names and physical types. For remote sources, preserve catalog and schema qualifiers.
+2. Have the business owner review grain, eligible statuses, null handling, units, and time meaning.
+3. Run each declared expression against a small fixture with known answers. Include excluded rows, nulls, refunds, and join duplication where relevant.
+4. Inspect `translate()` output for those same questions, then compare executed results with the known answers. A successful setter is not a successful end-to-end check.
+5. Repeat the checks when the source schema or business definitions change.
+
+| Symptom | What to check |
+| --- | --- |
+| Setter rejects a model | Include exactly one of `tableReference`, `refSql`, or `baseObject`; columns need `name` and `type`. |
+| Setter rejects a cube | Include `baseObject` and at least one measure with `name`, `expression`, and `type`. |
+| Setter rejects statistics | Put model and column `metrics` in `profile()`, not `semantic()`. |
+| Query says a logical name does not exist | Check whether the SQL expands its declared expression, view, or model into executable SQL. |
+| A discovered join disappears | Your relationship list replaced the discovered list. Include all joins you still need. |
+| Numbers are inflated | Check row grain, join cardinality, duplicate keys, eligibility filters, and refund treatment. |
+| A rule is ignored | Inspect the generated query. Enforce mandatory access rules in the data or execution layer. |
 
 ## analyze
 

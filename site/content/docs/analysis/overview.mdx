@@ -20,7 +20,7 @@ console.log(result.text);
 console.table(result.data);
 ```
 
-`analyze()` obtains schema on demand and uses the available profile to generate a query, execute it, and summarize the answer. It returns data and text; it does not generate a chart.
+`analyze()` obtains schema on demand and combines it with the available profile and supplied [semantic definitions](/documentation/data/semantic/) to generate a query, execute it, and summarize the answer. Semantic definitions explain business rules such as which orders count as revenue. It returns data and text; it does not generate a chart.
 
 ## Read the result
 
