@@ -681,6 +681,38 @@ export type JsonValue = string | number | boolean | null | JsonValue[] | { [key:
 /** Extensible metadata whose keys and meanings are agreed on by producers and consumers. */
 export type Properties = Record<string, JsonValue>;
 
+/** A session value referenced by a declared access-control rule. */
+export interface SessionProperty {
+  name: string;
+  required: boolean;
+  /** SQL fallback when the session does not supply a value. */
+  defaultExpr?: string | null;
+}
+
+/** Declarative row filter; enforcement belongs to the semantic execution layer. */
+export interface RowLevelAccessControl {
+  name: string;
+  requiredProperties: SessionProperty[];
+  /** SQL predicate over the model and session properties. */
+  condition: string;
+}
+
+export type ColumnLevelOperator =
+  | 'EQUALS'
+  | 'NOT_EQUALS'
+  | 'GREATER_THAN'
+  | 'LESS_THAN'
+  | 'GREATER_THAN_OR_EQUALS'
+  | 'LESS_THAN_OR_EQUALS';
+
+/** Declarative column access rule; storing it does not enforce access. */
+export interface ColumnLevelAccessControl {
+  name: string;
+  operator: ColumnLevelOperator;
+  requiredProperties: [SessionProperty];
+  threshold?: { value: string; dataType: 'NUMERIC' | 'STRING' };
+}
+
 export interface Column {
   /** Name exposed within the model; expressions can map it to a different source field. */
   name: string;
@@ -690,6 +722,11 @@ export interface Column {
   relationship?: string;
   /** Marks a column derived from an expression; execution is the engine's responsibility. */
   isCalculated?: boolean;
+  /** Marks this column as part of the model's declared primary key. */
+  isPrimaryKey?: boolean;
+  /** Declares a hidden field; visibility must be enforced by the semantic execution layer. */
+  isHidden?: boolean;
+  columnLevelAccessControl?: ColumnLevelAccessControl;
   /** Declared non-null constraint; omission is unspecified, not inferred from observed null counts. */
   notNull?: boolean;
   /** SQL mapping or calculation over the model source; null or omission supplies no expression. */
@@ -727,6 +764,12 @@ export type Model = {
   primaryKey?: PrimaryKey;
   /** Alternative unique column sets; each array is one composite key, not several independent keys. */
   uniqueKeys?: PrimaryKey[];
+  /** SQL dialect of refSql; omission uses the execution context's dialect. */
+  dialect?: string;
+  /** Cache declarations for a semantic execution layer; no cache is created by this metadata. */
+  cached?: boolean;
+  refreshTime?: string;
+  rowLevelAccessControls?: RowLevelAccessControl[];
   /**
    * Model-wide observations keyed by metric name, e.g. row_count.
    * Missing means uncomputed/omitted; null means no usable aggregate; zero and [] are actual results.
@@ -784,14 +827,44 @@ export interface View {
   name: string;
   /** SQL defining the view's result; declaring it here does not execute or materialize it. */
   statement: string;
+  /** SQL dialect of the statement; omission uses the execution context's dialect. */
+  dialect?: string;
   /** Context describing the view's purpose or business conventions. */
   properties?: Properties;
   /** Additional attributes with consumer-defined meaning; validate unknown values before use. */
   [key: string]: unknown;
 }
 
+/** A reusable aggregation, separate from observed profiling metrics. */
+export interface Measure extends Pick<Column, 'name' | 'type' | 'properties'> {
+  /** SQL aggregation over the cube's base object, e.g. SUM(amount). */
+  expression: string;
+  description?: string;
+}
+
+/** A grouping expression over a cube's base object. */
+export type CubeDimension = Measure;
+
+/** A date/time grouping expression; granularity is chosen at query time. */
+export type TimeDimension = CubeDimension;
+
+/** A semantic aggregation over a model or view. */
+export interface Cube {
+  name: string;
+  /** Name of the model or view supplying the rows to aggregate. */
+  baseObject: string;
+  measures: [Measure, ...Measure[]];
+  dimensions?: CubeDimension[];
+  timeDimensions?: TimeDimension[];
+  /** Ordered dimension names from coarsest to finest for each drill-down path. */
+  hierarchies?: Record<string, [string, ...string[]]>;
+  refreshTime?: string;
+  properties?: Properties;
+}
+
 /** Schema, profiling and semantics enrich the same data model. */
 export interface DataModel {
+  description?: string;
   /** Context shared across models; per-model and per-column metadata stays with its owning object. */
   properties?: Properties;
   /** Logical datasets, source mappings, columns and their computed observations. */
@@ -800,6 +873,8 @@ export interface DataModel {
   relationships?: Relationship[];
   /** Reusable named queries; discovering a database view does not automatically supply its SQL definition. */
   views?: View[];
+  /** Reusable business aggregations, dimensions and drill-down paths. */
+  cubes?: Cube[];
 }
 
 /** Catalog-discoverable structure; excludes observations and application-defined semantics. */

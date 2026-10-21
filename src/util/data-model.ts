@@ -8,6 +8,31 @@ import type { Column, DataModel, Model, Profile, Schema } from '../types';
 const name = z.string().min(1);
 const properties = z.record(jsonValue);
 const key = z.union([name, z.array(name).nonempty()]);
+const refreshTime = z.string().regex(/^\s*(\d+(?:\.\d+)?)\s*([a-zA-Z]+)\s*$/);
+const sessionProperty = z
+  .object({ name, required: z.boolean(), defaultExpr: z.string().nullable().optional() })
+  .strict();
+const rowLevelAccessControl = z
+  .object({ name, requiredProperties: z.array(sessionProperty), condition: name })
+  .strict();
+const columnLevelAccessControl = z
+  .object({
+    name,
+    operator: z.enum([
+      'EQUALS',
+      'NOT_EQUALS',
+      'GREATER_THAN',
+      'LESS_THAN',
+      'GREATER_THAN_OR_EQUALS',
+      'LESS_THAN_OR_EQUALS',
+    ]),
+    requiredProperties: z.tuple([sessionProperty]),
+    threshold: z
+      .object({ value: z.string(), dataType: z.enum(['NUMERIC', 'STRING']) })
+      .strict()
+      .optional(),
+  })
+  .strict();
 
 const column = z
   .object({
@@ -15,6 +40,9 @@ const column = z
     type: name,
     relationship: name.optional(),
     isCalculated: z.boolean().optional(),
+    isPrimaryKey: z.boolean().optional(),
+    isHidden: z.boolean().optional(),
+    columnLevelAccessControl: columnLevelAccessControl.optional(),
     notNull: z.boolean().optional(),
     expression: z.string().nullable().optional(),
     metrics: properties.optional(),
@@ -32,6 +60,10 @@ const model = z
     columns: z.array(column).optional(),
     primaryKey: key.optional(),
     uniqueKeys: z.array(key).optional(),
+    dialect: name.optional(),
+    cached: z.boolean().optional(),
+    refreshTime: refreshTime.optional(),
+    rowLevelAccessControls: z.array(rowLevelAccessControl).optional(),
     metrics: properties.optional(),
     properties: properties.optional(),
     refSql: name.optional(),
@@ -55,14 +87,35 @@ const relationship = z
   })
   .catchall(jsonValue);
 
-const view = z.object({ name, statement: name, properties: properties.optional() }).catchall(jsonValue);
+const view = z
+  .object({ name, statement: name, dialect: name.optional(), properties: properties.optional() })
+  .catchall(jsonValue);
+
+const measure = z
+  .object({ name, expression: name, type: name, description: z.string().optional(), properties: properties.optional() })
+  .strict();
+
+const cube = z
+  .object({
+    name,
+    baseObject: name,
+    measures: z.array(measure).nonempty(),
+    dimensions: z.array(measure).optional(),
+    timeDimensions: z.array(measure).optional(),
+    hierarchies: z.record(z.array(name).nonempty()).optional(),
+    refreshTime: refreshTime.optional(),
+    properties: properties.optional(),
+  })
+  .strict();
 
 /** Validate and copy metadata without stripping semantic extensions or observations. */
 export const dataModelMetadataSchema = z
   .object({
+    description: z.string().optional(),
     models: z.array(model).optional(),
     relationships: z.array(relationship).optional(),
     views: z.array(view).optional(),
+    cubes: z.array(cube).optional(),
     properties: properties.optional(),
   })
   .strict() as unknown as z.ZodType<DataModel>;
@@ -135,10 +188,12 @@ export function buildDataModel(input: { schema: Schema; profile?: Profile }): Da
 }
 
 /** Render model metadata as Markdown, keeping optional attributes with their owning objects. */
-export function stringifyDataModel(dataModel: DataModel): string {
+export function stringifyDataModel({ description, ...dataModel }: DataModel): string {
   const attributes = (value: object): string =>
     markdownTable(Object.entries(value).map(([key, value]) => ({ Attribute: key, Value: value })));
   const sections = ['# Data Model'];
+
+  if (description !== undefined) sections.push(attributes({ description }));
 
   if (dataModel.properties && Object.keys(dataModel.properties).length) {
     sections.push('## Properties', attributes(dataModel.properties));
@@ -154,6 +209,7 @@ export function stringifyDataModel(dataModel: DataModel): string {
 
   if (dataModel.relationships?.length) sections.push('## Relationships', markdownTable(dataModel.relationships));
   if (dataModel.views?.length) sections.push('## Views', markdownTable(dataModel.views));
+  if (dataModel.cubes?.length) sections.push('## Cubes', markdownTable(dataModel.cubes));
 
   return sections.filter(Boolean).join('\n\n');
 }

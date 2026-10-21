@@ -54,7 +54,7 @@ describe('stringifyDataModel', () => {
 
   it('accepts empty and partial descriptions without inventing metadata', () => {
     expect(stringifyDataModel({})).toBe('# Data Model');
-    expect(stringifyDataModel({ properties: {}, models: [], relationships: [], views: [] })).toBe('# Data Model');
+    expect(stringifyDataModel({ properties: {}, models: [], relationships: [], views: [], cubes: [] })).toBe('# Data Model');
     expect(stringifyDataModel({ models: [{ name: 'data', baseObject: 'source' }] })).toBe(
       '# Data Model\n\n## Models\n\n### data\n\n| Attribute | Value |\n| --- | --- |\n| baseObject | source |'
     );
@@ -144,8 +144,143 @@ describe('dataModelMetadataSchema', () => {
     expect(dataModelMetadataSchema.parse(input)).toEqual(input);
   });
 
-  it('rejects obsolete root fields instead of silently discarding data', () => {
-    expect(() => dataModelMetadataSchema.parse({ models: [], tables: [] })).toThrow();
+  it.each([{ tables: [] }, { catalog: 'analytics' }, { schema: 'sales' }])(
+    'rejects obsolete root fields instead of silently discarding data: %j',
+    (fields) => {
+      expect(() => dataModelMetadataSchema.parse({ models: [], ...fields })).toThrow();
+    }
+  );
+});
+
+describe('semantic metadata', () => {
+  const input: DataModel = {
+    description: 'Governed sales definitions',
+    models: [
+      {
+        name: 'orders',
+        tableReference: { catalog: 'warehouse', schema: 'public', table: 'raw_orders' },
+        dialect: 'duckdb',
+        cached: false,
+        refreshTime: '1h',
+        rowLevelAccessControls: [
+          {
+            name: 'tenant_filter',
+            requiredProperties: [{ name: 'tenant_id', required: true, defaultExpr: null }],
+            condition: 'tenant_id = @tenant_id',
+          },
+        ],
+        columns: [
+          { name: 'id', type: 'INTEGER', isPrimaryKey: true },
+          {
+            name: 'cost',
+            type: 'DOUBLE',
+            isHidden: true,
+            columnLevelAccessControl: {
+              name: 'cost_access',
+              operator: 'GREATER_THAN_OR_EQUALS',
+              requiredProperties: [{ name: 'access_level', required: false, defaultExpr: '0' }],
+              threshold: { value: '2', dataType: 'NUMERIC' },
+            },
+          },
+        ],
+      },
+    ],
+    views: [{ name: 'sales', statement: 'SELECT * FROM orders', dialect: 'duckdb' }],
+    cubes: [
+      {
+        name: 'revenue',
+        baseObject: 'sales',
+        measures: [
+          {
+            name: 'total_revenue',
+            expression: 'SUM(amount)',
+            type: 'DOUBLE',
+            description: 'Recognized revenue',
+            properties: { unit: 'USD' },
+          },
+        ],
+        dimensions: [{ name: 'status', expression: 'status', type: 'VARCHAR' }],
+        timeDimensions: [{ name: 'ordered_at', expression: 'ordered_at', type: 'TIMESTAMP' }],
+        hierarchies: { calendar: ['ordered_at'] },
+        refreshTime: '30m',
+        properties: { description: 'Revenue by order status' },
+      },
+    ],
+  };
+
+  it('validates and copies semantic definitions without filling defaults or mixing them with observations', () => {
+    const result = dataModelMetadataSchema.parse(input);
+    expect(result).toEqual(input);
+    expect(result.cubes[0].measures).not.toBe(input.cubes[0].measures);
+    expect(result.models[0].rowLevelAccessControls).not.toBe(input.models[0].rowLevelAccessControls);
+    expect(result.models[0].metrics).toBeUndefined();
+  });
+
+  it('includes description, cubes and access declarations in model context without mutating it', () => {
+    const original = structuredClone(input);
+    const result = stringifyDataModel(input);
+    for (const value of [
+      'Governed sales definitions',
+      '## Cubes',
+      'total&#95;revenue',
+      'SUM(amount)',
+      'ordered&#95;at',
+      'rowLevelAccessControls',
+      'columnLevelAccessControl',
+      'isHidden',
+    ]) {
+      expect(result).toContain(value);
+    }
+    expect(input).toEqual(original);
+  });
+
+  it.each([
+    { cubes: [{ name: 'empty', baseObject: 'orders', measures: [] }] },
+    { cubes: [{ name: 'invalid', measures: [{ name: 'total', expression: 'SUM(amount)', type: 'DOUBLE' }] }] },
+    { cubes: [{ ...input.cubes[0], measures: [{ name: 'total', type: 'DOUBLE' }] }] },
+    { cubes: [{ ...input.cubes[0], hierarchies: { calendar: [] } }] },
+    { models: [{ ...input.models[0], cached: 'true' }] },
+    { models: [{ ...input.models[0], refreshTime: 'tomorrow' }] },
+    { models: [{ ...input.models[0], rowLevelAccessControls: [{ name: 'invalid', condition: 'true' }] }] },
+    {
+      models: [{ name: 'orders', baseObject: 'raw_orders', columns: [{ name: 'id', type: 'INT', isHidden: 'true' }] }],
+    },
+  ])('rejects malformed semantic metadata: %j', (value) => {
+    expect(() => dataModelMetadataSchema.parse(value)).toThrow();
+  });
+
+  it.each([
+    { requiredProperties: [{ name: 'role' }] },
+    { operator: 'LIKE' },
+    { requiredProperties: [] },
+    {
+      requiredProperties: [
+        { name: 'role', required: true },
+        { name: 'level', required: true },
+      ],
+    },
+    { threshold: { value: '1', dataType: 'BOOLEAN' } },
+  ])('rejects malformed column access rules: %j', (rule) => {
+    expect(() =>
+      dataModelMetadataSchema.parse({
+        models: [
+          {
+            name: 'orders',
+            baseObject: 'raw_orders',
+            columns: [
+              {
+                name: 'cost',
+                type: 'DOUBLE',
+                columnLevelAccessControl: {
+                  ...input.models[0].columns[1].columnLevelAccessControl,
+                  ...rule,
+                },
+              },
+            ],
+          },
+        ],
+      })
+    ).toThrow();
   });
 });
 
