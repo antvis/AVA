@@ -1,5 +1,73 @@
 // Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
+exports[`stringifyDataModel > describes cube members and drill-down paths without nesting their definitions in JSON 1`] = `
+"# Data Model
+
+## Cubes
+
+### Cube: revenue
+
+| Attribute | Value |
+| --- | --- |
+| baseObject | orders |
+| refreshTime | 1h |
+
+Properties:
+
+| Attribute | Value |
+| --- | --- |
+| description | Sales reporting |
+
+#### Measures
+
+- total (DOUBLE)
+
+| Attribute | Value |
+| --- | --- |
+| expression | SUM(amount - refund) |
+| description | Net revenue |
+
+Properties:
+
+| Attribute | Value |
+| --- | --- |
+| unit | USD |
+
+#### Dimensions
+
+- region (VARCHAR)
+
+| Attribute | Value |
+| --- | --- |
+| expression | region |
+
+#### Time dimensions
+
+- month (DATE)
+
+| Attribute | Value |
+| --- | --- |
+| expression | DATE&#95;TRUNC('month', ordered&#95;at) |
+
+#### Hierarchies
+
+- calendar: year → month
+
+### Cube: counts
+
+| Attribute | Value |
+| --- | --- |
+| baseObject | orders |
+
+#### Measures
+
+- count (BIGINT)
+
+| Attribute | Value |
+| --- | --- |
+| expression | COUNT(&#42;) |"
+`;
+
 exports[`stringifyDataModel > renders model sources, constraints, columns and metadata as Markdown tables 1`] = `
 "# Data Model
 
@@ -11,31 +79,70 @@ exports[`stringifyDataModel > renders model sources, constraints, columns and me
 
 ## Models
 
-### orders
+### Model: orders
 
 | Attribute | Value |
 | --- | --- |
 | tableReference | {"schema":"public","table":"raw&#95;orders"} |
 | primaryKey | &#91;"id","customer&#95;id"&#93; |
 | uniqueKeys | &#91;"id"&#93; |
-| metrics | {"row&#95;count":0} |
-| properties | {"description":"Confirmed orders"} |
+
+Properties:
+
+| Attribute | Value |
+| --- | --- |
+| description | Confirmed orders |
+
+Metrics:
+
+| Attribute | Value |
+| --- | --- |
+| row&#95;count | 0 |
 
 #### Columns
 
-| name | type | notNull | isCalculated | expression | metrics | properties | relationship |
-| --- | --- | --- | --- | --- | --- | --- | --- |
-| id | INTEGER | true |  |  |  |  |  |
-| amount | DOUBLE | false | true | price &#42; quantity | {"min":null,"max":0,"top&#95;values":&#91;&#93;} | {"unit":"USD"} |  |
-| customer | customers |  |  | null |  |  | order&#95;customer |
+- id (INTEGER) NOT NULL
 
-### customers
+| Attribute | Value |
+| --- | --- |
+| notNull | true |
+
+- amount (DOUBLE) &#91;calculated: price &#42; quantity&#93;
+
+| Attribute | Value |
+| --- | --- |
+| notNull | false |
+| isCalculated | true |
+| expression | price &#42; quantity |
+
+Properties:
+
+| Attribute | Value |
+| --- | --- |
+| unit | USD |
+
+Metrics:
+
+| Attribute | Value |
+| --- | --- |
+| min | null |
+| max | 0 |
+| top&#95;values | &#91;&#93; |
+
+- customer (customers) &#91;relationship: order&#95;customer&#93;
+
+| Attribute | Value |
+| --- | --- |
+| relationship | order&#95;customer |
+| expression | null |
+
+### Model: customers
 
 | Attribute | Value |
 | --- | --- |
 | baseObject | raw&#95;customers |
 
-### recent&#95;orders
+### Model: recent&#95;orders
 
 | Attribute | Value |
 | --- | --- |
@@ -43,13 +150,29 @@ exports[`stringifyDataModel > renders model sources, constraints, columns and me
 
 ## Relationships
 
-| name | models | joinType | condition | properties | custom |
-| --- | --- | --- | --- | --- | --- |
-| order&#95;customer | &#91;"orders","customers"&#93; | MANY&#95;TO&#95;ONE | orders.customer&#95;id = customers.id | {"description":"Buyer"} | false |
+### Relationship: order&#95;customer
+
+orders → customers (MANY&#95;TO&#95;ONE)
+
+| Attribute | Value |
+| --- | --- |
+| models | &#91;"orders","customers"&#93; |
+| joinType | MANY&#95;TO&#95;ONE |
+| condition | orders.customer&#95;id = customers.id |
+| custom | false |
+
+Properties:
+
+| Attribute | Value |
+| --- | --- |
+| description | Buyer |
 
 ## Views
 
-| name | statement | custom |
-| --- | --- | --- |
-| all&#95;orders | SELECT &#42; FROM orders | {"enabled":true} |"
+### View: all&#95;orders
+
+| Attribute | Value |
+| --- | --- |
+| statement | SELECT &#42; FROM orders |
+| custom | {"enabled":true} |"
 `;
