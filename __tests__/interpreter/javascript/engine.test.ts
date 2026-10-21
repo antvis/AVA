@@ -60,7 +60,7 @@ describe('interpreter/javascript/engine', () => {
   describe('profile', () => {
     const metrics = BUILTIN_METRICS.map(({ id }) => ({ id }));
 
-    it('computes the DuckDB metrics through AVA, without changing schema or rows', async () => {
+    it('computes a complete profile through AVA without changing schema or rows', async () => {
       const ava = new AVA({ llm: getLLMConfig(), engine: { type: 'javascript' } });
       const data = [
         { n: 1, category: 'B', flag: true, day: '2024-01-01' },
@@ -69,40 +69,75 @@ describe('interpreter/javascript/engine', () => {
         { n: null, category: null, flag: null, day: null },
       ];
       try {
-        const discover = vi.spyOn(JavaScriptEngine.prototype, 'schema');
         await ava.source({ type: 'json', options: { data } });
         const loaded = await ava.schema();
-        discover.mockRestore();
-        const before = JSON.stringify({ loaded, data });
+        const before = structuredClone({ loaded, data });
         const result = await ava.profile({ metrics });
-        const [table] = result.models;
-        expect(table.metrics).toEqual({ row_count: 4 });
-        expect(table.columns[0].metrics).toMatchObject({
-          null_count: 1,
-          distinct_count: 2,
-          duplicate_count: 1,
-          min: 1,
-          max: 3,
-          sum: 7,
-          median: 3,
+        expect(result).toEqual({
+          models: [
+            {
+              name: 'data',
+              metrics: { row_count: 4 },
+              columns: [
+                {
+                  name: 'n',
+                  properties: { logicalType: 'numeric' },
+                  metrics: {
+                    null_count: 1,
+                    distinct_count: 2,
+                    duplicate_count: 1,
+                    min: 1,
+                    max: 3,
+                    sum: 7,
+                    median: 3,
+                    mean: expect.closeTo(7 / 3, 10),
+                    stddev: expect.closeTo(Math.sqrt(4 / 3), 10),
+                  },
+                },
+                {
+                  name: 'category',
+                  properties: { logicalType: 'string' },
+                  metrics: {
+                    null_count: 1,
+                    distinct_count: 2,
+                    duplicate_count: 1,
+                    min_length: 1,
+                    max_length: 1,
+                    top_values: [
+                      { value: 'A', count: 2 },
+                      { value: 'B', count: 1 },
+                    ],
+                  },
+                },
+                {
+                  name: 'flag',
+                  properties: { logicalType: 'boolean' },
+                  metrics: {
+                    null_count: 1,
+                    distinct_count: 2,
+                    duplicate_count: 1,
+                    top_values: [
+                      { value: false, count: 2 },
+                      { value: true, count: 1 },
+                    ],
+                  },
+                },
+                {
+                  name: 'day',
+                  properties: { logicalType: 'date' },
+                  metrics: {
+                    null_count: 2,
+                    distinct_count: 2,
+                    duplicate_count: 0,
+                    min: Date.UTC(2024, 0, 1),
+                    max: Date.UTC(2024, 0, 3),
+                  },
+                },
+              ],
+            },
+          ],
         });
-        expect(table.columns[0].metrics.mean).toBeCloseTo(7 / 3);
-        expect(table.columns[0].metrics.stddev).toBeCloseTo(Math.sqrt(4 / 3));
-        expect(table.columns[1].metrics.top_values).toEqual([
-          { value: 'A', count: 2 },
-          { value: 'B', count: 1 },
-        ]);
-        expect(table.columns[2]).toMatchObject({
-          properties: { logicalType: 'boolean' },
-          metrics: {
-            top_values: [
-              { value: false, count: 2 },
-              { value: true, count: 1 },
-            ],
-          },
-        });
-        expect(table.columns[3].metrics).toMatchObject({ min: Date.UTC(2024, 0, 1), max: Date.UTC(2024, 0, 3) });
-        expect(JSON.stringify({ loaded, data })).toBe(before);
+        expect({ loaded, data }).toEqual(before);
         expect((await ava.profile()).models[0].columns[0].metrics).not.toHaveProperty('sum');
         expect(
           (await ava.profile({ metrics: [] })).models[0].columns.every((field) => !Object.keys(field.metrics).length)

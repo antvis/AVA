@@ -245,14 +245,6 @@ describe('buildDataModel', () => {
         },
       ],
     });
-    expect(result.models[0].columns[2].metrics).toEqual({
-      min: null,
-      max: 0,
-      top_values: [],
-      custom: [{ value: false, count: 1 }],
-    });
-    expect(result.models[0].columns[1]).not.toHaveProperty('metrics');
-    expect(result.models[0].columns[1]).not.toHaveProperty('properties');
   });
 
   it('accepts absent, empty and partial profiles without inventing observations', () => {
@@ -262,8 +254,25 @@ describe('buildDataModel', () => {
 
     const result = buildDataModel({ schema, profile: { models: [profile.models[0]] } });
 
-    expect(result.models[0]).toEqual(schema.models[0]);
-    expect(result.models[1].metrics).toEqual({});
+    expect(result).toEqual({
+      ...schema,
+      models: [
+        schema.models[0],
+        {
+          ...schema.models[1],
+          metrics: {},
+          columns: [
+            {
+              name: 'id',
+              type: 'INTEGER',
+              notNull: true,
+              metrics: { distinct_count: 0 },
+              properties: { logicalType: 'numeric' },
+            },
+          ],
+        },
+      ],
+    });
   });
 
   it('accepts an in-memory source without inventing a catalog or schema', () => {
@@ -300,9 +309,10 @@ describe('buildDataModel', () => {
       profile: { models: [{ name: 'orders', metrics: { row_count: 10 }, columns: [] }] },
     });
 
-    expect(result.models[0].metrics).toEqual({ row_count: 10 });
-    expect(result.models[0].columns).toEqual(schema.models[0].columns);
-    expect(result.models[1]).not.toHaveProperty('metrics');
+    expect(result).toEqual({
+      ...schema,
+      models: [{ ...schema.models[0], metrics: { row_count: 10 } }, schema.models[1]],
+    });
   });
 
   it.each<[string, Profile]>([

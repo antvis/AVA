@@ -20,15 +20,22 @@ const profile: Profile = {
   })),
 };
 
-it('validates metric options without treating the metric id as an option', () => {
-  expect(resolveMetric({ id: 'row_count' }, BUILTIN_METRICS)).toBe(BUILTIN_METRICS[0]);
-  expect(resolveMetric({ id: 'top_values', limit: 2 }, BUILTIN_METRICS).id).toBe('top_values');
-  expect(() => resolveMetric({ id: 'row_count', limit: 2 }, BUILTIN_METRICS)).toThrow(
-    'Unknown option for row_count: limit'
-  );
-  expect(() => resolveMetric({ id: 'top_values', limit: -1 }, BUILTIN_METRICS)).toThrow(
-    'top_values.limit must be a non-negative safe integer'
-  );
+describe('resolveMetric', () => {
+  it('returns the selected definition after validating its options', () => {
+    expect(resolveMetric({ id: 'row_count' }, BUILTIN_METRICS)).toBe(BUILTIN_METRICS[0]);
+    expect(resolveMetric({ id: 'top_values', limit: 2, maxDistinctRatio: 0.5 }, BUILTIN_METRICS).id).toBe('top_values');
+  });
+
+  it.each([
+    { config: { id: 'missing' }, error: 'Unknown metric: missing' },
+    { config: { id: 'row_count', limit: 2 }, error: 'Unknown option for row_count: limit' },
+    { config: { id: 'top_values', limit: -1 }, error: 'top_values.limit' },
+    { config: { id: 'top_values', limit: 1.5 }, error: 'top_values.limit' },
+    { config: { id: 'top_values', maxDistinctRatio: 2 }, error: 'top_values.maxDistinctRatio' },
+    { config: { id: 'top_values', maxDistinctRatio: NaN }, error: 'top_values.maxDistinctRatio' },
+  ])('rejects invalid configuration $config', ({ config, error }) => {
+    expect(() => resolveMetric(config, BUILTIN_METRICS)).toThrow(error);
+  });
 });
 
 describe('profileMetadataSchema', () => {

@@ -114,12 +114,19 @@ describe('python/engine metadata', () => {
             condition: '"data"."value" = "data"."value"',
           },
         ];
+        const before = structuredClone(savedSchema);
         await engine.load(source);
         const computed = await engine.profile(savedSchema, { metrics: ['row_count', 'mean'] });
-        expect(savedSchema.models[0].uniqueKeys).toEqual(['value']);
-        expect(computed).not.toHaveProperty('tableReference');
-        expect(computed.models[0].metrics).toEqual({ row_count: 2 });
-        expect(computed.models[0].columns[0].metrics).toEqual({ mean: 3 });
+        expect(computed).toEqual({
+          models: [
+            {
+              name: 'data',
+              metrics: { row_count: 2 },
+              columns: [{ name: 'value', properties: { logicalType: 'numeric' }, metrics: { mean: 3 } }],
+            },
+          ],
+        });
+        expect(savedSchema).toEqual(before);
       } finally {
         await engine.dispose();
       }

@@ -35,39 +35,6 @@ describe('getDuckDBSchema', () => {
     const rows = (await query.mock.results[0].value).getRowObjectsJson();
     expect(rows.every((row) => typeof row.metadata === 'object' && row.metadata !== null)).toBe(true);
     expect(schema).toMatchSnapshot();
-    expect(schema.models.map((model) => model.name)).toEqual(['customers', 'details', 'orders']);
-    expect(schema.models.find((model) => model.name === 'orders')).toEqual({
-      name: 'orders',
-      tableReference: { catalog: 'memory', schema: 'analytics', table: 'orders' },
-      columns: [
-        { name: 'id', type: 'INTEGER', notNull: true },
-        { name: 'tenant_id', type: 'INTEGER', notNull: false },
-        { name: 'customer_id', type: 'INTEGER', notNull: false },
-        { name: 'amount', type: 'DOUBLE', notNull: false },
-      ],
-      primaryKey: 'id',
-    });
-    expect(schema.models.find((model) => model.name === 'customers')).toMatchObject({
-      primaryKey: ['tenant_id', 'id'],
-      uniqueKeys: ['email'],
-    });
-    expect(schema.relationships).toEqual([
-      expect.objectContaining({
-        models: ['details', 'orders'],
-        joinType: 'ONE_TO_ONE',
-        condition: '"details"."order_id" = "orders"."id"',
-      }),
-      expect.objectContaining({
-        models: ['orders', 'customers'],
-        joinType: 'MANY_TO_ONE',
-        condition: '"orders"."tenant_id" = "customers"."tenant_id" AND "orders"."customer_id" = "customers"."id"',
-      }),
-    ]);
-    expect(schema.views).toEqual([]);
-    expect(schema).not.toHaveProperty('tables');
-    expect(schema.models[0]).not.toHaveProperty('metrics');
-
-    expect(schema.models.find((model) => model.name === 'orders')).not.toHaveProperty('uniqueKeys');
   });
 
   it('discovers unique index keys without exposing secondary indexes', async () => {
@@ -77,22 +44,63 @@ describe('getDuckDBSchema', () => {
       CREATE INDEX by_value ON indexed(value);
     `);
     const schema = await getDuckDBSchema(connection);
-    expect(schema.models[0].uniqueKeys).toEqual(['id']);
-    expect(schema.models[0]).not.toHaveProperty('indexes');
+    expect(schema).toEqual({
+      models: [
+        {
+          name: 'indexed',
+          tableReference: { catalog: 'memory', schema: 'main', table: 'indexed' },
+          columns: [
+            { name: 'id', type: 'INTEGER', notNull: false },
+            { name: 'value', type: 'VARCHAR', notNull: false },
+          ],
+          uniqueKeys: ['id'],
+        },
+      ],
+      relationships: [],
+      views: [],
+    });
   });
 
-  it('extracts executable view queries and preserves explicit output aliases and quoted identifiers', async () => {
+  it('preserves CTEs, joins, aggregates, windows and nested views in a qualified namespace', async () => {
     await connection.run(`
-      CREATE VIEW "view AS ""quoted" ("output AS ""quoted") AS SELECT 'literal AS ;' AS original;
-      CREATE VIEW plain_view AS SELECT 1 AS id;
+      CREATE SCHEMA analytics;
+      USE analytics;
+      CREATE TABLE customers(id INTEGER PRIMARY KEY, name VARCHAR);
+      CREATE TABLE orders(customer_id INTEGER REFERENCES customers(id), amount INTEGER, status VARCHAR);
+
+      CREATE VIEW "sales.report AS ""quoted" ("customer, name", "total AS ""net", "position") AS
+      WITH totals AS (
+        SELECT c.name, CAST(COALESCE(SUM(o.amount) FILTER (WHERE o.status = 'paid'), 0) AS INTEGER) AS total
+        FROM customers c LEFT JOIN orders o ON c.id = o.customer_id
+        GROUP BY c.name
+      )
+      SELECT name, total, CAST(ROW_NUMBER() OVER (ORDER BY total DESC, name) AS INTEGER) FROM totals;
+
+      CREATE VIEW "top customers" AS
+      SELECT * FROM "sales.report AS ""quoted" WHERE "total AS ""net" >= 50
+      UNION ALL SELECT 'literal AS ; --', 0, 99;
+      CREATE VIEW main."top customers" AS SELECT -1 AS hidden;
     `);
-    const schema = await getDuckDBSchema(connection);
-    expect(schema.models.map((model) => model.name)).toEqual(['plain_view', 'view AS "quoted']);
-    const view = schema.views.find((view) => view.name === 'view AS "quoted');
-    expect(view.statement).not.toMatch(/^CREATE/i);
-    const result = await connection.runAndReadAll(view.statement);
-    expect(result.getRowObjectsJson()).toEqual([{ 'output AS "quoted': 'literal AS ;' }]);
-    expect(schema.views.find((view) => view.name === 'plain_view').statement).toBe('SELECT 1 AS id');
+
+    expect({
+      schema: await getDuckDBSchema(connection),
+      selected: await getDuckDBSchema(connection, ['top customers']),
+    }).toMatchSnapshot();
+  });
+
+  it('discovers replaced view definitions and preserves columns when the query returns no rows', async () => {
+    await connection.run('CREATE VIEW current_view AS SELECT 1 AS original');
+    const before = await getDuckDBSchema(connection, ['current_view']);
+
+    await connection.run(`
+      CREATE OR REPLACE VIEW current_view ("empty, value", "label AS text") AS
+      WITH RECURSIVE sequence(n) AS (
+        SELECT 1 UNION ALL SELECT n + 1 FROM sequence WHERE n < 3
+      )
+      SELECT n, 'AS ;' FROM sequence WHERE n > 10;
+    `);
+    const after = await getDuckDBSchema(connection, ['current_view']);
+    expect({ before, after }).toMatchSnapshot();
   });
 
   it('respects the selected namespace and safely filters names without dangling relationships', async () => {
@@ -103,8 +111,18 @@ describe('getDuckDBSchema', () => {
       CREATE TABLE hidden.secret(id INTEGER);
     `);
     const schema = await getDuckDBSchema(connection, ["O'Reilly"]);
-    expect(schema.models.map((model) => model.name)).toEqual(["O'Reilly"]);
-    expect(schema.relationships).toEqual([]);
+    expect(schema).toEqual({
+      models: [
+        {
+          name: "O'Reilly",
+          tableReference: { catalog: 'memory', schema: 'main', table: "O'Reilly" },
+          columns: [{ name: 'id', type: 'INTEGER', notNull: true }],
+          primaryKey: 'id',
+        },
+      ],
+      relationships: [],
+      views: [],
+    });
     expect(await getDuckDBSchema(connection, ['missing'])).toEqual({ models: [], relationships: [], views: [] });
   });
 

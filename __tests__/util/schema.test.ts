@@ -28,23 +28,28 @@ const profile: Profile = {
 };
 
 describe('extractDataSchema', () => {
-  it('should extract schema from an object array', () => {
+  it('infers scalar types, nullable fields and object values in input column order', () => {
     const data = [
-      { company: 'A', region: 'East', revenue: 100 },
-      { company: 'B', region: 'West', revenue: 200 },
+      { name: 'A', amount: 10, flag: true, day: '2024-01-01', extra: { tag: 'x' }, empty: null },
+      { name: 'B', amount: null, flag: 'false', day: '2024-01-02', extra: null, empty: '' },
     ];
 
-    const schema = extractDataSchema(data);
-
-    expect(schema.models).toHaveLength(1);
-    const table = schema.models[0];
-    expect(table.name).toBe('data');
-    expect(table.columns).toHaveLength(3);
-    expect(table.columns).toEqual([
-      { name: 'company', type: 'string' },
-      { name: 'region', type: 'string' },
-      { name: 'revenue', type: 'number' },
-    ]);
+    expect(extractDataSchema(data)).toEqual({
+      models: [
+        {
+          name: 'data',
+          tableReference: { table: 'data' },
+          columns: [
+            { name: 'name', type: 'string' },
+            { name: 'amount', type: 'number' },
+            { name: 'flag', type: 'boolean' },
+            { name: 'day', type: 'date' },
+            { name: 'extra', type: 'unknown' },
+            { name: 'empty', type: 'string' },
+          ],
+        },
+      ],
+    });
   });
 
   it('should handle empty data', () => {

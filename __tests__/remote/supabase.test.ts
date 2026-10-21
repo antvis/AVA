@@ -17,7 +17,6 @@ import type { Schema } from '../../src/types';
 const CONNECTION = { accessToken: 'token-123', projectRef: 'demo-ref' };
 
 /** Tagged catalog rows returned by the single metadata query. */
-/** Tagged catalog rows returned by the single metadata query. */
 const DISCOVERY_ROWS = [
   {
     kind: 'column',
@@ -41,7 +40,6 @@ const DISCOVERY_ROWS = [
   },
 ];
 
-/** Stub global fetch to answer Management API calls; records request shapes */
 /** Stub global fetch to answer Management API calls; records request shapes */
 function stubApi(payloads: Array<{ match?: RegExp; rows: unknown[] }>) {
   const requests: Array<{ url: string; headers: any; body: any }> = [];
@@ -213,21 +211,33 @@ describe('SupabaseEngine', () => {
       expect(parsed.stmts).toHaveLength(1);
       expect(parsed.stmts![0].stmt).toHaveProperty('SelectStmt');
       expect(requests[0].body.read_only).toBe(true);
-      expect(schema.models.find(({ name }) => name === 'users')).toMatchObject({
-        columns: [
-          { name: 'id', type: 'bigint', notNull: true },
-          { name: 'name', type: 'text', notNull: false },
+      expect(schema).toEqual({
+        models: [
+          {
+            name: 'orders',
+            tableReference: { table: 'orders' },
+            columns: [{ name: 'buyer_id', type: 'bigint', notNull: false }],
+          },
+          {
+            name: 'users',
+            tableReference: { table: 'users' },
+            columns: [
+              { name: 'id', type: 'bigint', notNull: true },
+              { name: 'name', type: 'text', notNull: false },
+            ],
+            primaryKey: 'id',
+          },
         ],
-        primaryKey: 'id',
+        relationships: [
+          {
+            name: 'buyer_fk',
+            models: ['orders', 'users'],
+            joinType: 'MANY_TO_ONE',
+            condition: '"orders"."buyer_id" = "users"."id"',
+          },
+        ],
+        views: [],
       });
-      expect(schema.relationships).toEqual([
-        {
-          name: 'buyer_fk',
-          models: ['orders', 'users'],
-          joinType: 'MANY_TO_ONE',
-          condition: '"orders"."buyer_id" = "users"."id"',
-        },
-      ]);
       const generate = vi.spyOn(PostgreSQLQueryDialect.prototype, 'getDSL').mockResolvedValue('SELECT 1');
       await engine.getDSL('Orders by buyer', schema);
       expect(generate).toHaveBeenCalledWith('Orders by buyer', schema);
@@ -296,9 +306,24 @@ describe('SupabaseEngine', () => {
       const selected = { metrics: [{ id: 'row_count' }, { id: 'mean' }, { id: 'top_values' }] };
       const result = await pgProfile(run, schema, selected);
       expect(run).toHaveBeenCalledTimes(1);
-      expect(result.models[0].metrics.row_count).toBe(4);
-      expect(result.models[0].columns[0].metrics.mean).toBeNull();
-      expect(result.models[0].columns[1].metrics.top_values).toEqual([{ value: 'A', count: 2 }]);
+      expect(result).toEqual({
+        models: [
+          {
+            name: 'order notes',
+            metrics: { row_count: 4 },
+            columns: [
+              { name: 'n', properties: { logicalType: 'numeric' }, metrics: { mean: null } },
+              {
+                name: 'note"text',
+                properties: { logicalType: 'string' },
+                metrics: { top_values: [{ value: 'A', count: 2 }] },
+              },
+              { name: 'day', properties: { logicalType: 'date' }, metrics: {} },
+              { name: 'extra', properties: { logicalType: 'unknown' }, metrics: {} },
+            ],
+          },
+        ],
+      });
       const query = run.mock.calls[0][0];
       expect(query).toContain('"public"."order notes"');
       expect(query).toContain('"note""text"');
@@ -313,8 +338,24 @@ describe('SupabaseEngine', () => {
         schema,
         { metrics }
       );
-      run.mockClear();
-      await pgProfile(run, schema, { metrics: [] });
+    });
+
+    it('skips queries for empty selections and propagates query failures', async () => {
+      const run = vi.fn();
+      expect(await pgProfile(run, schema, { metrics: [] })).toEqual({
+        models: [
+          {
+            name: 'order notes',
+            metrics: {},
+            columns: [
+              { name: 'n', properties: { logicalType: 'numeric' }, metrics: {} },
+              { name: 'note"text', properties: { logicalType: 'string' }, metrics: {} },
+              { name: 'day', properties: { logicalType: 'date' }, metrics: {} },
+              { name: 'extra', properties: { logicalType: 'unknown' }, metrics: {} },
+            ],
+          },
+        ],
+      });
       expect(run).not.toHaveBeenCalled();
       await expect(
         pgProfile(
@@ -322,7 +363,7 @@ describe('SupabaseEngine', () => {
             throw new Error('query failed');
           },
           schema,
-          selected
+          { metrics: [{ id: 'row_count' }] }
         )
       ).rejects.toThrow('query failed');
     });
@@ -332,7 +373,7 @@ describe('SupabaseEngine', () => {
         .fn()
         .mockResolvedValueOnce({
           ok: true,
-          json: async () => [{ kind: 'table', table_name: 'orders', metadata: '{}' }],
+          json: async () => [{ kind: 'table', table_name: 'orders', metadata: {} }],
         })
         .mockResolvedValueOnce({ ok: true, json: async () => [{ m0: '4' }] });
       vi.stubGlobal('fetch', fetch);

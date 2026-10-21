@@ -1,6 +1,6 @@
 import * as path from 'path';
 
-import { afterEach, describe, expect, it } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 
 import { DuckDBEngine } from '../../../src/duckdb/engine';
 import { getLLMConfig } from '../../test-utils';
@@ -8,16 +8,23 @@ import { getLLMConfig } from '../../test-utils';
 describe('profile/csv-file', () => {
   let engine: DuckDBEngine | null = null;
 
+  beforeEach(async () => {
+    engine = new DuckDBEngine(getLLMConfig());
+    await engine.load({ type: 'csv-file', options: { path: path.join(__dirname, '../../datasets/sales.csv') } });
+  });
+
   afterEach(async () => {
     await engine?.dispose();
     engine = null;
   });
 
-  it('profiles a loaded CSV file through the engine', async () => {
-    engine = new DuckDBEngine(getLLMConfig());
-    await engine.load({ type: 'csv-file', options: { path: path.join(__dirname, '../../datasets/sales.csv') } });
-
-    const profile = await engine.profile(await engine.schema(), {
+  it('profiles selected numeric, string and date columns from a CSV file', async () => {
+    const schema = await engine.schema();
+    const model = schema.models[0];
+    model.columns = ['region', 'quantity', 'order_date', 'order_id'].map(
+      (name) => model.columns.find((column) => column.name === name)!
+    );
+    const profile = await engine.profile(schema, {
       metrics: [
         'row_count',
         'null_count',
@@ -34,38 +41,67 @@ describe('profile/csv-file', () => {
         'median',
       ],
     });
-    const table = profile.models[0];
+    expect(profile).toEqual({
+      models: [
+        {
+          name: 'data',
+          metrics: { row_count: 240 },
+          columns: [
+            {
+              name: 'region',
+              properties: { logicalType: 'string' },
+              metrics: {
+                null_count: 1,
+                distinct_count: 4,
+                duplicate_count: 235,
+                min_length: 4,
+                max_length: 5,
+                top_values: [
+                  { value: 'North', count: 60 },
+                  { value: 'South', count: 60 },
+                  { value: 'West', count: 60 },
+                ],
+              },
+            },
+            {
+              name: 'quantity',
+              properties: { logicalType: 'numeric' },
+              metrics: {
+                null_count: 1,
+                distinct_count: 15,
+                duplicate_count: 224,
+                min: 1,
+                max: 15,
+                sum: 1814,
+                median: 7,
+                mean: expect.closeTo(1814 / 239, 10),
+                // Non-null quantities have sum 1814 and sum of squares 18380.
+                stddev: expect.closeTo(Math.sqrt((18380 - 1814 ** 2 / 239) / 238), 10),
+              },
+            },
+            {
+              name: 'order_date',
+              properties: { logicalType: 'date' },
+              metrics: {
+                null_count: 0,
+                distinct_count: 240,
+                duplicate_count: 0,
+                min: Date.UTC(2025, 0, 1),
+                max: Date.UTC(2025, 11, 31),
+              },
+            },
+            {
+              name: 'order_id',
+              properties: { logicalType: 'string' },
+              metrics: { null_count: 0, distinct_count: 240, duplicate_count: 0, min_length: 8, max_length: 8 },
+            },
+          ],
+        },
+      ],
+    });
+  });
 
-    expect(table).toMatchObject({ name: 'data', metrics: { row_count: 240 } });
-    expect(table.columns.find(({ name }) => name === 'region')).toMatchObject({
-      properties: { logicalType: 'string' },
-      metrics: {
-        null_count: 1,
-        distinct_count: 4,
-        duplicate_count: 235,
-        min_length: 4,
-        max_length: 5,
-        top_values: [
-          { value: 'North', count: 60 },
-          { value: 'South', count: 60 },
-          { value: 'West', count: 60 },
-        ],
-      },
-    });
-    const quantity = table.columns.find(({ name }) => name === 'quantity')!;
-    expect(quantity).toMatchObject({
-      properties: { logicalType: 'numeric' },
-      metrics: { null_count: 1, distinct_count: 15, duplicate_count: 224, min: 1, max: 15, sum: 1814, median: 7 },
-    });
-    expect(quantity.metrics.mean).toBeCloseTo(1814 / 239, 10);
-    // The non-null quantities have sum 1814 and sum of squares 18380.
-    expect(quantity.metrics.stddev).toBeCloseTo(Math.sqrt((18380 - 1814 ** 2 / 239) / 238), 10);
-    expect(quantity.metrics).not.toHaveProperty('top_values');
-    expect(table.columns.find(({ name }) => name === 'order_id')!.metrics).not.toHaveProperty('top_values');
-    expect(table.columns.find(({ name }) => name === 'order_date')).toMatchObject({
-      properties: { logicalType: 'date' },
-      metrics: { min: Date.UTC(2025, 0, 1), max: Date.UTC(2025, 11, 31) },
-    });
+  it('uses the last configuration when a metric is requested more than once', async () => {
     const repeated = await engine.profile(await engine.schema(), {
       metrics: [
         { id: 'top_values', maxDistinctRatio: 1 },
@@ -73,8 +109,5 @@ describe('profile/csv-file', () => {
       ],
     });
     expect(repeated.models[0].columns.find(({ name }) => name === 'region')!.metrics).toEqual({});
-    await expect(engine.profile(await engine.schema(), { metrics: ['custom_metric'] })).rejects.toThrow(
-      'Unknown metric: custom_metric'
-    );
   });
 });

@@ -19,23 +19,15 @@ function result(rows: unknown[]) {
   };
 }
 
-const TABLE_ROWS = [
-  {
-    table_name: 'customers',
-    engine: 'MergeTree',
-    primary_key: '(tenant_id, customer_id)',
-    sorting_key: '(tenant_id, customer_id)',
-  },
-  { table_name: 'order notes', engine: 'MergeTree', primary_key: '', sorting_key: '' },
-];
+const TABLE_ROWS = [{ table_name: 'customers' }, { table_name: 'order notes' }];
 
 const COLUMN_ROWS = [
-  { table_name: 'customers', name: 'tenant_id', type: 'UInt32', nullable: 0, position: 1 },
-  { table_name: 'customers', name: 'customer_id', type: 'UInt32', nullable: 0, position: 2 },
-  { table_name: 'customers', name: 'name', type: 'String', nullable: 0, position: 3 },
-  { table_name: 'customers', name: 'email', type: 'Nullable(String)', nullable: 1, position: 4 },
-  { table_name: 'order notes', name: 'order_id', type: 'Nullable(UInt64)', nullable: 1, position: 1 },
-  { table_name: 'order notes', name: 'note"text', type: 'Nullable(String)', nullable: 1, position: 2 },
+  { table_name: 'customers', name: 'tenant_id', type: 'UInt32', nullable: 0 },
+  { table_name: 'customers', name: 'customer_id', type: 'UInt32', nullable: 0 },
+  { table_name: 'customers', name: 'name', type: 'String', nullable: 0 },
+  { table_name: 'customers', name: 'email', type: 'Nullable(String)', nullable: 1 },
+  { table_name: 'order notes', name: 'order_id', type: 'Nullable(UInt64)', nullable: 1 },
+  { table_name: 'order notes', name: 'note"text', type: 'Nullable(String)', nullable: 1 },
 ];
 
 function stubClient(resolver: (query: string) => unknown[]) {
@@ -201,10 +193,23 @@ describe('ClickHouseEngine', () => {
     });
 
     expect(run).toHaveBeenCalledTimes(1);
-    expect(result.models[0].metrics.row_count).toBe(4);
-    expect(result.models[0].columns[0].metrics.mean).toBe(25);
-    expect(result.models[0].columns[1].metrics.top_values).toEqual([{ value: 'gift wrap', count: 2 }]);
-    expect(result.models[0].columns[2].metrics.max).toBe(1709283600000);
+    expect(result).toEqual({
+      models: [
+        {
+          name: 'order notes',
+          metrics: { row_count: 4 },
+          columns: [
+            { name: 'amount', properties: { logicalType: 'numeric' }, metrics: { mean: 25, max: 35.5 } },
+            {
+              name: 'note"text',
+              properties: { logicalType: 'string' },
+              metrics: { top_values: [{ value: 'gift wrap', count: 2 }] },
+            },
+            { name: 'placed_at', properties: { logicalType: 'date' }, metrics: { max: 1709283600000 } },
+          ],
+        },
+      ],
+    });
     const query = run.mock.calls[0][0];
     expect(query).toContain('toJSONString(groupArray((v, n)))');
     expect(query).toContain('"order notes"');
