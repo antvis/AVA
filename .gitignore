@@ -115,3 +115,4 @@ docs/
 # BIRD scoring runtime
 /evals/BIRD/.venv/
 /evals/reports/BIRD/
+/evals/ava-workflow/.runs/*
