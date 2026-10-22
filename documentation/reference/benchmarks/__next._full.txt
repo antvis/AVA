@@ -12,14 +12,14 @@ f:I[675049,["$2"],"$e"]
 12:I[675049,["$2"],"$11"]
 13:"$Sreact.suspense"
 15:I[809986,["$2"],"default",1]
-:HL["/_next/static/chunks/0vfkzyt9d0i-u.css","style"]
-:HL["/_next/static/chunks/06c2x3lpy4huq.css","style"]
+:HL["/_next/static/chunks/1av_ng_tz06e4.css","style"]
+:HL["/_next/static/chunks/2fbpr73nxt14q.css","style"]
 :HL["https://mdn.alipayobjects.com/huamei_qa8qxu/afts/img/A*A-lcQbVTpjwAAAAAAAAAAAAADmJ7AQ/original","image"]
 b:X
 c:[["children",{"s":"__PAGE__","h":512,"d":{"r":"$Ld","p":false,"v":null}}]]
 a:[["children",{"s":{"n":"slug","t":"c","k":"reference/benchmarks","s":[]},"h":66048,"d":{"r":["$","$1","c",{"children":[null,["$","$L3",null,{"parallelRouterKey":"children","error":"$undefined","errorStyles":"$undefined","errorScripts":"$undefined","template":["$","$L4",null,{}],"templateStyles":"$undefined","templateScripts":"$undefined","notFound":"$undefined","forbidden":"$undefined","unauthorized":"$undefined"}]]}],"p":false,"v":"$b"},"c":"$Qc"}]]
-5:[["children",{"s":"documentation","h":131584,"d":{"r":["$","$1","c",{"children":[[["$","link","0",{"rel":"stylesheet","href":"/_next/static/chunks/06c2x3lpy4huq.css","precedence":"next","crossOrigin":"$undefined","nonce":"$undefined"}],["$","script","script-0",{"src":"/_next/static/chunks/1bbubh83s1n76.js","async":true,"nonce":"$undefined"}]],["$","div",null,{"className":"docs-site","children":[["$","a",null,{"className":"docs-skip","href":"#docs-content","children":"Skip to content"}],["$","header",null,{"className":"docs-header","children":["$","div",null,{"className":"docs-header-inner","children":[["$","$L8",null,{"href":"/","className":"docs-brand","aria-label":"AVA home","children":[["$","img",null,{"src":"https://mdn.alipayobjects.com/huamei_qa8qxu/afts/img/A*A-lcQbVTpjwAAAAAAAAAAAAADmJ7AQ/original","alt":"","width":"80","height":"48"}],["$","strong",null,{"children":"AVA"}],["$","span",null,{"children":"Documentation"}]]}],["$","nav",null,{"aria-label":"Main navigation","className":"docs-header-links","children":[["$","$L8",null,{"href":"/","className":"docs-website","children":["Website ",["$","span",null,{"aria-hidden":"true","children":"↗"}]]}],["$","a",null,{"href":"https://github.com/antvis/AVA","className":"docs-github","children":["GitHub ",["$","span",null,{"aria-hidden":"true","children":"↗"}]]}],["$","$L8",null,{"href":"/ai/","className":"docs-ai","children":["AI ",["$","span",null,{"aria-hidden":"true","children":"→"}]]}]]}]]}]}],["$","$L9",null,{"mobile":true}],["$","div",null,{"className":"docs-layout","children":[["$","aside",null,{"className":"docs-sidebar","children":[["$","$L8",null,{"href":"/documentation/","className":"docs-sidebar-label","children":[["$","span",null,{"className":"docs-book-icon","aria-hidden":"true","children":"▤"}]," ","Documentation"]}],["$","$L9",null,{}],["$","div",null,{"className":"docs-sidebar-footer","children":[["$","span",null,{"className":"docs-status-dot"}]," TypeScript · Open source"]}]]}],["$","$L3",null,{"parallelRouterKey":"children","error":"$undefined","errorStyles":"$undefined","errorScripts":"$undefined","template":["$","$L4",null,{}],"templateStyles":"$undefined","templateScripts":"$undefined","notFound":"$undefined","forbidden":"$undefined","unauthorized":"$undefined"}]]}]]}]]}],"p":false,"v":null},"c":"$Qa"}]]
-0:{"P":null,"c":["","documentation","reference","benchmarks",""],"q":"","i":false,"t":{"t":{"s":"","h":131600,"d":{"r":["$","$1","c",{"children":[[["$","link","0",{"rel":"stylesheet","href":"/_next/static/chunks/0vfkzyt9d0i-u.css","precedence":"next","crossOrigin":"$undefined","nonce":"$undefined"}],["$","script","script-0",{"src":"/_next/static/chunks/3x799ho6-3r0n.js","async":true,"nonce":"$undefined"}]],["$","html",null,{"lang":"en","children":[["$","head",null,{"children":["$","script",null,{"dangerouslySetInnerHTML":{"__html":"\n            // Buffer polyfill for browser compatibility with csv-parse\n            window.Buffer = window.Buffer || {\n              isBuffer: function() { return false; },\n              from: function(str) { return new TextEncoder().encode(str); },\n              alloc: function(size) { return new Uint8Array(size); },\n            };\n          "}}]}],["$","body",null,{"className":"min-h-screen bg-[#f8fbfc]","children":["$","$L3",null,{"parallelRouterKey":"children","error":"$undefined","errorStyles":"$undefined","errorScripts":"$undefined","template":["$","$L4",null,{}],"templateStyles":"$undefined","templateScripts":"$undefined","notFound":[[["$","title",null,{"children":"404: This page could not be found."}],["$","div",null,{"style":{"fontFamily":"system-ui,\"Segoe UI\",Roboto,Helvetica,Arial,sans-serif,\"Apple Color Emoji\",\"Segoe UI Emoji\"","height":"100vh","textAlign":"center","display":"flex","flexDirection":"column","alignItems":"center","justifyContent":"center"},"children":["$","div",null,{"children":[["$","style",null,{"dangerouslySetInnerHTML":{"__html":"body{color:#000;background:#fff;margin:0}.next-error-h1{border-right:1px solid rgba(0,0,0,.3)}@media (prefers-color-scheme:dark){body{color:#fff;background:#000}.next-error-h1{border-right:1px solid rgba(255,255,255,.3)}}"}}],["$","h1",null,{"className":"next-error-h1","style":{"display":"inline-block","margin":"0 20px 0 0","padding":"0 23px 0 0","fontSize":24,"fontWeight":500,"verticalAlign":"top","lineHeight":"49px"},"children":404}],["$","div",null,{"style":{"display":"inline-block"},"children":["$","h2",null,{"style":{"fontSize":14,"fontWeight":400,"lineHeight":"49px","margin":0},"children":"This page could not be found."}]}]]}]}]],[]],"forbidden":"$undefined","unauthorized":"$undefined"}]}]]}]]}],"p":false,"v":null},"c":"$Q5"},"h":{"r":["$","$1","h",{"children":[null,["$","$Lf",null,{"children":"$L10"}],["$","$L12",null,{"children":[["$","div",null,{"hidden":true,"children":["$","$13",null,{"name":"Next.Metadata","children":"$L14"}]}],null]}],null]}],"p":false,"v":null}},"m":"$undefined","G":["$15",[["$","link","0",{"rel":"stylesheet","href":"/_next/static/chunks/0vfkzyt9d0i-u.css","precedence":"next","crossOrigin":"$undefined","nonce":"$undefined"}]]],"S":true,"r":"$undefined","s":"$undefined","a":"$undefined","l":"$undefined","p":"$undefined","d":"$undefined","b":"5a0nTIDtZyrw2Qx1-cI3x"}
+5:[["children",{"s":"documentation","h":131584,"d":{"r":["$","$1","c",{"children":[[["$","link","0",{"rel":"stylesheet","href":"/_next/static/chunks/2fbpr73nxt14q.css","precedence":"next","crossOrigin":"$undefined","nonce":"$undefined"}],["$","script","script-0",{"src":"/_next/static/chunks/1bbubh83s1n76.js","async":true,"nonce":"$undefined"}]],["$","div",null,{"className":"docs-site","children":[["$","a",null,{"className":"docs-skip","href":"#docs-content","children":"Skip to content"}],["$","header",null,{"className":"docs-header","children":["$","div",null,{"className":"docs-header-inner","children":[["$","$L8",null,{"href":"/","className":"docs-brand","aria-label":"AVA home","children":[["$","img",null,{"src":"https://mdn.alipayobjects.com/huamei_qa8qxu/afts/img/A*A-lcQbVTpjwAAAAAAAAAAAAADmJ7AQ/original","alt":"","width":"80","height":"48"}],["$","strong",null,{"children":"AVA"}],["$","span",null,{"children":"Documentation"}]]}],["$","nav",null,{"aria-label":"Main navigation","className":"docs-header-links","children":[["$","$L8",null,{"href":"/","className":"docs-website","children":["Website ",["$","span",null,{"aria-hidden":"true","children":"↗"}]]}],["$","a",null,{"href":"https://github.com/antvis/AVA","className":"docs-github","children":["GitHub ",["$","span",null,{"aria-hidden":"true","children":"↗"}]]}],["$","$L8",null,{"href":"/ai/","className":"docs-ai","children":["AI ",["$","span",null,{"aria-hidden":"true","children":"→"}]]}]]}]]}]}],["$","$L9",null,{"mobile":true}],["$","div",null,{"className":"docs-layout","children":[["$","aside",null,{"className":"docs-sidebar","children":[["$","$L8",null,{"href":"/documentation/","className":"docs-sidebar-label","children":[["$","span",null,{"className":"docs-book-icon","aria-hidden":"true","children":"▤"}]," ","Documentation"]}],["$","$L9",null,{}],["$","div",null,{"className":"docs-sidebar-footer","children":[["$","span",null,{"className":"docs-status-dot"}]," TypeScript · Open source"]}]]}],["$","$L3",null,{"parallelRouterKey":"children","error":"$undefined","errorStyles":"$undefined","errorScripts":"$undefined","template":["$","$L4",null,{}],"templateStyles":"$undefined","templateScripts":"$undefined","notFound":"$undefined","forbidden":"$undefined","unauthorized":"$undefined"}]]}]]}]]}],"p":false,"v":null},"c":"$Qa"}]]
+0:{"P":null,"c":["","documentation","reference","benchmarks",""],"q":"","i":false,"t":{"t":{"s":"","h":131600,"d":{"r":["$","$1","c",{"children":[[["$","link","0",{"rel":"stylesheet","href":"/_next/static/chunks/1av_ng_tz06e4.css","precedence":"next","crossOrigin":"$undefined","nonce":"$undefined"}],["$","script","script-0",{"src":"/_next/static/chunks/3x799ho6-3r0n.js","async":true,"nonce":"$undefined"}]],["$","html",null,{"lang":"en","children":[["$","head",null,{"children":["$","script",null,{"dangerouslySetInnerHTML":{"__html":"\n            // Buffer polyfill for browser compatibility with csv-parse\n            window.Buffer = window.Buffer || {\n              isBuffer: function() { return false; },\n              from: function(str) { return new TextEncoder().encode(str); },\n              alloc: function(size) { return new Uint8Array(size); },\n            };\n          "}}]}],["$","body",null,{"className":"min-h-screen bg-[#f8fbfc]","children":["$","$L3",null,{"parallelRouterKey":"children","error":"$undefined","errorStyles":"$undefined","errorScripts":"$undefined","template":["$","$L4",null,{}],"templateStyles":"$undefined","templateScripts":"$undefined","notFound":[[["$","title",null,{"children":"404: This page could not be found."}],["$","div",null,{"style":{"fontFamily":"system-ui,\"Segoe UI\",Roboto,Helvetica,Arial,sans-serif,\"Apple Color Emoji\",\"Segoe UI Emoji\"","height":"100vh","textAlign":"center","display":"flex","flexDirection":"column","alignItems":"center","justifyContent":"center"},"children":["$","div",null,{"children":[["$","style",null,{"dangerouslySetInnerHTML":{"__html":"body{color:#000;background:#fff;margin:0}.next-error-h1{border-right:1px solid rgba(0,0,0,.3)}@media (prefers-color-scheme:dark){body{color:#fff;background:#000}.next-error-h1{border-right:1px solid rgba(255,255,255,.3)}}"}}],["$","h1",null,{"className":"next-error-h1","style":{"display":"inline-block","margin":"0 20px 0 0","padding":"0 23px 0 0","fontSize":24,"fontWeight":500,"verticalAlign":"top","lineHeight":"49px"},"children":404}],["$","div",null,{"style":{"display":"inline-block"},"children":["$","h2",null,{"style":{"fontSize":14,"fontWeight":400,"lineHeight":"49px","margin":0},"children":"This page could not be found."}]}]]}]}]],[]],"forbidden":"$undefined","unauthorized":"$undefined"}]}]]}]]}],"p":false,"v":null},"c":"$Q5"},"h":{"r":["$","$1","h",{"children":[null,["$","$Lf",null,{"children":"$L10"}],["$","$L12",null,{"children":[["$","div",null,{"hidden":true,"children":["$","$13",null,{"name":"Next.Metadata","children":"$L14"}]}],null]}],null]}],"p":false,"v":null}},"m":"$undefined","G":["$15",[["$","link","0",{"rel":"stylesheet","href":"/_next/static/chunks/1av_ng_tz06e4.css","precedence":"next","crossOrigin":"$undefined","nonce":"$undefined"}]]],"S":true,"r":"$undefined","s":"$undefined","a":"$undefined","l":"$undefined","p":"$undefined","d":"$undefined","b":"9iUbXJcbqTzedZOX84sgJ"}
 17:I[675049,["$2"],"OutletBoundary"]
 b:C
 d:["$","$1","c",{"children":["$L16",[["$","script","script-0",{"src":"/_next/static/chunks/1ktliq13_uzzz.js","async":true,"nonce":"$undefined"}]],["$","$L17",null,{"children":["$","$13",null,{"name":"Next.MetadataOutlet","children":"$@18"}]}]]}]
@@ -28,7 +28,7 @@ d:["$","$1","c",{"children":["$L16",[["$","script","script-0",{"src":"/_next/sta
 14:[["$","title","0",{"children":"Benchmarks — AVA Docs"}],["$","meta","1",{"name":"description","content":"Evaluation results for data context and analysis strategies."}],["$","meta","2",{"name":"author","content":"AntV"}],["$","meta","3",{"name":"keywords","content":"AVA, visual analytics, AI-native, LLM, data visualization, natural language, data analysis, AntV, chart generation"}],["$","link","4",{"rel":"canonical","href":"https://ava.antv.vision/documentation/reference/benchmarks/"}],["$","meta","5",{"property":"og:title","content":"Benchmarks — AVA Docs"}],["$","meta","6",{"property":"og:description","content":"Evaluation results for data context and analysis strategies."}],["$","meta","7",{"property":"og:url","content":"https://ava.antv.vision/documentation/reference/benchmarks/"}],["$","meta","8",{"property":"og:type","content":"article"}],["$","meta","9",{"name":"twitter:card","content":"summary"}],["$","meta","10",{"name":"twitter:title","content":"Benchmarks — AVA Docs"}],["$","meta","11",{"name":"twitter:description","content":"Evaluation results for data context and analysis strategies."}],["$","link","12",{"rel":"icon","href":"https://mdn.alipayobjects.com/huamei_qa8qxu/afts/img/A*FBLnQIAzx6cAAAAAQDAAAAgAemJ7AQ/original"}],["$","$L19","13",{}]]
 18:null
 1a:I[5138,["$2","$6","$7"],"default"]
-1b:T1ab1,# Benchmarks
+1b:T2b03,# Benchmarks
 
 Evaluation results for data context and analysis strategies.
 
@@ -36,96 +36,285 @@ Evaluating AVA’s ability to turn data questions into reliable answers. [View e
 
 ## Context
 
-<Callout>
+<Callout icon="🤔">
   **How does the information available to a model affect its answers?** These evaluations examine answer accuracy and per-question cost using **GLM-5.1**, AVA Workflow, DuckDB, and Direct.
 </Callout>
 
-<div className="docs-benchmark-overview">
-
-| Evaluation focus | Raw data | With Semantic | Gain |
-| ---------------- | -------: | ------------: | ---: |
-| Tabular Q&A<br />DataBench<sup><a href="#dataset-databench" aria-label="Dataset note 1: DataBench">[1]</a></sup> | 83.51% | <span role="img" aria-label="Highest accuracy" style={{ color: '#a16207' }}>★</span> **93.01%** | <span style={{ color: '#b91c1c' }}>+9.50 pp</span> |
-| Complex SQL · SQLite<br />Spider2-Lite<sup><a href="#dataset-spider2lite" aria-label="Dataset note 3: Spider2-Lite">[3]</a></sup> | — | Pending | — |
-
+<div className="docs-table docs-benchmark-overview">
+<table>
+  <thead>
+    <tr>
+      <th scope="col">Evaluation</th>
+      <th scope="col">Context</th>
+      <th scope="col">Correct</th>
+      <th scope="col">Accuracy</th>
+      <th scope="col">Tokens / question</th>
+      <th scope="col">Time / question</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th scope="rowgroup" rowSpan={3}>Tabular Q&amp;A<br />DataBench<sup><a href="#dataset-databench" aria-label="Dataset note 1: DataBench">[1]</a></sup></th>
+      <td>Raw data<br />(header + first 3 rows)</td>
+      <td>1,494</td>
+      <td>83.51% (baseline)</td>
+      <td>991</td>
+      <td>1.35 s</td>
+    </tr>
+    <tr>
+      <td>With Schema<br />(Schema + Profile)</td>
+      <td>1,506</td>
+      <td>84.18% <span style={{ color: '#b91c1c' }}>(+0.67 pp)</span></td>
+      <td>1,990</td>
+      <td>2.08 s</td>
+    </tr>
+    <tr>
+      <td>With Semantic</td>
+      <td>1,664</td>
+      <td><span role="img" aria-label="Highest accuracy" style={{ color: '#a16207' }}>★</span> <strong>93.01%</strong> <span style={{ color: '#b91c1c' }}>(+9.50 pp)</span></td>
+      <td>3,288</td>
+      <td>1.66 s</td>
+    </tr>
+  </tbody>
+  <tbody>
+    <tr>
+      <th scope="rowgroup" rowSpan={3}>Complex SQL · SQLite<br />Spider2-Lite<sup><a href="#dataset-spider2lite" aria-label="Dataset note 3: Spider2-Lite">[3]</a></sup></th>
+      <td>Raw data<br />(header + first 3 rows)</td>
+      <td>35</td>
+      <td>25.93% (baseline)</td>
+      <td>4,057</td>
+      <td>12.93 s</td>
+    </tr>
+    <tr>
+      <td>With Schema<br />(Schema + Profile)</td>
+      <td>45</td>
+      <td>33.33% <span style={{ color: '#b91c1c' }}>(+7.41 pp)</span></td>
+      <td>20,945</td>
+      <td>11.89 s</td>
+    </tr>
+    <tr>
+      <td>With Semantic</td>
+      <td>109</td>
+      <td><span role="img" aria-label="Highest accuracy" style={{ color: '#a16207' }}>★</span> <strong>80.74%</strong> <span style={{ color: '#b91c1c' }}>(+54.81 pp)</span></td>
+      <td>23,705</td>
+      <td>13.33 s</td>
+    </tr>
+  </tbody>
+</table>
 </div>
 
-<details className="my-4 rounded-lg border border-[color:var(--docs-border)] px-4">
-<summary className="cursor-pointer py-3 font-medium text-[color:var(--docs-ink)]">DataBench · detailed results</summary>
-
-| Context | Correct | Accuracy | Tokens / question | Time / question |
-| ------- | ------: | -------: | ----------------: | --------------: |
-| Raw data (header + first 3 rows) | 1,494 | 83.51% (baseline) | 991 | 1.35 s |
-| Schema + Profile | 1,506 | 84.18% <span style={{ color: '#b91c1c' }}>(+0.67 pp)</span> | 1,990 | 2.08 s |
-| Semantic | 1,664 | <span role="img" aria-label="Highest accuracy" style={{ color: '#a16207' }}>★</span> **93.01%** <span style={{ color: '#b91c1c' }}>(+9.50 pp)</span> | 3,288 | 1.66 s |
-
-Parentheses show **percentage-point gains over raw data**. Profile supplies statistics; Semantic adds business definitions to Schema + Profile. All queries use the full table.
-
-</details>
-
-<details className="my-4 rounded-lg border border-[color:var(--docs-border)] px-4">
-<summary className="cursor-pointer py-3 font-medium text-[color:var(--docs-ink)]">Spider2-Lite SQLite subset · detailed results</summary>
-
-Profile and Semantic results are pending.
-
-| Context | Correct | Accuracy | Tokens / question | Time / question |
-| ------- | ------: | -------: | ----------------: | --------------: |
-| Schema + Profile | — | Pending | — | — |
-| Semantic | — | Pending | — | — |
-
-The previous Direct run with Profile scored **27.41%** (37/135).
-
-</details>
+<p style={{ color: 'var(--docs-muted)', fontSize: '12px' }}>DataBench: 1,789 single-table Q&amp;A questions covering filtering, aggregation, and sorting. Spider2-Lite: 135 complex SQL questions across multiple tables, using supplied external knowledge; raw data includes headers and the first 3 rows per table. With Schema adds structure and statistics; With Semantic adds business definitions. All queries use complete data.</p>
 
 ## Strategy
 
-<Callout>
-  **How does the analysis strategy affect answer quality?** Compare [Direct, Loop, and Subset](/documentation/analysis/strategies/) on tabular and database tasks.
+<Callout icon="🤔">
+  **How does the analysis strategy affect answer quality?** Compare [analysis strategies](/documentation/analysis/strategies/) on tabular and database tasks.
 </Callout>
 
-### Tabular question answering
+<div className="docs-table docs-benchmark-overview docs-benchmark-comparison">
+<table>
+  <thead>
+    <tr>
+      <th scope="col">Evaluation</th>
+      <th scope="col">Model</th>
+      <th scope="col">Strategy</th>
+      <th scope="col">Correct</th>
+      <th scope="col">Accuracy</th>
+      <th scope="col">Tokens / question</th>
+      <th scope="col">Time / question</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th scope="rowgroup" rowSpan={3}>Tabular Q&amp;A<br />DataBench<sup><a href="#dataset-databench" aria-label="Dataset note 1: DataBench">[1]</a></sup></th>
+      <td rowSpan={3}>GLM-5.1</td>
+      <td>Direct</td>
+      <td>1,550</td>
+      <td>86.64%</td>
+      <td>2,315</td>
+      <td>20.48 s</td>
+    </tr>
+    <tr>
+      <td>Subset</td>
+      <td>1,551</td>
+      <td><span role="img" aria-label="Highest accuracy" style={{ color: '#a16207' }}>★</span> <strong>86.70%</strong></td>
+      <td>1,173</td>
+      <td>25.42 s</td>
+    </tr>
+    <tr>
+      <td>Loop</td>
+      <td>1,504</td>
+      <td>84.07%</td>
+      <td>5,089</td>
+      <td>82.52 s</td>
+    </tr>
+  </tbody>
+  <tbody>
+    <tr>
+      <th scope="rowgroup" rowSpan={10}>Database queries<br />BIRD New Dev<sup><a href="#dataset-bird" aria-label="Dataset note 2: BIRD New Dev">[2]</a></sup></th>
+      <td rowSpan={2}>GLM-5.1</td>
+      <td>Direct</td>
+      <td>968</td>
+      <td>63.10%</td>
+      <td>6,780</td>
+      <td>—</td>
+    </tr>
+    <tr>
+      <td>Loop</td>
+      <td>1,010</td>
+      <td>65.84%</td>
+      <td>35,272</td>
+      <td>—</td>
+    </tr>
+    <tr>
+      <td rowSpan={2}>GLM-5.2</td>
+      <td>Direct</td>
+      <td>1,003</td>
+      <td>65.38%</td>
+      <td>6,575</td>
+      <td>—</td>
+    </tr>
+    <tr>
+      <td>Loop</td>
+      <td>1,030</td>
+      <td>67.14%</td>
+      <td>33,545</td>
+      <td>—</td>
+    </tr>
+    <tr>
+      <td rowSpan={2}>GLM-5.3</td>
+      <td>Direct</td>
+      <td>1,045</td>
+      <td><span role="img" aria-label="Highest accuracy" style={{ color: '#a16207' }}>★</span> <strong>68.12%</strong></td>
+      <td>≥ 9,529</td>
+      <td>—</td>
+    </tr>
+    <tr>
+      <td>Loop</td>
+      <td>1,016</td>
+      <td>66.23%</td>
+      <td>≥ 32,976</td>
+      <td>—</td>
+    </tr>
+    <tr>
+      <td rowSpan={2}>Kimi-K2.5</td>
+      <td>Direct</td>
+      <td>941</td>
+      <td>61.34%</td>
+      <td>7,220</td>
+      <td>—</td>
+    </tr>
+    <tr>
+      <td>Loop</td>
+      <td>905</td>
+      <td>59.00%</td>
+      <td>51,631</td>
+      <td>—</td>
+    </tr>
+    <tr>
+      <td rowSpan={2}>Kimi-K3</td>
+      <td>Direct</td>
+      <td>1,014</td>
+      <td>66.10%</td>
+      <td>6,696</td>
+      <td>—</td>
+    </tr>
+    <tr>
+      <td>Loop</td>
+      <td>993</td>
+      <td>64.73%</td>
+      <td>43,512</td>
+      <td>—</td>
+    </tr>
+  </tbody>
+</table>
+</div>
 
-**DataBench**<sup><a href="#dataset-databench" aria-label="Dataset note 1: DataBench">[1]</a></sup> · AVA Workflow · Profile enabled.
+<p style={{ color: 'var(--docs-muted)', fontSize: '12px' }}>AVA Workflow. DataBench: 1,789 questions; historical runs with different context configurations. BIRD New Dev: 1,534 questions with Schema, evidence, and database descriptions. No Subset results are reported for BIRD.</p>
 
-| Model | Direct | Loop | Subset |
-| ----- | -----: | ---: | -----: |
-| GLM-5.1 | 86.64% | — | 86.70% |
+## Execution
 
-<details className="my-4 rounded-lg border border-[color:var(--docs-border)] px-4">
-<summary className="cursor-pointer py-3 font-medium text-[color:var(--docs-ink)]">DataBench · detailed results and other configurations</summary>
+<Callout icon="🤔">
+  **How does the execution method affect answer quality and cost?** Compare [execution engines](/documentation/engines/overview/) on tabular tasks.
+</Callout>
 
-Historical GLM-5.1 results. The overview uses the two runs with Profile explicitly enabled; Loop's Profile setting was not recorded.
+<div className="docs-table docs-benchmark-overview docs-benchmark-comparison">
+<table>
+  <thead>
+    <tr>
+      <th scope="col">Evaluation</th>
+      <th scope="col">Model</th>
+      <th scope="col">Execution</th>
+      <th scope="col">Correct</th>
+      <th scope="col">Accuracy</th>
+      <th scope="col">Tokens / question</th>
+      <th scope="col">Time / question</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th scope="rowgroup" rowSpan={2}>Tabular Q&amp;A<br />DataBench<sup><a href="#dataset-databench" aria-label="Dataset note 1: DataBench">[1]</a></sup></th>
+      <td rowSpan={2}>GLM-5.1</td>
+      <td>SQL (DuckDB)</td>
+      <td>1,550</td>
+      <td><span role="img" aria-label="Highest accuracy" style={{ color: '#a16207' }}>★</span> <strong>86.64%</strong></td>
+      <td>2,315</td>
+      <td>20.48 s</td>
+    </tr>
+    <tr>
+      <td>Python</td>
+      <td>1,528</td>
+      <td>85.41%</td>
+      <td>2,002</td>
+      <td>22.03 s</td>
+    </tr>
+  </tbody>
+</table>
+</div>
 
-| Strategy | Profile | Accuracy | Tokens / question | Time / question |
-| -------- | ------- | -------: | ----------------: | --------------: |
-| Direct | On | 86.64% | 2,315 | 20.48 s |
-| Subset | On | 86.70% | 1,173 | 25.42 s |
-| Direct | Off | 84.46% | 903 | 18.44 s |
-| Loop | Not recorded | 84.07% | 5,089 | 82.52 s |
+<p style={{ color: 'var(--docs-muted)', fontSize: '12px' }}>DataBench: 1,789 questions · AVA Workflow · Direct. Historical SQL and Python runs use different execution configurations.</p>
 
-**Other execution configurations**
+## Integration
 
-These runs use a different engine or an agent that selects its own tools. They provide additional reference results, rather than a strategy-only comparison.
+<Callout icon="🤔">
+  **How does the integration method affect answer quality and cost?** Compare using AVA through the SDK and [Agent Skill](/documentation/agent-skill/).
+</Callout>
 
-| Execution mode | Strategy | Accuracy | Tokens / question | Time / question |
-| -------------- | -------- | -------: | ----------------: | --------------: |
-| Workflow · Python | Direct | 85.41% | 2,002 | 22.03 s |
-| Agent + AVA Skill | Agent-selected steps | 84.46% | 23,384 | 40.93 s |
+<div className="docs-table docs-benchmark-overview docs-benchmark-comparison">
+<table>
+  <thead>
+    <tr>
+      <th scope="col">Evaluation</th>
+      <th scope="col">Model</th>
+      <th scope="col">Integration</th>
+      <th scope="col">Correct</th>
+      <th scope="col">Accuracy</th>
+      <th scope="col">Tokens / question</th>
+      <th scope="col">Time / question</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th scope="rowgroup" rowSpan={2}>Tabular Q&amp;A<br />DataBench<sup><a href="#dataset-databench" aria-label="Dataset note 1: DataBench">[1]</a></sup></th>
+      <td rowSpan={2}>GLM-5.1</td>
+      <td>SDK</td>
+      <td>1,550</td>
+      <td><span role="img" aria-label="Highest accuracy" style={{ color: '#a16207' }}>★</span> <strong>86.64%</strong></td>
+      <td>2,315</td>
+      <td>20.48 s</td>
+    </tr>
+    <tr>
+      <td>Agent Skill</td>
+      <td>1,511</td>
+      <td>84.46%</td>
+      <td>23,384</td>
+      <td>40.93 s</td>
+    </tr>
+  </tbody>
+</table>
+</div>
 
-See [Agent Skill](/documentation/agent-skill/) for the agent workflow.
-
-</details>
-
-### Database queries
-
-**BIRD New Dev**<sup><a href="#dataset-bird" aria-label="Dataset note 2: BIRD New Dev">[2]</a></sup> · AVA Workflow · Schema, evidence, and database descriptions.
-
-| Model | Direct | Loop | Subset |
-| ----- | -----: | ---: | -----: |
-| GLM-5.1 | 63.10% | 65.84% | — |
-| GLM-5.2 | 65.38% | <span role="img" aria-label="Second-highest accuracy">🥈</span> 67.14% | — |
-| GLM-5.3 | <span role="img" aria-label="Highest accuracy">🥇</span> 68.12% | — | — |
-| Kimi-K2.5 | 61.34% | 59.00% | — |
-| Kimi-K3 | <span role="img" aria-label="Third-highest accuracy">🥉</span> 66.10% | 64.73% | — |
+<p style={{ color: 'var(--docs-muted)', fontSize: '12px' }}>DataBench: 1,789 questions. SDK uses AVA Workflow with Direct; Agent Skill lets the agent choose tools and execution steps. These historical runs use different execution configurations.</p>
 
 ## Dataset notes
 
@@ -141,26 +330,24 @@ Scale averages are calculated over unique base tables, excluding views and inter
 
 </div>
 16:[["$","main",null,{"className":"docs-main","id":"docs-content","children":[["$","div",null,{"className":"docs-page-toolbar","children":[["$","div",null,{"className":"docs-eyebrow","children":"More resources"}],["$","$L1a","reference/benchmarks",{"label":"Copy Markdown","text":"$1b"}]]}],"$L1c","$L1d","$L1e","$L1f","$L20","$L21"]}],"$L22"]
-32:I[754170,["$2","$6","$7"],"default"]
+30:I[754170,["$2","$6","$7"],"default"]
 1c:["$","h1",null,{"children":"Benchmarks"}]
 1d:["$","p",null,{"className":"docs-description","children":"Evaluation results for data context and analysis strategies."}]
-1e:["$","article",null,{"className":"docs-prose","children":[["$","p",null,{"children":["Evaluating AVA’s ability to turn data questions into reliable answers. ",["$","a",null,{"href":"https://github.com/antvis/AVA/tree/ai/evals/reports","children":"View evaluation reports"}],"."]}],"\n",["$","h2",null,{"id":"context","children":["$","a",null,{"href":"#context","className":"docs-heading-link","children":"Context"}]}],"\n",["$","aside",null,{"className":"docs-callout","children":[["$","span",null,{"aria-hidden":"true","children":"i"}],["$","div",null,{"children":["$","p",null,{"children":[["$","strong",null,{"children":"How does the information available to a model affect its answers?"}]," These evaluations examine answer accuracy and per-question cost using ",["$","strong",null,{"children":"GLM-5.1"}],", AVA Workflow, DuckDB, and Direct."]}]}]]}],"\n",["$","div",null,{"className":"docs-benchmark-overview","children":["$","div",null,{"className":"docs-table","children":["$","table",null,{"children":[["$","thead",null,{"children":["$","tr",null,{"children":[["$","th",null,{"children":"Evaluation focus"}],["$","th",null,{"style":{"textAlign":"right"},"children":"Raw data"}],["$","th",null,{"style":{"textAlign":"right"},"children":"With Semantic"}],["$","th",null,{"style":{"textAlign":"right"},"children":"Gain"}]]}]}],["$","tbody",null,{"children":[["$","tr",null,{"children":[["$","td",null,{"children":["Tabular Q&A",["$","br",null,{}],"DataBench",["$","sup",null,{"children":["$","a",null,{"href":"#dataset-databench","aria-label":"Dataset note 1: DataBench","children":"[1]"}]}]]}],["$","td",null,{"style":{"textAlign":"right"},"children":"83.51%"}],["$","td",null,{"style":{"textAlign":"right"},"children":[["$","span",null,{"role":"img","aria-label":"Highest accuracy","style":{"color":"#a16207"},"children":"★"}]," ",["$","strong",null,{"children":"93.01%"}]]}],["$","td",null,{"style":{"textAlign":"right"},"children":["$","span",null,{"style":{"color":"#b91c1c"},"children":"+9.50 pp"}]}]]}],["$","tr",null,{"children":[["$","td",null,{"children":["Complex SQL · SQLite",["$","br",null,{}],"Spider2-Lite",["$","sup",null,{"children":["$","a",null,{"href":"#dataset-spider2lite","aria-label":"Dataset note 3: Spider2-Lite","children":"[3]"}]}]]}],["$","td",null,{"style":{"textAlign":"right"},"children":"—"}],["$","td",null,{"style":{"textAlign":"right"},"children":"Pending"}],["$","td",null,{"style":{"textAlign":"right"},"children":"—"}]]}]]}]]}]}]}],"\n",["$","details",null,{"className":"my-4 rounded-lg border border-[color:var(--docs-border)] px-4","children":[["$","summary",null,{"className":"cursor-pointer py-3 font-medium text-[color:var(--docs-ink)]","children":"DataBench · detailed results"}],["$","div",null,{"className":"docs-table","children":["$","table",null,{"children":[["$","thead",null,{"children":["$","tr",null,{"children":[["$","th",null,{"children":"Context"}],["$","th",null,{"style":{"textAlign":"right"},"children":"Correct"}],["$","th",null,{"style":{"textAlign":"right"},"children":"Accuracy"}],["$","th",null,{"style":{"textAlign":"right"},"children":"Tokens / question"}],["$","th",null,{"style":{"textAlign":"right"},"children":"Time / question"}]]}]}],["$","tbody",null,{"children":[["$","tr",null,{"children":[["$","td",null,{"children":"Raw data (header + first 3 rows)"}],["$","td",null,{"style":{"textAlign":"right"},"children":"1,494"}],["$","td",null,{"style":{"textAlign":"right"},"children":"83.51% (baseline)"}],["$","td",null,{"style":{"textAlign":"right"},"children":"991"}],["$","td",null,{"style":{"textAlign":"right"},"children":"1.35 s"}]]}],["$","tr",null,{"children":[["$","td",null,{"children":"Schema + Profile"}],["$","td",null,{"style":{"textAlign":"right"},"children":"1,506"}],["$","td",null,{"style":{"textAlign":"right"},"children":["84.18% ",["$","span",null,{"style":{"color":"#b91c1c"},"children":"(+0.67 pp)"}]]}],["$","td",null,{"style":{"textAlign":"right"},"children":"1,990"}],["$","td",null,{"style":{"textAlign":"right"},"children":"2.08 s"}]]}],["$","tr",null,{"children":[["$","td",null,{"children":"Semantic"}],["$","td",null,{"style":{"textAlign":"right"},"children":"1,664"}],["$","td",null,{"style":{"textAlign":"right"},"children":[["$","span",null,{"role":"img","aria-label":"Highest accuracy","style":{"color":"#a16207"},"children":"★"}]," ",["$","strong",null,{"children":"93.01%"}]," ",["$","span",null,{"style":{"color":"#b91c1c"},"children":"(+9.50 pp)"}]]}],["$","td",null,{"style":{"textAlign":"right"},"children":"3,288"}],["$","td",null,{"style":{"textAlign":"right"},"children":"1.66 s"}]]}]]}]]}]}],["$","p",null,{"children":["Parentheses show ",["$","strong",null,{"children":"percentage-point gains over raw data"}],". Profile supplies statistics; Semantic adds business definitions to Schema + Profile. All queries use the full table."]}]]}],"\n",["$","details",null,{"className":"my-4 rounded-lg border border-[color:var(--docs-border)] px-4","children":["$L23","$L24","$L25","$L26"]}],"\n","$L27","\n","$L28","\n","$L29","\n","$L2a","\n","$L2b","\n","$L2c","\n","$L2d","\n","$L2e","\n","$L2f","\n","$L30","\n","$L31"]}]
+1e:["$","article",null,{"className":"docs-prose","children":[["$","p",null,{"children":["Evaluating AVA’s ability to turn data questions into reliable answers. ",["$","a",null,{"href":"https://github.com/antvis/AVA/tree/ai/evals/reports","children":"View evaluation reports"}],"."]}],"\n",["$","h2",null,{"id":"context","children":["$","a",null,{"href":"#context","className":"docs-heading-link","children":"Context"}]}],"\n",["$","aside",null,{"className":"docs-callout","children":[["$","span",null,{"aria-hidden":"true","className":"docs-callout-emoji","children":"🤔"}],["$","div",null,{"children":["$","p",null,{"children":[["$","strong",null,{"children":"How does the information available to a model affect its answers?"}]," These evaluations examine answer accuracy and per-question cost using ",["$","strong",null,{"children":"GLM-5.1"}],", AVA Workflow, DuckDB, and Direct."]}]}]]}],"\n",["$","div",null,{"className":"docs-table docs-benchmark-overview","children":["$","table",null,{"children":[["$","thead",null,{"children":["$","tr",null,{"children":[["$","th",null,{"scope":"col","children":"Evaluation"}],["$","th",null,{"scope":"col","children":"Context"}],["$","th",null,{"scope":"col","children":"Correct"}],["$","th",null,{"scope":"col","children":"Accuracy"}],["$","th",null,{"scope":"col","children":"Tokens / question"}],["$","th",null,{"scope":"col","children":"Time / question"}]]}]}],["$","tbody",null,{"children":[["$","tr",null,{"children":[["$","th",null,{"scope":"rowgroup","rowSpan":3,"children":["Tabular Q&A",["$","br",null,{}],"DataBench",["$","sup",null,{"children":["$","a",null,{"href":"#dataset-databench","aria-label":"Dataset note 1: DataBench","children":"[1]"}]}]]}],["$","td",null,{"children":["Raw data",["$","br",null,{}],"(header + first 3 rows)"]}],["$","td",null,{"children":"1,494"}],["$","td",null,{"children":"83.51% (baseline)"}],["$","td",null,{"children":"991"}],["$","td",null,{"children":"1.35 s"}]]}],["$","tr",null,{"children":[["$","td",null,{"children":["With Schema",["$","br",null,{}],"(Schema + Profile)"]}],["$","td",null,{"children":"1,506"}],["$","td",null,{"children":["84.18% ",["$","span",null,{"style":{"color":"#b91c1c"},"children":"(+0.67 pp)"}]]}],["$","td",null,{"children":"1,990"}],["$","td",null,{"children":"2.08 s"}]]}],["$","tr",null,{"children":[["$","td",null,{"children":"With Semantic"}],["$","td",null,{"children":"1,664"}],["$","td",null,{"children":[["$","span",null,{"role":"img","aria-label":"Highest accuracy","style":{"color":"#a16207"},"children":"★"}]," ",["$","strong",null,{"children":"93.01%"}]," ",["$","span",null,{"style":{"color":"#b91c1c"},"children":"(+9.50 pp)"}]]}],["$","td",null,{"children":"3,288"}],["$","td",null,{"children":"1.66 s"}]]}]]}],["$","tbody",null,{"children":[["$","tr",null,{"children":[["$","th",null,{"scope":"rowgroup","rowSpan":3,"children":["Complex SQL · SQLite",["$","br",null,{}],"Spider2-Lite",["$","sup",null,{"children":["$","a",null,{"href":"#dataset-spider2lite","aria-label":"Dataset note 3: Spider2-Lite","children":"[3]"}]}]]}],["$","td",null,{"children":["Raw data",["$","br",null,{}],"(header + first 3 rows)"]}],["$","td",null,{"children":"35"}],["$","td",null,{"children":"25.93% (baseline)"}],["$","td",null,{"children":"4,057"}],["$","td",null,{"children":"12.93 s"}]]}],["$","tr",null,{"children":[["$","td",null,{"children":["With Schema",["$","br",null,{}],"(Schema + Profile)"]}],["$","td",null,{"children":"45"}],["$","td",null,{"children":["33.33% ",["$","span",null,{"style":{"color":"#b91c1c"},"children":"(+7.41 pp)"}]]}],["$","td",null,{"children":"20,945"}],["$","td",null,{"children":"11.89 s"}]]}],["$","tr",null,{"children":[["$","td",null,{"children":"With Semantic"}],["$","td",null,{"children":"109"}],["$","td",null,{"children":[["$","span",null,{"role":"img","aria-label":"Highest accuracy","style":{"color":"#a16207"},"children":"★"}]," ",["$","strong",null,{"children":"80.74%"}]," ",["$","span",null,{"style":{"color":"#b91c1c"},"children":"(+54.81 pp)"}]]}],["$","td",null,{"children":"23,705"}],["$","td",null,{"children":"13.33 s"}]]}]]}]]}]}],"\n",["$","p",null,{"style":{"color":"var(--docs-muted)","fontSize":"12px"},"children":"DataBench: 1,789 single-table Q&A questions covering filtering, aggregation, and sorting. Spider2-Lite: 135 complex SQL questions across multiple tables, using supplied external knowledge; raw data includes headers and the first 3 rows per table. With Schema adds structure and statistics; With Semantic adds business definitions. All queries use complete data."}],"\n",["$","h2",null,{"id":"strategy","children":["$","a",null,{"href":"#strategy","className":"docs-heading-link","children":"Strategy"}]}],"\n",["$","aside",null,{"className":"docs-callout","children":[["$","span",null,{"aria-hidden":"true","className":"docs-callout-emoji","children":"🤔"}],["$","div",null,{"children":["$","p",null,{"children":[["$","strong",null,{"children":"How does the analysis strategy affect answer quality?"}]," Compare ","$L23"," on tabular and database tasks."]}]}]]}],"\n","$L24","\n","$L25","\n","$L26","\n","$L27","\n","$L28","\n","$L29","\n","$L2a","\n","$L2b","\n","$L2c","\n","$L2d","\n","$L2e","\n","$L2f"]}]
 1f:["$","div",null,{"className":"docs-page-meta","children":["$","a",null,{"href":"https://github.com/antvis/AVA/blob/ai/site/content/docs/reference/benchmarks.mdx","children":["Edit this page on GitHub ",["$","span",null,{"aria-hidden":"true","children":"↗"}]]}]}]
 20:["$","nav",null,{"className":"docs-pagination","aria-label":"Chapter navigation","children":[["$","$L8",null,{"href":"/documentation/reference/cli/","children":[["$","span",null,{"children":"← Previous"}],["$","strong",null,{"children":"Command-line interface"}]]}],["$","$L8",null,{"href":"/documentation/reference/architecture/","className":"docs-next","children":[["$","span",null,{"children":"Next →"}],["$","strong",null,{"children":"Architecture & source map"}]]}]]}]
 21:["$","footer",null,{"className":"docs-footer","children":[["$","span",null,{"children":"AVA · An AntV project"}],["$","a",null,{"href":"https://github.com/antvis/AVA","children":"Open source on GitHub ↗"}]]}]
-22:["$","$L32","reference/benchmarks",{}]
-23:["$","summary",null,{"className":"cursor-pointer py-3 font-medium text-[color:var(--docs-ink)]","children":"Spider2-Lite SQLite subset · detailed results"}]
-24:["$","p",null,{"children":"Profile and Semantic results are pending."}]
-25:["$","div",null,{"className":"docs-table","children":["$","table",null,{"children":[["$","thead",null,{"children":["$","tr",null,{"children":[["$","th",null,{"children":"Context"}],["$","th",null,{"style":{"textAlign":"right"},"children":"Correct"}],["$","th",null,{"style":{"textAlign":"right"},"children":"Accuracy"}],["$","th",null,{"style":{"textAlign":"right"},"children":"Tokens / question"}],["$","th",null,{"style":{"textAlign":"right"},"children":"Time / question"}]]}]}],["$","tbody",null,{"children":[["$","tr",null,{"children":[["$","td",null,{"children":"Schema + Profile"}],["$","td",null,{"style":{"textAlign":"right"},"children":"—"}],["$","td",null,{"style":{"textAlign":"right"},"children":"Pending"}],["$","td",null,{"style":{"textAlign":"right"},"children":"—"}],["$","td",null,{"style":{"textAlign":"right"},"children":"—"}]]}],["$","tr",null,{"children":[["$","td",null,{"children":"Semantic"}],["$","td",null,{"style":{"textAlign":"right"},"children":"—"}],["$","td",null,{"style":{"textAlign":"right"},"children":"Pending"}],["$","td",null,{"style":{"textAlign":"right"},"children":"—"}],["$","td",null,{"style":{"textAlign":"right"},"children":"—"}]]}]]}]]}]}]
-26:["$","p",null,{"children":["The previous Direct run with Profile scored ",["$","strong",null,{"children":"27.41%"}]," (37/135)."]}]
-27:["$","h2",null,{"id":"strategy","children":["$","a",null,{"href":"#strategy","className":"docs-heading-link","children":"Strategy"}]}]
-28:["$","aside",null,{"className":"docs-callout","children":[["$","span",null,{"aria-hidden":"true","children":"i"}],["$","div",null,{"children":["$","p",null,{"children":[["$","strong",null,{"children":"How does the analysis strategy affect answer quality?"}]," Compare ",["$","a",null,{"href":"/documentation/analysis/strategies/","children":"Direct, Loop, and Subset"}]," on tabular and database tasks."]}]}]]}]
-29:["$","h3",null,{"id":"tabular-question-answering","children":["$","a",null,{"href":"#tabular-question-answering","className":"docs-heading-link","children":"Tabular question answering"}]}]
-2a:["$","p",null,{"children":[["$","strong",null,{"children":"DataBench"}],["$","sup",null,{"children":["$","a",null,{"href":"#dataset-databench","aria-label":"Dataset note 1: DataBench","children":"[1]"}]}]," · AVA Workflow · Profile enabled."]}]
-2b:["$","div",null,{"className":"docs-table","children":["$","table",null,{"children":[["$","thead",null,{"children":["$","tr",null,{"children":[["$","th",null,{"children":"Model"}],["$","th",null,{"style":{"textAlign":"right"},"children":"Direct"}],["$","th",null,{"style":{"textAlign":"right"},"children":"Loop"}],["$","th",null,{"style":{"textAlign":"right"},"children":"Subset"}]]}]}],["$","tbody",null,{"children":["$","tr",null,{"children":[["$","td",null,{"children":"GLM-5.1"}],["$","td",null,{"style":{"textAlign":"right"},"children":"86.64%"}],["$","td",null,{"style":{"textAlign":"right"},"children":"—"}],["$","td",null,{"style":{"textAlign":"right"},"children":"86.70%"}]]}]}]]}]}]
-2c:["$","details",null,{"className":"my-4 rounded-lg border border-[color:var(--docs-border)] px-4","children":[["$","summary",null,{"className":"cursor-pointer py-3 font-medium text-[color:var(--docs-ink)]","children":"DataBench · detailed results and other configurations"}],["$","p",null,{"children":"Historical GLM-5.1 results. The overview uses the two runs with Profile explicitly enabled; Loop's Profile setting was not recorded."}],["$","div",null,{"className":"docs-table","children":["$","table",null,{"children":[["$","thead",null,{"children":["$","tr",null,{"children":[["$","th",null,{"children":"Strategy"}],["$","th",null,{"children":"Profile"}],["$","th",null,{"style":{"textAlign":"right"},"children":"Accuracy"}],["$","th",null,{"style":{"textAlign":"right"},"children":"Tokens / question"}],["$","th",null,{"style":{"textAlign":"right"},"children":"Time / question"}]]}]}],["$","tbody",null,{"children":[["$","tr",null,{"children":[["$","td",null,{"children":"Direct"}],["$","td",null,{"children":"On"}],["$","td",null,{"style":{"textAlign":"right"},"children":"86.64%"}],["$","td",null,{"style":{"textAlign":"right"},"children":"2,315"}],["$","td",null,{"style":{"textAlign":"right"},"children":"20.48 s"}]]}],["$","tr",null,{"children":[["$","td",null,{"children":"Subset"}],["$","td",null,{"children":"On"}],["$","td",null,{"style":{"textAlign":"right"},"children":"86.70%"}],["$","td",null,{"style":{"textAlign":"right"},"children":"1,173"}],["$","td",null,{"style":{"textAlign":"right"},"children":"25.42 s"}]]}],["$","tr",null,{"children":[["$","td",null,{"children":"Direct"}],["$","td",null,{"children":"Off"}],["$","td",null,{"style":{"textAlign":"right"},"children":"84.46%"}],["$","td",null,{"style":{"textAlign":"right"},"children":"903"}],["$","td",null,{"style":{"textAlign":"right"},"children":"18.44 s"}]]}],["$","tr",null,{"children":[["$","td",null,{"children":"Loop"}],["$","td",null,{"children":"Not recorded"}],["$","td",null,{"style":{"textAlign":"right"},"children":"84.07%"}],["$","td",null,{"style":{"textAlign":"right"},"children":"5,089"}],["$","td",null,{"style":{"textAlign":"right"},"children":"82.52 s"}]]}]]}]]}]}],["$","p",null,{"children":["$","strong",null,{"children":"Other execution configurations"}]}],["$","p",null,{"children":"These runs use a different engine or an agent that selects its own tools. They provide additional reference results, rather than a strategy-only comparison."}],["$","div",null,{"className":"docs-table","children":["$","table",null,{"children":[["$","thead",null,{"children":["$","tr",null,{"children":[["$","th",null,{"children":"Execution mode"}],["$","th",null,{"children":"Strategy"}],["$","th",null,{"style":{"textAlign":"right"},"children":"Accuracy"}],["$","th",null,{"style":{"textAlign":"right"},"children":"Tokens / question"}],["$","th",null,{"style":{"textAlign":"right"},"children":"Time / question"}]]}]}],["$","tbody",null,{"children":[["$","tr",null,{"children":[["$","td",null,{"children":"Workflow · Python"}],["$","td",null,{"children":"Direct"}],["$","td",null,{"style":{"textAlign":"right"},"children":"85.41%"}],["$","td",null,{"style":{"textAlign":"right"},"children":"2,002"}],["$","td",null,{"style":{"textAlign":"right"},"children":"22.03 s"}]]}],["$","tr",null,{"children":[["$","td",null,{"children":"Agent + AVA Skill"}],["$","td",null,{"children":"Agent-selected steps"}],["$","td",null,{"style":{"textAlign":"right"},"children":"84.46%"}],["$","td",null,{"style":{"textAlign":"right"},"children":"23,384"}],["$","td",null,{"style":{"textAlign":"right"},"children":"40.93 s"}]]}]]}]]}]}],["$","p",null,{"children":["See ",["$","a",null,{"href":"/documentation/agent-skill/","children":"Agent Skill"}]," for the agent workflow."]}]]}]
-2d:["$","h3",null,{"id":"database-queries","children":["$","a",null,{"href":"#database-queries","className":"docs-heading-link","children":"Database queries"}]}]
-2e:["$","p",null,{"children":[["$","strong",null,{"children":"BIRD New Dev"}],["$","sup",null,{"children":["$","a",null,{"href":"#dataset-bird","aria-label":"Dataset note 2: BIRD New Dev","children":"[2]"}]}]," · AVA Workflow · Schema, evidence, and database descriptions."]}]
-2f:["$","div",null,{"className":"docs-table","children":["$","table",null,{"children":[["$","thead",null,{"children":["$","tr",null,{"children":[["$","th",null,{"children":"Model"}],["$","th",null,{"style":{"textAlign":"right"},"children":"Direct"}],["$","th",null,{"style":{"textAlign":"right"},"children":"Loop"}],["$","th",null,{"style":{"textAlign":"right"},"children":"Subset"}]]}]}],["$","tbody",null,{"children":[["$","tr",null,{"children":[["$","td",null,{"children":"GLM-5.1"}],["$","td",null,{"style":{"textAlign":"right"},"children":"63.10%"}],["$","td",null,{"style":{"textAlign":"right"},"children":"65.84%"}],["$","td",null,{"style":{"textAlign":"right"},"children":"—"}]]}],["$","tr",null,{"children":[["$","td",null,{"children":"GLM-5.2"}],["$","td",null,{"style":{"textAlign":"right"},"children":"65.38%"}],["$","td",null,{"style":{"textAlign":"right"},"children":[["$","span",null,{"role":"img","aria-label":"Second-highest accuracy","children":"🥈"}]," 67.14%"]}],["$","td",null,{"style":{"textAlign":"right"},"children":"—"}]]}],["$","tr",null,{"children":[["$","td",null,{"children":"GLM-5.3"}],["$","td",null,{"style":{"textAlign":"right"},"children":[["$","span",null,{"role":"img","aria-label":"Highest accuracy","children":"🥇"}]," 68.12%"]}],["$","td",null,{"style":{"textAlign":"right"},"children":"—"}],["$","td",null,{"style":{"textAlign":"right"},"children":"—"}]]}],["$","tr",null,{"children":[["$","td",null,{"children":"Kimi-K2.5"}],["$","td",null,{"style":{"textAlign":"right"},"children":"61.34%"}],["$","td",null,{"style":{"textAlign":"right"},"children":"59.00%"}],["$","td",null,{"style":{"textAlign":"right"},"children":"—"}]]}],["$","tr",null,{"children":[["$","td",null,{"children":"Kimi-K3"}],["$","td",null,{"style":{"textAlign":"right"},"children":[["$","span",null,{"role":"img","aria-label":"Third-highest accuracy","children":"🥉"}]," 66.10%"]}],["$","td",null,{"style":{"textAlign":"right"},"children":"64.73%"}],["$","td",null,{"style":{"textAlign":"right"},"children":"—"}]]}]]}]]}]}]
-30:["$","h2",null,{"id":"dataset-notes","children":["$","a",null,{"href":"#dataset-notes","className":"docs-heading-link","children":"Dataset notes"}]}]
-31:["$","div",null,{"className":"docs-benchmark-notes","children":[["$","ol",null,{"children":["\n",["$","li",null,{"children":["\n",["$","p",null,{"children":[["$","strong",null,{"id":"dataset-databench","children":"DataBench."}]," ",["$","span",null,{"style":{"color":"var(--docs-link)","fontWeight":600},"children":"1,789 questions across 79 full tables"}],", excluding ",["$","code",null,{"children":"080_Books"}],". Tables average ",["$","span",null,{"style":{"color":"var(--docs-link)","fontWeight":600},"children":"46,911 rows and 22.8 columns"}],". Measures tabular answer correctness using reference answers and type-specific matching. ",["$","a",null,{"href":"https://github.com/antvis/AVA/blob/ai/evals/databench/README.md","children":"Details"}],"."]}],"\n"]}],"\n",["$","li",null,{"children":["\n",["$","p",null,{"children":[["$","strong",null,{"id":"dataset-bird","children":"BIRD New Dev."}]," ",["$","span",null,{"style":{"color":"var(--docs-link)","fontWeight":600},"children":"1,534 questions across 11 databases"}],", version ",["$","code",null,{"children":"dev_20251106"}],". Databases average ",["$","span",null,{"style":{"color":"var(--docs-link)","fontWeight":600},"children":"6.8 tables"}],"; tables average ",["$","span",null,{"style":{"color":"var(--docs-link)","fontWeight":600},"children":"52,436 rows and 10.6 columns"}],". Measures Text-to-SQL correctness by comparing query results with reference SQL results. ",["$","a",null,{"href":"https://github.com/antvis/AVA/blob/ai/evals/BIRD/README.md","children":"Details"}],"."]}],"\n"]}],"\n",["$","li",null,{"children":["\n",["$","p",null,{"children":[["$","strong",null,{"id":"dataset-spider2lite","children":"Spider2-Lite SQLite subset."}]," ",["$","span",null,{"style":{"color":"var(--docs-link)","fontWeight":600},"children":"135 complex SQL questions across 30 databases"}],". Databases average ",["$","span",null,{"style":{"color":"var(--docs-link)","fontWeight":600},"children":"13.7 tables"}],"; tables average ",["$","span",null,{"style":{"color":"var(--docs-link)","fontWeight":600},"children":"43,009 rows and 7.0 columns"}],". Scored by the official execution-result scorer; missing answers count as incorrect. Covers the SQLite subset only. ",["$","a",null,{"href":"https://github.com/antvis/AVA/blob/ai/evals/spider2lite/README.md","children":"Details"}],"."]}],"\n"]}],"\n"]}],["$","p",null,{"children":"Scale averages are calculated over unique base tables, excluding views and internal tables. Datasets use different scoring protocols, so their scores are not directly comparable. These evaluations measure answer correctness, not visualization quality."}]]}]
+22:["$","$L30","reference/benchmarks",{}]
+23:["$","a",null,{"href":"/documentation/analysis/strategies/","children":"analysis strategies"}]
+24:["$","div",null,{"className":"docs-table docs-benchmark-overview docs-benchmark-comparison","children":["$","table",null,{"children":[["$","thead",null,{"children":["$","tr",null,{"children":[["$","th",null,{"scope":"col","children":"Evaluation"}],["$","th",null,{"scope":"col","children":"Model"}],["$","th",null,{"scope":"col","children":"Strategy"}],["$","th",null,{"scope":"col","children":"Correct"}],["$","th",null,{"scope":"col","children":"Accuracy"}],["$","th",null,{"scope":"col","children":"Tokens / question"}],["$","th",null,{"scope":"col","children":"Time / question"}]]}]}],["$","tbody",null,{"children":[["$","tr",null,{"children":[["$","th",null,{"scope":"rowgroup","rowSpan":3,"children":["Tabular Q&A",["$","br",null,{}],"DataBench",["$","sup",null,{"children":["$","a",null,{"href":"#dataset-databench","aria-label":"Dataset note 1: DataBench","children":"[1]"}]}]]}],["$","td",null,{"rowSpan":3,"children":"GLM-5.1"}],["$","td",null,{"children":"Direct"}],["$","td",null,{"children":"1,550"}],["$","td",null,{"children":"86.64%"}],["$","td",null,{"children":"2,315"}],["$","td",null,{"children":"20.48 s"}]]}],["$","tr",null,{"children":[["$","td",null,{"children":"Subset"}],["$","td",null,{"children":"1,551"}],["$","td",null,{"children":[["$","span",null,{"role":"img","aria-label":"Highest accuracy","style":{"color":"#a16207"},"children":"★"}]," ",["$","strong",null,{"children":"86.70%"}]]}],["$","td",null,{"children":"1,173"}],["$","td",null,{"children":"25.42 s"}]]}],["$","tr",null,{"children":[["$","td",null,{"children":"Loop"}],["$","td",null,{"children":"1,504"}],["$","td",null,{"children":"84.07%"}],["$","td",null,{"children":"5,089"}],["$","td",null,{"children":"82.52 s"}]]}]]}],["$","tbody",null,{"children":[["$","tr",null,{"children":[["$","th",null,{"scope":"rowgroup","rowSpan":10,"children":["Database queries",["$","br",null,{}],"BIRD New Dev",["$","sup",null,{"children":["$","a",null,{"href":"#dataset-bird","aria-label":"Dataset note 2: BIRD New Dev","children":"[2]"}]}]]}],["$","td",null,{"rowSpan":2,"children":"GLM-5.1"}],["$","td",null,{"children":"Direct"}],["$","td",null,{"children":"968"}],["$","td",null,{"children":"63.10%"}],["$","td",null,{"children":"6,780"}],["$","td",null,{"children":"—"}]]}],["$","tr",null,{"children":[["$","td",null,{"children":"Loop"}],["$","td",null,{"children":"1,010"}],["$","td",null,{"children":"65.84%"}],["$","td",null,{"children":"35,272"}],["$","td",null,{"children":"—"}]]}],["$","tr",null,{"children":[["$","td",null,{"rowSpan":2,"children":"GLM-5.2"}],["$","td",null,{"children":"Direct"}],["$","td",null,{"children":"1,003"}],["$","td",null,{"children":"65.38%"}],["$","td",null,{"children":"6,575"}],["$","td",null,{"children":"—"}]]}],["$","tr",null,{"children":[["$","td",null,{"children":"Loop"}],["$","td",null,{"children":"1,030"}],["$","td",null,{"children":"67.14%"}],["$","td",null,{"children":"33,545"}],["$","td",null,{"children":"—"}]]}],["$","tr",null,{"children":[["$","td",null,{"rowSpan":2,"children":"GLM-5.3"}],["$","td",null,{"children":"Direct"}],["$","td",null,{"children":"1,045"}],["$","td",null,{"children":[["$","span",null,{"role":"img","aria-label":"Highest accuracy","style":{"color":"#a16207"},"children":"★"}]," ",["$","strong",null,{"children":"68.12%"}]]}],["$","td",null,{"children":"≥ 9,529"}],["$","td",null,{"children":"—"}]]}],["$","tr",null,{"children":[["$","td",null,{"children":"Loop"}],["$","td",null,{"children":"1,016"}],["$","td",null,{"children":"66.23%"}],["$","td",null,{"children":"≥ 32,976"}],["$","td",null,{"children":"—"}]]}],["$","tr",null,{"children":[["$","td",null,{"rowSpan":2,"children":"Kimi-K2.5"}],["$","td",null,{"children":"Direct"}],["$","td",null,{"children":"941"}],["$","td",null,{"children":"61.34%"}],["$","td",null,{"children":"7,220"}],["$","td",null,{"children":"—"}]]}],["$","tr",null,{"children":[["$","td",null,{"children":"Loop"}],["$","td",null,{"children":"905"}],["$","td",null,{"children":"59.00%"}],["$","td",null,{"children":"51,631"}],["$","td",null,{"children":"—"}]]}],["$","tr",null,{"children":[["$","td",null,{"rowSpan":2,"children":"Kimi-K3"}],["$","td",null,{"children":"Direct"}],["$","td",null,{"children":"1,014"}],["$","td",null,{"children":"66.10%"}],["$","td",null,{"children":"6,696"}],["$","td",null,{"children":"—"}]]}],["$","tr",null,{"children":[["$","td",null,{"children":"Loop"}],["$","td",null,{"children":"993"}],["$","td",null,{"children":"64.73%"}],["$","td",null,{"children":"43,512"}],["$","td",null,{"children":"—"}]]}]]}]]}]}]
+25:["$","p",null,{"style":{"color":"var(--docs-muted)","fontSize":"12px"},"children":"AVA Workflow. DataBench: 1,789 questions; historical runs with different context configurations. BIRD New Dev: 1,534 questions with Schema, evidence, and database descriptions. No Subset results are reported for BIRD."}]
+26:["$","h2",null,{"id":"execution","children":["$","a",null,{"href":"#execution","className":"docs-heading-link","children":"Execution"}]}]
+27:["$","aside",null,{"className":"docs-callout","children":[["$","span",null,{"aria-hidden":"true","className":"docs-callout-emoji","children":"🤔"}],["$","div",null,{"children":["$","p",null,{"children":[["$","strong",null,{"children":"How does the execution method affect answer quality and cost?"}]," Compare ",["$","a",null,{"href":"/documentation/engines/overview/","children":"execution engines"}]," on tabular tasks."]}]}]]}]
+28:["$","div",null,{"className":"docs-table docs-benchmark-overview docs-benchmark-comparison","children":["$","table",null,{"children":[["$","thead",null,{"children":["$","tr",null,{"children":[["$","th",null,{"scope":"col","children":"Evaluation"}],["$","th",null,{"scope":"col","children":"Model"}],["$","th",null,{"scope":"col","children":"Execution"}],["$","th",null,{"scope":"col","children":"Correct"}],["$","th",null,{"scope":"col","children":"Accuracy"}],["$","th",null,{"scope":"col","children":"Tokens / question"}],["$","th",null,{"scope":"col","children":"Time / question"}]]}]}],["$","tbody",null,{"children":[["$","tr",null,{"children":[["$","th",null,{"scope":"rowgroup","rowSpan":2,"children":["Tabular Q&A",["$","br",null,{}],"DataBench",["$","sup",null,{"children":["$","a",null,{"href":"#dataset-databench","aria-label":"Dataset note 1: DataBench","children":"[1]"}]}]]}],["$","td",null,{"rowSpan":2,"children":"GLM-5.1"}],["$","td",null,{"children":"SQL (DuckDB)"}],["$","td",null,{"children":"1,550"}],["$","td",null,{"children":[["$","span",null,{"role":"img","aria-label":"Highest accuracy","style":{"color":"#a16207"},"children":"★"}]," ",["$","strong",null,{"children":"86.64%"}]]}],["$","td",null,{"children":"2,315"}],["$","td",null,{"children":"20.48 s"}]]}],["$","tr",null,{"children":[["$","td",null,{"children":"Python"}],["$","td",null,{"children":"1,528"}],["$","td",null,{"children":"85.41%"}],["$","td",null,{"children":"2,002"}],["$","td",null,{"children":"22.03 s"}]]}]]}]]}]}]
+29:["$","p",null,{"style":{"color":"var(--docs-muted)","fontSize":"12px"},"children":"DataBench: 1,789 questions · AVA Workflow · Direct. Historical SQL and Python runs use different execution configurations."}]
+2a:["$","h2",null,{"id":"integration","children":["$","a",null,{"href":"#integration","className":"docs-heading-link","children":"Integration"}]}]
+2b:["$","aside",null,{"className":"docs-callout","children":[["$","span",null,{"aria-hidden":"true","className":"docs-callout-emoji","children":"🤔"}],["$","div",null,{"children":["$","p",null,{"children":[["$","strong",null,{"children":"How does the integration method affect answer quality and cost?"}]," Compare using AVA through the SDK and ",["$","a",null,{"href":"/documentation/agent-skill/","children":"Agent Skill"}],"."]}]}]]}]
+2c:["$","div",null,{"className":"docs-table docs-benchmark-overview docs-benchmark-comparison","children":["$","table",null,{"children":[["$","thead",null,{"children":["$","tr",null,{"children":[["$","th",null,{"scope":"col","children":"Evaluation"}],["$","th",null,{"scope":"col","children":"Model"}],["$","th",null,{"scope":"col","children":"Integration"}],["$","th",null,{"scope":"col","children":"Correct"}],["$","th",null,{"scope":"col","children":"Accuracy"}],["$","th",null,{"scope":"col","children":"Tokens / question"}],["$","th",null,{"scope":"col","children":"Time / question"}]]}]}],["$","tbody",null,{"children":[["$","tr",null,{"children":[["$","th",null,{"scope":"rowgroup","rowSpan":2,"children":["Tabular Q&A",["$","br",null,{}],"DataBench",["$","sup",null,{"children":["$","a",null,{"href":"#dataset-databench","aria-label":"Dataset note 1: DataBench","children":"[1]"}]}]]}],["$","td",null,{"rowSpan":2,"children":"GLM-5.1"}],["$","td",null,{"children":"SDK"}],["$","td",null,{"children":"1,550"}],["$","td",null,{"children":[["$","span",null,{"role":"img","aria-label":"Highest accuracy","style":{"color":"#a16207"},"children":"★"}]," ",["$","strong",null,{"children":"86.64%"}]]}],["$","td",null,{"children":"2,315"}],["$","td",null,{"children":"20.48 s"}]]}],["$","tr",null,{"children":[["$","td",null,{"children":"Agent Skill"}],["$","td",null,{"children":"1,511"}],["$","td",null,{"children":"84.46%"}],["$","td",null,{"children":"23,384"}],["$","td",null,{"children":"40.93 s"}]]}]]}]]}]}]
+2d:["$","p",null,{"style":{"color":"var(--docs-muted)","fontSize":"12px"},"children":"DataBench: 1,789 questions. SDK uses AVA Workflow with Direct; Agent Skill lets the agent choose tools and execution steps. These historical runs use different execution configurations."}]
+2e:["$","h2",null,{"id":"dataset-notes","children":["$","a",null,{"href":"#dataset-notes","className":"docs-heading-link","children":"Dataset notes"}]}]
+2f:["$","div",null,{"className":"docs-benchmark-notes","children":[["$","ol",null,{"children":["\n",["$","li",null,{"children":["\n",["$","p",null,{"children":[["$","strong",null,{"id":"dataset-databench","children":"DataBench."}]," ",["$","span",null,{"style":{"color":"var(--docs-link)","fontWeight":600},"children":"1,789 questions across 79 full tables"}],", excluding ",["$","code",null,{"children":"080_Books"}],". Tables average ",["$","span",null,{"style":{"color":"var(--docs-link)","fontWeight":600},"children":"46,911 rows and 22.8 columns"}],". Measures tabular answer correctness using reference answers and type-specific matching. ",["$","a",null,{"href":"https://github.com/antvis/AVA/blob/ai/evals/databench/README.md","children":"Details"}],"."]}],"\n"]}],"\n",["$","li",null,{"children":["\n",["$","p",null,{"children":[["$","strong",null,{"id":"dataset-bird","children":"BIRD New Dev."}]," ",["$","span",null,{"style":{"color":"var(--docs-link)","fontWeight":600},"children":"1,534 questions across 11 databases"}],", version ",["$","code",null,{"children":"dev_20251106"}],". Databases average ",["$","span",null,{"style":{"color":"var(--docs-link)","fontWeight":600},"children":"6.8 tables"}],"; tables average ",["$","span",null,{"style":{"color":"var(--docs-link)","fontWeight":600},"children":"52,436 rows and 10.6 columns"}],". Measures Text-to-SQL correctness by comparing query results with reference SQL results. ",["$","a",null,{"href":"https://github.com/antvis/AVA/blob/ai/evals/BIRD/README.md","children":"Details"}],"."]}],"\n"]}],"\n",["$","li",null,{"children":["\n",["$","p",null,{"children":[["$","strong",null,{"id":"dataset-spider2lite","children":"Spider2-Lite SQLite subset."}]," ",["$","span",null,{"style":{"color":"var(--docs-link)","fontWeight":600},"children":"135 complex SQL questions across 30 databases"}],". Databases average ",["$","span",null,{"style":{"color":"var(--docs-link)","fontWeight":600},"children":"13.7 tables"}],"; tables average ",["$","span",null,{"style":{"color":"var(--docs-link)","fontWeight":600},"children":"43,009 rows and 7.0 columns"}],". Scored by the official execution-result scorer; missing answers count as incorrect. Covers the SQLite subset only. ",["$","a",null,{"href":"https://github.com/antvis/AVA/blob/ai/evals/spider2lite/README.md","children":"Details"}],"."]}],"\n"]}],"\n"]}],["$","p",null,{"children":"Scale averages are calculated over unique base tables, excluding views and internal tables. Datasets use different scoring protocols, so their scores are not directly comparable. These evaluations measure answer correctness, not visualization quality."}]]}]
