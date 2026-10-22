@@ -39,7 +39,7 @@ Score options:
   --data <path>          CSV file or directory; repeatable
   --predictions <path>   Prediction CSV; repeatable
   --metrics <names>      Comma-separated metrics (default depends on dataset)
-  --metadata <path>      JSON with environment, evaluation, provenance metadata
+  --metadata <path>      JSON with evaluation and provenance metadata
   --output <path>        Write a JSON report, overwriting an existing file
   --help                Show help
 `;

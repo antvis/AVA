@@ -105,10 +105,10 @@ node evals/cli.js score \
 
 日期优先保留已明确记录的评测日期，否则取执行开始日期，缺少执行时间的历史报告取报告记录日期；时间戳按北京时间（UTC+8）换算，离线重评或导出不改变原评测日期。条件按执行方式／引擎、策略、上下文、实验标识排列，保留 `replay`、`retry-merged`、`comparison`、`not-retained` 等影响解释的区别。例如 `2026-10-21-databench-glm-5.1-duckdb-direct-raw.json`、`2026-10-22-bird-toxicology-glm-5.1-direct-semantic-comparison.json`。
 
-DataBench 报告将总体统计统一放在 `summary`，分组统计放在 `suites`；指标的 `passed` 和 `score` 共用所在统计对象的 `total`。`errors.execution` 保存执行错误详情数组，`failures` 保留未通过题目的预测、参考答案及各指标结果。早期报告仅有总体统计，保留原有统计精度。
+DataBench 报告保留评测时间、关键配置及 `summary` 中的评分、耗时和 token 用量；指标的 `passed` 和 `score` 共用 `summary.total`。不输出环境版本、分组统计或失败明细，保留历史统计精度。`provenance` 只保留执行方式（`execution`）、校准说明（`calibration`）、统计口径（`statistics`）和实验限制（`limitations`），不记录审计过程和文件清理历史。通过 `--metadata` 传入这些说明；旧的 `environment` 元数据仍可读取，但不写入报告。
 
 BIRD 报告的逐题 `status` 表示评分结果，省去重复的二元 `score`（`passed` 为 1，其他状态为 0）。BIRD 对照报告同样省去状态对应的重复分数；选中运行若已完整列入 `runs` 或 `fullRunAttempts`，通过运行路径引用。
 
 Spider2-Lite 正式报告不输出 `items` 和 `errors`；逐题评分和执行明细保存在本地运行目录的 `report.json`、`records/` 中。
 
-报告保留评测配置、统计结果、失败明细及影响解释的实验限制。SHA-256 等校验信息仅保存在运行 manifest 和本地审计文件中，不写入报告。
+报告保留评测配置、统计结果及影响解释的实验限制，逐题明细按各评测集的约定保存。SHA-256 等校验信息仅保存在运行 manifest 和本地审计文件中，不写入报告。

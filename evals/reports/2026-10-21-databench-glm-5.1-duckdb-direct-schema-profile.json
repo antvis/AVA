@@ -1,8 +1,5 @@
 {
   "generatedAt": "2026-10-22T02:10:05.663Z",
-  "environment": {
-    "scoringNodeVersion": "v22.22.0"
-  },
   "evaluation": {
     "benchmark": "DataBench full (080_Books excluded)",
     "runner": "ava-workflow",
@@ -42,18 +39,8 @@
     }
   },
   "provenance": {
-    "execution": "Previously generated no-semantic SQL was replayed on the same normalized data used by the paired semantic evaluation. SQL was not regenerated, no model calls were made during replay, and original failures without SQL were retained.",
-    "statisticsOrigin": "All CSV duration_ms and token columns are unchanged from original model generation. Reported timing and tokens are historical generation statistics, not replay timing or replay model usage; do not compare them as fresh-run costs.",
-    "referenceAnswers": "Original benchmark answers and shared databench-answer scorer unchanged. Ambiguous or inconsistent references remain in the denominator.",
-    "dataNormalization": "Cached Parquet copies have regenerated row-group statistics. Full-table fingerprints verified record values and order; source files were not overwritten.",
-    "statisticsScope": "Final retained CSV rows matching scored samples, including failed executions; excludes superseded attempts and retry overhead. Each timing/token statistic uses only rows with a recorded nonnegative finite value.",
-    "scoringScope": "Shared databench-answer metrics only; skill/tool assertions are separate.",
-    "recordedRows": {
-      "duration": 1789,
-      "inputTokens": 1789,
-      "outputTokens": 1789,
-      "totalTokens": 1789
-    },
-    "artifactRetention": "The Context comparison retains its final three DataBench prediction CSVs and reports. Independent historical Strategy reports are retained separately. Superseded Context predictions, execution logs, tuning attempts, normalized cache copies and intermediate audit files were removed during consolidation; original dataset and current semantic definitions remain unchanged."
+    "execution": "Previously generated SQL replayed on normalized data with unchanged records and order; no fresh model calls. Original failures without SQL remain.",
+    "statistics": "Timing and tokens come from historical model generation, not SQL replay; excludes superseded attempts and retry overhead.",
+    "limitations": "A replay baseline, not a fresh model run; ambiguous or inconsistent references remain in the denominator."
   }
 }

@@ -1,12 +1,5 @@
 {
   "generatedAt": "2026-09-22T03:17:04Z",
-  "environment": {
-    "nodeVersion": "v20.19.5",
-    "pnpmVersion": "10.20.0",
-    "operatingSystem": "Darwin 25.6.0",
-    "architecture": "arm64",
-    "gitRevision": "350be58a292d4d43a1e5df8a4a279deaf114c782"
-  },
   "evaluation": {
     "benchmark": "DataBench full (080_Books excluded)",
     "dataset": "databench",

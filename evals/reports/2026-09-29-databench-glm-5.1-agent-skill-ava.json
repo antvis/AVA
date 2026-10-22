@@ -1,9 +1,5 @@
 {
   "generatedAt": "2026-09-29T05:38:20+00:00",
-  "environment": {
-    "nodeVersion": "v24.21.0",
-    "eveVersion": "0.67.2"
-  },
   "evaluation": {
     "benchmark": "DataBench full (080_Books excluded)",
     "dataset": "databench",
@@ -38,11 +34,7 @@
     }
   },
   "provenance": {
-    "originalExecutionErrors": 752,
-    "preservedOriginalRows": 1037,
-    "rerunRows": 752,
-    "recoveredRows": 749,
-    "statisticsScope": "Final retained CSV rows, including failed executions; excludes superseded attempts and retry overhead. Results combine historical rows and repaired-harness reruns.",
-    "scoringScope": "Shared databench-answer metric only; skill/tool assertions are separate."
+    "execution": "Combines 1037 historical rows with 752 repaired-harness reruns; not a fresh complete run.",
+    "statistics": "Final retained rows, including failures; excludes superseded attempts and retry overhead."
   }
 }

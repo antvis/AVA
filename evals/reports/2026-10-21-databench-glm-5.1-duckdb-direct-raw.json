@@ -1,9 +1,5 @@
 {
   "generatedAt": "2026-10-22T02:10:05.466Z",
-  "environment": {
-    "scoringNodeVersion": "v22.22.0",
-    "executionNodeVersion": "v22.22.0"
-  },
   "evaluation": {
     "benchmark": "DataBench full (080_Books excluded)",
     "runner": "ava-workflow",
@@ -49,21 +45,8 @@
     }
   },
   "provenance": {
-    "execution": "All 1789 questions were rerun with fresh model calls, SQL generation and execution. Each initial prompt contains only the raw CSV header and first three rows, table name, question and the standard answer-shape instruction. No structured schema field types, metadata descriptions, profile statistics or semantic definitions are supplied. Queries execute against the complete table.",
-    "rawSerialization": "CSV cells are quoted; arrays and objects are JSON-encoded inside their cells; null values are empty cells. The preview preserves the first three source records and original column names.",
-    "referenceAnswers": "Original benchmark answers and shared databench-answer scorer unchanged. No questions or gold answers were used to tune dataset-specific raw-context instructions.",
-    "selection": "One complete raw-context run retained wholesale, including wrong, missing and failed cases; no per-question best-of selection.",
-    "dataNormalization": "Same normalized Parquet copies as the paired 90.22% semantic run; all 79 data hashes match. Original records and order were verified during normalization; original source files were not overwritten.",
-    "comparisonLimitations": "The schema/profile/no-semantic baseline replays old SQL without fresh model calls. The semantic result was calibrated using benchmark questions and answers. Raw context also differs in its row-preview representation, so differences do not isolate a single metadata component.",
-    "executionErrorCorrection": "The same Direct strategy default of up to two execution-error corrections remains enabled. Repair prompts can contain previous generated SQL and engine diagnostics, which may reveal field names or types; no schema/profile discovery or semantic loading is performed.",
-    "statisticsScope": "Final retained CSV rows matching scored samples, including failed executions; excludes superseded attempts and retry overhead. Each timing/token statistic uses only rows with a recorded nonnegative finite value.",
-    "scoringScope": "Shared databench-answer metrics only; skill/tool assertions are separate.",
-    "recordedRows": {
-      "duration": 1789,
-      "inputTokens": 1789,
-      "outputTokens": 1789,
-      "totalTokens": 1789
-    },
-    "artifactRetention": "The Context comparison retains its final three DataBench prediction CSVs and reports. Independent historical Strategy reports are retained separately. Superseded Context predictions, execution logs, tuning attempts, normalized cache copies and intermediate audit files were removed during consolidation; original dataset and current semantic definitions remain unchanged."
+    "execution": "Fresh model run on all 1789 questions using CSV headers and the first three rows. Queries use complete tables; up to two SQL corrections can expose engine diagnostics.",
+    "statistics": "Final retained rows, including failures; excludes superseded attempts and retry overhead.",
+    "limitations": "Same normalized data as the paired runs. Schema/profile baseline replays old SQL; semantics were reference-assisted. Differences do not isolate individual metadata effects."
   }
 }

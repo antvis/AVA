@@ -53,8 +53,6 @@ function buildReport(scores, samples, options, plugin = {}) {
   const models = [...new Set(rows.map((row) => row.model).filter(Boolean))];
   return {
     generatedAt: new Date().toISOString(),
-    // This is the scoring runtime; original execution versions must be supplied.
-    environment: { scoringNodeVersion: process.version, ...metadata.environment },
     evaluation: {
       benchmark: plugin.title ?? options.dataset,
       ...evaluation,
@@ -78,10 +76,9 @@ function buildReport(scores, samples, options, plugin = {}) {
       },
     },
     provenance: {
-      ...metadata.provenance,
-      statisticsScope: 'Final retained CSV rows matching scored samples, including failed executions; excludes superseded attempts and retry overhead. Each timing/token statistic uses only rows with a recorded nonnegative finite value.',
-      scoringScope: `Shared ${Object.keys(scores.metrics).join(', ')} metrics only; skill/tool assertions are separate.`,
-      recordedRows: { duration: durations.length, inputTokens: inputs.length, outputTokens: outputs.length, totalTokens: tokens.length },
+      ...Object.fromEntries(Object.entries(metadata.provenance ?? {}).filter(([key]) =>
+        ['execution', 'calibration', 'limitations'].includes(key))),
+      statistics: metadata.provenance?.statistics ?? 'Final retained rows, including failures; each statistic uses recorded values only. Superseded attempts and retry overhead are excluded.',
     },
   };
 }

@@ -139,10 +139,13 @@ test('CLI report stores aggregate scores once and preserves all selected metrics
   const predictions = join(directory, 'predictions.csv');
   writeFileSync(predictions, 'id,predicted_answer,error\none,wrong,\ntwo,,execution failed\n');
   const metadata = join(directory, 'metadata.json');
-  writeFileSync(metadata, JSON.stringify({ evaluation: { schema: false, profile: false, semantic: false,
+  writeFileSync(metadata, JSON.stringify({ environment: { nodeVersion: 'unused' }, evaluation: { schema: false, profile: false, semantic: false,
     context: { type: 'raw', previewRows: 3, schema: false, profile: true, semantic: false },
     predictionsSha256: 'private-hash' }, provenance: { semanticSha256: { demo: 'private-hash' },
-      source: { report_sha256: 'private-hash', scope: 'fixture' } } }));
+      source: { report_sha256: 'private-hash', scope: 'fixture' },
+      execution: 'Historical answers plus targeted reruns.', calibration: 'Reference-assisted; no held-out evaluation.',
+      statistics: 'Mixed historical and fresh row costs.', limitations: ['Not a fresh full run.'],
+      verification: { checks: 100 }, artifactRetention: 'Local audit only.' } }));
   const output = join(directory, 'report.json');
   const stdout = execFileSync(process.execPath, [join(import.meta.dirname, '../cli.js'), 'score', '--plugin', plugin,
     '--dataset', 'custom', '--predictions', predictions, '--metadata', metadata, '--output', output]);
@@ -154,13 +157,18 @@ test('CLI report stores aggregate scores once and preserves all selected metrics
   assert.deepEqual(report.summary, { ...expected,
     timingSeconds: { average: null, minimum: null, maximum: null, median: null },
     tokens: { prompt: null, completion: null, total: null, average: null } });
-  for (const key of ['total', 'predicted', 'missing', 'metrics', 'errors', 'failures', 'suites']) {
+  for (const key of ['total', 'predicted', 'missing', 'metrics', 'errors', 'failures', 'suites', 'environment']) {
     assert.equal(Object.hasOwn(report, key), false);
   }
   assert.match(stdout.toString(), /always: 50\.00% \(1\/2\)/);
-  assert.match(report.provenance.scoringScope, /Shared exact, always metrics only/);
   assert.doesNotMatch(JSON.stringify(report), /sha256|private-hash/i);
-  assert.deepEqual(report.provenance.source, { scope: 'fixture' });
+  assert.deepEqual(report.provenance, {
+    execution: 'Historical answers plus targeted reruns.', calibration: 'Reference-assisted; no held-out evaluation.',
+    limitations: ['Not a fresh full run.'], statistics: 'Mixed historical and fresh row costs.',
+  });
+  const defaults = buildReport(expected, [], { predictions: [] });
+  assert.deepEqual(Object.keys(defaults.provenance), ['statistics']);
+  assert.match(defaults.provenance.statistics, /recorded values only.*retry overhead/);
   writeFileSync(metadata, JSON.stringify({ sha256: 'unsupported-metadata' }));
   assert.throws(() => buildReport({}, [], { metadata }), /supports only/);
 });

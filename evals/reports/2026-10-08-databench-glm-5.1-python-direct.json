@@ -1,8 +1,5 @@
 {
   "generatedAt": "2026-10-08T14:14:12.655Z",
-  "environment": {
-    "scoringNodeVersion": "v20.19.5"
-  },
   "evaluation": {
     "benchmark": "DataBench full (080_Books excluded)",
     "runner": "ava-workflow",
@@ -36,13 +33,6 @@
     }
   },
   "provenance": {
-    "statisticsScope": "Final retained CSV rows matching scored samples, including failed executions; excludes superseded attempts and retry overhead. Each timing/token statistic uses only rows with a recorded nonnegative finite value.",
-    "scoringScope": "Shared databench-answer metrics only; skill/tool assertions are separate.",
-    "recordedRows": {
-      "duration": 1789,
-      "inputTokens": 1788,
-      "outputTokens": 1788,
-      "totalTokens": 1788
-    }
+    "statistics": "Timing uses 1789 retained rows; token statistics use 1788 recorded rows. Includes failures; excludes superseded attempts and retry overhead."
   }
 }

@@ -1,9 +1,5 @@
 {
   "generatedAt": "2026-10-22T02:10:05.843Z",
-  "environment": {
-    "scoringNodeVersion": "v22.22.0",
-    "executionNodeVersion": "v22.22.0"
-  },
   "evaluation": {
     "benchmark": "DataBench full (080_Books excluded)",
     "runner": "ava-workflow",
@@ -42,51 +38,8 @@
     }
   },
   "provenance": {
-    "semanticCalibration": "In-sample, reference-assisted experiment with inferred default vocabulary mappings. London neighbourhood-label questions default to host_neighbourhood; unqualified location rankings in the other Airbnb dataset default to host_location. Field roles are supported by value inspection, but the original question ambiguity is NOT independently resolved. No held-out evaluation.",
-    "referenceAnswers": "Original answers, source values and scorer unchanged. Two previously ambiguous field-mapping cases are now tested under an explicitly inferred business convention. Do not describe the improvement as removal of the original ambiguity.",
-    "semanticSnapshot": "evals/databench/semantics",
-    "attempts": {
-      "sampleExecutions": 2,
-      "totalTokens": 15255,
-      "meanDurationSeconds": 2.92
-    },
-    "modelRequests": "Sample executions count workflow attempts, not exact model/HTTP requests. Direct SQL error repair may issue additional model requests; their returned token usage is accumulated.",
-    "remaining": 125,
-    "execution": "Composite reference score ONLY, not a new full evaluation. Retain all 1787 unselected previous rows unchanged, including all 1662 previously correct rows, and replace exactly two previously incorrect rows with their latest outputs. Previously correct samples were not rerun under updated semantics.",
-    "statistics": "Statistics combine old and fresh row costs, not the cost of a fresh complete benchmark run.",
-    "statisticsScope": "Final retained CSV rows matching scored samples, including failed executions; excludes superseded attempts and retry overhead. Each timing/token statistic uses only rows with a recorded nonnegative finite value.",
-    "scoringScope": "Shared databench-answer metrics only; skill/tool assertions are separate.",
-    "recordedRows": {
-      "duration": 1789,
-      "inputTokens": 1789,
-      "outputTokens": 1789,
-      "totalTokens": 1789
-    },
-    "artifactRetention": "The Context comparison retains its final three DataBench prediction CSVs and reports. Independent historical Strategy reports are retained separately. Superseded Context predictions, execution logs, tuning attempts, normalized cache copies and intermediate audit files were removed during consolidation; original dataset and current semantic definitions remain unchanged.",
-    "verification": {
-      "targetedErrors": 2,
-      "allAlternativeQueriesMatch": true,
-      "records": [
-        {
-          "id": "databench:006_London:05",
-          "sql": "SELECT COUNT(DISTINCT host_neighbourhood) AS answer FROM data",
-          "answer": "563",
-          "gold": "563",
-          "matches": true,
-          "interpretation": "Inferred default vocabulary, not a resolution of the original question ambiguity."
-        },
-        {
-          "id": "databench:022_Airbnbs:11",
-          "sql": "SELECT host_location AS answer FROM data WHERE host_location IS NOT NULL GROUP BY host_location ORDER BY COUNT(*) DESC LIMIT 1",
-          "answer": "New York, New York, United States",
-          "gold": "New York, New York, United States",
-          "matches": true,
-          "interpretation": "Inferred default vocabulary, not a resolution of the original question ambiguity."
-        }
-      ],
-      "syntheticChecks": 4,
-      "mappingStatus": "inferred-business-convention",
-      "questionAmbiguityResolvedByValuesAlone": false
-    }
+    "execution": "Combines 1787 historical rows, including all 1662 previously correct answers, with two targeted reruns. Previously correct samples were not rerun under updated semantics.",
+    "calibration": "Reference-assisted, in-sample semantic calibration; no held-out evaluation. Inferred default field mappings do not independently resolve question ambiguity. Source values, reference answers and scorer are unchanged.",
+    "statistics": "Mixed historical and fresh row costs, not a fresh complete-run cost; excludes superseded attempts and retry overhead."
   }
 }
