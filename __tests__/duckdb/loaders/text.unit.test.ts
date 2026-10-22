@@ -1,4 +1,3 @@
-import { NoObjectGeneratedError } from 'ai';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { DuckDBEngine } from '../../../src/duckdb/engine';
@@ -43,58 +42,59 @@ describe.each([
     vi.unstubAllGlobals();
   });
 
-  it('requests JSON mode and preserves nested values and brackets inside strings', async () => {
+  it.each(['raw', 'json', 'unlabelled', 'CRLF', 'JSON'])('preserves nested values in a %s response', async (format) => {
     const rows = [
       {
-        name: 'Alice ] [ "quoted"',
+        name: 'Alice ] [ "quoted" ```json',
         values: [1.5, 2.5, null],
         details: { city: '杭州', flags: [true, false] },
         missing: null,
       },
     ];
-    responseText = JSON.stringify({ rows });
+    const json = JSON.stringify(rows, null, 2);
+    if (format === 'raw') responseText = `  ${json}  `;
+    else if (format === 'CRLF') responseText = `\`\`\`json\r\n${json}\r\n\`\`\``;
+    else responseText = `\`\`\`${format === 'unlabelled' ? '' : format}\n${json}\n\`\`\``;
     await engine.load({ type: 'text', options: { text: 'Beijing 100' } });
     const request = JSON.parse(fetch.mock.calls[0][1].body);
-    expect(request.response_format).toEqual({ type: 'json_object' });
+    expect(request).not.toHaveProperty('response_format');
     expect(JSON.stringify(request.messages)).toContain('Beijing 100');
     const data = engine instanceof DuckDBEngine ? (await engine.execute('SELECT * FROM data')).data : engine.getData();
     expect(data).toEqual(rows);
   });
 
   it('accepts an empty rows array', async () => {
-    responseText = '{"rows":[]}';
+    responseText = '[]';
     await engine.load({ type: 'text', options: { text: 'No records' } });
     const data = engine instanceof DuckDBEngine ? (await engine.execute('SELECT * FROM data')).data : engine.getData();
     expect(data).toEqual([]);
   });
 
-  it.each([{}, { rows: null }, { rows: {} }, { rows: [1] }, { rows: [null] }, { rows: [[]] }])(
-    'rejects invalid extracted records %j',
-    async (output) => {
-      responseText = JSON.stringify(output);
-      await expect(engine.load({ type: 'text', options: { text: 'Invalid records' } })).rejects.toThrow();
-      await expect(engine.schema()).rejects.toThrow('No data loaded');
-    }
-  );
-
-  it('propagates SDK errors for malformed JSON without extracting a partial array', async () => {
-    responseText = '{"rows":[{"values":[1,2]}]';
-    await expect(engine.load({ type: 'text', options: { text: 'Invalid JSON' } })).rejects.toThrow(
-      NoObjectGeneratedError
-    );
+  it.each([{}, null, { rows: [] }, [1], [null], [[]]])('rejects invalid extracted records %j', async (output) => {
+    responseText = JSON.stringify(output);
+    await expect(engine.load({ type: 'text', options: { text: 'Invalid records' } })).rejects.toThrow();
     await expect(engine.schema()).rejects.toThrow('No data loaded');
   });
 
-  it('reports unsupported JSON mode without falling back to plain text', async () => {
+  it.each([
+    '[{"values":[1,2]}',
+    '```json\n[{"values":[1,2]}]',
+    'Here are the records:\n[{"values":[1,2]}]',
+    '```json\n[]\n```\nMore explanation',
+  ])('rejects malformed or partially wrapped JSON %s', async (text) => {
+    responseText = text;
+    await expect(engine.load({ type: 'text', options: { text: 'Invalid JSON' } })).rejects.toThrow(SyntaxError);
+    await expect(engine.schema()).rejects.toThrow('No data loaded');
+  });
+
+  it('propagates model errors without retrying extraction', async () => {
     fetch.mockResolvedValueOnce(
-      new Response(JSON.stringify({ error: { message: 'JSON mode unsupported', type: 'invalid_request_error' } }), {
+      new Response(JSON.stringify({ error: { message: 'Model unavailable', type: 'invalid_request_error' } }), {
         status: 400,
         headers: { 'content-type': 'application/json' },
       })
     );
-    await expect(engine.load({ type: 'text', options: { text: 'Beijing 100' } })).rejects.toThrow(
-      'JSON mode unsupported'
-    );
+    await expect(engine.load({ type: 'text', options: { text: 'Beijing 100' } })).rejects.toThrow('Model unavailable');
     expect(fetch).toHaveBeenCalledTimes(1);
     await expect(engine.schema()).rejects.toThrow('No data loaded');
   });

@@ -331,7 +331,7 @@ DuckDB rejects workbooks containing sheet names with literal XML entity text, su
 
 ## Text
 
-Extract structured rows from unstructured text. This source calls your configured model, which must support JSON output mode. AVA validates the extracted records before loading them.
+Extract structured rows from unstructured text. This source calls your configured model and validates its response as a JSON array of objects before loading it.
 
 ```typescript
 await ava.source({
