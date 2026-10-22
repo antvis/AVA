@@ -128,7 +128,7 @@ describe('getDuckDBSchema', () => {
 
   it('skips querying when no tables are requested', async () => {
     const runAndReadAll = vi.fn();
-    expect(await getDuckDBSchema({ run: vi.fn(), runAndReadAll }, [])).toEqual({
+    expect(await getDuckDBSchema({ run: vi.fn(), runAndReadAll } as unknown as DuckDBConnection, [])).toEqual({
       models: [],
       relationships: [],
       views: [],

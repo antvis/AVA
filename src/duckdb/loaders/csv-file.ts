@@ -1,7 +1,7 @@
 /**
  * CSV file loader: read a CSV file (local path or http(s) URL) through
  * DuckDB's csv reader. Distinct from the inline `csv` loader (csv.ts), which
- * parses CSV content in JS first.
+ * accepts CSV content as a string.
  */
 
 import { createFileLoader } from '../util/file';

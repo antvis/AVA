@@ -235,6 +235,17 @@ describe('loaders/excel', () => {
       await rm(directory, { recursive: true, force: true });
     });
 
+    it.each([true, false])('supports normalize_names=%s for sheet headers', async (normalize_names) => {
+      engine = new DuckDBEngine(getLLMConfig());
+      await engine.load({
+        type: 'excel',
+        options: { path: file, sheets: [{ sheet: 'Sales', range: 'A1:A2', normalize_names }] },
+      });
+      expect((await engine.schema()).models[0].columns.map(({ name }) => name)).toEqual([
+        normalize_names ? 'report_title' : 'Report title',
+      ]);
+    });
+
     it.each([undefined, true, false])('respects range, blank rows, and header=%s', async (header) => {
       const instance = new DuckDBEngine(getLLMConfig());
       try {

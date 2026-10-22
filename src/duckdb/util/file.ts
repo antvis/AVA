@@ -2,14 +2,14 @@
  * File helpers for the DuckDB engine: temp file creation, remote download,
  * cleanup, and the shared file-source helpers used by the file-based loaders
  * (csv-file, json-file, parquet). A local file path is used directly; a remote
- * URL is downloaded to a temp file first. Node.js only.
+ * HTTP(S) URL is read through DuckDB's httpfs extension. Node.js only.
  */
 
 import * as fs from 'node:fs/promises';
 import * as os from 'node:os';
 import { dirname, join } from 'node:path';
 
-import { READ_FN, escapeSql, serializeOptions } from '../../util/sql';
+import { READ_FN, escapeSql, serializeOptions, sqlStringLiteral } from '../../util/sql';
 
 import { getDuckDBSchema } from './schema';
 
@@ -52,8 +52,8 @@ function isExtendedCSVEncoding(format: FileFormat, encoding?: string): boolean {
 }
 
 /**
- * Build a LoadedSource that registers a local file as the single `data` view.
- * The view reads the file lazily, so the file must outlive the engine.
+ * Build a LoadedSource exposing a file as `data`. JSON is parsed into a typed
+ * table once; CSV/Parquet views read lazily, so those files must outlive the engine.
  * The file's directory is whitelisted so the engine can still read it after hardening.
  * `options` carries extra DuckDB reader options (applied to CSV and JSON readers).
  */
@@ -70,10 +70,11 @@ export function fileSource(
         await conn.run('INSTALL encodings');
         await conn.run('LOAD encodings');
       }
-      // csv/json default to auto_detect=true; a user-supplied auto_detect
-      // overrides it because DuckDB applies later duplicate options over earlier ones.
-      const sniff = format === 'parquet' ? '' : `, auto_detect=true${serializeOptions(options)}`;
-      await conn.run(`CREATE OR REPLACE VIEW data AS SELECT * FROM ${READ_FN[format]}('${escapeSql(path)}'${sniff})`);
+      const object = format === 'json' ? 'TABLE' : 'VIEW';
+      const sniff = format === 'parquet' ? '' : serializeOptions(options);
+      await conn.run(
+        `CREATE OR REPLACE ${object} data AS SELECT * FROM ${READ_FN[format]}('${escapeSql(path)}'${sniff})`
+      );
       return ['data'];
     },
     getSchema: (conn) => getDuckDBSchema(conn, ['data']),
@@ -99,19 +100,35 @@ export interface FileLoaderOptions {
 
 /**
  * Build a file loader for a DuckDB-readable format: local files are read in
- * place, remote URLs are downloaded to a temp file first.
+ * place, HTTP(S) URLs are read through the native reader and httpfs.
  */
 export function createFileLoader<T extends FileLoaderOptions>(format: FileFormat) {
   return async (loaderOptions: T): Promise<LoadedSource> => {
     const { path: sourcePath, headers, options } = loaderOptions;
-
-    if (!/^https?:\/\//.test(sourcePath)) {
-      // Local file — DuckDB reads it in place
+    if (!/^https?:\/\//i.test(sourcePath)) {
       return fileSource(sourcePath, format, noopCleanup, options);
     }
-
-    // Remote file — download to a temp file (DuckDB stays offline)
-    const tmpFile = await downloadToTempFile(sourcePath, format, headers);
-    return fileSource(tmpFile, format, () => removeTempFile(tmpFile), options);
+    const url = new URL(sourcePath);
+    if (url.username || url.password) throw new Error('Use headers instead of credentials in an HTTP(S) source URL');
+    const source = fileSource(sourcePath, format, noopCleanup, options);
+    return {
+      ...source,
+      allowedDirectories: [],
+      allowedPaths: [sourcePath],
+      register: async (conn) => {
+        await conn.run('INSTALL httpfs');
+        await conn.run('LOAD httpfs');
+        await conn.run('SET enable_server_cert_verification = true');
+        if (headers && Object.keys(headers).length > 0) {
+          const entries = Object.entries(headers).map(
+            ([key, value]) => `${sqlStringLiteral(key)}: ${sqlStringLiteral(value)}`
+          );
+          await conn.run(`CREATE TEMPORARY SECRET ava_source_http (
+            TYPE http, SCOPE ${sqlStringLiteral(sourcePath)}, EXTRA_HTTP_HEADERS MAP {${entries.join(', ')}}
+          )`);
+        }
+        return source.register(conn);
+      },
+    };
   };
 }

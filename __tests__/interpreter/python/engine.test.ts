@@ -25,7 +25,7 @@ describe('python/engine', () => {
     }
   });
 
-  it.each(['all_varchar', 'ignore_errors', 'stop_at_empty', 'empty_as_varchar'])(
+  it.each(['all_varchar', 'ignore_errors', 'stop_at_empty', 'empty_as_varchar', 'normalize_names'])(
     'rejects DuckDB-only Excel setting %s before executing Python',
     async (key) => {
       const execute = vi.fn();

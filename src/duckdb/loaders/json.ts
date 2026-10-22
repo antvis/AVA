@@ -18,5 +18,5 @@ export async function loadJson(options: JsonSourceOptions): Promise<LoadedSource
   }
 
   const tmpFile = await writeTempFile(JSON.stringify(data), 'json');
-  return fileSource(tmpFile, 'json', () => removeTempFile(tmpFile), readerOptions);
+  return fileSource(tmpFile, 'json', () => removeTempFile(tmpFile), { format: 'array', ...readerOptions });
 }

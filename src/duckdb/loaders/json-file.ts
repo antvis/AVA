@@ -1,6 +1,6 @@
 /**
  * JSON file loader: read a JSON file (local path or http(s) URL) through
- * DuckDB's json reader. Distinct from the inline `json` loader (json.ts),
+ * DuckDB's native reader into a typed table. Distinct from the inline `json` loader (json.ts),
  * which takes an in-memory object array.
  */
 

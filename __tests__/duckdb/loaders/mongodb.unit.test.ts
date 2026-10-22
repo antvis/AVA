@@ -4,14 +4,16 @@ import { loadMongoDB } from '../../../src/duckdb/loaders/mongodb';
 
 import type { DuckDBConnection } from '../../../src/types';
 
-function createConnection(rows: Record<string, unknown>[] = []): DuckDBConnection & {
+type ConnectionMock = DuckDBConnection & {
   run: ReturnType<typeof vi.fn>;
   runAndReadAll: ReturnType<typeof vi.fn>;
-} {
+};
+
+function createConnection(rows: Record<string, unknown>[] = []): ConnectionMock {
   return {
     run: vi.fn().mockResolvedValue(undefined),
     runAndReadAll: vi.fn().mockResolvedValue({ getRowObjectsJson: () => rows }),
-  };
+  } as ConnectionMock;
 }
 
 describe('loaders/mongodb (unit)', () => {

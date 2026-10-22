@@ -124,15 +124,15 @@ await ava.source({
 });
 ```
 
-| Field     | Type                     | Required | Meaning / default                                    |
-| --------- | ------------------------ | -------- | ---------------------------------------------------- |
-| `path`    | `string`                 | Yes      | Local file path or http(s) URL                       |
-| `headers` | `Record<string, string>` | No       | HTTP headers for remote sources (e.g. Authorization) |
-| `options` | `CSVReadOptions`         | No       | [CSV reader options](#csv-reader-options).           |
+| Field      | Type                     | Required | Meaning / default                                                              |
+| ---------- | ------------------------ | -------- | ------------------------------------------------------------------------------ |
+| `path`     | `string`                 | Yes      | Local file path or http(s) URL                                                 |
+| `headers`  | `Record<string, string>` | No       | HTTP headers for remote sources (e.g. Authorization)                           |
+| `options`  | `CSVReadOptions`         | No       | [CSV reader options](#csv-reader-options).                                     |
 
 ### CSV reader options
 
-Use these fields in `options.options` for `csv` and `csv-file` sources with DuckDB. Every field is optional. AVA forwards supplied values to `read_csv`; omitted values use DuckDB reader defaults or detection. Defaults below describe individual reader settings; automatic detection can determine the effective header, delimiter, and types.
+Use these fields in `options.options` for `csv` and `csv-file` sources with DuckDB. Every field is optional. AVA forwards supplied values to [`read_csv`](https://duckdb.org/docs/2.0/data/csv/overview#parameters); omitted values use DuckDB reader defaults or detection. Defaults below describe individual reader settings; automatic detection can determine the effective header, delimiter, and types.
 
 | Field                  | Type                                 | Required | Meaning / default                                                                               |
 | ---------------------- | ------------------------------------ | -------- | ----------------------------------------------------------------------------------------------- |
@@ -169,11 +169,13 @@ Use these fields in `options.options` for `csv` and `csv-file` sources with Duck
 | `rejects_table`        | `string`                             | No       | Temp table name for faulty lines. Default 'reject_errors'                                       |
 | `rejects_scan`         | `string`                             | No       | Temp table name for faulty scans. Default 'reject_scans'                                        |
 | `rejects_limit`        | `number`                             | No       | Upper limit on faulty lines recorded per file; 0 = no limit. Default 0                          |
+| `rejects_line_size_limit` | `number`                          | No       | Maximum characters stored per rejected line; 0 stores the full line. Default 10000              |
 | `encoding`             | `string`                             | No       | File encoding: 'utf-8' \| 'utf-16' \| 'latin-1'. Default 'utf-8'                                |
 | `compression`          | `string`                             | No       | Compression method: 'none' \| 'gzip' \| 'zstd'. Default auto (from file extension)              |
 | `union_by_name`        | `boolean`                            | No       | Align columns from different files by name instead of position. Default false                   |
+| `allow_empty`          | `boolean`                            | No       | Return zero rows with an `empty` BOOLEAN column when no files match. Default false              |
 | `hive_partitioning`    | `boolean`                            | No       | Interpret the path as a Hive partitioned path. Default auto-detected                            |
-| `filename`             | `boolean`                            | No       | Add the source file path to each row as a `filename` column. Default false                      |
+| `filename`             | `boolean`                            | No       | Include filename in `SELECT *`. Default false; also available as a virtual column               |
 
 ## JSON
 
@@ -197,6 +199,8 @@ await ava.source({
 
 Use `type: 'json-file'` with a local path or HTTP(S) URL.
 
+DuckDB sources use native `read_json` inference and load a typed `data` table once. Nested objects and arrays become `STRUCT` and `LIST` columns. Repeated queries and profiles use the loaded table, so later source-file changes do not affect the session. Supply reader options only when inference needs guidance; fields declared as `JSON` retain heterogeneous values without custom type conversion.
+
 ```typescript
 await ava.source({
   type: 'json-file',
@@ -216,17 +220,21 @@ await ava.source({
 ### JSON reader options
 
 Both JSON source types accept `options.options` when using the DuckDB engine. All fields are optional.
-The complete [DuckDB JSON reader parameter list](https://duckdb.org/docs/current/data/json/loading_json) is exposed as `JSONReadOptions`:
+The supported native [DuckDB 2.0 JSON reader parameters](https://duckdb.org/docs/2.0/data/json/loading_json) are exposed as `JSONReadOptions`:
 
 | Parameter | Type | Default | Meaning |
 | --- | --- | --- | --- |
+| `allow_empty` | `boolean` | `false` | Return zero rows with an `empty` BOOLEAN column when no files match |
+| `array` | `boolean` | Unset | Shorthand for `format`: `true` reads an array, `false` reads NDJSON |
 | `auto_detect` | `boolean` | `true` | Infer schema |
 | `columns` | `Record<string, string>` | Unset | Names → DuckDB types; selects columns |
 | `compression` | `'auto_detect' \| 'none' \| 'gzip' \| 'zstd'` | `'auto_detect'` | Codec |
+| `convert_strings_to_integers` | `boolean` | `false` | Infer integer strings as numeric values |
 | `dateformat` | `string` | `'iso'` | Date pattern |
 | `field_appearance_threshold` | `number` | `0.1` | Sparse-object MAP threshold |
 | `filename` | `boolean` | `false` | Include filename in `SELECT *` |
 | `format` | `'auto' \| 'unstructured' \| 'newline_delimited' \| 'array'` | `'auto'` | Input layout for `read_json` |
+| `geojson` | `boolean` | `false` | Parse GeoJSON geometry objects as GEOMETRY |
 | `hive_partitioning` | `boolean` | Auto-detected | Path partitions |
 | `ignore_errors` | `boolean` | `false` | Skip errors; NDJSON only |
 | `map_inference_threshold` | `number` | `200` | STRUCT subfield limit; `-1` disables MAP inference |
@@ -235,11 +243,13 @@ The complete [DuckDB JSON reader parameter list](https://duckdb.org/docs/current
 | `maximum_sample_files` | `number` | `32` | Files sampled |
 | `records` | `'auto' \| 'true' \| 'false'` | `'auto'` | Unpack objects |
 | `sample_size` | `number` | `20480` | Objects sampled; `-1` scans all |
-| `timestampformat` | `string` | `'iso'` | Timestamp pattern |
+| `timestampformat` | `string` | `'iso'` | Timestamp pattern; ISO timestamps with timezone offsets infer TIMESTAMPTZ |
 | `union_by_name` | `boolean` | `false` | Merge schemas |
 
 Inline data is serialized as an uncompressed JSON array; choose compatible reader options.
-Remote files are downloaded to temporary paths, so set `compression` explicitly for compressed URLs.
+HTTP(S) URLs are read by DuckDB directly, including compression detection from the URL's file extension. Set `compression` explicitly when the URL does not identify the codec.
+
+DuckDB 2.0 infers JSON timestamps with timezone offsets as `TIMESTAMPTZ` (reported as `TIMESTAMP WITH TIME ZONE`), where 1.5 inferred `TIMESTAMP`. Set an explicit column type in `columns` when your schema requires a particular timestamp type.
 
 ## Parquet
 
@@ -252,10 +262,12 @@ await ava.source({
 });
 ```
 
-| Field     | Type                     | Required | Meaning / default                                    |
-| --------- | ------------------------ | -------- | ---------------------------------------------------- |
-| `path`    | `string`                 | Yes      | Local file path or http(s) URL                       |
-| `headers` | `Record<string, string>` | No       | HTTP headers for remote sources (e.g. Authorization) |
+| Field      | Type                     | Required | Meaning / default                                                                           |
+| ---------- | ------------------------ | -------- | ------------------------------------------------------------------------------------------- |
+| `path`     | `string`                 | Yes      | Local file path or http(s) URL                                                              |
+| `headers`  | `Record<string, string>` | No       | HTTP headers for remote sources (e.g. Authorization)                                        |
+
+See [asynchronous file reads](/documentation/engines/duckdb/#asynchronous-file-reads) for automatic native HTTP reading and I/O behavior. A server must support HTTP Range requests for selective Parquet reads. Remote Excel workbooks are downloaded for local sheet inspection.
 
 ## Excel
 
@@ -291,6 +303,7 @@ Each entry in `sheets` contains a required `sheet` and optional `ExcelReadOption
 | `sheet` | `string` | Required | Exact worksheet name; also used as the table name |
 | `range` | `string` | Inferred by the engine | Inclusive A1 rectangle, such as `B3:F100` |
 | `header` | `boolean` | `true` | Use the first row of the selected range as column names; `false` keeps it as data |
+| `normalize_names` | `boolean` | `false` | DuckDB only: normalize column names as for CSV |
 | `all_varchar` | `boolean` | `false` | DuckDB only: read all cells as VARCHAR |
 | `ignore_errors` | `boolean` | `false` | DuckDB only: replace cells that fail type conversion with NULL |
 | `stop_at_empty` | `boolean` | `false` with `range`, otherwise `true` | DuckDB only: stop reading at the first empty row |
@@ -300,9 +313,9 @@ A supplied `sheets` list must be non-empty, and every name must exist in the wor
 
 ### Engine behavior
 
-Both engines support `sheet`, `range`, and `header`. The Python engine rejects the four DuckDB-only options in the table above.
+Both engines support `sheet`, `range`, and `header`. The Python engine rejects the DuckDB-only options in the table above.
 
-DuckDB reader options follow [`read_xlsx`](https://duckdb.org/docs/current/core_extensions/excel#reading-xlsx-files), except that AVA defaults `header` to `true` instead of inferring it. For example, to preserve mixed cell types as text and continue past empty rows:
+DuckDB reader options follow [`read_xlsx`](https://duckdb.org/docs/2.0/core_extensions/excel#reading-xlsx-files), except that AVA defaults `header` to `true` instead of inferring it. For example, to preserve mixed cell types as text and continue past empty rows:
 
 ```typescript
 await ava.source({

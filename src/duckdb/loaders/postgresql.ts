@@ -1,10 +1,10 @@
 /**
  * PostgreSQL loader: ATTACH a PostgreSQL database through DuckDB's postgres
  * extension and register one view per table in the schema. Supports an optional SSH tunnel.
- * https://duckdb.org/docs/lts/core_extensions/postgres
+ * https://duckdb.org/docs/2.0/core_extensions/postgres
  */
 
-import { escapeSql, sqlIdentifier, sqlStringLiteral, sqlUnionAll } from '../../util/sql';
+import { sqlIdentifier, sqlStringLiteral, sqlUnionAll } from '../../util/sql';
 import { rowObjects2Schema } from '../../util/schema';
 import { createSshTunnel } from '../util/ssh';
 
@@ -95,18 +95,6 @@ JOIN pg_catalog.pg_attribute ra ON ra.attrelid = rt.oid AND ra.attnum = k.remote
 WHERE c.contype = 'f'`.trim();
 }
 
-/** Build the space-separated `key=value` connection string DuckDB's postgres extension expects */
-function buildConnectionString(options: PostgreSQLSourceOptions): string {
-  const parts: Array<[string, string]> = [
-    ['host', options.host],
-    ['port', String(options.port ?? 5432)],
-    ['dbname', options.database],
-  ];
-  if (options.user) parts.push(['user', options.user]);
-  if (options.password) parts.push(['password', options.password]);
-  return parts.map(([key, value]) => `${key}=${value}`).join(' ');
-}
-
 export async function loadPostgreSQL(options: PostgreSQLSourceOptions): Promise<LoadedSource> {
   // Open the SSH tunnel first; ATTACH then targets the local forwarded port
   const tunnel = options.ssh ? await createSshTunnel(options.ssh, options.host, options.port ?? 5432) : undefined;
@@ -116,11 +104,16 @@ export async function loadPostgreSQL(options: PostgreSQLSourceOptions): Promise<
   return {
     register: async (conn) => {
       try {
+        await conn.run('INSTALL postgres');
         await conn.run('LOAD postgres');
-        // READ_ONLY keeps the analysis read-only against the source database
-        await conn.run(
-          `ATTACH '${escapeSql(buildConnectionString(attachOptions))}' AS ${ATTACH_ALIAS} (TYPE postgres, READ_ONLY)`
-        );
+        const { host, port, database, user, password } = attachOptions;
+        await conn.run(`CREATE TEMPORARY SECRET ava_source_postgres (
+          TYPE postgres, HOST ${sqlStringLiteral(host)}, PORT ${port ?? 5432},
+          DATABASE ${sqlStringLiteral(database)}
+          ${user === undefined ? '' : `, USER ${sqlStringLiteral(user)}`}
+          ${password === undefined ? '' : `, PASSWORD ${sqlStringLiteral(password)}`}
+        )`);
+        await conn.run(`ATTACH '' AS ${ATTACH_ALIAS} (TYPE postgres, READ_ONLY, SECRET ava_source_postgres)`);
 
         // Discover every table in the attached schema and expose each as a view
         const tablesReader = await conn.runAndReadAll(

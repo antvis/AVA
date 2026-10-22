@@ -3,8 +3,10 @@
  */
 
 import * as path from 'path';
+import { mkdtemp, rm } from 'node:fs/promises';
+import { tmpdir } from 'node:os';
 
-import { describe, it, expect, afterEach, vi } from 'vitest';
+import { describe, it, expect, afterEach } from 'vitest';
 
 import { DuckDBEngine } from '../../../src/duckdb/engine';
 import { writeTempFile, removeTempFile } from '../../../src/duckdb/util/file';
@@ -16,7 +18,6 @@ describe('loaders/csv-file', () => {
   afterEach(async () => {
     await engine?.dispose();
     engine = null;
-    vi.unstubAllGlobals();
   });
 
   it('loads the sales CSV with a complete schema and original column order', async () => {
@@ -51,23 +52,6 @@ describe('loaders/csv-file', () => {
     });
   });
 
-  it('downloads a remote file and registers it as a queryable view', async () => {
-    vi.stubGlobal(
-      'fetch',
-      vi.fn(async () => ({
-        ok: true,
-        status: 200,
-        arrayBuffer: async () => new TextEncoder().encode('a,b\n1,2').buffer,
-      }))
-    );
-
-    engine = new DuckDBEngine(getLLMConfig());
-    await engine.load({ type: 'csv-file', options: { path: 'https://example.com/data.csv' } });
-
-    const rows = await engine.execute('SELECT * FROM "data"');
-    expect(rows.data).toEqual([{ a: 1, b: 2 }]);
-  });
-
   it('passes reader options (delim) through to read_csv', async () => {
     engine = new DuckDBEngine(getLLMConfig());
     const localPath = path.join(__dirname, '../../../data/semicolon.csv');
@@ -78,6 +62,44 @@ describe('loaders/csv-file', () => {
       { name: 'Alice', age: 30 },
       { name: 'Bob', age: 25 },
     ]);
+  });
+
+  it('returns an empty table for unmatched files only when allow_empty is enabled', async () => {
+    const directory = await mkdtemp(path.join(tmpdir(), 'ava-empty-csv-'));
+    try {
+      engine = new DuckDBEngine(getLLMConfig());
+      const options = { path: path.join(directory, '*.csv') };
+      await expect(engine.load({ type: 'csv-file', options })).rejects.toThrow();
+      await engine.load({ type: 'csv-file', options: { ...options, options: { allow_empty: true } } });
+      expect((await engine.schema()).models[0].columns).toEqual([{ name: 'empty', type: 'BOOLEAN', notNull: false }]);
+      expect((await engine.execute('SELECT * FROM data')).data).toEqual([]);
+    } finally {
+      await engine?.dispose();
+      engine = null;
+      await rm(directory, { recursive: true, force: true });
+    }
+  });
+
+  it.each([4, 0])('limits rejected CSV line text to %s characters (0 is unlimited)', async (limit) => {
+    const file = await writeTempFile('id\n1\ninvalid-long-line\n2\n', 'csv');
+    try {
+      engine = new DuckDBEngine(getLLMConfig());
+      await engine.load({
+        type: 'csv-file',
+        options: {
+          path: file,
+          options: { header: true, columns: { id: 'INTEGER' }, store_rejects: true, rejects_line_size_limit: limit },
+        },
+      });
+      expect((await engine.execute('SELECT * FROM data ORDER BY id')).data).toEqual([{ id: 1 }, { id: 2 }]);
+      expect((await engine.execute('SELECT csv_line FROM reject_errors')).data).toEqual([
+        { csv_line: limit ? 'inva' : 'invalid-long-line' },
+      ]);
+    } finally {
+      await engine?.dispose();
+      engine = null;
+      await removeTempFile(file);
+    }
   });
 
   it('reads GB18030 Chinese with automatic extension loading disabled', async () => {

@@ -1,10 +1,10 @@
 /**
  * MySQL loader: ATTACH a MySQL database through DuckDB's mysql extension and
  * register one view per table in the database. Supports an optional SSH tunnel.
- * https://duckdb.org/docs/lts/core_extensions/mysql
+ * https://duckdb.org/docs/2.0/core_extensions/mysql
  */
 
-import { escapeSql, sqlIdentifier, sqlStringLiteral, sqlUnionAll } from '../../util/sql';
+import { sqlIdentifier, sqlStringLiteral, sqlUnionAll } from '../../util/sql';
 import { rowObjects2Schema } from '../../util/schema';
 import { createSshTunnel } from '../util/ssh';
 
@@ -74,18 +74,6 @@ WHERE TABLE_SCHEMA = ${sqlStringLiteral(database)}
   AND REFERENCED_TABLE_NAME IS NOT NULL`.trim();
 }
 
-/** Build the space-separated `key=value` connection string DuckDB's mysql extension expects */
-function buildConnectionString(options: MySQLSourceOptions): string {
-  const parts: Array<[string, string]> = [
-    ['host', options.host],
-    ['port', String(options.port ?? 3306)],
-    ['database', options.database],
-  ];
-  if (options.user) parts.push(['user', options.user]);
-  if (options.password) parts.push(['password', options.password]);
-  return parts.map(([key, value]) => `${key}=${value}`).join(' ');
-}
-
 export async function loadMySQL(options: MySQLSourceOptions): Promise<LoadedSource> {
   // Open the SSH tunnel first; ATTACH then targets the local forwarded port
   const tunnel = options.ssh ? await createSshTunnel(options.ssh, options.host, options.port ?? 3306) : undefined;
@@ -94,14 +82,16 @@ export async function loadMySQL(options: MySQLSourceOptions): Promise<LoadedSour
   return {
     register: async (conn) => {
       try {
+        await conn.run('INSTALL mysql');
         await conn.run('LOAD mysql');
-        // Workaround for https://github.com/duckdb/duckdb-mysql/issues/266: DuckDB 1.5's aggregate
-        // pushdown to MySQL fails on queries through the generated views. Not needed after upgrading to 2.0.
-        await conn.run('SET mysql_aggregate_pushdown_enabled = FALSE');
-        // READ_ONLY keeps the analysis read-only against the source database
-        await conn.run(
-          `ATTACH '${escapeSql(buildConnectionString(attachOptions))}' AS ${ATTACH_ALIAS} (TYPE mysql, READ_ONLY)`
-        );
+        const { host, port, database, user, password } = attachOptions;
+        await conn.run(`CREATE TEMPORARY SECRET ava_source_mysql (
+          TYPE mysql, HOST ${sqlStringLiteral(host)}, PORT ${port ?? 3306},
+          DATABASE ${sqlStringLiteral(database)}
+          ${user === undefined ? '' : `, USER ${sqlStringLiteral(user)}`}
+          ${password === undefined ? '' : `, PASSWORD ${sqlStringLiteral(password)}`}
+        )`);
+        await conn.run(`ATTACH '' AS ${ATTACH_ALIAS} (TYPE mysql, READ_ONLY, SECRET ava_source_mysql)`);
 
         // Discover every table in the attached database and expose each as a view
         const tablesReader = await conn.runAndReadAll(

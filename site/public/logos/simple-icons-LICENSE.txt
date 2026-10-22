@@ -1,7 +1,8 @@
-MongoDB and Supabase icons from Simple Icons v16.0.0.
+DuckDB, MongoDB and Supabase icons from Simple Icons v16.0.0.
 https://github.com/simple-icons/simple-icons/tree/16.0.0
 
 Upstream sources:
+DuckDB: https://duckdb.org
 MongoDB: https://www.mongodb.com/pressroom
 Supabase: https://github.com/supabase/supabase/blob/4031a7549f5d46da7bc79c01d56be4177dc7c114/packages/common/assets/images/supabase-logo-wordmark--light.svg
 

@@ -5,7 +5,7 @@
 import * as path from 'path';
 
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
-import { DuckDBInstance } from '@duckdb/node-api';
+import { DuckDBConnection, DuckDBInstance } from '@duckdb/node-api';
 
 import { DuckDBEngine } from '../../src/duckdb';
 import { buildDataModel } from '../../src/util/data-model';
@@ -196,6 +196,31 @@ describe('DuckDBEngine', () => {
     await expect(engine.execute('SELECT * FROM data; CREATE TABLE blocked_too (a INTEGER)')).rejects.toThrow(
       'only read-only SELECT statements'
     );
+    await expect(
+      engine.execute('WITH removed AS (DELETE FROM data RETURNING *) SELECT * FROM removed')
+    ).rejects.toThrow('only read-only SELECT statements');
+    expect((await engine.execute('SELECT * FROM data')).data).toEqual([{ a: 1 }]);
+  });
+
+  it('includes remote query preparation in the timeout and never executes it after timing out', async () => {
+    const fast = new DuckDBEngine(getLLMConfig(), { queryTimeoutMs: 10 });
+    let finish: (sql: string) => void;
+    const validation = new Promise<string>((resolve) => {
+      finish = resolve;
+    });
+    try {
+      await fast.load({ type: 'json', options: { data: [{ value: 1 }] } });
+      vi.spyOn(DuckDBQueryDialect.prototype, 'validateDSL').mockReturnValue(validation);
+      const run = vi.spyOn(DuckDBConnection.prototype, 'runAndReadAll');
+      await expect(fast.execute('SELECT 1')).rejects.toThrow(QueryTimeoutError);
+      finish!('SELECT 1');
+      await validation;
+      await Promise.resolve();
+      expect(run).not.toHaveBeenCalled();
+    } finally {
+      finish!('SELECT 1');
+      await fast.dispose();
+    }
   });
 
   describe.skipIf(skipLLMTests)('getDSL', () => {
