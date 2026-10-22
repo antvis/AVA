@@ -408,6 +408,40 @@
 .docs-benchmark-overview table {
   min-width: 0;
 }
+.docs-benchmark-overview :is(th, td) {
+  overflow-wrap: normal;
+  min-width: 0;
+  padding: 12px 10px;
+}
+.docs-benchmark-overview td span {
+  display: inline-block;
+  white-space: nowrap;
+}
+.docs-benchmark-overview th[scope='rowgroup'] {
+  vertical-align: middle;
+  background: transparent;
+  border-bottom: 0;
+}
+.docs-benchmark-overview tbody + tbody {
+  border-top: 1px solid var(--docs-border);
+}
+.docs-benchmark-overview td,
+.docs-benchmark-overview thead th:nth-child(n + 3) {
+  text-align: right;
+}
+.docs-benchmark-overview td:first-of-type {
+  text-align: left;
+}
+.docs-benchmark-comparison td:nth-last-child(n + 5),
+.docs-benchmark-comparison thead th:nth-child(-n + 3) {
+  text-align: left;
+}
+.docs-benchmark-comparison td:nth-last-child(-n + 4) {
+  white-space: nowrap;
+}
+.docs-benchmark-comparison td[rowspan] {
+  vertical-align: middle;
+}
 .docs-benchmark-notes {
   padding: 4px 20px;
   border: 1px solid var(--docs-border);
