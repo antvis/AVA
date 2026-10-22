@@ -1,0 +1,84 @@
+{
+  "generatedAt": "2026-10-22T07:20:31.747Z",
+  "environment": {
+    "executionNodeVersion": "v22.22.0",
+    "scorer": {
+      "python": "3.9.6",
+      "pandas": "2.3.3"
+    },
+    "uvThreadpoolSize": 32
+  },
+  "evaluation": {
+    "benchmark": "Spider2-Lite SQLite subset",
+    "runner": "ava-workflow",
+    "model": "GLM-5.1",
+    "engine": "duckdb-sqlite",
+    "strategy": {
+      "type": "direct",
+      "maxRetries": 2
+    },
+    "schema": true,
+    "profile": true,
+    "semantic": false,
+    "thinking": false,
+    "concurrency": 20,
+    "executionMode": "fresh-complete-run",
+    "startedAt": "2026-10-22T07:17:26.633Z",
+    "run": "evals/ava-workflow/results/20261022-spider2lite-schema-profile-final",
+    "queryTimeoutMs": 30000,
+    "scoreTimeoutMs": 60000,
+    "resultLimits": {
+      "maxRows": 10000,
+      "maxResultBytes": 67108864
+    }
+  },
+  "summary": {
+    "total": 135,
+    "predicted": 122,
+    "passed": 45,
+    "incorrect": 77,
+    "missing": 13,
+    "scoringErrors": 0,
+    "accuracy": 0.3333333333333333,
+    "submittedAccuracy": 0.36885245901639346,
+    "coverage": 0.9037037037037037,
+    "timingSeconds": {
+      "average": 11.89,
+      "median": 8.84,
+      "minimum": 0.03,
+      "maximum": 65.29
+    },
+    "tokens": {
+      "inputTokens": 2602184,
+      "outputTokens": 57788,
+      "totalTokens": 2659972,
+      "calls": 166,
+      "recordedRows": 127,
+      "average": 20945
+    }
+  },
+  "provenance": {
+    "execution": "One independent fresh execution per question, all 135 questions, concurrency 20. No retries of whole questions, resumed or merged answers; normal Direct SQL correction remains enabled.",
+    "context": "Schema and statistical Profile restored using the validated local metadata cache and AVA setters. Local semantic definitions are disabled.",
+    "scoring": "Unmodified official exec_result scorer and reference CSVs. Missing cases remain in the 135-question denominator.",
+    "data": "Same source data and row-identical indexed complex_oracle copy as the final with-semantic run; no native views, rows or references changed.",
+    "indexAudit": "evals/ava-workflow/results/20261022-spider2lite-semantic-glm-5.1-pool32/input/index-optimization.json",
+    "manifest": "evals/ava-workflow/results/20261022-spider2lite-schema-profile-final/manifest.json",
+    "statistics": "Time averages include source loading and failures for all 135 cases, not wall time. Token averages use only cases with recorded provider usage; null is preserved for pre-model failures. SQL correction calls are included.",
+    "comparison": "Same question IDs, model, provider, strategy, data hashes, execution limits and concurrency verified against final semantic run. Semantic definitions were calibrated against this benchmark; differences are descriptive in-sample results, not a held-out causal estimate.",
+    "verification": {
+      "distinctAttempts": 135,
+      "sqlAndCsvIntegrity": "Verified all successful artifacts against recorded hashes.",
+      "sharedTests": 8
+    },
+    "limitations": [
+      "Eight oracle_sql questions fail before model calls because native views reference missing ehp.start_date.",
+      "Natural model variation and reference/output conventions remain."
+    ],
+    "artifactRetention": "Retained as the independent schema-profile baseline; only the latest full with-semantic report is formal.",
+    "executionDiagnostics": {
+      "archivedRun": "evals/ava-workflow/results/20261022-spider2lite-schema-profile-native-crash-diagnostic",
+      "reason": "An incomplete 25-case run ended in SIGSEGV inside DuckDB native CrossProductExecutor/string vector access. Its answers were not scored or reused; this report uses a fresh complete restart under identical configuration."
+    }
+  }
+}

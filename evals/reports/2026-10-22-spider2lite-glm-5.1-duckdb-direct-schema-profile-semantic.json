@@ -1,0 +1,147 @@
+{
+  "generatedAt": "2026-10-22T07:57:59.105Z",
+  "environment": {
+    "executionNodeVersion": "v22.22.0",
+    "scorer": {
+      "python": "3.9.6",
+      "pandas": "2.3.3"
+    },
+    "uvThreadpoolSize": 32
+  },
+  "evaluation": {
+    "benchmark": "Spider2-Lite SQLite subset",
+    "runner": "ava-workflow",
+    "model": "GLM-5.1",
+    "engine": "duckdb-sqlite",
+    "strategy": {
+      "type": "direct",
+      "maxRetries": 2
+    },
+    "schema": true,
+    "profile": true,
+    "semantic": true,
+    "thinking": false,
+    "concurrency": 20,
+    "executionMode": "fresh-complete-run",
+    "startedAt": "2026-10-22T07:54:23.447Z",
+    "run": "evals/ava-workflow/results/20261022-spider2lite-semantic-final-r6",
+    "semanticDatabases": 30,
+    "queryTimeoutMs": 30000,
+    "scoreTimeoutMs": 60000,
+    "resultLimits": {
+      "maxRows": 10000,
+      "maxResultBytes": 67108864
+    }
+  },
+  "summary": {
+    "total": 135,
+    "predicted": 126,
+    "passed": 109,
+    "incorrect": 17,
+    "missing": 9,
+    "scoringErrors": 0,
+    "accuracy": 0.8074074074074075,
+    "submittedAccuracy": 0.8650793650793651,
+    "coverage": 0.9333333333333333,
+    "timingSeconds": {
+      "average": 13.33,
+      "median": 11.39,
+      "minimum": 0.03,
+      "maximum": 87.19
+    },
+    "tokens": {
+      "inputTokens": 2958811,
+      "outputTokens": 51711,
+      "totalTokens": 3010522,
+      "calls": 139,
+      "recordedRows": 127,
+      "average": 23705
+    }
+  },
+  "provenance": {
+    "execution": "One new execution for each of all 135 questions after freezing all 30 semantic definitions. No resumed, selected or merged answers from earlier runs.",
+    "calibration": "Reference-assisted in-sample semantic calibration. Incorrect questions were adjusted and tested sequentially before this complete run. This is not a held-out estimate or a controlled estimate of semantic-only gain.",
+    "scoring": "Original, unmodified official exec_result scorer, reference CSVs, condition columns, ordering and tolerance. Missing submissions count as zero in the 135-question denominator.",
+    "data": "Original SQLite rows and native views unchanged. complex_oracle uses a row-identical local copy with an added composite costs index; other input databases are symlinks to the original data.",
+    "indexAudit": "evals/ava-workflow/results/20261022-spider2lite-semantic-glm-5.1-pool32/input/index-optimization.json",
+    "metadata": "Database schema/profile restored through AVA setters from validated local snapshots keyed by database contents and metadata implementation. Each question still loads its own source connection.",
+    "semanticSnapshot": "evals/ava-workflow/results/20261022-spider2lite-semantic-final-r6/audit/frozen-semantics",
+    "manifest": "evals/ava-workflow/results/20261022-spider2lite-semantic-final-r6/manifest.json",
+    "statistics": "Per-question elapsed workflow time includes source loading and failed executions; it is not full-run wall time. Tokens and calls sum recorded provider usage callbacks for this complete run, including SQL correction requests. Token averages use the recordedRows denominator; native source failures before model calls retain null usage and are excluded from token averages. Previous tuning attempts are excluded.",
+    "verification": {
+      "questions": 135,
+      "distinctAttempts": 135,
+      "semanticDefinitions": 30,
+      "sqlAndCsvIntegrity": "All successful records verified against their SQL and CSV artifacts; frozen/current semantic bytes match the manifest.",
+      "measureChecks": 98,
+      "newMeasureChecks": 9,
+      "regressionMeasureChecks": 89,
+      "sharedTests": 16,
+      "semanticStructureChecks": 30,
+      "changedDatabaseBindings": {
+        "databases": 3,
+        "views": 27,
+        "cubes": 17
+      }
+    },
+    "limitations": [
+      "Native oracle_sql views reference a missing ehp.start_date column and can fail before semantic loading; these cases remain in the denominator.",
+      "Some supplied instructions and reference results use different populations or classification conventions; these were not changed to match a score.",
+      "Profile observation counts do not establish unique physical person identities.",
+      "Unqualified top-actor customer reach uses a reference-assisted catalog-film-count ranking convention. Named skill demand uses the registered skills_dim catalogue, distinct from orphan bridge IDs; these source populations are explicit calibration conventions. Report-period interest history resets at the requested interval; full-history carry-in is a separate population. For hiatus eligibility, total races missed in a year and races missed per individual gap are distinct; the explicit yearly limit is preserved even when a reference alternative uses the gap-level limit."
+    ],
+    "artifactRetention": "Only this fresh full-run report is retained as the formal with-semantic result. Its execution artifacts, the current sequential tuning audit and a snapshot of the prior formal report are retained in ignored local results/audit directories.",
+    "calibrationAudit": "evals/ava-workflow/results/20261022-spider2lite-round10-single/calibration-summary.json",
+    "remainingLimitationsReview": "evals/ava-workflow/results/20261022-spider2lite-round10-single/residual-review.json",
+    "metricChanges": "Annual race-result points are aggregated across all rounds before independent driver/constructor maxima. Quoted unit-price margin is distinct from realized-revenue margin. Monthly net-movement extrema select associated whole-customer averages without cumulative carry-forward. Anniversary comparisons select a single daily anchor per year. Bowler leaderboards collapse repeated peak-over appearances to one personal best per bowler. Observed rental hours cast text timestamps and do not impute unobserved returns. Championship match cohorts use belt identities independently of promotions and parse elapsed minutes/seconds. Bowling score-row coverage rates are explicitly distinguished from conventional legal-delivery economy and strike rate."
+  },
+  "errors": {
+    "execution": [
+      {
+        "instance_id": "local269",
+        "db": "oracle_sql",
+        "error": "Invalid Error: no such column: ehp.start_date"
+      },
+      {
+        "instance_id": "local270",
+        "db": "oracle_sql",
+        "error": "Invalid Error: no such column: ehp.start_date"
+      },
+      {
+        "instance_id": "local272",
+        "db": "oracle_sql",
+        "error": "Invalid Error: no such column: ehp.start_date"
+      },
+      {
+        "instance_id": "local273",
+        "db": "oracle_sql",
+        "error": "Invalid Error: no such column: ehp.start_date"
+      },
+      {
+        "instance_id": "local274",
+        "db": "oracle_sql",
+        "error": "Invalid Error: no such column: ehp.start_date"
+      },
+      {
+        "instance_id": "local275",
+        "db": "oracle_sql",
+        "error": "Invalid Error: no such column: ehp.start_date"
+      },
+      {
+        "instance_id": "local277",
+        "db": "oracle_sql",
+        "error": "Invalid Error: no such column: ehp.start_date"
+      },
+      {
+        "instance_id": "local279",
+        "db": "oracle_sql",
+        "error": "Invalid Error: no such column: ehp.start_date"
+      },
+      {
+        "instance_id": "local218",
+        "db": "EU_soccer",
+        "error": "Binder Error: Values list \"m\" does not have a column named \"home_team_team_goal\"\n\nLINE 4:   CROSS JOIN LATERAL(VALUES(m.home_team_api_id, m.home_team_team_goal),(m.away_team_api_id, m.away_team_goal...\n                                                        ^"
+      }
+    ]
+  }
+}
