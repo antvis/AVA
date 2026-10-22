@@ -2,9 +2,11 @@
 import { join } from 'node:path';
 
 import { afterEach, describe, expect, it, vi } from 'vitest';
+import { DuckDBInstance } from '@duckdb/node-api';
 
 import { AVA } from '../../../src';
 import { DuckDBEngine } from '../../../src/duckdb';
+import { loadSQLite } from '../../../src/duckdb/loaders/sqlite';
 import { getLLMConfig } from '../../test-utils';
 
 describe('loaders/sqlite', () => {
@@ -52,7 +54,6 @@ describe('loaders/sqlite', () => {
           columns: [
             { name: 'category', type: 'TEXT', notNull: true },
             { name: 'product', type: 'TEXT', notNull: true },
-            { name: 'label', type: 'TEXT', notNull: false },
             { name: 'image', type: 'BLOB', notNull: false },
           ],
           primaryKey: ['product', 'category'],
@@ -74,7 +75,6 @@ describe('loaders/sqlite', () => {
             { name: 'cost', type: 'REAL', notNull: false },
             { name: 'profit', type: 'REAL', notNull: false },
             { name: 'customer_id', type: 'INTEGER', notNull: false },
-            { name: 'calculated_profit', type: 'REAL', notNull: false },
           ],
           primaryKey: 'order_id',
           tableReference: { table: 'sales' },
@@ -125,23 +125,22 @@ describe('loaders/sqlite', () => {
       cost: 165,
       profit: 59.1,
       customer_id: 1,
-      calculated_profit: expect.closeTo(59.1),
     });
     expect(result.data[239]).toMatchObject({ order_id: 'ORD-0240', order_date: '2025-12-31' });
     const joined = await ava.engine!.execute(`
-      SELECT s.order_id, c.name, p.label
+      SELECT s.order_id, c.name, p.category
       FROM sales s
       JOIN customers c ON c.id = s.customer_id
       JOIN products p ON p.product = s.product AND p.category = s.category
       ORDER BY s.order_id LIMIT 2
     `);
     expect(joined.data).toEqual([
-      { order_id: 'ORD-0001', name: 'Alice', label: 'Electronics: Monitor' },
-      { order_id: 'ORD-0002', name: 'Bob', label: 'Furniture: Office Chair' },
+      { order_id: 'ORD-0001', name: 'Alice', category: 'Electronics' },
+      { order_id: 'ORD-0002', name: 'Bob', category: 'Furniture' },
     ]);
     expect((await ava.engine!.execute('SELECT * FROM "order notes"')).data).toEqual([]);
     const totals = await ava.engine!.execute(`
-      SELECT SUM(sales) AS revenue, SUM(calculated_profit) AS profit, SUM(customer_id) AS customers
+      SELECT SUM(sales) AS revenue, SUM(profit) AS profit, SUM(customer_id) AS customers
       FROM sales WHERE order_id IN ('ORD-0001', 'ORD-0002')
     `);
     expect(totals.data).toEqual([{ revenue: expect.closeTo(904.3), profit: expect.closeTo(319.3), customers: 3 }]);
@@ -162,89 +161,101 @@ describe('loaders/sqlite', () => {
   });
 });
 
-// These values are legal SQLite data regardless of the column's declared affinity.
-it('profiles and queries actual storage types without dropping mixed values', async () => {
-  const path = join(__dirname, '../../datasets/mixed.sqlite');
-  const ava = new AVA({ llm: { model: 'no-model-call' } });
+it('uses native column pruning and a read-only attachment', async () => {
+  const db = await DuckDBInstance.create(':memory:');
+  const conn = await db.connect();
+  const source = await loadSQLite({ path: join(__dirname, '../../datasets/sales.sqlite') });
   try {
-    await ava.source({ type: 'sqlite', options: { path } });
-    const profile = await ava.profile();
-    const table = profile.models.find((table) => table.name === 'measurements')!;
-    expect(table.columns.find((field) => field.name === 'amount')).toMatchObject({
-      properties: { logicalType: 'string' },
-    });
-    expect(table.columns.find((field) => field.name === 'location')).toMatchObject({
-      properties: { logicalType: 'string' },
-    });
-    expect(table.columns.find((field) => field.name === 'flexible')).toMatchObject({
-      properties: { logicalType: 'numeric' },
-    });
+    await source.register(conn);
+    const plan = (await conn.runAndReadAll('EXPLAIN SELECT name FROM customers'))
+      .getRowObjectsJson()
+      .map((row) => row.explain_value)
+      .join('\n');
+    expect(plan).toMatch(/Sqlite Scan|SQLITE_SCAN/i);
+    expect(plan).toContain('Projections: name');
+    expect(plan).not.toMatch(/Sqlite Query|SQLITE_QUERY/i);
+    await expect(conn.run("INSERT INTO customers (id, name) VALUES (100, 'Blocked')")).rejects.toThrow(/read.only/i);
+  } finally {
+    conn.closeSync();
+    db.closeSync();
+    await source.cleanup();
+  }
+});
+
+it('reports mixed-type errors instead of silently converting the source', async () => {
+  const engine = new DuckDBEngine({ model: 'unused' });
+  try {
+    await engine.load({ type: 'sqlite', options: { path: join(__dirname, '../../datasets/mixed.sqlite') } });
+    await expect(engine.execute('SELECT location FROM measurements')).rejects.toThrow(/Mismatch Type/);
+    expect((await engine.execute('SELECT * FROM empty_table')).data).toEqual([]);
+  } finally {
+    await engine.dispose();
+  }
+});
+
+it('reads mixed types as strings with the official all-varchar setting', async () => {
+  const engine = new DuckDBEngine({ model: 'unused' });
+  try {
+    const path = join(__dirname, '../../datasets/mixed.sqlite');
+    await engine.load({ type: 'sqlite', options: { path, allVarchar: true } });
+    const schema = await engine.schema();
+    expect(schema.models.flatMap((table) => table.columns).every((column) => column.type === 'VARCHAR')).toBe(true);
     expect(
-      (
-        await ava.engine!.execute(`
-      SELECT amount, location, CAST(flexible AS VARCHAR) AS flexible,
-             hex(payload) AS payload, calculated,
-             union_tag(mixed_blob) AS tag,
-             hex(union_extract(mixed_blob, 'blob_value')) AS blob_value,
-             union_extract(mixed_blob, 'text_value') AS text_value,
-             union_extract(mixed_blob, 'integer_value') AS integer_value,
-             union_extract(mixed_blob, 'real_value') AS real_value
-      FROM measurements ORDER BY id
-    `)
-      ).data
-    ).toEqual([
+      schema.models.find((table) => table.name === 'measurements')!.columns.map((column) => column.name)
+    ).not.toContain('calculated');
+    const result = await engine.execute('SELECT amount, location, flexible FROM measurements ORDER BY id');
+    expect(result.schema.every((column) => column.type === 'VARCHAR')).toBe(true);
+    expect(result.data).toEqual([
+      { amount: '42', location: '(1,2)', flexible: '9007199254740993' },
+      { amount: '', location: '(3,4)', flexible: '7' },
+      { amount: null, location: null, flexible: null },
+      { amount: '2.5', location: '(5,6)', flexible: '-3' },
+    ]);
+    expect((await engine.execute('SELECT * FROM measurement_view')).data).toHaveLength(4);
+    const profile = await engine.profile(schema);
+    expect(
+      profile.models.find((table) => table.name === 'measurements')!.columns.find((field) => field.name === 'amount')
+    ).toMatchObject({ properties: { logicalType: 'string' }, metrics: { null_count: 1 } });
+    await engine.load({ type: 'sqlite', options: { path } });
+    await expect(engine.execute('SELECT location FROM measurements')).rejects.toThrow(/Mismatch Type/);
+  } finally {
+    await engine.dispose();
+  }
+});
+
+it('preserves native dates, timestamps, integer precision and blobs', async () => {
+  const path = join(__dirname, '../../datasets/native-types.sqlite');
+  const engine = new DuckDBEngine({ model: 'unused' });
+  try {
+    await engine.load({ type: 'sqlite', options: { path } });
+    const result = await engine.execute(`SELECT id, d, ts, hex(payload) AS payload,
+      list_transform([1, 2], lambda x: x + 1) AS values FROM events`);
+    expect(result.schema.slice(0, 3)).toEqual([
+      { name: 'id', type: 'BIGINT' },
+      { name: 'd', type: 'DATE' },
+      { name: 'ts', type: 'TIMESTAMP' },
+    ]);
+    expect(result.data).toEqual([
       {
-        amount: '42',
-        location: '(1,2)',
-        flexible: '9007199254740993',
+        id: '9007199254740993',
+        d: '2026-10-22',
+        ts: '2026-10-22 01:02:03',
         payload: '00FF80',
-        calculated: '42',
-        tag: 'blob_value',
-        blob_value: '00FF80',
-        text_value: null,
-        integer_value: null,
-        real_value: null,
-      },
-      {
-        amount: '',
-        location: '(3,4)',
-        flexible: '7',
-        payload: '',
-        calculated: '',
-        tag: 'text_value',
-        blob_value: null,
-        text_value: 'hello',
-        integer_value: null,
-        real_value: null,
-      },
-      {
-        amount: null,
-        location: null,
-        flexible: null,
-        payload: null,
-        calculated: null,
-        tag: 'integer_value',
-        blob_value: null,
-        text_value: null,
-        integer_value: 42,
-        real_value: null,
-      },
-      {
-        amount: '2.5',
-        location: '(5,6)',
-        flexible: '-3',
-        payload: 'AB',
-        calculated: '2.5',
-        tag: 'real_value',
-        blob_value: null,
-        text_value: null,
-        integer_value: null,
-        real_value: 2.5,
+        values: [2, 3],
       },
     ]);
-    expect((await ava.engine!.execute('SELECT * FROM empty_table')).data).toEqual([]);
-    expect((await ava.engine!.execute('SELECT * FROM measurement_view')).data).toHaveLength(4);
+    const schema = await engine.schema();
+    expect(schema.models[0].columns.map((column) => column.name)).not.toContain('generated_key');
+    expect(schema.models[0].uniqueKeys).toBeUndefined();
+    const profile = await engine.profile(schema);
+    expect(profile.models[0].columns.find((column) => column.name === 'd')).toMatchObject({
+      properties: { logicalType: 'date' },
+      metrics: { min: Date.UTC(2026, 9, 22), max: Date.UTC(2026, 9, 22) },
+    });
+    expect((await engine.execute('SELECT amount FROM events')).schema).toEqual([{ name: 'amount', type: 'DOUBLE' }]);
+    await engine.load({ type: 'sqlite', options: { path, allVarchar: true } });
+    expect((await engine.execute('SELECT amount FROM events')).data).toEqual([{ amount: '9007199254740993' }]);
   } finally {
-    await ava.dispose();
+    await engine.dispose();
   }
 });

@@ -346,7 +346,7 @@ await ava.source({
 
 ## SQLite
 
-Open a local SQLite database in read-only mode.
+Open a local SQLite database with the official extension's read-only `ATTACH` and query its tables directly using DuckDB SQL. Loading reads catalog metadata without scanning every table to infer storage types.
 
 ```typescript
 await ava.source({
@@ -358,6 +358,11 @@ await ava.source({
 | Field  | Type     | Required | Meaning / default                |
 | ------ | -------- | -------- | -------------------------------- |
 | `path` | `string` | Yes      | Local SQLite database file path. |
+| `allVarchar` | `boolean` | No | Read every column as `VARCHAR` using `sqlite_all_varchar`. Default `false`. |
+
+The default follows the extension's declared-type mapping, including native `DATE`, `TIMESTAMP`, and `BLOB`. Values that conflict with the mapped type can raise a type mismatch error. For mixed-type databases, set `options: { path: './analytics.sqlite', allVarchar: true }` before loading; schema and profiles then treat every column as text. Binary columns are also converted to text in this mode, so it does not preserve arbitrary blob bytes.
+
+`NUMERIC` and `DECIMAL` declarations map to `DOUBLE`, which can round large integers and exact decimals. Use `allVarchar: true` when their original text representation is required. The current extension does not expose generated columns through native table scans; AVA omits these columns from its schema. See the official [SQLite extension documentation](https://duckdb.org/docs/2.0/core_extensions/sqlite#data-types).
 
 ## MySQL
 

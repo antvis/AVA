@@ -396,6 +396,8 @@ export interface MySQLSourceOptions {
 export interface SQLiteSourceOptions {
   /** Local SQLite database file path. */
   path: string;
+  /** Read all columns as VARCHAR using DuckDB's sqlite_all_varchar setting. Default false. */
+  allVarchar?: boolean;
 }
 
 /**
