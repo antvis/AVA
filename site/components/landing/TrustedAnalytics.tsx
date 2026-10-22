@@ -5,44 +5,42 @@ import Reveal from './Reveal';
 import { SectionHeading, SectionLink } from './Section';
 
 // * Evaluation results published in the repository (README / evals).
-interface BenchmarkStrategy {
+interface BenchmarkContext {
   id: string;
   label: string;
   accuracy: number;
   latency: number;
   tokens: number;
-  highlight?: boolean;
 }
 
 const BENCHMARK = {
   dataset: 'DataBench',
   questions: '1,789 questions',
-  model: 'GLM 5.1',
+  model: 'GLM-5.1 · DuckDB · Direct',
   link: '/documentation/reference/benchmarks/',
-  strategies: [
+  contexts: [
     {
-      id: 'default',
-      label: 'AVA Workflow · default',
-      accuracy: 84.46,
-      latency: 18.44,
-      tokens: 903,
+      id: 'raw',
+      label: 'Raw data',
+      accuracy: 83.51,
+      latency: 1.35,
+      tokens: 991,
     },
     {
-      id: 'stats',
-      label: 'AVA Workflow · dataset statistics',
-      accuracy: 86.64,
-      latency: 20.48,
-      tokens: 2315,
+      id: 'schema-profile',
+      label: 'Schema + Profile',
+      accuracy: 84.18,
+      latency: 2.08,
+      tokens: 1990,
     },
     {
-      id: 'relevant',
-      label: 'AVA Workflow · question-relevant statistics',
-      accuracy: 86.7,
-      latency: 25.42,
-      tokens: 1173,
-      highlight: true,
+      id: 'semantic',
+      label: 'Semantic',
+      accuracy: 93.01,
+      latency: 1.66,
+      tokens: 3288,
     },
-  ] as BenchmarkStrategy[],
+  ] as BenchmarkContext[],
 };
 
 type Metric = 'accuracy' | 'latency' | 'tokens';
@@ -56,7 +54,7 @@ const METRICS: Record<Metric, { label: string; unit: string; fmt: (v: number) =>
 const MECHANISMS = [
   {
     title: 'Data-Aware Reasoning',
-    desc: 'Schema and data profiling give agents the context they need before analysis.',
+    desc: 'Schema, statistics, and business semantics provide context before analysis.',
     detail: 'ava.profile() computes row counts, distributions, top values, and ranges — without a single LLM call.',
   },
   {
@@ -66,14 +64,14 @@ const MECHANISMS = [
   },
   {
     title: 'Measurable Quality',
-    desc: 'Evaluate accuracy, latency, and token efficiency through reproducible benchmarks.',
-    detail: 'Every result is scored on DataBench with published methodology, timing, and token usage.',
+    desc: 'Compare answer accuracy and per-question cost across contexts and strategies.',
+    detail: 'Published reports document dataset scope, scoring, timing, and token usage.',
   },
 ];
 
 const TrustedAnalytics: React.FC<{ id?: string }> = ({ id = 'benchmarks' }) => {
   const [metric, setMetric] = useState<Metric>('accuracy');
-  const values = BENCHMARK.strategies.map((s) => s[metric]);
+  const values = BENCHMARK.contexts.map((s) => s[metric]);
   const max = Math.max(...values);
 
   return (
@@ -104,16 +102,16 @@ const TrustedAnalytics: React.FC<{ id?: string }> = ({ id = 'benchmarks' }) => {
               <div className="flex flex-wrap items-start justify-between gap-4">
                 <div>
                   <div className="font-mono text-[11px] uppercase tracking-[0.16em] text-zinc-400">
-                    {BENCHMARK.dataset} · {BENCHMARK.questions}
+                    Context · {BENCHMARK.dataset} · {BENCHMARK.questions}
                   </div>
                   <div className="mt-4 flex items-baseline gap-2">
                     <span className="text-[clamp(44px,6vw,64px)] font-semibold leading-none tracking-[-0.03em] text-zinc-900 tabular-nums">
-                      86.70
+                      {Math.max(...BENCHMARK.contexts.map((s) => s.accuracy)).toFixed(2)}
                       <span className="text-[0.4em] font-medium text-zinc-400">%</span>
                     </span>
                   </div>
                   <div className="mt-2 text-[13px] text-zinc-500">
-                    answer accuracy with question-relevant dataset statistics
+                    answer accuracy with Semantic
                   </div>
                   <div className="mt-1 font-mono text-[11.5px] text-zinc-400">
                     model: {BENCHMARK.model}
@@ -145,13 +143,11 @@ const TrustedAnalytics: React.FC<{ id?: string }> = ({ id = 'benchmarks' }) => {
 
               {/* comparison bars */}
               <div className="mt-8 flex flex-1 flex-col justify-end gap-4">
-                {BENCHMARK.strategies.map((s) => {
+                {BENCHMARK.contexts.map((s) => {
                   const m = METRICS[metric];
                   const value = s[metric];
                   const pct = metric === 'accuracy' ? value : (value / max) * 100;
-                  const isBest =
-                    s.highlight ||
-                    (m.best === 'max' ? value === max : value === Math.min(...values));
+                  const isBest = m.best === 'max' ? value === max : value === Math.min(...values);
                   return (
                     <div key={s.id}>
                       <div className="mb-1.5 flex items-baseline justify-between gap-4">
@@ -161,9 +157,9 @@ const TrustedAnalytics: React.FC<{ id?: string }> = ({ id = 'benchmarks' }) => {
                           }`}
                         >
                           {s.label}
-                          {s.highlight && metric === 'accuracy' && (
-                            <span className="ml-2 rounded-full bg-[color:var(--color-primary)]/15 px-2 py-0.5 font-mono text-[10px] font-semibold text-[color:var(--color-primary-dark)]">
-                              best
+                          {isBest && metric === 'accuracy' && (
+                            <span role="img" aria-label="Highest accuracy" className="ml-2 text-amber-700">
+                              ★
                             </span>
                           )}
                         </span>
@@ -173,6 +169,11 @@ const TrustedAnalytics: React.FC<{ id?: string }> = ({ id = 'benchmarks' }) => {
                           }`}
                         >
                           {m.fmt(value)}
+                          {metric === 'accuracy' && s.id !== 'raw' && (
+                            <span className="ml-1 text-red-700">
+                              (+{(s.accuracy - BENCHMARK.contexts[0].accuracy).toFixed(2)} pp)
+                            </span>
+                          )}
                         </span>
                       </div>
                       <div className="h-2 overflow-hidden rounded-full bg-zinc-100">
@@ -191,7 +192,7 @@ const TrustedAnalytics: React.FC<{ id?: string }> = ({ id = 'benchmarks' }) => {
                 })}
               </div>
 
-              <div className="mt-6 flex justify-end border-t border-zinc-100 pt-4">
+              <div className="mt-4 flex justify-end border-t border-zinc-100 pt-4">
                 <SectionLink href={BENCHMARK.link}>
                   Read the full evaluation
                 </SectionLink>

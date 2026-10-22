@@ -1,74 +1,108 @@
-AVA is evaluated on tabular question answering and text-to-SQL tasks. The results below are recorded in the repository's [benchmark results](https://github.com/antvis/AVA/blob/ai/evals/ACCURACY.md). They measure answer or query-result correctness; they do not measure visualization quality.
+Evaluating AVA’s ability to turn data questions into reliable answers. [View evaluation reports](https://github.com/antvis/AVA/tree/ai/evals/reports).
 
-## DataBench
+## Context
 
-The recorded evaluation uses **1,789 questions on full tables**, excluding `080_Books`, with **GLM-5.1**.
+<Callout>
+  **How does the information available to a model affect its answers?** These evaluations examine answer accuracy and per-question cost using **GLM-5.1**, AVA Workflow, DuckDB, and Direct.
+</Callout>
 
-| Execution mode    | Strategy / context   | Accuracy |
-| ----------------- | -------------------- | -------: |
-| Workflow · Python | Direct + Profile     |   85.41% |
-| Agent + AVA Skill | Agent-selected steps |   84.46% |
-| Workflow          | Direct               |   84.46% |
-| Workflow          | Direct + Profile     |   86.64% |
-| Workflow          | Subset + Profile     |   86.70% |
-| Workflow          | Loop                 |   84.07% |
+<div className="docs-benchmark-overview">
 
-`Profile` means dataset statistics are supplied as context. `Subset` selects relevant profile statistics before analysis. The agent workflow lets the model choose its tools and steps using the AVA Skill.
+| Evaluation focus | Raw data | With Semantic | Gain |
+| ---------------- | -------: | ------------: | ---: |
+| Tabular Q&A<br />DataBench<sup><a href="#dataset-databench" aria-label="Dataset note 1: DataBench">[1]</a></sup> | 83.51% | <span role="img" aria-label="Highest accuracy" style={{ color: '#a16207' }}>★</span> **93.01%** | <span style={{ color: '#b91c1c' }}>+9.50 pp</span> |
+| Complex SQL · SQLite<br />Spider2-Lite<sup><a href="#dataset-spider2lite" aria-label="Dataset note 3: Spider2-Lite">[3]</a></sup> | — | Pending | — |
 
-## BIRD New Dev
+</div>
 
-This evaluation uses **1,534 questions across 11 databases** from `dev_20251106`, executed through AVA Workflow. It covers schema understanding, joins, and SQL result correctness.
+<details className="my-4 rounded-lg border border-[color:var(--docs-border)] px-4">
+<summary className="cursor-pointer py-3 font-medium text-[color:var(--docs-ink)]">DataBench · detailed results</summary>
 
-| Model     | Direct |   Loop |
-| --------- | -----: | -----: |
-| GLM-5.1   | 63.10% | 65.84% |
-| GLM-5.2   | 65.38% | 67.14% |
-| GLM-5.3   | 68.12% |      — |
-| Kimi-K2.5 | 61.34% | 59.00% |
-| Kimi-K3   | 66.10% | 64.73% |
+| Context | Correct | Accuracy | Tokens / question | Time / question |
+| ------- | ------: | -------: | ----------------: | --------------: |
+| Raw data (header + first 3 rows) | 1,494 | 83.51% (baseline) | 991 | 1.35 s |
+| Schema + Profile | 1,506 | 84.18% <span style={{ color: '#b91c1c' }}>(+0.67 pp)</span> | 1,990 | 2.08 s |
+| Semantic | 1,664 | <span role="img" aria-label="Highest accuracy" style={{ color: '#a16207' }}>★</span> **93.01%** <span style={{ color: '#b91c1c' }}>(+9.50 pp)</span> | 3,288 | 1.66 s |
 
-A dash means no result is recorded for that combination.
+Parentheses show **percentage-point gains over raw data**. Profile supplies statistics; Semantic adds business definitions to Schema + Profile. All queries use the full table.
 
-## Spider2-Lite
+</details>
 
-The recorded run uses the **135-question SQLite subset**, with execution results compared by the official scorer.
+<details className="my-4 rounded-lg border border-[color:var(--docs-border)] px-4">
+<summary className="cursor-pointer py-3 font-medium text-[color:var(--docs-ink)]">Spider2-Lite SQLite subset · detailed results</summary>
 
-| Model   | Execution mode | Strategy | Accuracy |
-| ------- | -------------- | -------- | -------: |
-| GLM-5.1 | Workflow       | Direct   |   27.41% |
+Profile and Semantic results are pending.
 
-This subset targets complex, enterprise-style SQL tasks. Its score is not directly comparable to DataBench or BIRD because the datasets and scoring protocols differ.
+| Context | Correct | Accuracy | Tokens / question | Time / question |
+| ------- | ------: | -------: | ----------------: | --------------: |
+| Schema + Profile | — | Pending | — | — |
+| Semantic | — | Pending | — | — |
 
-## Run an evaluation
+The previous Direct run with Profile scored **27.41%** (37/135).
 
-From the repository root, install dependencies and build AVA. Workflow evaluations require **Node.js 22.18 or newer** and `curl` for downloading DataBench.
+</details>
 
-```bash
-npm install
-npm run build
-node evals/databench/fetch.js
-```
+## Strategy
 
-Configure the model in `evals/ava-workflow/.env`:
+<Callout>
+  **How does the analysis strategy affect answer quality?** Compare [Direct, Loop, and Subset](/documentation/analysis/strategies/) on tabular and database tasks.
+</Callout>
 
-```bash
-OPENAI_API_KEY=YOUR_API_KEY
-OPENAI_MODEL=YOUR_MODEL
-# Optional: use an OpenAI-compatible provider endpoint
-OPENAI_BASE_URL=https://YOUR_PROVIDER/v1
-```
+### Tabular question answering
 
-Start with a 20-question run on the full-table DataBench dataset:
+**DataBench**<sup><a href="#dataset-databench" aria-label="Dataset note 1: DataBench">[1]</a></sup> · AVA Workflow · Profile enabled.
 
-```bash
-node evals/cli.js run ava-workflow \
-  --benchmark databench \
-  --dataset databench \
-  --strategy direct \
-  --limit 20 \
-  --output evals/ava-workflow/results/my-databench-run.csv
-```
+| Model | Direct | Loop | Subset |
+| ----- | -----: | ---: | -----: |
+| GLM-5.1 | 86.64% | — | 86.70% |
 
-This small run checks your setup; it does not reproduce the full benchmark score. Keep the model, dataset version, question range, engine, and strategy consistent when comparing runs. Use a new output path when changing conditions: existing answers can be reused when resuming a workflow run.
+<details className="my-4 rounded-lg border border-[color:var(--docs-border)] px-4">
+<summary className="cursor-pointer py-3 font-medium text-[color:var(--docs-ink)]">DataBench · detailed results and other configurations</summary>
 
-The [evaluation guide](https://github.com/antvis/AVA/blob/ai/evals/README.md) covers full runs, offline scoring, and saved reports. [Agent evaluations](https://github.com/antvis/AVA/blob/ai/evals/ava-agent/README.md) additionally require Node.js 24 or newer and Docker. These commands call your configured model and incur its usage costs.
+Historical GLM-5.1 results. The overview uses the two runs with Profile explicitly enabled; Loop's Profile setting was not recorded.
+
+| Strategy | Profile | Accuracy | Tokens / question | Time / question |
+| -------- | ------- | -------: | ----------------: | --------------: |
+| Direct | On | 86.64% | 2,315 | 20.48 s |
+| Subset | On | 86.70% | 1,173 | 25.42 s |
+| Direct | Off | 84.46% | 903 | 18.44 s |
+| Loop | Not recorded | 84.07% | 5,089 | 82.52 s |
+
+**Other execution configurations**
+
+These runs use a different engine or an agent that selects its own tools. They provide additional reference results, rather than a strategy-only comparison.
+
+| Execution mode | Strategy | Accuracy | Tokens / question | Time / question |
+| -------------- | -------- | -------: | ----------------: | --------------: |
+| Workflow · Python | Direct | 85.41% | 2,002 | 22.03 s |
+| Agent + AVA Skill | Agent-selected steps | 84.46% | 23,384 | 40.93 s |
+
+See [Agent Skill](/documentation/agent-skill/) for the agent workflow.
+
+</details>
+
+### Database queries
+
+**BIRD New Dev**<sup><a href="#dataset-bird" aria-label="Dataset note 2: BIRD New Dev">[2]</a></sup> · AVA Workflow · Schema, evidence, and database descriptions.
+
+| Model | Direct | Loop | Subset |
+| ----- | -----: | ---: | -----: |
+| GLM-5.1 | 63.10% | 65.84% | — |
+| GLM-5.2 | 65.38% | <span role="img" aria-label="Second-highest accuracy">🥈</span> 67.14% | — |
+| GLM-5.3 | <span role="img" aria-label="Highest accuracy">🥇</span> 68.12% | — | — |
+| Kimi-K2.5 | 61.34% | 59.00% | — |
+| Kimi-K3 | <span role="img" aria-label="Third-highest accuracy">🥉</span> 66.10% | 64.73% | — |
+
+## Dataset notes
+
+<div className="docs-benchmark-notes">
+
+1. <strong id="dataset-databench">DataBench.</strong> <span style={{ color: 'var(--docs-link)', fontWeight: 600 }}>1,789 questions across 79 full tables</span>, excluding `080_Books`. Tables average <span style={{ color: 'var(--docs-link)', fontWeight: 600 }}>46,911 rows and 22.8 columns</span>. Measures tabular answer correctness using reference answers and type-specific matching. [Details](https://github.com/antvis/AVA/blob/ai/evals/databench/README.md).
+
+2. <strong id="dataset-bird">BIRD New Dev.</strong> <span style={{ color: 'var(--docs-link)', fontWeight: 600 }}>1,534 questions across 11 databases</span>, version `dev_20251106`. Databases average <span style={{ color: 'var(--docs-link)', fontWeight: 600 }}>6.8 tables</span>; tables average <span style={{ color: 'var(--docs-link)', fontWeight: 600 }}>52,436 rows and 10.6 columns</span>. Measures Text-to-SQL correctness by comparing query results with reference SQL results. [Details](https://github.com/antvis/AVA/blob/ai/evals/BIRD/README.md).
+
+3. <strong id="dataset-spider2lite">Spider2-Lite SQLite subset.</strong> <span style={{ color: 'var(--docs-link)', fontWeight: 600 }}>135 complex SQL questions across 30 databases</span>. Databases average <span style={{ color: 'var(--docs-link)', fontWeight: 600 }}>13.7 tables</span>; tables average <span style={{ color: 'var(--docs-link)', fontWeight: 600 }}>43,009 rows and 7.0 columns</span>. Scored by the official execution-result scorer; missing answers count as incorrect. Covers the SQLite subset only. [Details](https://github.com/antvis/AVA/blob/ai/evals/spider2lite/README.md).
+
+Scale averages are calculated over unique base tables, excluding views and internal tables. Datasets use different scoring protocols, so their scores are not directly comparable. These evaluations measure answer correctness, not visualization quality.
+
+</div>

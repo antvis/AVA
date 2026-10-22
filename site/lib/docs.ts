@@ -123,7 +123,7 @@ export const docs = [
     slug: 'reference/benchmarks',
     title: 'Benchmarks',
     group: 'More resources',
-    description: 'Evaluation results on DataBench, BIRD, and Spider2-Lite, with instructions to run your own tests.',
+    description: 'Evaluation results for data context and analysis strategies.',
   },
   {
     slug: 'reference/architecture',
