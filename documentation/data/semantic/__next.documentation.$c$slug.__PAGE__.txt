@@ -1,0 +1,246 @@
+1:"$Sreact.fragment"
+2:"/_next/static/chunks/3x799ho6-3r0n.js"
+3:I[936064,["$2"],"default"]
+4:I[481497,["$2"],"default"]
+8:"/_next/static/chunks/1bbubh83s1n76.js"
+9:"/_next/static/chunks/1ktliq13_uzzz.js"
+a:I[769197,["$2","$8","$9"],""]
+b:I[474333,["$2","$8"],"default"]
+11:I[5138,["$2","$8","$9"],"default"]
+1d:"ViewportBoundary"
+1e:I[675049,["$2"],"$1d"]
+1f:"MetadataBoundary"
+20:I[675049,["$2"],"$1f"]
+21:"$Sreact.suspense"
+22:I[934035,["$2"],"IconMark"]
+:HL["/_next/static/chunks/0vfkzyt9d0i-u.css","style"]
+:HL["/_next/static/chunks/06c2x3lpy4huq.css","style"]
+:HL["https://mdn.alipayobjects.com/huamei_qa8qxu/afts/img/A*A-lcQbVTpjwAAAAAAAAAAAAADmJ7AQ/original","image"]
+6:X
+f:X
+f:C
+12:T1e9e,# Define data semantics
+
+Write business definitions, model mappings, and reusable measures, with a worked sales example.
+
+Suppose a user asks: **“Show revenue by region.”** Here is the order table behind that question, also used in [Inspect your data](/documentation/data/schema/):
+
+| order_id | region | status | amount | refund_amount | ordered_at |
+| --- | --- | --- | --- | --- | --- |
+| 1 | East | paid | 120 | 20 | 2026-01-03 |
+| 2 | East | refunded | 80 | 80 | 2026-01-04 |
+| 3 | East | pending | 200 | 0 | 2026-01-05 |
+| 4 | West | paid | 90 | 30 | 2026-01-06 |
+| 5 | East | paid | 50 | `null` | 2026-01-07 |
+| 6 | West | cancelled | 500 | 0 | 2026-01-08 |
+
+The structure tells AVA that `amount` and `refund_amount` are numbers. It does not tell AVA which orders count as revenue. You supply that meaning through `semantic()`.
+
+## Decide what revenue means
+
+For this example, agree on three rules:
+
+- Count `paid` and `refunded` orders; exclude `pending` and `cancelled` orders.
+- Subtract cumulative refunds from the original amount. A missing refund is zero. Amounts are USD.
+- Group by the order's region and use its original order date.
+
+Apply those rules to the rows above:
+
+| Order | Contribution to revenue | Why |
+| --- | --- | --- |
+| 1 | 100 USD | 120 minus the 20 refund. |
+| 2 | 0 USD | Fully refunded: 80 minus 80. |
+| 3 | 0 USD | Pending, so excluded. |
+| 4 | 60 USD | 90 minus the 30 refund. |
+| 5 | 50 USD | The missing refund is treated as zero. |
+| 6 | 0 USD | Cancelled, so excluded. |
+
+East therefore has **150 USD** in revenue; West has **60 USD**. The definition below records the rules that produce those numbers.
+
+## Write the definition
+
+Load the table above as inline JSON, exposed by DuckDB as `data`. Its corresponding semantic definition is:
+
+```javascript
+/** @satisfies {import('@antv/ava').Semantic} */
+const semantic = {
+  description: 'Sales reporting in USD. Revenue means net revenue from paid and refunded orders. Pending and cancelled orders do not count. A missing refund is zero. Dates are order dates, not refund dates.',
+  properties: { owner: 'Sales operations' },
+  models: [{
+    name: 'data',
+    tableReference: { table: 'data' },
+    primaryKey: 'order_id',
+    properties: { description: 'One row per order; refunds are cumulative amounts on the original order.' },
+    columns: [
+      { name: 'amount', type: 'BIGINT', properties: { description: 'Order amount before refunds.', unit: 'USD' } },
+      { name: 'refund_amount', type: 'BIGINT', properties: { description: 'Cumulative refund, not a separate refund transaction. Null means zero.', unit: 'USD' } },
+      { name: 'status', type: 'VARCHAR', properties: { description: 'Only paid and refunded orders contribute to revenue.' } },
+      {
+        name: 'net_amount',
+        type: 'DOUBLE',
+        isCalculated: true,
+        expression: 'amount - COALESCE(refund_amount, 0)',
+        properties: { description: 'Per-order amount after refunds, before filtering by status.', unit: 'USD' },
+      },
+    ],
+  }],
+  cubes: [{
+    name: 'sales',
+    baseObject: 'data',
+    measures: [{
+      name: 'net_revenue',
+      expression: "SUM(CASE WHEN status IN ('paid', 'refunded') THEN amount - COALESCE(refund_amount, 0) ELSE 0 END)",
+      type: 'DOUBLE',
+      description: 'Revenue after refunds, counting only paid and refunded orders.',
+      properties: { unit: 'USD', synonyms: ['revenue', 'net sales'] },
+    }],
+    dimensions: [{ name: 'region', expression: 'region', type: 'VARCHAR' }],
+    timeDimensions: [{ name: 'order_date', expression: 'CAST(ordered_at AS DATE)', type: 'DATE' }],
+  }],
+};
+```
+
+<Callout>
+  **Definitions guide query generation.** They do not create database objects or enforce access rules.
+</Callout>
+
+Read it in three parts:
+
+1. **`description` and `properties` explain meaning.** The shared description defines revenue; model and column properties explain row grain, units, and nulls. Keys such as `unit` and `synonyms` are annotations, not special SDK options.
+2. **`models` connects meaning to data.** `name: 'data'` matches the discovered model. The calculated `net_amount` describes a per-order value. Unlisted physical columns remain available from the schema.
+3. **`cubes` defines reusable analysis.** `sales` groups a measure and its grouping expressions. `net_revenue` contains both the status filter and refund calculation. `dimensions` supplies region grouping; `timeDimensions` supplies order-date grouping.
+
+The measure includes its eligibility rule so that it still applies when grouping by region or date. The calculated `net_amount` alone does not decide which orders count toward revenue.
+
+For your own source, inspect `await ava.schema()` first. Match existing model and column names exactly and retain physical source qualifiers. Each semantic model requires exactly one of `tableReference`, `refSql`, or `baseObject`; each column requires `name` and `type`. Copy discovered types for physical fields and declare result types for calculations. See [model sources](/documentation/reference/api/#semantic-model-sources) for the alternatives.
+
+You can start smaller: `{ description: 'Your business rules here.' }` is valid. Add models for field-specific meaning, relationships for joins, and cubes for reusable measures as your questions require them.
+
+## Save the definition and see the result
+
+After configuring `ava` and loading a source with `source()`, pass the definition as the setter's return value:
+
+```typescript
+await ava.semantic(undefined, () => semantic);
+const saved = await ava.semantic();
+```
+
+`undefined` uses the default options; semantic currently has no configurable options. The setter saves a validated copy. Subsequent `analyze()`, `translate()`, and `suggest()` calls combine it with the schema and available profile.
+
+For “Show revenue by region,” a query applying these definitions can look like this:
+
+```sql
+SELECT
+  region,
+  CAST(SUM(
+    CASE WHEN status IN ('paid', 'refunded')
+      THEN amount - COALESCE(refund_amount, 0)
+      ELSE 0
+    END
+  ) AS DOUBLE) AS net_revenue
+FROM data
+GROUP BY region
+ORDER BY region;
+```
+
+The result for the six orders above is:
+
+| region | net_revenue (USD) |
+| --- | --- |
+| East | 150 |
+| West | 60 |
+
+This is an example query; model-generated SQL and column aliases can vary.
+
+A logical model, cube, view, or calculated column does not automatically become a queryable database object. For example, SQL using `net_amount` must expand its expression or define it in a subquery or CTE. The query above embeds the measure expression and reads the physical `data` table.
+
+## Check and maintain your definition
+
+Before using a definition for real questions:
+
+1. Confirm row grain, units, eligible records, null handling, and time meaning with the data owner. For joins, check that a row is not counted multiple times.
+2. Test expressions on a small dataset with known answers, including edge cases such as the refunds and excluded orders shown above.
+3. Inspect generated SQL and compare executed results with those known answers. Setter validation checks the object structure; it does not prove the SQL or business logic is correct.
+
+Keep the complete definition in application code or a JSON file and version it with the data contract.
+
+<Callout>
+  **Each setter replaces the complete definition.** Loading another source or calling `dispose()` clears it; reapply it after loading a source. Schema and profile updates retain it.
+</Callout>
+
+For exact field shapes, source mappings, relationships, views, merge rules, and validation errors, continue to the [semantic fields in the API reference](/documentation/reference/api/#semantic-fields). See [Inspect your data](/documentation/data/schema/) for the other inputs and [AVA API](/documentation/reference/api/#semantic) for the method signature.
+10:[["children",{"s":"__PAGE__","h":160,"d":{"r":["$","$1","c",{"children":[[["$","main",null,{"className":"docs-main","id":"docs-content","children":[["$","div",null,{"className":"docs-page-toolbar","children":[["$","div",null,{"className":"docs-eyebrow","children":"Working with data"}],["$","$L11","data/semantic",{"label":"Copy Markdown","text":"$12"}]]}],"$L13","$L14","$L15","$L16","$L17","$L18"]}],"$L19"],["$L1a"],"$L1b"]}],"p":"$@1c","v":null,"s":"$6"}}]]
+d:[["children",{"s":{"n":"slug","t":"c","k":"data/semantic","s":[]},"h":65632,"d":{"r":["$","$1","c",{"children":[null,["$","$L3",null,{"parallelRouterKey":"children","template":["$","$L4",null,{}]}]]}],"p":"$@e","v":"$f","s":"$6"},"c":"$Q10"}]]
+7:[["children",{"s":"documentation","h":131168,"d":{"r":["$","$1","c",{"children":[[["$","link","0",{"rel":"stylesheet","href":"/_next/static/chunks/06c2x3lpy4huq.css","precedence":"next"}],["$","script","script-0",{"src":"/_next/static/chunks/1bbubh83s1n76.js","async":true}]],["$","div",null,{"className":"docs-site","children":[["$","a",null,{"className":"docs-skip","href":"#docs-content","children":"Skip to content"}],["$","header",null,{"className":"docs-header","children":["$","div",null,{"className":"docs-header-inner","children":[["$","$La",null,{"href":"/","className":"docs-brand","aria-label":"AVA home","children":[["$","img",null,{"src":"https://mdn.alipayobjects.com/huamei_qa8qxu/afts/img/A*A-lcQbVTpjwAAAAAAAAAAAAADmJ7AQ/original","alt":"","width":"80","height":"48"}],["$","strong",null,{"children":"AVA"}],["$","span",null,{"children":"Documentation"}]]}],["$","nav",null,{"aria-label":"Main navigation","className":"docs-header-links","children":[["$","$La",null,{"href":"/","className":"docs-website","children":["Website ",["$","span",null,{"aria-hidden":"true","children":"↗"}]]}],["$","a",null,{"href":"https://github.com/antvis/AVA","className":"docs-github","children":["GitHub ",["$","span",null,{"aria-hidden":"true","children":"↗"}]]}],["$","$La",null,{"href":"/ai/","className":"docs-ai","children":["AI ",["$","span",null,{"aria-hidden":"true","children":"→"}]]}]]}]]}]}],["$","$Lb",null,{"mobile":true}],["$","div",null,{"className":"docs-layout","children":[["$","aside",null,{"className":"docs-sidebar","children":[["$","$La",null,{"href":"/documentation/","className":"docs-sidebar-label","children":[["$","span",null,{"className":"docs-book-icon","aria-hidden":"true","children":"▤"}]," ","Documentation"]}],["$","$Lb",null,{}],["$","div",null,{"className":"docs-sidebar-footer","children":[["$","span",null,{"className":"docs-status-dot"}]," TypeScript · Open source"]}]]}],["$","$L3",null,{"parallelRouterKey":"children","template":["$","$L4",null,{}]}]]}]]}]]}],"p":"$@c","v":null,"s":"$6"},"c":"$Qd"}]]
+0:{"t":{"t":{"s":"","h":131152,"d":{"r":["$","$1","c",{"children":[[["$","link","0",{"rel":"stylesheet","href":"/_next/static/chunks/0vfkzyt9d0i-u.css","precedence":"next"}],["$","script","script-0",{"src":"/_next/static/chunks/3x799ho6-3r0n.js","async":true}]],["$","html",null,{"lang":"en","children":[["$","head",null,{"children":["$","script",null,{"dangerouslySetInnerHTML":{"__html":"\n            // Buffer polyfill for browser compatibility with csv-parse\n            window.Buffer = window.Buffer || {\n              isBuffer: function() { return false; },\n              from: function(str) { return new TextEncoder().encode(str); },\n              alloc: function(size) { return new Uint8Array(size); },\n            };\n          "}}]}],["$","body",null,{"className":"min-h-screen bg-[#f8fbfc]","children":["$","$L3",null,{"parallelRouterKey":"children","template":["$","$L4",null,{}],"notFound":[[["$","title",null,{"children":"404: This page could not be found."}],["$","div",null,{"style":{"fontFamily":"system-ui,\"Segoe UI\",Roboto,Helvetica,Arial,sans-serif,\"Apple Color Emoji\",\"Segoe UI Emoji\"","height":"100vh","textAlign":"center","display":"flex","flexDirection":"column","alignItems":"center","justifyContent":"center"},"children":["$","div",null,{"children":[["$","style",null,{"dangerouslySetInnerHTML":{"__html":"body{color:#000;background:#fff;margin:0}.next-error-h1{border-right:1px solid rgba(0,0,0,.3)}@media (prefers-color-scheme:dark){body{color:#fff;background:#000}.next-error-h1{border-right:1px solid rgba(255,255,255,.3)}}"}}],["$","h1",null,{"className":"next-error-h1","style":{"display":"inline-block","margin":"0 20px 0 0","padding":"0 23px 0 0","fontSize":24,"fontWeight":500,"verticalAlign":"top","lineHeight":"49px"},"children":404}],["$","div",null,{"style":{"display":"inline-block"},"children":["$","h2",null,{"style":{"fontSize":14,"fontWeight":400,"lineHeight":"49px","margin":0},"children":"This page could not be found."}]}]]}]}]],[]]}]}]]}]]}],"p":"$@5","v":null,"s":"$6"},"c":"$Q7"},"h":{"r":["$","$1","h",{"children":[null,["$","$L1e",null,{"children":[["$","meta","0",{"charSet":"utf-8"}],["$","meta","1",{"name":"viewport","content":"width=device-width, initial-scale=1"}]]}],["$","$L20",null,{"children":[["$","div",null,{"hidden":true,"children":["$","$21",null,{"name":"Next.Metadata","children":[["$","title","0",{"children":"Define data semantics — AVA Docs"}],["$","meta","1",{"name":"description","content":"Write business definitions, model mappings, and reusable measures, with a worked sales example."}],["$","meta","2",{"name":"author","content":"AntV"}],["$","meta","3",{"name":"keywords","content":"AVA, visual analytics, AI-native, LLM, data visualization, natural language, data analysis, AntV, chart generation"}],["$","link","4",{"rel":"canonical","href":"https://ava.antv.vision/documentation/data/semantic/"}],["$","meta","5",{"property":"og:title","content":"Define data semantics — AVA Docs"}],["$","meta","6",{"property":"og:description","content":"Write business definitions, model mappings, and reusable measures, with a worked sales example."}],["$","meta","7",{"property":"og:url","content":"https://ava.antv.vision/documentation/data/semantic/"}],["$","meta","8",{"property":"og:type","content":"article"}],["$","meta","9",{"name":"twitter:card","content":"summary"}],["$","meta","10",{"name":"twitter:title","content":"Define data semantics — AVA Docs"}],["$","meta","11",{"name":"twitter:description","content":"Write business definitions, model mappings, and reusable measures, with a worked sales example."}],["$","link","12",{"rel":"icon","href":"https://mdn.alipayobjects.com/huamei_qa8qxu/afts/img/A*FBLnQIAzx6cAAAAAQDAAAAgAemJ7AQ/original"}],["$","$L22","13",{}]]}]}],null]}],null]}],"p":"$@23","v":null,"s":"$6"}},"a":"$@24","u":"$@25","b":"5a0nTIDtZyrw2Qx1-cI3x"}
+3e:I[754170,["$2","$8","$9"],"default"]
+3f:I[675049,["$2"],"OutletBoundary"]
+13:["$","h1",null,{"children":"Define data semantics"}]
+14:["$","p",null,{"className":"docs-description","children":"Write business definitions, model mappings, and reusable measures, with a worked sales example."}]
+15:["$","article",null,{"className":"docs-prose","children":[["$","p",null,{"children":["Suppose a user asks: ",["$","strong",null,{"children":"“Show revenue by region.”"}]," Here is the order table behind that question, also used in ",["$","a",null,{"href":"/documentation/data/schema/","children":"Inspect your data"}],":"]}],"\n",["$","div",null,{"className":"docs-table","children":["$","table",null,{"children":[["$","thead",null,{"children":["$","tr",null,{"children":[["$","th",null,{"children":"order_id"}],["$","th",null,{"children":"region"}],["$","th",null,{"children":"status"}],["$","th",null,{"children":"amount"}],["$","th",null,{"children":"refund_amount"}],["$","th",null,{"children":"ordered_at"}]]}]}],["$","tbody",null,{"children":[["$","tr",null,{"children":[["$","td",null,{"children":"1"}],["$","td",null,{"children":"East"}],["$","td",null,{"children":"paid"}],["$","td",null,{"children":"120"}],["$","td",null,{"children":"20"}],["$","td",null,{"children":"2026-01-03"}]]}],["$","tr",null,{"children":[["$","td",null,{"children":"2"}],["$","td",null,{"children":"East"}],["$","td",null,{"children":"refunded"}],["$","td",null,{"children":"80"}],["$","td",null,{"children":"80"}],["$","td",null,{"children":"2026-01-04"}]]}],["$","tr",null,{"children":[["$","td",null,{"children":"3"}],["$","td",null,{"children":"East"}],["$","td",null,{"children":"pending"}],["$","td",null,{"children":"200"}],["$","td",null,{"children":"0"}],["$","td",null,{"children":"2026-01-05"}]]}],["$","tr",null,{"children":[["$","td",null,{"children":"4"}],["$","td",null,{"children":"West"}],["$","td",null,{"children":"paid"}],["$","td",null,{"children":"90"}],["$","td",null,{"children":"30"}],["$","td",null,{"children":"2026-01-06"}]]}],["$","tr",null,{"children":[["$","td",null,{"children":"5"}],["$","td",null,{"children":"East"}],["$","td",null,{"children":"paid"}],["$","td",null,{"children":"50"}],["$","td",null,{"children":["$","code",null,{"children":"null"}]}],["$","td",null,{"children":"2026-01-07"}]]}],["$","tr",null,{"children":[["$","td",null,{"children":"6"}],["$","td",null,{"children":"West"}],["$","td",null,{"children":"cancelled"}],["$","td",null,{"children":"500"}],["$","td",null,{"children":"0"}],["$","td",null,{"children":"2026-01-08"}]]}]]}]]}]}],"\n",["$","p",null,{"children":["The structure tells AVA that ",["$","code",null,{"children":"amount"}]," and ",["$","code",null,{"children":"refund_amount"}]," are numbers. It does not tell AVA which orders count as revenue. You supply that meaning through ",["$","code",null,{"children":"semantic()"}],"."]}],"\n",["$","h2",null,{"id":"decide-what-revenue-means","children":["$","a",null,{"href":"#decide-what-revenue-means","className":"docs-heading-link","children":"Decide what revenue means"}]}],"\n",["$","p",null,{"children":"For this example, agree on three rules:"}],"\n",["$","ul",null,{"children":["\n",["$","li",null,{"children":["Count ",["$","code",null,{"children":"paid"}]," and ",["$","code",null,{"children":"refunded"}]," orders; exclude ",["$","code",null,{"children":"pending"}]," and ",["$","code",null,{"children":"cancelled"}]," orders."]}],"\n",["$","li",null,{"children":"Subtract cumulative refunds from the original amount. A missing refund is zero. Amounts are USD."}],"\n",["$","li",null,{"children":"Group by the order's region and use its original order date."}],"\n"]}],"\n",["$","p",null,{"children":"Apply those rules to the rows above:"}],"\n",["$","div",null,{"className":"docs-table","children":["$","table",null,{"children":[["$","thead",null,{"children":["$","tr",null,{"children":[["$","th",null,{"children":"Order"}],["$","th",null,{"children":"Contribution to revenue"}],["$","th",null,{"children":"Why"}]]}]}],["$","tbody",null,{"children":[["$","tr",null,{"children":[["$","td",null,{"children":"1"}],["$","td",null,{"children":"100 USD"}],["$","td",null,{"children":"120 minus the 20 refund."}]]}],["$","tr",null,{"children":[["$","td",null,{"children":"2"}],["$","td",null,{"children":"0 USD"}],["$","td",null,{"children":"Fully refunded: 80 minus 80."}]]}],["$","tr",null,{"children":[["$","td",null,{"children":"3"}],["$","td",null,{"children":"0 USD"}],["$","td",null,{"children":"Pending, so excluded."}]]}],["$","tr",null,{"children":[["$","td",null,{"children":"4"}],["$","td",null,{"children":"60 USD"}],["$","td",null,{"children":"90 minus the 30 refund."}]]}],["$","tr",null,{"children":[["$","td",null,{"children":"5"}],["$","td",null,{"children":"50 USD"}],["$","td",null,{"children":"The missing refund is treated as zero."}]]}],["$","tr",null,{"children":[["$","td",null,{"children":"6"}],["$","td",null,{"children":"0 USD"}],["$","td",null,{"children":"Cancelled, so excluded."}]]}]]}]]}]}],"\n",["$","p",null,{"children":["East therefore has ",["$","strong",null,{"children":"150 USD"}]," in revenue; West has ",["$","strong",null,{"children":"60 USD"}],". The definition below records the rules that produce those numbers."]}],"\n",["$","h2",null,{"id":"write-the-definition","children":["$","a",null,{"href":"#write-the-definition","className":"docs-heading-link","children":"Write the definition"}]}],"\n",["$","p",null,{"children":["Load the table above as inline JSON, exposed by DuckDB as ","$L26",". Its corresponding semantic definition is:"]}],"\n","$L27","\n","$L28","\n","$L29","\n","$L2a","\n","$L2b","\n","$L2c","\n","$L2d","\n","$L2e","\n","$L2f","\n","$L30","\n","$L31","\n","$L32","\n","$L33","\n","$L34","\n","$L35","\n","$L36","\n","$L37","\n","$L38","\n","$L39","\n","$L3a","\n","$L3b","\n","$L3c","\n","$L3d"]}]
+16:["$","div",null,{"className":"docs-page-meta","children":["$","a",null,{"href":"https://github.com/antvis/AVA/blob/ai/site/content/docs/data/semantic.mdx","children":["Edit this page on GitHub ",["$","span",null,{"aria-hidden":"true","children":"↗"}]]}]}]
+17:["$","nav",null,{"className":"docs-pagination","aria-label":"Chapter navigation","children":[["$","$La",null,{"href":"/documentation/data/schema/","children":[["$","span",null,{"children":"← Previous"}],["$","strong",null,{"children":"Inspect your data"}]]}],["$","$La",null,{"href":"/documentation/analysis/overview/","className":"docs-next","children":[["$","span",null,{"children":"Next →"}],["$","strong",null,{"children":"Analyze data"}]]}]]}]
+18:["$","footer",null,{"className":"docs-footer","children":[["$","span",null,{"children":"AVA · An AntV project"}],["$","a",null,{"href":"https://github.com/antvis/AVA","children":"Open source on GitHub ↗"}]]}]
+19:["$","$L3e","data/semantic",{}]
+1a:["$","script","script-0",{"src":"/_next/static/chunks/1ktliq13_uzzz.js","async":true}]
+1b:["$","$L3f",null,{"children":["$","$21",null,{"name":"Next.MetadataOutlet","children":"$@40"}]}]
+6:300
+26:["$","code",null,{"children":"data"}]
+27:["$","figure",null,{"data-rehype-pretty-code-figure":"","children":["$","div",null,{"className":"docs-code-block","children":[["$","div",null,{"className":"docs-code-toolbar","children":[["$","span",null,{"children":"javascript"}],["$","$L11",null,{}]]}],["$","pre",null,{"tabIndex":"0","data-language":"javascript","data-theme":"github-light","children":["$","code",null,{"data-language":"javascript","data-theme":"github-light","style":{"display":"grid"},"children":[["$","span",null,{"data-line":"","children":[["$","span",null,{"style":{"color":"#6A737D"},"children":"/** "}],["$","span",null,{"style":{"color":"#D73A49"},"children":"@satisfies"}],["$","span",null,{"style":{"color":"#6F42C1"},"children":" {import('@antv/ava').Semantic}"}],["$","span",null,{"style":{"color":"#6A737D"},"children":" */"}]]}],"\n",["$","span",null,{"data-line":"","children":[["$","span",null,{"style":{"color":"#D73A49"},"children":"const"}],["$","span",null,{"style":{"color":"#005CC5"},"children":" semantic"}],["$","span",null,{"style":{"color":"#D73A49"},"children":" ="}],["$","span",null,{"style":{"color":"#24292E"},"children":" {"}]]}],"\n",["$","span",null,{"data-line":"","children":[["$","span",null,{"style":{"color":"#24292E"},"children":"  description: "}],["$","span",null,{"style":{"color":"#032F62"},"children":"'Sales reporting in USD. Revenue means net revenue from paid and refunded orders. Pending and cancelled orders do not count. A missing refund is zero. Dates are order dates, not refund dates.'"}],["$","span",null,{"style":{"color":"#24292E"},"children":","}]]}],"\n",["$","span",null,{"data-line":"","children":[["$","span",null,{"style":{"color":"#24292E"},"children":"  properties: { owner: "}],["$","span",null,{"style":{"color":"#032F62"},"children":"'Sales operations'"}],["$","span",null,{"style":{"color":"#24292E"},"children":" },"}]]}],"\n",["$","span",null,{"data-line":"","children":["$","span",null,{"style":{"color":"#24292E"},"children":"  models: [{"}]}],"\n",["$","span",null,{"data-line":"","children":[["$","span",null,{"style":{"color":"#24292E"},"children":"    name: "}],["$","span",null,{"style":{"color":"#032F62"},"children":"'data'"}],["$","span",null,{"style":{"color":"#24292E"},"children":","}]]}],"\n",["$","span",null,{"data-line":"","children":[["$","span",null,{"style":{"color":"#24292E"},"children":"    tableReference: { table: "}],["$","span",null,{"style":{"color":"#032F62"},"children":"'data'"}],["$","span",null,{"style":{"color":"#24292E"},"children":" },"}]]}],"\n",["$","span",null,{"data-line":"","children":[["$","span",null,{"style":{"color":"#24292E"},"children":"    primaryKey: "}],["$","span",null,{"style":{"color":"#032F62"},"children":"'order_id'"}],["$","span",null,{"style":{"color":"#24292E"},"children":","}]]}],"\n",["$","span",null,{"data-line":"","children":[["$","span",null,{"style":{"color":"#24292E"},"children":"    properties: { description: "}],["$","span",null,{"style":{"color":"#032F62"},"children":"'One row per order; refunds are cumulative amounts on the original order.'"}],["$","span",null,{"style":{"color":"#24292E"},"children":" },"}]]}],"\n",["$","span",null,{"data-line":"","children":["$","span",null,{"style":{"color":"#24292E"},"children":"    columns: ["}]}],"\n",["$","span",null,{"data-line":"","children":[["$","span",null,{"style":{"color":"#24292E"},"children":"      { name: "}],["$","span",null,{"style":{"color":"#032F62"},"children":"'amount'"}],["$","span",null,{"style":{"color":"#24292E"},"children":", type: "}],["$","span",null,{"style":{"color":"#032F62"},"children":"'BIGINT'"}],["$","span",null,{"style":{"color":"#24292E"},"children":", properties: { description: "}],["$","span",null,{"style":{"color":"#032F62"},"children":"'Order amount before refunds.'"}],["$","span",null,{"style":{"color":"#24292E"},"children":", unit: "}],["$","span",null,{"style":{"color":"#032F62"},"children":"'USD'"}],["$","span",null,{"style":{"color":"#24292E"},"children":" } },"}]]}],"\n",["$","span",null,{"data-line":"","children":[["$","span",null,{"style":{"color":"#24292E"},"children":"      { name: "}],["$","span",null,{"style":{"color":"#032F62"},"children":"'refund_amount'"}],["$","span",null,{"style":{"color":"#24292E"},"children":", type: "}],["$","span",null,{"style":{"color":"#032F62"},"children":"'BIGINT'"}],["$","span",null,{"style":{"color":"#24292E"},"children":", properties: { description: "}],["$","span",null,{"style":{"color":"#032F62"},"children":"'Cumulative refund, not a separate refund transaction. Null means zero.'"}],["$","span",null,{"style":{"color":"#24292E"},"children":", unit: "}],["$","span",null,{"style":{"color":"#032F62"},"children":"'USD'"}],["$","span",null,{"style":{"color":"#24292E"},"children":" } },"}]]}],"\n",["$","span",null,{"data-line":"","children":[["$","span",null,{"style":{"color":"#24292E"},"children":"      { name: "}],["$","span",null,{"style":{"color":"#032F62"},"children":"'status'"}],["$","span",null,{"style":{"color":"#24292E"},"children":", type: "}],["$","span",null,{"style":{"color":"#032F62"},"children":"'VARCHAR'"}],"$L41","$L42","$L43"]}],"\n","$L44","\n","$L45","\n","$L46","\n","$L47","\n","$L48","\n","$L49","\n","$L4a","\n","$L4b","\n","$L4c","\n","$L4d","\n","$L4e","\n","$L4f","\n","$L50","\n","$L51","\n","$L52","\n","$L53","\n","$L54","\n","$L55","\n","$L56","\n","$L57","\n","$L58","\n","$L59","\n","$L5a"]}]}]]}]}]
+28:["$","aside",null,{"className":"docs-callout","children":[["$","span",null,{"aria-hidden":"true","children":"i"}],["$","div",null,{"children":["$","p",null,{"children":[["$","strong",null,{"children":"Definitions guide query generation."}]," They do not create database objects or enforce access rules."]}]}]]}]
+29:["$","p",null,{"children":"Read it in three parts:"}]
+2a:["$","ol",null,{"children":["\n",["$","li",null,{"children":[["$","strong",null,{"children":[["$","code",null,{"children":"description"}]," and ",["$","code",null,{"children":"properties"}]," explain meaning."]}]," The shared description defines revenue; model and column properties explain row grain, units, and nulls. Keys such as ",["$","code",null,{"children":"unit"}]," and ",["$","code",null,{"children":"synonyms"}]," are annotations, not special SDK options."]}],"\n",["$","li",null,{"children":[["$","strong",null,{"children":[["$","code",null,{"children":"models"}]," connects meaning to data."]}]," ",["$","code",null,{"children":"name: 'data'"}]," matches the discovered model. The calculated ",["$","code",null,{"children":"net_amount"}]," describes a per-order value. Unlisted physical columns remain available from the schema."]}],"\n",["$","li",null,{"children":[["$","strong",null,{"children":[["$","code",null,{"children":"cubes"}]," defines reusable analysis."]}]," ",["$","code",null,{"children":"sales"}]," groups a measure and its grouping expressions. ",["$","code",null,{"children":"net_revenue"}]," contains both the status filter and refund calculation. ",["$","code",null,{"children":"dimensions"}]," supplies region grouping; ",["$","code",null,{"children":"timeDimensions"}]," supplies order-date grouping."]}],"\n"]}]
+2b:["$","p",null,{"children":["The measure includes its eligibility rule so that it still applies when grouping by region or date. The calculated ",["$","code",null,{"children":"net_amount"}]," alone does not decide which orders count toward revenue."]}]
+2c:["$","p",null,{"children":["For your own source, inspect ",["$","code",null,{"children":"await ava.schema()"}]," first. Match existing model and column names exactly and retain physical source qualifiers. Each semantic model requires exactly one of ",["$","code",null,{"children":"tableReference"}],", ",["$","code",null,{"children":"refSql"}],", or ",["$","code",null,{"children":"baseObject"}],"; each column requires ",["$","code",null,{"children":"name"}]," and ",["$","code",null,{"children":"type"}],". Copy discovered types for physical fields and declare result types for calculations. See ",["$","a",null,{"href":"/documentation/reference/api/#semantic-model-sources","children":"model sources"}]," for the alternatives."]}]
+2d:["$","p",null,{"children":["You can start smaller: ",["$","code",null,{"children":"{ description: 'Your business rules here.' }"}]," is valid. Add models for field-specific meaning, relationships for joins, and cubes for reusable measures as your questions require them."]}]
+2e:["$","h2",null,{"id":"save-the-definition-and-see-the-result","children":["$","a",null,{"href":"#save-the-definition-and-see-the-result","className":"docs-heading-link","children":"Save the definition and see the result"}]}]
+2f:["$","p",null,{"children":["After configuring ",["$","code",null,{"children":"ava"}]," and loading a source with ",["$","code",null,{"children":"source()"}],", pass the definition as the setter's return value:"]}]
+30:["$","figure",null,{"data-rehype-pretty-code-figure":"","children":["$","div",null,{"className":"docs-code-block","children":[["$","div",null,{"className":"docs-code-toolbar","children":[["$","span",null,{"children":"typescript"}],["$","$L11",null,{}]]}],["$","pre",null,{"tabIndex":"0","data-language":"typescript","data-theme":"github-light","children":["$","code",null,{"data-language":"typescript","data-theme":"github-light","style":{"display":"grid"},"children":[["$","span",null,{"data-line":"","children":[["$","span",null,{"style":{"color":"#D73A49"},"children":"await"}],["$","span",null,{"style":{"color":"#24292E"},"children":" ava."}],["$","span",null,{"style":{"color":"#6F42C1"},"children":"semantic"}],["$","span",null,{"style":{"color":"#24292E"},"children":"("}],["$","span",null,{"style":{"color":"#005CC5"},"children":"undefined"}],["$","span",null,{"style":{"color":"#24292E"},"children":", () "}],["$","span",null,{"style":{"color":"#D73A49"},"children":"=>"}],["$","span",null,{"style":{"color":"#24292E"},"children":" semantic);"}]]}],"\n",["$","span",null,{"data-line":"","children":[["$","span",null,{"style":{"color":"#D73A49"},"children":"const"}],["$","span",null,{"style":{"color":"#005CC5"},"children":" saved"}],["$","span",null,{"style":{"color":"#D73A49"},"children":" ="}],["$","span",null,{"style":{"color":"#D73A49"},"children":" await"}],["$","span",null,{"style":{"color":"#24292E"},"children":" ava."}],["$","span",null,{"style":{"color":"#6F42C1"},"children":"semantic"}],["$","span",null,{"style":{"color":"#24292E"},"children":"();"}]]}]]}]}]]}]}]
+31:["$","p",null,{"children":[["$","code",null,{"children":"undefined"}]," uses the default options; semantic currently has no configurable options. The setter saves a validated copy. Subsequent ",["$","code",null,{"children":"analyze()"}],", ",["$","code",null,{"children":"translate()"}],", and ",["$","code",null,{"children":"suggest()"}]," calls combine it with the schema and available profile."]}]
+32:["$","p",null,{"children":"For “Show revenue by region,” a query applying these definitions can look like this:"}]
+33:["$","figure",null,{"data-rehype-pretty-code-figure":"","children":["$","div",null,{"className":"docs-code-block","children":[["$","div",null,{"className":"docs-code-toolbar","children":[["$","span",null,{"children":"sql"}],["$","$L11",null,{}]]}],["$","pre",null,{"tabIndex":"0","data-language":"sql","data-theme":"github-light","children":["$","code",null,{"data-language":"sql","data-theme":"github-light","style":{"display":"grid"},"children":[["$","span",null,{"data-line":"","children":["$","span",null,{"style":{"color":"#D73A49"},"children":"SELECT"}]}],"\n",["$","span",null,{"data-line":"","children":["$","span",null,{"style":{"color":"#24292E"},"children":"  region,"}]}],"\n",["$","span",null,{"data-line":"","children":[["$","span",null,{"style":{"color":"#005CC5"},"children":"  CAST"}],["$","span",null,{"style":{"color":"#24292E"},"children":"("}],["$","span",null,{"style":{"color":"#005CC5"},"children":"SUM"}],["$","span",null,{"style":{"color":"#24292E"},"children":"("}]]}],"\n",["$","span",null,{"data-line":"","children":[["$","span",null,{"style":{"color":"#D73A49"},"children":"    CASE"}],["$","span",null,{"style":{"color":"#D73A49"},"children":" WHEN"}],["$","span",null,{"style":{"color":"#D73A49"},"children":" status"}],["$","span",null,{"style":{"color":"#D73A49"},"children":" IN"}],["$","span",null,{"style":{"color":"#24292E"},"children":" ("}],["$","span",null,{"style":{"color":"#032F62"},"children":"'paid'"}],["$","span",null,{"style":{"color":"#24292E"},"children":", "}],["$","span",null,{"style":{"color":"#032F62"},"children":"'refunded'"}],["$","span",null,{"style":{"color":"#24292E"},"children":")"}]]}],"\n",["$","span",null,{"data-line":"","children":[["$","span",null,{"style":{"color":"#D73A49"},"children":"      THEN"}],["$","span",null,{"style":{"color":"#24292E"},"children":" amount "}],["$","span",null,{"style":{"color":"#D73A49"},"children":"-"}],["$","span",null,{"style":{"color":"#005CC5"},"children":" COALESCE"}],["$","span",null,{"style":{"color":"#24292E"},"children":"(refund_amount, "}],["$","span",null,{"style":{"color":"#005CC5"},"children":"0"}],["$","span",null,{"style":{"color":"#24292E"},"children":")"}]]}],"\n",["$","span",null,{"data-line":"","children":[["$","span",null,{"style":{"color":"#D73A49"},"children":"      ELSE"}],["$","span",null,{"style":{"color":"#005CC5"},"children":" 0"}]]}],"\n",["$","span",null,{"data-line":"","children":["$","span",null,{"style":{"color":"#D73A49"},"children":"    END"}]}],"\n",["$","span",null,{"data-line":"","children":[["$","span",null,{"style":{"color":"#24292E"},"children":"  ) "}],["$","span",null,{"style":{"color":"#D73A49"},"children":"AS"}],["$","span",null,{"style":{"color":"#24292E"},"children":" DOUBLE) "}],["$","span",null,{"style":{"color":"#D73A49"},"children":"AS"}],["$","span",null,{"style":{"color":"#24292E"},"children":" net_revenue"}]]}],"\n",["$","span",null,{"data-line":"","children":[["$","span",null,{"style":{"color":"#D73A49"},"children":"FROM"}],["$","span",null,{"style":{"color":"#D73A49"},"children":" data"}]]}],"\n",["$","span",null,{"data-line":"","children":[["$","span",null,{"style":{"color":"#D73A49"},"children":"GROUP BY"}],["$","span",null,{"style":{"color":"#24292E"},"children":" region"}]]}],"\n",["$","span",null,{"data-line":"","children":[["$","span",null,{"style":{"color":"#D73A49"},"children":"ORDER BY"}],["$","span",null,{"style":{"color":"#24292E"},"children":" region;"}]]}]]}]}]]}]}]
+34:["$","p",null,{"children":"The result for the six orders above is:"}]
+35:["$","div",null,{"className":"docs-table","children":["$","table",null,{"children":[["$","thead",null,{"children":["$","tr",null,{"children":[["$","th",null,{"children":"region"}],["$","th",null,{"children":"net_revenue (USD)"}]]}]}],["$","tbody",null,{"children":[["$","tr",null,{"children":[["$","td",null,{"children":"East"}],["$","td",null,{"children":"150"}]]}],["$","tr",null,{"children":[["$","td",null,{"children":"West"}],["$","td",null,{"children":"60"}]]}]]}]]}]}]
+36:["$","p",null,{"children":"This is an example query; model-generated SQL and column aliases can vary."}]
+37:["$","p",null,{"children":["A logical model, cube, view, or calculated column does not automatically become a queryable database object. For example, SQL using ",["$","code",null,{"children":"net_amount"}]," must expand its expression or define it in a subquery or CTE. The query above embeds the measure expression and reads the physical ",["$","code",null,{"children":"data"}]," table."]}]
+38:["$","h2",null,{"id":"check-and-maintain-your-definition","children":["$","a",null,{"href":"#check-and-maintain-your-definition","className":"docs-heading-link","children":"Check and maintain your definition"}]}]
+39:["$","p",null,{"children":"Before using a definition for real questions:"}]
+3a:["$","ol",null,{"children":["\n",["$","li",null,{"children":"Confirm row grain, units, eligible records, null handling, and time meaning with the data owner. For joins, check that a row is not counted multiple times."}],"\n",["$","li",null,{"children":"Test expressions on a small dataset with known answers, including edge cases such as the refunds and excluded orders shown above."}],"\n",["$","li",null,{"children":"Inspect generated SQL and compare executed results with those known answers. Setter validation checks the object structure; it does not prove the SQL or business logic is correct."}],"\n"]}]
+3b:["$","p",null,{"children":"Keep the complete definition in application code or a JSON file and version it with the data contract."}]
+3c:["$","aside",null,{"className":"docs-callout","children":[["$","span",null,{"aria-hidden":"true","children":"i"}],["$","div",null,{"children":["$","p",null,{"children":[["$","strong",null,{"children":"Each setter replaces the complete definition."}]," Loading another source or calling ",["$","code",null,{"children":"dispose()"}]," clears it; reapply it after loading a source. Schema and profile updates retain it."]}]}]]}]
+3d:["$","p",null,{"children":["For exact field shapes, source mappings, relationships, views, merge rules, and validation errors, continue to the ",["$","a",null,{"href":"/documentation/reference/api/#semantic-fields","children":"semantic fields in the API reference"}],". See ",["$","a",null,{"href":"/documentation/data/schema/","children":"Inspect your data"}]," for the other inputs and ",["$","a",null,{"href":"/documentation/reference/api/#semantic","children":"AVA API"}]," for the method signature."]}]
+40:null
+25:true
+6:C
+41:["$","span",null,{"style":{"color":"#24292E"},"children":", properties: { description: "}]
+42:["$","span",null,{"style":{"color":"#032F62"},"children":"'Only paid and refunded orders contribute to revenue.'"}]
+43:["$","span",null,{"style":{"color":"#24292E"},"children":" } },"}]
+44:["$","span",null,{"data-line":"","children":["$","span",null,{"style":{"color":"#24292E"},"children":"      {"}]}]
+45:["$","span",null,{"data-line":"","children":[["$","span",null,{"style":{"color":"#24292E"},"children":"        name: "}],["$","span",null,{"style":{"color":"#032F62"},"children":"'net_amount'"}],["$","span",null,{"style":{"color":"#24292E"},"children":","}]]}]
+46:["$","span",null,{"data-line":"","children":[["$","span",null,{"style":{"color":"#24292E"},"children":"        type: "}],["$","span",null,{"style":{"color":"#032F62"},"children":"'DOUBLE'"}],["$","span",null,{"style":{"color":"#24292E"},"children":","}]]}]
+47:["$","span",null,{"data-line":"","children":[["$","span",null,{"style":{"color":"#24292E"},"children":"        isCalculated: "}],["$","span",null,{"style":{"color":"#005CC5"},"children":"true"}],["$","span",null,{"style":{"color":"#24292E"},"children":","}]]}]
+48:["$","span",null,{"data-line":"","children":[["$","span",null,{"style":{"color":"#24292E"},"children":"        expression: "}],["$","span",null,{"style":{"color":"#032F62"},"children":"'amount - COALESCE(refund_amount, 0)'"}],["$","span",null,{"style":{"color":"#24292E"},"children":","}]]}]
+49:["$","span",null,{"data-line":"","children":[["$","span",null,{"style":{"color":"#24292E"},"children":"        properties: { description: "}],["$","span",null,{"style":{"color":"#032F62"},"children":"'Per-order amount after refunds, before filtering by status.'"}],["$","span",null,{"style":{"color":"#24292E"},"children":", unit: "}],["$","span",null,{"style":{"color":"#032F62"},"children":"'USD'"}],["$","span",null,{"style":{"color":"#24292E"},"children":" },"}]]}]
+4a:["$","span",null,{"data-line":"","children":["$","span",null,{"style":{"color":"#24292E"},"children":"      },"}]}]
+4b:["$","span",null,{"data-line":"","children":["$","span",null,{"style":{"color":"#24292E"},"children":"    ],"}]}]
+4c:["$","span",null,{"data-line":"","children":["$","span",null,{"style":{"color":"#24292E"},"children":"  }],"}]}]
+4d:["$","span",null,{"data-line":"","children":["$","span",null,{"style":{"color":"#24292E"},"children":"  cubes: [{"}]}]
+4e:["$","span",null,{"data-line":"","children":[["$","span",null,{"style":{"color":"#24292E"},"children":"    name: "}],["$","span",null,{"style":{"color":"#032F62"},"children":"'sales'"}],["$","span",null,{"style":{"color":"#24292E"},"children":","}]]}]
+4f:["$","span",null,{"data-line":"","children":[["$","span",null,{"style":{"color":"#24292E"},"children":"    baseObject: "}],["$","span",null,{"style":{"color":"#032F62"},"children":"'data'"}],["$","span",null,{"style":{"color":"#24292E"},"children":","}]]}]
+50:["$","span",null,{"data-line":"","children":["$","span",null,{"style":{"color":"#24292E"},"children":"    measures: [{"}]}]
+51:["$","span",null,{"data-line":"","children":[["$","span",null,{"style":{"color":"#24292E"},"children":"      name: "}],["$","span",null,{"style":{"color":"#032F62"},"children":"'net_revenue'"}],["$","span",null,{"style":{"color":"#24292E"},"children":","}]]}]
+52:["$","span",null,{"data-line":"","children":[["$","span",null,{"style":{"color":"#24292E"},"children":"      expression: "}],["$","span",null,{"style":{"color":"#032F62"},"children":"\"SUM(CASE WHEN status IN ('paid', 'refunded') THEN amount - COALESCE(refund_amount, 0) ELSE 0 END)\""}],["$","span",null,{"style":{"color":"#24292E"},"children":","}]]}]
+53:["$","span",null,{"data-line":"","children":[["$","span",null,{"style":{"color":"#24292E"},"children":"      type: "}],["$","span",null,{"style":{"color":"#032F62"},"children":"'DOUBLE'"}],["$","span",null,{"style":{"color":"#24292E"},"children":","}]]}]
+54:["$","span",null,{"data-line":"","children":[["$","span",null,{"style":{"color":"#24292E"},"children":"      description: "}],["$","span",null,{"style":{"color":"#032F62"},"children":"'Revenue after refunds, counting only paid and refunded orders.'"}],["$","span",null,{"style":{"color":"#24292E"},"children":","}]]}]
+55:["$","span",null,{"data-line":"","children":[["$","span",null,{"style":{"color":"#24292E"},"children":"      properties: { unit: "}],["$","span",null,{"style":{"color":"#032F62"},"children":"'USD'"}],["$","span",null,{"style":{"color":"#24292E"},"children":", synonyms: ["}],["$","span",null,{"style":{"color":"#032F62"},"children":"'revenue'"}],["$","span",null,{"style":{"color":"#24292E"},"children":", "}],["$","span",null,{"style":{"color":"#032F62"},"children":"'net sales'"}],["$","span",null,{"style":{"color":"#24292E"},"children":"] },"}]]}]
+56:["$","span",null,{"data-line":"","children":["$","span",null,{"style":{"color":"#24292E"},"children":"    }],"}]}]
+57:["$","span",null,{"data-line":"","children":[["$","span",null,{"style":{"color":"#24292E"},"children":"    dimensions: [{ name: "}],["$","span",null,{"style":{"color":"#032F62"},"children":"'region'"}],["$","span",null,{"style":{"color":"#24292E"},"children":", expression: "}],["$","span",null,{"style":{"color":"#032F62"},"children":"'region'"}],["$","span",null,{"style":{"color":"#24292E"},"children":", type: "}],["$","span",null,{"style":{"color":"#032F62"},"children":"'VARCHAR'"}],["$","span",null,{"style":{"color":"#24292E"},"children":" }],"}]]}]
+58:["$","span",null,{"data-line":"","children":[["$","span",null,{"style":{"color":"#24292E"},"children":"    timeDimensions: [{ name: "}],["$","span",null,{"style":{"color":"#032F62"},"children":"'order_date'"}],["$","span",null,{"style":{"color":"#24292E"},"children":", expression: "}],["$","span",null,{"style":{"color":"#032F62"},"children":"'CAST(ordered_at AS DATE)'"}],["$","span",null,{"style":{"color":"#24292E"},"children":", type: "}],["$","span",null,{"style":{"color":"#032F62"},"children":"'DATE'"}],["$","span",null,{"style":{"color":"#24292E"},"children":" }],"}]]}]
+59:["$","span",null,{"data-line":"","children":["$","span",null,{"style":{"color":"#24292E"},"children":"  }],"}]}]
+5a:["$","span",null,{"data-line":"","children":["$","span",null,{"style":{"color":"#24292E"},"children":"};"}]}]
+24:0
+e:"$undefined"
+c:"$undefined"
+5:"$undefined"
+23:"$undefined"
+1c:"$undefined"
