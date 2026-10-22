@@ -1,6 +1,6 @@
 import { feishuError,feishuOrigin,getTenantAccessToken } from "./token";
 import { convertRecord,isSupportedFieldType } from "./convert";
-import {resolveBitableTable} from "./url";
+import {resolveBitableTable} from "./resolve";
 
 import type { FeishuCell,FeishuField } from "./convert";
 import type { FeishuBitableSourceOptions } from "../../../types";
@@ -73,9 +73,10 @@ async function getAllItems(token:string,url:string,pageSize:number):Promise<any[
 }
 
 export async function readFeishuTable(options:FeishuBitableSourceOptions):Promise<{fields:FeishuField[];rows:Record<string,FeishuCell>[]}>{
-    const table = resolveBitableTable(options);
     const origin = feishuOrigin(options.url);
     const token = await getTenantAccessToken(options.appId,options.appSecret,origin);
+    // Wiki links carry a node token, so resolve the table after the token exists.
+    const table = await resolveBitableTable(options,{token,origin});
     const fieldsItems = await getAllItems(token,tableUrl(origin,table,'/fields'),FIELDS_PAGE_SIZE);
     const fields:FeishuField[] = fieldsItems
         .filter((field)=>isSupportedFieldType(field.type))

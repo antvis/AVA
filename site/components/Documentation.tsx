@@ -287,7 +287,10 @@ ava.dispose();`}</CodeBlock>
                             Provide <code>url</code>, or both <code>appToken</code> and <code>tableId</code>.
                             Read-only; rows are exposed as one view named <code>data</code>.
                             Complex cells (people, attachments, links, formulas, locations, groups) are flattened to comma-separated text.
-                            The <code>view</code> query on a Feishu URL is ignored, and only <code>/base/</code> links are supported. </li>
+                            The <code>view</code> query on a Feishu URL is ignored. <code>/base/</code> and
+                            wiki-hosted <code>/wiki/</code> links are supported; a wiki node is resolved to its
+                            Bitable through the wiki API, so the app also needs wiki read access and wiki space
+                            membership. </li>
                           </ul>
                         </>
                       }

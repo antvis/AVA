@@ -38,7 +38,7 @@ export async function run([dataset]: string[], options: Options): Promise<{ data
     if(options.type!== undefined) throw new Error('--type cannot be combined with a feishu-bitable source.');
     input = { type: 'feishu-bitable', options: { url: dataset }} ;
   }else if(isFeishuHostUrl(dataset)){
-    throw new Error('Only Feishu Bitable /base/ links with a ?table= query are supported. Open wiki-hosted tables from their /base/ link.');}
+    throw new Error('Only Feishu Bitable links are supported: /base/<appToken>?table=<tableId> or /wiki/<nodeToken>?table=<tableId>. Docx, Sheets, and other Feishu links cannot be loaded.');}
   else {
     const pathname = /^https?:\/\//i.test(dataset) ? new URL(dataset).pathname : dataset;
     const type = option(options, 'type') ?? sourceTypes[extname(pathname).toLowerCase()];
@@ -91,14 +91,18 @@ Options:
   -h, --help         Show help.
 
 Feishu Bitable:
-  A /base/ link from feishu.cn or larksuite.com is detected automatically:
+  A /base/ or /wiki/ link from feishu.cn or larksuite.com is detected automatically:
     ava source "https://my.feishu.cn/base/<appToken>?table=<tableId>"
-  Or pass a "feishu-bitable" config via @file or stdin.
+    ava source "https://my.feishu.cn/wiki/<nodeToken>?table=<tableId>"
+  A wiki node is resolved to the Bitable it hosts, so the app also needs wiki
+  read access and membership of the wiki space.
+  Without ?table=, AVA uses the only table of the Bitable and lists the tables
+  when there are several. Or pass a "feishu-bitable" config via @file or stdin.
   appId and appSecret are required. They are resolved from the config first,
   then AVA_FEISHU_APP_ID / AVA_FEISHU_APP_SECRET, then ~/.ava/feishu.json;
   in a terminal AVA offers to bind and save them.
   The whole table is loaded as one view named data; the view query is ignored.
-  Wiki (/wiki/) and Docx/Sheets-hosted tables are not supported yet.
+  Docx and Sheets links are not supported.
 
 Environment:
   OPENAI_API_KEY     Required for text sources and subsequent AI commands.
@@ -122,6 +126,7 @@ Examples:
   ava source @source.json
   echo '{ "type": "json", "options": { "data": [{ "sales": 10 }] } }' | ava source -
   ava source "https://my.feishu.cn/base/<appToken>?table=<tableId>"
+  ava source "https://my.feishu.cn/wiki/<nodeToken>?table=<tableId>"
   ava source @feishu.json
 
 feishu.json:

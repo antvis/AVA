@@ -75,13 +75,16 @@ Use authorized read-only credentials. Restrict temporary credential files to the
 
 `feishu-bitable` is read-only and uses DuckDB; the Python and JavaScript engines cannot load it. Rows are exposed as one view named `data`. The `view` parameter in the URL is ignored and the whole table is loaded, not one view.
 
-The CLI detects Bitable `/base/` links automatically (Node.js 22.13+):
+The CLI detects Bitable links automatically (Node.js 22.13+), including tables that live inside a wiki:
 
 ```sh
 ava source "https://<tenant>.feishu.cn/base/<app_token>?table=<table_id>" > session.json
+ava source "https://<tenant>.feishu.cn/wiki/<node_token>?table=<table_id>" > session.json
 ```
 
-Wiki (`/wiki/`) and Docx/Sheets-hosted links are not supported yet: open the Bitable itself and copy its `/base/` link. For non-URL configs, pass `feishu-bitable` through an `@file` or stdin config; `--type` cannot supply it.
+A `/wiki/` URL carries a node token, so AVA calls the wiki `get_node` API and uses the hosted object's `obj_token` as the Bitable app token. The node must host a Bitable (`obj_type=bitable`); the app also needs `wiki:wiki:readonly` and membership of the wiki space, which is separate from the document grant on the table. Docx and Sheets nodes are rejected with an explicit error.
+
+When `?table=` is missing, AVA uses the only table of the Bitable and, when there are several, stops with the table list so you can pick one. For non-URL configs, pass `feishu-bitable` through an `@file` or stdin config; `--type` cannot supply it.
 
 `appId` and `appSecret` are required. They are the internal app credentials used to request a tenant access token, and the app must be added as a collaborator on the table. A `bitable:app:readonly` scope is enough unless the table enables advanced permissions, which require manage rights. Credentials are resolved from the source config first, then `AVA_FEISHU_APP_ID` / `AVA_FEISHU_APP_SECRET`, then `~/.ava/feishu.json`. In a terminal, AVA prompts for the pair, verifies it, and saves it to `~/.ava/feishu.json`.
 
@@ -103,7 +106,7 @@ The app must belong to an account allowed to call the Open Platform. Apps create
 ava source @feishu.json > session.json
 ```
 
-Provide `url`, or both `appToken` and `tableId`; when both are set they must name the same table. The path segment after `base` is `appToken`, and the `table` query parameter is `tableId`. Never commit `appSecret` or put it in deliverables, logs, or screenshots; rotate it if it leaks.
+Provide `url`, or both `appToken` and `tableId`; when both are set they must name the same table. The path segment after `base` is `appToken`, and the `table` query parameter is `tableId`. For a `/wiki/` URL the segment after `wiki` is a node token that AVA resolves to the app token, so `appToken` alone is not enough to describe a wiki table. Never commit `appSecret` or put it in deliverables, logs, or screenshots; rotate it if it leaks.
 
 Supported field types become columns. Other types are omitted. Complex cells are flattened to text; list values are joined with a comma.
 

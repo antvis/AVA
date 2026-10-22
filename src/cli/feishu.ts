@@ -2,6 +2,8 @@ import { chmod, mkdir, readFile, writeFile } from 'fs/promises';
 import { homedir } from 'os';
 import { join } from 'path';
 
+import { parseTableLink } from '../duckdb/loaders/feishu/url';
+
 const feishuHost = /(^|\.)feishu\.cn$/;
 const larkHost = /(^|\.)larksuite\.com$/;
 
@@ -156,10 +158,6 @@ export function isFeishuBitableUrl(dataset: string): boolean {
   if (!url) {
     return false;
   }
-  const segments = url.pathname
-    .split('/')
-    .filter(Boolean)
-    .map((segment) => segment.toLowerCase());
-  const baseIndex = segments.indexOf('base');
-  return baseIndex !== -1 && Boolean(segments[baseIndex + 1]) && Boolean(url.searchParams.get('table'));
+  // Base links name the Bitable directly; wiki links host one behind a node token.
+  return parseTableLink(url.toString()) !== undefined;
 }

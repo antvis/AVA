@@ -193,13 +193,26 @@ describe('source', () => {
     expect(createSession).not.toHaveBeenCalled();
   });
 
-  it('rejects Feishu links that are not /base/ tables', async () => {
+  it('detects a wiki-hosted Bitable URL', async () => {
+    vi.stubEnv('AVA_FEISHU_APP_ID', 'cli_test_app');
+    vi.stubEnv('AVA_FEISHU_APP_SECRET', 'test-secret');
+    const url = 'https://my.feishu.cn/wiki/PdX7wzIVfiZKy4kSFSJcGa3anAV?table=tbl123&view=vew1';
+
+    expect(JSON.parse(await execute(['source', url]))).toEqual({ datasetId });
+    expect(createSession).toHaveBeenCalledExactlyOnceWith(
+      { type: 'feishu-bitable', options: { url, appId: 'cli_test_app', appSecret: 'test-secret' } },
+      { model: 'gpt-4o-mini' },
+      undefined
+    );
+  });
+
+  it('rejects Feishu links that are not Bitables', async () => {
     for (const url of [
-      'https://my.feishu.cn/wiki/wikcn123?table=tbl123',
       'https://my.feishu.cn/docx/doccn123',
-      'https://my.feishu.cn/base/appToken123',
+      'https://my.feishu.cn/sheets/shtcn123',
+      'https://my.feishu.cn/drive/folder/fldcn123',
     ]) {
-      await expect(run(['source', url])).rejects.toThrow('Only Feishu Bitable /base/ links');
+      await expect(run(['source', url])).rejects.toThrow('Only Feishu Bitable links are supported');
     }
     expect(createSession).not.toHaveBeenCalled();
   });
