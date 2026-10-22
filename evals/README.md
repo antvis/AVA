@@ -29,7 +29,7 @@ npm --prefix evals/ava-agent install
 npm --prefix evals/ava-agent run sandbox:build
 ```
 
-在所选方式对应的 `.env` 文件中配置模型：Workflow 使用 `evals/ava-workflow/.env`，Agent 使用 `evals/ava-agent/.env`。
+两种评测方式都直接使用仓库根目录 `.env` 中的模型配置，无需在评测子目录单独配置；进程环境变量和子目录 `.env` 不会覆盖这里的模型名、API key 和地址。
 
 ```env
 OPENAI_API_KEY=your-api-key
@@ -37,7 +37,7 @@ OPENAI_MODEL=your-model
 OPENAI_BASE_URL=https://your-provider.example.com/v1
 ```
 
-Agent 要求以上三项均填写；Workflow 可省略 `OPENAI_BASE_URL`，默认使用 OpenAI。更多配置见各执行方式的说明。
+以上三项均必填。更多配置见各执行方式的说明。
 
 下载评测数据（需要 `curl`，只需下载一次）：
 
