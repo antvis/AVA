@@ -4,7 +4,7 @@ import { join } from 'path';
 
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
-import { feishuCredentials, feishuUrl, isFeishuBitableUrl, isFeishuHostUrl } from '../../src/cli/feishu';
+import { feishuBindError, feishuCredentials, feishuUrl, isFeishuBitableUrl, isFeishuHostUrl } from '../../src/cli/feishu';
 
 const baseUrl = 'https://my.feishu.cn/base/AXuDbVoV7aKqzpslXwscP41Wncc?table=tblehsChh5T3X69i&view=vewfxHhZEb';
 const credentials = { appId: 'cli_test_app', appSecret: 'test-secret' };
@@ -108,5 +108,21 @@ describe('Feishu credentials', () => {
     await expect(feishuCredentials({})).rejects.toThrow(
       'Feishu Bitable source requires appId and appSecret. Provide them in the source config'
     );
+  });
+});
+
+describe('Feishu bind errors', () => {
+  it('explains 21001 as a platform policy denial of the app account', () => {
+    const message = feishuBindError(21001, 'Access denied due to platform policy.').message;
+    expect(message).toContain('21001');
+    expect(message).toContain('tenant_access_token');
+    expect(message).toContain('豆包');
+    expect(message).toContain('绑定手机号');
+  });
+
+  it('suggests checking the credentials for other failures', () => {
+    const message = feishuBindError(10003, 'invalid param').message;
+    expect(message).toContain('10003');
+    expect(message).toContain('App ID / App Secret');
   });
 });

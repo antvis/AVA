@@ -85,6 +85,9 @@ Wiki (`/wiki/`) and Docx/Sheets-hosted links are not supported yet: open the Bit
 
 `appId` and `appSecret` are required. They are the internal app credentials used to request a tenant access token, and the app must be added as a collaborator on the table. A `bitable:app:readonly` scope is enough unless the table enables advanced permissions, which require manage rights. Credentials are resolved from the source config first, then `AVA_FEISHU_APP_ID` / `AVA_FEISHU_APP_SECRET`, then `~/.ava/feishu.json`. In a terminal, AVA prompts for the pair, verifies it, and saves it to `~/.ava/feishu.json`.
 
+The app must belong to an account allowed to call the Open Platform. Apps created by signing in to `open.feishu.cn` with a personal account such as a Doubao account are rejected with `Feishu Error 21001` (access denied due to platform policy) when requesting the tenant access token; create the app with a Feishu account bound to a phone number instead.
+
+
 ```json
 {
   "type": "feishu-bitable",

@@ -52,6 +52,22 @@ function ask(label: string, echo: boolean) {
   });
 }
 
+export function feishuBindError(code: unknown, msg: unknown): Error {
+  const id = Number(code);
+  if (id === 21001) {
+    return new Error(
+      [
+        `飞书应用绑定失败: ${String(code)} ${String(msg ?? '')}`,
+        '飞书开放平台按平台策略拒绝了这个应用，它无法换取 tenant_access_token。',
+        '常见原因是应用用豆包等个人账号登录 open.feishu.cn 创建；请改用绑定手机号的飞书账号重新创建自建应用后再试。',
+      ].join('\n')
+    );
+  }
+  return new Error(
+    `飞书应用绑定失败: ${String(code ?? 'unknown')} ${String(msg ?? '')}（请检查 App ID / App Secret 是否正确）`
+  );
+}
+
 async function bindFeishu(url?: string) {
   const host = url && /^https?:\/\//i.test(url) ? new URL(url).hostname.toLowerCase() : '';
   const origin = larkHost.test(host) ? 'https://open.larksuite.com' : 'https://open.feishu.cn';
@@ -69,19 +85,29 @@ async function bindFeishu(url?: string) {
         app_id: appId,
         app_secret: appSecret,
       }),
+    }).catch((error: unknown) => {
+      throw new Error(`飞书应用绑定失败: 无法访问 ${origin}（${String((error as Error)?.message ?? error)}）`);
     });
-    const body = (await response.json().catch(() => undefined)) as {
-      code?: unknown;
-      msg?: unknown;
-      tenant_access_token?: unknown;
-    };
-    if (body?.code === 0 || (typeof body.tenant_access_token === 'string' && body.tenant_access_token)) {
+    const body = (await response.json().catch(() => undefined)) as
+      | {
+          code?: unknown;
+          msg?: unknown;
+          tenant_access_token?: unknown;
+        }
+      | undefined;
+    if (!body) {
+      throw new Error(`飞书应用绑定失败: ${origin} 返回的不是 JSON，请确认应用属于该站点（feishu.cn 或 larksuite.com）`);
+    }
+    if (Number(body.code) === 21001) {
+      throw feishuBindError(body.code, body.msg);
+    }
+    if (body.code === 0 || (typeof body.tenant_access_token === 'string' && body.tenant_access_token)) {
       await mkdir(join(homedir(), '.ava'), { recursive: true, mode: 0o700 });
       await writeFile(path, `${JSON.stringify({ appId, appSecret })}\n`, { mode: 0o600 });
       await chmod(path, 0o600);
       return { appId, appSecret };
     }
-    process.stderr.write(`飞书应用绑定失败: ${String(body?.code ?? 'unknown')} ${String(body?.msg ?? '')}\n`);
+    process.stderr.write(`${feishuBindError(body.code, body.msg).message}\n`);
   }
 }
 
