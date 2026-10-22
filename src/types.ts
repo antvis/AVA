@@ -3,18 +3,11 @@
  */
 
 import type { ClickHouseClientConfigOptions } from '@clickhouse/client';
+import type { DuckDBConnection, Json } from '@duckdb/node-api';
 import type { LanguageModelUsage, LanguageModel } from 'ai';
 import type { AnalysisEvent } from './event';
 
-/**
- * Minimal structural type for a database connection used by LoadedSource.
- * Matches the subset of @duckdb/node-api's DuckDBConnection that loaders use,
- * declared here so the shared types never import the Node-only package.
- */
-export interface DuckDBConnection {
-  run(sql: string): Promise<unknown>;
-  runAndReadAll(sql: string): Promise<{ getRowObjectsJson(): Record<string, unknown>[] }>;
-}
+export type { DuckDBConnection } from '@duckdb/node-api';
 
 /**
  * LLM configuration
@@ -124,7 +117,7 @@ export type SourceType =
 /**
  * DuckDB read_csv reader options.
  * Mirrors the Parameters table in
- * https://duckdb.org/docs/stable/data/csv/overview.html
+ * https://duckdb.org/docs/2.0/data/csv/overview
  * Type mapping: BOOL→boolean, BIGINT→number, VARCHAR→string,
  * VARCHAR[]→string[], STRUCT→Record<string, string>, TYPE[]→string[].
  * All fields optional; unset fields fall back to the reader default / sniffer.
@@ -206,6 +199,8 @@ export interface CSVReadOptions {
   rejects_scan?: string;
   /** Upper limit on faulty lines recorded per file; 0 = no limit. Default 0 */
   rejects_limit?: number;
+  /** Maximum characters stored per rejected line; 0 stores the full line. Default 10000 */
+  rejects_line_size_limit?: number;
 
   // ── encoding / compression ──────────────────
   /** File encoding (default 'utf-8'). Others such as 'gb18030' require the DuckDB encodings extension. */
@@ -214,11 +209,13 @@ export interface CSVReadOptions {
   compression?: string;
 
   // ── multiple files ──────────────────────────
+  /** Return zero rows with an `empty` BOOLEAN column when no files match. Default false */
+  allow_empty?: boolean;
   /** Align columns from different files by name instead of position. Default false */
   union_by_name?: boolean;
   /** Interpret the path as a Hive partitioned path. Default auto-detected */
   hive_partitioning?: boolean;
-  /** Add the source file path to each row as a `filename` column. Default false */
+  /** Include filename in SELECT *. Default false; also available as a virtual column */
   filename?: boolean;
 }
 
@@ -246,16 +243,22 @@ export interface CSVFileSourceOptions {
 
 /**
  * DuckDB read_json parameters, including shared JSON reader options.
- * https://duckdb.org/docs/current/data/json/loading_json
+ * https://duckdb.org/docs/2.0/data/json/loading_json
  * Optional fields use DuckDB defaults. These options apply only to DuckDB.
  */
 export interface JSONReadOptions {
+  /** Return zero rows with an `empty` BOOLEAN column when no files match. Default false */
+  allow_empty?: boolean;
+  /** Shorthand for format: true = array, false = newline_delimited */
+  array?: boolean;
   /** Infer columns and types. Default true */
   auto_detect?: boolean;
   /** Column names mapped to DuckDB types; omitted columns are excluded */
   columns?: Record<string, string>;
   /** Compression codec. Default auto_detect */
   compression?: 'auto_detect' | 'none' | 'gzip' | 'zstd';
+  /** Infer integer strings as numeric values. Default false */
+  convert_strings_to_integers?: boolean;
   /** Date parsing pattern. Default 'iso' */
   dateformat?: string;
   /** Average field frequency below which objects become MAPs. Default 0.1 */
@@ -264,6 +267,8 @@ export interface JSONReadOptions {
   filename?: boolean;
   /** Input layout. read_json defaults to auto-detection */
   format?: 'auto' | 'unstructured' | 'newline_delimited' | 'array';
+  /** Parse GeoJSON geometry objects as GEOMETRY. Default false */
+  geojson?: boolean;
   /** Read Hive partitions from paths. Default auto-detected */
   hive_partitioning?: boolean;
   /** Skip parse errors; requires newline_delimited format. Default false */
@@ -280,7 +285,7 @@ export interface JSONReadOptions {
   records?: 'auto' | 'true' | 'false';
   /** Objects sampled for inference; -1 scans all. Default 20480 */
   sample_size?: number;
-  /** Timestamp parsing pattern. Default 'iso' */
+  /** Timestamp parsing pattern. Default 'iso'; timestamps with timezone offsets infer TIMESTAMPTZ */
   timestampformat?: string;
   /** Merge file schemas by column name. Default false */
   union_by_name?: boolean;
@@ -338,13 +343,15 @@ export interface ExcelSheetOptions extends ExcelReadOptions {
 
 /**
  * DuckDB read_xlsx reader options, applied independently to each sheet.
- * https://duckdb.org/docs/current/core_extensions/excel#reading-xlsx-files
+ * https://duckdb.org/docs/2.0/core_extensions/excel#reading-xlsx-files
  */
 export interface ExcelReadOptions {
   /** Inclusive A1 rectangle, e.g. B3:F100. */
   range?: string;
   /** Whether the first row contains column names. Defaults to true. */
   header?: boolean;
+  /** DuckDB only: normalize column names as for CSV. Defaults to false. */
+  normalize_names?: boolean;
   /** DuckDB only: read every cell as VARCHAR. Defaults to false. */
   all_varchar?: boolean;
   /** DuckDB only: replace cells that fail type conversion with NULL. Defaults to false. */
@@ -514,7 +521,7 @@ export type FileFormat = 'csv' | 'json' | 'parquet';
 
 /**
  * A loaded data source, ready for an engine to register as one or more views.
- * File loaders register a single `data` view; database loaders ATTACH and
+ * File loaders expose a single `data` table or view; database loaders ATTACH and
  * register one view per discovered table.
  */
 export interface LoadedSource {
@@ -527,6 +534,8 @@ export interface LoadedSource {
    * (the data file's directory for file sources; empty for in-memory/remote sources).
    */
   allowedDirectories: string[];
+  /** Exact remote file URLs allowed after external access is disabled. */
+  allowedPaths?: string[];
   /** Release resources (temp files, attached databases, tunnels) */
   cleanup: () => Promise<void>;
 }
@@ -679,7 +688,7 @@ export type AnalysisStrategyConfig =
 /** Unified data structure, profiling results and semantics for AVA. */
 
 /** Serializable metadata values; numeric finiteness must be checked at runtime. */
-export type JsonValue = string | number | boolean | null | JsonValue[] | { [key: string]: JsonValue };
+export type JsonValue = Json;
 
 /** Extensible metadata whose keys and meanings are agreed on by producers and consumers. */
 export type Properties = Record<string, JsonValue>;

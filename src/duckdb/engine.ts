@@ -35,9 +35,8 @@ import type {
 /**
  * Process-level security baseline: DuckDB extensions run with the same
  * privileges as the host process, so disable auto-install/auto-load and keep
- * community extensions off by default at instance creation. The mysql/postgres
- * loaders still work because those extensions are statically linked (built-in),
- * so an explicit `LOAD mysql`/`LOAD postgres` is unaffected by these flags.
+ * community extensions off by default at instance creation. Loaders explicitly
+ * install and load their known extensions before the session is locked.
  * https://duckdb.org/docs/current/operations_manual/securing_duckdb/securing_extensions
  */
 const EXTENSION_LOCKDOWN = {
@@ -87,31 +86,39 @@ export class DuckDBEngine implements AnalysisEngine {
         this.allowCommunityExtensions || this.engineOptions.allowCommunityExtensions ? 'true' : 'false',
     });
     this.connection = await this.instance.connect();
+    // Bound ingestion as well as queries; JSON is materialized during registration.
+    await this.connection.run(
+      `SET memory_limit = ${sqlStringLiteral(this.engineOptions.memoryLimit ?? DEFAULT_MEMORY_LIMIT)}`
+    );
+    await this.connection.run(`SET threads = ${this.engineOptions.threads ?? DEFAULT_THREADS}`);
+    if (this.engineOptions.maxTempDirectorySize) {
+      await this.connection.run(
+        `SET max_temp_directory_size = ${sqlStringLiteral(this.engineOptions.maxTempDirectorySize)}`
+      );
+    }
+    const tempBase = this.source?.allowedDirectories[0] ?? tmpdir();
+    await this.connection.run(`SET temp_directory = ${sqlStringLiteral(join(tempBase, '.dbtmp'))}`);
     return this.connection;
   }
 
   /**
-   * Harden the session after the data view is registered: whitelist the data
+   * Harden the session after the data source is registered: whitelist the data
    * file's directories, then disable further external access and lock the
    * configuration so LLM-generated SQL cannot read arbitrary files or undo it.
    */
-  private async restrictAccess(conn: DuckDBConnection, allowedDirectories: string[]): Promise<void> {
-    // Resource limits must be set before lock_configuration (which freezes all
-    // settings). They bound a runaway LLM-generated query's memory/CPU/disk.
-    await conn.run(`SET memory_limit = ${sqlStringLiteral(this.engineOptions.memoryLimit ?? DEFAULT_MEMORY_LIMIT)}`);
-    await conn.run(`SET threads = ${this.engineOptions.threads ?? DEFAULT_THREADS}`);
-    if (this.engineOptions.maxTempDirectorySize) {
-      await conn.run(`SET max_temp_directory_size = ${sqlStringLiteral(this.engineOptions.maxTempDirectorySize)}`);
-    }
+  private async restrictAccess(
+    conn: DuckDBConnection,
+    allowedDirectories: string[],
+    allowedPaths: string[] = []
+  ): Promise<void> {
     if (allowedDirectories.length > 0) {
       await conn.run(`SET allowed_directories = [${allowedDirectories.map(sqlStringLiteral).join(', ')}]`);
     }
-    // Confine spill files (from out-of-memory sorts/joins) to a known directory
-    // instead of the default `.tmp` in the process working directory.
-    const tempBase = allowedDirectories[0] ?? tmpdir();
-    await conn.run(`SET temp_directory = ${sqlStringLiteral(join(tempBase, '.dbtmp'))}`);
+    if (allowedPaths.length > 0) {
+      await conn.run(`SET allowed_paths = [${allowedPaths.map(sqlStringLiteral).join(', ')}]`);
+    }
     // en Postgres catalog, external access must be disabled before disabling the local filesystem; configuration lock must be set last.
-    // The data view is already registered, so external access is no longer needed.
+    // Keep only the source directories/URLs accessible after registration.
     await conn.run('SET enable_external_access = false');
     if (allowedDirectories.length === 0) {
       // No local data file to read — disable the local filesystem entirely.
@@ -128,7 +135,7 @@ export class DuckDBEngine implements AnalysisEngine {
       this.source = await loadSource(config, this.llmConfig);
       const conn = await this.getConnection();
       await this.source.register(conn);
-      await this.restrictAccess(conn, this.source.allowedDirectories);
+      await this.restrictAccess(conn, this.source.allowedDirectories, this.source.allowedPaths);
     } catch (error) {
       await this.dispose();
       throw error;
@@ -162,15 +169,25 @@ export class DuckDBEngine implements AnalysisEngine {
     if (!this.source || !this.connection) throw new Error('No data loaded. Please call source() first.');
 
     const conn = this.connection;
-    const query = await this.queryDialect.validateDSL(sql, conn);
     const timeoutMs = this.engineOptions.queryTimeoutMs ?? DEFAULT_QUERY_TIMEOUT_MS;
-    const reader = await runWithTimeout(conn.runAndReadAll(limitedQuery(query, maxRows(options))), timeoutMs, {
-      onTimeout: () => {
-        conn.interrupt();
-        return new QueryTimeoutError(timeoutMs);
-      },
-      unref: true,
-    });
+    let timedOut = false;
+    const reader = await runWithTimeout(
+      (async () => {
+        // Preparing a direct remote scan can perform network I/O too.
+        const query = await this.queryDialect.validateDSL(sql, conn);
+        if (timedOut) throw new QueryTimeoutError(timeoutMs);
+        return conn.runAndReadAll(limitedQuery(query, maxRows(options)));
+      })(),
+      timeoutMs,
+      {
+        onTimeout: () => {
+          timedOut = true;
+          conn.interrupt();
+          return new QueryTimeoutError(timeoutMs);
+        },
+        unref: true,
+      }
+    );
     const schema = Array.from({ length: reader.columnCount }, (_, index) => ({
       name: reader.columnName(index),
       type: reader.columnType(index).toString(),

@@ -38,6 +38,7 @@ export const excelSheetSchema = z
       .transform((value) => value.toUpperCase())
       .optional(),
     header: z.boolean().default(true),
+    normalize_names: z.boolean().optional(),
     all_varchar: z.boolean().optional(),
     ignore_errors: z.boolean().optional(),
     stop_at_empty: z.boolean().optional(),
