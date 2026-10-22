@@ -1,13 +1,14 @@
 #!/usr/bin/env node
 
-const assert = require('node:assert/strict');
-const { cpSync, existsSync, mkdirSync, mkdtempSync, readdirSync, rmSync } = require('node:fs');
-const { tmpdir } = require('node:os');
-const { join } = require('node:path');
-const { execFile } = require('node:child_process');
-const { promisify } = require('node:util');
-const { ROOT, selectSamples, inspectResources } = require('./index');
-const { atomicJson, sha256 } = require('../_shared/files');
+import { pathToFileURL } from 'node:url';
+import assert from 'node:assert/strict';
+import { cpSync, existsSync, mkdirSync, mkdtempSync, readdirSync, rmSync } from 'node:fs';
+import { tmpdir } from 'node:os';
+import { join } from 'node:path';
+import { execFile } from 'node:child_process';
+import { promisify } from 'node:util';
+import { ROOT, selectSamples, inspectResources } from './index.js';
+import { atomicJson, sha256 } from '../_shared/files.js';
 
 const VERSION = 'dev_20251106';
 const QUESTIONS_URL = 'https://huggingface.co/datasets/birdsql/bird_sql_dev_20251106/resolve/main/data/dev_20251106-00000-of-00001.json';
@@ -60,11 +61,11 @@ async function main() {
   }
 }
 
-if (require.main === module) {
+if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) {
   main().catch((error) => {
     process.stderr.write(`${error instanceof Error ? error.message : String(error)}\n`);
     process.exitCode = 1;
   });
 }
 
-module.exports = { main };
+export { main };

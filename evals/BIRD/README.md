@@ -48,3 +48,11 @@ evals/BIRD/.venv/bin/python3 -c "import sqlite3; print(sqlite3.sqlite_version)"
 - `dev_databases/<db_id>/`：SQLite 数据库及 `database_description/` 字段说明。
 
 使用该数据集运行 AVA 评测，见 [Workflow BIRD 评测器](../ava-workflow/README.md#bird-评测器)。
+
+## 本地语义文件
+
+Workflow 可读取本目录 `semantics/<db_id>.yaml`，复用 SDK 的 `Semantic` 结构。语义文件由使用者自行准备，保留在本地，不随仓库提交，下载器也不提供；文件不存在时沿用 schema/profile 流程。`--no-semantic` 可显式关闭加载，`--database-description` 可同时使用。
+
+定义只描述可复用的实体、字段、关系和指标，不包含逐题答案。若使用题目或 gold 校准定义，须在报告中注明属于样本内调优，并与无语义基线分开解释。
+
+语义文件在调用模型前校验，实际加载文件的哈希保存在运行 manifest 中，用于续跑及离线评分校验；report 只保留评测配置、成绩、用量和必要的来源说明。定义变化后须使用新的输出目录。

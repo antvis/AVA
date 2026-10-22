@@ -1,4 +1,4 @@
-const { parseArgs } = require('node:util');
+import { parseArgs } from 'node:util';
 
 // Parse only this layer's options and preserve the remaining arguments for the next layer.
 function takeOptions(args, options) {
@@ -26,4 +26,4 @@ function integer(value, name, min = 1) {
   return n;
 }
 
-module.exports = { takeOptions, integer };
+export { takeOptions, integer };

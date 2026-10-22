@@ -37,6 +37,8 @@ evals/spider2lite/
 ├── fetch.js
 ├── README.md
 ├── spider2-lite.jsonl                 # 题目
+├── semantics/*.yaml                  # 自行准备的本地业务定义（不提交）
+├── semantics/sources.json            # 可选的本地来源审计（不传给模型、不提交）
 ├── resource/
 │   ├── databases/                    # 数据库结构与描述
 │   │   └── spider2-localdb/*.sqlite   # 实际 SQLite 数据文件
@@ -84,13 +86,21 @@ node evals/cli.js run ava-workflow --benchmark spider2lite --limit all \
 
 模型配置和 `direct`、`loop`、`subset` 策略见 [AVA Workflow](../ava-workflow/README.md)。默认 `direct`、20 题、并发 1；可用 `--id local002`（可重复）、`--suite <数据库名>`、`--offset` 选题。完整参数用 `--help` 查看。
 
-每道题均执行 `source → profile → analyze`，使用 DuckDB 引擎，通过官方 SQLite 扩展只读加载数据库，输入仅包括 AVA 数据库画像、原始问题和题目指定的外部知识；不向模型提供官方 `DDL.csv` 或表描述 JSON，预检也不再要求这些描述文件。输入条件记录在运行清单中，与旧版结果比较时需注意这一变化。gold 和评分条件不传给模型。
+Workflow 每道题执行 `source → profile → semantic（可选）→ analyze`，使用 DuckDB 引擎，通过官方 SQLite 扩展只读加载数据库。默认读取本目录 `semantics/<数据库名>.yaml`；语义文件须自行准备，不随仓库提交或下载，缺少时跳过；`--no-semantic` 可关闭这一步。输入包含 AVA 数据库画像、业务定义、原始问题和题目指定的外部知识；不向模型提供官方 `DDL.csv`、表描述 JSON、gold 或评分条件。Agent 入口不加载这些本地 YAML。
+
+`--context raw` 运行裸数据对照：只向模型提供每个执行表/视图的名称、CSV 表头和前 3 行，以及原始问题和指定外部知识；不注入字段类型、键、schema/profile 元数据或 semantic。所有查询仍在完整数据上执行。该模式仅支持 Direct，保留正常 SQL 纠错，诊断可能透露字段名或类型；加载器内部的存储类型检查仍然执行。`--no-semantic` 则保留 Schema + Profile，作为 with schema 对照。两种模式须使用独立输出目录，详见 [Workflow 参数](../ava-workflow/README.md#spider2-lite-评测器)。
+
+语义定义只包含可复用业务知识，不包含逐题答案；若参考 gold 校准，须注明属于样本内调优。`manifest.json` 保存定义哈希，用于拒绝混合不同输入条件的续跑。哈希不写入 report。
+
+本地验证：`node --test evals/_shared/test.js`。共享测试覆盖基线隔离、续跑和元数据缓存，不依赖本地语义定义或完整评测集，无需调用模型。
+
+Workflow 将 schema/profile 缓存在 `evals/ava-workflow/.cache/spider2lite/`。同一进程的并发题目共享首次计算，后续运行直接读取本地快照，通过 `ava.schema(undefined, setter)`、`ava.profile(undefined, setter)` 恢复；semantic 仍逐次读取当前 YAML。缓存键包含数据库内容哈希、元数据实现及运行时版本；数据或实现变化后重新生成，完整性或结构校验失败会明确报错。每道题仍须加载查询连接，缓存只复用元数据。缓存目录被 Git 忽略。
 
 输出目录包含 `manifest.json`（题目、资源哈希、运行配置）、`sql/<id>.sql`（最终 SQL）、`records/<id>.json`（耗时、用量、错误）、`exec_result/<id>.csv`（DuckDB 完整执行结果）和 `report.json`。同一目录可断点续跑，成功题目跳过；模型、策略、资源或实现变化时须使用新目录。
 
 ## 与官方评分保持一致
 
-当前 DuckDB 加载 `stacking.sqlite` 的 `stack_ok` 视图会报语法错误，包含该库的预检会失败。
+预检会加载并扫描全部原生表和视图；部分库（如 `complex_oracle`）的原生视图关联昂贵，加载可能较慢。运行失败仍计入所选题目的分母。
 
 模型生成和执行均使用 DuckDB，评测直接将 AVA 返回的数据写成 CSV，不重跑 SQL。评测结果上限提高为 10,000 行、64 MiB；若仍被截断，该题记录为失败，不提交不完整结果。SQL 保留用于诊断。
 

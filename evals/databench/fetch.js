@@ -1,16 +1,17 @@
 #!/usr/bin/env node
 
-const { copyFileSync, mkdirSync, mkdtempSync, rmSync, writeFileSync } = require('node:fs');
-const { tmpdir } = require('node:os');
-const { basename, dirname, join } = require('node:path');
-const { execFile } = require('node:child_process');
-const { promisify } = require('node:util');
+import { pathToFileURL } from 'node:url';
+import { mkdirSync, mkdtempSync, rmSync, writeFileSync } from 'node:fs';
+import { tmpdir } from 'node:os';
+import { basename, dirname, join } from 'node:path';
+import { execFile } from 'node:child_process';
+import { promisify } from 'node:util';
 
-const { DuckDBInstance } = require('@duckdb/node-api');
-const { csvCell } = require('../_shared/results');
+import { DuckDBInstance } from '@duckdb/node-api';
+import { csvCell } from '../_shared/results.js';
 
 const REPO = 'cardiffnlp/databench';
-const OUTPUT = join(__dirname, 'datasets');
+const OUTPUT = join(import.meta.dirname, 'datasets');
 const EXCLUDED_DATASETS = new Set(['080_Books']);
 const VARIANTS = [
   { name: 'databench-lite', directory: 'lite', dataFile: 'sample.parquet', answerField: 'sample_answer' },
@@ -72,7 +73,11 @@ async function main() {
           const data = targets.find((item) => item.path === `data/${dataset}/${variant.dataFile}`);
           const directory = join(OUTPUT, variant.directory);
           mkdirSync(join(directory, 'data'), { recursive: true });
-          copyFileSync(data.target, join(directory, 'data', `${dataset}.parquet`));
+          // Upstream row-group statistics can prune real matches; recompute metadata from the decoded rows.
+          await connection.run(
+            `COPY (SELECT * FROM read_parquet(${sqlString(data.target)})) TO ` +
+            `${sqlString(join(directory, 'data', `${dataset}.parquet`))} (FORMAT PARQUET, COMPRESSION SNAPPY, ROW_GROUP_SIZE 8192)`,
+          );
           rows.forEach((row, index) =>
             questions[variant.name].push({
               id: `${dataset}:${String(index + 1).padStart(2, '0')}`,
@@ -114,11 +119,11 @@ async function main() {
   }
 }
 
-if (require.main === module) {
+if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) {
   main().catch((error) => {
     process.stderr.write(`${error instanceof Error ? error.message : String(error)}\n`);
     process.exitCode = 1;
   });
 }
 
-module.exports = { main };
+export { main };

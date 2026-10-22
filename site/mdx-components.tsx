@@ -29,9 +29,9 @@ const components: MDXComponents = {
       <table {...props} />
     </div>
   ),
-  Callout: ({ children }: { children: ReactNode }) => (
+  Callout: ({ children, icon }: { children: ReactNode; icon?: string }) => (
     <aside className="docs-callout">
-      <span aria-hidden="true">i</span>
+      <span aria-hidden="true" className={icon ? 'docs-callout-emoji' : undefined}>{icon ?? 'i'}</span>
       <div>{children}</div>
     </aside>
   ),

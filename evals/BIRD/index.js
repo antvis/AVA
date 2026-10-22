@@ -1,9 +1,9 @@
-const { existsSync, statSync } = require('node:fs');
-const { join } = require('node:path');
-const { integer } = require('../_shared/args');
-const { readJson } = require('../_shared/files');
+import { existsSync, statSync } from 'node:fs';
+import { join } from 'node:path';
+import { integer } from '../_shared/args.js';
+import { readJson } from '../_shared/files.js';
 
-const ROOT = join(__dirname, 'datasets/dev');
+const ROOT = join(import.meta.dirname, 'datasets/dev');
 
 function selectSamples(options = {}, root = ROOT) {
   const path = join(root, 'dev.json');
@@ -84,7 +84,7 @@ function resultPayload(result) {
   return { schema: result.schema, rows };
 }
 
-module.exports = {
+export {
   ROOT,
   selectSamples,
   databasePath,

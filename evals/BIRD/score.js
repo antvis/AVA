@@ -1,19 +1,19 @@
-const { execFile } = require('node:child_process');
-const { existsSync } = require('node:fs');
-const { join, resolve } = require('node:path');
-const { parseArgs } = require('node:util');
-const { ROOT, selectSamples, databasePath, inspectResources } = require('./index');
-const { atomicJson, readJson, sha256 } = require('../_shared/files');
-const { integer } = require('../_shared/args');
+import { execFile } from 'node:child_process';
+import { existsSync } from 'node:fs';
+import { join, resolve } from 'node:path';
+import { parseArgs } from 'node:util';
+import { ROOT, selectSamples, databasePath, inspectResources } from './index.js';
+import { atomicJson, readJson, sha256 } from '../_shared/files.js';
+import { integer } from '../_shared/args.js';
 
-const localPython = join(__dirname, '.venv', 'bin', 'python3');
+const localPython = join(import.meta.dirname, '.venv', 'bin', 'python3');
 const PYTHON = existsSync(localPython) ? localPython : 'python3';
 
 function compare(request, { python = PYTHON, timeout = 60_000 } = {}) {
   return new Promise((resolveResult, reject) => {
     const child = execFile(
       python,
-      ['-I', join(__dirname, 'compare.py')],
+      ['-I', join(import.meta.dirname, 'compare.py')],
       { timeout, killSignal: 'SIGKILL', maxBuffer: 1024 * 1024 },
       (error, stdout, stderr) => {
         let result;
@@ -54,7 +54,6 @@ async function scoreSamples({ samples, root = ROOT, predictions, output, python,
           ...item,
           ...result,
           status: result.score === 1 ? 'passed' : 'incorrect',
-          prediction_sha256: sha256(prediction),
         };
       } catch (error) {
         item = { ...item, status: 'error', error: error.message };
@@ -83,7 +82,7 @@ async function scoreSamples({ samples, root = ROOT, predictions, output, python,
     ),
     items,
   };
-  atomicJson(output, report);
+  atomicJson(output, { ...report, items: items.map(({ score, ...item }) => item) });
   process.stdout.write(
     `BIRD result accuracy: ${report.passed}/${report.total} (${(report.accuracy * 100).toFixed(2)}%), missing ${
       report.missing
@@ -131,4 +130,4 @@ async function main(argv = process.argv.slice(2)) {
   return report;
 }
 
-module.exports = { PYTHON, main, compare, scoreSamples };
+export { PYTHON, main, compare, scoreSamples };

@@ -14,4 +14,4 @@ function createUsage() {
   };
 }
 
-module.exports = { createUsage };
+export { createUsage };

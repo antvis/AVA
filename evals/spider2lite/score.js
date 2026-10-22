@@ -1,10 +1,10 @@
-const { atomicJson, readJson, sha256 } = require('../_shared/files');
-const { integer } = require('../_shared/args');
-const { execFile } = require('node:child_process');
-const { existsSync, readFileSync } = require('node:fs');
-const { join, resolve } = require('node:path');
-const { parseArgs } = require('node:util');
-const { ROOT, inspectResources, loadQuestions, selectSamples } = require('./index');
+import { atomicJson, readJson } from '../_shared/files.js';
+import { integer } from '../_shared/args.js';
+import { execFile } from 'node:child_process';
+import { existsSync, readFileSync } from 'node:fs';
+import { join, resolve } from 'node:path';
+import { parseArgs } from 'node:util';
+import { ROOT, inspectResources, loadQuestions, selectSamples } from './index.js';
 
 function pythonPath() {
   const venv = join(ROOT, '.venv/bin/python');
@@ -79,7 +79,6 @@ async function scoreSamples({
           );
           items[i] = {
             ...result,
-            prediction_sha256: sha256(path),
             status: result.score === 1 ? 'passed' : result.error_info === 'Result Error' ? 'incorrect' : 'error',
           };
         } catch (error) {
@@ -88,7 +87,6 @@ async function scoreSamples({
             score: 0,
             status: 'error',
             error_info: error.message,
-            prediction_sha256: sha256(path),
           };
         }
       }
@@ -116,7 +114,7 @@ async function scoreSamples({
     limits: { timeoutMs: timeout, concurrency },
     items,
   };
-  atomicJson(output, report);
+  atomicJson(output, { ...report, items: items.map(({ score, ...item }) => item) });
   process.stdout.write(
     `SQLite subset: ${passed}/${samples.length} (${(100 * report.accuracy).toFixed(2)}%), missing ${missing}, errors ${
       report.errors
@@ -188,4 +186,4 @@ async function main(argv = process.argv.slice(2)) {
   return report;
 }
 
-module.exports = { main, checkScorer, scoreSamples, pythonPath };
+export { main, checkScorer, scoreSamples, pythonPath };

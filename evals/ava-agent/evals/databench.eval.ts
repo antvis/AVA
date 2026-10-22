@@ -1,5 +1,4 @@
 import { appendFileSync, copyFileSync, constants, cpSync, mkdirSync, readFileSync, renameSync, writeFileSync } from 'node:fs';
-import { createRequire } from 'node:module';
 import { basename, join, resolve } from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 
@@ -11,7 +10,6 @@ import { hashTree } from '../lib/files.mjs';
 import { removeSessionContainers } from '../lib/cleanup.mjs';
 
 type Benchmark = typeof import('../../databench/index.js');
-const require = createRequire(import.meta.url);
 
 export const config = defineEvalConfig({ maxConcurrency: 1, timeoutMs: 600000 });
 
@@ -32,7 +30,7 @@ Options:
 Additional execution options are forwarded to Eve.
 `;
 
-function prepareSnapshot(
+async function prepareSnapshot(
   directory: string,
   samples: ReturnType<Benchmark['selectSamples']>,
   selection: Parameters<Benchmark['selectSamples']>[0],
@@ -44,7 +42,7 @@ function prepareSnapshot(
   writeFileSync(join(directory, 'evals/evals.config.ts'), "export { config as default } from './databench.eval.ts';\n");
   mkdirSync(join(benchmarkDirectory, 'databench'), { recursive: true });
   mkdirSync(join(benchmarkDirectory, '_shared'), { recursive: true });
-  writeFileSync(join(benchmarkDirectory, 'package.json'), '{"type":"commonjs"}\n');
+  writeFileSync(join(benchmarkDirectory, 'package.json'), '{"type":"module"}\n');
   for (const file of ['databench/index.js', '_shared/results.js']) {
     cpSync(join(evalsRoot, file), join(benchmarkDirectory, file));
   }
@@ -59,10 +57,9 @@ function prepareSnapshot(
     sample.dataPath = files.get(sample.dataPath);
   }
   writeFileSync(join(benchmarkDirectory, 'samples.json'), JSON.stringify(samples));
-  const { OUTPUT_COLUMNS, csvCell } = require('../../_shared/results.js');
+  const { OUTPUT_COLUMNS, csvRows } = await import(new URL('../../_shared/results.js', import.meta.url).href);
   writeFileSync(join(directory, 'predictions.csv'),
-    [OUTPUT_COLUMNS, ...previous.map((row) => OUTPUT_COLUMNS.map((column: string) => row[column]))]
-      .map((row) => row.map(csvCell).join(',')).join('\n') + '\n');
+    csvRows([OUTPUT_COLUMNS, ...previous.map((row) => OUTPUT_COLUMNS.map((column: string) => row[column]))]) + '\n');
   return {
     directory: benchmarkDirectory,
     manifest: { benchmark: 'databench', selection, resumedFrom, importedRows: previous.length, benchmarkHash: hashTree(benchmarkDirectory) },
@@ -70,8 +67,8 @@ function prepareSnapshot(
 }
 
 export async function main(argv: string[] = process.argv.slice(2)) {
-  const { takeOptions } = require('../../_shared/args.js');
-  const { selectSamples }: Benchmark = require('../../databench/index.js');
+  const { takeOptions } = await import(new URL('../../_shared/args.js', import.meta.url).href);
+  const { selectSamples }: Benchmark = await import(new URL('../../databench/index.js', import.meta.url).href);
   const { values: { resume = [], 'retry-errors': retryErrors, ...selection }, rest } = takeOptions(argv, {
     dataset: { type: 'string' },
     limit: { type: 'string' },
@@ -85,7 +82,7 @@ export async function main(argv: string[] = process.argv.slice(2)) {
   if (!samples.length) throw new Error('No DataBench questions match the selection.');
   if (retryErrors && resume.length) throw new Error('--retry-errors cannot be combined with --resume.');
   const resumedFrom = (retryErrors ? [retryErrors] : resume).map((path: string) => resolve(path));
-  const imported = loadPreviousResults(resumedFrom, samples, !!retryErrors);
+  const imported = await loadPreviousResults(resumedFrom, samples, !!retryErrors);
   if (retryErrors && imported.length !== samples.length) {
     throw new Error('--retry-errors requires a CSV matching the complete selection.');
   }
@@ -100,12 +97,12 @@ export async function main(argv: string[] = process.argv.slice(2)) {
     return prepareSnapshot(directory, pending, selection, previous, resumedFrom);
   });
   if (!rest.includes('--list') && !result.signal) {
-    saveResults(result.directory, samples, join(evalsRoot, 'ava-agent/results'), retryErrors ? resolve(retryErrors) : undefined);
+    await saveResults(result.directory, samples, join(evalsRoot, 'ava-agent/results'), retryErrors ? resolve(retryErrors) : undefined);
   }
 }
 
-function loadPreviousResults(paths: string[], samples: ReturnType<Benchmark['selectSamples']>, exact = false) {
-  const { readCsv, OUTPUT_COLUMNS } = require('../../_shared/results.js');
+async function loadPreviousResults(paths: string[], samples: ReturnType<Benchmark['selectSamples']>, exact = false) {
+  const { readCsv, OUTPUT_COLUMNS } = await import(new URL('../../_shared/results.js', import.meta.url).href);
   const selected = new Set(samples.map((sample) => sample.id));
   const rows = new Map<string, Record<string, string>>();
   for (const path of paths) {
@@ -124,8 +121,8 @@ function loadPreviousResults(paths: string[], samples: ReturnType<Benchmark['sel
   return [...rows.values()];
 }
 
-function saveResults(directory: string, samples: ReturnType<Benchmark['selectSamples']>, destination: string, replace?: string) {
-  const { readCsv } = require('../../_shared/results.js');
+async function saveResults(directory: string, samples: ReturnType<Benchmark['selectSamples']>, destination: string, replace?: string) {
+  const { readCsv } = await import(new URL('../../_shared/results.js', import.meta.url).href);
   const source = join(directory, 'predictions.csv');
   const rows = readCsv(source);
   const ids = new Set(rows.map((row: { id: string }) => row.id));
@@ -146,9 +143,9 @@ function saveResults(directory: string, samples: ReturnType<Benchmark['selectSam
   return output;
 }
 
-function createEvals(directory: string) {
-  const { csvCell } = require(join(directory, '_shared/results.js'));
-  const benchmark: Benchmark = require(join(directory, 'databench/index.js'));
+async function createEvals(directory: string) {
+  const { csvCell } = await import(pathToFileURL(join(directory, '_shared/results.js')).href);
+  const benchmark: Benchmark = await import(pathToFileURL(join(directory, 'databench/index.js')).href);
   const samples: ReturnType<typeof benchmark.selectSamples> = JSON.parse(
     readFileSync(join(directory, 'samples.json'), 'utf8')
   );
@@ -225,7 +222,7 @@ function createEvals(directory: string) {
 }
 
 const directory = process.env.AVA_AGENT_BENCHMARK === 'databench' ? process.env.AVA_AGENT_EVAL_DIR : undefined;
-export default directory ? createEvals(directory) : [];
+export default directory ? await createEvals(directory) : [];
 
 if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) {
   main().catch((error) => {

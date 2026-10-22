@@ -6,9 +6,12 @@
 
 本目录提供共享的数据下载、加载和评分逻辑：
 
-- `fetch.js`：下载 `databench-lite`（采样表）和 `databench`（完整表），排除 `080_Books`。
+- `fetch.js`：下载 `databench-lite`（采样表）和 `databench`（完整表），排除 `080_Books`。通过 DuckDB 重写本地 Parquet 副本以重建统计元数据，避免上游错误的 min/max 导致筛选遗漏实际记录；记录值不作修改。
 - `index.js`：统一选择题目、格式化答案，使用 `databench-answer` 指标评分；供 workflow 和 agent 的评测适配器复用。
 - `datasets/lite/`、`datasets/full/`：存放下载的 `questions.csv` 和 Parquet 数据，已被 Git 忽略。
+- `semantics/<suite>.yaml`：使用者自行准备的本地 `Semantic` 定义，不随仓库提交或下载，由 ava-workflow 自动加载。不存在对应文件时沿用 schema/profile 流程。
+
+归档的语义增强实验参考了当前评测题目和标答，属于样本内调优结果，不能视为未见题目的泛化准确率；评分仍使用原标答。
 
 安装仓库依赖后，在仓库根目录执行（需要 `curl`）：
 

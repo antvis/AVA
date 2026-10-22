@@ -100,6 +100,7 @@ pnpm-lock.yaml
 
 # Downloaded/generated evaluation files
 /evals/*/datasets/
+/evals/*/semantics/
 /evals/*/results/
 /evals/*/*.jsonl
 /evals/spider2lite/resource/

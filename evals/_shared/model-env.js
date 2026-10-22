@@ -1,8 +1,8 @@
-const { readFileSync } = require('node:fs');
-const { resolve } = require('node:path');
-const { parseEnv } = require('node:util');
+import { readFileSync } from 'node:fs';
+import { resolve } from 'node:path';
+import { parseEnv } from 'node:util';
 
-function readModelEnv(path = resolve(__dirname, '../../.env')) {
+function readModelEnv(path = resolve(import.meta.dirname, '../../.env')) {
   const env = parseEnv(readFileSync(path, 'utf8'));
   const names = ['OPENAI_MODEL', 'OPENAI_BASE_URL', 'OPENAI_API_KEY'];
   for (const name of names) {
@@ -14,4 +14,4 @@ function readModelEnv(path = resolve(__dirname, '../../.env')) {
   return Object.fromEntries(names.map((name) => [name, env[name]]));
 }
 
-module.exports = { readModelEnv };
+export { readModelEnv };

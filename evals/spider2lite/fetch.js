@@ -1,12 +1,13 @@
 #!/usr/bin/env node
 
-const { copyFileSync, cpSync, mkdirSync, mkdtempSync, readFileSync, readdirSync, rmSync } = require('node:fs');
-const { tmpdir } = require('node:os');
-const { join } = require('node:path');
-const { execFile } = require('node:child_process');
-const { promisify, parseArgs } = require('node:util');
-const { createHash } = require('node:crypto');
-const { writeFileSync } = require('node:fs');
+import { pathToFileURL } from 'node:url';
+import { copyFileSync, cpSync, mkdirSync, mkdtempSync, readFileSync, readdirSync, rmSync } from 'node:fs';
+import { tmpdir } from 'node:os';
+import { join } from 'node:path';
+import { execFile } from 'node:child_process';
+import { promisify, parseArgs } from 'node:util';
+import { createHash } from 'node:crypto';
+import { writeFileSync } from 'node:fs';
 
 const REPO = 'https://github.com/xlang-ai/Spider2.git';
 const exec = promisify(execFile);
@@ -109,12 +110,12 @@ async function main(args = process.argv.slice(2)) {
     fingerprint(source);
 
     // Publish only after downloads and validation succeed. Keep unrelated local files intact.
-    cpSync(resource, join(__dirname, 'resource'), { recursive: true });
-    mkdirSync(join(__dirname, 'evaluation_suite'), { recursive: true });
-    cpSync(join(source, 'evaluation_suite'), join(__dirname, 'evaluation_suite'), { recursive: true });
-    copyFileSync(questionsPath, join(__dirname, 'spider2-lite.jsonl'));
+    cpSync(resource, join(import.meta.dirname, 'resource'), { recursive: true });
+    mkdirSync(join(import.meta.dirname, 'evaluation_suite'), { recursive: true });
+    cpSync(join(source, 'evaluation_suite'), join(import.meta.dirname, 'evaluation_suite'), { recursive: true });
+    copyFileSync(questionsPath, join(import.meta.dirname, 'spider2-lite.jsonl'));
     writeFileSync(
-      join(__dirname, 'upstream.json'),
+      join(import.meta.dirname, 'upstream.json'),
       JSON.stringify(
         { repository: REPO, revision: revision.trim(), fetchedAt: new Date().toISOString(), files },
         null,
@@ -134,11 +135,11 @@ async function main(args = process.argv.slice(2)) {
   }
 }
 
-if (require.main === module) {
+if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) {
   main().catch((error) => {
     process.stderr.write(`${error instanceof Error ? error.message : String(error)}\n`);
     process.exitCode = 1;
   });
 }
 
-module.exports = { main };
+export { main };

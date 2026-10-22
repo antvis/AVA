@@ -1,25 +1,22 @@
 import { writeFileSync } from 'node:fs';
-import { createRequire } from 'node:module';
 import { join, resolve } from 'node:path';
+import { pathToFileURL } from 'node:url';
 import { createEvals, readOptions, runEvaluation, saveResults, type Result, type Sample } from './sql.ts';
 export { config } from './sql.ts';
 
-const require = createRequire(import.meta.url);
-
-export function writeResult(directory: string, id: string, payload: Result) {
-  const { csvCell } = require(join(directory, 'benchmarks/_shared/results.js'));
+export async function writeResult(directory: string, id: string, payload: Result) {
+  const { csvRows } = await import(pathToFileURL(join(directory, 'benchmarks/_shared/results.js')).href);
   writeFileSync(join(directory, 'exec_result', `${id}.csv`),
-    [payload.schema.map((column) => column.name), ...payload.rows]
-      .map((row) => row.map(csvCell).join(',')).join('\n') + '\n');
+    csvRows([payload.schema.map((column) => column.name), ...payload.rows]) + '\n');
 }
 
 export async function main(argv: string[] = process.argv.slice(2)) {
-  const options = readOptions('spider2lite', argv);
+  const options = await readOptions('spider2lite', argv);
   if (!options) return;
   const { values, rest } = options;
-  const { ROOT, selectSamples, inspectResources, modelQuestion } = require('../../spider2lite/index.js');
-  const { checkScorer, scoreSamples, pythonPath } = require('../../spider2lite/score.js');
-  const { integer } = require('../../_shared/args.js');
+  const { ROOT, selectSamples, inspectResources, modelQuestion } = await import(new URL('../../spider2lite/index.js', import.meta.url).href);
+  const { checkScorer, scoreSamples, pythonPath } = await import(new URL('../../spider2lite/score.js', import.meta.url).href);
+  const { integer } = await import(new URL('../../_shared/args.js', import.meta.url).href);
   const root = resolve(values.root ?? ROOT);
   const timeout = integer(values['score-timeout'], 'score-timeout');
   const maxContextBytes = integer(values['max-context-bytes'], 'max-context-bytes');
@@ -46,4 +43,4 @@ export async function main(argv: string[] = process.argv.slice(2)) {
 }
 
 const directory = process.env.AVA_AGENT_BENCHMARK === 'spider2lite' ? process.env.AVA_AGENT_EVAL_DIR : undefined;
-export default directory ? createEvals(directory, 'spider2lite', writeResult) : [];
+export default directory ? await createEvals(directory, 'spider2lite', writeResult) : [];

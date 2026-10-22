@@ -2,21 +2,21 @@ Evaluating AVA’s ability to turn data questions into reliable answers. [View e
 
 ## Context
 
-<Callout>
+<Callout icon="🤔">
   **How does the information available to a model affect its answers?** These evaluations examine answer accuracy and per-question cost using **GLM-5.1**, AVA Workflow, DuckDB, and Direct.
 </Callout>
 
 <div className="docs-benchmark-overview">
 
-| Evaluation focus | Raw data | With Semantic | Gain |
-| ---------------- | -------: | ------------: | ---: |
-| Tabular Q&A<br />DataBench<sup><a href="#dataset-databench" aria-label="Dataset note 1: DataBench">[1]</a></sup> | 83.51% | <span role="img" aria-label="Highest accuracy" style={{ color: '#a16207' }}>★</span> **93.01%** | <span style={{ color: '#b91c1c' }}>+9.50 pp</span> |
-| Complex SQL · SQLite<br />Spider2-Lite<sup><a href="#dataset-spider2lite" aria-label="Dataset note 3: Spider2-Lite">[3]</a></sup> | — | Pending | — |
+| Evaluation focus | Raw data | With Schema | With Semantic |
+| ---------------- | -------: | ----------: | ------------: |
+| Tabular Q&A<br />DataBench<sup><a href="#dataset-databench" aria-label="Dataset note 1: DataBench">[1]</a></sup> | 83.51% | 84.18% <span style={{ color: '#b91c1c' }}>(+0.67 pp)</span> | <span role="img" aria-label="Highest accuracy" style={{ color: '#a16207' }}>★</span> **93.01%** <span style={{ color: '#b91c1c' }}>(+9.50 pp)</span> |
+| Complex SQL · SQLite<br />Spider2-Lite<sup><a href="#dataset-spider2lite" aria-label="Dataset note 3: Spider2-Lite">[3]</a></sup> | 25.93% | 33.33% <span style={{ color: '#b91c1c' }}>(+7.41 pp)</span> | <span role="img" aria-label="Highest accuracy" style={{ color: '#a16207' }}>★</span> **80.74%** <span style={{ color: '#b91c1c' }}>(+54.81 pp)</span> |
 
 </div>
 
 <details className="my-4 rounded-lg border border-[color:var(--docs-border)] px-4">
-<summary className="cursor-pointer py-3 font-medium text-[color:var(--docs-ink)]">DataBench · detailed results</summary>
+<summary className="cursor-pointer py-3 font-medium text-[color:var(--docs-ink)]">DataBench · Context comparison</summary>
 
 | Context | Correct | Accuracy | Tokens / question | Time / question |
 | ------- | ------: | -------: | ----------------: | --------------: |
@@ -24,27 +24,26 @@ Evaluating AVA’s ability to turn data questions into reliable answers. [View e
 | Schema + Profile | 1,506 | 84.18% <span style={{ color: '#b91c1c' }}>(+0.67 pp)</span> | 1,990 | 2.08 s |
 | Semantic | 1,664 | <span role="img" aria-label="Highest accuracy" style={{ color: '#a16207' }}>★</span> **93.01%** <span style={{ color: '#b91c1c' }}>(+9.50 pp)</span> | 3,288 | 1.66 s |
 
-Parentheses show **percentage-point gains over raw data**. Profile supplies statistics; Semantic adds business definitions to Schema + Profile. All queries use the full table.
+<p style={{ color: 'var(--docs-muted)', fontSize: '12px' }}>Single-table Q&amp;A covering filtering, aggregation, and sorting. With Schema adds structure and statistics; With Semantic adds business definitions. All queries use complete data.</p>
 
 </details>
 
 <details className="my-4 rounded-lg border border-[color:var(--docs-border)] px-4">
-<summary className="cursor-pointer py-3 font-medium text-[color:var(--docs-ink)]">Spider2-Lite SQLite subset · detailed results</summary>
-
-Profile and Semantic results are pending.
+<summary className="cursor-pointer py-3 font-medium text-[color:var(--docs-ink)]">Spider2-Lite (SQLite) · Context comparison</summary>
 
 | Context | Correct | Accuracy | Tokens / question | Time / question |
 | ------- | ------: | -------: | ----------------: | --------------: |
-| Schema + Profile | — | Pending | — | — |
-| Semantic | — | Pending | — | — |
+| Raw data (headers + first 3 rows per table) | 35 | 25.93% (baseline) | 4,057 | 12.93 s |
+| With Schema (Schema + Profile) | 45 | 33.33% <span style={{ color: '#b91c1c' }}>(+7.41 pp)</span> | 20,945 | 11.89 s |
+| With Semantic | 109 | <span role="img" aria-label="Highest accuracy" style={{ color: '#a16207' }}>★</span> **80.74%** <span style={{ color: '#b91c1c' }}>(+54.81 pp)</span> | 23,705 | 13.33 s |
 
-The previous Direct run with Profile scored **27.41%** (37/135).
+<p style={{ color: 'var(--docs-muted)', fontSize: '12px' }}>Complex SQL across multiple tables, using supplied external knowledge. With Schema adds structure and statistics; With Semantic adds business definitions. All queries use complete data. Semantic uses reference-assisted in-sample calibration. All 135 questions count, including 9 missing answers in the Semantic run. <a href="https://github.com/antvis/AVA/blob/ai/evals/reports/2026-10-22-spider2lite-glm-5.1-duckdb-direct-schema-profile-semantic.json">Final report</a>.</p>
 
 </details>
 
 ## Strategy
 
-<Callout>
+<Callout icon="🤔">
   **How does the analysis strategy affect answer quality?** Compare [Direct, Loop, and Subset](/documentation/analysis/strategies/) on tabular and database tasks.
 </Callout>
 
@@ -88,10 +87,10 @@ See [Agent Skill](/documentation/agent-skill/) for the agent workflow.
 | Model | Direct | Loop | Subset |
 | ----- | -----: | ---: | -----: |
 | GLM-5.1 | 63.10% | 65.84% | — |
-| GLM-5.2 | 65.38% | <span role="img" aria-label="Second-highest accuracy">🥈</span> 67.14% | — |
-| GLM-5.3 | <span role="img" aria-label="Highest accuracy">🥇</span> 68.12% | — | — |
+| GLM-5.2 | 65.38% | 67.14% | — |
+| GLM-5.3 | <span role="img" aria-label="Highest accuracy" style={{ color: '#a16207' }}>★</span> 68.12% | — | — |
 | Kimi-K2.5 | 61.34% | 59.00% | — |
-| Kimi-K3 | <span role="img" aria-label="Third-highest accuracy">🥉</span> 66.10% | 64.73% | — |
+| Kimi-K3 | 66.10% | 64.73% | — |
 
 ## Dataset notes
 

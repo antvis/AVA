@@ -1,6 +1,7 @@
-const { resolve } = require('node:path');
+import { resolve } from 'node:path';
+import { pathToFileURL } from 'node:url';
 
-const { readCsv } = require('./results');
+import { readCsv } from './results.js';
 
 const datasets = new Map();
 const metrics = new Map();
@@ -24,8 +25,9 @@ function registerPlugin(plugin) {
   return plugin;
 }
 
-function loadPlugin(path) {
-  const exported = require(resolve(path));
+async function loadPlugin(path) {
+  const namespace = await import(pathToFileURL(resolve(path)).href);
+  const exported = namespace.default ?? namespace;
   const plugins = Array.isArray(exported) ? exported : [exported.default ?? exported];
   return plugins.map(registerPlugin);
 }
@@ -110,7 +112,7 @@ async function evaluate({ samples, predictions, metricNames }) {
   };
 }
 
-module.exports = {
+export {
   evaluate,
   getDataset,
   loadPlugin,
