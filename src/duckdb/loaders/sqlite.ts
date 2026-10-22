@@ -1,5 +1,5 @@
 /** Read a local SQLite database through DuckDB's official SQLite extension. */
-import { dirname, resolve } from 'node:path';
+import { resolve } from 'node:path';
 
 import { sqlIdentifier, sqlStringLiteral, sqlUnionAll } from '../../util/sql';
 import { rowObjects2Schema } from '../../util/schema';
@@ -195,7 +195,8 @@ export async function loadSQLite(options: SQLiteSourceOptions): Promise<LoadedSo
       }
       return schema;
     },
-    allowedDirectories: [dirname(filePath)],
+    allowedDirectories: [],
+    allowedPaths: [filePath],
     // The engine closes the attached database when its connection is disposed.
     cleanup: async () => {},
   };

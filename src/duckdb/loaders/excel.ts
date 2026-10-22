@@ -4,7 +4,7 @@
  * https://duckdb.org/docs/current/core_extensions/excel
  */
 
-import { dirname } from 'node:path';
+import { resolve } from 'node:path';
 
 import AdmZip from 'adm-zip';
 import { SaxesParser } from 'saxes';
@@ -47,7 +47,7 @@ export async function loadExcel(options: ExcelSourceOptions): Promise<LoadedSour
 
   // Remote file — download to a temp file first (DuckDB stays offline)
   const isRemote = /^https?:\/\//.test(sourcePath);
-  const filePath = isRemote ? await downloadToTempFile(sourcePath, 'xlsx', headers) : sourcePath;
+  const filePath = isRemote ? await downloadToTempFile(sourcePath, 'xlsx', headers) : resolve(sourcePath);
   const cleanup = isRemote ? () => removeTempFile(filePath) : noopCleanup;
 
   let sheetNames: string[] = [];
@@ -80,7 +80,8 @@ export async function loadExcel(options: ExcelSourceOptions): Promise<LoadedSour
       return sheetNames;
     },
     getSchema: (conn) => getDuckDBSchema(conn, sheetNames),
-    allowedDirectories: [dirname(filePath)],
+    allowedDirectories: [],
+    allowedPaths: [filePath],
     cleanup,
   };
 }

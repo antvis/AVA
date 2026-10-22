@@ -7,7 +7,7 @@
 
 import * as fs from 'node:fs/promises';
 import * as os from 'node:os';
-import { dirname, join } from 'node:path';
+import { join, resolve } from 'node:path';
 
 import { READ_FN, escapeSql, serializeOptions, sqlStringLiteral } from '../../util/sql';
 
@@ -54,17 +54,25 @@ function isExtendedCSVEncoding(format: FileFormat, encoding?: string): boolean {
 /**
  * Build a LoadedSource exposing a file as `data`. JSON is parsed into a typed
  * table once; CSV/Parquet views read lazily, so those files must outlive the engine.
- * The file's directory is whitelisted so the engine can still read it after hardening.
+ * Only the source file(s) are allowed after hardening.
  * `options` carries extra DuckDB reader options (applied to CSV and JSON readers).
  */
 export function fileSource(
-  path: string,
+  sourcePath: string,
   format: FileFormat,
   cleanup: () => Promise<void>,
   options?: CSVReadOptions | JSONReadOptions
 ): LoadedSource {
+  const isRemote = /^https?:\/\//i.test(sourcePath);
+  const path = isRemote ? sourcePath : resolve(sourcePath);
+  const allowedPaths = [path];
   return {
     register: async (conn) => {
+      if (!isRemote && /[*?[]/.test(path)) {
+        const files = await conn.runAndReadAll('SELECT file FROM glob($1)', [path]);
+        // The pattern permits enumeration; each matched file needs its own permission.
+        allowedPaths.push(...files.getRowObjectsJson().map((row) => String(row.file)));
+      }
       if (isExtendedCSVEncoding(format, options && 'encoding' in options ? options.encoding : undefined)) {
         // Auto-install/load is disabled; prepare extended encodings before access is locked.
         await conn.run('INSTALL encodings');
@@ -78,7 +86,8 @@ export function fileSource(
       return ['data'];
     },
     getSchema: (conn) => getDuckDBSchema(conn, ['data']),
-    allowedDirectories: [dirname(path)],
+    allowedDirectories: [],
+    allowedPaths,
     cleanup,
   };
 }
@@ -106,15 +115,15 @@ export function createFileLoader<T extends FileLoaderOptions>(format: FileFormat
   return async (loaderOptions: T): Promise<LoadedSource> => {
     const { path: sourcePath, headers, options } = loaderOptions;
     if (!/^https?:\/\//i.test(sourcePath)) {
-      return fileSource(sourcePath, format, noopCleanup, options);
+      const path = resolve(sourcePath);
+      const isDirectory = format === 'parquet' && (await fs.stat(path).catch(() => null))?.isDirectory();
+      return fileSource(isDirectory ? join(path, '**', '*.parquet') : path, format, noopCleanup, options);
     }
     const url = new URL(sourcePath);
     if (url.username || url.password) throw new Error('Use headers instead of credentials in an HTTP(S) source URL');
     const source = fileSource(sourcePath, format, noopCleanup, options);
     return {
       ...source,
-      allowedDirectories: [],
-      allowedPaths: [sourcePath],
       register: async (conn) => {
         await conn.run('INSTALL httpfs');
         await conn.run('LOAD httpfs');

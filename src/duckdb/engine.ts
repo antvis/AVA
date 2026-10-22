@@ -102,8 +102,8 @@ export class DuckDBEngine implements AnalysisEngine {
   }
 
   /**
-   * Harden the session after the data source is registered: whitelist the data
-   * file's directories, then disable further external access and lock the
+   * Harden the session after the data source is registered: allow the source
+   * paths, then disable further external access and lock the
    * configuration so LLM-generated SQL cannot read arbitrary files or undo it.
    */
   private async restrictAccess(
@@ -117,10 +117,9 @@ export class DuckDBEngine implements AnalysisEngine {
     if (allowedPaths.length > 0) {
       await conn.run(`SET allowed_paths = [${allowedPaths.map(sqlStringLiteral).join(', ')}]`);
     }
-    // en Postgres catalog, external access must be disabled before disabling the local filesystem; configuration lock must be set last.
-    // Keep only the source directories/URLs accessible after registration.
+    // Disable external access before filesystems; lock configuration last.
     await conn.run('SET enable_external_access = false');
-    if (allowedDirectories.length === 0) {
+    if (allowedDirectories.length === 0 && allowedPaths.every((path) => /^https?:\/\//i.test(path))) {
       // No local data file to read — disable the local filesystem entirely.
       await conn.run("SET disabled_filesystems = 'LocalFileSystem'");
     }

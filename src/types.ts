@@ -530,11 +530,10 @@ export interface LoadedSource {
   /** */
   getSchema: (conn: DuckDBConnection) => Promise<Schema>;
   /**
-   * Directories the engine whitelists for file access after registering
-   * (the data file's directory for file sources; empty for in-memory/remote sources).
+   * Directories explicitly allowed after registration; empty for built-in loaders.
    */
   allowedDirectories: string[];
-  /** Exact remote file URLs allowed after external access is disabled. */
+  /** Exact source file paths/URLs (and selected glob patterns) allowed after registration. */
   allowedPaths?: string[];
   /** Release resources (temp files, attached databases, tunnels) */
   cleanup: () => Promise<void>;
