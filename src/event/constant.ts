@@ -34,6 +34,8 @@ export enum ExecutionEventType {
   SCHEMA_END = 'schemaend',
   PROFILE_START = 'profilestart',
   PROFILE_END = 'profileend',
+  SEMANTIC_START = 'semanticstart',
+  SEMANTIC_END = 'semanticend',
   ANALYZE_START = 'analyzestart',
   ANALYZE_END = 'analyzeend',
   VISUALIZE_START = 'visualizestart',

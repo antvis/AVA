@@ -47,7 +47,7 @@ To migrate an older engine, move discovery out of `load()` into `schema()`, chan
 | `fence`               | `string` | Yes      | Markdown code-fence language, such as `sql` or `python`. |
 | `instructions`        | `string` | No       | Available bindings and result conventions.               |
 
-`DataModel` combines structural metadata, optional statistics, and semantic annotations. AVA assembles it from cached schema/profile metadata when analysis, translation, or suggestions need it. Engines receive the model directly, without a context wrapper.
+`DataModel` combines structural metadata, optional statistics, and semantic annotations. AVA assembles it from cached `Schema`, `Profile`, and `Semantic` metadata when analysis, translation, or suggestions need it. Engines receive the model directly, without a context wrapper.
 
 | `DataModel` field | Type             | Required | Meaning                                                        |
 | ----------------- | ---------------- | -------- | -------------------------------------------------------------- |

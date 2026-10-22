@@ -3,7 +3,7 @@ import { z } from 'zod';
 import { escapeMarkdown, markdownTable } from './markdown';
 import { jsonValue, schemaStructure } from './schema';
 
-import type { Column, DataModel, Model, Profile, Schema } from '../types';
+import type { DataModel, Model, Profile, Properties, Schema, Semantic } from '../types';
 
 const name = z.string().min(1);
 const properties = z.record(jsonValue);
@@ -15,6 +15,7 @@ const column = z
     type: name,
     relationship: name.optional(),
     isCalculated: z.boolean().optional(),
+    isPrimaryKey: z.boolean().optional(),
     notNull: z.boolean().optional(),
     expression: z.string().nullable().optional(),
     metrics: properties.optional(),
@@ -26,24 +27,25 @@ const tableReference = z
   .object({ catalog: z.string().optional(), schema: z.string().optional(), table: name })
   .catchall(jsonValue);
 
-const model = z
+const modelStructure = z
   .object({
     name,
     columns: z.array(column).optional(),
     primaryKey: key.optional(),
     uniqueKeys: z.array(key).optional(),
+    dialect: name.optional(),
     metrics: properties.optional(),
     properties: properties.optional(),
     refSql: name.optional(),
     baseObject: name.optional(),
     tableReference: tableReference.optional(),
   })
-  .strict()
-  .refine(
-    (value) =>
-      [value.refSql, value.baseObject, value.tableReference].filter((source) => source !== undefined).length === 1,
-    'A model must specify exactly one of refSql, baseObject or tableReference'
-  );
+  .strict();
+
+const hasSingleSource = (value: z.infer<typeof modelStructure>) =>
+  [value.refSql, value.baseObject, value.tableReference].filter((source) => source !== undefined).length === 1;
+const modelSourceMessage = 'A model must specify exactly one of refSql, baseObject or tableReference';
+const model = modelStructure.refine(hasSingleSource, modelSourceMessage);
 
 const relationship = z
   .object({
@@ -55,17 +57,51 @@ const relationship = z
   })
   .catchall(jsonValue);
 
-const view = z.object({ name, statement: name, properties: properties.optional() }).catchall(jsonValue);
+const view = z
+  .object({ name, statement: name, dialect: name.optional(), properties: properties.optional() })
+  .catchall(jsonValue);
 
-/** Validate and copy metadata without stripping semantic extensions or observations. */
-export const dataModelMetadataSchema = z
+const measure = z
+  .object({ name, expression: name, type: name, description: z.string().optional(), properties: properties.optional() })
+  .strict();
+
+const cube = z
   .object({
+    name,
+    baseObject: name,
+    measures: z.array(measure).nonempty(),
+    dimensions: z.array(measure).optional(),
+    timeDimensions: z.array(measure).optional(),
+    hierarchies: z.record(z.array(name).nonempty()).optional(),
+    properties: properties.optional(),
+  })
+  .strict();
+
+const dataModelStructure = z
+  .object({
+    description: z.string().optional(),
     models: z.array(model).optional(),
     relationships: z.array(relationship).optional(),
     views: z.array(view).optional(),
+    cubes: z.array(cube).optional(),
     properties: properties.optional(),
   })
-  .strict() as unknown as z.ZodType<DataModel>;
+  .strict();
+
+/** Validate and copy metadata without stripping semantic extensions or observations. */
+export const dataModelMetadataSchema = dataModelStructure as unknown as z.ZodType<DataModel>;
+
+/** Semantic definitions exclude model and column profiling metrics. */
+export const semanticMetadataSchema = dataModelStructure.extend({
+  models: z
+    .array(
+      modelStructure
+        .omit({ metrics: true })
+        .extend({ columns: z.array(column.omit({ metrics: true })).optional() })
+        .refine(hasSingleSource, modelSourceMessage)
+    )
+    .optional(),
+}) as unknown as z.ZodType<Semantic>;
 
 const dataModelInputSchema = z.object({
   schema: schemaStructure.strict(),
@@ -93,7 +129,8 @@ const dataModelInputSchema = z.object({
     })
     .strict()
     .optional(),
-}) as unknown as z.ZodType<{ schema: Schema; profile?: Profile }>;
+  semantic: semanticMetadataSchema.optional(),
+}) as unknown as z.ZodType<{ schema: Schema; profile?: Profile; semantic?: Semantic }>;
 
 function indexByName<T extends { name: string }>(values: T[], label: string): Map<string, T> {
   const index = new Map<string, T>();
@@ -107,13 +144,13 @@ function indexByName<T extends { name: string }>(values: T[], label: string): Ma
   return index;
 }
 
-/** Build an independent snapshot; partial profiles enrich only the named models and columns. */
-export function buildDataModel(input: { schema: Schema; profile?: Profile }): DataModel {
-  const { schema, profile } = dataModelInputSchema.parse(input);
+/** Build an independent snapshot, enriching schema and observations with named semantic definitions. */
+export function buildDataModel(input: { schema: Schema; profile?: Profile; semantic?: Semantic }): DataModel {
+  const { schema, profile, semantic } = dataModelInputSchema.parse(input);
 
-  const models = indexByName<Model & { columns: Column[] }>(schema.models, 'schema model');
+  const models = indexByName<Model>(schema.models, 'schema model');
   const columns = new Map(
-    [...models].map(([name, model]) => [name, indexByName(model.columns, `schema column in model "${name}"`)])
+    [...models].map(([name, model]) => [name, indexByName(model.columns ?? [], `schema column in model "${name}"`)])
   );
 
   for (const observation of indexByName(profile?.models ?? [], 'profile model').values()) {
@@ -131,14 +168,48 @@ export function buildDataModel(input: { schema: Schema; profile?: Profile }): Da
     }
   }
 
-  return dataModelMetadataSchema.parse(schema);
+  for (const definition of indexByName(semantic?.models ?? [], 'semantic model').values()) {
+    const current = models.get(definition.name);
+    const model = { ...current, ...definition } as Model;
+    if (definition.refSql !== undefined || definition.baseObject !== undefined) delete model.tableReference;
+    if (current?.properties || definition.properties) {
+      model.properties = { ...current?.properties, ...definition.properties };
+    }
+
+    if (definition.columns) {
+      const fields = indexByName(current?.columns ?? [], `schema column in model "${definition.name}"`);
+      for (const field of indexByName(definition.columns, `semantic column in model "${definition.name}"`).values()) {
+        const original = fields.get(field.name);
+        const column = { ...original, ...field };
+        if (original?.properties || field.properties) {
+          column.properties = { ...original?.properties, ...field.properties };
+        }
+        fields.set(field.name, column);
+      }
+      model.columns = [...fields.values()];
+    }
+
+    models.set(definition.name, model);
+  }
+
+  return dataModelMetadataSchema.parse({ ...schema, ...semantic, models: [...models.values()] });
 }
 
-/** Render model metadata as Markdown, keeping optional attributes with their owning objects. */
-export function stringifyDataModel(dataModel: DataModel): string {
+/** Describe each semantic object separately, retaining source mappings, properties and observations. */
+export function stringifyDataModel({ description, ...dataModel }: DataModel): string {
   const attributes = (value: object): string =>
     markdownTable(Object.entries(value).map(([key, value]) => ({ Attribute: key, Value: value })));
+  const metadata = ({ properties, metrics, ...value }: { properties?: Properties; metrics?: Properties }): string =>
+    [
+      attributes(value),
+      properties && Object.keys(properties).length ? `Properties:\n\n${attributes(properties)}` : '',
+      metrics && Object.keys(metrics).length ? `Metrics:\n\n${attributes(metrics)}` : '',
+    ]
+      .filter(Boolean)
+      .join('\n\n');
   const sections = ['# Data Model'];
+
+  if (description !== undefined) sections.push(attributes({ description }));
 
   if (dataModel.properties && Object.keys(dataModel.properties).length) {
     sections.push('## Properties', attributes(dataModel.properties));
@@ -146,14 +217,71 @@ export function stringifyDataModel(dataModel: DataModel): string {
 
   if (dataModel.models?.length) {
     sections.push('## Models');
-    for (const { name, columns, ...metadata } of dataModel.models) {
-      sections.push(`### ${escapeMarkdown(name)}`, attributes(metadata));
-      if (columns?.length) sections.push('#### Columns', markdownTable(columns));
+    for (const { name, columns, ...model } of dataModel.models) {
+      sections.push(`### Model: ${escapeMarkdown(name)}`, metadata(model));
+      if (columns?.length) {
+        sections.push('#### Columns');
+        for (const { name, type, ...column } of columns) {
+          const summary = [
+            `${name} (${type})`,
+            column.isCalculated && column.expression ? `[calculated: ${column.expression}]` : '',
+            column.relationship ? `[relationship: ${column.relationship}]` : '',
+            column.notNull ? 'NOT NULL' : '',
+            column.isPrimaryKey ? 'PRIMARY KEY' : '',
+          ]
+            .filter(Boolean)
+            .join(' ');
+          sections.push(`- ${escapeMarkdown(summary)}`, metadata(column));
+        }
+      }
     }
   }
 
-  if (dataModel.relationships?.length) sections.push('## Relationships', markdownTable(dataModel.relationships));
-  if (dataModel.views?.length) sections.push('## Views', markdownTable(dataModel.views));
+  if (dataModel.relationships?.length) {
+    sections.push('## Relationships');
+    for (const { name, ...relationship } of dataModel.relationships) {
+      const [from, to] = relationship.models;
+      sections.push(
+        `### Relationship: ${escapeMarkdown(name)}`,
+        escapeMarkdown(`${from} → ${to} (${relationship.joinType})`),
+        metadata(relationship)
+      );
+    }
+  }
 
+  if (dataModel.views?.length) {
+    sections.push('## Views');
+    for (const { name, ...view } of dataModel.views) {
+      sections.push(`### View: ${escapeMarkdown(name)}`, metadata(view));
+    }
+  }
+
+  if (dataModel.cubes?.length) {
+    sections.push('## Cubes');
+    for (const { name, measures, dimensions, timeDimensions, hierarchies, ...cube } of dataModel.cubes) {
+      sections.push(`### Cube: ${escapeMarkdown(name)}`, metadata(cube));
+      for (const [label, fields] of [
+        ['Measures', measures],
+        ['Dimensions', dimensions],
+        ['Time dimensions', timeDimensions],
+      ] as const) {
+        if (!fields?.length) continue;
+        sections.push(`#### ${label}`);
+        for (const { name, type, ...field } of fields) {
+          sections.push(`- ${escapeMarkdown(`${name} (${type})`)}`, metadata(field));
+        }
+      }
+      if (hierarchies && Object.keys(hierarchies).length) {
+        sections.push(
+          '#### Hierarchies',
+          ...Object.entries(hierarchies).map(
+            ([name, levels]) => `- ${escapeMarkdown(`${name}: ${levels.join(' → ')}`)}`
+          )
+        );
+      }
+    }
+  }
+
+  // TODO: Above 30,000 characters, retrieve question-relevant context with embeddings; keep full context for now.
   return sections.filter(Boolean).join('\n\n');
 }

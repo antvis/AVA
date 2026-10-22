@@ -586,6 +586,9 @@ export type MetricConfig =
 /** Schema discovery currently has no configurable options. */
 export type SchemaOptions = Record<string, never>;
 
+/** Semantic metadata currently has no configurable options. */
+export type SemanticOptions = Record<string, never>;
+
 /**
  * Options for a profile run.
  */
@@ -690,6 +693,8 @@ export interface Column {
   relationship?: string;
   /** Marks a column derived from an expression; execution is the engine's responsibility. */
   isCalculated?: boolean;
+  /** Marks this column as part of the model's declared primary key. */
+  isPrimaryKey?: boolean;
   /** Declared non-null constraint; omission is unspecified, not inferred from observed null counts. */
   notNull?: boolean;
   /** SQL mapping or calculation over the model source; null or omission supplies no expression. */
@@ -727,6 +732,8 @@ export type Model = {
   primaryKey?: PrimaryKey;
   /** Alternative unique column sets; each array is one composite key, not several independent keys. */
   uniqueKeys?: PrimaryKey[];
+  /** SQL dialect of refSql; omission uses the execution context's dialect. */
+  dialect?: string;
   /**
    * Model-wide observations keyed by metric name, e.g. row_count.
    * Missing means uncomputed/omitted; null means no usable aggregate; zero and [] are actual results.
@@ -734,7 +741,9 @@ export type Model = {
   metrics?: Record<string, JsonValue>;
   /** Model-level context such as business descriptions or source annotations. */
   properties?: Properties;
-} & (
+} & ModelSource;
+
+type ModelSource =
   | {
       /** SQL defining the model's source rows, before its column mappings and calculations. */
       refSql: string;
@@ -758,8 +767,7 @@ export type Model = {
       baseObject?: never;
       /** Physical table or view to resolve through the engine's connection. */
       tableReference: TableReference;
-    }
-);
+    };
 
 /** Relationship cardinality, not a SQL join operator such as LEFT or INNER. */
 export type JoinType = 'ONE_TO_ONE' | 'ONE_TO_MANY' | 'MANY_TO_ONE' | 'MANY_TO_MANY';
@@ -784,14 +792,43 @@ export interface View {
   name: string;
   /** SQL defining the view's result; declaring it here does not execute or materialize it. */
   statement: string;
+  /** SQL dialect of the statement; omission uses the execution context's dialect. */
+  dialect?: string;
   /** Context describing the view's purpose or business conventions. */
   properties?: Properties;
   /** Additional attributes with consumer-defined meaning; validate unknown values before use. */
   [key: string]: unknown;
 }
 
+/** A reusable aggregation, separate from observed profiling metrics. */
+export interface Measure extends Pick<Column, 'name' | 'type' | 'properties'> {
+  /** SQL aggregation over the cube's base object, e.g. SUM(amount). */
+  expression: string;
+  description?: string;
+}
+
+/** A grouping expression over a cube's base object. */
+export type CubeDimension = Measure;
+
+/** A date/time grouping expression; granularity is chosen at query time. */
+export type TimeDimension = CubeDimension;
+
+/** A semantic aggregation over a model or view. */
+export interface Cube {
+  name: string;
+  /** Name of the model or view supplying the rows to aggregate. */
+  baseObject: string;
+  measures: [Measure, ...Measure[]];
+  dimensions?: CubeDimension[];
+  timeDimensions?: TimeDimension[];
+  /** Ordered dimension names from coarsest to finest for each drill-down path. */
+  hierarchies?: Record<string, [string, ...string[]]>;
+  properties?: Properties;
+}
+
 /** Schema, profiling and semantics enrich the same data model. */
 export interface DataModel {
+  description?: string;
   /** Context shared across models; per-model and per-column metadata stays with its owning object. */
   properties?: Properties;
   /** Logical datasets, source mappings, columns and their computed observations. */
@@ -800,6 +837,16 @@ export interface DataModel {
   relationships?: Relationship[];
   /** Reusable named queries; discovering a database view does not automatically supply its SQL definition. */
   views?: View[];
+  /** Reusable business aggregations, dimensions and drill-down paths. */
+  cubes?: Cube[];
+}
+
+/** Business definitions supplied independently of catalog discovery and profiling observations. */
+export interface Semantic extends Pick<DataModel, 'description' | 'properties' | 'relationships' | 'views' | 'cubes'> {
+  models?: (Omit<Model, 'columns' | 'metrics'> &
+    ModelSource & {
+      columns?: Omit<Column, 'metrics'>[];
+    })[];
 }
 
 /** Catalog-discoverable structure; excludes observations and application-defined semantics. */

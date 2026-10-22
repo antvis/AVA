@@ -40,6 +40,7 @@ These inherited methods are synchronous. `on()`, `once()`, and `off()` return th
 | Source loading   | `sourcestart` / `sourceend`               |
 | Schema discovery | `schemastart` / `schemaend`               |
 | Profiling        | `profilestart` / `profileend`             |
+| Semantic setter  | `semanticstart` / `semanticend`           |
 | Analysis         | `analyzestart` / `analyzeend`             |
 | Translation      | `translatestart` / `translateend`         |
 | Query execution  | `querystart` / `queryend`                 |
@@ -57,4 +58,6 @@ Replacing a source disposes its engine and clears metadata. `dispose()` clears s
 
 Translation events can include `query`, `attempt`, and `dsl`; query events include the DSL or result. Reasoning events include the loop step and action.
 
-Schema and profiling failures emit an end event with `data.error` and reject the method’s Promise.
+`semantic()` emits its event pair when a setter is supplied; reading saved definitions emits no events.
+
+Schema, profiling, and semantic setter failures emit an end event with `data.error` and reject the method’s Promise.

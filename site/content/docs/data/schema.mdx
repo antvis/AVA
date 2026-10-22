@@ -1,93 +1,109 @@
-`Schema` describes the structure of your data. `Profile` contains independent statistics such as row counts, minimums, and averages. Both belong to the currently loaded source.
+Start with this small order table. The [Define data semantics](/documentation/data/semantic/) guide uses these same six rows.
 
-## Read the schema
+| order_id | region | status | amount | refund_amount | ordered_at |
+| --- | --- | --- | --- | --- | --- |
+| 1 | East | paid | 120 | 20 | 2026-01-03 |
+| 2 | East | refunded | 80 | 80 | 2026-01-04 |
+| 3 | East | pending | 200 | 0 | 2026-01-05 |
+| 4 | West | paid | 90 | 30 | 2026-01-06 |
+| 5 | East | paid | 50 | `null` | 2026-01-07 |
+| 6 | West | cancelled | 500 | 0 | 2026-01-08 |
 
-Load a source, then ask AVA for its structure:
+<Callout>
+  **AVA discovers structure and computes statistics. You add business meaning:** what counts as revenue and how refunds should be handled.
+</Callout>
+
+<details>
+<summary>Load this table as inline JSON</summary>
+
+With `ava` configured, load the rows below. The default DuckDB engine exposes them as a model named `data`.
 
 ```typescript
-await ava.source({
-  type: 'json',
-  options: { data: [{ region: 'East', revenue: 120 }] },
-});
+const orders = [
+  { order_id: 1, region: 'East', status: 'paid', amount: 120, refund_amount: 20, ordered_at: '2026-01-03' },
+  { order_id: 2, region: 'East', status: 'refunded', amount: 80, refund_amount: 80, ordered_at: '2026-01-04' },
+  { order_id: 3, region: 'East', status: 'pending', amount: 200, refund_amount: 0, ordered_at: '2026-01-05' },
+  { order_id: 4, region: 'West', status: 'paid', amount: 90, refund_amount: 30, ordered_at: '2026-01-06' },
+  { order_id: 5, region: 'East', status: 'paid', amount: 50, refund_amount: null, ordered_at: '2026-01-07' },
+  { order_id: 6, region: 'West', status: 'cancelled', amount: 500, refund_amount: 0, ordered_at: '2026-01-08' },
+];
 
+await ava.source({ type: 'json', options: { data: orders } });
+```
+
+</details>
+
+## Schema: the structure AVA discovers
+
+```typescript
 const schema = await ava.schema();
-console.log(schema.models);
+console.log(schema.models[0]);
 ```
 
-`source()` only loads the data. The first `schema()` call reads the structure through the engine and saves it; later calls return the saved schema. Analysis and profiling also obtain the schema when needed.
+For this table, the discovered model is:
 
-## Schema structure
+```json
+{
+  "name": "data",
+  "tableReference": { "catalog": "memory", "schema": "main", "table": "data" },
+  "columns": [
+    { "name": "order_id", "type": "BIGINT", "notNull": false },
+    { "name": "region", "type": "VARCHAR", "notNull": false },
+    { "name": "status", "type": "VARCHAR", "notNull": false },
+    { "name": "amount", "type": "BIGINT", "notNull": false },
+    { "name": "refund_amount", "type": "BIGINT", "notNull": false },
+    { "name": "ordered_at", "type": "DATE", "notNull": false }
+  ]
+}
+```
 
-| Property | Meaning |
-| --- | --- |
-| `models` | Tables or views available for queries |
-| `models[].name` | Table name |
-| `models[].columns.length` | Number of columns |
-| `models[].columns` | Column names, types, and optional nullability |
-| `models[].tableReference` | Source catalog, schema and table identifiers |
-| `models[].primaryKey`, `models[].uniqueKeys` | Declared primary and unique keys |
-| `views` | Named view queries |
-| `relationships` | Foreign-key relationships, when available |
+This is your automatically discovered structural starting point. You do not write it by hand. Types and source qualifiers depend on the engine; database sources may also expose declared keys and relationships. `notNull: false` means there is no declared non-null constraint, not that a null was found.
 
-The available details depend on the source and engine. A query result's `schema` describes only its output columns; it is not a source `Schema`.
+AVA also discovers schema when analysis needs it, so calling `schema()` yourself is optional.
 
-## Profile a dataset
-
-Call `profile()` to calculate statistics through the engine:
+## Profile: statistics AVA computes
 
 ```typescript
-const profile = await ava.profile({ metrics: ['row_count', 'mean'] });
-console.log(profile.models[0].metrics);
-console.log(profile.models[0].columns);
+const profile = await ava.profile({
+  metrics: ['row_count', 'null_count', 'min', 'max'],
+});
 ```
 
-Each call calculates fresh statistics and saves the returned profile. Analysis, translation, and suggestions can then use it. Profiling requires engine support and does not call an LLM.
+Among the results for the same table:
 
-## Select metrics
+| Observation | Where it appears in Profile | Value |
+| --- | --- | --- |
+| Number of rows | Model `metrics.row_count` | 6 |
+| Missing refunds | `refund_amount` column's `metrics.null_count` | 1 |
+| Smallest order amount | `amount` column's `metrics.min` | 50 |
+| Largest order amount | `amount` column's `metrics.max` | 500 |
 
-Omit options to use the default metrics, or pass `metrics` to choose your own set:
+<Callout>
+  **The maximum of 500 includes a cancelled order.** Profiling describes stored values; the rules for what counts as revenue belong in semantic definitions.
+</Callout>
+
+Profiling is optional, requires engine support, and can scan the data. It does not call an LLM. See [metric options](/documentation/reference/api/#metrics) for other statistics.
+
+## Semantic: the meaning you add
+
+The table contains paid, refunded, pending, and cancelled orders. Which should count as revenue? That is a rule you supply:
 
 ```typescript
-await ava.profile();
-await ava.profile({ metrics: ['min', 'max'] });
+await ava.semantic(undefined, () => ({
+  description: 'Amounts are USD. Revenue counts paid and refunded orders, subtracts refunds, and excludes pending and cancelled orders. A missing refund is zero.',
+  cubes: [{
+    name: 'sales',
+    baseObject: 'data',
+    measures: [{
+      name: 'net_revenue',
+      expression: "SUM(CASE WHEN status IN ('paid', 'refunded') THEN amount - COALESCE(refund_amount, 0) ELSE 0 END)",
+      type: 'DOUBLE',
+    }],
+    dimensions: [{ name: 'region', expression: 'region', type: 'VARCHAR' }],
+  }],
+}));
 ```
 
-The defaults are `row_count`, `null_count`, `distinct_count`, `top_values`, `min`, `max`, and `mean`. Additional built-in metrics include `duplicate_count`, `min_length`, `max_length`, `sum`, `stddev`, and `median`.
+`description` explains the business rule. The `sales` cube names its source (`data`), revenue calculation (`measures`), and region grouping (`dimensions`). The discovered columns remain available without repeating them; the cube guides query generation and does not create a database object.
 
-Metrics apply to compatible tables or columns. A supplied list replaces the defaults; `metrics: []` produces empty metric objects. See the [API reference](/documentation/reference/api/#profile) for metric options.
-
-## Profile format
-
-A profile matches the schema by model and column names and contains only observations:
-
-| Property | Meaning |
-| --- | --- |
-| `models[].metrics` | Table statistics, such as `row_count` |
-| `models[].columns[].metrics` | Column statistics, such as `mean` |
-| `models[].columns[].properties.logicalType` | Column category, such as `numeric` or `string` |
-
-A missing metric means it was not computed. It does not mean zero.
-
-## Supply metadata
-
-If you already have a schema or profile, pass a **setter** as the second argument. A setter is simply a function that returns the value you want AVA to use.
-
-Here, `savedSchema` and `savedProfile` are results you saved from earlier calls:
-
-```typescript
-await ava.schema(undefined, () => savedSchema);
-await ava.profile(undefined, () => savedProfile);
-```
-
-AVA uses the setter's return value instead of asking the engine. Omit the setter to use the normal engine behavior:
-
-```typescript
-await ava.schema();  // Read the saved schema, or discover it through the engine.
-await ava.profile(); // Calculate a fresh profile through the engine.
-```
-
-The first argument is options. `undefined` uses the default `{}`. If the setter needs options, it receives that same object as its argument. Schema currently has no configurable options.
-
-Setting a schema replaces the saved schema and clears the saved profile, so set the schema first when supplying both. Setting a profile replaces only the profile. AVA validates and copies each returned value; a thrown error or invalid value leaves the previous metadata unchanged.
-
-Use metadata that matches the loaded data. Loading another source or calling `dispose()` clears both saved values.
+Continue to [Define data semantics](/documentation/data/semantic/) for the full example and corresponding SQL result: **East 150 USD, West 60 USD**. Field formats, manual overrides, and update rules are in the [API reference](/documentation/reference/api/#schema).

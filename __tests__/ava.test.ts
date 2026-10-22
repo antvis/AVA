@@ -15,7 +15,7 @@ import * as memorySchema from '../src/util/schema';
 
 import { getLLMConfig, skipLLMTests } from './test-utils';
 
-import type { DataSourceConfig, Profile, Schema } from '../src';
+import type { DataSourceConfig, Profile, Schema, Semantic } from '../src';
 
 describe('AVA', () => {
   let ava: AVA;
@@ -449,6 +449,116 @@ describe('AVA metadata setters', () => {
   afterEach(() => vi.restoreAllMocks());
 
   it.each(['duckdb', 'javascript'])(
+    'supplies semantic definitions to analysis, translation and suggestions with %s',
+    async (type) => {
+      const ava = new AVA({ llm, engine: { type } });
+      try {
+        await ava.source(source);
+        const discover = vi.spyOn(ava.engine!, 'schema');
+        expect(await ava.semantic()).toEqual({});
+        const definitions: Semantic = {
+          description: 'Sales definitions',
+          properties: { currency: 'USD' },
+          models: [
+            {
+              ...schema.models[0],
+              properties: { description: 'Values' },
+              columns: [{ name: 'value', type: 'number', properties: { unit: 'USD' } }],
+            },
+          ],
+          relationships: [],
+          views: [{ name: 'positive_values', statement: 'SELECT * FROM data WHERE value > 0' }],
+          cubes: [
+            {
+              name: 'values',
+              baseObject: 'data',
+              measures: [{ name: 'total', expression: 'SUM(value)', type: 'DOUBLE' }],
+            },
+          ],
+        };
+        const expected = structuredClone(definitions);
+        const options = {};
+        const setter = vi.fn(() => definitions);
+        const onSemantic = vi.fn();
+        ava.on('semanticstart', onSemantic);
+        ava.on('semanticend', onSemantic);
+        expect(await ava.semantic(options, setter)).toEqual(expected);
+        expect(setter).toHaveBeenCalledExactlyOnceWith(options);
+        expect(discover).not.toHaveBeenCalled();
+        expect(onSemantic.mock.calls.map(([event]) => event)).toEqual([
+          { type: 'semanticstart', data: {} },
+          { type: 'semanticend', data: {} },
+        ]);
+        definitions.description = 'changed';
+        definitions.models[0].columns[0].properties.unit = 'changed';
+        expect(await ava.semantic()).toEqual(expected);
+        expect(onSemantic).toHaveBeenCalledTimes(2);
+
+        await ava.schema();
+        await ava.profile(undefined, () => profile);
+        const dsl =
+          type === 'duckdb'
+            ? 'SELECT SUM(value) AS total FROM data'
+            : 'const result = [{ total: stat.sum(data, "value") }];';
+        const getDSL = vi.spyOn(ava.engine!, 'getDSL').mockResolvedValue(dsl);
+        const suggest = vi.spyOn(suggestions, 'generateSuggestions').mockResolvedValue([]);
+        await ava.translate('Total');
+        const context = getDSL.mock.calls[0][1];
+        const snapshot = structuredClone(context);
+        expect(context).toMatchObject(expected);
+        expect(context.models[0].metrics).toEqual({ row_count: 2 });
+        expect(context.models[0].columns[0]).toMatchObject({
+          metrics: { mean: 3 },
+          properties: { logicalType: 'numeric', unit: 'USD' },
+        });
+        expect(
+          (await ava.analyze('Total', { includeSummary: false, strategy: { type: 'direct', maxRetries: 0 } })).data
+        ).toEqual([{ total: 6 }]);
+        expect(getDSL).toHaveBeenLastCalledWith('Total', context);
+        await ava.suggest();
+        expect(suggest).toHaveBeenCalledExactlyOnceWith(llm, context, 3);
+        await ava.profile({ metrics: ['sum'] });
+        await ava.translate('Total');
+        expect(getDSL.mock.calls.at(-1)[1].models[0].columns[0].metrics).toEqual({ sum: 6 });
+        expect(await ava.semantic()).toEqual(expected);
+
+        await ava.semantic(undefined, () => ({}));
+        await ava.translate('Total');
+        expect(getDSL.mock.calls.at(-1)[1]).not.toHaveProperty('cubes');
+        expect(getDSL.mock.calls[0][1]).toEqual(snapshot);
+      } finally {
+        await ava.dispose();
+      }
+    }
+  );
+
+  it('keeps semantic definitions when a setter throws or returns invalid metadata', async () => {
+    const ava = new AVA({ llm, engine: { type: 'javascript' } });
+    try {
+      await ava.source(source);
+      const setter = vi.fn(() => ({ description: 'Original' }));
+      await ava.semantic(undefined, setter);
+      expect(setter).toHaveBeenCalledExactlyOnceWith({});
+      const onEnd = vi.fn();
+      ava.on('semanticend', onEnd);
+      const error = new Error('setter failed');
+      await expect(
+        ava.semantic(undefined, () => {
+          throw error;
+        })
+      ).rejects.toBe(error);
+      await expect(
+        ava.semantic(undefined, () => ({ cubes: [{ name: 'invalid', measures: [] }] } as never))
+      ).rejects.toThrow();
+      expect(onEnd.mock.calls[0][0].data.error.message).toBe(error.message);
+      expect(onEnd.mock.calls[1][0].data.error.name).toBe('ZodError');
+      expect(await ava.semantic()).toEqual({ description: 'Original' });
+    } finally {
+      await ava.dispose();
+    }
+  });
+
+  it.each(['duckdb', 'javascript'])(
     'reuses an exported profile with %s and recomputes only on request',
     async (type) => {
       const original = new AVA({ llm, engine: { type } });
@@ -606,10 +716,14 @@ describe('AVA metadata setters', () => {
     try {
       await expect(ava.schema(undefined, () => schema)).rejects.toThrow('No data loaded');
       await expect(ava.profile(undefined, () => profile)).rejects.toThrow('No data loaded');
+      await expect(ava.semantic()).rejects.toThrow('No data loaded');
+      await expect(ava.semantic(undefined, () => ({}))).rejects.toThrow('No data loaded');
       await ava.source(source);
       await ava.schema(undefined, () => schema);
       await ava.profile(undefined, () => profile);
+      await ava.semantic(undefined, () => ({ description: 'Previous source' }));
       await ava.source(source);
+      expect(await ava.semantic()).toEqual({});
       const discover = vi.spyOn(ava.engine!, 'schema');
       expect(discover).not.toHaveBeenCalled();
       const getDSL = vi.spyOn(ava.engine!, 'getDSL').mockResolvedValue('const result = data;');
@@ -618,12 +732,23 @@ describe('AVA metadata setters', () => {
       expect(getDSL).toHaveBeenLastCalledWith('Rows', schema);
       await ava.schema(undefined, () => schema);
       await ava.profile(undefined, () => profile);
+      await ava.semantic(undefined, () => ({ description: 'Failed source' }));
       await expect(ava.source({ type: 'parquet', options: { path: 'unsupported.parquet' } })).rejects.toThrow();
       expect(ava.engine).toBeNull();
       await expect(ava.schema()).rejects.toThrow('No data loaded');
+      await ava.source(source);
+      expect(await ava.semantic()).toEqual({});
+      await ava.semantic(undefined, () => ({ description: 'Disposed source' }));
     } finally {
       await ava.dispose();
     }
     await expect(ava.profile(undefined, () => profile)).rejects.toThrow('No data loaded');
+    await expect(ava.semantic()).rejects.toThrow('No data loaded');
+    await ava.source(source);
+    try {
+      expect(await ava.semantic()).toEqual({});
+    } finally {
+      await ava.dispose();
+    }
   });
 });

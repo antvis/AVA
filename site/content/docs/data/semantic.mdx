@@ -1,0 +1,146 @@
+Suppose a user asks: **“Show revenue by region.”** Here is the order table behind that question, also used in [Inspect your data](/documentation/data/schema/):
+
+| order_id | region | status | amount | refund_amount | ordered_at |
+| --- | --- | --- | --- | --- | --- |
+| 1 | East | paid | 120 | 20 | 2026-01-03 |
+| 2 | East | refunded | 80 | 80 | 2026-01-04 |
+| 3 | East | pending | 200 | 0 | 2026-01-05 |
+| 4 | West | paid | 90 | 30 | 2026-01-06 |
+| 5 | East | paid | 50 | `null` | 2026-01-07 |
+| 6 | West | cancelled | 500 | 0 | 2026-01-08 |
+
+The structure tells AVA that `amount` and `refund_amount` are numbers. It does not tell AVA which orders count as revenue. You supply that meaning through `semantic()`.
+
+## Decide what revenue means
+
+For this example, agree on three rules:
+
+- Count `paid` and `refunded` orders; exclude `pending` and `cancelled` orders.
+- Subtract cumulative refunds from the original amount. A missing refund is zero. Amounts are USD.
+- Group by the order's region and use its original order date.
+
+Apply those rules to the rows above:
+
+| Order | Contribution to revenue | Why |
+| --- | --- | --- |
+| 1 | 100 USD | 120 minus the 20 refund. |
+| 2 | 0 USD | Fully refunded: 80 minus 80. |
+| 3 | 0 USD | Pending, so excluded. |
+| 4 | 60 USD | 90 minus the 30 refund. |
+| 5 | 50 USD | The missing refund is treated as zero. |
+| 6 | 0 USD | Cancelled, so excluded. |
+
+East therefore has **150 USD** in revenue; West has **60 USD**. The definition below records the rules that produce those numbers.
+
+## Write the definition
+
+Load the table above as inline JSON, exposed by DuckDB as `data`. Its corresponding semantic definition is:
+
+```javascript
+/** @satisfies {import('@antv/ava').Semantic} */
+const semantic = {
+  description: 'Sales reporting in USD. Revenue means net revenue from paid and refunded orders. Pending and cancelled orders do not count. A missing refund is zero. Dates are order dates, not refund dates.',
+  properties: { owner: 'Sales operations' },
+  models: [{
+    name: 'data',
+    tableReference: { table: 'data' },
+    primaryKey: 'order_id',
+    properties: { description: 'One row per order; refunds are cumulative amounts on the original order.' },
+    columns: [
+      { name: 'amount', type: 'BIGINT', properties: { description: 'Order amount before refunds.', unit: 'USD' } },
+      { name: 'refund_amount', type: 'BIGINT', properties: { description: 'Cumulative refund, not a separate refund transaction. Null means zero.', unit: 'USD' } },
+      { name: 'status', type: 'VARCHAR', properties: { description: 'Only paid and refunded orders contribute to revenue.' } },
+      {
+        name: 'net_amount',
+        type: 'DOUBLE',
+        isCalculated: true,
+        expression: 'amount - COALESCE(refund_amount, 0)',
+        properties: { description: 'Per-order amount after refunds, before filtering by status.', unit: 'USD' },
+      },
+    ],
+  }],
+  cubes: [{
+    name: 'sales',
+    baseObject: 'data',
+    measures: [{
+      name: 'net_revenue',
+      expression: "SUM(CASE WHEN status IN ('paid', 'refunded') THEN amount - COALESCE(refund_amount, 0) ELSE 0 END)",
+      type: 'DOUBLE',
+      description: 'Revenue after refunds, counting only paid and refunded orders.',
+      properties: { unit: 'USD', synonyms: ['revenue', 'net sales'] },
+    }],
+    dimensions: [{ name: 'region', expression: 'region', type: 'VARCHAR' }],
+    timeDimensions: [{ name: 'order_date', expression: 'CAST(ordered_at AS DATE)', type: 'DATE' }],
+  }],
+};
+```
+
+<Callout>
+  **Definitions guide query generation.** They do not create database objects or enforce access rules.
+</Callout>
+
+Read it in three parts:
+
+1. **`description` and `properties` explain meaning.** The shared description defines revenue; model and column properties explain row grain, units, and nulls. Keys such as `unit` and `synonyms` are annotations, not special SDK options.
+2. **`models` connects meaning to data.** `name: 'data'` matches the discovered model. The calculated `net_amount` describes a per-order value. Unlisted physical columns remain available from the schema.
+3. **`cubes` defines reusable analysis.** `sales` groups a measure and its grouping expressions. `net_revenue` contains both the status filter and refund calculation. `dimensions` supplies region grouping; `timeDimensions` supplies order-date grouping.
+
+The measure includes its eligibility rule so that it still applies when grouping by region or date. The calculated `net_amount` alone does not decide which orders count toward revenue.
+
+For your own source, inspect `await ava.schema()` first. Match existing model and column names exactly and retain physical source qualifiers. Each semantic model requires exactly one of `tableReference`, `refSql`, or `baseObject`; each column requires `name` and `type`. Copy discovered types for physical fields and declare result types for calculations. See [model sources](/documentation/reference/api/#semantic-model-sources) for the alternatives.
+
+You can start smaller: `{ description: 'Your business rules here.' }` is valid. Add models for field-specific meaning, relationships for joins, and cubes for reusable measures as your questions require them.
+
+## Save the definition and see the result
+
+After configuring `ava` and loading a source with `source()`, pass the definition as the setter's return value:
+
+```typescript
+await ava.semantic(undefined, () => semantic);
+const saved = await ava.semantic();
+```
+
+`undefined` uses the default options; semantic currently has no configurable options. The setter saves a validated copy. Subsequent `analyze()`, `translate()`, and `suggest()` calls combine it with the schema and available profile.
+
+For “Show revenue by region,” a query applying these definitions can look like this:
+
+```sql
+SELECT
+  region,
+  CAST(SUM(
+    CASE WHEN status IN ('paid', 'refunded')
+      THEN amount - COALESCE(refund_amount, 0)
+      ELSE 0
+    END
+  ) AS DOUBLE) AS net_revenue
+FROM data
+GROUP BY region
+ORDER BY region;
+```
+
+The result for the six orders above is:
+
+| region | net_revenue (USD) |
+| --- | --- |
+| East | 150 |
+| West | 60 |
+
+This is an example query; model-generated SQL and column aliases can vary.
+
+A logical model, cube, view, or calculated column does not automatically become a queryable database object. For example, SQL using `net_amount` must expand its expression or define it in a subquery or CTE. The query above embeds the measure expression and reads the physical `data` table.
+
+## Check and maintain your definition
+
+Before using a definition for real questions:
+
+1. Confirm row grain, units, eligible records, null handling, and time meaning with the data owner. For joins, check that a row is not counted multiple times.
+2. Test expressions on a small dataset with known answers, including edge cases such as the refunds and excluded orders shown above.
+3. Inspect generated SQL and compare executed results with those known answers. Setter validation checks the object structure; it does not prove the SQL or business logic is correct.
+
+Keep the complete definition in application code or a JSON file and version it with the data contract.
+
+<Callout>
+  **Each setter replaces the complete definition.** Loading another source or calling `dispose()` clears it; reapply it after loading a source. Schema and profile updates retain it.
+</Callout>
+
+For exact field shapes, source mappings, relationships, views, merge rules, and validation errors, continue to the [semantic fields in the API reference](/documentation/reference/api/#semantic-fields). See [Inspect your data](/documentation/data/schema/) for the other inputs and [AVA API](/documentation/reference/api/#semantic) for the method signature.

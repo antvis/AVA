@@ -25,9 +25,15 @@ export const docs = [
   },
   {
     slug: 'data/schema',
-    title: 'Understand your data',
+    title: 'Inspect your data',
     group: 'Working with data',
-    description: 'Inspect schema and relationships, then compute profiling metrics.',
+    description: 'Let AVA discover the structure, inspect statistics when useful, then add business meaning.',
+  },
+  {
+    slug: 'data/semantic',
+    title: 'Define data semantics',
+    group: 'Working with data',
+    description: 'Write business definitions, model mappings, and reusable measures, with a worked sales example.',
   },
   {
     slug: 'analysis/overview',
@@ -117,7 +123,7 @@ export const docs = [
     slug: 'reference/benchmarks',
     title: 'Benchmarks',
     group: 'More resources',
-    description: 'Evaluation results on DataBench, BIRD, and Spider2-Lite, with instructions to run your own tests.',
+    description: 'Evaluation results for data context and analysis strategies.',
   },
   {
     slug: 'reference/architecture',

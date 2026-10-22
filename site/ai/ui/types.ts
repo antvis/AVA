@@ -1,4 +1,5 @@
 import type { ReactNode } from 'react';
+import type { Semantic } from '@antv/ava/browser';
 import type { AIUIMessage } from '../core/session';
 export type ToolDetailLine = { text: string; tone?: 'add' | 'del' | 'ctx' };
 export type ToolStep = {
@@ -49,13 +50,14 @@ export interface LiveChat {
   busy: boolean;
   ready: boolean;
   error: string;
-  dataset: { name: string; rowCount: number };
+  dataset: { name: string; rowCount: number; semantic?: Semantic };
   model: string;
   onSend: (text: string) => void;
   onReset: () => void;
   onConfigure: () => void;
   onAttach: (file: File) => void;
   onSuggest: () => void;
+  onSemanticChange: (json: string) => Promise<void>;
 }
 
 export interface ChatPlayback {

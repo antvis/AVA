@@ -4,6 +4,7 @@ export const content = {
   quickstart: () => import('./quickstart.mdx'),
   'data/sources': () => import('./data/sources.mdx'),
   'data/schema': () => import('./data/schema.mdx'),
+  'data/semantic': () => import('./data/semantic.mdx'),
   'analysis/overview': () => import('./analysis/overview.mdx'),
   'analysis/strategies': () => import('./analysis/strategies.mdx'),
   'visualization/overview': () => import('./visualization/overview.mdx'),

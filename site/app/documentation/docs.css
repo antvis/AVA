@@ -405,6 +405,20 @@
 .docs-table tr:last-child td {
   border: 0;
 }
+.docs-benchmark-overview table {
+  min-width: 0;
+}
+.docs-benchmark-notes {
+  padding: 4px 20px;
+  border: 1px solid var(--docs-border);
+  border-radius: 8px;
+  background: var(--color-hover);
+  font-size: 12px;
+  line-height: 1.8;
+}
+.docs-benchmark-notes p {
+  margin: 12px 0;
+}
 .docs-callout {
   display: flex;
   gap: 12px;
