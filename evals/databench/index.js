@@ -1,7 +1,7 @@
-const { readdirSync, statSync } = require('node:fs');
-const { dirname, extname, join, resolve } = require('node:path');
+import { readdirSync, statSync } from 'node:fs';
+import { dirname, extname, join, resolve } from 'node:path';
 
-const { readCsv } = require('../_shared/results');
+import { readCsv } from '../_shared/results.js';
 
 function csvFiles(paths) {
   return paths.flatMap((input) => {
@@ -15,7 +15,7 @@ function csvFiles(paths) {
 }
 
 /** @returns {Array<{ id: string, dataset: string, suite: string, question: string, answerType: string, goldAnswer: string, dataPath: string }>} */
-function load(name, directory, paths = [join(__dirname, 'datasets', directory, 'questions.csv')]) {
+function load(name, directory, paths = [join(import.meta.dirname, 'datasets', directory, 'questions.csv')]) {
   return csvFiles(paths).flatMap((path) =>
     readCsv(path).map((row, index) => {
       const id = String(row.id ?? index);
@@ -107,15 +107,25 @@ const plugins = [
   load: (paths) => load(name, directory, paths),
 }));
 
-/** @param {{ dataset?: string, suite?: string, offset?: string, limit?: string }} options */
-function selectSamples({ dataset = 'databench-lite', suite, offset = '0', limit = '20' } = {}) {
+/** @param {{ dataset?: string, suite?: string, offset?: string, limit?: string, sampleIds?: string[] }} options */
+function selectSamples({ dataset = 'databench-lite', suite, offset = '0', limit = '20', sampleIds } = {}) {
   const plugin = plugins.find((item) => item.name === dataset);
   if (!plugin) throw new Error('--dataset must be databench-lite or databench.');
   const start = Number(offset);
   const count = limit === 'all' ? Infinity : Number(limit);
   if (!Number.isInteger(start) || start < 0) throw new Error('--offset must be an integer >= 0.');
   if (limit !== 'all' && (!Number.isInteger(count) || count < 1)) throw new Error('--limit must be an integer >= 1 or all.');
-  return plugin.load().filter((sample) => !suite || sample.suite === suite).slice(start, start + count);
+  const selected = plugin.load().filter((sample) => !suite || sample.suite === suite).slice(start, start + count);
+  if (sampleIds === undefined) return selected;
+  if (!Array.isArray(sampleIds) || !sampleIds.length || new Set(sampleIds).size !== sampleIds.length) {
+    throw new Error('sampleIds must be a nonempty array of unique sample IDs.');
+  }
+  const available = new Set(selected.map((sample) => sample.id));
+  for (const id of sampleIds) {
+    if (!available.has(id)) throw new Error(`sampleIds contains an ID outside the selected scope: ${id}`);
+  }
+  const ids = new Set(sampleIds);
+  return selected.filter((sample) => ids.has(sample.id));
 }
 
 function formatAnswer(value) {
@@ -123,4 +133,4 @@ function formatAnswer(value) {
   return value == null ? 'None' : String(value);
 }
 
-module.exports = { databenchAnswer, formatAnswer, plugins, selectSamples };
+export { databenchAnswer, formatAnswer, plugins, selectSamples };

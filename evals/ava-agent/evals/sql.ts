@@ -1,25 +1,23 @@
 import { appendFileSync, copyFileSync, cpSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
-import { createRequire } from 'node:module';
 import { basename, join, relative, resolve } from 'node:path';
-import { fileURLToPath } from 'node:url';
+import { fileURLToPath, pathToFileURL } from 'node:url';
 import { defineEval, defineEvalConfig, type EveEvalSession } from 'eve/evals';
 import { equals } from 'eve/evals/expect';
 import { z } from 'zod';
 import { removeSessionContainers } from '../lib/cleanup.mjs';
 import { readSessionResult } from '../lib/sql-results.mjs';
 
-const require = createRequire(import.meta.url);
 const evalsRoot = fileURLToPath(new URL('../../', import.meta.url));
 type Benchmark = 'bird' | 'spider2lite';
 export type Sample = { id: string; suite: string; question: string; database: string };
 export const config = defineEvalConfig({ maxConcurrency: 1, timeoutMs: 600000 });
 
-export function prepareSnapshot(directory: string, benchmark: Benchmark, samples: Sample[]) {
-  const { atomicJson } = require('../../_shared/files.js');
-  const { OUTPUT_COLUMNS } = require('../../_shared/results.js');
+export async function prepareSnapshot(directory: string, benchmark: Benchmark, samples: Sample[]) {
+  const { atomicJson } = await import(new URL('../../_shared/files.js', import.meta.url).href);
+  const { OUTPUT_COLUMNS } = await import(new URL('../../_shared/results.js', import.meta.url).href);
   mkdirSync(join(directory, 'evals/fixtures'), { recursive: true });
   mkdirSync(join(directory, 'benchmarks/_shared'), { recursive: true });
-  writeFileSync(join(directory, 'benchmarks/package.json'), '{"type":"commonjs"}\n');
+  writeFileSync(join(directory, 'benchmarks/package.json'), '{"type":"module"}\n');
   copyFileSync(join(evalsRoot, '_shared/results.js'), join(directory, 'benchmarks/_shared/results.js'));
   writeFileSync(join(directory, 'evals/evals.config.ts'), `export { config as default } from './${benchmark}.eval.ts';\n`);
   const files = new Map<string, string>();
@@ -38,8 +36,8 @@ export function prepareSnapshot(directory: string, benchmark: Benchmark, samples
   return { directory: join(directory, 'benchmarks'), manifest: { benchmark } };
 }
 
-export function readOptions(benchmark: Benchmark, argv: string[]) {
-  const { takeOptions } = require('../../_shared/args.js');
+export async function readOptions(benchmark: Benchmark, argv: string[]) {
+  const { takeOptions } = await import(new URL('../../_shared/args.js', import.meta.url).href);
   const { values, rest } = takeOptions(argv, {
     root: { type: 'string' }, limit: { type: 'string' }, offset: { type: 'string' },
     suite: { type: 'string' }, id: { type: 'string', multiple: true },
@@ -68,14 +66,14 @@ Additional execution options are forwarded to Eve. Results: results/${benchmark}
 
 export async function runEvaluation(benchmark: Benchmark, samples: Sample[], root: string,
   questionFile: string, argv: string[], rest: string[], runtime: unknown) {
-  const { atomicJson, sha256 } = require('../../_shared/files.js');
+  const { atomicJson, sha256 } = await import(new URL('../../_shared/files.js', import.meta.url).href);
   const resources = Object.fromEntries([...new Set([
     join(root, questionFile),
     ...samples.map((sample) => sample.database),
   ])].map((file) => [relative(root, file), sha256(file)]));
   const { run } = await import(new URL('../scripts/run.mjs', import.meta.url).href);
-  const result = await run('eval', [benchmark, ...rest], (directory: string) => {
-    const snapshot = prepareSnapshot(directory, benchmark, samples);
+  const result = await run('eval', [benchmark, ...rest], async (directory: string) => {
+    const snapshot = await prepareSnapshot(directory, benchmark, samples);
     atomicJson(join(directory, 'manifest.json'), {
       benchmark, ids: samples.map((sample) => sample.id), resources, runtime,
       model: process.env.OPENAI_MODEL, arguments: argv, mode: 'agent-exec-result',
@@ -108,9 +106,9 @@ export function saveResults(directory: string, benchmark: Benchmark, samples: Sa
 
 export type Result = { schema: { name: string; type: string }[]; rows: (string | number | boolean | null)[][] };
 
-export function createEvals(directory: string, benchmark: Benchmark,
-  writeResult: (directory: string, id: string, payload: Result) => void) {
-  const { csvCell } = require(join(directory, '_shared/results.js'));
+export async function createEvals(directory: string, benchmark: Benchmark,
+  writeResult: (directory: string, id: string, payload: Result) => void | Promise<void>) {
+  const { csvCell } = await import(pathToFileURL(join(directory, '_shared/results.js')).href);
   const runDirectory = resolve(directory, '..');
   const samples: Sample[] = JSON.parse(readFileSync(join(directory, 'samples.json'), 'utf8'));
   return samples.map((sample) => defineEval({
@@ -141,7 +139,7 @@ Return the SQL actually executed in the required structured output.`,
         sql = outputSchema.parse(turn.data).sql;
         writeFileSync(join(runDirectory, 'sql', `${sample.id}.sql`), sql + '\n');
         const payload = await readSessionResult(session.sessionId);
-        writeResult(runDirectory, sample.id, payload);
+        await writeResult(runDirectory, sample.id, payload);
         t.succeeded();
         t.check(turn.toolCalls.some((call) => call.name === 'python' || call.name === 'bash'), equals(true)).label('execution tool called');
         t.maxToolCalls(30);

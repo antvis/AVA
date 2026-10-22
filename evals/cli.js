@@ -1,11 +1,13 @@
 #!/usr/bin/env node
 
-const { writeFileSync } = require('node:fs');
-const { parseArgs } = require('node:util');
+import { pathToFileURL } from 'node:url';
+import { writeFileSync } from 'node:fs';
+import { parseArgs } from 'node:util';
 
-const { evaluate, getDataset, loadPlugin, predictionIndex, registerPlugin } = require('./_shared');
-const { takeOptions } = require('./_shared/args');
-const { buildReport } = require('./_shared/report');
+import { evaluate, getDataset, loadPlugin, predictionIndex, registerPlugin } from './_shared/index.js';
+import { takeOptions } from './_shared/args.js';
+import { buildReport } from './_shared/report.js';
+import { plugins } from './databench/index.js';
 
 const adapters = {
   'ava-workflow': {
@@ -33,11 +35,11 @@ Spider2-Lite scoring: score --dataset spider2lite --predictions <run-dir> --help
 
 Score options:
   --dataset <name>       Dataset plugin name (default: databench-lite)
-  --plugin <path>        Load a CommonJS dataset plugin; repeatable
+  --plugin <path>        Load an ESM or CommonJS dataset plugin; repeatable
   --data <path>          CSV file or directory; repeatable
   --predictions <path>   Prediction CSV; repeatable
-  --metrics <names>      Comma-separated metrics; first is summary metric (default depends on dataset)
-  --metadata <path>      JSON with environment, evaluation, provenance metadata
+  --metrics <names>      Comma-separated metrics (default depends on dataset)
+  --metadata <path>      JSON with evaluation and provenance metadata
   --output <path>        Write a JSON report, overwriting an existing file
   --help                Show help
 `;
@@ -58,8 +60,8 @@ async function score(args) {
   });
   if (values.help) return process.stdout.write(HELP);
 
-  require('./databench').plugins.forEach(registerPlugin);
-  values.plugin?.forEach(loadPlugin);
+  plugins.forEach(registerPlugin);
+  for (const path of values.plugin ?? []) await loadPlugin(path);
   if (!values.predictions?.length) throw new Error(`--predictions is required.\n\n${HELP}`);
   const plugin = getDataset(values.dataset);
   const samples = plugin.load(values.data?.length ? values.data : undefined);
@@ -72,11 +74,11 @@ async function score(args) {
   const report = buildReport(scores, samples, values, plugin);
   if (values.output) writeFileSync(values.output, `${JSON.stringify(report, null, 2)}\n`, 'utf8');
 
-  process.stdout.write(`Samples: ${report.total}\nPredicted: ${report.predicted}\nMissing: ${report.missing}\n`);
-  for (const [name, result] of Object.entries(report.metrics)) {
-    process.stdout.write(`${name}: ${(result.score * 100).toFixed(2)}% (${result.passed}/${result.total})\n`);
+  process.stdout.write(`Samples: ${scores.total}\nPredicted: ${scores.predicted}\nMissing: ${scores.missing}\n`);
+  for (const [name, result] of Object.entries(scores.metrics)) {
+    process.stdout.write(`${name}: ${(result.score * 100).toFixed(2)}% (${result.passed}/${scores.total})\n`);
   }
-  for (const [suite, result] of Object.entries(report.suites)) {
+  for (const [suite, result] of Object.entries(scores.suites)) {
     const scores = Object.entries(result.metrics)
       .map(([name, metric]) => `${name} ${(metric.score * 100).toFixed(2)}%`)
       .join(', ');
@@ -101,18 +103,18 @@ async function main(argv = process.argv.slice(2)) {
   }
   if (command === 'score') {
     const { values } = takeOptions(args, { dataset: { type: 'string' } });
-    if (values.dataset === 'spider2lite') return require('./spider2lite/score').main(args);
-    if (values.dataset === 'bird') return require('./BIRD/score').main(args);
+    if (values.dataset === 'spider2lite') return (await import('./spider2lite/score.js')).main(args);
+    if (values.dataset === 'bird') return (await import('./BIRD/score.js')).main(args);
     return score(args);
   }
   throw new Error(`Unknown command: ${command}.\n\n${HELP}`);
 }
 
-if (require.main === module) {
+if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) {
   main().catch((error) => {
     process.stderr.write(`${error instanceof Error ? error.message : String(error)}\n`);
     process.exitCode = 1;
   });
 }
 
-module.exports = { main };
+export { main };

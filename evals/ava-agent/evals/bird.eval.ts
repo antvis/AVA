@@ -1,22 +1,19 @@
 import { writeFileSync } from 'node:fs';
-import { createRequire } from 'node:module';
 import { join, resolve } from 'node:path';
 import { createEvals, readOptions, runEvaluation, saveResults, type Result, type Sample } from './sql.ts';
 export { config } from './sql.ts';
-
-const require = createRequire(import.meta.url);
 
 export function writeResult(directory: string, id: string, payload: Result) {
   writeFileSync(join(directory, 'exec_result', `${id}.json`), JSON.stringify(payload));
 }
 
 export async function main(argv: string[] = process.argv.slice(2)) {
-  const options = readOptions('bird', argv);
+  const options = await readOptions('bird', argv);
   if (!options) return;
   const { values, rest } = options;
-  const { ROOT, selectSamples, inspectResources, modelQuestion, databasePath } = require('../../BIRD/index.js');
-  const { PYTHON, compare, scoreSamples } = require('../../BIRD/score.js');
-  const { integer } = require('../../_shared/args.js');
+  const { ROOT, selectSamples, inspectResources, modelQuestion, databasePath } = await import(new URL('../../BIRD/index.js', import.meta.url).href);
+  const { PYTHON, compare, scoreSamples } = await import(new URL('../../BIRD/score.js', import.meta.url).href);
+  const { integer } = await import(new URL('../../_shared/args.js', import.meta.url).href);
   const root = resolve(values.root ?? ROOT);
   const timeout = integer(values['score-timeout'], 'score-timeout');
   const selected: { question_id: number; db_id: string; question: string; evidence?: string }[] = selectSamples(values, root);
@@ -41,4 +38,4 @@ export async function main(argv: string[] = process.argv.slice(2)) {
 }
 
 const directory = process.env.AVA_AGENT_BENCHMARK === 'bird' ? process.env.AVA_AGENT_EVAL_DIR : undefined;
-export default directory ? createEvals(directory, 'bird', writeResult) : [];
+export default directory ? await createEvals(directory, 'bird', writeResult) : [];

@@ -2,96 +2,285 @@ Evaluating AVA’s ability to turn data questions into reliable answers. [View e
 
 ## Context
 
-<Callout>
+<Callout icon="🤔">
   **How does the information available to a model affect its answers?** These evaluations examine answer accuracy and per-question cost using **GLM-5.1**, AVA Workflow, DuckDB, and Direct.
 </Callout>
 
-<div className="docs-benchmark-overview">
-
-| Evaluation focus | Raw data | With Semantic | Gain |
-| ---------------- | -------: | ------------: | ---: |
-| Tabular Q&A<br />DataBench<sup><a href="#dataset-databench" aria-label="Dataset note 1: DataBench">[1]</a></sup> | 83.51% | <span role="img" aria-label="Highest accuracy" style={{ color: '#a16207' }}>★</span> **93.01%** | <span style={{ color: '#b91c1c' }}>+9.50 pp</span> |
-| Complex SQL · SQLite<br />Spider2-Lite<sup><a href="#dataset-spider2lite" aria-label="Dataset note 3: Spider2-Lite">[3]</a></sup> | — | Pending | — |
-
+<div className="docs-table docs-benchmark-overview">
+<table>
+  <thead>
+    <tr>
+      <th scope="col">Evaluation</th>
+      <th scope="col">Context</th>
+      <th scope="col">Correct</th>
+      <th scope="col">Accuracy</th>
+      <th scope="col">Tokens / question</th>
+      <th scope="col">Time / question</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th scope="rowgroup" rowSpan={3}>Tabular Q&amp;A<br />DataBench<sup><a href="#dataset-databench" aria-label="Dataset note 1: DataBench">[1]</a></sup></th>
+      <td>Raw data<br />(header + first 3 rows)</td>
+      <td>1,494</td>
+      <td>83.51% (baseline)</td>
+      <td>991</td>
+      <td>1.35 s</td>
+    </tr>
+    <tr>
+      <td>With Schema<br />(Schema + Profile)</td>
+      <td>1,506</td>
+      <td>84.18% <span style={{ color: '#b91c1c' }}>(+0.67 pp)</span></td>
+      <td>1,990</td>
+      <td>2.08 s</td>
+    </tr>
+    <tr>
+      <td>With Semantic</td>
+      <td>1,664</td>
+      <td><span role="img" aria-label="Highest accuracy" style={{ color: '#a16207' }}>★</span> <strong>93.01%</strong> <span style={{ color: '#b91c1c' }}>(+9.50 pp)</span></td>
+      <td>3,288</td>
+      <td>1.66 s</td>
+    </tr>
+  </tbody>
+  <tbody>
+    <tr>
+      <th scope="rowgroup" rowSpan={3}>Complex SQL · SQLite<br />Spider2-Lite<sup><a href="#dataset-spider2lite" aria-label="Dataset note 3: Spider2-Lite">[3]</a></sup></th>
+      <td>Raw data<br />(header + first 3 rows)</td>
+      <td>35</td>
+      <td>25.93% (baseline)</td>
+      <td>4,057</td>
+      <td>12.93 s</td>
+    </tr>
+    <tr>
+      <td>With Schema<br />(Schema + Profile)</td>
+      <td>45</td>
+      <td>33.33% <span style={{ color: '#b91c1c' }}>(+7.41 pp)</span></td>
+      <td>20,945</td>
+      <td>11.89 s</td>
+    </tr>
+    <tr>
+      <td>With Semantic</td>
+      <td>109</td>
+      <td><span role="img" aria-label="Highest accuracy" style={{ color: '#a16207' }}>★</span> <strong>80.74%</strong> <span style={{ color: '#b91c1c' }}>(+54.81 pp)</span></td>
+      <td>23,705</td>
+      <td>13.33 s</td>
+    </tr>
+  </tbody>
+</table>
 </div>
 
-<details className="my-4 rounded-lg border border-[color:var(--docs-border)] px-4">
-<summary className="cursor-pointer py-3 font-medium text-[color:var(--docs-ink)]">DataBench · detailed results</summary>
-
-| Context | Correct | Accuracy | Tokens / question | Time / question |
-| ------- | ------: | -------: | ----------------: | --------------: |
-| Raw data (header + first 3 rows) | 1,494 | 83.51% (baseline) | 991 | 1.35 s |
-| Schema + Profile | 1,506 | 84.18% <span style={{ color: '#b91c1c' }}>(+0.67 pp)</span> | 1,990 | 2.08 s |
-| Semantic | 1,664 | <span role="img" aria-label="Highest accuracy" style={{ color: '#a16207' }}>★</span> **93.01%** <span style={{ color: '#b91c1c' }}>(+9.50 pp)</span> | 3,288 | 1.66 s |
-
-Parentheses show **percentage-point gains over raw data**. Profile supplies statistics; Semantic adds business definitions to Schema + Profile. All queries use the full table.
-
-</details>
-
-<details className="my-4 rounded-lg border border-[color:var(--docs-border)] px-4">
-<summary className="cursor-pointer py-3 font-medium text-[color:var(--docs-ink)]">Spider2-Lite SQLite subset · detailed results</summary>
-
-Profile and Semantic results are pending.
-
-| Context | Correct | Accuracy | Tokens / question | Time / question |
-| ------- | ------: | -------: | ----------------: | --------------: |
-| Schema + Profile | — | Pending | — | — |
-| Semantic | — | Pending | — | — |
-
-The previous Direct run with Profile scored **27.41%** (37/135).
-
-</details>
+<p style={{ color: 'var(--docs-muted)', fontSize: '12px' }}>DataBench: 1,789 single-table Q&amp;A questions covering filtering, aggregation, and sorting. Spider2-Lite: 135 complex SQL questions across multiple tables, using supplied external knowledge; raw data includes headers and the first 3 rows per table. With Schema adds structure and statistics; With Semantic adds business definitions. All queries use complete data.</p>
 
 ## Strategy
 
-<Callout>
-  **How does the analysis strategy affect answer quality?** Compare [Direct, Loop, and Subset](/documentation/analysis/strategies/) on tabular and database tasks.
+<Callout icon="🤔">
+  **How does the analysis strategy affect answer quality?** Compare [analysis strategies](/documentation/analysis/strategies/) on tabular and database tasks.
 </Callout>
 
-### Tabular question answering
+<div className="docs-table docs-benchmark-overview docs-benchmark-comparison">
+<table>
+  <thead>
+    <tr>
+      <th scope="col">Evaluation</th>
+      <th scope="col">Model</th>
+      <th scope="col">Strategy</th>
+      <th scope="col">Correct</th>
+      <th scope="col">Accuracy</th>
+      <th scope="col">Tokens / question</th>
+      <th scope="col">Time / question</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th scope="rowgroup" rowSpan={3}>Tabular Q&amp;A<br />DataBench<sup><a href="#dataset-databench" aria-label="Dataset note 1: DataBench">[1]</a></sup></th>
+      <td rowSpan={3}>GLM-5.1</td>
+      <td>Direct</td>
+      <td>1,550</td>
+      <td>86.64%</td>
+      <td>2,315</td>
+      <td>20.48 s</td>
+    </tr>
+    <tr>
+      <td>Subset</td>
+      <td>1,551</td>
+      <td><span role="img" aria-label="Highest accuracy" style={{ color: '#a16207' }}>★</span> <strong>86.70%</strong></td>
+      <td>1,173</td>
+      <td>25.42 s</td>
+    </tr>
+    <tr>
+      <td>Loop</td>
+      <td>1,504</td>
+      <td>84.07%</td>
+      <td>5,089</td>
+      <td>82.52 s</td>
+    </tr>
+  </tbody>
+  <tbody>
+    <tr>
+      <th scope="rowgroup" rowSpan={10}>Database queries<br />BIRD New Dev<sup><a href="#dataset-bird" aria-label="Dataset note 2: BIRD New Dev">[2]</a></sup></th>
+      <td rowSpan={2}>GLM-5.1</td>
+      <td>Direct</td>
+      <td>968</td>
+      <td>63.10%</td>
+      <td>6,780</td>
+      <td>—</td>
+    </tr>
+    <tr>
+      <td>Loop</td>
+      <td>1,010</td>
+      <td>65.84%</td>
+      <td>35,272</td>
+      <td>—</td>
+    </tr>
+    <tr>
+      <td rowSpan={2}>GLM-5.2</td>
+      <td>Direct</td>
+      <td>1,003</td>
+      <td>65.38%</td>
+      <td>6,575</td>
+      <td>—</td>
+    </tr>
+    <tr>
+      <td>Loop</td>
+      <td>1,030</td>
+      <td>67.14%</td>
+      <td>33,545</td>
+      <td>—</td>
+    </tr>
+    <tr>
+      <td rowSpan={2}>GLM-5.3</td>
+      <td>Direct</td>
+      <td>1,045</td>
+      <td><span role="img" aria-label="Highest accuracy" style={{ color: '#a16207' }}>★</span> <strong>68.12%</strong></td>
+      <td>≥ 9,529</td>
+      <td>—</td>
+    </tr>
+    <tr>
+      <td>Loop</td>
+      <td>1,016</td>
+      <td>66.23%</td>
+      <td>≥ 32,976</td>
+      <td>—</td>
+    </tr>
+    <tr>
+      <td rowSpan={2}>Kimi-K2.5</td>
+      <td>Direct</td>
+      <td>941</td>
+      <td>61.34%</td>
+      <td>7,220</td>
+      <td>—</td>
+    </tr>
+    <tr>
+      <td>Loop</td>
+      <td>905</td>
+      <td>59.00%</td>
+      <td>51,631</td>
+      <td>—</td>
+    </tr>
+    <tr>
+      <td rowSpan={2}>Kimi-K3</td>
+      <td>Direct</td>
+      <td>1,014</td>
+      <td>66.10%</td>
+      <td>6,696</td>
+      <td>—</td>
+    </tr>
+    <tr>
+      <td>Loop</td>
+      <td>993</td>
+      <td>64.73%</td>
+      <td>43,512</td>
+      <td>—</td>
+    </tr>
+  </tbody>
+</table>
+</div>
 
-**DataBench**<sup><a href="#dataset-databench" aria-label="Dataset note 1: DataBench">[1]</a></sup> · AVA Workflow · Profile enabled.
+<p style={{ color: 'var(--docs-muted)', fontSize: '12px' }}>AVA Workflow. DataBench: 1,789 questions; historical runs with different context configurations. BIRD New Dev: 1,534 questions with Schema, evidence, and database descriptions. No Subset results are reported for BIRD.</p>
 
-| Model | Direct | Loop | Subset |
-| ----- | -----: | ---: | -----: |
-| GLM-5.1 | 86.64% | — | 86.70% |
+## Execution
 
-<details className="my-4 rounded-lg border border-[color:var(--docs-border)] px-4">
-<summary className="cursor-pointer py-3 font-medium text-[color:var(--docs-ink)]">DataBench · detailed results and other configurations</summary>
+<Callout icon="🤔">
+  **How does the execution method affect answer quality and cost?** Compare [execution engines](/documentation/engines/overview/) on tabular tasks.
+</Callout>
 
-Historical GLM-5.1 results. The overview uses the two runs with Profile explicitly enabled; Loop's Profile setting was not recorded.
+<div className="docs-table docs-benchmark-overview docs-benchmark-comparison">
+<table>
+  <thead>
+    <tr>
+      <th scope="col">Evaluation</th>
+      <th scope="col">Model</th>
+      <th scope="col">Execution</th>
+      <th scope="col">Correct</th>
+      <th scope="col">Accuracy</th>
+      <th scope="col">Tokens / question</th>
+      <th scope="col">Time / question</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th scope="rowgroup" rowSpan={2}>Tabular Q&amp;A<br />DataBench<sup><a href="#dataset-databench" aria-label="Dataset note 1: DataBench">[1]</a></sup></th>
+      <td rowSpan={2}>GLM-5.1</td>
+      <td>SQL (DuckDB)</td>
+      <td>1,550</td>
+      <td><span role="img" aria-label="Highest accuracy" style={{ color: '#a16207' }}>★</span> <strong>86.64%</strong></td>
+      <td>2,315</td>
+      <td>20.48 s</td>
+    </tr>
+    <tr>
+      <td>Python</td>
+      <td>1,528</td>
+      <td>85.41%</td>
+      <td>2,002</td>
+      <td>22.03 s</td>
+    </tr>
+  </tbody>
+</table>
+</div>
 
-| Strategy | Profile | Accuracy | Tokens / question | Time / question |
-| -------- | ------- | -------: | ----------------: | --------------: |
-| Direct | On | 86.64% | 2,315 | 20.48 s |
-| Subset | On | 86.70% | 1,173 | 25.42 s |
-| Direct | Off | 84.46% | 903 | 18.44 s |
-| Loop | Not recorded | 84.07% | 5,089 | 82.52 s |
+<p style={{ color: 'var(--docs-muted)', fontSize: '12px' }}>DataBench: 1,789 questions · AVA Workflow · Direct. Historical SQL and Python runs use different execution configurations.</p>
 
-**Other execution configurations**
+## Integration
 
-These runs use a different engine or an agent that selects its own tools. They provide additional reference results, rather than a strategy-only comparison.
+<Callout icon="🤔">
+  **How does the integration method affect answer quality and cost?** Compare using AVA through the SDK and [Agent Skill](/documentation/agent-skill/).
+</Callout>
 
-| Execution mode | Strategy | Accuracy | Tokens / question | Time / question |
-| -------------- | -------- | -------: | ----------------: | --------------: |
-| Workflow · Python | Direct | 85.41% | 2,002 | 22.03 s |
-| Agent + AVA Skill | Agent-selected steps | 84.46% | 23,384 | 40.93 s |
+<div className="docs-table docs-benchmark-overview docs-benchmark-comparison">
+<table>
+  <thead>
+    <tr>
+      <th scope="col">Evaluation</th>
+      <th scope="col">Model</th>
+      <th scope="col">Integration</th>
+      <th scope="col">Correct</th>
+      <th scope="col">Accuracy</th>
+      <th scope="col">Tokens / question</th>
+      <th scope="col">Time / question</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th scope="rowgroup" rowSpan={2}>Tabular Q&amp;A<br />DataBench<sup><a href="#dataset-databench" aria-label="Dataset note 1: DataBench">[1]</a></sup></th>
+      <td rowSpan={2}>GLM-5.1</td>
+      <td>SDK</td>
+      <td>1,550</td>
+      <td><span role="img" aria-label="Highest accuracy" style={{ color: '#a16207' }}>★</span> <strong>86.64%</strong></td>
+      <td>2,315</td>
+      <td>20.48 s</td>
+    </tr>
+    <tr>
+      <td>Agent Skill</td>
+      <td>1,511</td>
+      <td>84.46%</td>
+      <td>23,384</td>
+      <td>40.93 s</td>
+    </tr>
+  </tbody>
+</table>
+</div>
 
-See [Agent Skill](/documentation/agent-skill/) for the agent workflow.
-
-</details>
-
-### Database queries
-
-**BIRD New Dev**<sup><a href="#dataset-bird" aria-label="Dataset note 2: BIRD New Dev">[2]</a></sup> · AVA Workflow · Schema, evidence, and database descriptions.
-
-| Model | Direct | Loop | Subset |
-| ----- | -----: | ---: | -----: |
-| GLM-5.1 | 63.10% | 65.84% | — |
-| GLM-5.2 | 65.38% | <span role="img" aria-label="Second-highest accuracy">🥈</span> 67.14% | — |
-| GLM-5.3 | <span role="img" aria-label="Highest accuracy">🥇</span> 68.12% | — | — |
-| Kimi-K2.5 | 61.34% | 59.00% | — |
-| Kimi-K3 | <span role="img" aria-label="Third-highest accuracy">🥉</span> 66.10% | 64.73% | — |
+<p style={{ color: 'var(--docs-muted)', fontSize: '12px' }}>DataBench: 1,789 questions. SDK uses AVA Workflow with Direct; Agent Skill lets the agent choose tools and execution steps. These historical runs use different execution configurations.</p>
 
 ## Dataset notes
 

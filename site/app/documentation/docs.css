@@ -444,6 +444,14 @@
   font-weight: bold;
   margin-top: 4px;
 }
+.docs-callout > .docs-callout-emoji {
+  border: 0;
+  width: 28px;
+  height: 28px;
+  font-size: 24px;
+  line-height: 1;
+  margin-top: 0;
+}
 .docs-skill-install {
   margin: 0 0 36px;
   padding: clamp(20px, 3vw, 28px);

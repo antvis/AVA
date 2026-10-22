@@ -1,8 +1,8 @@
-const { integer } = require('../_shared/args');
-const { existsSync, readFileSync, readdirSync, statSync } = require('node:fs');
-const { basename, join, resolve } = require('node:path');
+import { integer } from '../_shared/args.js';
+import { existsSync, readFileSync, readdirSync, statSync } from 'node:fs';
+import { basename, join, resolve } from 'node:path';
 
-const ROOT = __dirname;
+const ROOT = import.meta.dirname;
 function readJsonl(path) {
   const records = readFileSync(path, 'utf8')
     .split(/\r?\n/)
@@ -130,7 +130,7 @@ function inspectResources(samples, root = ROOT, { databases = true, maxContextBy
     );
 }
 
-module.exports = {
+export {
   ROOT,
   loadQuestions,
   selectSamples,

@@ -1,7 +1,7 @@
-const { existsSync } = require('node:fs');
-const { join } = require('node:path');
-const { isDeepStrictEqual } = require('node:util');
-const { readJson, sha256 } = require('./files');
+import { existsSync } from 'node:fs';
+import { join } from 'node:path';
+import { isDeepStrictEqual } from 'node:util';
+import { readJson, sha256 } from './files.js';
 
 function validateResume(previous, current, compatibleImplementations = []) {
   if (!previous || !current || !previous.implementation || !current.implementation)
@@ -47,4 +47,4 @@ function pendingSamples(samples, output, { idKey, databaseKey, resultExtension }
   });
 }
 
-module.exports = { validateResume, pendingSamples };
+export { validateResume, pendingSamples };

@@ -1,0 +1,38 @@
+{
+  "generatedAt": "2026-10-08T14:14:12.655Z",
+  "evaluation": {
+    "benchmark": "DataBench full (080_Books excluded)",
+    "runner": "ava-workflow",
+    "engine": "python",
+    "strategy": "direct",
+    "model": "GLM-5.1",
+    "dataset": "databench",
+    "predictions": "evals/ava-workflow/results/1008-python-direct-GLM-5.1.csv"
+  },
+  "summary": {
+    "total": 1789,
+    "predicted": 1788,
+    "missing": 1,
+    "metrics": {
+      "databench-answer": {
+        "passed": 1528,
+        "score": 0.854108440469536
+      }
+    },
+    "timingSeconds": {
+      "average": 22.03,
+      "minimum": 3.21,
+      "maximum": 380.43,
+      "median": 13.09
+    },
+    "tokens": {
+      "prompt": 2619753,
+      "completion": 959570,
+      "total": 3579323,
+      "average": 2002
+    }
+  },
+  "provenance": {
+    "statistics": "Timing uses 1789 retained rows; token statistics use 1788 recorded rows. Includes failures; excludes superseded attempts and retry overhead."
+  }
+}

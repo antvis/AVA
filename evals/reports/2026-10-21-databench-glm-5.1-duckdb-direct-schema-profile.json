@@ -1,0 +1,46 @@
+{
+  "generatedAt": "2026-10-22T02:10:05.663Z",
+  "evaluation": {
+    "benchmark": "DataBench full (080_Books excluded)",
+    "runner": "ava-workflow",
+    "engine": "duckdb",
+    "strategy": "direct",
+    "profile": true,
+    "semantic": false,
+    "thinking": false,
+    "executionMode": "fixed-sql-replay",
+    "originalGenerationConcurrency": 20,
+    "replayConcurrency": 10,
+    "dataset": "databench",
+    "model": "GLM-5.1",
+    "predictions": "evals/ava-workflow/results/databench-schema-profile.csv"
+  },
+  "summary": {
+    "total": 1789,
+    "predicted": 1767,
+    "missing": 22,
+    "metrics": {
+      "databench-answer": {
+        "passed": 1506,
+        "score": 0.8418110676355506
+      }
+    },
+    "timingSeconds": {
+      "average": 2.08,
+      "minimum": 0.69,
+      "maximum": 52.22,
+      "median": 1.43
+    },
+    "tokens": {
+      "prompt": 3513163,
+      "completion": 47499,
+      "total": 3560662,
+      "average": 1990
+    }
+  },
+  "provenance": {
+    "execution": "Previously generated SQL replayed on normalized data with unchanged records and order; no fresh model calls. Original failures without SQL remain.",
+    "statistics": "Timing and tokens come from historical model generation, not SQL replay; excludes superseded attempts and retry overhead.",
+    "limitations": "A replay baseline, not a fresh model run; ambiguous or inconsistent references remain in the denominator."
+  }
+}

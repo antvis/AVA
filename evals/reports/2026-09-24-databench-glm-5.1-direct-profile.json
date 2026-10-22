@@ -1,0 +1,33 @@
+{
+  "generatedAt": "2026-09-23T23:50:30.331Z",
+  "evaluation": {
+    "benchmark": "DataBench full (080_Books excluded)",
+    "dataset": "databench",
+    "strategy": "direct",
+    "model": "GLM-5.1",
+    "profile": true
+  },
+  "summary": {
+    "total": 1789,
+    "predicted": 1788,
+    "missing": 1,
+    "metrics": {
+      "databench-answer": {
+        "passed": 1550,
+        "score": 0.8664
+      }
+    },
+    "timingSeconds": {
+      "average": 20.48,
+      "minimum": 1.47,
+      "maximum": 460.22,
+      "median": 11.17
+    },
+    "tokens": {
+      "prompt": 3116021,
+      "completion": 1026127,
+      "total": 4142148,
+      "average": 2315
+    }
+  }
+}

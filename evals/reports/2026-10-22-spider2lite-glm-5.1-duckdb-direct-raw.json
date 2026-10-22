@@ -1,0 +1,89 @@
+{
+  "generatedAt": "2026-10-22T07:13:54.939Z",
+  "environment": {
+    "executionNodeVersion": "v22.22.0",
+    "scorer": {
+      "python": "3.9.6",
+      "pandas": "2.3.3"
+    },
+    "uvThreadpoolSize": 32
+  },
+  "evaluation": {
+    "benchmark": "Spider2-Lite SQLite subset",
+    "runner": "ava-workflow",
+    "model": "GLM-5.1",
+    "engine": "duckdb-sqlite",
+    "strategy": {
+      "type": "direct",
+      "maxRetries": 2
+    },
+    "schema": false,
+    "profile": false,
+    "semantic": false,
+    "context": {
+      "type": "raw",
+      "format": "csv",
+      "previewRows": 3
+    },
+    "thinking": false,
+    "concurrency": 20,
+    "executionMode": "fresh-complete-run",
+    "startedAt": "2026-10-22T07:10:23.584Z",
+    "run": "evals/ava-workflow/results/20261022-spider2lite-raw-final",
+    "queryTimeoutMs": 30000,
+    "scoreTimeoutMs": 60000,
+    "resultLimits": {
+      "maxRows": 10000,
+      "maxResultBytes": 67108864
+    }
+  },
+  "summary": {
+    "total": 135,
+    "predicted": 118,
+    "passed": 35,
+    "incorrect": 83,
+    "missing": 17,
+    "scoringErrors": 0,
+    "accuracy": 0.25925925925925924,
+    "submittedAccuracy": 0.2966101694915254,
+    "coverage": 0.8740740740740741,
+    "timingSeconds": {
+      "average": 12.93,
+      "median": 10.16,
+      "minimum": 0.03,
+      "maximum": 54.58
+    },
+    "tokens": {
+      "inputTokens": 449306,
+      "outputTokens": 65927,
+      "totalTokens": 515233,
+      "calls": 191,
+      "recordedRows": 127,
+      "average": 4057
+    }
+  },
+  "provenance": {
+    "execution": "One independent fresh execution per question, all 135 questions, concurrency 20. No retries of whole questions, resumed or merged answers; normal Direct SQL correction remains enabled.",
+    "context": "Only execution table names, CSV headers and the first three rows of each table, plus the original question and supplied external knowledge. No field types, keys, schema/profile metadata or semantic definitions. Queries execute on complete tables. Loader-internal type inspection still occurs, and SQL correction diagnostics may expose field names/types.",
+    "scoring": "Unmodified official exec_result scorer and reference CSVs. Missing cases remain in the 135-question denominator.",
+    "data": "Same source data and row-identical indexed complex_oracle copy as the final with-semantic run; no native views, rows or references changed.",
+    "indexAudit": "evals/ava-workflow/results/20261022-spider2lite-semantic-glm-5.1-pool32/input/index-optimization.json",
+    "manifest": "evals/ava-workflow/results/20261022-spider2lite-raw-final/manifest.json",
+    "statistics": "Time averages include source loading and failures for all 135 cases, not wall time. Token averages use only cases with recorded provider usage; null is preserved for pre-model failures. SQL correction calls are included.",
+    "comparison": "Same question IDs, model, provider, strategy, data hashes, execution limits and concurrency verified against final semantic run. Semantic definitions were calibrated against this benchmark; differences are descriptive in-sample results, not a held-out causal estimate.",
+    "verification": {
+      "distinctAttempts": 135,
+      "sqlAndCsvIntegrity": "Verified all successful artifacts against recorded hashes.",
+      "sharedTests": 8
+    },
+    "limitations": [
+      "Eight oracle_sql questions fail before model calls because native views reference missing ehp.start_date.",
+      "Natural model variation and reference/output conventions remain."
+    ],
+    "artifactRetention": "Retained as the independent raw baseline; only the latest full with-semantic report is formal.",
+    "executionDiagnostics": {
+      "archivedRun": "evals/ava-workflow/results/20261022-spider2lite-raw-catalog-diagnostic",
+      "reason": "Superseded raw diagnostic run enumerated the global DuckDB catalog and failed on attached SQLite view parsing. Fixed to read native SQLite names only, validated without model calls, then independently reran all 135 questions. No diagnostic answers reused."
+    }
+  }
+}

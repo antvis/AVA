@@ -8,6 +8,8 @@ import { MAX_ATTACHMENT_BYTES, readFixture } from './lib/attachments.mjs';
 import { prepareSnapshot } from './evals/sql.ts';
 import { writeResult as writeBirdResult } from './evals/bird.eval.ts';
 import { writeResult as writeSpiderResult } from './evals/spider2lite.eval.ts';
+import { main as runDataBench } from './evals/databench.eval.ts';
+import { plugins } from '../databench/index.js';
 import { run } from './scripts/run.mjs';
 
 function temporary(t) {
@@ -77,7 +79,7 @@ test('Eve discovers both snapshots and resolves SQLite attachments without a mod
         writeBirdResult(snapshot, 'smoke', payload);
         assert.deepEqual(JSON.parse(readFileSync(join(snapshot, 'exec_result/smoke.json'))), payload);
       } else {
-        writeSpiderResult(snapshot, 'smoke', payload);
+        await writeSpiderResult(snapshot, 'smoke', payload);
         assert.equal(readFileSync(join(snapshot, 'exec_result/smoke.csv'), 'utf8'),
           '"text","count"\n"a,""b""\nc",""\n"other","42"\n');
       }
@@ -85,5 +87,32 @@ test('Eve discovers both snapshots and resolves SQLite attachments without a mod
     } finally {
       if (snapshot) rmSync(snapshot, { recursive: true, force: true });
     }
+  }
+});
+
+test('DataBench lists cases from an ESM snapshot without a model', async (t) => {
+  const directory = temporary(t);
+  const dataPath = join(directory, 'fixture.parquet');
+  writeFileSync(dataPath, 'fixture');
+  t.mock.method(plugins.find((plugin) => plugin.name === 'databench-lite'), 'load', () => [{
+    id: 'databench-lite:fixture:01', dataset: 'databench-lite', suite: 'fixture',
+    question: 'Snapshot import check', answerType: 'number', goldAnswer: '1', dataPath,
+  }]);
+  let snapshot;
+  const log = console.error;
+  t.mock.method(console, 'error', (message) => {
+    if (message.startsWith('ava-agent ava: ')) snapshot = message.slice('ava-agent ava: '.length);
+    log(message);
+  });
+  try {
+    await runDataBench(['--list', '--limit', '1']);
+    assert(snapshot);
+    assert.equal(process.exitCode, 0);
+    assert.deepEqual(JSON.parse(readFileSync(join(snapshot, 'benchmarks/package.json'))), { type: 'module' });
+    const samples = JSON.parse(readFileSync(join(snapshot, 'benchmarks/samples.json')));
+    assert.equal(samples[0].id, 'databench-lite:fixture:01');
+    assert.equal(readFileSync(join(snapshot, samples[0].dataPath), 'utf8'), 'fixture');
+  } finally {
+    if (snapshot) rmSync(snapshot, { recursive: true, force: true });
   }
 });

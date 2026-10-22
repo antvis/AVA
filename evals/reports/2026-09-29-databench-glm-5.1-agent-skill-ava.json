@@ -1,0 +1,40 @@
+{
+  "generatedAt": "2026-09-29T05:38:20+00:00",
+  "evaluation": {
+    "benchmark": "DataBench full (080_Books excluded)",
+    "dataset": "databench",
+    "runner": "ava-agent",
+    "model": "GLM-5.1",
+    "skill": "ava",
+    "concurrency": 10,
+    "retryTimeoutMs": 600000,
+    "predictions": "evals/ava-agent/results/databench-2026-09-29T02-21-21-121Z-ava-60eef4c6.csv"
+  },
+  "summary": {
+    "total": 1789,
+    "predicted": 1786,
+    "missing": 3,
+    "metrics": {
+      "databench-answer": {
+        "passed": 1511,
+        "score": 0.8446059250978201
+      }
+    },
+    "timingSeconds": {
+      "average": 40.93,
+      "minimum": 11.79,
+      "maximum": 596.75,
+      "median": 27.75
+    },
+    "tokens": {
+      "prompt": 40953556,
+      "completion": 880810,
+      "total": 41834366,
+      "average": 23384
+    }
+  },
+  "provenance": {
+    "execution": "Combines 1037 historical rows with 752 repaired-harness reruns; not a fresh complete run.",
+    "statistics": "Final retained rows, including failures; excludes superseded attempts and retry overhead."
+  }
+}

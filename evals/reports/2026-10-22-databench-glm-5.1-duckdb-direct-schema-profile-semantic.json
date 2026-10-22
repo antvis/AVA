@@ -1,0 +1,45 @@
+{
+  "generatedAt": "2026-10-22T02:10:05.843Z",
+  "evaluation": {
+    "benchmark": "DataBench full (080_Books excluded)",
+    "runner": "ava-workflow",
+    "engine": "duckdb",
+    "strategy": "direct",
+    "profile": true,
+    "semantic": true,
+    "thinking": false,
+    "concurrency": 20,
+    "executionMode": "composite-previous-answers-plus-targeted-error-rerun",
+    "dataset": "databench",
+    "model": "GLM-5.1",
+    "predictions": "evals/ava-workflow/results/databench-semantic.csv"
+  },
+  "summary": {
+    "total": 1789,
+    "predicted": 1789,
+    "missing": 0,
+    "metrics": {
+      "databench-answer": {
+        "passed": 1664,
+        "score": 0.9301285634432644
+      }
+    },
+    "timingSeconds": {
+      "average": 1.66,
+      "minimum": 0.72,
+      "maximum": 13.56,
+      "median": 1.36
+    },
+    "tokens": {
+      "prompt": 5829791,
+      "completion": 51828,
+      "total": 5881619,
+      "average": 3288
+    }
+  },
+  "provenance": {
+    "execution": "Combines 1787 historical rows, including all 1662 previously correct answers, with two targeted reruns. Previously correct samples were not rerun under updated semantics.",
+    "calibration": "Reference-assisted, in-sample semantic calibration; no held-out evaluation. Inferred default field mappings do not independently resolve question ambiguity. Source values, reference answers and scorer are unchanged.",
+    "statistics": "Mixed historical and fresh row costs, not a fresh complete-run cost; excludes superseded attempts and retry overhead."
+  }
+}

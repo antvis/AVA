@@ -1,0 +1,52 @@
+{
+  "generatedAt": "2026-10-22T02:10:05.466Z",
+  "evaluation": {
+    "benchmark": "DataBench full (080_Books excluded)",
+    "runner": "ava-workflow",
+    "engine": "duckdb",
+    "strategy": "direct",
+    "schema": false,
+    "profile": false,
+    "semantic": false,
+    "concurrency": 20,
+    "thinking": false,
+    "executionMode": "full-model-rerun",
+    "context": {
+      "type": "raw",
+      "format": "csv",
+      "previewRows": 3
+    },
+    "executionRetries": 2,
+    "dataset": "databench",
+    "model": "GLM-5.1",
+    "predictions": "evals/ava-workflow/results/databench-raw.csv"
+  },
+  "summary": {
+    "total": 1789,
+    "predicted": 1758,
+    "missing": 31,
+    "metrics": {
+      "databench-answer": {
+        "passed": 1494,
+        "score": 0.835103409726104
+      }
+    },
+    "timingSeconds": {
+      "average": 1.35,
+      "minimum": 0.6,
+      "maximum": 13.96,
+      "median": 1.07
+    },
+    "tokens": {
+      "prompt": 1720208,
+      "completion": 52067,
+      "total": 1772275,
+      "average": 991
+    }
+  },
+  "provenance": {
+    "execution": "Fresh model run on all 1789 questions using CSV headers and the first three rows. Queries use complete tables; up to two SQL corrections can expose engine diagnostics.",
+    "statistics": "Final retained rows, including failures; excludes superseded attempts and retry overhead.",
+    "limitations": "Same normalized data as the paired runs. Schema/profile baseline replays old SQL; semantics were reference-assisted. Differences do not isolate individual metadata effects."
+  }
+}

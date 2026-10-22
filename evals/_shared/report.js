@@ -1,16 +1,30 @@
-const { sha256 } = require('./files');
-const { readFileSync } = require('node:fs');
+import { readFileSync } from 'node:fs';
 
-const { readCsv } = require('./results');
+import { readCsv } from './results.js';
+
+function compactScores({ total, predicted, missing, metrics }) {
+  return {
+    total, predicted, missing,
+    metrics: Object.fromEntries(Object.entries(metrics).map(([name, { passed, score }]) => [name, { passed, score }])),
+  };
+}
 
 function buildReport(scores, samples, options, plugin = {}) {
-  const metadata = options.metadata ? JSON.parse(readFileSync(options.metadata, 'utf8')) : {};
+  let metadata = options.metadata ? JSON.parse(readFileSync(options.metadata, 'utf8')) : {};
   if (!metadata || typeof metadata !== 'object' || Array.isArray(metadata)) {
     throw new Error('--metadata must contain a JSON object.');
   }
   for (const [key, value] of Object.entries(metadata)) {
     if (!['environment', 'evaluation', 'provenance'].includes(key) || !value || typeof value !== 'object' || Array.isArray(value)) {
       throw new Error('--metadata supports only environment, evaluation, and provenance objects.');
+    }
+  }
+  metadata = JSON.parse(JSON.stringify(metadata), (key, value) => /sha256/i.test(key) ? undefined : value);
+  const evaluation = { ...metadata.evaluation };
+  if (evaluation.context) {
+    evaluation.context = { ...evaluation.context };
+    for (const key of ['schema', 'profile', 'semantic']) {
+      if (Object.hasOwn(evaluation, key) && evaluation.context[key] === evaluation[key]) delete evaluation.context[key];
     }
   }
 
@@ -36,28 +50,18 @@ function buildReport(scores, samples, options, plugin = {}) {
   const inputs = numbers('input_tokens');
   const outputs = numbers('output_tokens');
   const tokens = numbers('total_tokens');
-  const execution = rows.filter((row) => row.error);
   const models = [...new Set(rows.map((row) => row.model).filter(Boolean))];
-  const hashes = options.predictions.map(sha256);
-  const [primaryMetric, metric] = Object.entries(scores.metrics)[0];
   return {
     generatedAt: new Date().toISOString(),
-    // This is the scoring runtime; original execution versions must be supplied.
-    environment: { scoringNodeVersion: process.version, ...metadata.environment },
     evaluation: {
       benchmark: plugin.title ?? options.dataset,
-      ...metadata.evaluation,
+      ...evaluation,
       dataset: options.dataset,
       model: models.length === 1 ? models[0] : models.length ? models : metadata.evaluation?.model ?? null,
       predictions: options.predictions.length === 1 ? options.predictions[0] : options.predictions,
-      predictionsSha256: hashes.length === 1 ? hashes[0] : hashes,
     },
     summary: {
-      samples: scores.total,
-      correct: metric.passed,
-      wrong: scores.predicted - metric.passed,
-      missing: scores.missing,
-      accuracy: metric.score,
+      ...compactScores(scores),
       timingSeconds: {
         average: durations.length ? round(sum(durations) / durations.length) : null,
         minimum: durations.length ? round(durations[0]) : null,
@@ -72,16 +76,11 @@ function buildReport(scores, samples, options, plugin = {}) {
       },
     },
     provenance: {
-      ...metadata.provenance,
-      statisticsScope: 'Final retained CSV rows matching scored samples, including failed executions; excludes superseded attempts and retry overhead. Each timing/token statistic uses only rows with a recorded nonnegative finite value.',
-      scoringScope: `Shared ${Object.keys(scores.metrics).join(', ')} metrics only; skill/tool assertions are separate. Summary uses ${primaryMetric}.`,
-      recordedRows: { duration: durations.length, inputTokens: inputs.length, outputTokens: outputs.length, totalTokens: tokens.length },
+      ...Object.fromEntries(Object.entries(metadata.provenance ?? {}).filter(([key]) =>
+        ['execution', 'calibration', 'limitations'].includes(key))),
+      statistics: metadata.provenance?.statistics ?? 'Final retained rows, including failures; each statistic uses recorded values only. Superseded attempts and retry overhead are excluded.',
     },
-    errors: {
-      execution: { count: execution.length, ids: execution.map((row) => row.id), details: execution.map((row) => ({ id: row.id, error: row.error })) },
-    },
-    ...scores,
   };
 }
 
-module.exports = { buildReport };
+export { buildReport };
