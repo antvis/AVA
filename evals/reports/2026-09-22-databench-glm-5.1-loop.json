@@ -35,19 +35,5 @@
       "total": 9103990,
       "average": 5089
     }
-  },
-  "errors": {
-    "categories": [
-      {
-        "type": "wrongAnswer",
-        "category": "Prediction did not match the gold answer",
-        "count": 283
-      },
-      {
-        "type": "missing",
-        "category": "Loop SQL response did not contain exactly one SQL block",
-        "count": 2
-      }
-    ]
   }
 }

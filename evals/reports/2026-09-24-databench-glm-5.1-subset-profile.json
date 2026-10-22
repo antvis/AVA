@@ -36,19 +36,5 @@
       "total": 2098090,
       "average": 1173
     }
-  },
-  "errors": {
-    "categories": [
-      {
-        "type": "wrongAnswer",
-        "category": "Prediction did not match the gold answer",
-        "count": 236
-      },
-      {
-        "type": "missing",
-        "category": "Gateway request failed with invalid error response",
-        "count": 2
-      }
-    ]
   }
 }

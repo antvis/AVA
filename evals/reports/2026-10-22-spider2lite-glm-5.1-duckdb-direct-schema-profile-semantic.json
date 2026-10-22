@@ -94,54 +94,5 @@
     "calibrationAudit": "evals/ava-workflow/results/20261022-spider2lite-round10-single/calibration-summary.json",
     "remainingLimitationsReview": "evals/ava-workflow/results/20261022-spider2lite-round10-single/residual-review.json",
     "metricChanges": "Annual race-result points are aggregated across all rounds before independent driver/constructor maxima. Quoted unit-price margin is distinct from realized-revenue margin. Monthly net-movement extrema select associated whole-customer averages without cumulative carry-forward. Anniversary comparisons select a single daily anchor per year. Bowler leaderboards collapse repeated peak-over appearances to one personal best per bowler. Observed rental hours cast text timestamps and do not impute unobserved returns. Championship match cohorts use belt identities independently of promotions and parse elapsed minutes/seconds. Bowling score-row coverage rates are explicitly distinguished from conventional legal-delivery economy and strike rate."
-  },
-  "errors": {
-    "execution": [
-      {
-        "instance_id": "local269",
-        "db": "oracle_sql",
-        "error": "Invalid Error: no such column: ehp.start_date"
-      },
-      {
-        "instance_id": "local270",
-        "db": "oracle_sql",
-        "error": "Invalid Error: no such column: ehp.start_date"
-      },
-      {
-        "instance_id": "local272",
-        "db": "oracle_sql",
-        "error": "Invalid Error: no such column: ehp.start_date"
-      },
-      {
-        "instance_id": "local273",
-        "db": "oracle_sql",
-        "error": "Invalid Error: no such column: ehp.start_date"
-      },
-      {
-        "instance_id": "local274",
-        "db": "oracle_sql",
-        "error": "Invalid Error: no such column: ehp.start_date"
-      },
-      {
-        "instance_id": "local275",
-        "db": "oracle_sql",
-        "error": "Invalid Error: no such column: ehp.start_date"
-      },
-      {
-        "instance_id": "local277",
-        "db": "oracle_sql",
-        "error": "Invalid Error: no such column: ehp.start_date"
-      },
-      {
-        "instance_id": "local279",
-        "db": "oracle_sql",
-        "error": "Invalid Error: no such column: ehp.start_date"
-      },
-      {
-        "instance_id": "local218",
-        "db": "EU_soccer",
-        "error": "Binder Error: Values list \"m\" does not have a column named \"home_team_team_goal\"\n\nLINE 4:   CROSS JOIN LATERAL(VALUES(m.home_team_api_id, m.home_team_team_goal),(m.away_team_api_id, m.away_team_goal...\n                                                        ^"
-      }
-    ]
   }
 }

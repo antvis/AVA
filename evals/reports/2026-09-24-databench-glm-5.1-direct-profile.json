@@ -36,19 +36,5 @@
       "total": 4142148,
       "average": 2315
     }
-  },
-  "errors": {
-    "categories": [
-      {
-        "type": "wrongAnswer",
-        "category": "Prediction did not match the gold answer",
-        "count": 238
-      },
-      {
-        "type": "missing",
-        "category": "Model API hostname resolution failed",
-        "count": 1
-      }
-    ]
   }
 }

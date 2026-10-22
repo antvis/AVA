@@ -50,7 +50,6 @@ function buildReport(scores, samples, options, plugin = {}) {
   const inputs = numbers('input_tokens');
   const outputs = numbers('output_tokens');
   const tokens = numbers('total_tokens');
-  const execution = rows.filter((row) => row.error);
   const models = [...new Set(rows.map((row) => row.model).filter(Boolean))];
   return {
     generatedAt: new Date().toISOString(),
@@ -84,11 +83,6 @@ function buildReport(scores, samples, options, plugin = {}) {
       scoringScope: `Shared ${Object.keys(scores.metrics).join(', ')} metrics only; skill/tool assertions are separate.`,
       recordedRows: { duration: durations.length, inputTokens: inputs.length, outputTokens: outputs.length, totalTokens: tokens.length },
     },
-    errors: {
-      execution: execution.map((row) => ({ id: row.id, error: row.error })),
-    },
-    suites: Object.fromEntries(Object.entries(scores.suites).map(([name, result]) => [name, compactScores(result)])),
-    failures: scores.failures,
   };
 }
 

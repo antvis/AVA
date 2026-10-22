@@ -151,16 +151,12 @@ test('CLI report stores aggregate scores once and preserves all selected metrics
   assert.deepEqual(report.evaluation.context, { type: 'raw', previewRows: 3, profile: true });
   const expected = { total: 2, predicted: 1, missing: 1,
     metrics: { exact: { passed: 0, score: 0 }, always: { passed: 1, score: 0.5 } } };
-  assert.deepEqual(report.suites.demo, expected);
   assert.deepEqual(report.summary, { ...expected,
     timingSeconds: { average: null, minimum: null, maximum: null, median: null },
     tokens: { prompt: null, completion: null, total: null, average: null } });
-  for (const key of ['total', 'predicted', 'missing', 'metrics']) assert.equal(Object.hasOwn(report, key), false);
-  assert.deepEqual(report.errors.execution, [{ id: 'two', error: 'execution failed' }]);
-  assert.deepEqual(report.failures, [
-    { id: 'one', prediction: 'wrong', gold: 'right', scores: { exact: false, always: true } },
-    { id: 'two', prediction: null, gold: 'missing', scores: { exact: false, always: false } },
-  ]);
+  for (const key of ['total', 'predicted', 'missing', 'metrics', 'errors', 'failures', 'suites']) {
+    assert.equal(Object.hasOwn(report, key), false);
+  }
   assert.match(stdout.toString(), /always: 50\.00% \(1\/2\)/);
   assert.match(report.provenance.scoringScope, /Shared exact, always metrics only/);
   assert.doesNotMatch(JSON.stringify(report), /sha256|private-hash/i);
