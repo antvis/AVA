@@ -25,6 +25,22 @@ describe.skipIf(process.env.AVA_MYSQL_TEST !== '1')('loaders/mysql', () => {
     });
     const schema = await engine.schema();
 
+    expect(engine.language.name).toBe('DuckDB SQL dialect');
+    expect(
+      (await engine.execute('SELECT list_transform([1, 2], lambda x: x + 1) AS values FROM customers LIMIT 1')).data
+    ).toEqual([{ values: [2, 3] }]);
+    expect(
+      (
+        await engine.execute(`SELECT c.name, SUM(o.amount) AS total FROM orders o
+        JOIN customers c USING (tenant_id, customer_id) GROUP BY c.name ORDER BY c.name`)
+      ).data
+    ).toEqual([
+      { name: 'Alice', total: 55.4 },
+      { name: 'Bob', total: 10 },
+      { name: 'Carol', total: 34.6 },
+    ]);
+    expect(await engine.execute('SELECT * FROM orders', { maxRows: 1 })).toMatchObject({ truncated: true });
+
     expect(schema).toEqual({
       models: [
         {

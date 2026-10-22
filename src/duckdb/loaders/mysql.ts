@@ -1,6 +1,6 @@
 /**
  * MySQL loader: ATTACH a MySQL database through DuckDB's mysql extension and
- * register one view per table in the database. Supports an optional SSH tunnel.
+ * query its catalog directly so DuckDB can push complete queries down. Supports SSH.
  * https://duckdb.org/docs/2.0/core_extensions/mysql
  */
 
@@ -93,7 +93,6 @@ export async function loadMySQL(options: MySQLSourceOptions): Promise<LoadedSour
         )`);
         await conn.run(`ATTACH '' AS ${ATTACH_ALIAS} (TYPE mysql, READ_ONLY, SECRET ava_source_mysql)`);
 
-        // Discover every table in the attached database and expose each as a view
         const tablesReader = await conn.runAndReadAll(
           `SELECT table_name FROM information_schema.tables
            WHERE table_catalog = ${sqlStringLiteral(ATTACH_ALIAS)}
@@ -102,13 +101,8 @@ export async function loadMySQL(options: MySQLSourceOptions): Promise<LoadedSour
         );
         const tableNames = tablesReader.getRowObjectsJson().map((row: any) => String(row.table_name));
 
-        for (const table of tableNames) {
-          await conn.run(
-            `CREATE OR REPLACE VIEW ${sqlIdentifier(table)} AS SELECT * FROM ${sqlIdentifier(
-              ATTACH_ALIAS
-            )}.${sqlIdentifier(options.database)}.${sqlIdentifier(table)}`
-          );
-        }
+        // Local pass-through views prevent whole-query remote pushdown.
+        await conn.run(`USE ${sqlIdentifier(ATTACH_ALIAS)}.${sqlIdentifier(options.database)}`);
         return tableNames;
       } catch (error) {
         await tunnel?.close();

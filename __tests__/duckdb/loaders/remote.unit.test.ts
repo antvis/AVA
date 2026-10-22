@@ -9,7 +9,7 @@ describe.each([
   { type: 'mysql', load: loadMySQL, alias: 'mysql_source', port: 3306 },
   { type: 'postgres', load: loadPostgreSQL, alias: 'pg_source', port: 5432 },
 ])('loaders/$type native setup', ({ type, load, alias, port }) => {
-  it('installs the extension and attaches read-only with a temporary secret', async () => {
+  it('attaches read-only with a temporary secret and uses the remote catalog', async () => {
     const run = vi.fn().mockResolvedValue(undefined);
     const runAndReadAll = vi.fn().mockResolvedValue({ getRowObjectsJson: () => [{ table_name: 'orders' }] });
     const source = await load({ host: 'localhost', database: 'sales db', user: "O'Brien", password: "p a'ss\\word" });
@@ -24,7 +24,7 @@ describe.each([
       expect(statements[2]).toContain("PASSWORD 'p a''ss\\word'");
       expect(statements[3]).toBe(`ATTACH '' AS ${alias} (TYPE ${type}, READ_ONLY, SECRET ava_source_${type})`);
       expect(statements).toHaveLength(5);
-      expect(statements[4]).toContain('CREATE OR REPLACE VIEW "orders"');
+      expect(statements[4]).toBe(`USE "${alias}"."${type === 'mysql' ? 'sales db' : 'public'}"`);
     } finally {
       await source.cleanup();
     }

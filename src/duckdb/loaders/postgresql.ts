@@ -1,7 +1,7 @@
 /**
  * PostgreSQL loader: ATTACH a PostgreSQL database through DuckDB's postgres
- * extension and register one view per table in the schema. Supports an optional SSH tunnel.
- * https://duckdb.org/docs/2.0/core_extensions/postgres
+ * extension and query its catalog with DuckDB SQL. Supports an optional SSH tunnel.
+ * https://duckdb.org/docs/2.0/core_extensions/postgres/overview
  */
 
 import { sqlIdentifier, sqlStringLiteral, sqlUnionAll } from '../../util/sql';
@@ -115,7 +115,6 @@ export async function loadPostgreSQL(options: PostgreSQLSourceOptions): Promise<
         )`);
         await conn.run(`ATTACH '' AS ${ATTACH_ALIAS} (TYPE postgres, READ_ONLY, SECRET ava_source_postgres)`);
 
-        // Discover every table in the attached schema and expose each as a view
         const tablesReader = await conn.runAndReadAll(
           `SELECT table_name FROM information_schema.tables
            WHERE table_catalog = ${sqlStringLiteral(ATTACH_ALIAS)}
@@ -124,13 +123,7 @@ export async function loadPostgreSQL(options: PostgreSQLSourceOptions): Promise<
         );
         const tableNames = tablesReader.getRowObjectsJson().map((row: any) => String(row.table_name));
 
-        for (const table of tableNames) {
-          await conn.run(
-            `CREATE OR REPLACE VIEW ${sqlIdentifier(table)} AS SELECT * FROM ${sqlIdentifier(
-              ATTACH_ALIAS
-            )}.${sqlIdentifier(schema)}.${sqlIdentifier(table)}`
-          );
-        }
+        await conn.run(`USE ${sqlIdentifier(ATTACH_ALIAS)}.${sqlIdentifier(schema)}`);
         return tableNames;
       } catch (error) {
         await tunnel?.close();

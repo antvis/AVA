@@ -76,6 +76,12 @@ AVA installs `httpfs` before locking configuration and scopes supplied headers a
 
 Parquet supports selective reads when the server supports HTTP Range requests; CSV aggregations often transfer the whole file. For supported asynchronous reads and remote-file behavior, see <a href="https://duckdb.org/docs/2.0/data/io"><img src="/logos/duckdb.svg" alt="" width="16" height="16" className="inline-block align-text-bottom" /> DuckDB I/O</a> and <a href="https://duckdb.org/docs/2.0/core_extensions/httpfs/https"><img src="/logos/duckdb.svg" alt="" width="16" height="16" className="inline-block align-text-bottom" /> HTTP(S) support</a>.
 
+## Remote database queries
+
+MySQL and PostgreSQL sources use DuckDB SQL. AVA attaches each source read-only and selects its catalog directly. For eligible MySQL queries, DuckDB 2.0 pushes the complete query, including joins and aggregates, to MySQL. PostgreSQL uses the extension's column and filter pushdown; joins and aggregates can run in DuckDB. DuckDB-specific expressions remain available, with execution determined by the optimizer.
+
+See the official [MySQL extension](https://duckdb.org/docs/2.0/core_extensions/mysql) and [PostgreSQL extension](https://duckdb.org/docs/2.0/core_extensions/postgres/overview) documentation.
+
 ## Resource limits
 
 Defaults are 512 MB of memory, one worker thread, and a 30-second query timeout. `maxTempDirectorySize` is optional; no spill-size limit is configured when omitted.
