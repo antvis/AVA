@@ -42,6 +42,19 @@ const clickhouse = z
   .passthrough()
   .refine((value) => value.host || value.url, { message: "ClickHouse sources require either 'host' or 'url'" });
 
+const feishuBitable = z
+  .object({
+    url:text.optional(),
+    appToken:text.optional(),
+    tableId:text.optional(),
+    appSecret:text.optional(),
+    appId: text.optional(),
+  })
+  .strict()
+  .refine((value)=>Boolean(value.url || (value.appToken && value.tableId)),{
+    message:"Feishu Bitable sources require either 'url' or both 'appToken' and 'tableId'",
+  })
+
 const sourceSchema = z.discriminatedUnion('type', [
   z
     .object({ type: z.literal('csv-file'), options: file.extend({ options: z.record(z.unknown()).optional() }) })
@@ -85,6 +98,7 @@ const sourceSchema = z.discriminatedUnion('type', [
     .object({ type: z.literal('supabase'), options: z.object({ accessToken: text, projectRef: text }).strict() })
     .strict(),
   z.object({ type: z.literal('clickhouse'), options: clickhouse }).strict(),
+  z.object({ type: z.literal('feishu-bitable'), options: feishuBitable }).strict(),
 ]);
 
 export const sourceConfig = sourceSchema.transform((value) => value as DataSourceConfig);

@@ -2,6 +2,7 @@ import { extname, resolve } from 'path';
 
 import { createSession } from '../session/client';
 import { engineTypeSchema, sourceConfig } from '../session/protocol';
+import { isFeishuBitableUrl,isFeishuHostUrl,feishuCredentials } from '../feishu';
 import { llmConfig } from '../config';
 import { readJSON } from '../io';
 import { option } from '../options';
@@ -33,7 +34,12 @@ export async function run([dataset]: string[], options: Options): Promise<{ data
   if (dataset.startsWith('@') || dataset === '-') {
     if (options.type !== undefined) throw new Error('--type cannot be combined with a source config.');
     input = await readJSON(dataset);
-  } else {
+  }else if (isFeishuBitableUrl(dataset)){
+    if(options.type!== undefined) throw new Error('--type cannot be combined with a feishu-bitable source.');
+    input = { type: 'feishu-bitable', options: { url: dataset }} ;
+  }else if(isFeishuHostUrl(dataset)){
+    throw new Error('Only Feishu Bitable links are supported: /base/<appToken>?table=<tableId> or /wiki/<nodeToken>?table=<tableId>. Docx, Sheets, and other Feishu links cannot be loaded.');}
+  else {
     const pathname = /^https?:\/\//i.test(dataset) ? new URL(dataset).pathname : dataset;
     const type = option(options, 'type') ?? sourceTypes[extname(pathname).toLowerCase()];
     if (!type) throw new Error('Cannot infer the source type. Pass --type.');
@@ -44,6 +50,12 @@ export async function run([dataset]: string[], options: Options): Promise<{ data
 
   if ('path' in config.options && !/^https?:\/\//i.test(config.options.path)) {
     config.options.path = resolve(config.options.path);
+  }
+
+  if(config.type === 'feishu-bitable'){
+    const creds = await feishuCredentials(config.options);
+    config.options.appId = creds.appId;
+    config.options.appSecret = creds.appSecret;
   }
 
   return createSession(config, llmConfig(config.type === 'text'), engine);
@@ -71,21 +83,39 @@ Arguments:
 Options:
   -t, --type <type>  Override the type inferred from the file extension.
                     Types: csv-file, json-file, parquet, excel, sqlite.
-                    Cannot be used with @file or stdin configs.
+                    Cannot be used with @file, stdin configs, or Feishu URLs.
   --engine <type>    duckdb, python, javascript, supabase, or clickhouse.
                     Default: supabase/clickhouse for those sources, otherwise duckdb.
                     Fixed for the session; source support depends on the engine.
+                    feishu-bitable uses duckdb. The loaded view is named data.
   -h, --help         Show help.
+
+Feishu Bitable:
+  A /base/ or /wiki/ link from feishu.cn or larksuite.com is detected automatically:
+    ava source "https://my.feishu.cn/base/<appToken>?table=<tableId>"
+    ava source "https://my.feishu.cn/wiki/<nodeToken>?table=<tableId>"
+  A wiki node is resolved to the Bitable it hosts, so the app also needs wiki
+  read access and membership of the wiki space.
+  Without ?table=, AVA uses the only table of the Bitable and lists the tables
+  when there are several. Or pass a "feishu-bitable" config via @file or stdin.
+  appId and appSecret are required. They are resolved from the config first,
+  then AVA_FEISHU_APP_ID / AVA_FEISHU_APP_SECRET, then ~/.ava/feishu.json;
+  in a terminal AVA offers to bind and save them.
+  The whole table is loaded as one view named data; the view query is ignored.
+  Docx and Sheets links are not supported.
 
 Environment:
   OPENAI_API_KEY     Required for text sources and subsequent AI commands.
   OPENAI_MODEL       Model name (default: gpt-4o-mini).
   OPENAI_BASE_URL    Optional API base URL.
+  AVA_FEISHU_APP_ID      Feishu app credentials for feishu-bitable sources.
+  AVA_FEISHU_APP_SECRET
   Model settings are fixed when the dataset is loaded.
 
 In a terminal, shows the dataset ID and suggested next commands.
 When piped or redirected, returns JSON containing datasetId.
-IDs use a sanitized source name plus a random suffix. Requires macOS or Linux.
+IDs use a sanitized source name plus a random suffix.
+Requires Node.js 22.13+ on macOS or Linux.
 Sessions expire after 30 idle minutes; dispose releases them immediately.
 Python requires python3 and pandas; local Python execution is not sandboxed.
 JavaScript accepts inline csv/json/text configs. Use ava schema to inspect the query language.
@@ -94,4 +124,20 @@ Examples:
   ava source sales.csv
   ava source sales.csv --engine python
   ava source @source.json
-  echo '{ "type": "json", "options": { "data": [{ "sales": 10 }] } }' | ava source -`;
+  echo '{ "type": "json", "options": { "data": [{ "sales": 10 }] } }' | ava source -
+  ava source "https://my.feishu.cn/base/<appToken>?table=<tableId>"
+  ava source "https://my.feishu.cn/wiki/<nodeToken>?table=<tableId>"
+  ava source @feishu.json
+
+feishu.json:
+{
+  "type": "feishu-bitable",
+  "options": {
+    "url": "https://my.feishu.cn/base/<appToken>?table=<tableId>",
+    "appId": "<app-id>",
+    "appSecret": "<app-secret>"
+  }
+}
+    Provide url or both appToken and tableId; they must name the same table.
+    Keep appSecret out of version control and logs.
+`;

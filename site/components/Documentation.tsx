@@ -279,6 +279,18 @@ ava.dispose();`}</CodeBlock>
                             <li><b>Inline</b>: <code>&apos;csv&apos;</code> <code>{'{ csv }'}</code>, <code>&apos;json&apos;</code> <code>{'{ data }'}</code>, <code>&apos;text&apos;</code> <code>{'{ text }'}</code> (extracts data from unstructured text using LLM)</li>
                             <li><b>Files</b> (Node.js only): <code>&apos;csv-file&apos;</code>, <code>&apos;json-file&apos;</code>, <code>&apos;parquet&apos;</code>, <code>&apos;excel&apos;</code> (one view per sheet) — with <code>{'{ path, headers? }'}</code> (local path or http(s) URL)</li>
                             <li><b>Databases</b> (Node.js only): <code>&apos;mysql&apos;</code>, <code>&apos;postgresql&apos;</code>, <code>&apos;mongodb&apos;</code> — all tables/collections are auto-discovered and exposed</li>
+                            <li><b>Feishu Bitable</b> (Node.js, DuckDB only):
+                            <code>&apos;feishu-bitable&apos;</code> with
+                            <code>{'{url? | appToken?, tableId?, appId, appSecret}'}</code>.
+                            <code>appId</code> and <code>appSecret</code> are required; they are read from the config,
+                            <code>AVA_FEISHU_APP_ID</code>/<code>AVA_FEISHU_APP_SECRET</code>, or <code>~/.ava/feishu.json</code>.
+                            Provide <code>url</code>, or both <code>appToken</code> and <code>tableId</code>.
+                            Read-only; rows are exposed as one view named <code>data</code>.
+                            Complex cells (people, attachments, links, formulas, locations, groups) are flattened to comma-separated text.
+                            The <code>view</code> query on a Feishu URL is ignored. <code>/base/</code> and
+                            wiki-hosted <code>/wiki/</code> links are supported; a wiki node is resolved to its
+                            Bitable through the wiki API, so the app also needs wiki read access and wiki space
+                            membership. </li>
                           </ul>
                         </>
                       }
