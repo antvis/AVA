@@ -11,7 +11,7 @@
   },
   "dependencies": {
     "@ai-sdk/openai": "^4.0.73",
-    "@ai-sdk/react": "4.0.145",
+    "@ai-sdk/react": "^4.0.154",
     "@antv/ava": "file:..",
     "@antv/gpt-vis": "^1.0.0",
     "@mdx-js/loader": "^3.1.1",
