@@ -3,6 +3,7 @@
  * that the engine registers as one or more views.
  */
 
+
 import { loadCSV } from './csv';
 import { loadCSVFile } from './csv-file';
 import { loadExcel } from './excel';
@@ -14,6 +15,7 @@ import { loadParquetFile } from './parquet';
 import { loadPostgreSQL } from './postgresql';
 import { loadSQLite } from './sqlite';
 import { loadText } from './text';
+import { loadFeishuBitable } from './feishu-bitable';
 
 import type { DataSourceConfig, LLMConfig, LoadedSource } from '../../types';
 
@@ -54,5 +56,7 @@ export async function loadSource(config: DataSourceConfig, llmConfig: LLMConfig)
       // ClickHouse is queried directly through ClickHouseEngine, not through
       // DuckDB ATTACH loaders.
       throw new Error('ClickHouse sources are handled by ClickHouseEngine, not the DuckDB engine');
+    case 'feishu-bitable':
+      return loadFeishuBitable(config.options);
   }
 }

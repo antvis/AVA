@@ -84,7 +84,7 @@ const schema = await ava.schema();
 
 | Parameter | Type                   | Required | Meaning                                                                                                                                      |
 | --------- | ---------------------- | -------- | -------------------------------------------------------------------------------------------------------------------------------------------- |
-| `type`    | `SourceType`           | Yes      | `csv`, `csv-file`, `json`, `json-file`, `parquet`, `excel`, `text`, `sqlite`, `mysql`, `postgresql`, `mongodb`, `supabase`, or `clickhouse`. |
+| `type`    | `SourceType`           | Yes      | `csv`, `csv-file`, `json`, `json-file`, `parquet`, `excel`, `text`, `sqlite`, `mysql`, `postgresql`, `mongodb`, `supabase`, `clickhouse`, or `feishu-bitable`. |
 | `options` | Source-specific object | Yes      | Use the matching table below. Field names are relative to `options`.                                                                         |
 
 `source()` returns no value and prepares the data for execution. Schema discovery is deferred until `schema()` or another operation needs it. Calling `source()` again replaces the current source and clears its cached metadata. Use `schema()` to inspect table and field names, and call `await ava.dispose()` when finished.
@@ -425,6 +425,25 @@ await ava.source({
 | `ssl`                         | `boolean` | No       | Alias for `tls`.                                                                                                                                                |
 | `tlsCAFile`                   | `string`  | No       | Path to CA certificate file for TLS.                                                                                                                            |
 | `tlsAllowInvalidCertificates` | `boolean` | No       | Allow invalid certificates (testing only, default false).                                                                                                       |
+
+## Feishu Bitable
+
+Use `type: 'feishu-bitable'` with the DuckDB engine in Node.js. Rows are exposed as one read-only view named `data`.
+
+```typescript
+await ava.source({
+  type: 'feishu-bitable',
+  options: {
+    url: 'https://my.feishu.cn/base/APP_TOKEN?table=TABLE_ID',
+    appId: process.env.AVA_FEISHU_APP_ID,
+    appSecret: process.env.AVA_FEISHU_APP_SECRET,
+  },
+});
+```
+
+Provide `url`, or both `appToken` and `tableId`, along with `appId` and `appSecret`. The CLI also reads credentials from `AVA_FEISHU_APP_ID` / `AVA_FEISHU_APP_SECRET` or `~/.ava/feishu.json`.
+
+Both `/base/` and wiki-hosted `/wiki/` links are supported. Wiki links require wiki read access and wiki space membership so the app can resolve the Bitable. The `view` query parameter is ignored. Complex cells (people, attachments, links, formulas, locations, and groups) are flattened to comma-separated text.
 
 ## Supabase
 

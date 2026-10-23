@@ -44,5 +44,10 @@
     "tailwindcss": "^4.1.18",
     "typescript": "~5.9.3"
   },
+
+    "optionalDependencies": {
+      "@tailwindcss/oxide-darwin-arm64": "*"
+    }
+  ,
   "repository": "https://github.com/antvis/AVA.git"
 }

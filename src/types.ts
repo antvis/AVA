@@ -119,7 +119,8 @@ export type SourceType =
   | 'sqlite'
   | 'mongodb'
   | 'supabase'
-  | 'clickhouse';
+  | 'clickhouse'
+  | 'feishu-bitable';
 
 /**
  * DuckDB read_csv reader options.
@@ -484,6 +485,14 @@ export type ClickHouseSourceOptions = Omit<ClickHouseClientConfigOptions, 'host'
   password?: string;
 };
 
+export interface FeishuBitableSourceOptions {
+  url?:string;
+  appToken?:string;
+  tableId?: string;
+  appId?:string;
+  appSecret?:string;
+}
+
 /**
  * External data source configuration for loadSource.
  * - inline types (csv/json/text): data is materialized into JS memory
@@ -505,7 +514,8 @@ export type DataSourceConfig =
   | { type: 'sqlite'; options: SQLiteSourceOptions }
   | { type: 'mongodb'; options: MongoDBSourceOptions }
   | { type: 'supabase'; options: SupabaseSourceOptions }
-  | { type: 'clickhouse'; options: ClickHouseSourceOptions };
+  | { type: 'clickhouse'; options: ClickHouseSourceOptions }
+  | { type: 'feishu-bitable'; options: FeishuBitableSourceOptions };
 
 /**
  * File formats readable by DuckDB's readers (csv-file maps to csv, json-file to json).
