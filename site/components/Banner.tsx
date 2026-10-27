@@ -192,9 +192,9 @@ const Banner: React.FC = () => (
             <RotatingVerse /> <StaggerChars text="Visual Analytics." startMs={430} />
           </span>
           <br />
-          <StaggerChars text="Built for " startMs={900} />{' '}
+          <StaggerChars text="Open Source, Built for " startMs={900} />{' '}
           <span className="relative whitespace-nowrap text-[color:var(--color-primary-dark)]">
-            <StaggerChars text="Agents." startMs={1000} />
+            <StaggerChars text="Agents." startMs={1680} />
             {/* a single crafted accent: hand-drawn underline */}
             <svg
               aria-hidden
