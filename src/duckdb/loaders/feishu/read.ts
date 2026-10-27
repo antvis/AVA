@@ -9,39 +9,22 @@ function tableUrl(origin:string,table:{appToken:string;tableId:string},suffix:st
     return  `${origin}/open-apis/bitable/v1/apps/${encodeURIComponent(table.appToken)}/tables/${encodeURIComponent(table.tableId)}${suffix}`
 }
 
-// async function getItem(token:string,url:string):Promise<any[]>{
-//     const response = await fetch(url,{
-//         method:'GET',
-//         headers:{
-//             'Authorization':`Bearer ${token}`
-//         }
-//     });
-//     const body = await response.json();
-//     if(body.code !== 0) throw new Error(`Feishu API error ${body.code}:${body.msg}`);
-//     return body.data?.items??[];
-
-// }
-
 const RECORDS_PAGE_SIZE = 500;
 const FIELDS_PAGE_SIZE = 100;
-
-function apiError(code:unknown,msg:unknown):Error{
-    return feishuError(code,msg)
-}
 
 async function readFeishuBody(response:Response):Promise<{data?:{items?:any[];has_more?:unknown;page_token?:unknown}}>{
     let body: unknown;
     try{
         body = await response.json()
     }catch{
-        throw apiError(undefined,'response is not JSON');
+        throw feishuError(undefined,'response is not JSON');
     }
     if (!body || typeof body !== 'object'){
-        throw apiError(undefined,'response is not JSON');
+        throw feishuError(undefined,'response is not JSON');
     }
     const payload = body as {code ?:unknown;msg?:unknown;data?:{items?:any[];has_more?:unknown;page_token?:unknown}};
     if(payload.code !== 0){
-        throw apiError(payload.code,payload.msg);
+        throw feishuError(payload.code,payload.msg);
     }
     return payload;
 }
