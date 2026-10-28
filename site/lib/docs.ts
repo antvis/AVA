@@ -109,7 +109,7 @@ export const docs = [
   },
   {
     slug: 'reference/events',
-    title: 'Events & lifecycle',
+    title: 'Events',
     group: 'API Reference',
     description: 'Observe data loading, model work, query execution, and cleanup.',
   },

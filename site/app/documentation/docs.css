@@ -405,6 +405,33 @@
 .docs-table tr:last-child td {
   border: 0;
 }
+.docs-api-overview table {
+  table-layout: fixed;
+}
+.docs-api-overview th:first-child {
+  width: 25%;
+}
+.docs-api-overview th:nth-child(2) {
+  width: 40%;
+}
+.docs-api-overview td:first-child {
+  white-space: normal;
+}
+.docs-api-overview code {
+  overflow-wrap: anywhere;
+}
+.docs-api-tag {
+  display: inline-block;
+  margin: 2px 4px 2px 0;
+  padding: 1px 6px;
+  border-radius: 4px;
+  background: #d6f3e8;
+  color: #075f50;
+  font-size: 11px;
+  font-weight: 600;
+  line-height: 1.5;
+  white-space: nowrap;
+}
 .docs-benchmark-overview table {
   min-width: 0;
 }

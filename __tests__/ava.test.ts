@@ -7,6 +7,7 @@ import * as path from 'path';
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 
 import { AVA } from '../src';
+import { LifecycleEvent, LifecycleEventType } from '../src/event';
 import { JavaScriptEngine } from '../src/interpreter/javascript';
 import { buildDataModel } from '../src/util/data-model';
 import * as suggestions from '../src/suggest';
@@ -32,11 +33,12 @@ describe('AVA', () => {
 
   it('returns the current schema throughout the source lifecycle', async () => {
     const onEnd = vi.fn();
-    ava.on('sourceend', onEnd);
+    ava.on(LifecycleEventType.SOURCE_END, onEnd);
     const message = 'No data loaded. Please call source() first.';
     await expect(ava.schema()).rejects.toThrow(message);
     await ava.source({ type: 'json', options: { data: [{ first: 1 }] } });
     expect(onEnd).toHaveBeenLastCalledWith({ type: 'sourceend', data: {} });
+    expect(onEnd.mock.lastCall?.[0]).toBeInstanceOf(LifecycleEvent);
     const first = await ava.schema();
     expect(first.models[0].columns.map((field) => field.name)).toEqual(['first']);
     const before = JSON.stringify(first);
