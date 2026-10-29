@@ -71,11 +71,15 @@ describe('directAnalysis', () => {
       'summarizeend',
     ]);
     for (let i = 0; i < events.length; i += 2) {
-      expect(events[i].context.operationId).toEqual(expect.any(String));
-      expect(events[i + 1].context).toEqual(events[i].context);
+      expect(events[i].context.eventId).toMatch(/^[^:]+:start$/);
+      expect(events[i + 1].context).toEqual({
+        ...events[i].context,
+        eventId: events[i].context.eventId.replace(/:start$/, ':end'),
+      });
       expect(events[i].context.stepId).toBe(events[0].context.stepId);
     }
-    expect(events[4].data.queryId).toBe(events[2].context.operationId);
+    expect(new Set(events.map(({ context }) => context.eventId)).size).toBe(events.length);
+    expect(events[4].data.queryId).toBe(events[3].context.eventId);
     expect(events[5].data).toMatchObject({ ...narrative, usage: { inputTokens: 10, outputTokens: 5 } });
   });
 
@@ -91,7 +95,7 @@ describe('directAnalysis', () => {
   });
 
   it('retries a failed query with its DSL and error as correction context', async () => {
-    const { runtime, engine, doGenerate } = setup();
+    const { runtime, engine, doGenerate, emit } = setup();
     engine.getDSL.mockResolvedValueOnce('BAD SQL');
     engine.execute.mockRejectedValueOnce(new Error('Invalid SQL'));
 
@@ -106,6 +110,21 @@ describe('directAnalysis', () => {
     expect(engine.execute).toHaveBeenLastCalledWith('SELECT 1', expect.any(Object));
     expect(result).toMatchObject({ ...execution, sql: 'SELECT 1', text: narrative.conclusion });
     expect(doGenerate).toHaveBeenCalledOnce();
+
+    const events = emit.mock.calls.map(([event]) => event);
+    const queryEnds = events.filter(({ type }) => type === 'queryend');
+    expect(queryEnds).toHaveLength(2);
+    expect(queryEnds[0].data).toHaveProperty('error');
+    expect(new Set(events.map(({ context }) => context.eventId)).size).toBe(events.length);
+    for (let i = 0; i < events.length; i += 2) {
+      expect(events[i].context.eventId).toMatch(/^[^:]+:start$/);
+      expect(events[i + 1].context).toEqual({
+        ...events[i].context,
+        eventId: events[i].context.eventId.replace(/:start$/, ':end'),
+      });
+      expect(events[i].context.stepId).toBe(events[0].context.stepId);
+    }
+    expect(events.find(({ type }) => type === 'summarizestart').data.queryId).toBe(queryEnds[1].context.eventId);
   });
 
   it.each([0, 2])('stops after %s correction retries', async (maxRetries) => {
@@ -133,7 +152,10 @@ describe('directAnalysis', () => {
     expect(events.at(-2).type).toBe(`${phase}start`);
     expect(events.at(-1)).toMatchObject({
       type: `${phase}end`,
-      context: events.at(-2).context,
+      context: {
+        ...events.at(-2).context,
+        eventId: events.at(-2).context.eventId.replace(/:start$/, ':end'),
+      },
       data: { error: expect.any(Object) },
     });
     expect(engine.getDSL).toHaveBeenCalledOnce();

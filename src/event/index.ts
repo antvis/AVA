@@ -5,6 +5,14 @@ export * from './constant';
 export * from './events';
 export * from './types';
 
+export function startOf(pairId: string) {
+  return `${pairId}:start`;
+}
+
+export function endOf(pairId: string) {
+  return `${pairId}:end`;
+}
+
 /**
  * Trigger event based on Event object
  */

@@ -46,7 +46,7 @@ These events describe steps within analysis. Direct calls to `translate()` and `
 | --- | --- | --- |
 | Translate a question | `translatestart`: `{ query }`; direct analysis also includes `attempt` | `translateend`: `{ dsl }` |
 | Execute a query | `querystart`: `{ dsl }` | `queryend`: `ExecutionResult` |
-| Summarize results | `summarizestart`: `{}` | `summarizeend`: `{ text }` |
+| Summarize results | `summarizestart`: `{ queryId }` | `summarizeend`: `{ queryExplanation, conclusion, limitations?, nextStep?, usage? }` |
 | Loop reasoning | `reasonstart`: `{ step }` | `reasonend`: `{ step, action, text }` |
 
 Failed end events carry `{ error }`. A reasoning failure also carries `step`; the final fallback includes `finalAttempt: true` on both events. See [analysis strategies](/documentation/analysis/strategies/) for these steps.
@@ -58,7 +58,9 @@ analyzestart → translatestart → translateend → querystart → queryend
              → summarizestart → summarizeend → analyzeend
 ```
 
-Retries can repeat translation and query events. The summary is omitted when `includeSummary` is `false`. Concurrent operations can interleave; events do not contain an operation ID.
+Retries can repeat translation and query events. The summary is omitted when `includeSummary` is `false`.
+
+Direct analysis events include `context.eventId` and `context.stepId`. Each start/end pair shares an internal `pairId`, producing event IDs `${pairId}:start` and `${pairId}:end`; retries use a new pair ID. The `stepId` groups events from the same direct analysis, even when concurrent analyses interleave. The summary's `data.queryId` references the successful query-end event's complete ID, including `:end`. Loop analysis and standalone `translate()` / `query()` calls do not currently include this context.
 
 ## Listener parameters
 

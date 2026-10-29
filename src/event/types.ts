@@ -30,8 +30,8 @@ export type SuggestStartPayload = object | null;
 export type SuggestEndPayload = object | null;
 
 export type AnalysisEventContext = {
-  /** Pairs start and end events for one operation; retries use a new ID. */
-  operationId?: string;
+  /** Unique event ID: `${pairId}:start` or `${pairId}:end`; retries use a new pair ID. */
+  eventId?: string;
   /** Groups operations that belong to the same sub-analysis. */
   stepId?: string;
   /** Identifies sub-analyses whose results this step depends on. */
@@ -75,7 +75,7 @@ export type QueryEndPayload =
     };
 
 export type SummarizeStartPayload = {
-  /** The operation ID of the query whose result will be summarized. */
+  /** The query-end event ID whose result will be summarized. */
   queryId: string;
 };
 

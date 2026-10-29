@@ -18,7 +18,7 @@ import { extractJsonMiddleware, generateId, generateText, Output, wrapLanguageMo
 import { z } from 'zod/v4';
 
 import { languageModel } from '../util/model';
-import { AnalysisEvent, AnalysisEventType } from '../event';
+import { AnalysisEvent, AnalysisEventType, startOf, endOf } from '../event';
 import { serializeError } from '../util/error';
 
 import type { LanguageModelUsage } from 'ai';
@@ -68,34 +68,36 @@ export const directAnalysis: AnalysisStrategy = async (query, config, { dataMode
   const maxRetries = Math.max(config.strategy?.type === 'direct' ? config.strategy.maxRetries ?? 2 : 10, 0);
 
   const stepId = generateId();
-  const stepContext = { stepId };
+  const emitEvent = (type: AnalysisEventType, data: object, eventId: string) =>
+    emit(new AnalysisEvent(type, data, { stepId, eventId }));
+
   let queryId: string;
   let translationQuery = query;
   let dsl: string;
   let result: ExecutionResult;
 
   for (let attempt = 0; ; attempt++) {
-    const translationContext = { ...stepContext, operationId: generateId() };
-    emit(new AnalysisEvent(AnalysisEventType.TRANSLATE_START, { query, attempt }, translationContext));
+    const translationPairId = generateId();
+    emitEvent(AnalysisEventType.TRANSLATE_START, { query, attempt }, startOf(translationPairId));
 
     try {
       dsl = await engine.getDSL(translationQuery, dataModel);
     } catch (error) {
-      emit(new AnalysisEvent(AnalysisEventType.TRANSLATE_END, { error: serializeError(error) }, translationContext));
+      emitEvent(AnalysisEventType.TRANSLATE_END, { error: serializeError(error) }, endOf(translationPairId));
 
       throw error;
     }
 
-    emit(new AnalysisEvent(AnalysisEventType.TRANSLATE_END, { dsl }, translationContext));
+    emitEvent(AnalysisEventType.TRANSLATE_END, { dsl }, endOf(translationPairId));
 
-    queryId = generateId();
-    const queryContext = { ...stepContext, operationId: queryId };
-    emit(new AnalysisEvent(AnalysisEventType.QUERY_START, { dsl }, queryContext));
+    const queryPairId = generateId();
+    queryId = endOf(queryPairId);
+    emitEvent(AnalysisEventType.QUERY_START, { dsl }, startOf(queryPairId));
 
     try {
       result = await engine.execute(dsl, config);
     } catch (error) {
-      emit(new AnalysisEvent(AnalysisEventType.QUERY_END, { error: serializeError(error) }, queryContext));
+      emitEvent(AnalysisEventType.QUERY_END, { error: serializeError(error) }, queryId);
 
       if (attempt >= maxRetries) throw error;
 
@@ -112,7 +114,7 @@ export const directAnalysis: AnalysisStrategy = async (query, config, { dataMode
       continue;
     }
 
-    emit(new AnalysisEvent(AnalysisEventType.QUERY_END, result, queryContext));
+    emitEvent(AnalysisEventType.QUERY_END, result, queryId);
 
     break;
   }
@@ -121,20 +123,20 @@ export const directAnalysis: AnalysisStrategy = async (query, config, { dataMode
   let usage: LanguageModelUsage | undefined;
 
   if (config.includeSummary !== false) {
-    const summaryContext = { ...stepContext, operationId: generateId() };
-    emit(new AnalysisEvent(AnalysisEventType.SUMMARIZE_START, { queryId }, summaryContext));
+    const summaryPairId = generateId();
+    emitEvent(AnalysisEventType.SUMMARIZE_START, { queryId }, startOf(summaryPairId));
 
     try {
       const generated = await summarizeResult(query, dsl, result, llm);
       summary = generated.summary;
       usage = generated.usage;
     } catch (error) {
-      emit(new AnalysisEvent(AnalysisEventType.SUMMARIZE_END, { error: serializeError(error) }, summaryContext));
+      emitEvent(AnalysisEventType.SUMMARIZE_END, { error: serializeError(error) }, endOf(summaryPairId));
 
       throw error;
     }
 
-    emit(new AnalysisEvent(AnalysisEventType.SUMMARIZE_END, { ...summary, usage }, summaryContext));
+    emitEvent(AnalysisEventType.SUMMARIZE_END, { ...summary, usage }, endOf(summaryPairId));
   }
 
   return {
