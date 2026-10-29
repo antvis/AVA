@@ -1,5 +1,7 @@
 import { LifecycleEventType, AnalysisEventType } from './constant';
 
+import type { AnalysisEventContext } from './types';
+
 export class BaseEvent {
   constructor(public type: string) {}
 }
@@ -11,19 +13,14 @@ export class LifecycleEvent extends BaseEvent {
 }
 
 export class AnalysisEvent extends BaseEvent {
-  /** Operation identity, shared by its start and end events within one analysis. */
-  id?: string;
-  parentIds?: string[];
+  context?: AnalysisEventContext;
 
-  constructor(
-    type: AnalysisEventType,
-    public data: object | null = {},
-    operation?: { id: string; parentIds: string[] }
-  ) {
+  constructor(type: AnalysisEventType, public data: object | null = {}, context?: AnalysisEventContext) {
     super(type);
-    if (operation) {
-      this.id = operation.id;
-      this.parentIds = [...operation.parentIds];
+
+    if (context) {
+      this.context = { ...context };
+      if (context.parentStepIds) this.context.parentStepIds = [...context.parentStepIds];
     }
   }
 }
