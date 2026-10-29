@@ -92,8 +92,6 @@ export interface AVAConfig {
 
 /** Per-analysis options. */
 export interface AnalysisConfig extends ExecutionOptions {
-  /** Include model input context in analysis events. */
-  telemetry?: boolean;
   /** Include a natural-language summary. Defaults to true; false returns empty text. */
   includeSummary?: boolean;
   /** Strategy for this analysis (defaults to direct). */
