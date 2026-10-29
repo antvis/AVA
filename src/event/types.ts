@@ -98,5 +98,27 @@ export type SummarizeEndPayload = LLMPayload &
       }
   );
 
-export type ReasonStartPayload = object | null;
-export type ReasonEndPayload = object | null;
+export type StepAction = 'EXPLORE' | 'REFINE' | 'SQL' | 'CONFIRM';
+
+export type StepStartPayload = {
+  /** Zero-based analysis step; direct analysis has a single step numbered 0. */
+  step: number;
+  /** Marks the final fallback after normal iterations are exhausted. */
+  finalAttempt?: boolean;
+};
+
+export type StepEndPayload = StepStartPayload &
+  (
+    | {
+        action: StepAction;
+        /** The loop model's response, or the direct analysis conclusion (empty when summary is disabled). */
+        text: string;
+        error?: never;
+      }
+    | {
+        /** Why the iteration could not continue. */
+        error: SerializedError;
+        action?: StepAction;
+        text?: string;
+      }
+  );

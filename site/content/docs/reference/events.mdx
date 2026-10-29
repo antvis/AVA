@@ -47,24 +47,38 @@ These events describe steps within analysis. Direct calls to `translate()` and `
 | Translate a question | `translatestart`: `{ query }`; direct analysis also includes `attempt` | `translateend`: `{ dsl }` |
 | Execute a query | `querystart`: `{ dsl }` | `queryend`: `ExecutionResult` |
 | Summarize results | `summarizestart`: `{ queryId }` | `summarizeend`: `{ queryExplanation, conclusion, limitations?, nextStep?, usage? }` |
-| Loop reasoning | `reasonstart`: `{ step }` | `reasonend`: `{ step, action, text }` |
+| Direct analysis step | `stepstart`: `{ step: 0 }` | `stepend`: `{ step: 0, action: 'SQL', text }` |
+| Loop iteration | `stepstart`: `{ step, finalAttempt? }` | `stepend`: `{ step, action, text, finalAttempt? }` |
 
-Failed end events carry `{ error }`. A reasoning failure also carries `step`; the final fallback includes `finalAttempt: true` on both events. See [analysis strategies](/documentation/analysis/strategies/) for these steps.
+Failed end events carry `{ error }`. A step failure also carries `step`; the loop's final fallback includes `finalAttempt: true` on both step events. `step` is zero-based. See [analysis strategies](/documentation/analysis/strategies/) for these steps.
+
+In direct analysis, one step wraps translation, all query retries, and optional summarization. `stepend` reports `action: 'SQL'` and the summary conclusion as `text`, or an empty string when summary is disabled. A recovered query error stays on `queryend`; exhausting retries or a translation/summary failure also produces `stepend.error`.
+
+In loop analysis, `stepstart` fires before the model call. `stepend` fires after the whole iteration, including all its queries, and reports the model's `action` (`EXPLORE`, `REFINE`, `SQL`, or `CONFIRM`) and `text`. Iterations without queries still emit both step events. A recoverable query failure appears on `queryend`; the iteration can finish normally so the next step can correct it. A failure that stops the analysis appears on `stepend.error`, where `action` and `text` may be absent.
+
+For example, an exploration step followed by a refinement step emits:
+
+```text
+stepstart → querystart → queryend → stepend (action: EXPLORE)
+stepstart → stepend (action: REFINE)
+```
 
 For example, a successful direct `analyze()` typically emits:
 
 ```text
-analyzestart → translatestart → translateend → querystart → queryend
-             → summarizestart → summarizeend → analyzeend
+analyzestart → stepstart → translatestart → translateend → querystart → queryend
+             → summarizestart → summarizeend → stepend → analyzeend
 ```
 
 Retries can repeat translation and query events. The summary is omitted when `includeSummary` is `false`.
 
-Direct and loop analysis events include `context.eventId` and `context.stepId`. Each start/end pair shares an internal `pairId`, producing event IDs `${pairId}:start` and `${pairId}:end`; each reasoning call, query, and retry gets a new pair ID.
+Direct and loop analysis events include `context.eventId` and `context.stepId`. Each start/end pair shares an internal `pairId`, producing event IDs `${pairId}:start` and `${pairId}:end`; each operation and retry gets a new pair ID.
 
-In direct analysis, `stepId` groups events from the same analysis. The summary's `data.queryId` references the successful query-end event's complete ID, including `:end`.
+In direct analysis, `stepId` groups events from the same analysis and `parentStepIds` is empty. The summary's `data.queryId` references the successful query-end event's complete ID, including `:end`.
 
-In loop analysis, each iteration has its own `stepId`, shared by its reasoning and query events. `context.parentStepIds` is empty for the first iteration and contains the previous iteration's ID for later iterations. The final fallback gets a new step ID and follows the same rule. Standalone `translate()` / `query()` calls do not currently include this context.
+In loop analysis, each iteration has its own `stepId`, shared by its step and query events. `context.parentStepIds` is empty for the first iteration and contains the previous iteration's ID for later iterations. The final fallback gets a new step ID and follows the same rule.
+
+In both strategies, step events use `${stepId}:start` and `${stepId}:end` as their event IDs; each operation inside a step uses its own pair ID. Standalone `translate()` / `query()` calls do not currently include this context or emit step events.
 
 ## Listener parameters
 

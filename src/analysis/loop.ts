@@ -17,6 +17,7 @@ import { AnalysisEvent, AnalysisEventType, startOf, endOf } from '../event';
 import { serializeError } from '../util/error';
 
 import type { AnalysisStrategy, QueryLanguage, ExecutionResult } from '../types';
+import type { SerializedError } from '../util/error';
 
 const DEFAULT_MAX_STEPS = 12;
 
@@ -202,11 +203,11 @@ export const loopAnalysis: AnalysisStrategy = async (query, config, { dataModel,
 
     ${transcriptPrompt(transcript)}`;
 
-    const reasonPairId = generateId();
-    emitEvent(AnalysisEventType.REASON_START, { step }, startOf(reasonPairId));
+    emitEvent(AnalysisEventType.STEP_START, { step }, startOf(stepId));
 
-    let text: string;
+    let text: string | undefined;
     let action: string | undefined;
+    let stepError: SerializedError | undefined;
     let queries: string[] = [];
     try {
       const response = await generateText({
@@ -230,75 +231,77 @@ export const loopAnalysis: AnalysisStrategy = async (query, config, { dataModel,
           );
         }
       }
-    } catch (error) {
-      emitEvent(AnalysisEventType.REASON_END, { step, error: serializeError(error) }, endOf(reasonPairId));
+      transcript.push(`Assistant:\n${text}`);
 
-      throw error;
-    }
+      if (action === 'REFINE') continue;
 
-    emitEvent(AnalysisEventType.REASON_END, { step, action, text }, endOf(reasonPairId));
+      if (action === 'CONFIRM') {
+        if (!sql || !result) {
+          lastConfirmation = text;
+          transcript.push('Runtime:\nNo final SQL has executed successfully yet. Continue the loop.');
+          continue;
+        }
 
-    transcript.push(`Assistant:\n${text}`);
-
-    if (action === 'REFINE') continue;
-
-    if (action === 'CONFIRM') {
-      if (!sql || !result) {
-        lastConfirmation = text;
-        transcript.push('Runtime:\nNo final SQL has executed successfully yet. Continue the loop.');
-        continue;
+        return {
+          query,
+          ...result,
+          sql,
+          text: config.includeSummary === false ? '' : text.replace(/^\[CONFIRM\]\s*/, ''),
+        };
       }
 
-      return {
-        query,
-        ...result,
-        sql,
-        text: config.includeSummary === false ? '' : text.replace(/^\[CONFIRM\]\s*/, ''),
-      };
-    }
+      const observations: string[] = [];
 
-    const observations: string[] = [];
+      for (const proposal of queries) {
+        const statement = proposal;
 
-    for (const proposal of queries) {
-      const statement = proposal;
+        const queryPairId = generateId();
+        emitEvent(AnalysisEventType.QUERY_START, { dsl: statement }, startOf(queryPairId));
 
-      const queryPairId = generateId();
-      emitEvent(AnalysisEventType.QUERY_START, { dsl: statement }, startOf(queryPairId));
+        let execution: ExecutionResult;
+        try {
+          execution = await engine.execute(statement, config);
+        } catch (error) {
+          emitEvent(AnalysisEventType.QUERY_END, { error: serializeError(error) }, endOf(queryPairId));
 
-      let execution: ExecutionResult;
-      try {
-        execution = await engine.execute(statement, config);
-      } catch (error) {
-        emitEvent(AnalysisEventType.QUERY_END, { error: serializeError(error) }, endOf(queryPairId));
+          if (action === 'SQL') result = undefined;
 
-        if (action === 'SQL') result = undefined;
+          observations.push(
+            `Proposed statement (${engine.language.name}):
+          ${proposal}
+          Error:
+          ${error instanceof Error ? error.message : String(error)}`
+          );
+
+          continue;
+        }
+
+        emitEvent(AnalysisEventType.QUERY_END, execution, endOf(queryPairId));
 
         observations.push(
           `Proposed statement (${engine.language.name}):
           ${proposal}
-          Error:
-          ${error instanceof Error ? error.message : String(error)}`
-        );
-
-        continue;
-      }
-
-      emitEvent(AnalysisEventType.QUERY_END, execution, endOf(queryPairId));
-
-      observations.push(
-        `Proposed statement (${engine.language.name}):
-          ${proposal}
           Result:
           ${JSON.stringify(execution)}`
-      );
+        );
 
-      if (action === 'SQL') {
-        sql = statement;
-        result = execution;
+        if (action === 'SQL') {
+          sql = statement;
+          result = execution;
+        }
       }
-    }
 
-    transcript.push(`Runtime:\n${observations.join('\n\n')}`);
+      transcript.push(`Runtime:\n${observations.join('\n\n')}`);
+    } catch (error) {
+      stepError = serializeError(error);
+      throw error;
+    } finally {
+      emitEvent(
+        AnalysisEventType.STEP_END,
+        { step, ...(stepError ? { error: stepError } : { action, text }) },
+        endOf(stepId)
+      );
+    }
   }
 
   // The last normal step may execute the final SQL without leaving another step for CONFIRM.
@@ -319,10 +322,10 @@ export const loopAnalysis: AnalysisStrategy = async (query, config, { dataModel,
   // history-aware SQL-only turn and adopt its executed result without another CONFIRM.
   parentStepIds = stepId ? [stepId] : [];
   stepId = generateId();
-  const reasonPairId = generateId();
-  emitEvent(AnalysisEventType.REASON_START, { step: maxSteps, finalAttempt: true }, startOf(reasonPairId));
+  emitEvent(AnalysisEventType.STEP_START, { step: maxSteps, finalAttempt: true }, startOf(stepId));
 
-  let finalText: string;
+  let finalText: string | undefined;
+  let stepError: SerializedError | undefined;
   let statement: string;
   try {
     const finalResponse = await generateText({
@@ -353,47 +356,46 @@ export const loopAnalysis: AnalysisStrategy = async (query, config, { dataModel,
     }
 
     statement = proposals[0];
-  } catch (error) {
-    emitEvent(
-      AnalysisEventType.REASON_END,
-      { step: maxSteps, finalAttempt: true, error: serializeError(error) },
-      endOf(reasonPairId)
-    );
 
+    const queryPairId = generateId();
+    emitEvent(AnalysisEventType.QUERY_START, { dsl: statement }, startOf(queryPairId));
+
+    let execution: ExecutionResult;
+    try {
+      execution = await engine.execute(statement, config);
+    } catch (error) {
+      emitEvent(AnalysisEventType.QUERY_END, { error: serializeError(error) }, endOf(queryPairId));
+
+      throw new Error(
+        `Loop final statement failed: ${error instanceof Error ? error.message : String(error)}\nLast attempted ${
+          engine.language.name
+        } statement:\n${statement}`
+      );
+    }
+
+    emitEvent(AnalysisEventType.QUERY_END, execution, endOf(queryPairId));
+
+    return {
+      query,
+      ...execution,
+      sql: statement,
+      text:
+        config.includeSummary === false
+          ? ''
+          : lastConfirmation?.replace(/^\[CONFIRM\]\s*/, '') ?? JSON.stringify(execution.data, null, 2),
+    };
+  } catch (error) {
+    stepError = serializeError(error);
     throw error;
-  }
-
-  emitEvent(
-    AnalysisEventType.REASON_END,
-    { step: maxSteps, finalAttempt: true, action: 'SQL', text: finalText },
-    endOf(reasonPairId)
-  );
-
-  const queryPairId = generateId();
-  emitEvent(AnalysisEventType.QUERY_START, { dsl: statement }, startOf(queryPairId));
-
-  let execution: ExecutionResult;
-  try {
-    execution = await engine.execute(statement, config);
-  } catch (error) {
-    emitEvent(AnalysisEventType.QUERY_END, { error: serializeError(error) }, endOf(queryPairId));
-
-    throw new Error(
-      `Loop final statement failed: ${error instanceof Error ? error.message : String(error)}\nLast attempted ${
-        engine.language.name
-      } statement:\n${statement}`
+  } finally {
+    emitEvent(
+      AnalysisEventType.STEP_END,
+      {
+        step: maxSteps,
+        finalAttempt: true,
+        ...(stepError ? { error: stepError } : { action: 'SQL', text: finalText }),
+      },
+      endOf(stepId)
     );
   }
-
-  emitEvent(AnalysisEventType.QUERY_END, execution, endOf(queryPairId));
-
-  return {
-    query,
-    ...execution,
-    sql: statement,
-    text:
-      config.includeSummary === false
-        ? ''
-        : lastConfirmation?.replace(/^\[CONFIRM\]\s*/, '') ?? JSON.stringify(execution.data, null, 2),
-  };
 };

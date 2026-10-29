@@ -71,8 +71,13 @@ export const directAnalysis: AnalysisStrategy = async (query, config, { dataMode
 
   const stepId = generateId();
   const emitEvent = (type: AnalysisEventType, data: object, eventId: string) =>
-    emit(new AnalysisEvent(type, data, { stepId, eventId }));
+    emit(new AnalysisEvent(type, data, { stepId, parentStepIds: [], eventId }));
 
+  emitEvent(AnalysisEventType.STEP_START, { step: 0 }, startOf(stepId));
+  let stepError: SerializedError | undefined;
+  let summary: Summary | undefined;
+
+  try {
     let queryId: string;
     let translationQuery = query;
     let dsl: string;
@@ -121,7 +126,6 @@ export const directAnalysis: AnalysisStrategy = async (query, config, { dataMode
       break;
     }
 
-  let summary: Summary | undefined;
     let usage: LanguageModelUsage | undefined;
 
     if (config.includeSummary !== false) {
@@ -148,4 +152,14 @@ export const directAnalysis: AnalysisStrategy = async (query, config, { dataMode
       ...summary,
       text: summary?.conclusion ?? '',
     };
+  } catch (error) {
+    stepError = serializeError(error);
+    throw error;
+  } finally {
+    emitEvent(
+      AnalysisEventType.STEP_END,
+      { step: 0, ...(stepError ? { error: stepError } : { action: 'SQL', text: summary?.conclusion ?? '' }) },
+      endOf(stepId)
+    );
+  }
 };
