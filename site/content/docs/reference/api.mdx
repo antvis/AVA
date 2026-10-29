@@ -284,11 +284,11 @@ These definitions provide context for query generation. Declaring a cube, view, 
 | `config.maxRows`             | `number`                           | No                        | `200`; see [execution limits](#executionoptions).                                                                               |
 | `config.maxResultBytes`      | `number`                           | No                        | `1048576`; see [execution limits](#executionoptions).                                                                           |
 | `config.strategy`            | `AnalysisStrategyConfig`           | No                        | Direct analysis.                                                                                                                |
-| `config.strategy.type`       | `'direct'` / `'loop'` / `'subset'` | When strategy is provided | Selects the strategy.                                                                                                           |
+| `config.strategy.type`       | `'direct'` / `'loop'` | When strategy is provided | Selects the strategy.                                                                                                           |
 | `config.strategy.maxRetries` | `number`                           | No; `direct` only         | `2` with explicit `type: 'direct'`; currently `10` when the strategy is omitted. Correction attempts after the first execution. |
 | `config.strategy.maxSteps`   | `number`                           | No; `loop` only           | `12`; maximum reasoning steps.                                                                                                  |
 
-`subset` has no additional options. These retry controls differ from `llm.maxRetries`. See [strategy behavior and requirements](/documentation/analysis/strategies/).
+These retry controls differ from `llm.maxRetries`. See [strategy behavior and requirements](/documentation/analysis/strategies/).
 
 Requires a loaded source. Returns an [ExecutionResult](#executionresult) plus:
 

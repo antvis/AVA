@@ -207,6 +207,22 @@ describe('AVA', () => {
     ]);
   });
 
+  it('rejects the removed subset strategy without profiling or executing a query', async () => {
+    ava = new AVA({ llm: getLLMConfig(), engine: { type: 'javascript' } });
+    await ava.source({ type: 'json', options: { data: [{ value: 2 }] } });
+    const compute = vi.spyOn(ava.engine!, 'profile');
+    const getDSL = vi.spyOn(ava.engine!, 'getDSL');
+    const execute = vi.spyOn(ava.engine!, 'execute');
+
+    // @ts-expect-error Verify rejection for untyped callers using the removed strategy.
+    await expect(ava.analyze('Rows', { strategy: { type: 'subset' } })).rejects.toThrow(
+      'Unknown analysis strategy: subset'
+    );
+    expect(compute).not.toHaveBeenCalled();
+    expect(getDSL).not.toHaveBeenCalled();
+    expect(execute).not.toHaveBeenCalled();
+  });
+
   it('emits suggestion status without repeating inputs or results', async () => {
     await ava.source({ type: 'json', options: { data: [{ value: 2 }] } });
     const result = [{ query: 'Total value?', score: 1, reason: 'Useful' }];

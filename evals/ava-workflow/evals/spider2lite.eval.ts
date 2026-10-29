@@ -39,7 +39,7 @@ const HELP = `Usage: node evals/cli.js run ava-workflow --benchmark spider2lite 
   --offset <number>       Start after filtering (default 0)
   --suite <database>      Filter database name
   --id <instance_id>      Repeatable local question ID
-  --strategy <name>       direct, loop or subset (default direct)
+  --strategy <name>       direct or loop (default direct)
   --max-retries <number>  Direct execution correction retries (default 2)
   --max-steps <number>    Loop action budget (default 12)
   --concurrency <number>  Parallel workflows (default 1)
@@ -220,7 +220,7 @@ export async function main(argv = process.argv.slice(2)) {
     scoreTimeoutMs: scoreTimeout,
     maxContextBytes,
     concurrency,
-    usageScope: 'Accumulated onQueryUsage callbacks; subset auxiliary selector usage is not included',
+    usageScope: 'Accumulated onQueryUsage callbacks',
     implementation: Object.fromEntries(
       [
         fileURLToPath(import.meta.url),
@@ -244,7 +244,6 @@ export async function main(argv = process.argv.slice(2)) {
           'util/sql.js',
           'analysis/direct.js',
           'analysis/loop.js',
-          'analysis/subset.js',
         ].map((p) => join(workflowRoot, '../../lib', p)),
       ].map((p) => [p.replace(resolve(workflowRoot, '../..') + '/', ''), sha256(p)])
     ),

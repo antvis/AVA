@@ -98,7 +98,7 @@ test('workflow strategy parsing preserves retry defaults and validates only the 
   assert.deepEqual(readStrategy(values), { type: 'direct', maxRetries: 2 });
   assert.deepEqual(readStrategy({ ...values, 'max-retries': '0', 'max-steps': 'unused' }), { type: 'direct', maxRetries: 0 });
   assert.deepEqual(readStrategy({ ...values, strategy: 'loop', 'max-retries': 'unused' }), { type: 'loop', maxSteps: 12 });
-  assert.deepEqual(readStrategy({ strategy: 'subset', 'max-retries': 'unused', 'max-steps': 'unused' }), { type: 'subset' });
+  assert.throws(() => readStrategy({ ...values, strategy: 'subset' }), /--strategy must be direct or loop/);
   for (const retry of ['-1', '1.5', 'invalid']) {
     assert.throws(() => readStrategy({ ...values, 'max-retries': retry }), /--max-retries/);
   }

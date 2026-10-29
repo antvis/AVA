@@ -45,7 +45,7 @@ export const docs = [
     slug: 'analysis/strategies',
     title: 'Analysis strategies',
     group: 'Analysis & visualization',
-    description: 'Choose direct queries, iterative reasoning, or selected profile context.',
+    description: 'Choose direct queries or iterative reasoning.',
   },
   {
     slug: 'visualization/overview',

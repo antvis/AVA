@@ -9,8 +9,7 @@ export function readStrategy(values: { strategy: string; 'max-retries': string; 
   switch (values.strategy) {
     case 'direct': return { type: 'direct', maxRetries: integer(values['max-retries'], 'max-retries', 0) };
     case 'loop': return { type: 'loop', maxSteps: integer(values['max-steps'], 'max-steps') };
-    case 'subset': return { type: 'subset' };
-    default: throw new Error('--strategy must be direct, loop or subset');
+    default: throw new Error('--strategy must be direct or loop');
   }
 }
 

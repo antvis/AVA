@@ -306,6 +306,7 @@ describe('dataset commands', () => {
     { args: ['suggest', '--count', '0'], error: '--count must be an integer' },
     { args: ['profile', '--metrics', 'mean,'], error: '--metrics contains an empty item.' },
     { args: ['analyze', 'Total sales?', '--strategy', 'invalid'], error: 'Invalid enum value' },
+    { args: ['analyze', 'Total sales?', '--strategy', 'subset'], error: 'Invalid enum value' },
   ])('rejects invalid $args before sending a request', async ({ args: [command, ...args], error }) => {
     await expect(run([command, datasetId, ...args])).rejects.toThrow(error);
     expect(request).not.toHaveBeenCalled();

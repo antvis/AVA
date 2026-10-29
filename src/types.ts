@@ -683,8 +683,7 @@ export type AnalysisStrategyConfig =
       /** Execution correction retries after the initial attempt. defaults to 2. */
       maxRetries?: number;
     }
-  | { type: 'loop'; maxSteps?: number }
-  | { type: 'subset' };
+  | { type: 'loop'; maxSteps?: number };
 
 /** Unified data structure, profiling results and semantics for AVA. */
 

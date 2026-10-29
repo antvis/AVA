@@ -84,7 +84,7 @@ node evals/cli.js run ava-workflow --benchmark spider2lite --limit all \
   --output evals/ava-workflow/results/spider2lite-full
 ```
 
-模型配置和 `direct`、`loop`、`subset` 策略见 [AVA Workflow](../ava-workflow/README.md)。默认 `direct`、20 题、并发 1；可用 `--id local002`（可重复）、`--suite <数据库名>`、`--offset` 选题。完整参数用 `--help` 查看。
+模型配置和 `direct`、`loop` 策略见 [AVA Workflow](../ava-workflow/README.md)。默认 `direct`、20 题、并发 1；可用 `--id local002`（可重复）、`--suite <数据库名>`、`--offset` 选题。完整参数用 `--help` 查看。
 
 Workflow 每道题执行 `source → profile → semantic（可选）→ analyze`，使用 DuckDB 引擎，通过官方 SQLite 扩展只读加载数据库。默认读取本目录 `semantics/<数据库名>.yaml`；语义文件须自行准备，不随仓库提交或下载，缺少时跳过；`--no-semantic` 可关闭这一步。输入包含 AVA 数据库画像、业务定义、原始问题和题目指定的外部知识；不向模型提供官方 `DDL.csv`、表描述 JSON、gold 或评分条件。Agent 入口不加载这些本地 YAML。
 

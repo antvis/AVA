@@ -47,7 +47,6 @@ These events describe steps within analysis. Direct calls to `translate()` and `
 | Translate a question | `translatestart`: `{ query }`; direct analysis also includes `attempt` | `translateend`: `{ dsl }` |
 | Execute a query | `querystart`: `{ dsl }` | `queryend`: `ExecutionResult` |
 | Summarize results | `summarizestart`: `{}` | `summarizeend`: `{ text }` |
-| Select context for subset analysis | `selectcontextstart`: `{}` | `selectcontextend`: `{}` |
 | Loop reasoning | `reasonstart`: `{ step }` | `reasonend`: `{ step, action, text }` |
 
 Failed end events carry `{ error }`. A reasoning failure also carries `step`; the final fallback includes `finalAttempt: true` on both events. See [analysis strategies](/documentation/analysis/strategies/) for these steps.
