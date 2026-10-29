@@ -1,3 +1,19 @@
+/**
+ * Direct analysis: translate a question, execute the query, and optionally summarize the result.
+ *
+ * Question -> Translate DSL -> Execute query -- success --> Summarize (optional) -> Result
+ *                   ^               |
+ *                   |             failure
+ *                   |               v
+ *                   +--- yes -- Retries left?
+ *                                   |
+ *                                   no
+ *                                   v
+ *                               Throw error
+ *
+ * Retries include the failed DSL and execution error as correction context.
+ * Translation and summary failures propagate immediately.
+ */
 import { extractJsonMiddleware, generateId, generateText, Output, wrapLanguageModel } from 'ai';
 import { z } from 'zod/v4';
 
@@ -47,7 +63,6 @@ Write all values in the language of the user question; use English if ambiguous.
   return { summary, usage };
 }
 
-/** Generate and execute a query with bounded error correction, then summarize its data. */
 export const directAnalysis: AnalysisStrategy = async (query, config, { dataModel, engine, llm, emit }) => {
   const maxRetries = Math.max(config.strategy?.type === 'direct' ? config.strategy.maxRetries ?? 2 : 10, 0);
 
