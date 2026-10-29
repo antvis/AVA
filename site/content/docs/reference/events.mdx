@@ -54,7 +54,7 @@ Failed end events carry `{ error }`. A step failure also carries `step`; the loo
 
 In direct analysis, one step wraps translation, all query retries, and optional summarization. `stepend` reports `action: 'SQL'` and the summary conclusion as `text`, or an empty string when summary is disabled. A recovered query error stays on `queryend`; exhausting retries or a translation/summary failure also produces `stepend.error`.
 
-In loop analysis, `stepstart` fires before the model call. `stepend` fires after the whole iteration, including all its queries, and reports the model's `action` (`EXPLORE`, `REFINE`, `SQL`, or `CONFIRM`) and `text`. Iterations without queries still emit both step events. A recoverable query failure appears on `queryend`; the iteration can finish normally so the next step can correct it. A failure that stops the analysis appears on `stepend.error`, where `action` and `text` may be absent.
+In loop analysis, `stepstart` fires before the model call. `stepend` fires after the whole iteration, including all its queries, and reports the model's `action` (`EXPLORE`, `REFINE`, `SQL`, or `CONFIRM`) and `text`. The `text` excludes the leading protocol tag; the action is available separately in `action`. Iterations without queries still emit both step events. A recoverable query failure appears on `queryend`; the iteration can finish normally so the next step can correct it. A failure that stops the analysis appears on `stepend.error`, where `action` and `text` may be absent.
 
 For example, an exploration step followed by a refinement step emits:
 

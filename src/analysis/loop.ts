@@ -232,6 +232,7 @@ export const loopAnalysis: AnalysisStrategy = async (query, config, { dataModel,
         }
       }
       transcript.push(`Assistant:\n${text}`);
+      text = text.slice(action.length + 2).trimStart();
 
       if (action === 'REFINE') continue;
 
@@ -246,7 +247,7 @@ export const loopAnalysis: AnalysisStrategy = async (query, config, { dataModel,
           query,
           ...result,
           sql,
-          text: config.includeSummary === false ? '' : text.replace(/^\[CONFIRM\]\s*/, ''),
+          text: config.includeSummary === false ? '' : text,
         };
       }
 
@@ -311,10 +312,7 @@ export const loopAnalysis: AnalysisStrategy = async (query, config, { dataModel,
       query,
       ...result,
       sql,
-      text:
-        config.includeSummary === false
-          ? ''
-          : lastConfirmation?.replace(/^\[CONFIRM\]\s*/, '') ?? JSON.stringify(result.data, null, 2),
+      text: config.includeSummary === false ? '' : lastConfirmation ?? JSON.stringify(result.data, null, 2),
     };
   }
 
@@ -354,6 +352,7 @@ export const loopAnalysis: AnalysisStrategy = async (query, config, { dataModel,
     if (!finalText.startsWith('[SQL]') || proposals.length !== 1) {
       throw new Error(`Loop final fallback response must contain exactly one ${engine.language.fence} code block`);
     }
+    finalText = finalText.replace(/^\[SQL\]\s*/, '');
 
     statement = proposals[0];
 
@@ -379,10 +378,7 @@ export const loopAnalysis: AnalysisStrategy = async (query, config, { dataModel,
       query,
       ...execution,
       sql: statement,
-      text:
-        config.includeSummary === false
-          ? ''
-          : lastConfirmation?.replace(/^\[CONFIRM\]\s*/, '') ?? JSON.stringify(execution.data, null, 2),
+      text: config.includeSummary === false ? '' : lastConfirmation ?? JSON.stringify(execution.data, null, 2),
     };
   } catch (error) {
     stepError = serializeError(error);

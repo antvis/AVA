@@ -293,7 +293,7 @@ it.each([0, 1, 2])('loop omits summary with maxSteps=%s, retaining verification 
 });
 
 it('wraps loop queries in steps across exploration, refinement, and confirmation', async () => {
-  const { runtime, engine, doGenerate, emit } = setup();
+  const { runtime, engine, doGenerate, model, emit } = setup();
   doGenerate
     .mockResolvedValueOnce(response('[EXPLORE]\n```sql\nBAD SQL\n```\n```sql\nSELECT 2\n```'))
     .mockResolvedValueOnce(response('[REFINE] Use the verified values.'))
@@ -327,6 +327,13 @@ it('wraps loop queries in steps across exploration, refinement, and confirmation
     'SQL',
     'CONFIRM',
   ]);
+  expect(events.filter(({ type }) => type === 'stepend').map(({ data }) => data.text)).toEqual([
+    '```sql\nBAD SQL\n```\n```sql\nSELECT 2\n```',
+    'Use the verified values.',
+    '```sql\nSELECT 1\n```',
+    'Result verified.',
+  ]);
+  expect(JSON.stringify(model.doGenerateCalls[3].prompt)).toContain('Assistant:\\n[REFINE] Use the verified values.');
   expect(events.filter(({ type }) => type === 'querystart').map(({ data }) => data.dsl)).toEqual([
     'BAD SQL',
     'SELECT 2',
@@ -336,7 +343,7 @@ it('wraps loop queries in steps across exploration, refinement, and confirmation
     error: { message: 'Invalid SQL' },
   });
   expect(events.filter(({ type }) => type === 'stepend').every(({ data }) => !data.error)).toBe(true);
-  expect(events.at(-1).data).toEqual({ step: 3, action: 'CONFIRM', text: '[CONFIRM] Result verified.' });
+  expect(events.at(-1).data).toEqual({ step: 3, action: 'CONFIRM', text: 'Result verified.' });
   expectStepContexts(events);
 });
 
@@ -357,7 +364,7 @@ it('links the loop fallback to the previous step', async () => {
     step: 1,
     finalAttempt: true,
     action: 'SQL',
-    text: '[SQL]\n```sql\nSELECT 1\n```',
+    text: '```sql\nSELECT 1\n```',
   });
   expectStepContexts(events);
 });
@@ -379,7 +386,7 @@ it('closes an early confirmation step before continuing to a query', async () =>
     'queryend',
     'stepend',
   ]);
-  expect(events[1].data).toEqual({ step: 0, action: 'CONFIRM', text: '[CONFIRM] No query yet.' });
+  expect(events[1].data).toEqual({ step: 0, action: 'CONFIRM', text: 'No query yet.' });
   expectStepContexts(events);
 });
 
@@ -393,8 +400,8 @@ it('ends a recoverable failed SQL step before the fallback starts', async () => 
   const events = emit.mock.calls.map(([event]) => event);
   const ends = events.filter(({ type }) => type === 'stepend');
   expect(ends.map(({ data }) => data)).toEqual([
-    { step: 0, action: 'SQL', text: '[SQL]\n```sql\nSELECT 1\n```' },
-    { step: 1, finalAttempt: true, action: 'SQL', text: '[SQL]\n```sql\nSELECT 1\n```' },
+    { step: 0, action: 'SQL', text: '```sql\nSELECT 1\n```' },
+    { step: 1, finalAttempt: true, action: 'SQL', text: '```sql\nSELECT 1\n```' },
   ]);
   expect(events[2].data.error.message).toBe('Query failed');
   expectStepContexts(events);
