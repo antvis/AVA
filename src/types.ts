@@ -687,7 +687,7 @@ export type AnalysisStrategyConfig =
       /** Execution correction retries after the initial attempt. defaults to 2. */
       maxRetries?: number;
     }
-  | { type: 'loop'; maxSteps?: number; control?: LoopControl };
+  | { type: 'loop'; maxSteps?: number };
 
 /** Unified data structure, profiling results and semantics for AVA. */
 
@@ -948,48 +948,6 @@ export interface AnalysisResponse<T = Record<string, unknown>> extends Execution
   parentIds?: string[];
   /** Why the analysis finished; completed does not imply independent verification. */
   completionReason?: 'completed' | 'confirmed' | 'step_limit' | 'final_attempt';
-}
-
-/** Serializable loop state. Resume only against the same question, data model and engine. */
-export interface LoopCheckpoint {
-  version: 2;
-  /** Identity and dependencies of the next operation, scoped to this analysis. */
-  id: string;
-  parentIds: string[];
-  query: string;
-  dataset: string;
-  language: string;
-  maxSteps: number;
-  step: number;
-  phase: 'model' | 'query' | 'complete';
-  transcript: string[];
-  pending?: {
-    action: 'EXPLORE' | 'SQL';
-    queries: string[];
-    index: number;
-    observations: string[];
-    finalAttempt: boolean;
-  };
-  sql?: string;
-  result?: ExecutionResult;
-  lastConfirmation?: string;
-  completion?: { reason: 'confirmed' | 'step_limit' | 'final_attempt'; text: string };
-}
-
-export interface LoopDecision {
-  /** Replace the pending query; it still passes through the engine's validation. */
-  sql?: string;
-  /** Add explicit user guidance to the next model request. */
-  instruction?: string;
-}
-
-export interface LoopControl {
-  resumeFrom?: LoopCheckpoint;
-  signal?: AbortSignal;
-  /** Await durable storage at safe boundaries. Credentials are not included. */
-  onCheckpoint?: (checkpoint: LoopCheckpoint) => void | Promise<void>;
-  /** Await user intervention before a model call or query. */
-  beforeStep?: (checkpoint: LoopCheckpoint) => void | LoopDecision | Promise<void | LoopDecision>;
 }
 
 /**

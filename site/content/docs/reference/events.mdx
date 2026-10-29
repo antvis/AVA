@@ -60,7 +60,11 @@ analyzestart → translatestart → translateend → querystart → queryend
 
 Retries can repeat translation and query events. The summary is omitted when `includeSummary` is `false`.
 
-Direct analysis events include `context.eventId` and `context.stepId`. Each start/end pair shares an internal `pairId`, producing event IDs `${pairId}:start` and `${pairId}:end`; retries use a new pair ID. The `stepId` groups events from the same direct analysis, even when concurrent analyses interleave. The summary's `data.queryId` references the successful query-end event's complete ID, including `:end`. Loop analysis and standalone `translate()` / `query()` calls do not currently include this context.
+Direct and loop analysis events include `context.eventId` and `context.stepId`. Each start/end pair shares an internal `pairId`, producing event IDs `${pairId}:start` and `${pairId}:end`; each reasoning call, query, and retry gets a new pair ID.
+
+In direct analysis, `stepId` groups events from the same analysis. The summary's `data.queryId` references the successful query-end event's complete ID, including `:end`.
+
+In loop analysis, each iteration has its own `stepId`, shared by its reasoning and query events. `context.parentStepIds` is empty for the first iteration and contains the previous iteration's ID for later iterations. The final fallback gets a new step ID and follows the same rule. Standalone `translate()` / `query()` calls do not currently include this context.
 
 ## Listener parameters
 

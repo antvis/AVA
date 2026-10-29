@@ -4,6 +4,7 @@ import { MockLanguageModelV4 } from 'ai/test';
 import { analyze } from '../src/analysis';
 
 import type { AnalysisEngine } from '../src/types';
+import type { AnalysisEvent } from '../src/event';
 
 const narrative = { queryExplanation: 'Return the constant 1.', conclusion: 'One result.' };
 const execution = { data: [{ value: 1 }], schema: [{ name: 'value', type: 'INTEGER' }], rowCount: 1 };
@@ -164,8 +165,32 @@ describe('directAnalysis', () => {
   });
 });
 
+function expectLoopContexts(events: AnalysisEvent[]) {
+  const steps = events.filter(({ type }) => type === 'reasonstart');
+  expect(steps.length).toBeGreaterThan(0);
+  expect(new Set(steps.map(({ context }) => context.stepId)).size).toBe(steps.length);
+  expect(new Set(events.map(({ context }) => context.eventId)).size).toBe(events.length);
+
+  let step = -1;
+  for (let i = 0; i < events.length; i += 2) {
+    const start = events[i];
+    const end = events[i + 1];
+    if (start.type === 'reasonstart') step++;
+
+    expect(start.context.eventId).toMatch(/^[^:]+:start$/);
+    expect(start.context.stepId).toEqual(expect.any(String));
+    expect(start.context.stepId).toBe(steps[step].context.stepId);
+    expect(start.context.parentStepIds).toEqual(step === 0 ? [] : [steps[step - 1].context.stepId]);
+    expect(end.type).toBe(start.type.replace(/start$/, 'end'));
+    expect(end.context).toEqual({
+      ...start.context,
+      eventId: start.context.eventId.replace(/:start$/, ':end'),
+    });
+  }
+}
+
 it.each([0, 1, 2])('loop omits summary with maxSteps=%s, retaining verification when possible', async (maxSteps) => {
-  const { runtime, engine, doGenerate, model } = setup();
+  const { runtime, engine, doGenerate, model, emit } = setup();
   doGenerate
     .mockResolvedValueOnce(response('[SQL]\n```sql\nSELECT 1\n```'))
     .mockResolvedValueOnce(response('[CONFIRM] Result verified.'));
@@ -177,4 +202,70 @@ it.each([0, 1, 2])('loop omits summary with maxSteps=%s, retaining verification 
   expect(engine.getDSL).not.toHaveBeenCalled();
   expect(doGenerate).toHaveBeenCalledTimes(maxSteps === 2 ? 2 : 1);
   expect(JSON.stringify(model.doGenerateCalls[0].prompt)).toContain('without a summary or conclusion');
+  expectLoopContexts(emit.mock.calls.map(([event]) => event));
+});
+
+it('groups loop reasoning and queries by step across exploration, refinement, and confirmation', async () => {
+  const { runtime, engine, doGenerate, emit } = setup();
+  doGenerate
+    .mockResolvedValueOnce(response('[EXPLORE]\n```sql\nBAD SQL\n```\n```sql\nSELECT 2\n```'))
+    .mockResolvedValueOnce(response('[REFINE] Use the verified values.'))
+    .mockResolvedValueOnce(response('[SQL]\n```sql\nSELECT 1\n```'))
+    .mockResolvedValueOnce(response('[CONFIRM] Result verified.'));
+  engine.execute.mockRejectedValueOnce(new Error('Invalid SQL'));
+
+  const result = await analyze('Give me one', { strategy: { type: 'loop', maxSteps: 4 } }, runtime);
+
+  expect(result).toMatchObject({ ...execution, sql: 'SELECT 1', text: 'Result verified.' });
+  const events = emit.mock.calls.map(([event]) => event);
+  expect(events.filter(({ type }) => type === 'reasonend').map(({ data }) => data.action)).toEqual([
+    'EXPLORE',
+    'REFINE',
+    'SQL',
+    'CONFIRM',
+  ]);
+  expect(events.filter(({ type }) => type === 'querystart').map(({ data }) => data.dsl)).toEqual([
+    'BAD SQL',
+    'SELECT 2',
+    'SELECT 1',
+  ]);
+  expect(events.find(({ type }) => type === 'queryend').data).toMatchObject({
+    error: { message: 'Invalid SQL' },
+  });
+  expectLoopContexts(events);
+});
+
+it('links the loop fallback to the previous step', async () => {
+  const { runtime, doGenerate, emit } = setup();
+  doGenerate
+    .mockResolvedValueOnce(response('[REFINE] Need an answer query.'))
+    .mockResolvedValueOnce(response('[SQL]\n```sql\nSELECT 1\n```'));
+
+  await analyze('Give me one', { strategy: { type: 'loop', maxSteps: 1 } }, runtime);
+
+  const events = emit.mock.calls.map(([event]) => event);
+  expect(events.filter(({ type }) => type === 'reasonstart').map(({ data }) => data)).toEqual([
+    { step: 0 },
+    { step: 1, finalAttempt: true },
+  ]);
+  expectLoopContexts(events);
+});
+
+it.each([
+  ['reason', 1],
+  ['reason', 0],
+  ['query', 0],
+] as const)('closes a failed loop %s event with context at maxSteps=%s', async (phase, maxSteps) => {
+  const { runtime, engine, doGenerate, emit } = setup();
+  if (phase === 'reason') doGenerate.mockRejectedValueOnce(new Error('Reasoning failed'));
+  else {
+    doGenerate.mockResolvedValueOnce(response('[SQL]\n```sql\nSELECT 1\n```'));
+    engine.execute.mockRejectedValueOnce(new Error('Query failed'));
+  }
+
+  await expect(analyze('Question', { strategy: { type: 'loop', maxSteps } }, runtime)).rejects.toThrow();
+
+  const events = emit.mock.calls.map(([event]) => event);
+  expect(events.at(-1)).toMatchObject({ type: `${phase}end`, data: { error: expect.any(Object) } });
+  expectLoopContexts(events);
 });

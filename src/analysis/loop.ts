@@ -9,11 +9,11 @@
  * Every action and runtime observation is fed into the next step; a step limit and one
  * final SQL attempt keep the loop bounded.
  */
-import { generateText } from 'ai';
+import { generateId, generateText } from 'ai';
 
 import { languageModel } from '../util/model';
 import { stringifyDataModel } from '../util/data-model';
-import { AnalysisEvent, AnalysisEventType } from '../event';
+import { AnalysisEvent, AnalysisEventType, startOf, endOf } from '../event';
 import { serializeError } from '../util/error';
 
 import type { AnalysisStrategy, QueryLanguage, ExecutionResult } from '../types';
@@ -176,6 +176,11 @@ const transcriptPrompt = (transcript: string[]) => {
  * Explore, refine, execute, and verify SQL before returning an answer.
  */
 export const loopAnalysis: AnalysisStrategy = async (query, config, { dataModel, engine, llm, emit }) => {
+  let stepId: string | undefined;
+  let parentStepIds: string[] = [];
+  const emitEvent = (type: AnalysisEventType, data: object, eventId: string) =>
+    emit(new AnalysisEvent(type, data, { stepId, parentStepIds, eventId }));
+
   const dataset = stringifyDataModel(dataModel);
   const transcript: string[] = [];
   let sql: string | undefined;
@@ -184,6 +189,9 @@ export const loopAnalysis: AnalysisStrategy = async (query, config, { dataModel,
   const maxSteps = (config.strategy as { maxSteps?: number })?.maxSteps ?? DEFAULT_MAX_STEPS;
 
   for (let step = 0; step < maxSteps; step += 1) {
+    parentStepIds = stepId ? [stepId] : [];
+    stepId = generateId();
+
     const prompt = `${loopPrompt(engine.language, config.includeSummary !== false)}
 
     # DATABASE CONTEXT
@@ -194,10 +202,11 @@ export const loopAnalysis: AnalysisStrategy = async (query, config, { dataModel,
 
     ${transcriptPrompt(transcript)}`;
 
-    emit(new AnalysisEvent(AnalysisEventType.REASON_START, { step }));
+    const reasonPairId = generateId();
+    emitEvent(AnalysisEventType.REASON_START, { step }, startOf(reasonPairId));
 
     let text: string;
-    let action: string;
+    let action: string | undefined;
     let queries: string[] = [];
     try {
       const response = await generateText({
@@ -222,12 +231,12 @@ export const loopAnalysis: AnalysisStrategy = async (query, config, { dataModel,
         }
       }
     } catch (error) {
-      emit(new AnalysisEvent(AnalysisEventType.REASON_END, { step, error: serializeError(error) }));
+      emitEvent(AnalysisEventType.REASON_END, { step, error: serializeError(error) }, endOf(reasonPairId));
 
       throw error;
     }
 
-    emit(new AnalysisEvent(AnalysisEventType.REASON_END, { step, action, text }));
+    emitEvent(AnalysisEventType.REASON_END, { step, action, text }, endOf(reasonPairId));
 
     transcript.push(`Assistant:\n${text}`);
 
@@ -253,13 +262,14 @@ export const loopAnalysis: AnalysisStrategy = async (query, config, { dataModel,
     for (const proposal of queries) {
       const statement = proposal;
 
-      emit(new AnalysisEvent(AnalysisEventType.QUERY_START, { dsl: statement }));
+      const queryPairId = generateId();
+      emitEvent(AnalysisEventType.QUERY_START, { dsl: statement }, startOf(queryPairId));
 
       let execution: ExecutionResult;
       try {
         execution = await engine.execute(statement, config);
       } catch (error) {
-        emit(new AnalysisEvent(AnalysisEventType.QUERY_END, { error: serializeError(error) }));
+        emitEvent(AnalysisEventType.QUERY_END, { error: serializeError(error) }, endOf(queryPairId));
 
         if (action === 'SQL') result = undefined;
 
@@ -273,7 +283,7 @@ export const loopAnalysis: AnalysisStrategy = async (query, config, { dataModel,
         continue;
       }
 
-      emit(new AnalysisEvent(AnalysisEventType.QUERY_END, execution));
+      emitEvent(AnalysisEventType.QUERY_END, execution, endOf(queryPairId));
 
       observations.push(
         `Proposed statement (${engine.language.name}):
@@ -307,7 +317,10 @@ export const loopAnalysis: AnalysisStrategy = async (query, config, { dataModel,
 
   // maxSteps limits the normal loop. If it ends without final SQL, allow exactly one
   // history-aware SQL-only turn and adopt its executed result without another CONFIRM.
-  emit(new AnalysisEvent(AnalysisEventType.REASON_START, { step: maxSteps, finalAttempt: true }));
+  parentStepIds = stepId ? [stepId] : [];
+  stepId = generateId();
+  const reasonPairId = generateId();
+  emitEvent(AnalysisEventType.REASON_START, { step: maxSteps, finalAttempt: true }, startOf(reasonPairId));
 
   let finalText: string;
   let statement: string;
@@ -341,33 +354,29 @@ export const loopAnalysis: AnalysisStrategy = async (query, config, { dataModel,
 
     statement = proposals[0];
   } catch (error) {
-    emit(
-      new AnalysisEvent(AnalysisEventType.REASON_END, {
-        step: maxSteps,
-        finalAttempt: true,
-        error: serializeError(error),
-      })
+    emitEvent(
+      AnalysisEventType.REASON_END,
+      { step: maxSteps, finalAttempt: true, error: serializeError(error) },
+      endOf(reasonPairId)
     );
 
     throw error;
   }
 
-  emit(
-    new AnalysisEvent(AnalysisEventType.REASON_END, {
-      step: maxSteps,
-      finalAttempt: true,
-      action: 'SQL',
-      text: finalText,
-    })
+  emitEvent(
+    AnalysisEventType.REASON_END,
+    { step: maxSteps, finalAttempt: true, action: 'SQL', text: finalText },
+    endOf(reasonPairId)
   );
 
-  emit(new AnalysisEvent(AnalysisEventType.QUERY_START, { dsl: statement }));
+  const queryPairId = generateId();
+  emitEvent(AnalysisEventType.QUERY_START, { dsl: statement }, startOf(queryPairId));
 
   let execution: ExecutionResult;
   try {
     execution = await engine.execute(statement, config);
   } catch (error) {
-    emit(new AnalysisEvent(AnalysisEventType.QUERY_END, { error: serializeError(error) }));
+    emitEvent(AnalysisEventType.QUERY_END, { error: serializeError(error) }, endOf(queryPairId));
 
     throw new Error(
       `Loop final statement failed: ${error instanceof Error ? error.message : String(error)}\nLast attempted ${
@@ -376,7 +385,7 @@ export const loopAnalysis: AnalysisStrategy = async (query, config, { dataModel,
     );
   }
 
-  emit(new AnalysisEvent(AnalysisEventType.QUERY_END, execution));
+  emitEvent(AnalysisEventType.QUERY_END, execution, endOf(queryPairId));
 
   return {
     query,
