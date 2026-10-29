@@ -88,9 +88,8 @@ describe('directAnalysis', () => {
 
     const result = await analyze('Give me one', config, runtime);
 
-    expect(result).toMatchObject({
+    expect(result).toEqual({
       ...execution,
-      ...narrative,
       query: 'Give me one',
       sql: 'SELECT 1',
       text: 'One result.',
@@ -129,7 +128,7 @@ describe('directAnalysis', () => {
 
     const result = await analyze('Give me one', {}, runtime);
 
-    expect(result).toMatchObject({ ...execution, ...narrative, text: narrative.conclusion });
+    expect(result).toEqual({ ...execution, query: 'Give me one', sql: 'SELECT 1', text: narrative.conclusion });
     expect(doGenerate).toHaveBeenCalledOnce();
     expect(engine.execute).toHaveBeenCalledOnce();
     expect(emit.mock.calls.at(-2)[0]).toMatchObject({
@@ -139,7 +138,7 @@ describe('directAnalysis', () => {
   });
 
   it.each([false, true])('preserves quoted content while repairing bare keys: %s', async (repair) => {
-    const { runtime, doGenerate } = setup();
+    const { runtime, doGenerate, emit } = setup();
     const content = {
       queryExplanation: 'SQL: SELECT "value"; text: {bare: 1,}; array: [1,]; path: C:\\tmp\\file; \\"quote", after: 2',
       conclusion: '中文结论\n下一行：{"conclusion": "不改动"}',
@@ -151,7 +150,8 @@ describe('directAnalysis', () => {
       : JSON.stringify(content);
     doGenerate.mockResolvedValue(response(text));
 
-    expect(await analyze('Give me one', {}, runtime)).toMatchObject(content);
+    expect(await analyze('Give me one', {}, runtime)).toMatchObject({ text: content.conclusion });
+    expect(emit.mock.calls.at(-2)[0]).toMatchObject({ type: 'summarizeend', data: content });
   });
 
   it.each([

@@ -149,7 +149,6 @@ export const directAnalysis: AnalysisStrategy = async (query, config, { dataMode
       query,
       ...result,
       sql: dsl,
-      ...summary,
       text: summary?.conclusion ?? '',
     };
   } catch (error) {

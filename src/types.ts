@@ -935,17 +935,6 @@ export interface AnalysisResponse<T = Record<string, unknown>> extends Execution
   markdown?: string;
   /** The SQL executed for the analysis */
   sql?: string;
-  /** Plain-language explanation of the executed query (direct, when summary is enabled). */
-  queryExplanation?: string;
-  /** Evidence-based answer (direct); also returned as text for compatibility. */
-  conclusion?: string;
-  /** Optional follow-up analysis suggested by direct. */
-  nextStep?: string;
-  /** Conclusion identity and dependencies within this analysis. */
-  id?: string;
-  parentIds?: string[];
-  /** Why the analysis finished; completed does not imply independent verification. */
-  completionReason?: 'completed' | 'confirmed' | 'step_limit' | 'final_attempt';
 }
 
 /**
