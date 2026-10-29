@@ -18,11 +18,13 @@ import { extractJsonMiddleware, generateId, generateText, Output, wrapLanguageMo
 import { z } from 'zod/v4';
 
 import { languageModel } from '../util/model';
+import { repairJson } from '../util/json';
 import { AnalysisEvent, AnalysisEventType, startOf, endOf } from '../event';
 import { serializeError } from '../util/error';
 
 import type { LanguageModelUsage } from 'ai';
 import type { AnalysisStrategy, ExecutionResult, LLMConfig } from '../types';
+import type { SerializedError } from '../util/error';
 
 const summarySchema = z.object({
   queryExplanation: z.string().trim().min(1),
@@ -53,7 +55,7 @@ async function summarizeResult(query: string, dsl: string, result: ExecutionResu
   const { output: summary, usage } = await generateText({
     model: wrapLanguageModel({
       model: languageModel(llm),
-      middleware: extractJsonMiddleware(),
+      middleware: extractJsonMiddleware({ transform: repairJson }),
     }),
     output: Output.object<Summary>({ schema: summarySchema }),
     providerOptions: { openai: { strictJsonSchema: false } },
@@ -71,37 +73,37 @@ export const directAnalysis: AnalysisStrategy = async (query, config, { dataMode
   const emitEvent = (type: AnalysisEventType, data: object, eventId: string) =>
     emit(new AnalysisEvent(type, data, { stepId, eventId }));
 
-  let queryId: string;
-  let translationQuery = query;
-  let dsl: string;
-  let result: ExecutionResult;
+    let queryId: string;
+    let translationQuery = query;
+    let dsl: string;
+    let result: ExecutionResult;
 
-  for (let attempt = 0; ; attempt++) {
-    const translationPairId = generateId();
-    emitEvent(AnalysisEventType.TRANSLATE_START, { query, attempt }, startOf(translationPairId));
+    for (let attempt = 0; ; attempt++) {
+      const translationPairId = generateId();
+      emitEvent(AnalysisEventType.TRANSLATE_START, { query, attempt }, startOf(translationPairId));
 
-    try {
-      dsl = await engine.getDSL(translationQuery, dataModel);
-    } catch (error) {
-      emitEvent(AnalysisEventType.TRANSLATE_END, { error: serializeError(error) }, endOf(translationPairId));
+      try {
+        dsl = await engine.getDSL(translationQuery, dataModel);
+      } catch (error) {
+        emitEvent(AnalysisEventType.TRANSLATE_END, { error: serializeError(error) }, endOf(translationPairId));
 
-      throw error;
-    }
+        throw error;
+      }
 
-    emitEvent(AnalysisEventType.TRANSLATE_END, { dsl }, endOf(translationPairId));
+      emitEvent(AnalysisEventType.TRANSLATE_END, { dsl }, endOf(translationPairId));
 
-    const queryPairId = generateId();
-    queryId = endOf(queryPairId);
-    emitEvent(AnalysisEventType.QUERY_START, { dsl }, startOf(queryPairId));
+      const queryPairId = generateId();
+      queryId = endOf(queryPairId);
+      emitEvent(AnalysisEventType.QUERY_START, { dsl }, startOf(queryPairId));
 
-    try {
-      result = await engine.execute(dsl, config);
-    } catch (error) {
-      emitEvent(AnalysisEventType.QUERY_END, { error: serializeError(error) }, queryId);
+      try {
+        result = await engine.execute(dsl, config);
+      } catch (error) {
+        emitEvent(AnalysisEventType.QUERY_END, { error: serializeError(error) }, queryId);
 
-      if (attempt >= maxRetries) throw error;
+        if (attempt >= maxRetries) throw error;
 
-      translationQuery = `${query}
+        translationQuery = `${query}
 
         The previous DSL failed to execute. Correct it using the following diagnostic context:
 
@@ -111,39 +113,39 @@ export const directAnalysis: AnalysisStrategy = async (query, config, { dataMode
         Execution error:
         ${error instanceof Error ? error.message : String(error)}`;
 
-      continue;
+        continue;
+      }
+
+      emitEvent(AnalysisEventType.QUERY_END, result, queryId);
+
+      break;
     }
-
-    emitEvent(AnalysisEventType.QUERY_END, result, queryId);
-
-    break;
-  }
 
   let summary: Summary | undefined;
-  let usage: LanguageModelUsage | undefined;
+    let usage: LanguageModelUsage | undefined;
 
-  if (config.includeSummary !== false) {
-    const summaryPairId = generateId();
-    emitEvent(AnalysisEventType.SUMMARIZE_START, { queryId }, startOf(summaryPairId));
+    if (config.includeSummary !== false) {
+      const summaryPairId = generateId();
+      emitEvent(AnalysisEventType.SUMMARIZE_START, { queryId }, startOf(summaryPairId));
 
-    try {
-      const generated = await summarizeResult(query, dsl, result, llm);
-      summary = generated.summary;
-      usage = generated.usage;
-    } catch (error) {
-      emitEvent(AnalysisEventType.SUMMARIZE_END, { error: serializeError(error) }, endOf(summaryPairId));
+      try {
+        const generated = await summarizeResult(query, dsl, result, llm);
+        summary = generated.summary;
+        usage = generated.usage;
+      } catch (error) {
+        emitEvent(AnalysisEventType.SUMMARIZE_END, { error: serializeError(error) }, endOf(summaryPairId));
 
-      throw error;
+        throw error;
+      }
+
+      emitEvent(AnalysisEventType.SUMMARIZE_END, { ...summary, usage }, endOf(summaryPairId));
     }
 
-    emitEvent(AnalysisEventType.SUMMARIZE_END, { ...summary, usage }, endOf(summaryPairId));
-  }
-
-  return {
-    query,
-    ...result,
-    sql: dsl,
-    ...summary,
-    text: summary?.conclusion ?? '',
-  };
+    return {
+      query,
+      ...result,
+      sql: dsl,
+      ...summary,
+      text: summary?.conclusion ?? '',
+    };
 };
