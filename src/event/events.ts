@@ -11,7 +11,19 @@ export class LifecycleEvent extends BaseEvent {
 }
 
 export class AnalysisEvent extends BaseEvent {
-  constructor(type: AnalysisEventType, public data: object | null = {}) {
+  /** Operation identity, shared by its start and end events within one analysis. */
+  id?: string;
+  parentIds?: string[];
+
+  constructor(
+    type: AnalysisEventType,
+    public data: object | null = {},
+    operation?: { id: string; parentIds: string[] }
+  ) {
     super(type);
+    if (operation) {
+      this.id = operation.id;
+      this.parentIds = [...operation.parentIds];
+    }
   }
 }

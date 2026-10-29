@@ -92,6 +92,8 @@ export interface AVAConfig {
 
 /** Per-analysis options. */
 export interface AnalysisConfig extends ExecutionOptions {
+  /** Include model input context in analysis events. */
+  telemetry?: boolean;
   /** Include a natural-language summary. Defaults to true; false returns empty text. */
   includeSummary?: boolean;
   /** Strategy for this analysis (defaults to direct). */
@@ -486,11 +488,11 @@ export type ClickHouseSourceOptions = Omit<ClickHouseClientConfigOptions, 'host'
 };
 
 export interface FeishuBitableSourceOptions {
-  url?:string;
-  appToken?:string;
+  url?: string;
+  appToken?: string;
   tableId?: string;
-  appId?:string;
-  appSecret?:string;
+  appId?: string;
+  appSecret?: string;
 }
 
 /**
@@ -683,7 +685,7 @@ export type AnalysisStrategyConfig =
       /** Execution correction retries after the initial attempt. defaults to 2. */
       maxRetries?: number;
     }
-  | { type: 'loop'; maxSteps?: number };
+  | { type: 'loop'; maxSteps?: number; control?: LoopControl };
 
 /** Unified data structure, profiling results and semantics for AVA. */
 
@@ -933,6 +935,59 @@ export interface AnalysisResponse<T = Record<string, unknown>> extends Execution
   markdown?: string;
   /** The SQL executed for the analysis */
   sql?: string;
+  /** Plain-language explanation of the executed query (direct, when summary is enabled). */
+  queryExplanation?: string;
+  /** Evidence-based answer (direct); also returned as text for compatibility. */
+  conclusion?: string;
+  /** Optional follow-up analysis suggested by direct. */
+  nextStep?: string;
+  /** Conclusion identity and dependencies within this analysis. */
+  id?: string;
+  parentIds?: string[];
+  /** Why the analysis finished; completed does not imply independent verification. */
+  completionReason?: 'completed' | 'confirmed' | 'step_limit' | 'final_attempt';
+}
+
+/** Serializable loop state. Resume only against the same question, data model and engine. */
+export interface LoopCheckpoint {
+  version: 2;
+  /** Identity and dependencies of the next operation, scoped to this analysis. */
+  id: string;
+  parentIds: string[];
+  query: string;
+  dataset: string;
+  language: string;
+  maxSteps: number;
+  step: number;
+  phase: 'model' | 'query' | 'complete';
+  transcript: string[];
+  pending?: {
+    action: 'EXPLORE' | 'SQL';
+    queries: string[];
+    index: number;
+    observations: string[];
+    finalAttempt: boolean;
+  };
+  sql?: string;
+  result?: ExecutionResult;
+  lastConfirmation?: string;
+  completion?: { reason: 'confirmed' | 'step_limit' | 'final_attempt'; text: string };
+}
+
+export interface LoopDecision {
+  /** Replace the pending query; it still passes through the engine's validation. */
+  sql?: string;
+  /** Add explicit user guidance to the next model request. */
+  instruction?: string;
+}
+
+export interface LoopControl {
+  resumeFrom?: LoopCheckpoint;
+  signal?: AbortSignal;
+  /** Await durable storage at safe boundaries. Credentials are not included. */
+  onCheckpoint?: (checkpoint: LoopCheckpoint) => void | Promise<void>;
+  /** Await user intervention before a model call or query. */
+  beforeStep?: (checkpoint: LoopCheckpoint) => void | LoopDecision | Promise<void | LoopDecision>;
 }
 
 /**
