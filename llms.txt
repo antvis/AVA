@@ -21,7 +21,7 @@ DuckDB is the default Node.js engine. JavaScript supports browsers and Node.js; 
 - [Inspect your data](https://ava.antv.vision/documentation/data/schema/): AVA discovers the structural starting point automatically; optionally compute statistics, then supply business meaning through semantic definitions. No schema needs to be authored for ordinary use.
 - [Define data semantics](https://ava.antv.vision/documentation/data/semantic/): Author business context, model and column mappings, relationships, views, and cubes; includes a worked sales example and links to the complete API fields. Definitions guide query generation and do not materialize objects or enforce access policies.
 - [Analyze data](https://ava.antv.vision/documentation/analysis/overview/): Ask questions, get suggestions, and translate or execute queries separately.
-- [Analysis strategies](https://ava.antv.vision/documentation/analysis/strategies/): Choose direct analysis, iterative reasoning, or selected profile context.
+- [Analysis strategies](https://ava.antv.vision/documentation/analysis/strategies/): Choose direct analysis or iterative reasoning.
 - [Generate visualizations](https://ava.antv.vision/documentation/visualization/overview/): Recommend charts and generate GPT-Vis syntax and HTML.
 
 ## Configuration and execution engines
