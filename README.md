@@ -254,7 +254,7 @@ Feishu Bitable links are detected automatically, both `/base/` links and wiki-ho
 ## 📚 Resources
 
 - [Documentation](https://ava.antv.vision/documentation/) — Guides and examples
-- [Analysis strategies](https://ava.antv.vision/documentation/analysis/strategies/) — Direct, loop, and subset execution
+- [Analysis strategies](https://ava.antv.vision/documentation/analysis/strategies/) — Direct and loop execution
 - [API Reference](https://ava.antv.vision/documentation/reference/api/) — Methods and configuration
 - [AI](https://ava.antv.vision/ai/) — Try out AVA in the browser environment
 - [Benchmarks](https://ava.antv.vision/documentation/reference/benchmarks/) — Evaluation results

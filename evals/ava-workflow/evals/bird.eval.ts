@@ -40,7 +40,7 @@ const HELP = `Usage: node evals/cli.js run ava-workflow --benchmark bird [option
   --offset <number>       Offset after filtering (default 0)
   --suite <database>      Filter database
   --id <question_id>      Repeatable question ID, including 0
-  --strategy <name>       direct, loop or subset (default direct)
+  --strategy <name>       direct or loop (default direct)
   --max-retries <number>  Direct execution retries (default 2)
   --max-steps <number>    Loop action budget (default 12)
   --concurrency <number>  Parallel workflows (default 1)
@@ -177,7 +177,7 @@ export async function main(argv = process.argv.slice(2)) {
     scoreTimeoutMs: scoreTimeout,
     concurrency,
     modelContext: 'ava-profile + question + evidence + SQL answer constraints' + (semantics.size ? ' + semantic' : '') + (values['database-description'] ? ' + database_description' : ''),
-    usageScope: 'onQueryUsage callbacks; subset auxiliary selector usage excluded',
+    usageScope: 'onQueryUsage callbacks',
     resources: Object.fromEntries(files.map((file) => [relative(root, file), sha256(file)])),
     implementation: Object.fromEntries(
       [

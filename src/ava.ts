@@ -72,12 +72,8 @@ export class AVA extends EventEmitter {
   }
 
   /** Assemble the dataset model when a model-facing operation needs it. */
-  private async getDataModel(needProfile = false): Promise<DataModel> {
+  private async getDataModel(): Promise<DataModel> {
     this.dataSchema ??= await this.engine!.schema();
-
-    if (needProfile && !this.dataProfile && this.engine?.profile) {
-      this.dataProfile = await this.engine.profile(this.dataSchema);
-    }
 
     return buildDataModel({
       schema: this.dataSchema,
@@ -252,7 +248,7 @@ export class AVA extends EventEmitter {
     try {
       const runtime = {
         emit: (event: AnalysisEvent) => emit(this, event),
-        dataModel: await this.getDataModel(config.strategy?.type === 'subset'),
+        dataModel: await this.getDataModel(),
         engine: this.engine,
         llm: this.llmConfig,
       };

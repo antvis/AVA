@@ -32,8 +32,6 @@ export enum AnalysisEventType {
   QUERY_END = 'queryend',
   SUMMARIZE_START = 'summarizestart',
   SUMMARIZE_END = 'summarizeend',
-  SELECT_CONTEXT_START = 'selectcontextstart',
-  SELECT_CONTEXT_END = 'selectcontextend',
   REASON_START = 'reasonstart',
   REASON_END = 'reasonend',
 }

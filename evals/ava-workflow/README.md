@@ -1,6 +1,6 @@
 # AVA Workflow
 
-按 `source → profile → semantic（可选）→ analyze` 执行数据分析，支持 `direct`、`loop`、`subset` 三种策略。`workflow.ts` 负责分析编排，`model.ts` 提供模型配置，`evals/` 中的评测器负责适配数据和评分，通用工具位于 `../_shared/`。
+按 `source → profile → semantic（可选）→ analyze` 执行数据分析，支持 `direct`、`loop` 两种策略。`workflow.ts` 负责分析编排，`model.ts` 提供模型配置，`evals/` 中的评测器负责适配数据和评分，通用工具位于 `../_shared/`。
 
 ## 准备
 
@@ -141,4 +141,4 @@ node evals/cli.js score --dataset bird --predictions "$BIRD_OUTPUT"
 
 保存到 `evals/reports/` 时，文件名中的日期、模型和条件须与原始评测一致，命名规则见[评测说明](../README.md#查看结果)。
 
-Token 用量累计单题所有 `onQueryUsage` 回调；缺失字段记为未知（CSV 留空、JSON 为 null），不包含 subset 辅助选择器未上报的用量。
+Token 用量累计单题所有 `onQueryUsage` 回调；缺失字段记为未知（CSV 留空、JSON 为 null）。
