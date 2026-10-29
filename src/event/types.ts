@@ -2,33 +2,6 @@ import type { LanguageModelUsage } from 'ai';
 import type { ExecutionResult } from '../types';
 import type { SerializedError } from '../util/error';
 
-export type CreateStartPayload = object | null;
-export type CreateEndPayload = object | null;
-
-export type DisposeStartPayload = object | null;
-export type DisposeEndPayload = object | null;
-
-export type SourceStartPayload = object | null;
-export type SourceEndPayload = object | null;
-
-export type SchemaStartPayload = object | null;
-export type SchemaEndPayload = object | null;
-
-export type ProfileStartPayload = object | null;
-export type ProfileEndPayload = object | null;
-
-export type SemanticStartPayload = object | null;
-export type SemanticEndPayload = object | null;
-
-export type AnalyzeStartPayload = object | null;
-export type AnalyzeEndPayload = object | null;
-
-export type VisualizeStartPayload = object | null;
-export type VisualizeEndPayload = object | null;
-
-export type SuggestStartPayload = object | null;
-export type SuggestEndPayload = object | null;
-
 export type AnalysisEventContext = {
   /** Unique event ID: `${pairId}:start` or `${pairId}:end`; retries use a new pair ID. */
   eventId?: string;
