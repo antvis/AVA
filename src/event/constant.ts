@@ -16,6 +16,8 @@ export enum LifecycleEventType {
   SEMANTIC_END = 'semanticend',
   ANALYZE_START = 'analyzestart',
   ANALYZE_END = 'analyzeend',
+  RECOMMEND_START = 'recommendstart',
+  RECOMMEND_END = 'recommendend',
   VISUALIZE_START = 'visualizestart',
   VISUALIZE_END = 'visualizeend',
   SUGGEST_START = 'suggeststart',

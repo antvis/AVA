@@ -33,10 +33,11 @@ These events mark AVA operations. End events have empty data (`{}`) unless liste
 | Compute or set profile | `profilestart` | `{}` | `profileend` |
 | Set semantic definitions | `semanticstart` | `{}` | `semanticend` |
 | Analyze a question | `analyzestart` | `{ query }` | `analyzeend` |
-| Recommend or visualize a result | `visualizestart` | `{ query }` | `visualizeend`: `{ usages? }` |
+| Recommend a chart | `recommendstart` | `{ query }` | `recommendend`: `{ usages? }` |
+| Visualize a result | `visualizestart` | `{ query }` | `visualizeend` |
 | Suggest questions | `suggeststart` | `{}` | `suggestend`: `{ usage? }` |
 
-Cached schema reads, semantic reads, and `viz()` do not emit events. `recommend()` uses the visualization events; `visualize()` emits one pair for the complete operation.
+Cached schema reads, semantic reads, and `viz()` do not emit events. `visualize()` emits its own events around the `recommend()` events.
 
 ## Analysis events
 
@@ -50,7 +51,7 @@ These events describe steps within analysis. Direct calls to `translate()` and `
 | Direct analysis step | `stepstart`: `{ step: 0 }` | `stepend`: `{ step: 0, action: 'SQL', text }` |
 | Loop iteration | `stepstart`: `{ step, finalAttempt? }` | `stepend`: `{ step, action, text, finalAttempt?, usage? }` |
 
-Text source extraction and suggestions report `data.usage` on `sourceend` and `suggestend`. Visualization and standalone recommendation report an ordered `data.usages` array on `visualizeend`: chart selection first, followed by chart configuration if generated. No usage field is present when no model call completes.
+Text source extraction and suggestions report `data.usage` on `sourceend` and `suggestend`. Recommendation, including when called by `visualize()`, reports an ordered `data.usages` array on `recommendend`: chart selection first, followed by chart configuration if generated. No usage field is present when no model call completes.
 
 Model token usage is available as `data.usage` on `translateend` for translation, `stepend` for loop model calls, and `summarizeend` for summaries. A failed end event can still contain usage when the model responded before a later error. Custom engines can supply source and translation usage through optional callbacks to `load` and `getDSL`. Multiple reports are added; a token count remains unknown if any report omits that count. Aggregated usage does not include provider-specific raw usage.
 
