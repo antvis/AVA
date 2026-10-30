@@ -55,10 +55,13 @@ async function summarizeResult(query: string, dsl: string, result: ExecutionResu
   const { output: summary, usage } = await generateText({
     model: wrapLanguageModel({
       model: languageModel(llm),
-      middleware: extractJsonMiddleware({ transform: repairJson }),
+      middleware: {
+        ...extractJsonMiddleware({ transform: repairJson }),
+        // Validate locally; compatible endpoints may reject JSON response formats.
+        transformParams: async ({ params }) => ({ ...params, responseFormat: { type: 'text' } }),
+      },
     }),
     output: Output.object<Summary>({ schema: summarySchema }),
-    providerOptions: { openai: { strictJsonSchema: false } },
     maxRetries: llm.maxRetries ?? 3,
     prompt,
   });

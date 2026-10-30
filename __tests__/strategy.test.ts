@@ -1,5 +1,6 @@
 import { describe, expect, it, vi } from 'vitest';
 import { MockLanguageModelV4 } from 'ai/test';
+import { createOpenAI } from '@ai-sdk/openai';
 
 import { analyze } from '../src/analysis';
 
@@ -97,7 +98,7 @@ describe('directAnalysis', () => {
     expect(engine.getDSL).toHaveBeenCalledExactlyOnceWith('Give me one', runtime.dataModel);
     expect(engine.execute).toHaveBeenCalledExactlyOnceWith('SELECT 1', config);
     expect(doGenerate).toHaveBeenCalledOnce();
-    expect(model.doGenerateCalls[0].providerOptions.openai).toMatchObject({ strictJsonSchema: false });
+    expect(model.doGenerateCalls[0].responseFormat).toEqual({ type: 'text' });
 
     const allEvents = emit.mock.calls.map(([event]) => event);
     expectStepContexts(allEvents);
@@ -114,6 +115,49 @@ describe('directAnalysis', () => {
     ]);
     expect(events[4].data.queryId).toBe(events[3].context.eventId);
     expect(events[5].data).toMatchObject({ ...narrative, usage: { inputTokens: 10, outputTokens: 5 } });
+  });
+
+  it.each([false, true])('summarizes through an endpoint that rejects response_format (fenced: %s)', async (fenced) => {
+    const { runtime, emit } = setup();
+    const requests: Record<string, unknown>[] = [];
+    const model = createOpenAI({
+      apiKey: 'test-only',
+      baseURL: 'https://example.invalid/v1',
+      fetch: async (_input, init) => {
+        const body = JSON.parse(String(init?.body));
+        requests.push(body);
+        if ('response_format' in body) {
+          return new Response(JSON.stringify({ error: { message: 'This response_format type is unavailable now' } }), {
+            status: 400,
+            headers: { 'content-type': 'application/json' },
+          });
+        }
+        const text = JSON.stringify(narrative);
+        return new Response(
+          JSON.stringify({
+            id: 'test',
+            created: 0,
+            model: 'test-model',
+            choices: [
+              {
+                index: 0,
+                message: { role: 'assistant', content: fenced ? '```json\n' + text + '\n```' : text },
+                finish_reason: 'stop',
+              },
+            ],
+            usage: { prompt_tokens: 10, completion_tokens: 5, total_tokens: 15 },
+          }),
+          { headers: { 'content-type': 'application/json' } }
+        );
+      },
+    }).chat('test-model');
+
+    const result = await analyze('Give me one', {}, { ...runtime, llm: { model, maxRetries: 0 } });
+
+    expect(result.text).toBe(narrative.conclusion);
+    expect(requests).toHaveLength(1);
+    expect(requests[0]).not.toHaveProperty('response_format');
+    expect(emit.mock.calls.at(-2)[0]).toMatchObject({ type: 'summarizeend', data: narrative });
   });
 
   it.each([
