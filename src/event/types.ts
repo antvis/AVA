@@ -81,6 +81,7 @@ export type StepStartPayload = {
 };
 
 export type StepEndPayload = StepStartPayload &
+  LLMPayload &
   (
     | {
         action: StepAction;

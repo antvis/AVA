@@ -9,13 +9,14 @@
  * Every action and runtime observation is fed into the next step; a step limit and one
  * final SQL attempt keep the loop bounded.
  */
-import { generateId, generateText } from 'ai';
+import { generateText } from 'ai';
 
 import { languageModel } from '../util/model';
 import { stringifyDataModel } from '../util/data-model';
-import { AnalysisEvent, AnalysisEventType, startOf, endOf } from '../event';
+import { AnalysisEvent, AnalysisEventType, eventPair } from '../event';
 import { serializeError } from '../util/error';
 
+import type { LanguageModelUsage } from 'ai';
 import type { AnalysisStrategy, QueryLanguage, ExecutionResult } from '../types';
 import type { SerializedError } from '../util/error';
 
@@ -187,11 +188,12 @@ export const loopAnalysis: AnalysisStrategy = async (query, config, { dataModel,
   let sql: string | undefined;
   let result: ExecutionResult | undefined;
   let lastConfirmation: string | undefined;
-  const maxSteps = (config.strategy as { maxSteps?: number })?.maxSteps ?? DEFAULT_MAX_STEPS;
+  const maxSteps = (config.strategy?.type === 'loop' ? config.strategy.maxSteps : undefined) ?? DEFAULT_MAX_STEPS;
 
   for (let step = 0; step < maxSteps; step += 1) {
     parentStepIds = stepId ? [stepId] : [];
-    stepId = generateId();
+    const stepEvent = eventPair(emitEvent, AnalysisEventType.STEP_START, AnalysisEventType.STEP_END);
+    stepId = stepEvent.pairId;
 
     const prompt = `${loopPrompt(engine.language, config.includeSummary !== false)}
 
@@ -203,20 +205,22 @@ export const loopAnalysis: AnalysisStrategy = async (query, config, { dataModel,
 
     ${transcriptPrompt(transcript)}`;
 
-    emitEvent(AnalysisEventType.STEP_START, { step }, startOf(stepId));
+    stepEvent.start({ step });
 
+    let usage: LanguageModelUsage | undefined;
     let text: string | undefined;
     let action: string | undefined;
     let stepError: SerializedError | undefined;
     let queries: string[] = [];
     try {
-      const response = await generateText({
+      const { text: responseText, usage: responseUsage } = await generateText({
         model: languageModel(llm),
         maxRetries: llm.maxRetries ?? 3,
         prompt,
       });
 
-      text = response.text.trim();
+      usage = responseUsage;
+      text = responseText.trim();
       action = text.match(/^\[(EXPLORE|REFINE|SQL|CONFIRM)\]/)?.[1];
       if (!action) throw new Error('Loop response must begin with [EXPLORE], [REFINE], [SQL], or [CONFIRM]');
 
@@ -253,16 +257,14 @@ export const loopAnalysis: AnalysisStrategy = async (query, config, { dataModel,
       const observations: string[] = [];
 
       for (const proposal of queries) {
-        const statement = proposal;
-
-        const queryPairId = generateId();
-        emitEvent(AnalysisEventType.QUERY_START, { dsl: statement }, startOf(queryPairId));
+        const queryEvent = eventPair(emitEvent, AnalysisEventType.QUERY_START, AnalysisEventType.QUERY_END);
+        queryEvent.start({ dsl: proposal });
 
         let execution: ExecutionResult;
         try {
-          execution = await engine.execute(statement, config);
+          execution = await engine.execute(proposal, config);
         } catch (error) {
-          emitEvent(AnalysisEventType.QUERY_END, { error: serializeError(error) }, endOf(queryPairId));
+          queryEvent.end({ error: serializeError(error) });
 
           if (action === 'SQL') result = undefined;
 
@@ -276,7 +278,7 @@ export const loopAnalysis: AnalysisStrategy = async (query, config, { dataModel,
           continue;
         }
 
-        emitEvent(AnalysisEventType.QUERY_END, execution, endOf(queryPairId));
+        queryEvent.end(execution);
 
         observations.push(
           `Proposed statement (${engine.language.name}):
@@ -286,7 +288,7 @@ export const loopAnalysis: AnalysisStrategy = async (query, config, { dataModel,
         );
 
         if (action === 'SQL') {
-          sql = statement;
+          sql = proposal;
           result = execution;
         }
       }
@@ -296,11 +298,11 @@ export const loopAnalysis: AnalysisStrategy = async (query, config, { dataModel,
       stepError = serializeError(error);
       throw error;
     } finally {
-      emitEvent(
-        AnalysisEventType.STEP_END,
-        { step, ...(stepError ? { error: stepError } : { action, text }) },
-        endOf(stepId)
-      );
+      if (stepError) {
+        stepEvent.end({ step, usage, error: stepError });
+      } else {
+        stepEvent.end({ step, usage, action, text });
+      }
     }
   }
 
@@ -318,14 +320,16 @@ export const loopAnalysis: AnalysisStrategy = async (query, config, { dataModel,
   // maxSteps limits the normal loop. If it ends without final SQL, allow exactly one
   // history-aware SQL-only turn and adopt its executed result without another CONFIRM.
   parentStepIds = stepId ? [stepId] : [];
-  stepId = generateId();
-  emitEvent(AnalysisEventType.STEP_START, { step: maxSteps, finalAttempt: true }, startOf(stepId));
+  const stepEvent = eventPair(emitEvent, AnalysisEventType.STEP_START, AnalysisEventType.STEP_END);
+  stepId = stepEvent.pairId;
+  stepEvent.start({ step: maxSteps, finalAttempt: true });
 
+  let usage: LanguageModelUsage | undefined;
   let finalText: string | undefined;
   let stepError: SerializedError | undefined;
   let statement: string;
   try {
-    const finalResponse = await generateText({
+    const { text: responseText, usage: responseUsage } = await generateText({
       model: languageModel(llm),
       maxRetries: llm.maxRetries ?? 3,
       prompt: `${loopPrompt(engine.language, config.includeSummary !== false)}
@@ -345,7 +349,8 @@ export const loopAnalysis: AnalysisStrategy = async (query, config, { dataModel,
     } statement.`,
     });
 
-    finalText = finalResponse.text.trim();
+    usage = responseUsage;
+    finalText = responseText.trim();
     const proposals = codeBlocks(finalText, engine.language.fence);
     if (!finalText.startsWith('[SQL]') || proposals.length !== 1) {
       throw new Error(`Loop final fallback response must contain exactly one ${engine.language.fence} code block`);
@@ -354,14 +359,14 @@ export const loopAnalysis: AnalysisStrategy = async (query, config, { dataModel,
 
     statement = proposals[0];
 
-    const queryPairId = generateId();
-    emitEvent(AnalysisEventType.QUERY_START, { dsl: statement }, startOf(queryPairId));
+    const queryEvent = eventPair(emitEvent, AnalysisEventType.QUERY_START, AnalysisEventType.QUERY_END);
+    queryEvent.start({ dsl: statement });
 
     let execution: ExecutionResult;
     try {
       execution = await engine.execute(statement, config);
     } catch (error) {
-      emitEvent(AnalysisEventType.QUERY_END, { error: serializeError(error) }, endOf(queryPairId));
+      queryEvent.end({ error: serializeError(error) });
 
       throw new Error(
         `Loop final statement failed: ${error instanceof Error ? error.message : String(error)}\nLast attempted ${
@@ -370,7 +375,7 @@ export const loopAnalysis: AnalysisStrategy = async (query, config, { dataModel,
       );
     }
 
-    emitEvent(AnalysisEventType.QUERY_END, execution, endOf(queryPairId));
+    queryEvent.end(execution);
 
     return {
       query,
@@ -382,14 +387,10 @@ export const loopAnalysis: AnalysisStrategy = async (query, config, { dataModel,
     stepError = serializeError(error);
     throw error;
   } finally {
-    emitEvent(
-      AnalysisEventType.STEP_END,
-      {
-        step: maxSteps,
-        finalAttempt: true,
-        ...(stepError ? { error: stepError } : { action: 'SQL', text: finalText }),
-      },
-      endOf(stepId)
-    );
+    if (stepError) {
+      stepEvent.end({ step: maxSteps, finalAttempt: true, usage, error: stepError });
+    } else {
+      stepEvent.end({ step: maxSteps, finalAttempt: true, usage, action: 'SQL', text: finalText });
+    }
   }
 };

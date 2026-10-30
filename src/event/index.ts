@@ -24,6 +24,7 @@ export function eventPair(
   const pairId = generateId();
 
   return {
+    pairId,
     endId: endOf(pairId),
     start: (data: object) => emitEvent(startType, data, startOf(pairId)),
     end: (data: object) => emitEvent(endType, data, endOf(pairId)),

@@ -14,12 +14,12 @@
  * Retries include the failed DSL and execution error as correction context.
  * Translation and summary failures propagate immediately.
  */
-import { extractJsonMiddleware, generateId, generateText, Output, wrapLanguageModel } from 'ai';
+import { extractJsonMiddleware, generateText, Output, wrapLanguageModel } from 'ai';
 import { z } from 'zod/v4';
 
 import { languageModel } from '../util/model';
 import { repairJson } from '../util/json';
-import { AnalysisEvent, AnalysisEventType, startOf, endOf, eventPair } from '../event';
+import { AnalysisEvent, AnalysisEventType, eventPair } from '../event';
 import { serializeError } from '../util/error';
 
 import type { LanguageModelUsage } from 'ai';
@@ -72,11 +72,13 @@ async function summarizeResult(query: string, dsl: string, result: ExecutionResu
 export const directAnalysis: AnalysisStrategy = async (query, config, { dataModel, engine, llm, emit }) => {
   const maxRetries = Math.max(config.strategy?.type === 'direct' ? config.strategy.maxRetries ?? 2 : 10, 0);
 
-  const stepId = generateId();
+  let stepId: string;
   const emitEvent = (type: AnalysisEventType, data: object, eventId: string) =>
     emit(new AnalysisEvent(type, data, { stepId, parentStepIds: [], eventId }));
 
-  emitEvent(AnalysisEventType.STEP_START, { step: 0 }, startOf(stepId));
+  const stepEvent = eventPair(emitEvent, AnalysisEventType.STEP_START, AnalysisEventType.STEP_END);
+  stepId = stepEvent.pairId;
+  stepEvent.start({ step: 0 });
   let stepError: SerializedError | undefined;
   let summary: Summary | undefined;
 
@@ -156,10 +158,10 @@ export const directAnalysis: AnalysisStrategy = async (query, config, { dataMode
     stepError = serializeError(error);
     throw error;
   } finally {
-    emitEvent(
-      AnalysisEventType.STEP_END,
-      { step: 0, ...(stepError ? { error: stepError } : { action: 'SQL', text: summary?.conclusion ?? '' }) },
-      endOf(stepId)
-    );
+    if (stepError) {
+      stepEvent.end({ step: 0, error: stepError });
+    } else {
+      stepEvent.end({ step: 0, action: 'SQL', text: summary?.conclusion ?? '' });
+    }
   }
 };
