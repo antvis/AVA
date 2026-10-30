@@ -19,7 +19,7 @@ import { z } from 'zod/v4';
 
 import { languageModel } from '../util/model';
 import { repairJson } from '../util/json';
-import { AnalysisEvent, AnalysisEventType, startOf, endOf } from '../event';
+import { AnalysisEvent, AnalysisEventType, startOf, endOf, eventPair } from '../event';
 import { serializeError } from '../util/error';
 
 import type { LanguageModelUsage } from 'ai';
@@ -87,28 +87,28 @@ export const directAnalysis: AnalysisStrategy = async (query, config, { dataMode
     let result: ExecutionResult;
 
     for (let attempt = 0; ; attempt++) {
-      const translationPairId = generateId();
-      emitEvent(AnalysisEventType.TRANSLATE_START, { query, attempt }, startOf(translationPairId));
+      const translationEvent = eventPair(emitEvent, AnalysisEventType.TRANSLATE_START, AnalysisEventType.TRANSLATE_END);
+      translationEvent.start({ query, attempt });
 
       let usage: LanguageModelUsage | undefined;
       try {
         ({ dsl, usage } = await engine.getDSL(translationQuery, dataModel));
       } catch (error) {
-        emitEvent(AnalysisEventType.TRANSLATE_END, { error: serializeError(error) }, endOf(translationPairId));
+        translationEvent.end({ error: serializeError(error) });
 
         throw error;
       }
 
-      emitEvent(AnalysisEventType.TRANSLATE_END, { dsl, usage }, endOf(translationPairId));
+      translationEvent.end({ dsl, usage });
 
-      const queryPairId = generateId();
-      queryId = endOf(queryPairId);
-      emitEvent(AnalysisEventType.QUERY_START, { dsl }, startOf(queryPairId));
+      const queryEvent = eventPair(emitEvent, AnalysisEventType.QUERY_START, AnalysisEventType.QUERY_END);
+      queryId = queryEvent.endId;
+      queryEvent.start({ dsl });
 
       try {
         result = await engine.execute(dsl, config);
       } catch (error) {
-        emitEvent(AnalysisEventType.QUERY_END, { error: serializeError(error) }, queryId);
+        queryEvent.end({ error: serializeError(error) });
 
         if (attempt >= maxRetries) throw error;
 
@@ -125,25 +125,25 @@ export const directAnalysis: AnalysisStrategy = async (query, config, { dataMode
         continue;
       }
 
-      emitEvent(AnalysisEventType.QUERY_END, result, queryId);
+      queryEvent.end(result);
 
       break;
     }
 
     if (config.includeSummary !== false) {
       let usage: LanguageModelUsage | undefined;
-      const summaryPairId = generateId();
-      emitEvent(AnalysisEventType.SUMMARIZE_START, { queryId }, startOf(summaryPairId));
+      const summaryEvent = eventPair(emitEvent, AnalysisEventType.SUMMARIZE_START, AnalysisEventType.SUMMARIZE_END);
+      summaryEvent.start({ queryId });
 
       try {
         ({ summary, usage } = await summarizeResult(query, dsl, result, llm));
       } catch (error) {
-        emitEvent(AnalysisEventType.SUMMARIZE_END, { error: serializeError(error) }, endOf(summaryPairId));
+        summaryEvent.end({ error: serializeError(error) });
 
         throw error;
       }
 
-      emitEvent(AnalysisEventType.SUMMARIZE_END, { ...summary, usage }, endOf(summaryPairId));
+      summaryEvent.end({ ...summary, usage });
     }
 
     return {

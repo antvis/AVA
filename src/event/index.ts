@@ -1,5 +1,8 @@
+import { generateId } from 'ai';
+
 import type EventEmitter from '@antv/event-emitter';
 import type { BaseEvent } from './events';
+import type { AnalysisEventType } from './constant';
 
 export * from './constant';
 export * from './events';
@@ -11,6 +14,20 @@ export function startOf(pairId: string) {
 
 export function endOf(pairId: string) {
   return `${pairId}:end`;
+}
+
+export function eventPair(
+  emitEvent: (type: AnalysisEventType, data: object, eventId: string) => void,
+  startType: AnalysisEventType,
+  endType: AnalysisEventType
+) {
+  const pairId = generateId();
+
+  return {
+    endId: endOf(pairId),
+    start: (data: object) => emitEvent(startType, data, startOf(pairId)),
+    end: (data: object) => emitEvent(endType, data, endOf(pairId)),
+  };
 }
 
 /**
