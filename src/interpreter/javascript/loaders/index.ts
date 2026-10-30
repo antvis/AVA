@@ -13,10 +13,7 @@ export type InterpreterSourceConfig =
   | { type: 'json'; options: JsonSourceOptions }
   | { type: 'text'; options: TextSourceOptions };
 
-export async function loadSource(
-  config: InterpreterSourceConfig,
-  llmConfig: LLMConfig,
-): Promise<any[]> {
+export async function loadSource(config: InterpreterSourceConfig, llmConfig: LLMConfig): Promise<any[]> {
   switch (config.type) {
     case 'csv':
       return loadCSV(config.options);

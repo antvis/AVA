@@ -9,6 +9,7 @@ import { getClickHouseSchema } from './schema';
 
 import type { ClickHouseClient, ClickHouseClientConfigOptions } from '@clickhouse/client';
 import type {
+  TranslationResult,
   AnalysisEngine,
   ClickHouseSourceOptions,
   DataModel,
@@ -80,7 +81,7 @@ export class ClickHouseEngine implements AnalysisEngine {
     );
   }
 
-  async getDSL(query: string, dataModel: DataModel): Promise<string> {
+  async getDSL(query: string, dataModel: DataModel): Promise<TranslationResult> {
     if (!this.client) throw new Error('No data loaded. Please call source() first.');
     return this.queryDialect.getDSL(query, dataModel);
   }

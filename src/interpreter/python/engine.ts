@@ -15,6 +15,7 @@ import { createPythonExecutor } from './util/execute';
 import { executionCode } from './util/code';
 
 import type {
+  TranslationResult,
   AnalysisEngine,
   DataModel,
   DataSourceConfig,
@@ -74,7 +75,7 @@ Do not read files, access the network, install packages, or print the answer.`,
     return { models: tables } as Schema;
   }
 
-  async getDSL(query: string, dataModel: DataModel): Promise<string> {
+  async getDSL(query: string, dataModel: DataModel): Promise<TranslationResult> {
     if (!this.source) throw new Error('No data loaded. Please call source() first.');
 
     const dataset = stringifyDataModel(dataModel);
@@ -93,11 +94,11 @@ User question: ${query}
 Return ONLY executable Python code without explanation.`,
     });
 
-
-    return response.text
+    const dsl = response.text
       .trim()
       .replace(/^```(?:python|py)?\s*|\s*```$/gi, '')
       .trim();
+    return { dsl, usage: response.usage };
   }
 
   async profile(schema: Schema, options: ProfileOptions = {}): Promise<Profile> {

@@ -40,6 +40,7 @@ export type {
   JSONReadOptions,
   ClickHouseSourceOptions,
   AnalysisEngine,
+  TranslationResult,
   ExecutionOptions,
   ExecutionResult,
   QueryLanguage,

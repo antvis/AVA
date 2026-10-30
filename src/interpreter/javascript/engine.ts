@@ -20,6 +20,7 @@ import { loadSource } from './loaders';
 import { STAT_OPS_PROMPT, STAT_OPS_EXAMPLE } from './stat';
 
 import type {
+  TranslationResult,
   Profile,
   ProfileOptions,
   AnalysisEngine,
@@ -69,7 +70,7 @@ export class JavaScriptEngine implements AnalysisEngine {
     return profileTables(this.data, schema, parseProfileOptions(options, { metrics: DEFAULT_METRICS }));
   }
 
-  async getDSL(query: string, dataModel: DataModel): Promise<string> {
+  async getDSL(query: string, dataModel: DataModel): Promise<TranslationResult> {
     if (!this.data) {
       throw new Error('No data loaded. Please call source() first.');
     }
@@ -91,16 +92,17 @@ ${STAT_OPS_EXAMPLE}
 
 Now generate the code:`;
 
-    const { text } = await generateText({
+    const { text, usage } = await generateText({
       model: languageModel(this.llmConfig),
       maxRetries: this.llmConfig.maxRetries ?? 3,
       prompt,
     });
 
-    return text
+    const dsl = text
       .trim()
       .replace(/^```(?:javascript|js)?\s*|\s*```$/gi, '')
       .trim();
+    return { dsl, usage };
   }
 
   async execute<T = Record<string, unknown>>(code: string, options?: ExecutionOptions): Promise<ExecutionResult<T>> {

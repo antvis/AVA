@@ -4,12 +4,12 @@ import { languageModel } from '../util/model';
 import { stringifyDataModel } from '../util/data-model';
 
 import type { ClickHouseClient } from '@clickhouse/client';
-import type { DataModel, LLMConfig, QueryDialect } from '../types';
+import type { TranslationResult, DataModel, LLMConfig, QueryDialect } from '../types';
 
 export class ClickHouseQueryDialect implements QueryDialect<ClickHouseClient> {
   constructor(private readonly llmConfig: LLMConfig) {}
 
-  async getDSL(query: string, dataModel: DataModel): Promise<string> {
+  async getDSL(query: string, dataModel: DataModel): Promise<TranslationResult> {
     const prompt = `You are a SQL expert. Given the following dataset profile and user query, generate a SQL query to answer the question.
 
 Dataset Context:
@@ -19,14 +19,15 @@ User Query: ${query}
 
 Generate exactly one read-only SELECT query (WITH is allowed), without explanation or markdown formatting. Do not use INTO OUTFILE, FORMAT, PARALLEL WITH, or SETTINGS. Reference the tables and fields by their exact names shown above (join tables when the question spans multiple tables). Use ClickHouse SQL syntax.`;
 
-    const { text } = await generateText({
+    const { text, usage } = await generateText({
       model: languageModel(this.llmConfig),
       maxRetries: this.llmConfig.maxRetries ?? 3,
       prompt,
     });
 
     const trimmed = text.trim();
-    return (trimmed.match(/^```(?:sql)?[ \t]*\r?\n([\s\S]*?)\r?\n```$/i)?.[1] ?? trimmed).trim();
+    const dsl = (trimmed.match(/^```(?:sql)?[ \t]*\r?\n([\s\S]*?)\r?\n```$/i)?.[1] ?? trimmed).trim();
+    return { dsl, usage };
   }
 
   /** Parse and normalize on the server; SQL is a parameter, never an executable suffix.

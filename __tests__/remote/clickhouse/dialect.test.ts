@@ -56,7 +56,7 @@ describe('ClickHouse query generation', () => {
     ["SELECT '```' AS value", "SELECT '```' AS value"],
   ])('extracts SQL without corrupting literals: %s', async (text, expected) => {
     vi.mocked(generateText).mockResolvedValue({ text, usage: {} } as never);
-    await expect(dialect.getDSL('query', { models: [] })).resolves.toBe(expected);
+    await expect(dialect.getDSL('query', { models: [] })).resolves.toMatchObject({ dsl: expected });
   });
 
   it('passes the data model and retries through', async () => {
@@ -74,6 +74,12 @@ describe('ClickHouse query generation', () => {
     expect(generateText).toHaveBeenCalledWith(
       expect.objectContaining({ maxRetries: 0, prompt: expect.stringContaining('orders') })
     );
+  });
+
+  it('returns model usage with the generated DSL', async () => {
+    const usage = { inputTokens: 10, outputTokens: 5, totalTokens: 15 };
+    vi.mocked(generateText).mockResolvedValue({ text: 'SELECT 1', usage } as never);
+    await expect(dialect.getDSL('query', { models: [] })).resolves.toEqual({ dsl: 'SELECT 1', usage });
   });
 
   it('uses model metrics when supplied', async () => {

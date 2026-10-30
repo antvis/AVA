@@ -90,15 +90,20 @@ export const directAnalysis: AnalysisStrategy = async (query, config, { dataMode
       const translationPairId = generateId();
       emitEvent(AnalysisEventType.TRANSLATE_START, { query, attempt }, startOf(translationPairId));
 
+      let translationUsage: LanguageModelUsage | undefined;
       try {
-        dsl = await engine.getDSL(translationQuery, dataModel);
+        ({ dsl, usage: translationUsage } = await engine.getDSL(translationQuery, dataModel));
       } catch (error) {
         emitEvent(AnalysisEventType.TRANSLATE_END, { error: serializeError(error) }, endOf(translationPairId));
 
         throw error;
       }
 
-      emitEvent(AnalysisEventType.TRANSLATE_END, { dsl }, endOf(translationPairId));
+      emitEvent(
+        AnalysisEventType.TRANSLATE_END,
+        { dsl, ...(translationUsage ? { usage: translationUsage } : {}) },
+        endOf(translationPairId)
+      );
 
       const queryPairId = generateId();
       queryId = endOf(queryPairId);

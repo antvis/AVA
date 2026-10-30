@@ -228,7 +228,7 @@ test('DataBench raw context exposes only the first three data rows and executes 
     ava.engine.getDSL = async (query, model) => {
       prompt = query;
       assert.deepEqual(model, { models: [] });
-      return 'SELECT COUNT(*) AS answer FROM data';
+      return { dsl: 'SELECT COUNT(*) AS answer FROM data' };
     };
   };
   ava.semantic = async () => { throw new Error('Raw context must not load semantics'); };
@@ -263,7 +263,7 @@ test('Spider2-Lite raw context isolates multi-table previews from metadata and q
         assert(prompt.includes(`Table "${table}":`));
       assert.match(prompt, /ORD-0003/);
       assert.doesNotMatch(prompt, /ORD-0004|sqlite_sequence/);
-      return 'SELECT COUNT(*) AS answer FROM sales';
+      return { dsl: 'SELECT COUNT(*) AS answer FROM sales' };
     };
   };
   ava.semantic = async () => { throw new Error('Raw context must not load semantics'); };

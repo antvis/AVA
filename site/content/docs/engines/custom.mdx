@@ -33,13 +33,13 @@ Implement the exported [AnalysisEngine interface](https://github.com/antvis/AVA/
 | `load(config)`              | `DataSourceConfig`                                                                               | `Promise<void>`; prepare data and connections for execution.                          |
 | `schema()`                  | None                                                                                             | `Promise<Schema>`; discover the loaded source structure.                              |
 | `profile(schema, options?)` | Required `Schema`, optional `ProfileOptions`                                                     | Optional method returning `Promise<Profile>`; compute against the supplied structure. |
-| `getDSL(query, dataModel)`  | Required query string and `DataModel`                                                            | `Promise<string>` in the engine's language.                                           |
+| `getDSL(query, dataModel)` | Required query string and `DataModel` | `Promise<TranslationResult>` with `dsl` and optional `usage`.                                           |
 | `execute(dsl, options?)`    | Required DSL string; optional [ExecutionOptions](/documentation/reference/api/#executionoptions) | `Promise<ExecutionResult<T>>`; enforce validation and result bounds.                  |
 | `dispose()`                 | None                                                                                             | `Promise<void>`; release connections, files, and other resources.                     |
 
 AVA owns schema/profile caching. `load()` prepares resources; `schema()` discovers structure on demand. `execute()` must work without prior discovery. Profiling uses the supplied schema; query generation uses the supplied data model. Discovery failure leaves the engine available for retry or queries.
 
-To migrate an older engine, move discovery out of `load()` into `schema()`, change `load()` to return `Promise<void>`, and add the required schema/data-model parameters. Keep `dispose()` safe after partial loading.
+To migrate an older engine, move discovery out of `load()` into `schema()`, change `load()` to return `Promise<void>`, add the required schema/data-model parameters, and return `{ dsl, usage? }` from `getDSL()`. Keep `dispose()` safe after partial loading.
 
 | `QueryLanguage` field | Type     | Required | Meaning                                                  |
 | --------------------- | -------- | -------- | -------------------------------------------------------- |
@@ -71,6 +71,7 @@ import { generateText, type LanguageModel } from 'ai';
 import { executionResult } from '@antv/ava';
 import type {
   AnalysisEngine,
+  TranslationResult,
   DataModel,
   DataSourceConfig,
   ExecutionOptions,
@@ -134,16 +135,16 @@ export class SalesEngine implements AnalysisEngine {
     };
   }
 
-  async getDSL(query: string, _dataModel: DataModel): Promise<string> {
+  async getDSL(query: string, _dataModel: DataModel): Promise<TranslationResult> {
     if (!this.sales) throw new Error('Load a source first.');
-    const { text } = await generateText({
+    const { text, usage } = await generateText({
       model: this.model,
       maxRetries: this.llm.maxRetries ?? 3,
       system: `Convert a question into a sales metric. ${this.language.instructions}
 Return raw JSON without Markdown. If neither metric answers the question, return {"metric":"unsupported"}.`,
       prompt: query,
     });
-    return text.trim();
+    return { dsl: text.trim(), usage };
   }
 
   async execute<T = Record<string, unknown>>(dsl: string, options?: ExecutionOptions): Promise<ExecutionResult<T>> {

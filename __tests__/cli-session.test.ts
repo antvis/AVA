@@ -124,7 +124,7 @@ describe('dataset engine and language', () => {
     expect(await datasets.describeDataset(schema)).toMatchObject(schema);
     await datasets.withDataset((ava) => ava.profile(undefined, () => profile));
     const getDSL = await datasets.withDataset(async (ava) =>
-      vi.spyOn(ava.engine!, 'getDSL').mockResolvedValue('const result = data;')
+      vi.spyOn(ava.engine!, 'getDSL').mockResolvedValue({ dsl: 'const result = data;' })
     );
     await datasets.withDataset((ava) => ava.translate('Sales'));
     expect(getDSL).toHaveBeenLastCalledWith('Sales', buildDataModel({ schema, profile }));

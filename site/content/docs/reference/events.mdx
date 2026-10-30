@@ -44,7 +44,7 @@ These events describe steps within analysis. Direct calls to `translate()` and `
 
 | Step | Start event and data | End event and successful data |
 | --- | --- | --- |
-| Translate a question | `translatestart`: `{ query }`; direct analysis also includes `attempt` | `translateend`: `{ dsl }` |
+| Translate a question | `translatestart`: `{ query }`; direct analysis also includes `attempt` | `translateend`: `{ dsl, usage? }` |
 | Execute a query | `querystart`: `{ dsl }` | `queryend`: `ExecutionResult` |
 | Summarize results | `summarizestart`: `{ queryId }` | `summarizeend`: `{ queryExplanation, conclusion, limitations?, nextStep?, usage? }` |
 | Direct analysis step | `stepstart`: `{ step: 0 }` | `stepend`: `{ step: 0, action: 'SQL', text }` |

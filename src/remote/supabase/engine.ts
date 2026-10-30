@@ -16,6 +16,7 @@ import { profileTables } from './profile';
 import { getSupabaseSchema } from './schema';
 
 import type {
+  TranslationResult,
   Profile,
   ProfileOptions,
   AnalysisEngine,
@@ -76,7 +77,7 @@ export class SupabaseEngine implements AnalysisEngine {
     );
   }
 
-  async getDSL(query: string, dataModel: DataModel): Promise<string> {
+  async getDSL(query: string, dataModel: DataModel): Promise<TranslationResult> {
     if (!this.connection) {
       throw new Error('No data loaded. Please call source() first.');
     }

@@ -36,7 +36,10 @@ export async function run(_args: string[], options: Options): Promise<unknown> {
 
   const ava = new AVA({ llm: { model: 'unused' } });
 
-  return await writeHTML(output, await ava.viz({ ...spec, config: { ...spec.config, type: spec.chartType } } as ChartSpec));
+  return await writeHTML(
+    output,
+    await ava.viz({ ...spec, config: { ...spec.config, type: spec.chartType } } as ChartSpec)
+  );
 }
 
 export const help = `${description}.

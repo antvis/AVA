@@ -10,15 +10,10 @@ import { buildDataModel, semanticMetadataSchema, stringifyDataModel } from './ut
 import { adviseChartType, generateVisualizationConfig, wrapConfigInHTML } from './visualization';
 import { generateSuggestions } from './suggest';
 import { analyze } from './analysis';
-import {
-  LifecycleEventType,
-  LifecycleEvent,
-  AnalysisEventType,
-  AnalysisEvent,
-  emit,
-} from './event';
+import { LifecycleEventType, LifecycleEvent, AnalysisEventType, AnalysisEvent, emit } from './event';
 import { serializeError } from './util/error';
 
+import type { LanguageModelUsage } from 'ai';
 import type {
   DataModel,
   AVAConfig,
@@ -276,15 +271,16 @@ export class AVA extends EventEmitter {
     emit(this, new AnalysisEvent(AnalysisEventType.TRANSLATE_START, { query }));
 
     let dsl: string;
+    let usage: LanguageModelUsage | undefined;
     try {
-      dsl = await this.engine.getDSL(query, await this.getDataModel());
+      ({ dsl, usage } = await this.engine.getDSL(query, await this.getDataModel()));
     } catch (error) {
       emit(this, new AnalysisEvent(AnalysisEventType.TRANSLATE_END, { error: serializeError(error) }));
 
       throw error;
     }
 
-    emit(this, new AnalysisEvent(AnalysisEventType.TRANSLATE_END, { dsl }));
+    emit(this, new AnalysisEvent(AnalysisEventType.TRANSLATE_END, { dsl, ...(usage ? { usage } : {}) }));
 
     return dsl;
   }
