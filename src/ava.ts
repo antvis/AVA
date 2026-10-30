@@ -10,13 +10,7 @@ import { buildDataModel, semanticMetadataSchema, stringifyDataModel } from './ut
 import { adviseChartType, generateVisualizationConfig, wrapConfigInHTML } from './visualization';
 import { generateSuggestions } from './suggest';
 import { analyze } from './analysis';
-import {
-  LifecycleEventType,
-  LifecycleEvent,
-  AnalysisEventType,
-  AnalysisEvent,
-  emit,
-} from './event';
+import { LifecycleEventType, LifecycleEvent, AnalysisEventType, AnalysisEvent, eventsOf, emit } from './event';
 import { serializeError } from './util/error';
 import { addUsage } from './util/usage';
 
@@ -142,13 +136,20 @@ export class AVA extends EventEmitter {
 
       this.engine = await this.createEngine();
       try {
-        await this.engine.load(config, (value) => { usage = addUsage(usage, value); });
+        const operation = this.engine.load(config);
+        eventsOf(operation)?.on('sourceend', (event: { data: { usage: LanguageModelUsage } }) => {
+          usage = addUsage(usage, event.data.usage);
+        });
+        await operation;
       } catch (error) {
         await this.dispose();
         throw error;
       }
     } catch (error) {
-      emit(this, new LifecycleEvent(LifecycleEventType.SOURCE_END, { error: serializeError(error), ...(usage && { usage }) }));
+      emit(
+        this,
+        new LifecycleEvent(LifecycleEventType.SOURCE_END, { error: serializeError(error), ...(usage && { usage }) })
+      );
 
       throw error;
     }
@@ -281,9 +282,16 @@ export class AVA extends EventEmitter {
     let dsl: string;
     let usage: LanguageModelUsage | undefined;
     try {
-      dsl = await this.engine.getDSL(query, await this.getDataModel(), (value) => { usage = addUsage(usage, value); });
+      const operation = this.engine.getDSL(query, await this.getDataModel());
+      eventsOf(operation)?.on('translateend', (event: { data: { usage: LanguageModelUsage } }) => {
+        usage = addUsage(usage, event.data.usage);
+      });
+      dsl = await operation;
     } catch (error) {
-      emit(this, new AnalysisEvent(AnalysisEventType.TRANSLATE_END, { error: serializeError(error), ...(usage && { usage }) }));
+      emit(
+        this,
+        new AnalysisEvent(AnalysisEventType.TRANSLATE_END, { error: serializeError(error), ...(usage && { usage }) })
+      );
 
       throw error;
     }
@@ -362,12 +370,20 @@ export class AVA extends EventEmitter {
         if (!chartType) {
           result = null;
         } else {
-          const config = await generateVisualizationConfig(chartType, data, query, this.llmConfig, (usage) => usages.push(usage));
+          const config = await generateVisualizationConfig(chartType, data, query, this.llmConfig, (usage) =>
+            usages.push(usage)
+          );
           result = { chartType, config };
         }
       }
     } catch (error) {
-      emit(this, new LifecycleEvent(LifecycleEventType.RECOMMEND_END, { error: serializeError(error), ...(usages.length && { usages }) }));
+      emit(
+        this,
+        new LifecycleEvent(LifecycleEventType.RECOMMEND_END, {
+          error: serializeError(error),
+          ...(usages.length && { usages }),
+        })
+      );
       throw error;
     }
 
@@ -395,9 +411,14 @@ export class AVA extends EventEmitter {
     let result: SuggestResult[];
     let usage: LanguageModelUsage | undefined;
     try {
-      result = await generateSuggestions(this.llmConfig, await this.getDataModel(), count, (value) => { usage = value; });
+      result = await generateSuggestions(this.llmConfig, await this.getDataModel(), count, (value) => {
+        usage = value;
+      });
     } catch (error) {
-      emit(this, new LifecycleEvent(LifecycleEventType.SUGGEST_END, { error: serializeError(error), ...(usage && { usage }) }));
+      emit(
+        this,
+        new LifecycleEvent(LifecycleEventType.SUGGEST_END, { error: serializeError(error), ...(usage && { usage }) })
+      );
 
       throw error;
     }

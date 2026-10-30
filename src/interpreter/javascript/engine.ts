@@ -6,8 +6,9 @@
  * browser-friendly, but only supports csv/json/text sources.
  */
 
-import { generateText, type LanguageModelUsage } from 'ai';
+import { generateText } from 'ai';
 
+import { withOperationEvents } from '../../event';
 import { languageModel } from '../../util/model';
 import { extractDataSchema } from '../../util/schema';
 import { stringifyDataModel } from '../../util/data-model';
@@ -41,13 +42,15 @@ export class JavaScriptEngine implements AnalysisEngine {
 
   constructor(private readonly llmConfig: LLMConfig) {}
 
-  async load(config: DataSourceConfig, reportUsage?: (usage: LanguageModelUsage) => void): Promise<void> {
-    this.data = null;
-    if (!['csv', 'json', 'text'].includes(config.type)) {
-      throw new Error(`JavaScriptEngine only supports csv/json/text sources, got: ${config.type}`);
-    }
+  load(config: DataSourceConfig): Promise<void> {
+    return withOperationEvents(async (events) => {
+      this.data = null;
+      if (!['csv', 'json', 'text'].includes(config.type)) {
+        throw new Error(`JavaScriptEngine only supports csv/json/text sources, got: ${config.type}`);
+      }
 
-    this.data = await loadSource(config as any, this.llmConfig, reportUsage);
+      this.data = await loadSource(config as any, this.llmConfig, events);
+    });
   }
 
   async schema(): Promise<Schema> {
@@ -69,14 +72,15 @@ export class JavaScriptEngine implements AnalysisEngine {
     return profileTables(this.data, schema, parseProfileOptions(options, { metrics: DEFAULT_METRICS }));
   }
 
-  async getDSL(query: string, dataModel: DataModel, reportUsage?: (usage: LanguageModelUsage) => void): Promise<string> {
-    if (!this.data) {
-      throw new Error('No data loaded. Please call source() first.');
-    }
+  getDSL(query: string, dataModel: DataModel): Promise<string> {
+    return withOperationEvents(async (events) => {
+      if (!this.data) {
+        throw new Error('No data loaded. Please call source() first.');
+      }
 
-    const dataset = stringifyDataModel(dataModel);
+      const dataset = stringifyDataModel(dataModel);
 
-    const prompt = `You are a data analysis expert. Given the following dataset information and user query, generate JavaScript code to answer the question.
+      const prompt = `You are a data analysis expert. Given the following dataset information and user query, generate JavaScript code to answer the question.
 
 Dataset Information:
 ${dataset}
@@ -91,18 +95,19 @@ ${STAT_OPS_EXAMPLE}
 
 Now generate the code:`;
 
-    const { text, usage } = await generateText({
-      model: languageModel(this.llmConfig),
-      maxRetries: this.llmConfig.maxRetries ?? 3,
-      prompt,
+      const { text, usage } = await generateText({
+        model: languageModel(this.llmConfig),
+        maxRetries: this.llmConfig.maxRetries ?? 3,
+        prompt,
+      });
+
+      events.emit('translateend', { data: { usage } });
+
+      return text
+        .trim()
+        .replace(/^```(?:javascript|js)?\s*|\s*```$/gi, '')
+        .trim();
     });
-
-    reportUsage?.(usage);
-
-    return text
-      .trim()
-      .replace(/^```(?:javascript|js)?\s*|\s*```$/gi, '')
-      .trim();
   }
 
   async execute<T = Record<string, unknown>>(code: string, options?: ExecutionOptions): Promise<ExecutionResult<T>> {

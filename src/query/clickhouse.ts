@@ -1,5 +1,6 @@
-import { generateText, type LanguageModelUsage } from 'ai';
+import { generateText } from 'ai';
 
+import { withOperationEvents } from '../event';
 import { languageModel } from '../util/model';
 import { stringifyDataModel } from '../util/data-model';
 
@@ -9,8 +10,9 @@ import type { DataModel, LLMConfig, QueryDialect } from '../types';
 export class ClickHouseQueryDialect implements QueryDialect<ClickHouseClient> {
   constructor(private readonly llmConfig: LLMConfig) {}
 
-  async getDSL(query: string, dataModel: DataModel, reportUsage?: (usage: LanguageModelUsage) => void): Promise<string> {
-    const prompt = `You are a SQL expert. Given the following dataset profile and user query, generate a SQL query to answer the question.
+  getDSL(query: string, dataModel: DataModel): Promise<string> {
+    return withOperationEvents(async (events) => {
+      const prompt = `You are a SQL expert. Given the following dataset profile and user query, generate a SQL query to answer the question.
 
 Dataset Context:
 ${stringifyDataModel(dataModel)}
@@ -19,15 +21,16 @@ User Query: ${query}
 
 Generate exactly one read-only SELECT query (WITH is allowed), without explanation or markdown formatting. Do not use INTO OUTFILE, FORMAT, PARALLEL WITH, or SETTINGS. Reference the tables and fields by their exact names shown above (join tables when the question spans multiple tables). Use ClickHouse SQL syntax.`;
 
-    const { text, usage } = await generateText({
-      model: languageModel(this.llmConfig),
-      maxRetries: this.llmConfig.maxRetries ?? 3,
-      prompt,
-    });
-    reportUsage?.(usage);
+      const { text, usage } = await generateText({
+        model: languageModel(this.llmConfig),
+        maxRetries: this.llmConfig.maxRetries ?? 3,
+        prompt,
+      });
+      events.emit('translateend', { data: { usage } });
 
-    const trimmed = text.trim();
-    return (trimmed.match(/^```(?:sql)?[ \t]*\r?\n([\s\S]*?)\r?\n```$/i)?.[1] ?? trimmed).trim();
+      const trimmed = text.trim();
+      return (trimmed.match(/^```(?:sql)?[ \t]*\r?\n([\s\S]*?)\r?\n```$/i)?.[1] ?? trimmed).trim();
+    });
   }
 
   /** Parse and normalize on the server; SQL is a parameter, never an executable suffix.

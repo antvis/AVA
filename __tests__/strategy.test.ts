@@ -95,7 +95,7 @@ describe('directAnalysis', () => {
       sql: 'SELECT 1',
       text: 'One result.',
     });
-    expect(engine.getDSL).toHaveBeenCalledExactlyOnceWith('Give me one', runtime.dataModel, expect.any(Function));
+    expect(engine.getDSL).toHaveBeenCalledExactlyOnceWith('Give me one', runtime.dataModel);
     expect(engine.execute).toHaveBeenCalledExactlyOnceWith('SELECT 1', config);
     expect(doGenerate).toHaveBeenCalledOnce();
     expect(model.doGenerateCalls[0].responseFormat).toEqual({ type: 'text' });

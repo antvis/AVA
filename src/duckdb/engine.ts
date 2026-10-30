@@ -7,6 +7,7 @@ import { join } from 'node:path';
 
 import { DuckDBInstance } from '@duckdb/node-api';
 
+import { withOperationEvents } from '../event';
 import { DuckDBQueryDialect } from '../query/duckdb';
 import { executionResult, limitedQuery, maxRows } from '../util/result';
 import { coerceNumbers } from '../util/coerce';
@@ -17,7 +18,6 @@ import { runWithTimeout } from '../util/timeout';
 import { DEFAULT_METRICS, profileTables } from './profile';
 import { loadSource } from './loaders';
 
-import type { LanguageModelUsage } from 'ai';
 import type { DuckDBConnection } from '@duckdb/node-api';
 import type {
   AnalysisEngine,
@@ -122,18 +122,20 @@ export class DuckDBEngine implements AnalysisEngine {
     await conn.run('SET lock_configuration = true');
   }
 
-  async load(config: DataSourceConfig, reportUsage?: (usage: LanguageModelUsage) => void): Promise<void> {
-    await this.dispose();
-    this.allowCommunityExtensions = config.type === 'mongodb';
-    try {
-      this.source = await loadSource(config, this.llmConfig, reportUsage);
-      const conn = await this.getConnection();
-      await this.source.register(conn);
-      await this.restrictAccess(conn, this.source.allowedDirectories);
-    } catch (error) {
+  load(config: DataSourceConfig): Promise<void> {
+    return withOperationEvents(async (events) => {
       await this.dispose();
-      throw error;
-    }
+      this.allowCommunityExtensions = config.type === 'mongodb';
+      try {
+        this.source = await loadSource(config, this.llmConfig, events);
+        const conn = await this.getConnection();
+        await this.source.register(conn);
+        await this.restrictAccess(conn, this.source.allowedDirectories);
+      } catch (error) {
+        await this.dispose();
+        throw error;
+      }
+    });
   }
 
   async schema(): Promise<Schema> {
@@ -153,10 +155,10 @@ export class DuckDBEngine implements AnalysisEngine {
     return profileTables(this.connection, schema, parsedOptions);
   }
 
-  async getDSL(query: string, dataModel: DataModel, reportUsage?: (usage: LanguageModelUsage) => void): Promise<string> {
-    if (!this.source) throw new Error('No data loaded. Please call source() first.');
+  getDSL(query: string, dataModel: DataModel): Promise<string> {
+    if (!this.source) return Promise.reject(new Error('No data loaded. Please call source() first.'));
 
-    return this.queryDialect.getDSL(query, dataModel, reportUsage);
+    return this.queryDialect.getDSL(query, dataModel);
   }
 
   async execute<T = Record<string, unknown>>(sql: string, options?: ExecutionOptions): Promise<ExecutionResult<T>> {

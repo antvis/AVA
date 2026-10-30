@@ -2,6 +2,7 @@ import { afterEach, describe, expect, it, vi } from 'vitest';
 import { generateText } from 'ai';
 
 import { ClickHouseQueryDialect } from '../../../src/query/clickhouse';
+import { eventsOf } from '../../../src/event';
 
 import type { ClickHouseClient } from '@clickhouse/client';
 
@@ -64,7 +65,7 @@ describe('ClickHouse query generation', () => {
     const config = { model: 'test', maxRetries: 0 };
     const usage = { totalTokens: 12 };
     vi.mocked(generateText).mockResolvedValue({ text: 'SELECT 1', usage } as never);
-    await new ClickHouseQueryDialect(config).getDSL('count rows', {
+    const operation = new ClickHouseQueryDialect(config).getDSL('count rows', {
       models: [
         {
           name: 'orders',
@@ -72,11 +73,13 @@ describe('ClickHouse query generation', () => {
           tableReference: { catalog: 'default', table: 'orders' },
         },
       ],
-    }, emit);
+    });
+    eventsOf(operation)?.on('translateend', emit);
+    await operation;
     expect(generateText).toHaveBeenCalledWith(
       expect.objectContaining({ maxRetries: 0, prompt: expect.stringContaining('orders') })
     );
-    expect(emit).toHaveBeenCalledWith(usage);
+    expect(emit).toHaveBeenCalledWith({ data: { usage } });
   });
 
   it('uses model metrics when supplied', async () => {

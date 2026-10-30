@@ -3,14 +3,15 @@
  * then write it to a temp JSON file for DuckDB to read.
  */
 
-import { generateText, type LanguageModelUsage } from 'ai';
+import { generateText } from 'ai';
 
 import { languageModel } from '../../util/model';
 import { fileSource, removeTempFile, writeTempFile } from '../util/file';
 
+import type EventEmitter from '@antv/event-emitter';
 import type { LLMConfig, TextSourceOptions, LoadedSource } from '../../types';
 
-async function extractData(text: string, llmConfig: LLMConfig, reportUsage?: (usage: LanguageModelUsage) => void): Promise<any[]> {
+async function extractData(text: string, llmConfig: LLMConfig, events?: EventEmitter): Promise<any[]> {
   const prompt = `You are a data extraction assistant. Extract structured data from the following text and return it as a JSON array of objects.
 
 The text may contain data in various formats (comma-separated, space-separated, tabular, etc.). Your task is to:
@@ -31,7 +32,7 @@ Return ONLY the JSON array, no additional text or explanation. The response must
     prompt,
   });
 
-  reportUsage?.(usage);
+  events?.emit('sourceend', { data: { usage } });
 
   // Parse the whole response first, then fall back to extracting the JSON array
   try {
@@ -57,8 +58,12 @@ Return ONLY the JSON array, no additional text or explanation. The response must
   }
 }
 
-export async function loadText(options: TextSourceOptions, llmConfig: LLMConfig, reportUsage?: (usage: LanguageModelUsage) => void): Promise<LoadedSource> {
-  const data = await extractData(options.text, llmConfig, reportUsage);
+export async function loadText(
+  options: TextSourceOptions,
+  llmConfig: LLMConfig,
+  events?: EventEmitter
+): Promise<LoadedSource> {
+  const data = await extractData(options.text, llmConfig, events);
   const tmpFile = await writeTempFile(JSON.stringify(data), 'json');
   return fileSource(tmpFile, 'json', () => removeTempFile(tmpFile));
 }

@@ -19,7 +19,7 @@ import { z } from 'zod/v4';
 
 import { languageModel } from '../util/model';
 import { repairJson } from '../util/json';
-import { AnalysisEvent, AnalysisEventType, startOf, endOf } from '../event';
+import { AnalysisEvent, AnalysisEventType, startOf, endOf, eventsOf } from '../event';
 import { serializeError } from '../util/error';
 import { addUsage } from '../util/usage';
 
@@ -93,9 +93,17 @@ export const directAnalysis: AnalysisStrategy = async (query, config, { dataMode
 
       let usage: LanguageModelUsage | undefined;
       try {
-        dsl = await engine.getDSL(translationQuery, dataModel, (value) => { usage = addUsage(usage, value); });
+        const operation = engine.getDSL(translationQuery, dataModel);
+        eventsOf(operation)?.on('translateend', (event: { data: { usage: LanguageModelUsage } }) => {
+          usage = addUsage(usage, event.data.usage);
+        });
+        dsl = await operation;
       } catch (error) {
-        emitEvent(AnalysisEventType.TRANSLATE_END, { error: serializeError(error), ...(usage && { usage }) }, endOf(translationPairId));
+        emitEvent(
+          AnalysisEventType.TRANSLATE_END,
+          { error: serializeError(error), ...(usage && { usage }) },
+          endOf(translationPairId)
+        );
 
         throw error;
       }
@@ -143,7 +151,11 @@ export const directAnalysis: AnalysisStrategy = async (query, config, { dataMode
         usage = generated.usage;
       } catch (error) {
         if (NoObjectGeneratedError.isInstance(error)) usage = error.usage ?? usage;
-        emitEvent(AnalysisEventType.SUMMARIZE_END, { error: serializeError(error), ...(usage && { usage }) }, endOf(summaryPairId));
+        emitEvent(
+          AnalysisEventType.SUMMARIZE_END,
+          { error: serializeError(error), ...(usage && { usage }) },
+          endOf(summaryPairId)
+        );
 
         throw error;
       }

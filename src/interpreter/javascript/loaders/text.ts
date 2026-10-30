@@ -2,13 +2,18 @@
  * Text loader: extract structured data from unstructured text via LLM.
  */
 
-import { generateText, type LanguageModelUsage } from 'ai';
+import { generateText } from 'ai';
 
 import { languageModel } from '../../../util/model';
 
+import type EventEmitter from '@antv/event-emitter';
 import type { LLMConfig, TextSourceOptions } from '../../../types';
 
-export async function loadText(options: TextSourceOptions, llmConfig: LLMConfig, reportUsage?: (usage: LanguageModelUsage) => void): Promise<any[]> {
+export async function loadText(
+  options: TextSourceOptions,
+  llmConfig: LLMConfig,
+  events?: EventEmitter
+): Promise<any[]> {
   const prompt = `You are a data extraction assistant. Extract structured data from the following text and return it as a JSON array of objects.
 
 The text may contain data in various formats (comma-separated, space-separated, tabular, etc.). Your task is to:
@@ -29,7 +34,7 @@ Return ONLY the JSON array, no additional text or explanation. The response must
     prompt,
   });
 
-  reportUsage?.(usage);
+  events?.emit('sourceend', { data: { usage } });
 
   try {
     const data = JSON.parse(responseText);

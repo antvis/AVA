@@ -85,7 +85,7 @@ describe('dataset engine and language', () => {
     await datasets.createDataset(source, llm, explicit);
     const instance = await datasets.withDataset((ava) => Promise.resolve(ava.engine));
     expect(instance).toBeInstanceOf(Engine);
-    expect(load).toHaveBeenCalledExactlyOnceWith(source, expect.any(Function));
+    expect(load).toHaveBeenCalledExactlyOnceWith(source);
     expect(discover).not.toHaveBeenCalled();
     expect(await datasets.describeDataset()).toEqual({ ...schema, language: instance!.language });
     expect(discover).toHaveBeenCalledOnce();
@@ -127,6 +127,6 @@ describe('dataset engine and language', () => {
       vi.spyOn(ava.engine!, 'getDSL').mockResolvedValue('const result = data;')
     );
     await datasets.withDataset((ava) => ava.translate('Sales'));
-    expect(getDSL).toHaveBeenLastCalledWith('Sales', buildDataModel({ schema, profile }), expect.any(Function));
+    expect(getDSL).toHaveBeenLastCalledWith('Sales', buildDataModel({ schema, profile }));
   });
 });

@@ -53,7 +53,7 @@ These events describe steps within analysis. Direct calls to `translate()` and `
 
 Text source extraction and suggestions report `data.usage` on `sourceend` and `suggestend`. Recommendation, including when called by `visualize()`, reports an ordered `data.usages` array on `recommendend`: chart selection first, followed by chart configuration if generated. No usage field is present when no model call completes.
 
-Model token usage is available as `data.usage` on `translateend` for translation, `stepend` for loop model calls, and `summarizeend` for summaries. A failed end event can still contain usage when the model responded before a later error. Custom engines can supply source and translation usage through optional callbacks to `load` and `getDSL`. Multiple reports are added; a token count remains unknown if any report omits that count. Aggregated usage does not include provider-specific raw usage.
+Model token usage is available as `data.usage` on `translateend` for translation, `stepend` for loop model calls, and `summarizeend` for summaries. A failed end event can still contain usage when the model responded before a later error. Custom engines can report source and translation usage through the operation event channel; see [custom engines](/documentation/engines/custom/). Multiple reports are added; a token count remains unknown if any report omits that count. Aggregated usage does not include provider-specific raw usage.
 
 Failed end events carry `{ error }`. A step failure also carries `step`; the loop's final fallback includes `finalAttempt: true` on both step events. `step` is zero-based. See [analysis strategies](/documentation/analysis/strategies/) for these steps.
 

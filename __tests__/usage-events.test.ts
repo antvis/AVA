@@ -43,3 +43,23 @@ describe('suggestion usage', () => {
     await ava.dispose();
   });
 });
+
+describe('translation operation usage', () => {
+  it('keeps concurrent calls on the same engine independent', async () => {
+    const ava = new AVA({ ...config, engine: { type: 'javascript' } });
+    await ava.source({ type: 'json', options: { data: [{ value: 1 }] } });
+    const ends: Array<{ data: { dsl: string; usage: { totalTokens: number } } }> = [];
+    ava.on('translateend', (event) => ends.push(event));
+    vi.mocked(generateText).mockImplementation(async ({ prompt }) => {
+      const first = String(prompt).includes('first question');
+      if (first) await new Promise((resolve) => setTimeout(resolve, 10));
+      return { text: first ? 'const result = 1;' : 'const result = 2;', usage: { totalTokens: first ? 10 : 20 } } as never;
+    });
+    await Promise.all([ava.translate('first question'), ava.translate('second question')]);
+    expect(ends.map(({ data }) => [data.dsl, data.usage.totalTokens])).toEqual([
+      ['const result = 2;', 20],
+      ['const result = 1;', 10],
+    ]);
+    await ava.dispose();
+  });
+});

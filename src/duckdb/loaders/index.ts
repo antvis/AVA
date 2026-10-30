@@ -3,7 +3,6 @@
  * that the engine registers as one or more views.
  */
 
-
 import { loadCSV } from './csv';
 import { loadCSVFile } from './csv-file';
 import { loadExcel } from './excel';
@@ -17,7 +16,7 @@ import { loadSQLite } from './sqlite';
 import { loadText } from './text';
 import { loadFeishuBitable } from './feishu-bitable';
 
-import type { LanguageModelUsage } from 'ai';
+import type EventEmitter from '@antv/event-emitter';
 import type { DataSourceConfig, LLMConfig, LoadedSource } from '../../types';
 
 export type { LoadedSource } from '../../types';
@@ -25,14 +24,18 @@ export type { LoadedSource } from '../../types';
 /**
  * Load a data source config into a LoadedSource the engine can register.
  */
-export async function loadSource(config: DataSourceConfig, llmConfig: LLMConfig, reportUsage?: (usage: LanguageModelUsage) => void): Promise<LoadedSource> {
+export async function loadSource(
+  config: DataSourceConfig,
+  llmConfig: LLMConfig,
+  events?: EventEmitter
+): Promise<LoadedSource> {
   switch (config.type) {
     case 'csv':
       return loadCSV(config.options);
     case 'json':
       return loadJson(config.options);
     case 'text':
-      return loadText(config.options, llmConfig, reportUsage);
+      return loadText(config.options, llmConfig, events);
     case 'csv-file':
       return loadCSVFile(config.options);
     case 'json-file':

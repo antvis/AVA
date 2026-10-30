@@ -6,7 +6,7 @@ import { loadCSV } from './csv';
 import { loadJson } from './json';
 import { loadText } from './text';
 
-import type { LanguageModelUsage } from 'ai';
+import type EventEmitter from '@antv/event-emitter';
 import type { CSVSourceOptions, JsonSourceOptions, LLMConfig, TextSourceOptions } from '../../../types';
 
 export type InterpreterSourceConfig =
@@ -17,7 +17,7 @@ export type InterpreterSourceConfig =
 export async function loadSource(
   config: InterpreterSourceConfig,
   llmConfig: LLMConfig,
-  reportUsage?: (usage: LanguageModelUsage) => void,
+  events?: EventEmitter
 ): Promise<any[]> {
   switch (config.type) {
     case 'csv':
@@ -25,7 +25,7 @@ export async function loadSource(
     case 'json':
       return loadJson(config.options);
     case 'text':
-      return loadText(config.options, llmConfig, reportUsage);
+      return loadText(config.options, llmConfig, events);
     default:
       throw new Error(`Unsupported source type for JavaScript interpreter engine: ${(config as any).type}`);
   }

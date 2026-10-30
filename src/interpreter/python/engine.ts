@@ -1,8 +1,9 @@
 /** Python engine: pandas analysis through a local or caller-supplied executor. */
 
-import { generateText, type LanguageModelUsage } from 'ai';
+import { generateText } from 'ai';
 import { z } from 'zod';
 
+import { withOperationEvents } from '../../event';
 import { languageModel } from '../../util/model';
 import { stringifyDataModel } from '../../util/data-model';
 import { executionResult, maxRows, maxResultBytes } from '../../util/result';
@@ -74,15 +75,16 @@ Do not read files, access the network, install packages, or print the answer.`,
     return { models: tables } as Schema;
   }
 
-  async getDSL(query: string, dataModel: DataModel, reportUsage?: (usage: LanguageModelUsage) => void): Promise<string> {
-    if (!this.source) throw new Error('No data loaded. Please call source() first.');
+  getDSL(query: string, dataModel: DataModel): Promise<string> {
+    return withOperationEvents(async (events) => {
+      if (!this.source) throw new Error('No data loaded. Please call source() first.');
 
-    const dataset = stringifyDataModel(dataModel);
+      const dataset = stringifyDataModel(dataModel);
 
-    const response = await generateText({
-      model: languageModel(this.llmConfig),
-      maxRetries: this.llmConfig.maxRetries ?? 3,
-      prompt: `You are a data analysis expert. Generate Python code to answer the question.
+      const response = await generateText({
+        model: languageModel(this.llmConfig),
+        maxRetries: this.llmConfig.maxRetries ?? 3,
+        prompt: `You are a data analysis expert. Generate Python code to answer the question.
 ${this.language.instructions}
 
 Dataset information:
@@ -91,14 +93,15 @@ ${dataset}
 User question: ${query}
 
 Return ONLY executable Python code without explanation.`,
+      });
+
+      events.emit('translateend', { data: { usage: response.usage } });
+
+      return response.text
+        .trim()
+        .replace(/^```(?:python|py)?\s*|\s*```$/gi, '')
+        .trim();
     });
-
-    reportUsage?.(response.usage);
-
-    return response.text
-      .trim()
-      .replace(/^```(?:python|py)?\s*|\s*```$/gi, '')
-      .trim();
   }
 
   async profile(schema: Schema, options: ProfileOptions = {}): Promise<Profile> {

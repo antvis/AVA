@@ -15,7 +15,6 @@ import { DEFAULT_METRICS, parseProfileOptions } from '../../util/profile';
 import { profileTables } from './profile';
 import { getSupabaseSchema } from './schema';
 
-import type { LanguageModelUsage } from 'ai';
 import type {
   Profile,
   ProfileOptions,
@@ -77,11 +76,11 @@ export class SupabaseEngine implements AnalysisEngine {
     );
   }
 
-  async getDSL(query: string, dataModel: DataModel, reportUsage?: (usage: LanguageModelUsage) => void): Promise<string> {
+  getDSL(query: string, dataModel: DataModel): Promise<string> {
     if (!this.connection) {
-      throw new Error('No data loaded. Please call source() first.');
+      return Promise.reject(new Error('No data loaded. Please call source() first.'));
     }
-    return this.queryDialect.getDSL(query, dataModel, reportUsage);
+    return this.queryDialect.getDSL(query, dataModel);
   }
 
   async execute<T = Record<string, unknown>>(sql: string, options?: ExecutionOptions): Promise<ExecutionResult<T>> {

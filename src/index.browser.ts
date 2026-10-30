@@ -9,6 +9,7 @@ import { registerEngine } from './engines';
 registerEngine('javascript', JavaScriptEngine);
 
 export { AVA } from './ava';
+export { withOperationEvents } from './event';
 export type { JavaScriptEngine } from './interpreter/javascript';
 export type {
   DataModel,

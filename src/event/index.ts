@@ -3,6 +3,7 @@ import type { BaseEvent } from './events';
 
 export * from './constant';
 export * from './events';
+export * from './operation';
 export * from './types';
 
 export function startOf(pairId: string) {
