@@ -90,20 +90,16 @@ export const directAnalysis: AnalysisStrategy = async (query, config, { dataMode
       const translationPairId = generateId();
       emitEvent(AnalysisEventType.TRANSLATE_START, { query, attempt }, startOf(translationPairId));
 
-      let translationUsage: LanguageModelUsage | undefined;
+      let usage: LanguageModelUsage | undefined;
       try {
-        ({ dsl, usage: translationUsage } = await engine.getDSL(translationQuery, dataModel));
+        ({ dsl, usage } = await engine.getDSL(translationQuery, dataModel));
       } catch (error) {
         emitEvent(AnalysisEventType.TRANSLATE_END, { error: serializeError(error) }, endOf(translationPairId));
 
         throw error;
       }
 
-      emitEvent(
-        AnalysisEventType.TRANSLATE_END,
-        { dsl, ...(translationUsage ? { usage: translationUsage } : {}) },
-        endOf(translationPairId)
-      );
+      emitEvent(AnalysisEventType.TRANSLATE_END, { dsl, usage }, endOf(translationPairId));
 
       const queryPairId = generateId();
       queryId = endOf(queryPairId);
@@ -134,16 +130,13 @@ export const directAnalysis: AnalysisStrategy = async (query, config, { dataMode
       break;
     }
 
-    let usage: LanguageModelUsage | undefined;
-
     if (config.includeSummary !== false) {
+      let usage: LanguageModelUsage | undefined;
       const summaryPairId = generateId();
       emitEvent(AnalysisEventType.SUMMARIZE_START, { queryId }, startOf(summaryPairId));
 
       try {
-        const generated = await summarizeResult(query, dsl, result, llm);
-        summary = generated.summary;
-        usage = generated.usage;
+        ({ summary, usage } = await summarizeResult(query, dsl, result, llm));
       } catch (error) {
         emitEvent(AnalysisEventType.SUMMARIZE_END, { error: serializeError(error) }, endOf(summaryPairId));
 

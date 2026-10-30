@@ -280,7 +280,7 @@ export class AVA extends EventEmitter {
       throw error;
     }
 
-    emit(this, new AnalysisEvent(AnalysisEventType.TRANSLATE_END, { dsl, ...(usage ? { usage } : {}) }));
+    emit(this, new AnalysisEvent(AnalysisEventType.TRANSLATE_END, { dsl, usage }));
 
     return dsl;
   }
