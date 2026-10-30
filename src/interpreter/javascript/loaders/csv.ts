@@ -3,7 +3,7 @@
  */
 
 // eslint-disable-next-line import/no-unresolved
-import { parse } from 'csv-parse/sync';
+import { parse } from 'csv-parse/browser/esm/sync';
 
 import type { CSVSourceOptions } from '../../../types';
 
