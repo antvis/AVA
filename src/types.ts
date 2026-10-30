@@ -486,11 +486,11 @@ export type ClickHouseSourceOptions = Omit<ClickHouseClientConfigOptions, 'host'
 };
 
 export interface FeishuBitableSourceOptions {
-  url?:string;
-  appToken?:string;
+  url?: string;
+  appToken?: string;
   tableId?: string;
-  appId?:string;
-  appSecret?:string;
+  appId?: string;
+  appSecret?: string;
 }
 
 /**
@@ -666,7 +666,9 @@ export interface QueryColumn {
 
 /** A bounded query result. */
 export interface ExecutionResult<T = Record<string, unknown>> {
+  /** Columns returned by the query, in result order. */
   schema: QueryColumn[];
+  /** Rows returned within the configured result limits. */
   data: T[];
   /** Present only when the result was truncated. */
   truncated?: true;
