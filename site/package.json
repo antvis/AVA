@@ -31,7 +31,7 @@
     "remark-gfm": "^4.0.1",
     "shiki": "^4.5.0",
     "streamdown": "^2.7.0",
-    "zod": "^3.25.76"
+    "zod": "^4.6.6"
   },
   "devDependencies": {
     "@types/mdx": "^2.0.14",
