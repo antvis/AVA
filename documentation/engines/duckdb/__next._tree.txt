@@ -4,4 +4,4 @@
 3:[["children",{"s":"__PAGE__","h":160}]]
 2:[["children",{"s":{"n":"slug","t":"c","k":"engines/duckdb","s":[]},"h":65632,"c":"$Q3"}]]
 1:[["children",{"s":"documentation","h":131168,"c":"$Q2"}]]
-0:{"b":"R2i-xEvInK-y1rrR3qZ2v","t":{"t":{"s":"","h":131152,"c":"$Q1"}}}
+0:{"b":"207YL1M-7Fwrknnb6fhwW","t":{"t":{"s":"","h":131152,"c":"$Q1"}}}
