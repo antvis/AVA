@@ -2,7 +2,7 @@
 
 ## CLI
 
-Requires AVA CLI **4.0.0-beta.3**, Node.js ≥22.13, and macOS or Linux. The runtime must support long-lived background processes and Unix sockets. Calls must share the same user, runtime environment, and temporary directory.
+Requires AVA CLI **4.x**, Node.js ≥22.13, and macOS or Linux. The runtime must support long-lived background processes and Unix sockets. Calls must share the same user, runtime environment, and temporary directory.
 
 Check the Node.js version and confirm that the CLI is available:
 
@@ -14,7 +14,7 @@ ava source --help
 Prefer an existing installation or project build of this version. Otherwise, install:
 
 ```sh
-npm install -g @antv/ava@4.0.0-beta.3
+npm install -g @antv/ava@4
 ```
 
 ## Python

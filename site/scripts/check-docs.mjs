@@ -112,7 +112,7 @@ for (const [route, { html }] of linkedPages) {
 const quickstart = pages.get('/documentation/quickstart/').html;
 assert.ok(quickstart.includes('data-rehype-pretty-code-figure'), 'Code has build-time highlighting');
 assert.ok(quickstart.includes('aria-label="Copy code"'), 'Code has a copy control');
-assert.ok(quickstart.replace(/<[^>]+>/g, '').includes('npm install @antv/ava@beta'), 'Install targets the v4 beta');
+assert.ok(quickstart.replace(/<[^>]+>/g, '').includes('npm install @antv/ava@4'), 'Install targets AVA 4.x');
 console.log(
   `Verified ${pages.size} static MDX pages, ${links} documentation links, anchors, metadata, and code blocks.`
 );
