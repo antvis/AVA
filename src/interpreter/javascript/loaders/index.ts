@@ -6,6 +6,7 @@ import { loadCSV } from './csv';
 import { loadJson } from './json';
 import { loadText } from './text';
 
+import type { LanguageModelUsage } from 'ai';
 import type { CSVSourceOptions, JsonSourceOptions, LLMConfig, TextSourceOptions } from '../../../types';
 
 export type InterpreterSourceConfig =
@@ -16,6 +17,7 @@ export type InterpreterSourceConfig =
 export async function loadSource(
   config: InterpreterSourceConfig,
   llmConfig: LLMConfig,
+  reportUsage?: (usage: LanguageModelUsage) => void,
 ): Promise<any[]> {
   switch (config.type) {
     case 'csv':
@@ -23,7 +25,7 @@ export async function loadSource(
     case 'json':
       return loadJson(config.options);
     case 'text':
-      return loadText(config.options, llmConfig);
+      return loadText(config.options, llmConfig, reportUsage);
     default:
       throw new Error(`Unsupported source type for JavaScript interpreter engine: ${(config as any).type}`);
   }

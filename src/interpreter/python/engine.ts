@@ -1,6 +1,6 @@
 /** Python engine: pandas analysis through a local or caller-supplied executor. */
 
-import { generateText } from 'ai';
+import { generateText, type LanguageModelUsage } from 'ai';
 import { z } from 'zod';
 
 import { languageModel } from '../../util/model';
@@ -74,7 +74,7 @@ Do not read files, access the network, install packages, or print the answer.`,
     return { models: tables } as Schema;
   }
 
-  async getDSL(query: string, dataModel: DataModel): Promise<string> {
+  async getDSL(query: string, dataModel: DataModel, reportUsage?: (usage: LanguageModelUsage) => void): Promise<string> {
     if (!this.source) throw new Error('No data loaded. Please call source() first.');
 
     const dataset = stringifyDataModel(dataModel);
@@ -93,7 +93,7 @@ User question: ${query}
 Return ONLY executable Python code without explanation.`,
     });
 
-    this.llmConfig.onQueryUsage?.(response.usage);
+    reportUsage?.(response.usage);
 
     return response.text
       .trim()

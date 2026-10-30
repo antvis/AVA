@@ -60,8 +60,8 @@ describe('ClickHouse query generation', () => {
   });
 
   it('passes the data model, retries, and token usage through', async () => {
-    const onQueryUsage = vi.fn();
-    const config = { model: 'test', maxRetries: 0, onQueryUsage };
+    const emit = vi.fn();
+    const config = { model: 'test', maxRetries: 0 };
     const usage = { totalTokens: 12 };
     vi.mocked(generateText).mockResolvedValue({ text: 'SELECT 1', usage } as never);
     await new ClickHouseQueryDialect(config).getDSL('count rows', {
@@ -72,11 +72,11 @@ describe('ClickHouse query generation', () => {
           tableReference: { catalog: 'default', table: 'orders' },
         },
       ],
-    });
+    }, emit);
     expect(generateText).toHaveBeenCalledWith(
       expect.objectContaining({ maxRetries: 0, prompt: expect.stringContaining('orders') })
     );
-    expect(onQueryUsage).toHaveBeenCalledWith(usage);
+    expect(emit).toHaveBeenCalledWith(usage);
   });
 
   it('uses model metrics when supplied', async () => {

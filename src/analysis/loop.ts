@@ -16,6 +16,7 @@ import { stringifyDataModel } from '../util/data-model';
 import { AnalysisEvent, AnalysisEventType, startOf, endOf } from '../event';
 import { serializeError } from '../util/error';
 
+import type { LanguageModelUsage } from 'ai';
 import type { AnalysisStrategy, QueryLanguage, ExecutionResult } from '../types';
 import type { SerializedError } from '../util/error';
 
@@ -208,6 +209,7 @@ export const loopAnalysis: AnalysisStrategy = async (query, config, { dataModel,
     let text: string | undefined;
     let action: string | undefined;
     let stepError: SerializedError | undefined;
+    let usage: LanguageModelUsage | undefined;
     let queries: string[] = [];
     try {
       const response = await generateText({
@@ -215,7 +217,7 @@ export const loopAnalysis: AnalysisStrategy = async (query, config, { dataModel,
         maxRetries: llm.maxRetries ?? 3,
         prompt,
       });
-      llm.onQueryUsage?.(response.usage);
+      usage = response.usage;
 
       text = response.text.trim();
       action = text.match(/^\[(EXPLORE|REFINE|SQL|CONFIRM)\]/)?.[1];
@@ -299,7 +301,7 @@ export const loopAnalysis: AnalysisStrategy = async (query, config, { dataModel,
     } finally {
       emitEvent(
         AnalysisEventType.STEP_END,
-        { step, ...(stepError ? { error: stepError } : { action, text }) },
+        { step, ...(usage && { usage }), ...(stepError ? { error: stepError } : { action, text }) },
         endOf(stepId)
       );
     }
@@ -322,6 +324,7 @@ export const loopAnalysis: AnalysisStrategy = async (query, config, { dataModel,
   stepId = generateId();
   emitEvent(AnalysisEventType.STEP_START, { step: maxSteps, finalAttempt: true }, startOf(stepId));
 
+  let usage: LanguageModelUsage | undefined;
   let finalText: string | undefined;
   let stepError: SerializedError | undefined;
   let statement: string;
@@ -345,7 +348,7 @@ export const loopAnalysis: AnalysisStrategy = async (query, config, { dataModel,
       engine.language.name
     } statement.`,
     });
-    llm.onQueryUsage?.(finalResponse.usage);
+    usage = finalResponse.usage;
 
     finalText = finalResponse.text.trim();
     const proposals = codeBlocks(finalText, engine.language.fence);
@@ -389,6 +392,7 @@ export const loopAnalysis: AnalysisStrategy = async (query, config, { dataModel,
       {
         step: maxSteps,
         finalAttempt: true,
+        ...(usage && { usage }),
         ...(stepError ? { error: stepError } : { action: 'SQL', text: finalText }),
       },
       endOf(stepId)

@@ -6,7 +6,7 @@
  * from LLM-generated HTML and ensures the HTML is always well-formed.
  */
 
-import { generateText } from 'ai';
+import { generateText, type LanguageModelUsage } from 'ai';
 
 import { languageModel } from '../util/model';
 
@@ -60,7 +60,8 @@ export async function generateVisualizationConfig(
   chartType: ChartType,
   data: any,
   query: string,
-  llmConfig: LLMConfig
+  llmConfig: LLMConfig,
+  reportUsage?: (usage: LanguageModelUsage) => void
 ): Promise<ChartConfig> {
   const prompt = `你是一个 GPT-Vis 可视化专家。根据图表类型、数据和用户查询，生成对应的 GPT-Vis JSON 配置。
 
@@ -107,11 +108,13 @@ ${JSON.stringify(data, null, 2)}
 5. 不要生成 width height，图表会按照容器自适应大小
 6. 直接输出 JSON，不要用代码块包裹，不要有任何说明文字`;
 
-  const { text } = await generateText({
+  const { text, usage } = await generateText({
     model: languageModel(llmConfig),
     maxRetries: llmConfig.maxRetries ?? 3,
     prompt,
   });
+
+  reportUsage?.(usage);
 
   // Remove possible markdown code block wrappers (LLM may still wrap in ```json ... ```)
   const json = text

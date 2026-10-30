@@ -3,14 +3,14 @@
  * then write it to a temp JSON file for DuckDB to read.
  */
 
-import { generateText } from 'ai';
+import { generateText, type LanguageModelUsage } from 'ai';
 
 import { languageModel } from '../../util/model';
 import { fileSource, removeTempFile, writeTempFile } from '../util/file';
 
 import type { LLMConfig, TextSourceOptions, LoadedSource } from '../../types';
 
-async function extractData(text: string, llmConfig: LLMConfig): Promise<any[]> {
+async function extractData(text: string, llmConfig: LLMConfig, reportUsage?: (usage: LanguageModelUsage) => void): Promise<any[]> {
   const prompt = `You are a data extraction assistant. Extract structured data from the following text and return it as a JSON array of objects.
 
 The text may contain data in various formats (comma-separated, space-separated, tabular, etc.). Your task is to:
@@ -25,11 +25,13 @@ ${text}
 
 Return ONLY the JSON array, no additional text or explanation. The response must be valid JSON that can be parsed directly.`;
 
-  const { text: responseText } = await generateText({
+  const { text: responseText, usage } = await generateText({
     model: languageModel(llmConfig),
     maxRetries: llmConfig.maxRetries ?? 3,
     prompt,
   });
+
+  reportUsage?.(usage);
 
   // Parse the whole response first, then fall back to extracting the JSON array
   try {
@@ -55,8 +57,8 @@ Return ONLY the JSON array, no additional text or explanation. The response must
   }
 }
 
-export async function loadText(options: TextSourceOptions, llmConfig: LLMConfig): Promise<LoadedSource> {
-  const data = await extractData(options.text, llmConfig);
+export async function loadText(options: TextSourceOptions, llmConfig: LLMConfig, reportUsage?: (usage: LanguageModelUsage) => void): Promise<LoadedSource> {
+  const data = await extractData(options.text, llmConfig, reportUsage);
   const tmpFile = await writeTempFile(JSON.stringify(data), 'json');
   return fileSource(tmpFile, 'json', () => removeTempFile(tmpFile));
 }

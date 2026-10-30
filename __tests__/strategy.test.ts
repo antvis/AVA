@@ -95,7 +95,7 @@ describe('directAnalysis', () => {
       sql: 'SELECT 1',
       text: 'One result.',
     });
-    expect(engine.getDSL).toHaveBeenCalledExactlyOnceWith('Give me one', runtime.dataModel);
+    expect(engine.getDSL).toHaveBeenCalledExactlyOnceWith('Give me one', runtime.dataModel, expect.any(Function));
     expect(engine.execute).toHaveBeenCalledExactlyOnceWith('SELECT 1', config);
     expect(doGenerate).toHaveBeenCalledOnce();
     expect(model.doGenerateCalls[0].responseFormat).toEqual({ type: 'text' });
@@ -220,7 +220,7 @@ describe('directAnalysis', () => {
     expect(doGenerate).toHaveBeenCalledOnce();
     expect(emit.mock.calls.at(-2)[0]).toMatchObject({
       type: 'summarizeend',
-      data: { error: { name: 'AI_NoObjectGeneratedError' } },
+      data: { error: { name: 'AI_NoObjectGeneratedError' }, usage: expect.objectContaining({ totalTokens: 15 }) },
     });
     expect(emit.mock.calls.find(([event]) => event.type === 'stepend')[0]).toMatchObject({
       type: 'stepend',
@@ -348,6 +348,9 @@ it('wraps loop queries in steps across exploration, refinement, and confirmation
   const result = await analyze('Give me one', { strategy: { type: 'loop', maxSteps: 4 } }, runtime);
 
   expect(result).toMatchObject({ ...execution, sql: 'SELECT 1', text: 'Result verified.' });
+  const usageEvents = emit.mock.calls.map(([event]) => event).filter(({ type }) => type === 'stepend');
+  expect(usageEvents).toHaveLength(4);
+  expect(usageEvents.every(({ data }) => data.usage.totalTokens === 15)).toBe(true);
   const events = emit.mock.calls.map(([event]) => event);
   expect(events.map(({ type }) => type)).toEqual([
     'stepstart',
@@ -387,7 +390,7 @@ it('wraps loop queries in steps across exploration, refinement, and confirmation
     error: { message: 'Invalid SQL' },
   });
   expect(events.filter(({ type }) => type === 'stepend').every(({ data }) => !data.error)).toBe(true);
-  expect(events.at(-1).data).toEqual({ step: 3, action: 'CONFIRM', text: 'Result verified.' });
+  expect(events.at(-1).data).toMatchObject({ step: 3, action: 'CONFIRM', text: 'Result verified.' });
   expectStepContexts(events);
 });
 
@@ -404,7 +407,7 @@ it('links the loop fallback to the previous step', async () => {
     { step: 0 },
     { step: 1, finalAttempt: true },
   ]);
-  expect(events.at(-1).data).toEqual({
+  expect(events.at(-1).data).toMatchObject({
     step: 1,
     finalAttempt: true,
     action: 'SQL',
@@ -430,7 +433,7 @@ it('closes an early confirmation step before continuing to a query', async () =>
     'queryend',
     'stepend',
   ]);
-  expect(events[1].data).toEqual({ step: 0, action: 'CONFIRM', text: 'No query yet.' });
+  expect(events[1].data).toMatchObject({ step: 0, action: 'CONFIRM', text: 'No query yet.' });
   expectStepContexts(events);
 });
 
@@ -443,7 +446,7 @@ it('ends a recoverable failed SQL step before the fallback starts', async () => 
 
   const events = emit.mock.calls.map(([event]) => event);
   const ends = events.filter(({ type }) => type === 'stepend');
-  expect(ends.map(({ data }) => data)).toEqual([
+  expect(ends.map(({ data }) => data)).toMatchObject([
     { step: 0, action: 'SQL', text: '```sql\nSELECT 1\n```' },
     { step: 1, finalAttempt: true, action: 'SQL', text: '```sql\nSELECT 1\n```' },
   ]);
@@ -476,6 +479,7 @@ it.each([
 
   const events = emit.mock.calls.map(([event]) => event);
   expect(events.at(-1)).toMatchObject({ type: 'stepend', data: { step: 0, error: { message: failure.message } } });
+  if (phase !== 'model') expect(events.at(-1).data.usage).toMatchObject({ totalTokens: 15 });
   if (maxSteps === 0) expect(events.at(-1).data.finalAttempt).toBe(true);
   if (phase === 'query') {
     expect(events.map(({ type }) => type)).toEqual(['stepstart', 'querystart', 'queryend', 'stepend']);

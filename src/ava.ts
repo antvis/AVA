@@ -18,7 +18,9 @@ import {
   emit,
 } from './event';
 import { serializeError } from './util/error';
+import { addUsage } from './util/usage';
 
+import type { LanguageModelUsage } from 'ai';
 import type {
   DataModel,
   AVAConfig,
@@ -64,6 +66,8 @@ export class AVA extends EventEmitter {
   private dataSchema: Schema | null = null;
   private dataProfile: Profile | null = null;
   private dataSemantic: Semantic = {};
+  private readonly visualizationUsages = new WeakMap<object, (usage: LanguageModelUsage) => void>();
+  private readonly visualizationCallbacks = new WeakSet<(usage: LanguageModelUsage) => void>();
 
   constructor(config: AVAConfig) {
     super();
@@ -134,23 +138,24 @@ export class AVA extends EventEmitter {
   async source(config: DataSourceConfig): Promise<void> {
     emit(this, new LifecycleEvent(LifecycleEventType.SOURCE_START, { type: config.type }));
 
+    let usage: LanguageModelUsage | undefined;
     try {
       await this.dispose();
 
       this.engine = await this.createEngine();
       try {
-        await this.engine.load(config);
+        await this.engine.load(config, (value) => { usage = addUsage(usage, value); });
       } catch (error) {
         await this.dispose();
         throw error;
       }
     } catch (error) {
-      emit(this, new LifecycleEvent(LifecycleEventType.SOURCE_END, { error: serializeError(error) }));
+      emit(this, new LifecycleEvent(LifecycleEventType.SOURCE_END, { error: serializeError(error), ...(usage && { usage }) }));
 
       throw error;
     }
 
-    emit(this, new LifecycleEvent(LifecycleEventType.SOURCE_END));
+    emit(this, new LifecycleEvent(LifecycleEventType.SOURCE_END, usage ? { usage } : {}));
   }
 
   /**
@@ -276,15 +281,16 @@ export class AVA extends EventEmitter {
     emit(this, new AnalysisEvent(AnalysisEventType.TRANSLATE_START, { query }));
 
     let dsl: string;
+    let usage: LanguageModelUsage | undefined;
     try {
-      dsl = await this.engine.getDSL(query, await this.getDataModel());
+      dsl = await this.engine.getDSL(query, await this.getDataModel(), (value) => { usage = addUsage(usage, value); });
     } catch (error) {
-      emit(this, new AnalysisEvent(AnalysisEventType.TRANSLATE_END, { error: serializeError(error) }));
+      emit(this, new AnalysisEvent(AnalysisEventType.TRANSLATE_END, { error: serializeError(error), ...(usage && { usage }) }));
 
       throw error;
     }
 
-    emit(this, new AnalysisEvent(AnalysisEventType.TRANSLATE_END, { dsl }));
+    emit(this, new AnalysisEvent(AnalysisEventType.TRANSLATE_END, { dsl, ...(usage && { usage }) }));
 
     return dsl;
   }
@@ -324,17 +330,29 @@ export class AVA extends EventEmitter {
   async visualize(analysisResult: Pick<AnalysisResponse, 'query' | 'data'>): Promise<VisualizeResponse | null> {
     emit(this, new LifecycleEvent(LifecycleEventType.VISUALIZE_START, { query: analysisResult.query }));
 
+    const usages: LanguageModelUsage[] = [];
     let result: VisualizeResponse | null;
     try {
-      const spec = await this.recommend(analysisResult);
+      const collectUsage = (usage: LanguageModelUsage) => { usages.push(usage); };
+      // A per-call array retains the context when overrides rebuild { query, data }.
+      const input = { ...analysisResult, data: Array.isArray(analysisResult.data) ? [...analysisResult.data] : analysisResult.data };
+      if (input.data && typeof input.data === 'object') this.visualizationUsages.set(input.data, collectUsage);
+      this.visualizationCallbacks.add(collectUsage);
+      let spec: ChartSpec | null;
+      try {
+        spec = await this.recommend(input, collectUsage);
+      } finally {
+        if (input.data && typeof input.data === 'object') this.visualizationUsages.delete(input.data);
+        this.visualizationCallbacks.delete(collectUsage);
+      }
       result = spec ? { ...spec, html: await this.viz(spec) } : null;
     } catch (error) {
-      emit(this, new LifecycleEvent(LifecycleEventType.VISUALIZE_END, { error: serializeError(error) }));
+      emit(this, new LifecycleEvent(LifecycleEventType.VISUALIZE_END, { error: serializeError(error), ...(usages.length && { usages }) }));
 
       throw error;
     }
 
-    emit(this, new LifecycleEvent(LifecycleEventType.VISUALIZE_END));
+    emit(this, new LifecycleEvent(LifecycleEventType.VISUALIZE_END, usages.length ? { usages } : {}));
 
     return result;
   }
@@ -343,15 +361,36 @@ export class AVA extends EventEmitter {
    * Recommend a chart specification for the analysis result.
    * Combine a suitable chart type with GPT-Vis JSON config for rendering.
    */
-  async recommend(analysisResult: Pick<AnalysisResponse, 'query' | 'data'>): Promise<ChartSpec | null> {
+  async recommend(analysisResult: Pick<AnalysisResponse, 'query' | 'data'>, reportUsage?: (usage: LanguageModelUsage) => void): Promise<ChartSpec | null> {
+    const parentUsage = (analysisResult.data && typeof analysisResult.data === 'object' && this.visualizationUsages.get(analysisResult.data))
+      || (reportUsage && this.visualizationCallbacks.has(reportUsage) ? reportUsage : undefined);
+    if (parentUsage) return this.recommendChart(analysisResult, parentUsage);
+
+    emit(this, new LifecycleEvent(LifecycleEventType.VISUALIZE_START, { query: analysisResult.query }));
+    const usages: LanguageModelUsage[] = [];
+    let result: ChartSpec | null;
+    try {
+      result = await this.recommendChart(analysisResult, (usage) => {
+        usages.push(usage);
+        reportUsage?.(usage);
+      });
+    } catch (error) {
+      emit(this, new LifecycleEvent(LifecycleEventType.VISUALIZE_END, { error: serializeError(error), ...(usages.length && { usages }) }));
+      throw error;
+    }
+    emit(this, new LifecycleEvent(LifecycleEventType.VISUALIZE_END, usages.length ? { usages } : {}));
+    return result;
+  }
+
+  private async recommendChart(analysisResult: Pick<AnalysisResponse, 'query' | 'data'>, reportUsage: (usage: LanguageModelUsage) => void): Promise<ChartSpec | null> {
     const { data, query } = analysisResult;
     if (!hasData(data)) return null;
 
     const dataInfo = Array.isArray(data) ? stringifyDataModel(extractDataSchema(data)) : JSON.stringify(data);
-    const chartType = await adviseChartType(query, dataInfo, this.llmConfig);
+    const chartType = await adviseChartType(query, dataInfo, this.llmConfig, reportUsage);
     if (!chartType) return null;
 
-    const config = await generateVisualizationConfig(chartType, data, query, this.llmConfig);
+    const config = await generateVisualizationConfig(chartType, data, query, this.llmConfig, reportUsage);
     return { chartType, config };
   }
 
@@ -373,15 +412,16 @@ export class AVA extends EventEmitter {
     emit(this, new LifecycleEvent(LifecycleEventType.SUGGEST_START));
 
     let result: SuggestResult[];
+    let usage: LanguageModelUsage | undefined;
     try {
-      result = await generateSuggestions(this.llmConfig, await this.getDataModel(), count);
+      result = await generateSuggestions(this.llmConfig, await this.getDataModel(), count, (value) => { usage = value; });
     } catch (error) {
-      emit(this, new LifecycleEvent(LifecycleEventType.SUGGEST_END, { error: serializeError(error) }));
+      emit(this, new LifecycleEvent(LifecycleEventType.SUGGEST_END, { error: serializeError(error), ...(usage && { usage }) }));
 
       throw error;
     }
 
-    emit(this, new LifecycleEvent(LifecycleEventType.SUGGEST_END));
+    emit(this, new LifecycleEvent(LifecycleEventType.SUGGEST_END, usage ? { usage } : {}));
 
     return result;
   }

@@ -1,4 +1,4 @@
-import { generateText } from 'ai';
+import { generateText, type LanguageModelUsage } from 'ai';
 import { StatementType } from '@duckdb/node-api';
 
 import { languageModel } from '../util/model';
@@ -10,7 +10,7 @@ import type { LLMConfig, QueryDialect, DataModel } from '../types';
 export class DuckDBQueryDialect implements QueryDialect<DuckDBConnection> {
   constructor(private readonly llmConfig: LLMConfig) {}
 
-  async getDSL(query: string, dataModel: DataModel): Promise<string> {
+  async getDSL(query: string, dataModel: DataModel, reportUsage?: (usage: LanguageModelUsage) => void): Promise<string> {
     const prompt = `You are a SQL expert. Given the following dataset profile and user query, generate a SQL query to answer the question.
 
 Dataset Context:
@@ -25,7 +25,7 @@ Generate ONLY the SQL query without any explanation or markdown formatting. Refe
       maxRetries: this.llmConfig.maxRetries ?? 3,
       prompt,
     });
-    this.llmConfig.onQueryUsage?.(usage);
+    reportUsage?.(usage);
 
     return text
       .trim()

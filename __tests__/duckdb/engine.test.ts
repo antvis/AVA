@@ -41,22 +41,22 @@ describe('DuckDBEngine', () => {
     await engine.load({ type: 'json', options: { data: [{ value: 1 }] } });
     const schema = await engine.schema();
     await engine.getDSL('One', schema);
-    expect(generate).toHaveBeenLastCalledWith('One', schema);
+    expect(generate).toHaveBeenLastCalledWith('One', schema, undefined);
     expect(compute).not.toHaveBeenCalled();
 
     const profile = await engine.profile(schema, { metrics: ['row_count'] });
     await engine.getDSL('One', buildDataModel({ schema, profile }));
-    expect(generate).toHaveBeenLastCalledWith('One', buildDataModel({ schema, profile }));
+    expect(generate).toHaveBeenLastCalledWith('One', buildDataModel({ schema, profile }), undefined);
     expect(compute).toHaveBeenCalledTimes(1);
     await engine.getDSL('One', schema);
-    expect(generate).toHaveBeenLastCalledWith('One', schema);
+    expect(generate).toHaveBeenLastCalledWith('One', schema, undefined);
 
     await engine.dispose();
     await expect(engine.getDSL('One', schema)).rejects.toThrow('No data loaded');
     await engine.load({ type: 'json', options: { data: [{ other: 2 }] } });
     const nextSchema = await engine.schema();
     await engine.getDSL('Two', nextSchema);
-    expect(generate).toHaveBeenLastCalledWith('Two', nextSchema);
+    expect(generate).toHaveBeenLastCalledWith('Two', nextSchema, undefined);
   });
 
   it('should load data and execute queries', async () => {

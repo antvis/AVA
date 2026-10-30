@@ -3,7 +3,7 @@
  * pre-formatted data description string.
  */
 
-import { generateText } from 'ai';
+import { generateText, type LanguageModelUsage } from 'ai';
 
 import { languageModel } from '../util/model';
 
@@ -109,15 +109,18 @@ ${chartDescriptions}
 export async function adviseChartType(
   query: string,
   dataInfoStr: string,
-  llmConfig: LLMConfig
+  llmConfig: LLMConfig,
+  reportUsage?: (usage: LanguageModelUsage) => void
 ): Promise<ChartType | null> {
   const prompt = buildAdvisorPrompt(query, dataInfoStr);
 
-  const { text } = await generateText({
+  const { text, usage } = await generateText({
     model: languageModel(llmConfig),
     maxRetries: llmConfig.maxRetries ?? 3,
     prompt,
   });
+
+  reportUsage?.(usage);
 
   const raw = text
     .trim()

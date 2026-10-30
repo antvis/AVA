@@ -6,7 +6,7 @@
  * browser-friendly, but only supports csv/json/text sources.
  */
 
-import { generateText } from 'ai';
+import { generateText, type LanguageModelUsage } from 'ai';
 
 import { languageModel } from '../../util/model';
 import { extractDataSchema } from '../../util/schema';
@@ -41,13 +41,13 @@ export class JavaScriptEngine implements AnalysisEngine {
 
   constructor(private readonly llmConfig: LLMConfig) {}
 
-  async load(config: DataSourceConfig): Promise<void> {
+  async load(config: DataSourceConfig, reportUsage?: (usage: LanguageModelUsage) => void): Promise<void> {
     this.data = null;
     if (!['csv', 'json', 'text'].includes(config.type)) {
       throw new Error(`JavaScriptEngine only supports csv/json/text sources, got: ${config.type}`);
     }
 
-    this.data = await loadSource(config as any, this.llmConfig);
+    this.data = await loadSource(config as any, this.llmConfig, reportUsage);
   }
 
   async schema(): Promise<Schema> {
@@ -69,7 +69,7 @@ export class JavaScriptEngine implements AnalysisEngine {
     return profileTables(this.data, schema, parseProfileOptions(options, { metrics: DEFAULT_METRICS }));
   }
 
-  async getDSL(query: string, dataModel: DataModel): Promise<string> {
+  async getDSL(query: string, dataModel: DataModel, reportUsage?: (usage: LanguageModelUsage) => void): Promise<string> {
     if (!this.data) {
       throw new Error('No data loaded. Please call source() first.');
     }
@@ -91,11 +91,13 @@ ${STAT_OPS_EXAMPLE}
 
 Now generate the code:`;
 
-    const { text } = await generateText({
+    const { text, usage } = await generateText({
       model: languageModel(this.llmConfig),
       maxRetries: this.llmConfig.maxRetries ?? 3,
       prompt,
     });
+
+    reportUsage?.(usage);
 
     return text
       .trim()

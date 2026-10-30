@@ -141,7 +141,12 @@ export async function main(
   await Promise.all(
     Array.from({ length: Math.min(concurrency, pending.length) }, async () => {
       let usage = createUsage();
-      const ava = new AVA({ engine: { type: engine }, llm: { ...config, onQueryUsage: (value) => usage.add(value) } });
+      const ava = new AVA({ engine: { type: engine }, llm: config });
+      for (const name of ['translateend', 'stepend', 'summarizeend']) {
+        ava.on(name, (event: { data: { usage?: Parameters<typeof usage.add>[0] } }) => {
+          if (event.data.usage) usage.add(event.data.usage);
+        });
+      }
       try {
         while (cursor < pending.length) {
           const sample = pending[cursor++];

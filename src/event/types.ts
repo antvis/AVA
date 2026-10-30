@@ -80,7 +80,7 @@ export type StepStartPayload = {
   finalAttempt?: boolean;
 };
 
-export type StepEndPayload = StepStartPayload &
+export type StepEndPayload = StepStartPayload & LLMPayload &
   (
     | {
         action: StepAction;

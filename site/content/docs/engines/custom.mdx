@@ -30,10 +30,10 @@ Implement the exported [AnalysisEngine interface](https://github.com/antvis/AVA/
 | --------------------------- | ------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------- |
 | Constructor                 | `llmConfig: LLMConfig`, `options?: Record<string, unknown>`                                      | Receives model configuration and engine fields except `type`.                         |
 | `language`                  | Readonly property                                                                                | `QueryLanguage`, used by analysis prompts.                                            |
-| `load(config)`              | `DataSourceConfig`                                                                               | `Promise<void>`; prepare data and connections for execution.                          |
+| `load(config, reportUsage?)` | `DataSourceConfig`, optional usage reporter                                                                               | `Promise<void>`; prepare data and connections for execution.                          |
 | `schema()`                  | None                                                                                             | `Promise<Schema>`; discover the loaded source structure.                              |
 | `profile(schema, options?)` | Required `Schema`, optional `ProfileOptions`                                                     | Optional method returning `Promise<Profile>`; compute against the supplied structure. |
-| `getDSL(query, dataModel)`  | Required query string and `DataModel`                                                            | `Promise<string>` in the engine's language.                                           |
+| `getDSL(query, dataModel, reportUsage?)`  | Required query string and `DataModel`, optional usage reporter                                                            | `Promise<string>` in the engine's language.                                           |
 | `execute(dsl, options?)`    | Required DSL string; optional [ExecutionOptions](/documentation/reference/api/#executionoptions) | `Promise<ExecutionResult<T>>`; enforce validation and result bounds.                  |
 | `dispose()`                 | None                                                                                             | `Promise<void>`; release connections, files, and other resources.                     |
 
@@ -134,7 +134,7 @@ export class SalesEngine implements AnalysisEngine {
     };
   }
 
-  async getDSL(query: string, _dataModel: DataModel): Promise<string> {
+  async getDSL(query: string, _dataModel: DataModel, reportUsage?: Parameters<AnalysisEngine['getDSL']>[2]): Promise<string> {
     if (!this.sales) throw new Error('Load a source first.');
     const { text, usage } = await generateText({
       model: this.model,
@@ -143,7 +143,7 @@ export class SalesEngine implements AnalysisEngine {
 Return raw JSON without Markdown. If neither metric answers the question, return {"metric":"unsupported"}.`,
       prompt: query,
     });
-    this.llm.onQueryUsage?.(usage);
+    reportUsage?.(usage);
     return text.trim();
   }
 

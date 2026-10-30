@@ -17,6 +17,7 @@ import { loadSQLite } from './sqlite';
 import { loadText } from './text';
 import { loadFeishuBitable } from './feishu-bitable';
 
+import type { LanguageModelUsage } from 'ai';
 import type { DataSourceConfig, LLMConfig, LoadedSource } from '../../types';
 
 export type { LoadedSource } from '../../types';
@@ -24,14 +25,14 @@ export type { LoadedSource } from '../../types';
 /**
  * Load a data source config into a LoadedSource the engine can register.
  */
-export async function loadSource(config: DataSourceConfig, llmConfig: LLMConfig): Promise<LoadedSource> {
+export async function loadSource(config: DataSourceConfig, llmConfig: LLMConfig, reportUsage?: (usage: LanguageModelUsage) => void): Promise<LoadedSource> {
   switch (config.type) {
     case 'csv':
       return loadCSV(config.options);
     case 'json':
       return loadJson(config.options);
     case 'text':
-      return loadText(config.options, llmConfig);
+      return loadText(config.options, llmConfig, reportUsage);
     case 'csv-file':
       return loadCSVFile(config.options);
     case 'json-file':

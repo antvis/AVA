@@ -1,4 +1,4 @@
-import { generateText } from 'ai';
+import { generateText, type LanguageModelUsage } from 'ai';
 
 import { languageModel } from '../util/model';
 import { stringifyDataModel } from '../util/data-model';
@@ -9,7 +9,7 @@ import type { DataModel, LLMConfig, QueryDialect } from '../types';
 export class ClickHouseQueryDialect implements QueryDialect<ClickHouseClient> {
   constructor(private readonly llmConfig: LLMConfig) {}
 
-  async getDSL(query: string, dataModel: DataModel): Promise<string> {
+  async getDSL(query: string, dataModel: DataModel, reportUsage?: (usage: LanguageModelUsage) => void): Promise<string> {
     const prompt = `You are a SQL expert. Given the following dataset profile and user query, generate a SQL query to answer the question.
 
 Dataset Context:
@@ -24,7 +24,7 @@ Generate exactly one read-only SELECT query (WITH is allowed), without explanati
       maxRetries: this.llmConfig.maxRetries ?? 3,
       prompt,
     });
-    this.llmConfig.onQueryUsage?.(usage);
+    reportUsage?.(usage);
 
     const trimmed = text.trim();
     return (trimmed.match(/^```(?:sql)?[ \t]*\r?\n([\s\S]*?)\r?\n```$/i)?.[1] ?? trimmed).trim();

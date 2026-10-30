@@ -13,7 +13,7 @@ import { pendingSamples, validateResume } from '../../_shared/resume.js';
 import { readSemantic, readStrategy, workflow } from '../workflow.ts';
 import { llmConfig, modelMetadata } from '../model.ts';
 import { createUsage } from '../../_shared/usage.js';
-import type { AnalysisStrategyConfig, LLMConfig, Semantic } from '../../../lib/index.js';
+import type { AnalysisStrategyConfig, Semantic } from '../../../lib/index.js';
 
 type Sample = { question_id: number; db_id: string; question: string; evidence?: string };
 const workflowRoot = fileURLToPath(new URL('../', import.meta.url));
@@ -177,7 +177,7 @@ export async function main(argv = process.argv.slice(2)) {
     scoreTimeoutMs: scoreTimeout,
     concurrency,
     modelContext: 'ava-profile + question + evidence + SQL answer constraints' + (semantics.size ? ' + semantic' : '') + (values['database-description'] ? ' + database_description' : ''),
-    usageScope: 'onQueryUsage callbacks',
+    usageScope: 'translation, step, and summary usage',
     resources: Object.fromEntries(files.map((file) => [relative(root, file), sha256(file)])),
     implementation: Object.fromEntries(
       [
@@ -233,11 +233,15 @@ export async function main(argv = process.argv.slice(2)) {
       }
       const startedAt = Date.now();
       const usage = createUsage();
-      const onQueryUsage: LLMConfig['onQueryUsage'] = usage.add;
       const ava = new AVA({
-        llm: { ...config, onQueryUsage },
+        llm: config,
         engine: { type: 'duckdb', queryTimeoutMs: timeout, memoryLimit: values['memory-limit'] },
       });
+      for (const name of ['translateend', 'stepend', 'summarizeend']) {
+        ava.on(name, (event: { data: { usage?: Parameters<typeof usage.add>[0] } }) => {
+          if (event.data.usage) usage.add(event.data.usage);
+        });
+      }
       for (const [event, stage] of [
         ['sourcestart', 'loading'],
         ['profilestart', 'profiling'],

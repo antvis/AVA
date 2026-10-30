@@ -2,7 +2,7 @@
  * Suggest module for generating recommended analysis queries
  */
 
-import { generateText } from 'ai';
+import { generateText, type LanguageModelUsage } from 'ai';
 
 import { languageModel } from '../util/model';
 import { stringifyDataModel } from '../util/data-model';
@@ -15,7 +15,8 @@ import type { LLMConfig, DataModel, SuggestResult } from '../types';
 export async function generateSuggestions(
   llmConfig: LLMConfig,
   dataModel: DataModel,
-  count: number = 3
+  count: number = 3,
+  reportUsage?: (usage: LanguageModelUsage) => void
 ): Promise<SuggestResult[]> {
   const dataModelStr = stringifyDataModel(dataModel);
 
@@ -50,11 +51,13 @@ Example format:
 
 Generate the JSON array now.`;
 
-  const { text } = await generateText({
+  const { text, usage } = await generateText({
     model: languageModel(llmConfig),
     maxRetries: llmConfig.maxRetries ?? 3,
     prompt,
   });
+
+  reportUsage?.(usage);
 
   try {
     const jsonMatch = text.match(/\[[\s\S]*\]/);

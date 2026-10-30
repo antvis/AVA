@@ -7,6 +7,7 @@ import { executionResult, inferQuerySchema, limitedQuery, maxRows } from '../../
 import { profileTables } from './profile';
 import { getClickHouseSchema } from './schema';
 
+import type { LanguageModelUsage } from 'ai';
 import type { ClickHouseClient, ClickHouseClientConfigOptions } from '@clickhouse/client';
 import type {
   AnalysisEngine,
@@ -80,9 +81,9 @@ export class ClickHouseEngine implements AnalysisEngine {
     );
   }
 
-  async getDSL(query: string, dataModel: DataModel): Promise<string> {
+  async getDSL(query: string, dataModel: DataModel, reportUsage?: (usage: LanguageModelUsage) => void): Promise<string> {
     if (!this.client) throw new Error('No data loaded. Please call source() first.');
-    return this.queryDialect.getDSL(query, dataModel);
+    return this.queryDialect.getDSL(query, dataModel, reportUsage);
   }
 
   async execute<T = Record<string, unknown>>(dsl: string, options?: ExecutionOptions): Promise<ExecutionResult<T>> {

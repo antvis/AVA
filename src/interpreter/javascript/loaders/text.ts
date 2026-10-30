@@ -2,13 +2,13 @@
  * Text loader: extract structured data from unstructured text via LLM.
  */
 
-import { generateText } from 'ai';
+import { generateText, type LanguageModelUsage } from 'ai';
 
 import { languageModel } from '../../../util/model';
 
 import type { LLMConfig, TextSourceOptions } from '../../../types';
 
-export async function loadText(options: TextSourceOptions, llmConfig: LLMConfig): Promise<any[]> {
+export async function loadText(options: TextSourceOptions, llmConfig: LLMConfig, reportUsage?: (usage: LanguageModelUsage) => void): Promise<any[]> {
   const prompt = `You are a data extraction assistant. Extract structured data from the following text and return it as a JSON array of objects.
 
 The text may contain data in various formats (comma-separated, space-separated, tabular, etc.). Your task is to:
@@ -23,11 +23,13 @@ ${options.text}
 
 Return ONLY the JSON array, no additional text or explanation. The response must be valid JSON that can be parsed directly.`;
 
-  const { text: responseText } = await generateText({
+  const { text: responseText, usage } = await generateText({
     model: languageModel(llmConfig),
     maxRetries: llmConfig.maxRetries ?? 3,
     prompt,
   });
+
+  reportUsage?.(usage);
 
   try {
     const data = JSON.parse(responseText);

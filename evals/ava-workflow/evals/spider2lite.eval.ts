@@ -23,7 +23,7 @@ import { createMetadataCache, metadataImplementation } from '../metadata.ts';
 import { llmConfig, modelMetadata } from '../model.ts';
 import { createUsage } from '../../_shared/usage.js';
 
-import type { AnalysisConfig, AnalysisStrategyConfig, DataSourceConfig, LLMConfig, Semantic } from '../../../lib/index.js';
+import type { AnalysisConfig, AnalysisStrategyConfig, DataSourceConfig, Semantic } from '../../../lib/index.js';
 
 type Sample = { instance_id: string; db: string; question: string; external_knowledge?: string };
 const resultLimits = { maxRows: 10_000, maxResultBytes: 64 * 1024 * 1024 };
@@ -220,7 +220,7 @@ export async function main(argv = process.argv.slice(2)) {
     scoreTimeoutMs: scoreTimeout,
     maxContextBytes,
     concurrency,
-    usageScope: 'Accumulated onQueryUsage callbacks',
+    usageScope: 'Accumulated translation, step, and summary usage',
     implementation: Object.fromEntries(
       [
         fileURLToPath(import.meta.url),
@@ -300,11 +300,15 @@ export async function main(argv = process.argv.slice(2)) {
       const usage = createUsage();
       let lastSQL = '';
       const traces: unknown[] = [];
-      const onQueryUsage: LLMConfig['onQueryUsage'] = usage.add;
       const ava = new AVA({
-        llm: { ...config, onQueryUsage },
+        llm: config,
         engine: { type: 'duckdb', queryTimeoutMs: timeout },
       });
+      for (const name of ['translateend', 'stepend', 'summarizeend']) {
+        ava.on(name, (event: { data: { usage?: Parameters<typeof usage.add>[0] } }) => {
+          if (event.data.usage) usage.add(event.data.usage);
+        });
+      }
       // Stage progress is console-only; records retain query events only.
       for (const [event, stage] of [
         ['sourcestart', 'loading'],
