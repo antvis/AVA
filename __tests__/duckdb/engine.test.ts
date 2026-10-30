@@ -7,6 +7,7 @@ import * as path from 'path';
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 import { DuckDBInstance } from '@duckdb/node-api';
 
+import { withOperationEvents } from '../../src/event';
 import { DuckDBEngine } from '../../src/duckdb';
 import { buildDataModel } from '../../src/util/data-model';
 import { QueryTimeoutError } from '../../src/duckdb/engine';
@@ -35,8 +36,18 @@ describe('DuckDBEngine', () => {
     await engine.dispose();
   });
 
+  it('invalidates the previous source as soon as reload starts', async () => {
+    await engine.load({ type: 'json', options: { data: [{ old: 1 }] } });
+    const loading = engine.load({ type: 'json', options: { data: [{ fresh: 2 }] } });
+    await expect(engine.schema()).rejects.toThrow('No data loaded');
+    await loading;
+    expect((await engine.schema()).models[0].columns[0].name).toBe('fresh');
+  });
+
   it('uses caller-supplied context without retaining schema or profile', async () => {
-    const generate = vi.spyOn(DuckDBQueryDialect.prototype, 'getDSL').mockResolvedValue('SELECT 1');
+    const generate = vi
+      .spyOn(DuckDBQueryDialect.prototype, 'getDSL')
+      .mockImplementation(() => withOperationEvents(async () => 'SELECT 1'));
     const compute = vi.spyOn(engine, 'profile');
     await engine.load({ type: 'json', options: { data: [{ value: 1 }] } });
     const schema = await engine.schema();

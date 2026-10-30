@@ -4,6 +4,7 @@ import { rm } from 'fs/promises';
 
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
+import { withOperationEvents } from '../src/event';
 import { createSession } from '../src/cli/session/client';
 import { buildDataModel } from '../src/util/data-model';
 import { sessionDirectory, startupSchema, requestSchema } from '../src/cli/session/protocol';
@@ -79,7 +80,7 @@ describe('dataset engine and language', () => {
   ])('selects $engine and exposes its language without changing the schema', async ({ source, engine, explicit }) => {
     const { getEngineClass } = await import('../src/engines');
     const Engine = getEngineClass(engine);
-    const load = vi.spyOn(Engine.prototype, 'load').mockResolvedValue(undefined);
+    const load = vi.spyOn(Engine.prototype, 'load').mockImplementation(() => withOperationEvents(async () => undefined));
     const discover = vi.spyOn(Engine.prototype, 'schema').mockResolvedValue(schema);
 
     await datasets.createDataset(source, llm, explicit);
@@ -124,7 +125,7 @@ describe('dataset engine and language', () => {
     expect(await datasets.describeDataset(schema)).toMatchObject(schema);
     await datasets.withDataset((ava) => ava.profile(undefined, () => profile));
     const getDSL = await datasets.withDataset(async (ava) =>
-      vi.spyOn(ava.engine!, 'getDSL').mockResolvedValue('const result = data;')
+      vi.spyOn(ava.engine!, 'getDSL').mockImplementation(() => withOperationEvents(async () => 'const result = data;'))
     );
     await datasets.withDataset((ava) => ava.translate('Sales'));
     expect(getDSL).toHaveBeenLastCalledWith('Sales', buildDataModel({ schema, profile }));

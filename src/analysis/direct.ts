@@ -94,8 +94,8 @@ export const directAnalysis: AnalysisStrategy = async (query, config, { dataMode
       let usage: LanguageModelUsage | undefined;
       try {
         const operation = engine.getDSL(translationQuery, dataModel);
-        eventsOf(operation)?.on('translateend', (event: { data: { usage: LanguageModelUsage } }) => {
-          usage = addUsage(usage, event.data.usage);
+        eventsOf(operation).on('translateend', (event?: { data?: { usage?: LanguageModelUsage } | null }) => {
+          if (event?.data?.usage) usage = addUsage(usage, event.data.usage);
         });
         dsl = await operation;
       } catch (error) {

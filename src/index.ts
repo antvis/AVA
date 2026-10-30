@@ -16,6 +16,7 @@ registerEngine('python', PythonEngine);
 
 export { AVA } from './ava';
 export { withOperationEvents } from './event';
+export type { Operation } from './event';
 export { registerEngine } from './engines';
 export type { EngineClass } from './engines';
 export { executionResult } from './util/result';

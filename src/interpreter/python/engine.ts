@@ -15,6 +15,7 @@ import { profileCode } from './profile';
 import { createPythonExecutor } from './util/execute';
 import { executionCode } from './util/code';
 
+import type { Operation } from '../../event';
 import type {
   AnalysisEngine,
   DataModel,
@@ -60,9 +61,11 @@ Do not read files, access the network, install packages, or print the answer.`,
     this.executor = engineOptions.execute ?? createPythonExecutor(this.timeoutMs);
   }
 
-  async load(config: DataSourceConfig): Promise<void> {
+  load(config: DataSourceConfig): Operation<void> {
     this.source = null;
-    this.source = sourceSchema.parse(config) as DataSourceConfig;
+    return withOperationEvents(async () => {
+      this.source = sourceSchema.parse(config) as DataSourceConfig;
+    });
   }
 
   async schema(): Promise<Schema> {
@@ -75,7 +78,7 @@ Do not read files, access the network, install packages, or print the answer.`,
     return { models: tables } as Schema;
   }
 
-  getDSL(query: string, dataModel: DataModel): Promise<string> {
+  getDSL(query: string, dataModel: DataModel): Operation<string> {
     return withOperationEvents(async (events) => {
       if (!this.source) throw new Error('No data loaded. Please call source() first.');
 

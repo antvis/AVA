@@ -137,8 +137,8 @@ export class AVA extends EventEmitter {
       this.engine = await this.createEngine();
       try {
         const operation = this.engine.load(config);
-        eventsOf(operation)?.on('sourceend', (event: { data: { usage: LanguageModelUsage } }) => {
-          usage = addUsage(usage, event.data.usage);
+        eventsOf(operation).on('sourceend', (event?: { data?: { usage?: LanguageModelUsage } | null }) => {
+          if (event?.data?.usage) usage = addUsage(usage, event.data.usage);
         });
         await operation;
       } catch (error) {
@@ -283,8 +283,8 @@ export class AVA extends EventEmitter {
     let usage: LanguageModelUsage | undefined;
     try {
       const operation = this.engine.getDSL(query, await this.getDataModel());
-      eventsOf(operation)?.on('translateend', (event: { data: { usage: LanguageModelUsage } }) => {
-        usage = addUsage(usage, event.data.usage);
+      eventsOf(operation).on('translateend', (event?: { data?: { usage?: LanguageModelUsage } | null }) => {
+        if (event?.data?.usage) usage = addUsage(usage, event.data.usage);
       });
       dsl = await operation;
     } catch (error) {

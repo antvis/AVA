@@ -10,11 +10,13 @@
 
 import { PostgreSQLQueryDialect } from '../../query/postgresql';
 import { executionResult, inferQuerySchema, limitedQuery, maxRows } from '../../util/result';
+import { withOperationEvents } from '../../event';
 import { DEFAULT_METRICS, parseProfileOptions } from '../../util/profile';
 
 import { profileTables } from './profile';
 import { getSupabaseSchema } from './schema';
 
+import type { Operation } from '../../event';
 import type {
   Profile,
   ProfileOptions,
@@ -54,12 +56,14 @@ export class SupabaseEngine implements AnalysisEngine {
     this.queryDialect = new PostgreSQLQueryDialect(llmConfig);
   }
 
-  async load(config: DataSourceConfig): Promise<void> {
+  load(config: DataSourceConfig): Operation<void> {
     this.connection = null;
-    if (config.type !== 'supabase') {
-      throw new Error(`SupabaseEngine only supports 'supabase' data sources, got '${config.type}'`);
-    }
-    this.connection = config.options;
+    return withOperationEvents(async () => {
+      if (config.type !== 'supabase') {
+        throw new Error(`SupabaseEngine only supports 'supabase' data sources, got '${config.type}'`);
+      }
+      this.connection = config.options;
+    });
   }
 
   async schema(): Promise<Schema> {
@@ -76,9 +80,11 @@ export class SupabaseEngine implements AnalysisEngine {
     );
   }
 
-  getDSL(query: string, dataModel: DataModel): Promise<string> {
+  getDSL(query: string, dataModel: DataModel): Operation<string> {
     if (!this.connection) {
-      return Promise.reject(new Error('No data loaded. Please call source() first.'));
+      return withOperationEvents(async () => {
+        throw new Error('No data loaded. Please call source() first.');
+      });
     }
     return this.queryDialect.getDSL(query, dataModel);
   }

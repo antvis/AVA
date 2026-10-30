@@ -18,6 +18,7 @@ import { runWithTimeout } from '../util/timeout';
 import { DEFAULT_METRICS, profileTables } from './profile';
 import { loadSource } from './loaders';
 
+import type { Operation } from '../event';
 import type { DuckDBConnection } from '@duckdb/node-api';
 import type {
   AnalysisEngine,
@@ -122,9 +123,10 @@ export class DuckDBEngine implements AnalysisEngine {
     await conn.run('SET lock_configuration = true');
   }
 
-  load(config: DataSourceConfig): Promise<void> {
+  load(config: DataSourceConfig): Operation<void> {
+    const disposing = this.dispose();
     return withOperationEvents(async (events) => {
-      await this.dispose();
+      await disposing;
       this.allowCommunityExtensions = config.type === 'mongodb';
       try {
         this.source = await loadSource(config, this.llmConfig, events);
@@ -155,8 +157,11 @@ export class DuckDBEngine implements AnalysisEngine {
     return profileTables(this.connection, schema, parsedOptions);
   }
 
-  getDSL(query: string, dataModel: DataModel): Promise<string> {
-    if (!this.source) return Promise.reject(new Error('No data loaded. Please call source() first.'));
+  getDSL(query: string, dataModel: DataModel): Operation<string> {
+    if (!this.source)
+      return withOperationEvents(async () => {
+        throw new Error('No data loaded. Please call source() first.');
+      });
 
     return this.queryDialect.getDSL(query, dataModel);
   }

@@ -5,13 +5,14 @@ import { withOperationEvents } from '../event';
 import { languageModel } from '../util/model';
 import { stringifyDataModel } from '../util/data-model';
 
+import type { Operation } from '../event';
 import type { DuckDBConnection } from '@duckdb/node-api';
 import type { LLMConfig, QueryDialect, DataModel } from '../types';
 
 export class DuckDBQueryDialect implements QueryDialect<DuckDBConnection> {
   constructor(private readonly llmConfig: LLMConfig) {}
 
-  getDSL(query: string, dataModel: DataModel): Promise<string> {
+  getDSL(query: string, dataModel: DataModel): Operation<string> {
     return withOperationEvents(async (events) => {
       const prompt = `You are a SQL expert. Given the following dataset profile and user query, generate a SQL query to answer the question.
 

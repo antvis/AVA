@@ -1,12 +1,14 @@
 import { createClient } from '@clickhouse/client';
 
 import { ClickHouseQueryDialect } from '../../query/clickhouse';
+import { withOperationEvents } from '../../event';
 import { DEFAULT_METRICS, parseProfileOptions } from '../../util/profile';
 import { executionResult, inferQuerySchema, limitedQuery, maxRows } from '../../util/result';
 
 import { profileTables } from './profile';
 import { getClickHouseSchema } from './schema';
 
+import type { Operation } from '../../event';
 import type { ClickHouseClient, ClickHouseClientConfigOptions } from '@clickhouse/client';
 import type {
   AnalysisEngine,
@@ -55,15 +57,18 @@ export class ClickHouseEngine implements AnalysisEngine {
     this.queryDialect = new ClickHouseQueryDialect(llmConfig);
   }
 
-  async load(config: DataSourceConfig): Promise<void> {
-    await this.dispose();
-    if (config.type !== 'clickhouse') {
-      throw new Error(`ClickHouseEngine only supports 'clickhouse' data sources, got '${config.type}'`);
-    }
+  load(config: DataSourceConfig): Operation<void> {
+    const disposing = this.dispose();
+    return withOperationEvents(async () => {
+      await disposing;
+      if (config.type !== 'clickhouse') {
+        throw new Error(`ClickHouseEngine only supports 'clickhouse' data sources, got '${config.type}'`);
+      }
 
-    const client = createClient(clientConfig(config.options));
-    this.client = client;
-    this.database = config.options.database;
+      const client = createClient(clientConfig(config.options));
+      this.client = client;
+      this.database = config.options.database;
+    });
   }
 
   async schema(): Promise<Schema> {
@@ -80,8 +85,11 @@ export class ClickHouseEngine implements AnalysisEngine {
     );
   }
 
-  getDSL(query: string, dataModel: DataModel): Promise<string> {
-    if (!this.client) return Promise.reject(new Error('No data loaded. Please call source() first.'));
+  getDSL(query: string, dataModel: DataModel): Operation<string> {
+    if (!this.client)
+      return withOperationEvents(async () => {
+        throw new Error('No data loaded. Please call source() first.');
+      });
     return this.queryDialect.getDSL(query, dataModel);
   }
 

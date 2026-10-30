@@ -6,6 +6,7 @@
 import { describe, it, expect, afterEach, vi } from 'vitest';
 import { PgParser, unwrapParseResult } from '@supabase/pg-parser';
 
+import { withOperationEvents } from '../../src/event';
 import { AVA } from '../../src';
 import { BUILTIN_METRICS as PG_METRICS, profileTables as pgProfile } from '../../src/remote/supabase/profile';
 import { SupabaseEngine } from '../../src/remote';
@@ -238,7 +239,7 @@ describe('SupabaseEngine', () => {
         ],
         views: [],
       });
-      const generate = vi.spyOn(PostgreSQLQueryDialect.prototype, 'getDSL').mockResolvedValue('SELECT 1');
+      const generate = vi.spyOn(PostgreSQLQueryDialect.prototype, 'getDSL').mockImplementation(() => withOperationEvents(async () => 'SELECT 1'));
       await engine.getDSL('Orders by buyer', schema);
       expect(generate).toHaveBeenCalledWith('Orders by buyer', schema);
       expect(requests).toHaveLength(1);

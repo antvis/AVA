@@ -20,6 +20,7 @@ import { executeCode } from './sandbox';
 import { loadSource } from './loaders';
 import { STAT_OPS_PROMPT, STAT_OPS_EXAMPLE } from './stat';
 
+import type { Operation } from '../../event';
 import type {
   Profile,
   ProfileOptions,
@@ -42,9 +43,9 @@ export class JavaScriptEngine implements AnalysisEngine {
 
   constructor(private readonly llmConfig: LLMConfig) {}
 
-  load(config: DataSourceConfig): Promise<void> {
+  load(config: DataSourceConfig): Operation<void> {
+    this.data = null;
     return withOperationEvents(async (events) => {
-      this.data = null;
       if (!['csv', 'json', 'text'].includes(config.type)) {
         throw new Error(`JavaScriptEngine only supports csv/json/text sources, got: ${config.type}`);
       }
@@ -72,7 +73,7 @@ export class JavaScriptEngine implements AnalysisEngine {
     return profileTables(this.data, schema, parseProfileOptions(options, { metrics: DEFAULT_METRICS }));
   }
 
-  getDSL(query: string, dataModel: DataModel): Promise<string> {
+  getDSL(query: string, dataModel: DataModel): Operation<string> {
     return withOperationEvents(async (events) => {
       if (!this.data) {
         throw new Error('No data loaded. Please call source() first.');

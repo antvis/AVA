@@ -40,6 +40,15 @@ describe('interpreter/javascript/engine', () => {
     expect(result.truncated).toBe(true);
   });
 
+  it('invalidates the previous source as soon as reload starts', async () => {
+    engine = new JavaScriptEngine(getLLMConfig());
+    await engine.load({ type: 'json', options: { data: [{ old: 1 }] } });
+    const loading = engine.load({ type: 'json', options: { data: [{ fresh: 2 }] } });
+    await expect(engine.schema()).rejects.toThrow('No data loaded');
+    await loading;
+    expect((await engine.schema()).models[0].columns[0].name).toBe('fresh');
+  });
+
   it('isolates source data from query mutations, errors, and returned results', async () => {
     engine = new JavaScriptEngine(getLLMConfig());
     const data = [{ value: 2, nested: { tags: ['original'] } }];

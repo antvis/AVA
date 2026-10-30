@@ -2,6 +2,7 @@ import { describe, expect, it, vi } from 'vitest';
 import { MockLanguageModelV4 } from 'ai/test';
 import { createOpenAI } from '@ai-sdk/openai';
 
+import { withOperationEvents } from '../src/event';
 import { analyze } from '../src/analysis';
 
 import type { AnalysisEngine } from '../src/types';
@@ -27,7 +28,7 @@ function setup() {
   const model = new MockLanguageModelV4({ doGenerate });
   const engine = {
     language: { name: 'SQL', fence: 'sql' },
-    getDSL: vi.fn().mockResolvedValue('SELECT 1'),
+    getDSL: vi.fn().mockImplementation(() => withOperationEvents(async () => 'SELECT 1')),
     execute: vi.fn().mockResolvedValue(execution),
   };
   const emit = vi.fn();
@@ -252,7 +253,7 @@ describe('directAnalysis', () => {
 
   it('retries a failed query with its DSL and error as correction context', async () => {
     const { runtime, engine, doGenerate, emit } = setup();
-    engine.getDSL.mockResolvedValueOnce('BAD SQL');
+    engine.getDSL.mockImplementationOnce(() => withOperationEvents(async () => 'BAD SQL'));
     engine.execute.mockRejectedValueOnce(new Error('Invalid SQL'));
 
     const result = await analyze('Give me one', { strategy: { type: 'direct', maxRetries: 1 } }, runtime);
@@ -296,7 +297,7 @@ describe('directAnalysis', () => {
 
   it.each(['translate', 'query', 'summarize'])('propagates %s failures and closes the event', async (phase) => {
     const { runtime, engine, doGenerate, emit } = setup();
-    if (phase === 'translate') engine.getDSL.mockRejectedValue(new Error('Translation failed'));
+    if (phase === 'translate') engine.getDSL.mockImplementation(() => withOperationEvents(async () => { throw new Error('Translation failed'); }));
     if (phase === 'query') engine.execute.mockRejectedValue(new Error('Query failed'));
     if (phase === 'summarize') doGenerate.mockResolvedValue(response('{"conclusion":""}'));
 
