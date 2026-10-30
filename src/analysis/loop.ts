@@ -215,7 +215,6 @@ export const loopAnalysis: AnalysisStrategy = async (query, config, { dataModel,
         maxRetries: llm.maxRetries ?? 3,
         prompt,
       });
-      llm.onQueryUsage?.(response.usage);
 
       text = response.text.trim();
       action = text.match(/^\[(EXPLORE|REFINE|SQL|CONFIRM)\]/)?.[1];
@@ -345,7 +344,6 @@ export const loopAnalysis: AnalysisStrategy = async (query, config, { dataModel,
       engine.language.name
     } statement.`,
     });
-    llm.onQueryUsage?.(finalResponse.usage);
 
     finalText = finalResponse.text.trim();
     const proposals = codeBlocks(finalText, engine.language.fence);

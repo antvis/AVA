@@ -4,7 +4,6 @@ import { mkdtempSync, writeFileSync, appendFileSync, readFileSync, readdirSync, 
 import { join } from 'node:path';
 import { tmpdir } from 'node:os';
 import { execFileSync } from 'node:child_process';
-import { createUsage } from './usage.js';
 import { OUTPUT_COLUMNS, csvCell, csvRows, previewCsv, readCsv } from './results.js';
 import { atomicJson, atomicWrite } from './files.js';
 import { forEachConcurrent } from './concurrency.js';
@@ -113,17 +112,6 @@ test('model metadata omits endpoint credentials and supports both model represen
   assert.deepEqual(modelMetadata({ ...config, model: { modelId: 'provider-model' } }),
     { model: 'provider-model', endpoint: 'https://example.com/v1' });
   assert.equal(config.baseURL, 'https://user:secret@example.com/v1?api_key=secret');
-});
-
-test('usage accumulates multiple calls and preserves incomplete statistics', () => {
-  const usage = createUsage();
-  assert.equal(usage.value.totalTokens, null);
-  usage.add({ inputTokens: 2, outputTokens: 3, totalTokens: 5 });
-  usage.add({ inputTokens: 7, outputTokens: 11, totalTokens: 18 });
-  assert.deepEqual(usage.value, { inputTokens: 9, outputTokens: 14, totalTokens: 23, calls: 2 });
-  usage.add({ inputTokens: 0 });
-  usage.add({ inputTokens: 1, outputTokens: 1, totalTokens: 2 });
-  assert.deepEqual(usage.value, { inputTokens: 10, outputTokens: null, totalTokens: null, calls: 4 });
 });
 
 test('CLI report stores aggregate scores once and preserves all selected metrics', (t) => {

@@ -19,12 +19,11 @@ User Query: ${query}
 
 Generate exactly one read-only SELECT query (WITH is allowed), without explanation or markdown formatting. Do not use INTO OUTFILE, FORMAT, PARALLEL WITH, or SETTINGS. Reference the tables and fields by their exact names shown above (join tables when the question spans multiple tables). Use ClickHouse SQL syntax.`;
 
-    const { text, usage } = await generateText({
+    const { text } = await generateText({
       model: languageModel(this.llmConfig),
       maxRetries: this.llmConfig.maxRetries ?? 3,
       prompt,
     });
-    this.llmConfig.onQueryUsage?.(usage);
 
     const trimmed = text.trim();
     return (trimmed.match(/^```(?:sql)?[ \t]*\r?\n([\s\S]*?)\r?\n```$/i)?.[1] ?? trimmed).trim();

@@ -93,7 +93,6 @@ User question: ${query}
 Return ONLY executable Python code without explanation.`,
     });
 
-    this.llmConfig.onQueryUsage?.(response.usage);
 
     return response.text
       .trim()

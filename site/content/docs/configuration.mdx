@@ -25,7 +25,6 @@ const ava = new AVA({
 | `apiKey`       | `string`                              | No       | API key for the LLM provider                                                      |
 | `baseURL`      | `string`                              | No       | Optional API base URL                                                             |
 | `maxRetries`   | `number`                              | No       | Maximum retries for retryable model API failures. Default 3.                      |
-| `onQueryUsage` | `(usage: LanguageModelUsage) => void` | No       | Optional callback for SQL-generation token usage                                  |
 
 String model names use OpenAI-compatible **Chat Completions** by default. A supplied model object is used directly. Usage callbacks are not a complete accounting stream for every LLM request.
 

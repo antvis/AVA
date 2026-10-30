@@ -3,7 +3,7 @@
  */
 
 import type { ClickHouseClientConfigOptions } from '@clickhouse/client';
-import type { LanguageModelUsage, LanguageModel } from 'ai';
+import type { LanguageModel } from 'ai';
 import type { AnalysisEvent } from './event';
 
 /**
@@ -30,8 +30,6 @@ export interface LLMConfig {
   baseURL?: string;
   /** Maximum retries for retryable model API failures. Default 3. */
   maxRetries?: number;
-  /** Optional callback for SQL-generation token usage */
-  onQueryUsage?: (usage: LanguageModelUsage) => void;
 }
 
 /**

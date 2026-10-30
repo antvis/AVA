@@ -21,9 +21,8 @@ import { pendingSamples, validateResume } from '../../_shared/resume.js';
 import { readSemantic, readStrategy, workflow } from '../workflow.ts';
 import { createMetadataCache, metadataImplementation } from '../metadata.ts';
 import { llmConfig, modelMetadata } from '../model.ts';
-import { createUsage } from '../../_shared/usage.js';
 
-import type { AnalysisConfig, AnalysisStrategyConfig, DataSourceConfig, LLMConfig, Semantic } from '../../../lib/index.js';
+import type { AnalysisConfig, AnalysisStrategyConfig, DataSourceConfig, Semantic } from '../../../lib/index.js';
 
 type Sample = { instance_id: string; db: string; question: string; external_knowledge?: string };
 const resultLimits = { maxRows: 10_000, maxResultBytes: 64 * 1024 * 1024 };
@@ -220,7 +219,6 @@ export async function main(argv = process.argv.slice(2)) {
     scoreTimeoutMs: scoreTimeout,
     maxContextBytes,
     concurrency,
-    usageScope: 'Accumulated onQueryUsage callbacks',
     implementation: Object.fromEntries(
       [
         fileURLToPath(import.meta.url),
@@ -232,7 +230,6 @@ export async function main(argv = process.argv.slice(2)) {
         join(workflowRoot, 'metadata.ts'),
         join(workflowRoot, 'model.ts'),
         join(workflowRoot, '../_shared/model-env.js'),
-        join(workflowRoot, '../_shared/usage.js'),
         join(workflowRoot, '../_shared/files.js'),
         join(workflowRoot, '../_shared/args.js'),
         join(workflowRoot, '../spider2lite/index.js'),
@@ -297,12 +294,10 @@ export async function main(argv = process.argv.slice(2)) {
     );
     await forEachConcurrent(pending, concurrency, async (sample: Sample) => {
       const startedAt = Date.now();
-      const usage = createUsage();
       let lastSQL = '';
       const traces: unknown[] = [];
-      const onQueryUsage: LLMConfig['onQueryUsage'] = usage.add;
       const ava = new AVA({
-        llm: { ...config, onQueryUsage },
+        llm: config,
         engine: { type: 'duckdb', queryTimeoutMs: timeout },
       });
       // Stage progress is console-only; records retain query events only.
@@ -359,7 +354,6 @@ export async function main(argv = process.argv.slice(2)) {
         instance_id: sample.instance_id,
         db: sample.db,
         elapsedMs: Date.now() - startedAt,
-        usage: usage.value,
         traces,
       };
       atomicJson(join(records, `${sample.instance_id}.json`), record);

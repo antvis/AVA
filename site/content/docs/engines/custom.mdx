@@ -136,14 +136,13 @@ export class SalesEngine implements AnalysisEngine {
 
   async getDSL(query: string, _dataModel: DataModel): Promise<string> {
     if (!this.sales) throw new Error('Load a source first.');
-    const { text, usage } = await generateText({
+    const { text } = await generateText({
       model: this.model,
       maxRetries: this.llm.maxRetries ?? 3,
       system: `Convert a question into a sales metric. ${this.language.instructions}
 Return raw JSON without Markdown. If neither metric answers the question, return {"metric":"unsupported"}.`,
       prompt: query,
     });
-    this.llm.onQueryUsage?.(usage);
     return text.trim();
   }
 

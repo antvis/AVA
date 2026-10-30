@@ -141,4 +141,4 @@ node evals/cli.js score --dataset bird --predictions "$BIRD_OUTPUT"
 
 保存到 `evals/reports/` 时，文件名中的日期、模型和条件须与原始评测一致，命名规则见[评测说明](../README.md#查看结果)。
 
-Token 用量累计单题所有 `onQueryUsage` 回调；缺失字段记为未知（CSV 留空、JSON 为 null）。
+AVA workflow 当前不采集 token 用量，DataBench CSV 中的 token 字段留空。
