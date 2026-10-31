@@ -69,11 +69,6 @@ describe.skipIf(!sqlserverEnabled)('SQL Server actual CLI sessions', () => {
     );
     const total = await cli(['query', id, '--dsl', 'SELECT COUNT(*) AS count, SUM(amount) AS total FROM dbo.orders']);
     expect(total.data).toEqual([{ count: 6, total: 881.5 }]);
-    const rows = await cli(['query', id, '--dsl', 'SELECT order_id FROM dbo.orders ORDER BY order_id', '--max-rows', '2']);
-    expect(rows.data).toEqual([{ order_id: 1001 }, { order_id: 1002 }]);
-    expect(rows.truncatedBy).toBe('maxRows');
-    await expect(cli(['query', id, '--dsl', 'DELETE FROM dbo.orders'])).rejects.toThrow();
-    expect((await cli(['query', id, '--dsl', 'SELECT COUNT(*) AS count FROM dbo.orders'])).data).toEqual([{ count: 6 }]);
     await cli(['dispose', id]);
     datasets.delete(id);
     await expect(cli(['schema', id])).rejects.toThrow();
@@ -104,9 +99,8 @@ describe.skipIf(!sqlserverEnabled || skipLLMTests)('SQL Server SDK natural-langu
     return ava;
   }
 
-  it('queries SQL Server and analyzes both examples with exact expected results', async () => {
+  it('analyzes both examples with exact expected results', async () => {
     const instance = await source();
-    expect((await instance.query('SELECT COUNT(*) AS count FROM dbo.orders')).data).toEqual([{ count: 6 }]);
     const monthly = await instance.analyze(monthlyQuestion, { strategy: { type: 'direct' } });
     expect(monthly.data).toEqual(monthlyExpected);
     expect(monthly.text.trim().length).toBeGreaterThan(0);

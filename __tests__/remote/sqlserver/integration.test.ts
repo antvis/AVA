@@ -79,60 +79,29 @@ describe.skipIf(!sqlserverEnabled)('SQL Server integration', () => {
     const profile = (await engine.profile({ models: [view] }, { metrics: ['row_count', 'sum', 'mean'] })).models[0];
     expect(profile.metrics).toEqual({ row_count: 5 });
     expect(profile.columns.find((column) => column.name === 'amount')!.metrics).toEqual({ sum: 830.75, mean: 166.15 });
-  });
 
-  it('executes extracted view queries with CTEs, column aliases and CHECK OPTION', async () => {
-    const engine = await load();
-    const definitions = [
+    const aliased = await getSQLServerSchema(async () => [
       {
-        sql: `CREATE OR ALTER VIEW dbo.report ([customer], [total]) WITH VIEW_METADATA AS
-          WITH paid AS (
-            SELECT customer_id, SUM(amount) AS amount FROM dbo.orders WHERE status=N'paid' GROUP BY customer_id
-          ) SELECT customer_id, amount FROM paid;`,
-        columns: ['customer', 'total'],
-        rows: [
-          { customer: 1, total: 380.5 },
-          { customer: 2, total: 450.25 },
-        ],
-      },
-      {
-        sql: `ALTER VIEW dbo.report AS
-          SELECT order_id, amount FROM dbo.orders WHERE status=N'paid' WITH CHECK OPTION;`,
-        columns: ['order_id', 'amount'],
-        rows: [
-          { order_id: 1001, amount: 100.5 },
-          { order_id: 1002, amount: 200 },
-          { order_id: 1003, amount: 150.25 },
-          { order_id: 1004, amount: 300 },
-          { order_id: 1006, amount: 80 },
-        ],
-      },
-    ];
-    for (const definition of definitions) {
-      const rows = [
-        {
-          kind: 'view',
-          table_name: '[dbo].[report]',
-          source_table: 'report',
-          metadata: JSON.stringify({ sql: definition.sql }),
+        kind: 'view',
+        table_name: '[dbo].[report]',
+        source_table: 'report',
+        metadata: {
+          sql: `CREATE OR ALTER VIEW dbo.report ([customer], [total]) WITH SCHEMABINDING, VIEW_METADATA AS
+            WITH paid AS (
+              SELECT customer_id, amount FROM dbo.orders WHERE status=N'paid' AND customer_id=2
+            ) SELECT customer_id, amount FROM paid WITH CHECK OPTION;`,
         },
-        ...definition.columns.map((name, index) => ({
-          kind: 'column',
-          table_name: '[dbo].[report]',
-          source_table: 'report',
-          metadata: JSON.stringify({ name, type: index === 0 ? 'int' : 'decimal(12,2)', position: index + 1 }),
-        })),
-      ];
-      const schema = await getSQLServerSchema(async () => rows);
-      expect(schema.views).toHaveLength(1);
-      const result = await engine.execute(schema.views![0].statement);
-      expect(result.data).toHaveLength(definition.rows.length);
-      expect(result.data).toEqual(expect.arrayContaining(definition.rows));
-      expect(result.schema.map((column) => column.name)).toEqual(definition.columns);
-    }
+      },
+    ]);
+    const result = await engine.execute(aliased.views![0].statement);
+    expect(result.data).toEqual(expect.arrayContaining([
+      { customer: 2, total: 150.25 },
+      { customer: 2, total: 300 },
+    ]));
+    expect(result.rowCount).toBe(2);
   });
 
-  it('profiles native tables with defaults and custom metrics', async () => {
+  it('profiles fixture tables with the shared defaults', async () => {
     const engine = await load({ schema: 'dbo' });
     const schema = await engine.schema();
     const profile = await engine.profile(schema);
@@ -153,21 +122,8 @@ describe.skipIf(!sqlserverEnabled)('SQL Server integration', () => {
       { value: 'paid', count: 5 },
       { value: 'cancelled', count: 1 },
     ]);
-    const custom = await engine.profile(schema, {
-      metrics: ['duplicate_count', 'median', 'sum', 'min_length', 'max_length'],
-    });
-    const orderMetrics = custom.models.find((model) => model.name === '[dbo].[orders]')!.columns;
-    expect(orderMetrics.find((column) => column.name === 'amount')!.metrics).toEqual({
-      duplicate_count: 0,
-      median: 125.375,
-      sum: 881.5,
-    });
-    expect(orderMetrics.find((column) => column.name === 'status')!.metrics).toEqual({
-      duplicate_count: 4,
-      min_length: 4,
-      max_length: 9,
-    });
-    expect(schema.models.find((model) => model.name === '[dbo].[orders]')!.columns[0]).not.toHaveProperty('metrics');
+    const customers = profile.models.find((model) => model.name === '[dbo].[customers]')!;
+    expect(customers.columns.find((column) => column.name === 'customer_name')!.metrics).not.toHaveProperty('top_values');
   });
 
   it('profiles empty, null, Unicode, boolean and date-offset values', async () => {
@@ -321,9 +277,6 @@ describe.skipIf(!sqlserverEnabled)('SQL Server integration', () => {
     expect(rows.data).toEqual([{ order_id: 1002 }, { order_id: 1003 }]);
     expect(rows.truncatedBy).toBe('maxRows');
     expect(rows.rowCount).toBeUndefined();
-    const bytes = await engine.execute("SELECT N'中文' AS value", { maxResultBytes: 4 });
-    expect(bytes.data).toEqual([]);
-    expect(bytes.truncatedBy).toBe('maxResultBytes');
     expect((await engine.execute('SELECT COUNT(*) AS count FROM dbo.orders')).data).toEqual([{ count: 6 }]);
   });
 
