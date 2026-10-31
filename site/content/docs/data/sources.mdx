@@ -478,7 +478,7 @@ await ava.source({
 | `connectionTimeoutMs` | `number` | No | Connection deadline; `10000` ms. |
 | `requestTimeoutMs` | `number` | No | Query deadline; `30000` ms. |
 
-`schema()` discovers readable tables and views, including their columns and physical references. Available view queries are returned in `views`; encrypted or unavailable definitions do not hide the view model. Use `SELECT` and `VIEW DEFINITION` permissions. `profile()` computes the [built-in metrics](/documentation/reference/api/#metrics) remotely with native T-SQL, using the standard default metrics when no list is supplied. See the [SQL Server fixture](https://github.com/antvis/AVA/tree/oss-camp2026/__tests__/datasets/sqlserver) for tested environments, supported queries, and two runnable analysis examples.
+`schema()` discovers readable tables and views, including their columns and physical references. Available view queries are returned in `views`; encrypted or unavailable definitions do not hide the view model. Use `SELECT` and `VIEW DEFINITION` permissions. `profile()` computes the [built-in metrics](/documentation/reference/api/#metrics) remotely with native T-SQL, using the standard default metrics when no list is supplied. See the [SQL Server fixture](https://github.com/antvis/AVA/tree/oss-camp2026/__tests__/datasets/sqlserver) for test setup.
 
 ## Supabase
 

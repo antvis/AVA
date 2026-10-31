@@ -40,7 +40,7 @@ Use `url` or `host`, with a required `database`. `username` takes precedence ove
 
 SQL Server uses native T-SQL through the Node.js `mssql` driver. Use a SQL login with `SELECT` and `VIEW DEFINITION`. TLS certificate verification is enabled by default. Queries use one read-only SELECT/CTE with bounded results. `profile()` computes the shared built-in metrics for applicable field types through native T-SQL aggregates; rows remain in SQL Server. It accepts the standard [profile options](/documentation/reference/api/#profile), including metric selection and `top_values` options.
 
-See [connection parameters](/documentation/data/sources/#sql-server) and the [SQL Server fixture and two analysis examples](https://github.com/antvis/AVA/tree/oss-camp2026/__tests__/datasets/sqlserver).
+See [connection parameters](/documentation/data/sources/#sql-server) and the [SQL Server fixture](https://github.com/antvis/AVA/tree/oss-camp2026/__tests__/datasets/sqlserver).
 
 ## Shared workflow
 
