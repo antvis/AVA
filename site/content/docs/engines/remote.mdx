@@ -38,9 +38,23 @@ Use `url` or `host`, with a required `database`. `username` takes precedence ove
 
 ## SQL Server
 
-SQL Server uses native T-SQL through the Node.js `mssql` driver. Use a SQL login with `SELECT` and `VIEW DEFINITION`. TLS certificate verification is enabled by default. Queries use one read-only SELECT/CTE with bounded results. `profile()` computes the shared built-in metrics for applicable field types through native T-SQL aggregates; rows remain in SQL Server. It accepts the standard [profile options](/documentation/reference/api/#profile), including metric selection and `top_values` options.
+```typescript
+const ava = new AVA({
+  llm: { model: 'YOUR_MODEL', apiKey: process.env.OPENAI_API_KEY },
+  engine: { type: 'sqlserver' },
+});
+await ava.source({
+  type: 'sqlserver',
+  options: {
+    host: 'localhost',
+    database: 'analytics',
+    user: 'reader',
+    password: process.env.SQLSERVER_PASSWORD!,
+  },
+});
+```
 
-See [connection parameters](/documentation/data/sources/#sql-server) and the [SQL Server fixture](https://github.com/antvis/AVA/tree/oss-camp2026/__tests__/datasets/sqlserver).
+Queries use the Node.js `mssql` driver with read-only T-SQL.
 
 ## Shared workflow
 

@@ -7,7 +7,7 @@
 | CSV/JSON/Parquet/Excel files, inline CSV/JSON | DuckDB by default; Python is optional | DuckDB SQL / Python (pandas) |
 | MySQL, PostgreSQL, SQLite, MongoDB | DuckDB by default | DuckDB SQL |
 | ClickHouse | ClickHouse is selected automatically | ClickHouse SQL |
-| SQL Server | SQL Server is selected automatically | Microsoft SQL Server T-SQL |
+| SQL Server | SQL Server is selected automatically | T-SQL |
 | Supabase | Supabase is selected automatically | PostgreSQL SQL |
 | Feishu Bitable | DuckDB only | DuckDB SQL |
 | Inline CSV/JSON/text | JavaScript is optional when explicitly selected | JavaScript |
@@ -71,7 +71,7 @@ Use authorized read-only credentials. Restrict temporary credential files to the
 
 - MySQL, PostgreSQL, SQLite, and MongoDB require the corresponding DuckDB extensions. MongoDB uses the `mongo` community extension. Each collection becomes a table, and its schema is inferred from samples, so rare fields may be missed.
 - ClickHouse connects over HTTP(S) and requires version 23.10 or later.
-- SQL Server uses native T-SQL and SQL authentication. The default port is `1433`; `schema` optionally restricts discovery. Grant `SELECT` and `VIEW DEFINITION` permissions. TLS certificate verification is enabled by default. Use `TOP (n)` or `OFFSET/FETCH` for query row limits.
+- SQL Server uses SQL authentication on port `1433` by default. Grant `SELECT` and `VIEW DEFINITION` permissions. TLS certificate verification is enabled by default.
 - Supabase uses the Management API; `accessToken` must be a token authorized for that API.
 
 ## Feishu Bitable

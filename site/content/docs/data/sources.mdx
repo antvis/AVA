@@ -89,7 +89,7 @@ const schema = await ava.schema();
 
 `source()` returns no value and prepares the data for execution. Schema discovery is deferred until `schema()` or another operation needs it. Calling `source()` again replaces the current source and clears its cached metadata. Use `schema()` to inspect table and field names, and call `await ava.dispose()` when finished.
 
-The examples use Node.js. Supabase and ClickHouse include their required constructor settings alongside the source call. For frontend applications, see [browser usage](/documentation/browser/).
+The examples use Node.js. Supabase, ClickHouse, and SQL Server include their required constructor settings alongside the source call. For frontend applications, see [browser usage](/documentation/browser/).
 
 ## CSV
 
@@ -447,7 +447,7 @@ Both `/base/` and wiki-hosted `/wiki/` links are supported. Wiki links require w
 
 ## SQL Server
 
-Use the `sqlserver` source and engine in Node.js. The CLI selects this engine automatically for `ava source @sqlserver.json`.
+Provide a server hostname and database. Use SQL authentication.
 
 ```typescript
 const ava = new AVA({
@@ -457,9 +457,9 @@ const ava = new AVA({
 await ava.source({
   type: 'sqlserver',
   options: {
-    host: 'sql.example.com',
+    host: 'localhost',
     database: 'analytics',
-    user: 'ava_reader',
+    user: 'reader',
     password: process.env.SQLSERVER_PASSWORD!,
   },
 });
@@ -468,7 +468,7 @@ await ava.source({
 | Field | Type | Required | Meaning / default |
 | --- | --- | --- | --- |
 | `host` | `string` | Yes | SQL Server hostname or IP address. |
-| `port` | `number` | No | TCP port; `1433`, integer between 1 and 65535. |
+| `port` | `number` | No | Default: `1433`. |
 | `database` | `string` | Yes | Database to analyze. |
 | `user` | `string` | Yes | SQL-authentication login. |
 | `password` | `string` | Yes | Login password. |
@@ -478,7 +478,7 @@ await ava.source({
 | `connectionTimeoutMs` | `number` | No | Connection deadline; `10000` ms. |
 | `requestTimeoutMs` | `number` | No | Query deadline; `30000` ms. |
 
-`schema()` discovers readable tables and views, including their columns and physical references. Available view queries are returned in `views`; encrypted or unavailable definitions do not hide the view model. Use `SELECT` and `VIEW DEFINITION` permissions. `profile()` computes the [built-in metrics](/documentation/reference/api/#metrics) remotely with native T-SQL, using the standard default metrics when no list is supplied. See the [SQL Server fixture](https://github.com/antvis/AVA/tree/oss-camp2026/__tests__/datasets/sqlserver) for test setup.
+Grant `SELECT` and `VIEW DEFINITION` permissions to the SQL login.
 
 ## Supabase
 
