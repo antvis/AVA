@@ -20,12 +20,12 @@ view exposes the five paid orders for view discovery, querying, and profiling te
 For a remote host, forward port 11433 with `ssh -N -L 11433:127.0.0.1:11433 <host>`.
 Override connections through `AVA_SQLSERVER_TEST_HOST`, `AVA_SQLSERVER_TEST_PORT`,
 `AVA_SQLSERVER_TEST_DATABASE`, `AVA_SQLSERVER_TEST_USER`, and `AVA_SQLSERVER_TEST_PASSWORD`.
-Without `AVA_SQLSERVER_TEST=1`, live tests are skipped. Model tests additionally require
-`OPENAI_API_KEY`, `OPENAI_MODEL`, and optionally `OPENAI_BASE_URL` in the environment or `.env`.
+Without `AVA_SQLSERVER_TEST=1`, live tests are skipped. Tests do not require a model API key.
 
 ## Natural-language examples
 
-Use the fixture with the Node.js SDK:
+Set `OPENAI_API_KEY`, `OPENAI_MODEL`, and optionally `OPENAI_BASE_URL` in the environment
+for these manual examples. Use the fixture with the Node.js SDK:
 
 ```typescript
 import { AVA } from '@antv/ava';
@@ -83,8 +83,7 @@ ava dispose <dataset-id>
 ```
 
 The tests cover connection cleanup, schema/keys, profiling, single read-only T-SQL,
-result limits, query errors/timeouts, and the actual SDK/CLI workflows. Both analysis examples compare
-real query results with the expected values above. Supported connections use SQL
+result limits, query errors/timeouts, and the actual CLI session workflow. Supported connections use SQL
 authentication. `profile()` supports the shared built-in metrics for applicable field
 types, using native T-SQL on the server. Omitting `metrics` uses the standard defaults;
 a supplied list replaces them, and `top_values` accepts `limit` and `maxDistinctRatio`.
@@ -100,5 +99,5 @@ To reset this disposable fixture, use `down -v`, then repeat startup and initial
 ## AI usage
 
 AI assisted with implementation, test cases and documentation. Verification uses executed
-unit tests and real SQL Server SDK/CLI queries; model-generated results are checked against
-fixed expectations. Tested with Node.js 24.1, SQL Server 2022 CU27-GDR1 and DeepSeek Flash.
+unit tests and real SQL Server queries through the engine and CLI.
+Tested with Node.js 24.1 and SQL Server 2022 CU27-GDR1.
