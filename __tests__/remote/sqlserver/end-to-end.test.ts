@@ -1,5 +1,4 @@
 import { execFile } from 'child_process';
-import { existsSync } from 'fs';
 import { mkdtemp, rm, writeFile } from 'fs/promises';
 import { tmpdir } from 'os';
 import { join, resolve } from 'path';
@@ -23,9 +22,9 @@ describe.skipIf(!sqlserverEnabled)('SQL Server actual CLI sessions', () => {
   const directories: string[] = [];
   const datasets = new Set<string>();
 
-  beforeAll(() => {
-    expect(existsSync(cliPath), 'Run npm run build before enabling SQL Server CLI integration tests').toBe(true);
-  });
+  beforeAll(async () => {
+    await execute('npm', ['run', 'build:cjs']);
+  }, 30000);
 
   afterEach(async () => {
     for (const dataset of datasets) {

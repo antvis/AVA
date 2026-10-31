@@ -59,11 +59,8 @@ describe.skipIf(!sqlserverEnabled)('SQL Server integration', () => {
       .toEqual({ data: [], schema: [{ name: 'amount', type: 'decimal' }], rowCount: 0 });
   });
 
-  it('discovers, queries and profiles readable views from the updated fixture', async (context) => {
+  it('discovers, queries and profiles readable views', async () => {
     const engine = await load({ schema: 'dbo' });
-    const catalog = await engine.execute("SELECT OBJECT_ID(N'dbo.paid_orders', N'V') AS id");
-    if (catalog.data[0].id == null)
-      context.skip('Run the updated SQL Server fixture initialization to create dbo.paid_orders');
     const schema = await engine.schema();
     const view = schema.models.find((model) => model.name === '[dbo].[paid_orders]')!;
     expect(view.tableReference).toEqual({ catalog: sqlserverOptions().database, schema: 'dbo', table: 'paid_orders' });

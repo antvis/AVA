@@ -2,6 +2,7 @@ name: ava-sqlserver-tests
 services:
   sqlserver:
     image: mcr.microsoft.com/mssql/server:2022-CU27-GDR1-ubuntu-22.04
+    platform: linux/amd64
     environment:
       ACCEPT_EULA: 'Y'
       MSSQL_PID: Developer
@@ -13,7 +14,7 @@ services:
     cpus: 2
     volumes:
       - sqlserver-data:/var/opt/mssql
-      - ./init.sql:/tmp/ava-init.sql:ro
+      - ./init.sql:/mssql-server-setup-scripts.d/01-fixture.sql:ro
     logging:
       driver: json-file
       options:
@@ -22,7 +23,7 @@ services:
     healthcheck:
       test:
         - CMD-SHELL
-        - 'SQLCMDPASSWORD="$$MSSQL_SA_PASSWORD" /opt/mssql-tools18/bin/sqlcmd -S localhost -U sa -C -b -Q "SELECT 1" -o /dev/null'
+        - 'SQLCMDPASSWORD=Sql_fixture_2026! /opt/mssql-tools18/bin/sqlcmd -S localhost -U ava_reader -d ava_sqlserver_test -C -b -Q "SELECT COUNT(*) FROM dbo.orders; SELECT COUNT(*) FROM dbo.paid_orders" -o /dev/null'
       interval: 5s
       timeout: 5s
       retries: 30

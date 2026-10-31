@@ -1,3 +1,5 @@
+:ON ERROR EXIT
+
 -- Disposable test fixtures only. These passwords are not deployment credentials.
 IF DB_ID(N'ava_sqlserver_test') IS NULL CREATE DATABASE ava_sqlserver_test;
 GO
@@ -42,7 +44,7 @@ GO
 USE master;
 GO
 IF NOT EXISTS (SELECT 1 FROM sys.server_principals WHERE name=N'ava_reader')
-  CREATE LOGIN ava_reader WITH PASSWORD=N'Ava_reader_test_2026!', CHECK_POLICY=ON, DEFAULT_DATABASE=ava_sqlserver_test;
+  CREATE LOGIN ava_reader WITH PASSWORD=N'Sql_fixture_2026!', CHECK_POLICY=ON, DEFAULT_DATABASE=ava_sqlserver_test;
 GO
 USE ava_sqlserver_test;
 GO
