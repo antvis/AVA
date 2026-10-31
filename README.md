@@ -202,6 +202,8 @@ await ava.source({ type: 'excel', options: { path: './sales.xlsx' } });
 
 See the [data source guide](https://ava.antv.vision/documentation/data/sources/) for connection settings and engine support.
 
+[SQL Server](https://ava.antv.vision/documentation/data/sources/#sql-server) supports remote T-SQL analysis; see the [test setup and examples](__tests__/datasets/sqlserver/README.md).
+
 For browser applications, use `@antv/ava/browser` with inline data. See [runtime configuration](https://ava.antv.vision/documentation/browser/).
 
 ## 🧩 More ways to use AVA

@@ -29,7 +29,7 @@ String model names use OpenAI-compatible **Chat Completions** by default. A supp
 
 ### Engine options
 
-`config.engine.type` is required when `engine` is supplied. Supported values are `duckdb`, `python`, `javascript`, `supabase`, and `clickhouse`, plus names registered through `registerEngine()`. Omitting `engine` selects DuckDB. JavaScript, Supabase, and ClickHouse accept no additional engine fields; connection credentials belong to `source()`.
+`config.engine.type` is required when `engine` is supplied. Supported values are `duckdb`, `python`, `javascript`, `supabase`, `clickhouse`, and `sqlserver`, plus names registered through `registerEngine()`. Omitting `engine` selects DuckDB. JavaScript, Supabase, ClickHouse, and SQL Server accept no additional engine fields; connection credentials belong to `source()`; see [SQL Server parameters](/documentation/data/sources/#sql-server).
 
 #### DuckDB
 

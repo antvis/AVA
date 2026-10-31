@@ -1,0 +1,31 @@
+name: ava-sqlserver-tests
+services:
+  sqlserver:
+    image: mcr.microsoft.com/mssql/server:2022-CU27-GDR1-ubuntu-22.04
+    environment:
+      ACCEPT_EULA: 'Y'
+      MSSQL_PID: Developer
+      MSSQL_SA_PASSWORD: Ava_admin_test_2026!
+      MSSQL_MEMORY_LIMIT_MB: '3072'
+    ports:
+      - '127.0.0.1:${AVA_SQLSERVER_TEST_PORT:-11433}:1433'
+    mem_limit: 4g
+    cpus: 2
+    volumes:
+      - sqlserver-data:/var/opt/mssql
+      - ./init.sql:/tmp/ava-init.sql:ro
+    logging:
+      driver: json-file
+      options:
+        max-size: 10m
+        max-file: '3'
+    healthcheck:
+      test:
+        - CMD-SHELL
+        - 'SQLCMDPASSWORD="$$MSSQL_SA_PASSWORD" /opt/mssql-tools18/bin/sqlcmd -S localhost -U sa -C -b -Q "SELECT 1" -o /dev/null'
+      interval: 5s
+      timeout: 5s
+      retries: 30
+      start_period: 30s
+volumes:
+  sqlserver-data:

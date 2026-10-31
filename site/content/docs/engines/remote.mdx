@@ -36,8 +36,14 @@ await ava.source({
 
 Use `url` or `host`, with a required `database`. `username` takes precedence over the `user` alias. Queries use the official ClickHouse client with read-only settings.
 
+## SQL Server
+
+SQL Server uses native T-SQL through the Node.js `mssql` driver. Use a SQL login with `SELECT` and `VIEW DEFINITION`. TLS certificate verification is enabled by default. Queries use one read-only SELECT/CTE with bounded results. `profile()` computes the shared built-in metrics for applicable field types through native T-SQL aggregates; rows remain in SQL Server. It accepts the standard [profile options](/documentation/reference/api/#profile), including metric selection and `top_values` options.
+
+See [connection parameters](/documentation/data/sources/#sql-server) and the [SQL Server fixture and two analysis examples](https://github.com/antvis/AVA/tree/oss-camp2026/__tests__/datasets/sqlserver).
+
 ## Shared workflow
 
-Both engines support `schema()`, `profile()`, `translate()`, `query()`, and `analyze()`. Set the matching source and engine types in the JavaScript API. Release resources with `await ava.dispose()` after use.
+All remote engines support `schema()`, `profile()`, `translate()`, `query()`, and `analyze()`. Set the matching source and engine types in the JavaScript API. Release resources with `await ava.dispose()` after use.
 
-See [Supabase parameters](/documentation/data/sources/#supabase) and [ClickHouse options](/documentation/data/sources/#clickhouse) for complete configuration tables.
+See [Supabase parameters](/documentation/data/sources/#supabase), [ClickHouse options](/documentation/data/sources/#clickhouse), and [SQL Server parameters](/documentation/data/sources/#sql-server) for complete configuration tables.

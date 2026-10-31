@@ -7,6 +7,7 @@
 | CSV/JSON/Parquet/Excel files, inline CSV/JSON | DuckDB by default; Python is optional | DuckDB SQL / Python (pandas) |
 | MySQL, PostgreSQL, SQLite, MongoDB | DuckDB by default | DuckDB SQL |
 | ClickHouse | ClickHouse is selected automatically | ClickHouse SQL |
+| SQL Server | SQL Server is selected automatically | Microsoft SQL Server T-SQL |
 | Supabase | Supabase is selected automatically | PostgreSQL SQL |
 | Feishu Bitable | DuckDB only | DuckDB SQL |
 | Inline CSV/JSON/text | JavaScript is optional when explicitly selected | JavaScript |
@@ -63,12 +64,14 @@ Use the configuration format and load command shown above:
 | `postgresql` | `{"host":"localhost","database":"sales","user":"reader","password":"REPLACE","schema":"public"}` |
 | `mongodb` | `{"connection":"mongodb://localhost:27017","database":"sales"}` |
 | `clickhouse` | `{"url":"http://localhost:8123","database":"sales","username":"reader","password":"REPLACE"}` |
+| `sqlserver` | `{"host":"localhost","database":"sales","user":"reader","password":"REPLACE","schema":"dbo"}` |
 | `supabase` | `{"accessToken":"REPLACE","projectRef":"REPLACE"}` |
 
 Use authorized read-only credentials. Restrict temporary credential files to the current user and delete them after loading. Do not put credentials in deliverables or logs.
 
 - MySQL, PostgreSQL, SQLite, and MongoDB require the corresponding DuckDB extensions. MongoDB uses the `mongo` community extension. Each collection becomes a table, and its schema is inferred from samples, so rare fields may be missed.
 - ClickHouse connects over HTTP(S) and requires version 23.10 or later.
+- SQL Server uses native T-SQL and SQL authentication. The default port is `1433`; `schema` optionally restricts discovery. Grant `SELECT` and `VIEW DEFINITION` permissions. TLS certificate verification is enabled by default. Use `TOP (n)` or `OFFSET/FETCH` for query row limits.
 - Supabase uses the Management API; `accessToken` must be a token authorized for that API.
 
 ## Feishu Bitable

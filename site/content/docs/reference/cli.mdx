@@ -16,7 +16,7 @@ Structured source loading, schema, profile, query, and `viz` do not need a model
 
 `ava source` accepts a file or URL, `@file` containing a source configuration, or `-` for standard input. File extensions infer CSV, JSON, Parquet, Excel, and SQLite sources. Override with `--type` for path inputs; configuration files and stdin already include their type.
 
-Use `--engine` to select an execution engine. The CLI infers Supabase and ClickHouse for matching source configurations; otherwise it defaults to DuckDB. This inference differs from the JavaScript constructor. The engine is fixed for the session. See [source configurations](/documentation/data/sources/) for connection and reader settings.
+Use `--engine` to select an execution engine. The CLI infers Supabase, ClickHouse, and SQL Server for matching source configurations; otherwise it defaults to DuckDB. This inference differs from the JavaScript constructor. The engine is fixed for the session. See [source configurations](/documentation/data/sources/) for connection and reader settings.
 
 ## Reuse saved metadata
 
@@ -68,7 +68,7 @@ All commands accept `-h` / `--help` (boolean; optional). Every positional argume
 
 | Command     | Positional inputs                      | Flags and defaults                                                                                                                                                                                    |
 | ----------- | -------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `source`    | `dataset`: path, URL, `@file`, or `-`  | `-t` / `--type`: `csv-file`, `json-file`, `parquet`, `excel`, `sqlite`; inferred from extension. `--engine`: `duckdb`, `python`, `javascript`, `supabase`, `clickhouse`; inferred as described above. |
+| `source`    | `dataset`: path, URL, `@file`, or `-`  | `-t` / `--type`: `csv-file`, `json-file`, `parquet`, `excel`, `sqlite`; inferred from extension. `--engine`: `duckdb`, `python`, `javascript`, `supabase`, `clickhouse`, `sqlserver`; inferred as described above. |
 | `schema` | `dataset-id` | Optional `--file`: path to an existing schema JSON file. |
 | `profile` | `dataset-id` | Optional `--file`: path to an existing profile JSON file. Otherwise, `--metrics` selects comma-separated metric names; defaults to the [standard metric set](/documentation/reference/api/#profile). An empty string computes no statistics. |
 | `suggest`   | `dataset-id`                           | `--count`: integer `1`–`100`; default `3`.                                                                                                                                                            |

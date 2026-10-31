@@ -78,6 +78,7 @@ export type EngineConfig =
   | { type: 'javascript' }
   | { type: 'supabase' }
   | { type: 'clickhouse' }
+  | { type: 'sqlserver' }
   | { type: string; [option: string]: unknown };
 
 /**
@@ -120,6 +121,7 @@ export type SourceType =
   | 'mongodb'
   | 'supabase'
   | 'clickhouse'
+  | 'sqlserver'
   | 'feishu-bitable';
 
 /**
@@ -493,6 +495,25 @@ export interface FeishuBitableSourceOptions {
   appSecret?:string;
 }
 
+/** Microsoft SQL Server, queried remotely through a dedicated connection pool. */
+export interface SQLServerSourceOptions {
+  host: string;
+  port?: number;
+  database: string;
+  user: string;
+  password: string;
+  /** Restrict schema discovery to this schema; otherwise discover all accessible user tables and views. */
+  schema?: string;
+  /** Encrypt the connection. Defaults to true. */
+  encrypt?: boolean;
+  /** Trust a self-signed server certificate. Defaults to false; intended for isolated tests. */
+  trustServerCertificate?: boolean;
+  /** Connection deadline in milliseconds. Defaults to 10000. */
+  connectionTimeoutMs?: number;
+  /** Query deadline in milliseconds. Defaults to 30000. */
+  requestTimeoutMs?: number;
+}
+
 /**
  * External data source configuration for loadSource.
  * - inline types (csv/json/text): data is materialized into JS memory
@@ -515,6 +536,7 @@ export type DataSourceConfig =
   | { type: 'mongodb'; options: MongoDBSourceOptions }
   | { type: 'supabase'; options: SupabaseSourceOptions }
   | { type: 'clickhouse'; options: ClickHouseSourceOptions }
+  | { type: 'sqlserver'; options: SQLServerSourceOptions }
   | { type: 'feishu-bitable'; options: FeishuBitableSourceOptions };
 
 /**
