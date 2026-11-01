@@ -1,6 +1,8 @@
-## Listen to events
+Events report what AVA is doing while an operation runs. You can use them to show progress, inspect generated queries, or diagnose failures. The operation’s return value contains its final result.
 
-AVA emits events while loading data, analyzing questions, and performing other operations. Subscribe by event name, or use `'*'` for every event:
+## Subscribe to events
+
+Register a listener before starting the operation. Subscribe to a specific event by name, or use `'*'` to listen to all events:
 
 ```typescript
 import { AVA } from '@antv/ava';
@@ -17,68 +19,62 @@ try {
 }
 ```
 
-Each event has a lowercase `type` and a `data` object. For example, `sourcestart` has `data: { type: 'json' }`. Event classes and constants are not exported by the public package; use the names below as strings.
+Use the same listener reference to unsubscribe. Event classes and constants are not exported by the public package, so use the event names listed on this page as strings.
 
-Most operations emit a start and an end event. A failed operation emits an end event with `data.error: { message, name? }` and rejects its Promise. Check for `error` before treating an end event as a success. A precondition failure, such as a missing source, can occur before the start event.
+## Read an event
 
-## Lifecycle events
+Every AVA event has a lowercase `type` and a `data` object. For example, the `sourcestart` event above contains `{ type: 'json' }` in `data`. Analysis events emitted within `analyze()` also carry `context`, which identifies their step and pairs related start and end events.
 
-These events mark AVA operations. Successful end events have empty data (`{}`).
+An operation usually emits a start event and then an end event. A failed end event carries `data.error` with a `message` and, for an `Error`, a `name`. Some failures are recoverable: a query can fail and be retried, so `queryend` may report an error even if `analyze()` eventually succeeds. An unrecovered failure rejects the operation. A precondition failure, such as calling `analyze()` before loading a source, can occur before its start event.
 
-| Operation | Start event | Start data | End event |
-| --- | --- | --- | --- |
-| Create or dispose an engine | `createstart` / `disposestart` | `{}` | `createend` / `disposeend` |
-| Load a source | `sourcestart` | `{ type }` | `sourceend` |
-| Discover or set schema | `schemastart` | `{}` | `schemaend` |
-| Compute or set profile | `profilestart` | `{}` | `profileend` |
-| Set semantic definitions | `semanticstart` | `{}` | `semanticend` |
-| Analyze a question | `analyzestart` | `{ query }` | `analyzeend` |
-| Visualize a result | `visualizestart` | `{ query }` | `visualizeend` |
-| Suggest questions | `suggeststart` | `{}` | `suggestend` |
+## Event reference
 
-Cached schema reads and semantic reads do not emit events. `recommend()` and `viz()` do not emit their own events.
+### Lifecycle events
 
-## Analysis events
+These events describe AVA operations. On success, end-event `data` is `{}`; the method returns the result separately.
 
-These events describe steps within analysis. Direct calls to `translate()` and `query()` emit the same translation and query events.
-
-| Step | Start event and data | End event and successful data |
+| Operation | Start event and data | End event |
 | --- | --- | --- |
-| Translate a question | `translatestart`: `{ query }`; direct analysis also includes `attempt` | `translateend`: `{ dsl, usage? }` |
-| Execute a query | `querystart`: `{ dsl }` | `queryend`: `ExecutionResult` |
-| Summarize results | `summarizestart`: `{ queryId }` | `summarizeend`: `{ queryExplanation, conclusion, limitations?, nextStep?, usage? }` |
-| Direct analysis step | `stepstart`: `{ step: 0 }` | `stepend`: `{ step: 0, action: 'SQL', text }` |
-| Loop iteration | `stepstart`: `{ step, finalAttempt? }` | `stepend`: `{ step, action, text, usage?, finalAttempt? }` |
+| Create an engine | `createstart`: `{}` | `createend` |
+| Dispose an engine | `disposestart`: `{}` | `disposeend` |
+| Load a source | `sourcestart`: `{ type }` | `sourceend` |
+| Discover or set schema | `schemastart`: `{}` | `schemaend` |
+| Compute or set profile | `profilestart`: `{}` | `profileend` |
+| Set semantic definitions | `semanticstart`: `{}` | `semanticend` |
+| Analyze a question | `analyzestart`: `{ query }` | `analyzeend` |
+| Visualize a result | `visualizestart`: `{ query }` | `visualizeend` |
+| Suggest questions | `suggeststart`: `{}` | `suggestend` |
 
-Failed end events carry `{ error }`. A step failure also carries `step`; the loop's final fallback includes `finalAttempt: true` on both step events. `step` is zero-based. See [analysis strategies](/documentation/analysis/strategies/) for these steps.
+Loading a source can also emit engine disposal and creation events. Cached schema reads and semantic reads emit no events; schema discovery performed internally by other methods does not emit `schema` events. `recommend()` and `viz()` do not have their own events.
 
-In direct analysis, one step wraps translation, all query retries, and optional summarization. `stepend` reports `action: 'SQL'` and the summary conclusion as `text`, or an empty string when summary is disabled. A recovered query error stays on `queryend`; exhausting retries or a translation/summary failure also produces `stepend.error`.
+### Analysis events
 
-In loop analysis, `stepstart` fires before the model call. `stepend` fires after the whole iteration, including all its queries, and reports the model's `action` (`EXPLORE`, `REFINE`, `SQL`, or `CONFIRM`), `text`, and `usage` when the model returned it. If response parsing or execution subsequently fails, `stepend` retains the reported `usage`; a model call that fails without returning usage cannot report it. The `text` excludes the leading protocol tag; the action is available separately in `action`. Iterations without queries still emit both step events. A recoverable query failure appears on `queryend`; the iteration can finish normally so the next step can correct it. A failure that stops the analysis appears on `stepend.error`, where `action` and `text` may be absent.
+These events describe analysis steps and the statements they produce or execute. The table shows successful end-event data; on failure, the end event carries `error` instead. A failed step also carries `step` and, when applicable, `finalAttempt`. A question is natural language; `dsl` is an executable statement, such as SQL or Python code.
 
-For example, an exploration step followed by a refinement step emits:
+| Operation | Start event and data | Successful end event and data |
+| --- | --- | --- |
+| Analysis step | `stepstart`: `{ step, finalAttempt? }` | `stepend`: `{ step, action, text, usage?, finalAttempt? }` |
+| Translate a question | `translatestart`: `{ query, attempt? }` | `translateend`: `{ dsl, usage? }` |
+| Execute a statement | `querystart`: `{ dsl }` | `queryend`: `{ data, schema, rowCount?, truncated?, truncatedBy? }` |
+| Summarize a result | `summarizestart`: `{ queryId }` | `summarizeend`: `{ queryExplanation, conclusion, limitations?, nextStep?, usage? }` |
 
-```text
-stepstart → querystart → queryend → stepend (action: EXPLORE)
-stepstart → stepend (action: REFINE)
-```
+`?` marks an optional field. In `queryend`, `data` contains the returned rows and `schema` describes their columns; truncation fields indicate when a result limit was reached. See [query results](/documentation/reference/api/#executionresult) for the full result structure.
 
-For example, a successful direct `analyze()` typically emits:
+`step` and `attempt` are zero-based. `attempt` is present on translation starts within analysis. `finalAttempt` marks an additional step after the normal step limit. Step actions are `EXPLORE` (inspect data), `REFINE` (revise the plan), `SQL` (execute an answer statement), and `CONFIRM` (verify the answer). The `text` field does not include the leading action tag.
 
-```text
-analyzestart → stepstart → translatestart → translateend → querystart → queryend
-             → summarizestart → summarizeend → stepend → analyzeend
-```
+Where present, `usage` describes token usage for the model call. A step can retain usage when parsing or execution fails after the model has returned. Token fields depend on the provider, and a failed call that returns no usage cannot be counted from the events. AVA does not emit an aggregate usage event. `queryend` describes execution and carries no model usage.
 
-Retries can repeat translation and query events. The summary is omitted when `includeSummary` is `false`.
+### Event context
 
-Direct and loop analysis events include `context.eventId` and `context.stepId`. Each start/end pair shares an internal `pairId`, producing event IDs `${pairId}:start` and `${pairId}:end`; each operation and retry gets a new pair ID.
+Analysis events emitted within `analyze()` include a `context` object:
 
-In direct analysis, `stepId` groups events from the same analysis and `parentStepIds` is empty. The summary's `data.queryId` references the successful query-end event's complete ID, including `:end`.
+| Field | Meaning |
+| --- | --- |
+| `eventId` | Unique event ID. A start/end pair shares an ID prefix and uses `:start` and `:end` suffixes. |
+| `stepId` | ID of the step containing the event. |
+| `parentStepIds` | IDs of steps that this step depends on. |
 
-In loop analysis, each iteration has its own `stepId`, shared by its step and query events. `context.parentStepIds` is empty for the first iteration and contains the previous iteration's ID for later iterations. The final fallback gets a new step ID and follows the same rule.
-
-In both strategies, step events use `${stepId}:start` and `${stepId}:end` as their event IDs; each operation inside a step uses its own pair ID. Standalone `translate()` / `query()` calls do not currently include this context or emit step events.
+Step event IDs use `stepId` as their prefix; operations within a step have separate pair IDs. Each retry gets a new pair. `summarizestart.data.queryId` references the successful `queryend.context.eventId`, including `:end`. Standalone `translate()` and `query()` emit their respective events without analysis `context` or step events.
 
 ## Listener parameters
 
@@ -90,4 +86,4 @@ In both strategies, step events use `${stepId}:start` and `${stepId}:end` as the
 | `emit(name, ...args)` | Emit an event manually. |
 | `getEvents()` | Return the listener registry. |
 
-These methods are synchronous; `on`, `once`, and `off` return the emitter. Synchronous listener errors propagate, and asynchronous listeners are not awaited. Event data is not copied; use `structuredClone(event)` if you need a snapshot.
+Event dispatch is synchronous: `on`, `once`, and `off` return the emitter, synchronous listener errors propagate, and async listeners are not awaited. Event data is not copied; use `structuredClone(event)` if you need a snapshot.
