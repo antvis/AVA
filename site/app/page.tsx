@@ -124,11 +124,35 @@ export default function Home() {
               <div className={styles.sourceGrid}>
                 {SOURCES.map(([label, logo, detail]) => (
                   <Link key={label} href={`/documentation/data/sources/#${logo}`}>
-                    <img src={`/logos/${logo}.svg`} alt="" width="26" height="26" loading="lazy" />
+                    <span className={styles.sourceIcon}>
+                      <img src={`/logos/${logo}.svg`} alt="" width="32" height="32" loading="lazy" />
+                    </span>
                     <span>{label}</span>
                     {['csv', 'json'].includes(logo) && <small>{detail}</small>}
                   </Link>
                 ))}
+              </div>
+              <div className={styles.sourceHub} aria-hidden="true">
+                <span />
+                <div>
+                  <svg
+                    width="16"
+                    height="16"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="1.5"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  >
+                    <path d="M5 5v5a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V5M12 12v7" />
+                    <circle cx="5" cy="4" r="2" />
+                    <circle cx="19" cy="4" r="2" />
+                    <circle cx="12" cy="21" r="2" />
+                  </svg>
+                  AVA
+                </div>
+                <span />
               </div>
             </div>
           </div>

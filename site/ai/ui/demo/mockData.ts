@@ -6,21 +6,21 @@ import { MONTHLY_SALES } from '../constants';
 /** One result set for the chart and its inspectable data table. */
 export const ARTIFACT_DATA = MONTHLY_SALES.map(({ month, revenue, gross_profit }) => ({
   month: new Date(month).toLocaleString('en-US', { month: 'short', timeZone: 'UTC' }),
-  revenueK: revenue / 1000,
-  grossProfitK: gross_profit / 1000,
-  marginPct: Number(((100 * gross_profit) / revenue).toFixed(1)),
+  revenue_k: revenue / 1000,
+  gross_profit_k: gross_profit / 1000,
+  margin_pct: Number(((100 * gross_profit) / revenue).toFixed(1)),
 }));
 
 export const CHART_CONFIG = {
   type: 'dual-axes',
   categories: ARTIFACT_DATA.map((row) => row.month),
   series: [
-    { type: 'column', axisYTitle: 'Revenue ($k)', data: ARTIFACT_DATA.map((row) => row.revenueK) },
-    { type: 'line', axisYTitle: 'Gross margin (%)', data: ARTIFACT_DATA.map((row) => row.marginPct) },
+    { type: 'column', axisYTitle: 'Revenue ($k)', data: ARTIFACT_DATA.map((row) => row.revenue_k) },
+    { type: 'line', axisYTitle: 'Gross margin (%)', data: ARTIFACT_DATA.map((row) => row.margin_pct) },
   ],
   axisXTitle: '2026',
   theme: 'default',
-  style: { palette: ['#0891b2', '#e88245'], backgroundColor: '#ffffff', startAtZero: true },
+  style: { palette: ['#7ce2ff', '#e5ad7d'], backgroundColor: '#ffffff', startAtZero: true },
 } satisfies DualAxesConfig;
 
 /** DuckDB file sources are registered as the `data` view. */
@@ -120,6 +120,14 @@ export const PRESET_MESSAGES: Message[] = [
       id: 'demo-growth-quality',
       title: 'growth-quality.html',
       description: 'Revenue & gross margin · Jan–Sep 2026 · Dual Axes',
+      report: {
+        question: QUESTION,
+        answer: 'Revenue more than doubled, while gross margin slipped from 30% to 27%. July was weakest at 19%.',
+        insight:
+          'July’s revenue rose 13.3% from June, while gross profit fell 2.1%. Review discounts, product mix and unit costs.',
+        limitations:
+          'Gross margin excludes operating expenses. Monthly totals cannot explain whether discounts, product mix or costs caused the change.',
+      },
       config: CHART_CONFIG,
       code: ARTIFACT_SQL,
       data: ARTIFACT_DATA,
