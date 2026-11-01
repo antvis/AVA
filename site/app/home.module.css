@@ -199,7 +199,19 @@
   height: var(--demo-height);
 }
 .demo section[aria-label='Artifact panel'] [role='img'] {
-  height: clamp(200px, calc(var(--demo-height) - 470px), 300px);
+  height: clamp(220px, calc(var(--demo-height) - 470px), 300px);
+  padding: 8px 4px;
+  border: 1px solid #dceef5;
+  border-radius: 20px;
+  isolation: isolate;
+  background: radial-gradient(ellipse at 90% 0%, #bceef566, transparent 65%),
+    radial-gradient(ellipse at 0% 100%, #ffdfce33, transparent 60%),
+    linear-gradient(145deg, #eaf9ff, #f7fcff 58%, #fff6ef);
+  box-shadow: inset 0 1px 0 #fff, 0 9px 24px -18px #4a8fa84d;
+}
+/* Blend the canvas's white surface into the chart card. */
+.demo section[aria-label='Artifact panel'] [role='img'] canvas {
+  mix-blend-mode: multiply;
 }
 .features {
   max-width: 1240px;
