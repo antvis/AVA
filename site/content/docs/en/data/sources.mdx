@@ -54,6 +54,11 @@
     <strong>ClickHouse</strong>
     <span>Analytics database</span>
   </a>
+  <a href="#snowflake">
+    <img src="/logos/snowflake.svg" alt="" width="28" height="28" />
+    <strong>Snowflake</strong>
+    <span>Cloud data warehouse</span>
+  </a>
   <a href="/documentation/engines/custom/">
     <img src="/logos/contribute.svg" alt="" width="28" height="28" />
     <strong>Custom extension</strong>
@@ -84,12 +89,12 @@ const schema = await ava.schema();
 
 | Parameter | Type                   | Required | Meaning                                                                                                                                      |
 | --------- | ---------------------- | -------- | -------------------------------------------------------------------------------------------------------------------------------------------- |
-| `type`    | `SourceType`           | Yes      | `csv`, `csv-file`, `json`, `json-file`, `parquet`, `excel`, `text`, `sqlite`, `mysql`, `postgresql`, `mongodb`, `supabase`, `clickhouse`, `sqlserver`, or `feishu-bitable`. |
+| `type`    | `SourceType`           | Yes      | `csv`, `csv-file`, `json`, `json-file`, `parquet`, `excel`, `text`, `sqlite`, `mysql`, `postgresql`, `mongodb`, `supabase`, `clickhouse`, `sqlserver`, `snowflake`, or `feishu-bitable`. |
 | `options` | Source-specific object | Yes      | Use the matching table below. Field names are relative to `options`.                                                                         |
 
 `source()` returns no value and prepares the data for execution. Schema discovery is deferred until `schema()` or another operation needs it. Calling `source()` again replaces the current source and clears its cached metadata. Use `schema()` to inspect table and field names, and call `await ava.dispose()` when finished.
 
-The examples use Node.js. Supabase, ClickHouse, and SQL Server include their required constructor settings alongside the source call. For frontend applications, see [browser usage](/documentation/browser/).
+The examples use Node.js. Supabase, ClickHouse, SQL Server, and Snowflake include their required constructor settings alongside the source call. For frontend applications, see [browser usage](/documentation/browser/).
 
 ## CSV
 
@@ -590,6 +595,76 @@ All forwarded fields are optional. Server settings are an extensible, server-ver
 | `json.stringify`                           | `<T>(input: T) => string`                        | Optional; serializes a value.                                               |
 
 Zstd compression requires Node.js 22.15 or newer in this client. Response compression may conflict with the engine's enforced read-only server settings; leave it disabled unless the server permits it.
+
+## Snowflake
+
+Queries run in Snowflake through the official Node.js driver ([snowflake-sdk](https://docs.snowflake.com/en/developer-guide/node-js/nodejs-driver)): the warehouse does the computation and the connecting role decides which tables and views AVA can see. Data is not copied into AVA.
+
+```typescript
+const ava = new AVA({
+  llm: { model: 'YOUR_MODEL', apiKey: process.env.OPENAI_API_KEY },
+  engine: { type: 'snowflake' },
+});
+await ava.source({
+  type: 'snowflake',
+  options: {
+    account: 'myorg-myaccount',
+    username: 'AVA_READER_SVC',
+    authenticator: 'SNOWFLAKE_JWT',
+    privateKeyPath: '/secure/ava_reader_key.p8',
+    warehouse: 'AVA_WH',
+    role: 'AVA_READER',
+    database: 'SNOWFLAKE_SAMPLE_DATA',
+    schema: 'TPCH_SF1',
+  },
+});
+```
+
+### Connection fields
+
+| Field                       | Type     | Required             | Meaning / default                                                                                                                                                   |
+| --------------------------- | -------- | -------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `account`                   | `string` | Yes                  | Account identifier, `orgname-accountname`.                                                                                                                          |
+| `database`                  | `string` | Yes                  | Database to discover and query.                                                                                                                                     |
+| `schema`                    | `string` | No                   | Schema whose tables and views are exposed; also the session's default schema. Default `PUBLIC`.                                                                     |
+| `warehouse`                 | `string` | No                   | Warehouse that runs the queries; defaults to the user's `DEFAULT_WAREHOUSE`.                                                                                        |
+| `role`                      | `string` | No                   | Role for the session; defaults to the user's `DEFAULT_ROLE`. Use a read-only role.                                                                                  |
+| `username`                  | `string` | For most methods     | Login name.                                                                                                                                                         |
+| `authenticator`             | `string` | No                   | Driver authentication method, such as `SNOWFLAKE_JWT`, `PROGRAMMATIC_ACCESS_TOKEN` or `OAUTH`. Default `SNOWFLAKE` (password).                                       |
+| `privateKey`                | `string` | For `SNOWFLAKE_JWT`  | PEM private key; or set `privateKeyPath` to read it from a file, and `privateKeyPass` for an encrypted key.                                                         |
+| `token`                     | `string` | For token methods    | Programmatic access token or OAuth access token; or set `tokenFilePath`.                                                                                            |
+| `password`                  | `string` | For `SNOWFLAKE`      | Password. Snowflake is phasing out single-factor password sign-in, so prefer key pairs or tokens.                                                                   |
+| `queryTimeoutMs`            | `number` | No                   | Limit for each statement in milliseconds. Snowflake enforces it (statement and queue timeouts) and the client cancels the statement when it expires. Default `30000`. |
+
+Other [snowflake-sdk connection options](https://docs.snowflake.com/en/developer-guide/node-js/nodejs-driver-options), such as `host`, proxy settings or `queryTag` (default `AVA`), are forwarded unchanged. AVA sets the driver options that shape results and sessions (`rowMode`, `streamResult`, `fetchAsString`, `jsTreatIntegerAsBigInt`, `representNullAsStringNull`, `serverSessionKeepAlive`).
+
+### Permissions
+
+The role needs `USAGE` on the warehouse, database and schema, and `SELECT` on the tables and views to analyze (`IMPORTED PRIVILEGES` for a shared database such as `SNOWFLAKE_SAMPLE_DATA`). Schema discovery reads `INFORMATION_SCHEMA` and `SHOW ... KEYS`, which list only objects the role can access, so the discovered schema is the authorized scope; declared primary, unique and foreign keys become keys and relationships. Loading fails with an explicit error when the database, schema or warehouse does not exist or is not granted to the role.
+
+A dedicated read-only service user with key-pair authentication:
+
+```sql
+CREATE ROLE AVA_READER;
+GRANT USAGE ON WAREHOUSE AVA_WH TO ROLE AVA_READER;
+GRANT USAGE ON DATABASE ANALYTICS TO ROLE AVA_READER;
+GRANT USAGE ON SCHEMA ANALYTICS.SALES TO ROLE AVA_READER;
+GRANT SELECT ON ALL TABLES IN SCHEMA ANALYTICS.SALES TO ROLE AVA_READER;
+GRANT SELECT ON ALL VIEWS IN SCHEMA ANALYTICS.SALES TO ROLE AVA_READER;
+CREATE USER AVA_READER_SVC TYPE = SERVICE DEFAULT_ROLE = AVA_READER DEFAULT_WAREHOUSE = AVA_WH
+  RSA_PUBLIC_KEY = 'MIIBIjANBgkqh...';
+GRANT ROLE AVA_READER TO USER AVA_READER_SVC;
+```
+
+### Query execution
+
+- A statement runs only if it compiles as a subquery, which Snowflake accepts for a single query expression only. DDL, DML, `CALL`, scripting blocks and multiple statements are therefore rejected before anything runs; compiling uses no warehouse. Anonymous procedures (`WITH ... AS PROCEDURE ... CALL`) and `SYSTEM$` functions are rejected before compiling: Snowflake runs the former even inside a subquery, and several of the latter change state.
+- The statement then runs as written, because Snowflake does not apply a subquery's `ORDER BY` to the outer query. AVA reads at most `maxRows + 1` rows from a streamed result, and Snowflake stops at the same row count (`ROWS_PER_RESULTSET`).
+- After login AVA sets session parameters: statement and queue timeouts from `queryTimeoutMs`, `MULTI_STATEMENT_COUNT = 1`, `ABORT_DETACHED_QUERY`, `STRICT_JSON_OUTPUT` and fixed output formats.
+- `NUMBER` values become JavaScript numbers only when exact; larger or more precise values stay decimal strings. Float `NaN` and infinities stay strings. Dates are `YYYY-MM-DD`; times and timestamps have nine fractional digits (`2024-03-01 09:00:00.123456789`), plus the offset (`+08:00`) for time-zone types. `VARIANT`, `OBJECT` and `ARRAY` are parsed JSON, and `BINARY` is hexadecimal text.
+- `dispose()` cancels running statements, then closes the session; closing a Snowflake session alone does not stop its statements. If the process stops unexpectedly, the statement timeout still ends them.
+
+Queries use warehouse credits: give AVA a small warehouse with auto-suspend and a resource monitor, and no privileges it does not need, such as `USAGE` on stored procedures, external functions or integrations. One source covers one schema; load another source to analyze a different schema.
 
 ## Tencent Docs SmartSheet
 

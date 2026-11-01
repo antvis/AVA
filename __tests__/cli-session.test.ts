@@ -119,6 +119,10 @@ describe('dataset engine and language', () => {
     { source: { type: 'supabase', options: { accessToken: 'test', projectRef: 'test' } }, engine: 'supabase' },
     { source: { type: 'clickhouse', options: { host: 'localhost', database: 'sales' } }, engine: 'clickhouse' },
     { source: sqlserverSource, engine: 'sqlserver' },
+    {
+      source: { type: 'snowflake', options: { account: 'myorg-myaccount', database: 'ANALYTICS' } },
+      engine: 'snowflake',
+    },
   ])('selects $engine and exposes its language without changing the schema', async ({ source, engine, explicit }) => {
     const { getEngineClass } = await import('../src/engines');
     const Engine = getEngineClass(engine);

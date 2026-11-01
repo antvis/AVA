@@ -18,7 +18,7 @@ ava schema "$DATASET_ID" > schema.json
 
 `ava source` 接受文件或 URL、包含数据源配置的 `@file`，或用 `-` 读取标准输入。CSV、JSON、Parquet、Excel、SQLite 可根据扩展名推断类型；路径输入可用 `--type` 覆盖类型。配置文件和标准输入本身已包含类型。
 
-使用 `--engine` 选择执行引擎。CLI 会为匹配的数据源配置推断 Supabase、ClickHouse，其余情况默认 DuckDB；这与 JavaScript 构造函数的行为不同。引擎在会话期间固定。连接和读取配置见[数据源配置](/documentation/data/sources/)。
+使用 `--engine` 选择执行引擎。CLI 会为匹配的数据源配置推断 Supabase、ClickHouse、Snowflake，其余情况默认 DuckDB；这与 JavaScript 构造函数的行为不同。引擎在会话期间固定。连接和读取配置见[数据源配置](/documentation/data/sources/)。
 
 <Heading as="h2" id="reuse-saved-metadata">复用已有元数据</Heading>
 
@@ -73,7 +73,7 @@ ava visualize --query "Plot revenue by region" --data @rows.json
 
 | 命令 | 位置参数 | 标志与默认值 |
 | ----------- | -------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `source` | `dataset`：路径、URL、`@file` 或 `-` | `-t` / `--type`：`csv-file`、`json-file`、`parquet`、`excel`、`sqlite`，默认按扩展名推断。`--engine`：`duckdb`、`python`、`javascript`、`supabase`、`clickhouse`，推断规则见上文。 |
+| `source` | `dataset`：路径、URL、`@file` 或 `-` | `-t` / `--type`：`csv-file`、`json-file`、`parquet`、`excel`、`sqlite`，默认按扩展名推断。`--engine`：`duckdb`、`python`、`javascript`、`supabase`、`clickhouse`、`snowflake`，推断规则见上文。 |
 | `schema` | `dataset-id` | 可选 `--file`：已有 schema JSON 文件的路径。 |
 | `profile` | `dataset-id` | 可选 `--file`：已有 profile JSON 文件的路径；否则可用 `--metrics` 指定逗号分隔的指标名，默认[标准指标集](/documentation/reference/api/#profile)。传入空字符串则不计算统计项。 |
 | `semantic` | `dataset-id` | 可选 `--file`：Semantic JSON 文件的路径，用于替换会话中的完整定义；不提供时读取当前定义。 |
