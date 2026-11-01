@@ -1,14 +1,16 @@
+For Node.js file and inline-data workflows, you can usually omit engine configuration and specify the data source in `source()`. Configure an execution engine when you need browser execution, Python/pandas, direct Supabase or ClickHouse queries, or custom execution behavior.
+
 ## Engine selection
 
 Set the engine in the `AVA` constructor. In the JavaScript API, omitting it always selects DuckDB; source type does not change this selection automatically.
 
-| Engine                                                  | Sources                                                | Runtime                    |
-| ------------------------------------------------------- | ------------------------------------------------------ | -------------------------- |
-| [DuckDB](/documentation/engines/duckdb/)                | Inline data, files, MySQL, PostgreSQL, SQLite, MongoDB, Feishu Bitable / Lark | Node.js                    |
-| [JavaScript](/documentation/engines/javascript/)        | Inline CSV, JSON, text                                 | Node.js and browser        |
-| [Python](/documentation/engines/python/)                | Inline CSV / JSON; CSV / JSON / Parquet / Excel files  | Node.js + Python executor  |
-| [Supabase](/documentation/engines/remote/#supabase)     | Supabase project                                       | Node.js; remote PostgreSQL |
-| [ClickHouse](/documentation/engines/remote/#clickhouse) | ClickHouse database                                    | Node.js; remote ClickHouse |
+| Engine | Query language | Sources | Runtime |
+| --- | --- | --- | --- |
+| [DuckDB](/documentation/engines/duckdb/) | SQL | Inline data, files, MySQL, PostgreSQL, SQLite, MongoDB, Feishu Bitable / Lark | Node.js; default |
+| [JavaScript](/documentation/engines/javascript/) | JavaScript | Inline CSV, JSON, text | Node.js and browser |
+| [Python](/documentation/engines/python/) | Python / pandas | Inline CSV / JSON; CSV / JSON / Parquet / Excel files | Node.js + Python executor |
+| [Supabase](/documentation/engines/remote/#supabase) | PostgreSQL SQL | Supabase project | Node.js; remote execution |
+| [ClickHouse](/documentation/engines/remote/#clickhouse) | ClickHouse SQL | ClickHouse database | Node.js; remote execution |
 
 ## Engine configuration
 

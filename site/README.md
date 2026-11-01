@@ -43,4 +43,6 @@ Use `<Callout>...</Callout>` for contextual notes. Link to other chapters with t
 
 Guides prioritize JavaScript / TypeScript SDK usage. Keep CLI commands, CLI-specific credential lookup, and CLI session behavior in `reference/cli.mdx`. The Agent Skill guide covers installation, prompts, and results; link to the CLI reference for command usage.
 
+Keep engine selection in the advanced engine guides. Introduction and quickstart should focus on choosing a data source type, asking questions, and creating charts. Keep source-specific configuration requirements with the relevant source example.
+
 The reading order is introduction → quickstart → data → analysis → visualization → advanced usage → execution engines → API Reference. Keep each workflow self-contained: source parameter tables live with the source guide; analysis includes suggestions and direct queries, with advanced strategies in their own chapter; visualization includes recommendation and rendering. The API reference lists constructor fields directly. Use in-page anchors for related sections rather than splitting each option into its own chapter.

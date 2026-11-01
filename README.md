@@ -5,7 +5,7 @@
 
 AVA is an open-source TypeScript library for analyzing data with natural-language questions. Load a file or connect a database, ask a question, and get computed results, a summary, and optional charts.
 
-Use the SDK in your application, the CLI in your terminal, or the AVA skill with an AI coding agent. AVA uses a language model to generate queries and an execution engine to calculate the answers.
+Use the SDK in your application, the CLI in your terminal, or the AVA skill with an AI coding agent. AVA uses a language model to generate queries, runs them against your data, and explains the results.
 
 <p align="center">
   <a href="https://github.com/antvis/ava">
@@ -38,7 +38,6 @@ Use the SDK in your application, the CLI in your terminal, or the AVA skill with
 - **Create charts:** recommend a chart type and generate chart specifications or HTML.
 - **Understand a dataset:** inspect tables and columns, compute statistics, and suggest questions.
 - **Add business rules:** define what measures such as revenue mean for your data.
-- **Choose an engine:** use DuckDB, JavaScript, Python/pandas, Supabase, or ClickHouse.
 
 ## Quickstart
 
@@ -53,7 +52,7 @@ export OPENAI_MODEL='gpt-4o-mini'
 # export OPENAI_BASE_URL='https://your-provider.example/v1'
 ```
 
-Save the following as `analysis.mjs`. It uses the default DuckDB engine:
+Save the following as `analysis.mjs`:
 
 ```javascript
 import { writeFile } from 'node:fs/promises';
@@ -95,7 +94,7 @@ try {
 
 Run `node analysis.mjs`. The result should show **East: 200** and **West: 90**; wording and column names can vary. Open `revenue.html` in a browser with internet access to view the chart. `visualize()` returns `null` when no chart is recommended.
 
-For a walkthrough, see the [quickstart](https://ava.antv.vision/documentation/quickstart/). For frontend applications, use `@antv/ava/browser` with the [JavaScript engine](https://ava.antv.vision/documentation/browser/).
+For a walkthrough, see the [quickstart](https://ava.antv.vision/documentation/quickstart/). For frontend applications, see [browser usage](https://ava.antv.vision/documentation/browser/) for the `@antv/ava/browser` entry point.
 
 ## Connect your data
 
@@ -126,7 +125,7 @@ For example, load a CSV file instead of the inline rows above:
 await ava.source({ type: 'csv-file', options: { path: './sales.csv' } });
 ```
 
-See [data sources](https://ava.antv.vision/documentation/data/sources/) for connection settings and [execution engines](https://ava.antv.vision/documentation/engines/overview/) for source support. Applications can also [register a custom engine](https://ava.antv.vision/documentation/engines/custom/).
+See [data sources](https://ava.antv.vision/documentation/data/sources/) for supported types and connection settings.
 
 ## Use with an AI agent
 

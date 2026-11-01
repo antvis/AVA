@@ -23,7 +23,7 @@ The example reads these variables explicitly. See [model configuration](/documen
 
 ## Run your first analysis
 
-Save this as `analysis.mjs`. It loads three rows with the default DuckDB engine, calculates revenue by region, and saves a chart:
+Save this as `analysis.mjs`. It loads three rows, calculates revenue by region, and saves a chart:
 
 ```javascript
 import { writeFile } from 'node:fs/promises';
@@ -76,7 +76,7 @@ The answer should show **East: 200** and **West: 90**. Summary wording, row orde
 - `source()` loads the data. Calling it again replaces the current source.
 - `analyze()` discovers table and column names, generates and executes a query, and summarizes the result. It returns rows in `data` and a summary in `text`.
 - `visualize()` uses the question and result rows to generate chart HTML.
-- `dispose()` releases connections and other engine resources, including when a call fails.
+- `dispose()` releases connections and temporary resources, including when a call fails.
 
 You can inspect structure with `schema()`, compute statistics with `profile()`, or add business rules with `semantic()`. These are optional for this example.
 
@@ -85,6 +85,6 @@ You can inspect structure with `schema()`, compute statistics with `profile()`, 
 - [Data sources](/documentation/data/sources/) — load files or connect a database.
 - [Analyze data](/documentation/analysis/overview/) — read results, suggest questions, and run queries directly.
 - [Generate visualizations](/documentation/visualization/overview/) — customize chart generation and rendering.
-- [Browser usage](/documentation/browser/) — use the JavaScript engine in a frontend.
+- [Browser usage](/documentation/browser/) — add data analysis to a frontend.
 
 See the [API reference](/documentation/reference/api/) for signatures, parameters, and defaults.

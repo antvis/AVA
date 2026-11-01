@@ -24,7 +24,7 @@ AVA is an open-source TypeScript library for analyzing data with natural-languag
       ⌘
     </span>
     <strong>Build for the browser</strong>
-    <span>Bring analytics into your frontend with the JavaScript engine.</span>
+    <span>Bring data analysis and charts into your frontend.</span>
   </a>
   <a href="/documentation/reference/cli/">
     <span className="docs-card-icon" aria-hidden="true">
@@ -38,9 +38,7 @@ AVA is an open-source TypeScript library for analyzing data with natural-languag
 
 ## The core workflow
 
-AVA uses a language model to generate queries and explain results. An execution engine runs those queries against your data; DuckDB is the default in Node.js.
-
-Connect a data source, ask a question, and optionally generate a chart.
+Connect a data source, ask a question, and optionally generate a chart. AVA generates and runs queries against your data, then explains the results.
 
 {
 
@@ -53,27 +51,15 @@ Connect a data source, ask a question, and optionally generate a chart.
 </div>
 }
 
-- **Load data.** `source()` connects a file, database, or inline rows. AVA discovers table and column names when analysis needs them.
+- **Load data.** Choose a data source type and pass its settings to `source()` to load a file, database, or inline rows. AVA discovers table and column names when analysis needs them.
 - **Ask a question.** `analyze()` generates and executes a query, then returns result rows and a summary.
 - **Create a chart.** `visualize()` turns the question and result rows into chart HTML.
 
 Use `schema()` to inspect tables and columns, `profile()` to compute statistics, and `semantic()` to add business rules. These steps are optional. See [Inspect your data](/documentation/data/schema/).
 
-## Choose an execution engine
-
-| Engine     | Query language  | Environment                    |
-| ---------- | --------------- | ------------------------------ |
-| DuckDB     | SQL             | Node.js; default               |
-| JavaScript | JavaScript      | Browser and Node.js            |
-| Python     | Python / pandas | Node.js with a Python executor |
-| Supabase   | PostgreSQL SQL  | Node.js; remote execution      |
-| ClickHouse | ClickHouse SQL  | Node.js; remote execution      |
-
-The [engine guide](/documentation/engines/overview/) explains supported sources and configuration.
-
 ## Explore the documentation
 
-Follow these five steps to load data, answer a question, and create a chart.
+Follow the workflow from setup to a chart; advanced configuration is optional.
 
 {
 
@@ -121,10 +107,10 @@ Follow these five steps to load data, answer a question, and create a chart.
       05
     </span>
     <strong>
-      <a href="/documentation/configuration/">Configure and extend</a>
+      <a href="/documentation/configuration/">Advanced configuration</a>
     </strong>
     <p>
-      Adjust your model setup, choose an <a href="/documentation/engines/overview/">execution engine</a>, or implement a{' '}
+      When needed, adjust model settings, configure an <a href="/documentation/engines/overview/">execution engine</a>, or add a{' '}
       <a href="/documentation/engines/custom/">custom engine</a>.
     </p>
   </li>
