@@ -52,21 +52,9 @@ const METRICS: Record<Metric, { label: string; unit: string; fmt: (v: number) =>
 };
 
 const MECHANISMS = [
-  {
-    title: 'Data-Aware Reasoning',
-    desc: 'Schema, statistics, and business semantics provide context before analysis.',
-    detail: 'ava.profile() computes row counts, distributions, top values, and ranges — without a single LLM call.',
-  },
-  {
-    title: 'Real Execution',
-    desc: 'Queries run against actual data through dedicated execution engines.',
-    detail: 'Generated SQL executes on DuckDB or your Python engine — errors are caught, corrected, and retried.',
-  },
-  {
-    title: 'Measurable Quality',
-    desc: 'Compare answer accuracy and per-question cost across contexts and strategies.',
-    detail: 'Published reports document dataset scope, scoring, timing, and token usage.',
-  },
+  { title: 'Context before queries.', detail: 'Schema · Profile · Semantic' },
+  { title: 'Queries that actually run.', detail: 'SQL · Python · Execution feedback' },
+  { title: 'Results you can inspect.', detail: 'Queries · Data · Chart specs' },
 ];
 
 const TrustedAnalytics: React.FC<{ id?: string }> = ({ id = 'benchmarks' }) => {
@@ -75,12 +63,17 @@ const TrustedAnalytics: React.FC<{ id?: string }> = ({ id = 'benchmarks' }) => {
   const max = Math.max(...values);
 
   return (
-    <section id={id} className="relative mx-6 overflow-hidden rounded-[24px] px-6 py-[88px] max-md:mx-2.5 max-md:px-1 max-md:py-14" aria-label="Trusted analytics">
+    <section
+      id={id}
+      className="relative mx-6 overflow-hidden rounded-[24px] px-6 py-[88px] max-md:mx-2.5 max-md:px-1 max-md:py-14"
+      aria-label="Trusted analytics"
+    >
       <div
         aria-hidden
         className="pointer-events-none absolute inset-0 overflow-hidden"
         style={{
-          background: 'radial-gradient(ellipse at 18% 0%, #a8d4ff 0%, transparent 58%), radial-gradient(ellipse at 90% 35%, #bddfff 0%, transparent 55%), linear-gradient(180deg, #d3eaff 0%, #eaf6ff 100%)',
+          background:
+            'radial-gradient(ellipse at 18% 0%, #a8d4ff 0%, transparent 58%), radial-gradient(ellipse at 90% 35%, #bddfff 0%, transparent 55%), linear-gradient(180deg, #d3eaff 0%, #eaf6ff 100%)',
         }}
       >
         <div className="absolute -left-32 top-16 h-96 w-96 -rotate-20 rounded-[80px] bg-white/20" />
@@ -89,19 +82,24 @@ const TrustedAnalytics: React.FC<{ id?: string }> = ({ id = 'benchmarks' }) => {
       <div className="relative mx-auto max-w-6xl px-6">
         <Reveal>
           <SectionHeading
-            eyebrow="Trusted Analytics"
-            title="Trust the Analysis, Not Just the Answer."
-            description="Ground AI reasoning in real data, reliable execution, and measurable results."
+            title={
+              <>
+                Trust the Analysis,
+                <br />
+                Not Just the Answer.
+              </>
+            }
+            description="Published results with model, dataset, and scoring details."
           />
         </Reveal>
 
-        <div className="mt-14 grid items-stretch gap-5 lg:grid-cols-[5fr_4fr]">
+        <div className="mt-7 grid items-stretch gap-5 lg:grid-cols-[5fr_4fr]">
           {/* ── left: benchmark ── */}
           <Reveal className="h-full">
-            <div className="flex h-full flex-col rounded-2xl bg-white p-6 sm:p-8">
+            <div className="flex h-full flex-col rounded-2xl bg-white p-6">
               <div className="flex flex-wrap items-start justify-between gap-4">
                 <div>
-                  <div className="font-mono text-[11px] uppercase tracking-[0.16em] text-zinc-400">
+                  <div className="font-mono text-[12px] uppercase tracking-[0.1em] text-zinc-400">
                     Context · {BENCHMARK.dataset} · {BENCHMARK.questions}
                   </div>
                   <div className="mt-4 flex items-baseline gap-2">
@@ -110,12 +108,17 @@ const TrustedAnalytics: React.FC<{ id?: string }> = ({ id = 'benchmarks' }) => {
                       <span className="text-[0.4em] font-medium text-zinc-400">%</span>
                     </span>
                   </div>
-                  <div className="mt-2 text-[13px] text-zinc-500">
-                    answer accuracy with Semantic
-                  </div>
-                  <div className="mt-1 font-mono text-[11.5px] text-zinc-400">
-                    model: {BENCHMARK.model}
-                  </div>
+                  <div className="mt-2 text-[15px] text-zinc-500">in-sample accuracy with Semantic</div>
+                  <div className="mt-1 font-mono text-[13px] text-zinc-400">model: {BENCHMARK.model}</div>
+                  <details className="mt-3 max-w-sm text-[13px] leading-relaxed text-zinc-500">
+                    <summary className="w-fit cursor-pointer underline decoration-zinc-300 underline-offset-4">
+                      Evaluation conditions
+                    </summary>
+                    <p className="mt-2">
+                      Reference-assisted semantic calibration on these questions. This is an in-sample result, not a
+                      held-out accuracy estimate or a controlled measure of semantic-only gain.
+                    </p>
+                  </details>
                 </div>
                 {/* metric switch — real data exists for all three */}
                 <div
@@ -129,7 +132,7 @@ const TrustedAnalytics: React.FC<{ id?: string }> = ({ id = 'benchmarks' }) => {
                       role="tab"
                       aria-selected={metric === m}
                       onClick={() => setMetric(m)}
-                      className={`rounded-full px-3.5 py-1.5 text-[12px] font-medium transition-all duration-200 ${
+                      className={`rounded-full px-4 py-2 text-[14px] font-medium transition-all duration-200 ${
                         metric === m
                           ? 'bg-white text-zinc-900 shadow-[0_1px_2px_rgba(0,0,0,0.08)]'
                           : 'text-zinc-500 hover:text-zinc-700'
@@ -142,7 +145,7 @@ const TrustedAnalytics: React.FC<{ id?: string }> = ({ id = 'benchmarks' }) => {
               </div>
 
               {/* comparison bars */}
-              <div className="mt-8 flex flex-1 flex-col justify-end gap-4">
+              <div className="mt-6 flex flex-1 flex-col justify-end gap-4">
                 {BENCHMARK.contexts.map((s) => {
                   const m = METRICS[metric];
                   const value = s[metric];
@@ -151,11 +154,7 @@ const TrustedAnalytics: React.FC<{ id?: string }> = ({ id = 'benchmarks' }) => {
                   return (
                     <div key={s.id}>
                       <div className="mb-1.5 flex items-baseline justify-between gap-4">
-                        <span
-                          className={`text-[12.5px] ${
-                            isBest ? 'font-medium text-zinc-800' : 'text-zinc-500'
-                          }`}
-                        >
+                        <span className={`text-[14px] ${isBest ? 'font-medium text-zinc-800' : 'text-zinc-500'}`}>
                           {s.label}
                           {isBest && metric === 'accuracy' && (
                             <span role="img" aria-label="Highest accuracy" className="ml-2 text-amber-700">
@@ -164,7 +163,7 @@ const TrustedAnalytics: React.FC<{ id?: string }> = ({ id = 'benchmarks' }) => {
                           )}
                         </span>
                         <span
-                          className={`shrink-0 font-mono text-[12.5px] tabular-nums ${
+                          className={`shrink-0 font-mono text-[14px] tabular-nums ${
                             isBest ? 'text-[color:var(--color-primary-dark)]' : 'text-zinc-400'
                           }`}
                         >
@@ -193,9 +192,7 @@ const TrustedAnalytics: React.FC<{ id?: string }> = ({ id = 'benchmarks' }) => {
               </div>
 
               <div className="mt-4 flex justify-end border-t border-zinc-100 pt-4">
-                <SectionLink href={BENCHMARK.link}>
-                  Read the full evaluation
-                </SectionLink>
+                <SectionLink href={BENCHMARK.link}>Full evaluation</SectionLink>
               </div>
             </div>
           </Reveal>
@@ -208,10 +205,9 @@ const TrustedAnalytics: React.FC<{ id?: string }> = ({ id = 'benchmarks' }) => {
                   key={mech.title}
                   className="group flex-1 rounded-2xl bg-white p-6 transition-shadow duration-200 hover:shadow-[0_4px_16px_rgba(120,211,248,0.12)]"
                 >
-                  <h3 className="text-[15.5px] font-semibold text-zinc-900">{mech.title}</h3>
-                  <p className="mt-1.5 text-[13.5px] leading-relaxed text-zinc-500">{mech.desc}</p>
+                  <h3 className="text-[24px] font-semibold text-zinc-900">{mech.title}</h3>
                   <p
-                    className="mt-3 border-l-2 pl-3 font-mono text-[11.5px] leading-relaxed text-zinc-400 transition-colors group-hover:text-zinc-500"
+                    className="mt-3 border-l-2 pl-3 text-[15px] leading-relaxed text-zinc-500 transition-colors group-hover:text-zinc-600"
                     style={{ borderColor: 'color-mix(in srgb, var(--color-primary-dark) 40%, transparent)' }}
                   >
                     {mech.detail}

@@ -12,8 +12,6 @@ export type ToolStep = {
   detailMono?: boolean;
   detail: ToolDetailLine[];
 };
-export type ToolDiff = { file: string; add: number; del?: number };
-export type ToolDiffLine = { text: string; tone: 'add' | 'del' | 'ctx' };
 
 export interface AnalysisArtifact {
   id: string;
@@ -26,8 +24,6 @@ export interface AnalysisArtifact {
 
 export interface Message {
   artifact?: AnalysisArtifact;
-  diffs?: ToolDiff[];
-  diffLines?: Record<string, ToolDiffLine[]>;
   role: 'user' | 'assistant';
   text: string;
   parts?: AIUIMessage['parts'];
@@ -68,6 +64,7 @@ export interface ChatPlayback {
 
 export type ArtifactTab = 'chart' | 'data' | 'sql';
 export interface ArtifactDisplay {
+  chartOnly?: boolean;
   columns?: { key: string; label: string; suffix?: string }[];
   chartHeader?: ReactNode;
   chartFooter?: ReactNode;

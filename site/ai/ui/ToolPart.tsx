@@ -3,21 +3,14 @@
 import { getToolName } from 'ai';
 import type { AIUIMessage } from '../core/session';
 import { MAX_TOOL_DETAIL_LENGTH, TOOL_STEPS } from './constants';
-import type { Message } from './types';
 import ToolRow from './ToolRow';
-import FileDiffs from './FileDiffs';
 import SchemaTable from './SchemaTable';
 import MetadataTable from './MetadataTable';
 
 type ToolMessagePart = Extract<AIUIMessage['parts'][number], { type: `tool-${string}` | 'dynamic-tool' }>;
 
 /** Render the SDK tool part without copying its execution state. */
-export default function ToolPart({
-  part,
-  active,
-  diffs,
-  diffLines,
-}: { part: ToolMessagePart; active: boolean } & Pick<Message, 'diffs' | 'diffLines'>) {
+export default function ToolPart({ part, active }: { part: ToolMessagePart; active: boolean }) {
   const name = getToolName(part);
   const presentation = TOOL_STEPS[name] ?? { icon: 'run', label: name, chip: name, mono: true };
   const pending =
@@ -72,7 +65,6 @@ export default function ToolPart({
             </span>
           )}
         </ToolRow>
-        {!running && <FileDiffs diffs={diffs} diffLines={diffLines} />}
       </div>
     </div>
   );
