@@ -114,8 +114,14 @@ function viewStatement(sql: string): string {
 type Metadata = Record<string, any>;
 const bool = (value: unknown): boolean => value === true || value === 1 || value === '1';
 
-/** Assemble models, keys and relationships from tagged catalog rows. */
-export function rowObjects2Schema(rows: Record<string, unknown>[]): Schema {
+/**
+ * Assemble models, keys and relationships from tagged catalog rows.
+ * `quote` renders identifiers in relationship conditions for the engine's SQL dialect.
+ */
+export function rowObjects2Schema(
+  rows: Record<string, unknown>[],
+  quote: (name: string) => string = sqlIdentifier
+): Schema {
   const models = new Map<string, Schema['models'][number]>();
   const columns = new Map<string, Metadata[]>();
   const keys = new Map<string, Metadata[]>();
@@ -236,9 +242,7 @@ export function rowObjects2Schema(rows: Record<string, unknown>[]): Schema {
       condition: fk.columns
         .map(
           (column, i) =>
-            `${sqlIdentifier(fk.table)}.${sqlIdentifier(column)} = ${sqlIdentifier(fk.referencedTable)}.${sqlIdentifier(
-              fk.referencedColumns[i]
-            )}`
+            `${quote(fk.table)}.${quote(column)} = ${quote(fk.referencedTable)}.${quote(fk.referencedColumns[i])}`
         )
         .join(' AND '),
     });

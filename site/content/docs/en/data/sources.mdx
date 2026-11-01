@@ -54,6 +54,11 @@
     <strong>ClickHouse</strong>
     <span>Analytics database</span>
   </a>
+  <a href="#bigquery">
+    <img src="/logos/bigquery.svg" alt="" width="28" height="28" />
+    <strong>BigQuery</strong>
+    <span>Cloud data warehouse</span>
+  </a>
   <a href="/documentation/engines/custom/">
     <img src="/logos/contribute.svg" alt="" width="28" height="28" />
     <strong>Custom extension</strong>
@@ -84,12 +89,12 @@ const schema = await ava.schema();
 
 | Parameter | Type                   | Required | Meaning                                                                                                                                      |
 | --------- | ---------------------- | -------- | -------------------------------------------------------------------------------------------------------------------------------------------- |
-| `type`    | `SourceType`           | Yes      | `csv`, `csv-file`, `json`, `json-file`, `parquet`, `excel`, `text`, `sqlite`, `mysql`, `postgresql`, `mongodb`, `supabase`, `clickhouse`, `sqlserver`, or `feishu-bitable`. |
+| `type`    | `SourceType`           | Yes      | `csv`, `csv-file`, `json`, `json-file`, `parquet`, `excel`, `text`, `sqlite`, `mysql`, `postgresql`, `mongodb`, `supabase`, `clickhouse`, `sqlserver`, `bigquery`, or `feishu-bitable`. |
 | `options` | Source-specific object | Yes      | Use the matching table below. Field names are relative to `options`.                                                                         |
 
 `source()` returns no value and prepares the data for execution. Schema discovery is deferred until `schema()` or another operation needs it. Calling `source()` again replaces the current source and clears its cached metadata. Use `schema()` to inspect table and field names, and call `await ava.dispose()` when finished.
 
-The examples use Node.js. Supabase, ClickHouse, and SQL Server include their required constructor settings alongside the source call. For frontend applications, see [browser usage](/documentation/browser/).
+The examples use Node.js. Supabase, ClickHouse, SQL Server, and BigQuery include their required constructor settings alongside the source call. For frontend applications, see [browser usage](/documentation/browser/).
 
 ## CSV
 
@@ -590,6 +595,84 @@ All forwarded fields are optional. Server settings are an extensible, server-ver
 | `json.stringify`                           | `<T>(input: T) => string`                        | Optional; serializes a value.                                               |
 
 Zstd compression requires Node.js 22.15 or newer in this client. Response compression may conflict with the engine's enforced read-only server settings; leave it disabled unless the server permits it.
+
+## BigQuery
+
+Expose one BigQuery dataset. Schema is read through the BigQuery API and GoogleSQL runs as BigQuery query jobs, so the data stays in BigQuery.
+
+```typescript
+const ava = new AVA({
+  llm: { model: 'YOUR_MODEL', apiKey: process.env.OPENAI_API_KEY },
+  engine: { type: 'bigquery' },
+});
+await ava.source({
+  type: 'bigquery',
+  options: {
+    projectId: 'YOUR_PROJECT_ID',
+    dataset: 'bigquery-public-data.thelook_ecommerce',
+    keyFilename: './service-account.json',
+  },
+});
+```
+
+| Field                | Type                              | Required | Meaning / default                                                                                                          |
+| -------------------- | --------------------------------- | -------- | -------------------------------------------------------------------------------------------------------------------------- |
+| `dataset`            | `string`                          | Yes      | Dataset ID in `projectId`, or `project.dataset` for another project's dataset, such as a public dataset.                  |
+| `projectId`          | `string`                          | No       | Project that runs and pays for query jobs. Default: `GOOGLE_CLOUD_PROJECT`, then the project named by the credentials.     |
+| `tables`             | `string[]`                        | No       | Tables and views to expose. Default: every table, view, materialized view, external table, and snapshot in the dataset.   |
+| `keyFilename`        | `string`                          | No       | Path to a service account key or `gcloud` user credentials file.                                                          |
+| `credentials`        | `BigQueryCredentials`             | No       | The parsed contents of such a file.                                                                                        |
+| `accessToken`        | `string \| () => Promise<string>` | No       | OAuth 2.0 access token, or a function returning a current one. Your application refreshes it.                              |
+| `maximumBytesBilled` | `number`                          | No       | Bytes billed allowed per query; BigQuery fails larger queries without charging. Default: `1073741824` (1 GiB).             |
+| `queryTimeoutMs`     | `number`                          | No       | Time allowed per query; AVA then cancels the job. Default: `30000`.                                                        |
+| `apiEndpoint`        | `string`                          | No       | BigQuery API root, such as a regional or Private Service Connect endpoint. Default: `https://bigquery.googleapis.com`.     |
+
+Set at most one of `keyFilename`, `credentials`, and `accessToken`. Without them, AVA uses Application Default Credentials: the file named by `GOOGLE_APPLICATION_CREDENTIALS`, the credentials saved by `gcloud auth application-default login`, then the metadata server of Google Cloud runtimes. Other credential types, such as workload identity federation, can be used through an `accessToken` function.
+
+### Permissions
+
+Grant the identity two predefined roles:
+
+| Role                         | Where                                          | Purpose                                     |
+| ---------------------------- | ---------------------------------------------- | ------------------------------------------- |
+| `roles/bigquery.jobUser`     | `projectId`                                    | Run query jobs, including dry runs.         |
+| `roles/bigquery.dataViewer`  | The dataset, or its project                    | List tables, read metadata, and read rows.  |
+
+Public datasets such as `bigquery-public-data` need no grant. `source()` reads the dataset and dry-runs `SELECT 1`, so missing datasets or permissions fail at load time with the required role in the message. The [BigQuery sandbox](https://cloud.google.com/bigquery/docs/sandbox) works without a billing account.
+
+The model only sees the exposed dataset, but a query can read any table the identity can read. Grant `roles/bigquery.dataViewer` on the datasets you want analyzed rather than on a whole organization.
+
+### Query limits
+
+- Every statement is dry-run first. Only the `SELECT` statement type runs; scripts, DML, DDL, `EXPORT DATA`, and `CALL` are rejected before a job starts.
+- `maximumBytesBilled` caps each query job. Results from the BigQuery cache are not billed.
+- Jobs that outlive `queryTimeoutMs` are cancelled, and `dispose()` cancels a running job.
+- AVA reads at most `maxRows + 1` rows and `maxResultBytes` from the job result without rewriting the SQL, so `ORDER BY` order is kept.
+- Unqualified table names resolve in `dataset`. Schema discovery reads table metadata, which is not billed.
+
+### Types
+
+Columns keep their GoogleSQL types, such as `NUMERIC(10, 2)`, `ARRAY<STRING>`, and `STRUCT<city STRING>`. Rows become JSON values:
+
+| GoogleSQL type                                      | Result value                                                                     |
+| --------------------------------------------------- | -------------------------------------------------------------------------------- |
+| `INT64`                                             | Number; a string beyond ±2^53 - 1.                                               |
+| `FLOAT64`                                           | Number; `"NaN"`, `"Infinity"`, or `"-Infinity"` as strings.                      |
+| `NUMERIC`, `BIGNUMERIC`                             | Number when exact; otherwise the decimal string.                                 |
+| `BOOL`                                              | Boolean.                                                                         |
+| `TIMESTAMP`                                         | ISO 8601 UTC string with microseconds, such as `2024-03-04T14:00:00.123456Z`.   |
+| `DATE`, `DATETIME`, `TIME`, `INTERVAL`, `RANGE`     | BigQuery's canonical string.                                                     |
+| `STRING`, `BYTES`, `GEOGRAPHY`                      | String; `BYTES` is base64 and `GEOGRAPHY` is WKT.                                |
+| `JSON`                                              | Parsed JSON value.                                                               |
+| `ARRAY`, `STRUCT`                                   | Array and object with the same conversions.                                      |
+
+Primary and foreign keys declared on BigQuery tables (`NOT ENFORCED`) become model keys and relationships. Legacy SQL views are skipped because GoogleSQL cannot read them.
+
+Date-sharded tables, such as the daily `events_YYYYMMDD` tables of a Google Analytics 4 export, become one [wildcard table](https://cloud.google.com/bigquery/docs/querying-wildcard-tables) model named `events_*`. It has the columns of the newest shard plus `_TABLE_SUFFIX`, which queries filter to read only the dates they need. List `events_*` or individual shards in `tables` to choose what is exposed.
+
+### Network access
+
+AVA calls `bigquery.googleapis.com` and `oauth2.googleapis.com` with the Node.js `fetch`. If they are only reachable through a proxy, set `HTTPS_PROXY` together with `NODE_USE_ENV_PROXY=1` (Node.js 22.21 or newer).
 
 ## Tencent Docs SmartSheet
 

@@ -33,6 +33,8 @@ ORDER BY total DESC, region;
 
 For ClickHouse, do not add `FORMAT`, `SETTINGS`, or `INTO OUTFILE`; AVA handles execution.
 
+For BigQuery, write GoogleSQL. Reference tables by their schema names without project or dataset qualifiers, and quote names with spaces or dashes in backticks, such as `` `order items` ``. Read `ARRAY` columns with `UNNEST` and `STRUCT` fields with dot notation. A table named like `events_*` stands for date-sharded tables; filter `_TABLE_SUFFIX` (`YYYYMMDD`) to the dates you need. BigQuery bills the bytes of every column a query reads: select only the needed columns and filter partitioning columns when possible. A query above the byte limit fails with `bytesBilledLimitExceeded`; narrow it instead of retrying.
+
 ## Python / pandas
 
 | Binding | Usage |

@@ -11,6 +11,7 @@
 | ClickHouse | ClickHouse only, selected automatically | ClickHouse SQL |
 | SQL Server | SQL Server only, selected automatically | T-SQL |
 | Supabase | Supabase only, selected automatically | PostgreSQL SQL |
+| BigQuery | BigQuery only, selected automatically | BigQuery GoogleSQL |
 | Feishu Bitable | DuckDB only | DuckDB SQL |
 
 To use Python or JavaScript, add `--engine python` or `--engine javascript` to the `source` command. Python does not connect directly to databases. To post-process database results with pandas, query the database first, then export the complete result as described in [Results and Post-Processing](queries.md#results-and-post-processing).
@@ -77,6 +78,7 @@ Use the configuration format and load command shown above:
 | `clickhouse` | `{"url":"http://localhost:8123","database":"sales","username":"reader","password":"REPLACE"}` |
 | `sqlserver` | `{"host":"localhost","database":"sales","user":"reader","password":"REPLACE","schema":"dbo"}` |
 | `supabase` | `{"accessToken":"REPLACE","projectRef":"REPLACE"}` |
+| `bigquery` | `{"projectId":"REPLACE","dataset":"bigquery-public-data.thelook_ecommerce","keyFilename":"/secure/key.json"}` |
 
 Use authorized read-only credentials. Restrict temporary credential files to the current user and delete them after loading. Do not put credentials in deliverables or logs.
 
@@ -87,6 +89,7 @@ Use authorized read-only credentials. Restrict temporary credential files to the
 - ClickHouse requires `database` and either `host` or `url`. It accepts `port`, `user`/`username`, `password`, `access_token`, `pathname`, `application`, `session_id`, `role` (string or string array), `http_headers`, `request_timeout`, and other ClickHouse client options.
 - SQL Server uses SQL authentication on port `1433` by default. Grant `SELECT` and `VIEW DEFINITION` permissions. TLS certificate verification is enabled by default.
 - Supabase uses the Management API; `accessToken` must be a token authorized for that API.
+- BigQuery exposes one dataset: an ID in `projectId`, or `project.dataset` for another project's dataset such as a public one. `projectId` runs and pays for the query jobs. Credentials come from `keyFilename`, `credentials`, or `accessToken`, otherwise from `GOOGLE_APPLICATION_CREDENTIALS` or `gcloud auth application-default login`. The identity needs `roles/bigquery.jobUser` on the project and `roles/bigquery.dataViewer` on the dataset; loading fails early with the missing role. Use `tables` to expose only the tables you need in large datasets. Each query may bill at most `maximumBytesBilled` bytes (default 1 GiB) and run for `queryTimeoutMs` (default 30000 ms).
 
 ## Feishu Bitable
 

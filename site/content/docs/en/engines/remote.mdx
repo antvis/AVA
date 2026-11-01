@@ -56,8 +56,31 @@ await ava.source({
 
 Queries use the Node.js `mssql` driver with read-only T-SQL.
 
+## BigQuery
+
+```typescript
+const ava = new AVA({
+  llm: { model: 'YOUR_MODEL', apiKey: process.env.OPENAI_API_KEY },
+  engine: { type: 'bigquery' },
+});
+await ava.source({
+  type: 'bigquery',
+  options: {
+    projectId: 'YOUR_PROJECT_ID',
+    dataset: 'bigquery-public-data.thelook_ecommerce',
+    keyFilename: './service-account.json',
+  },
+});
+
+const result = await ava.analyze('What are the 5 product categories with the highest sales?');
+```
+
+The engine reads table metadata through the BigQuery API and runs GoogleSQL as query jobs in `projectId`; rows are never copied out of BigQuery. Each statement is dry-run first and must be a single `SELECT`. Every job is bounded by `maximumBytesBilled` (1 GiB by default) and `queryTimeoutMs` (30 seconds by default); timed-out jobs are cancelled. Credentials come from a service account key, `gcloud` Application Default Credentials, the Google Cloud metadata server, or an access token supplied by your application.
+
+Generated queries reference tables by name in the source dataset, quote other identifiers with backticks, and read `ARRAY` columns with `UNNEST`. Profiles use GoogleSQL aggregates; `median` uses `PERCENTILE_CONT` and reads the column again. Profile queries are billed like other queries, so select metrics such as `top_values` when the model needs to see value formats, for example the `YYYYMMDD` strings in a Google Analytics `event_date` column.
+
 ## Shared workflow
 
 All remote engines support `schema()`, `profile()`, `translate()`, `query()`, and `analyze()`. Set the matching source and engine types in the JavaScript API. Release resources with `await ava.dispose()` after use.
 
-See [Supabase parameters](/documentation/data/sources/#supabase), [ClickHouse options](/documentation/data/sources/#clickhouse), and [SQL Server parameters](/documentation/data/sources/#sql-server) for complete configuration tables.
+See [Supabase parameters](/documentation/data/sources/#supabase), [ClickHouse options](/documentation/data/sources/#clickhouse), [SQL Server parameters](/documentation/data/sources/#sql-server), and [BigQuery options](/documentation/data/sources/#bigquery) for complete configuration tables.

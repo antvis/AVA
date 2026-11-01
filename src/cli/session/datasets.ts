@@ -2,6 +2,9 @@ import { AVA } from '../../index';
 
 import type { DataSourceConfig, EngineConfig, LLMConfig, Schema } from '../../types';
 
+/** Sources queried in place by the engine of the same name. */
+const REMOTE_SOURCES = new Set<DataSourceConfig['type']>(['supabase', 'clickhouse', 'sqlserver', 'bigquery']);
+
 // One server process owns one dataset. The socket path supplies its external ID.
 let ava: AVA | undefined;
 let queue = Promise.resolve();
@@ -28,7 +31,7 @@ export async function createDataset(
 
   ava = new AVA({
     llm,
-    engine: { type: engine ?? (source.type === 'supabase' || source.type === 'clickhouse' || source.type === 'sqlserver' ? source.type : 'duckdb') },
+    engine: { type: engine ?? (REMOTE_SOURCES.has(source.type) ? source.type : 'duckdb') },
   });
   const loading = ava.source(source);
   queue = loading.catch(() => undefined);

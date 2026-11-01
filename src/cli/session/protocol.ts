@@ -62,6 +62,24 @@ const clickhouse = z
   .passthrough()
   .refine((value) => value.host || value.url, { message: "ClickHouse sources require either 'host' or 'url'" });
 
+/** Credential JSON shapes are validated when the engine loads; secrets never appear in messages. */
+const bigquery = z
+  .object({
+    dataset: text,
+    projectId: text.optional(),
+    tables: z.array(text).nonempty().optional(),
+    keyFilename: text.optional(),
+    credentials: z
+      .object({ type: z.enum(['service_account', 'authorized_user']) })
+      .passthrough()
+      .optional(),
+    accessToken: text.optional(),
+    maximumBytesBilled: z.number().int().positive().optional(),
+    queryTimeoutMs: z.number().int().positive().optional(),
+    apiEndpoint: z.string().url().optional(),
+  })
+  .strict();
+
 const feishuBitable = z
   .object({
     url: text.optional(),
@@ -137,13 +155,22 @@ const sourceSchema = z.discriminatedUnion('type', [
     .strict(),
   z.object({ type: z.literal('clickhouse'), options: clickhouse }).strict(),
   z.object({ type: z.literal('sqlserver'), options: sqlserver }).strict(),
+  z.object({ type: z.literal('bigquery'), options: bigquery }).strict(),
   z.object({ type: z.literal('feishu-bitable'), options: feishuBitable }).strict(),
   z.object({ type: z.literal('tencent-smartsheet'), options: tencentDocsOptionsSchema }).strict(),
 ]);
 
 export const sourceConfig = sourceSchema.transform((value) => value as DataSourceConfig);
 export const modelSchema = z.object({ model: text, apiKey: text.optional(), baseURL: text.optional() }).strict();
-export const engineTypeSchema = z.enum(['duckdb', 'python', 'javascript', 'supabase', 'clickhouse', 'sqlserver']);
+export const engineTypeSchema = z.enum([
+  'duckdb',
+  'python',
+  'javascript',
+  'supabase',
+  'clickhouse',
+  'sqlserver',
+  'bigquery',
+]);
 
 const execution = {
   maxRows: z.number().int().positive().max(10000).optional(),

@@ -56,6 +56,11 @@ import { Heading } from '../../../../mdx-components';
     <strong>ClickHouse</strong>
     <span>分析型数据库</span>
   </a>
+  <a href="#bigquery">
+    <img src="/logos/bigquery.svg" alt="" width="28" height="28" />
+    <strong>BigQuery</strong>
+    <span>云数据仓库</span>
+  </a>
   <a href="/zh/documentation/engines/custom/">
     <img src="/logos/contribute.svg" alt="" width="28" height="28" />
     <strong>自定义扩展</strong>
@@ -86,12 +91,12 @@ const schema = await ava.schema();
 
 | 参数 | 类型 | 必填 | 含义 |
 | --------- | ---------------------- | -------- | -------------------------------------------------------------------------------------------------------------------------------------------- |
-| `type` | `SourceType` | 是 | 支持 `csv`、`csv-file`、`json`、`json-file`、`parquet`、`excel`、`text`、`sqlite`、`mysql`、`postgresql`、`mongodb`、`supabase`、`clickhouse`、`feishu-bitable`。 |
+| `type` | `SourceType` | 是 | 支持 `csv`、`csv-file`、`json`、`json-file`、`parquet`、`excel`、`text`、`sqlite`、`mysql`、`postgresql`、`mongodb`、`supabase`、`clickhouse`、`bigquery`、`feishu-bitable`。 |
 | `options` | 数据源对应的对象 | 是 | 使用下方对应的数据源参数表，字段名均相对于 `options`。 |
 
 `source()` 没有返回值，负责为执行准备数据。结构发现会推迟到 `schema()` 或其他操作需要时进行。再次调用 `source()` 会替换当前数据源并清空元数据缓存。使用 `schema()` 查看表名与字段名，结束后调用 `await ava.dispose()`。
 
-示例均在 Node.js 中运行。Supabase 和 ClickHouse 的示例同时给出了必需的构造函数配置。前端应用请参考[浏览器用法](/documentation/browser/)。
+示例均在 Node.js 中运行。Supabase、ClickHouse 和 BigQuery 的示例同时给出了必需的构造函数配置。前端应用请参考[浏览器用法](/documentation/browser/)。
 
 <Heading as="h2" id="csv">CSV</Heading>
 
@@ -557,6 +562,84 @@ await ava.source({
 | `json.stringify` | `<T>(input: T) => string` | 可选，用于序列化值。 |
 
 此客户端的 Zstd 压缩需要 Node.js 22.15 或更高版本。响应压缩可能与引擎强制的服务端只读设置冲突；除非服务端允许，否则请保持关闭。
+
+<Heading as="h2" id="bigquery">BigQuery</Heading>
+
+接入一个 BigQuery 数据集。表结构通过 BigQuery API 读取，GoogleSQL 以 BigQuery 查询作业执行，数据始终留在 BigQuery 中。
+
+```typescript
+const ava = new AVA({
+  llm: { model: 'YOUR_MODEL', apiKey: process.env.OPENAI_API_KEY },
+  engine: { type: 'bigquery' },
+});
+await ava.source({
+  type: 'bigquery',
+  options: {
+    projectId: 'YOUR_PROJECT_ID',
+    dataset: 'bigquery-public-data.thelook_ecommerce',
+    keyFilename: './service-account.json',
+  },
+});
+```
+
+| 字段 | 类型 | 必填 | 含义与默认值 |
+| -------------------- | --------------------------------- | -------- | ------------------------------------------------------------ |
+| `dataset` | `string` | 是 | `projectId` 中的数据集 ID，或用 `project.dataset` 指定其他项目的数据集（例如公共数据集）。 |
+| `projectId` | `string` | 否 | 运行查询作业并承担费用的项目。默认依次取 `GOOGLE_CLOUD_PROJECT` 和凭证中的项目。 |
+| `tables` | `string[]` | 否 | 要暴露的表和视图。默认暴露数据集中的所有表、视图、物化视图、外部表和快照。 |
+| `keyFilename` | `string` | 否 | 服务账号密钥文件或 `gcloud` 用户凭证文件的路径。 |
+| `credentials` | `BigQueryCredentials` | 否 | 上述文件解析后的内容。 |
+| `accessToken` | `string \| () => Promise<string>` | 否 | OAuth 2.0 访问令牌，或返回当前令牌的函数；由应用负责刷新。 |
+| `maximumBytesBilled` | `number` | 否 | 每个查询允许计费的字节数；超出时 BigQuery 直接失败且不计费。默认 `1073741824`（1 GiB）。 |
+| `queryTimeoutMs` | `number` | 否 | 每个查询允许的时长，超时后 AVA 会取消作业。默认 `30000`。 |
+| `apiEndpoint` | `string` | 否 | BigQuery API 根地址，例如区域端点或 Private Service Connect 端点。默认 `https://bigquery.googleapis.com`。 |
+
+`keyFilename`、`credentials`、`accessToken` 最多设置一个。都不设置时，AVA 使用应用默认凭证（ADC）：依次读取 `GOOGLE_APPLICATION_CREDENTIALS` 指向的文件、`gcloud auth application-default login` 保存的凭证，以及 Google Cloud 运行环境的元数据服务器。工作负载身份联合等其他凭证类型可以通过 `accessToken` 函数接入。
+
+<Heading as="h3" id="permissions">权限</Heading>
+
+为该身份授予两个预定义角色：
+
+| 角色 | 授予位置 | 用途 |
+| --- | --- | --- |
+| `roles/bigquery.jobUser` | `projectId` | 运行查询作业，包括 dry run。 |
+| `roles/bigquery.dataViewer` | 数据集或其所在项目 | 列出表、读取元数据和数据。 |
+
+`bigquery-public-data` 等公共数据集无需额外授权。`source()` 会读取数据集并对 `SELECT 1` 做 dry run，所以数据集不存在或权限不足时会在加载阶段报错，错误信息中会写明缺少哪个角色。[BigQuery 沙箱](https://cloud.google.com/bigquery/docs/sandbox)无需结算账号即可使用。
+
+模型只能看到暴露的数据集，但查询可以读取该身份有权读取的任何表。请只在需要分析的数据集上授予 `roles/bigquery.dataViewer`，不要授予整个组织。
+
+<Heading as="h3" id="query-limits">查询限制</Heading>
+
+- 每条语句先做 dry run，只有语句类型为 `SELECT` 时才会执行；脚本、DML、DDL、`EXPORT DATA` 和 `CALL` 在创建作业前就会被拒绝。
+- `maximumBytesBilled` 限制每个查询作业的计费字节数。命中 BigQuery 缓存的结果不计费。
+- 超过 `queryTimeoutMs` 的作业会被取消，`dispose()` 也会取消正在运行的作业。
+- AVA 不改写 SQL，只从作业结果中读取至多 `maxRows + 1` 行和 `maxResultBytes` 字节，因此 `ORDER BY` 的顺序保持不变。
+- 未限定的表名在 `dataset` 中解析。结构发现只读取表元数据，不产生费用。
+
+<Heading as="h3" id="types">类型</Heading>
+
+列保留 GoogleSQL 类型，例如 `NUMERIC(10, 2)`、`ARRAY<STRING>`、`STRUCT<city STRING>`。行会转换为 JSON 值：
+
+| GoogleSQL 类型 | 结果值 |
+| --- | --- |
+| `INT64` | 数字；超出 ±2^53 - 1 时为字符串。 |
+| `FLOAT64` | 数字；`"NaN"`、`"Infinity"`、`"-Infinity"` 为字符串。 |
+| `NUMERIC`、`BIGNUMERIC` | 能精确表示时为数字，否则为十进制字符串。 |
+| `BOOL` | 布尔值。 |
+| `TIMESTAMP` | 带微秒的 ISO 8601 UTC 字符串，例如 `2024-03-04T14:00:00.123456Z`。 |
+| `DATE`、`DATETIME`、`TIME`、`INTERVAL`、`RANGE` | BigQuery 的规范字符串。 |
+| `STRING`、`BYTES`、`GEOGRAPHY` | 字符串；`BYTES` 为 base64，`GEOGRAPHY` 为 WKT。 |
+| `JSON` | 解析后的 JSON 值。 |
+| `ARRAY`、`STRUCT` | 按相同规则转换后的数组和对象。 |
+
+BigQuery 表上声明的主键和外键（`NOT ENFORCED`）会成为模型的主键和关系。GoogleSQL 无法读取旧版 SQL（legacy SQL）视图，因此这类视图会被跳过。
+
+按日期分片的表（例如 Google Analytics 4 导出的每日 `events_YYYYMMDD` 表）会合并为一个名为 `events_*` 的[通配符表](https://cloud.google.com/bigquery/docs/querying-wildcard-tables)模型。它的列取自最新的分片，并附带 `_TABLE_SUFFIX` 列，查询时按它过滤，只读取需要的日期。在 `tables` 中列出 `events_*` 或单个分片，可以选择要暴露的内容。
+
+<Heading as="h3" id="network-access">网络访问</Heading>
+
+AVA 通过 Node.js 的 `fetch` 访问 `bigquery.googleapis.com` 和 `oauth2.googleapis.com`。如果只能通过代理访问，请同时设置 `HTTPS_PROXY` 和 `NODE_USE_ENV_PROXY=1`（需要 Node.js 22.21 或更高版本）。
 
 ## 腾讯文档智能表格
 

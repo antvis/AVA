@@ -60,6 +60,10 @@ export async function run([dataset]: string[], options: Options): Promise<{ data
     config.options.path = resolve(config.options.path);
   }
 
+  if (config.type === 'bigquery' && config.options.keyFilename) {
+    config.options.keyFilename = resolve(config.options.keyFilename);
+  }
+
   if (config.type === 'feishu-bitable') {
     const creds = await feishuCredentials(config.options);
     config.options.appId = creds.appId;
@@ -92,8 +96,8 @@ Options:
   -t, --type <type>  Override the type inferred from the file extension.
                     Types: csv-file, json-file, parquet, excel, sqlite.
                     Cannot be used with @file, stdin configs, or Feishu URLs.
-  --engine <type>    duckdb, python, javascript, supabase, clickhouse, or sqlserver.
-                    Default: supabase/clickhouse/sqlserver for those sources, otherwise duckdb.
+  --engine <type>    duckdb, python, javascript, supabase, clickhouse, sqlserver, or bigquery.
+                    Default: supabase/clickhouse/sqlserver/bigquery for those sources, otherwise duckdb.
                     Fixed for the session; source support depends on the engine.
                     feishu-bitable uses duckdb. The loaded view is named data.
   -h, --help         Show help.
@@ -112,12 +116,25 @@ Feishu Bitable:
   The whole table is loaded as one view named data; the view query is ignored.
   Docx and Sheets links are not supported.
 
+BigQuery:
+  Pass a "bigquery" config via @file or stdin; the bigquery engine is selected automatically.
+  dataset is a dataset ID in projectId, or project.dataset for another project's dataset,
+  e.g. bigquery-public-data.thelook_ecommerce. projectId runs and pays for the query jobs; it
+  defaults to GOOGLE_CLOUD_PROJECT or the credentials' project. Credentials come from one of
+  keyFilename, credentials, or accessToken, otherwise from GOOGLE_APPLICATION_CREDENTIALS or
+  gcloud auth application-default login. Grant roles/bigquery.jobUser on the project and
+  roles/bigquery.dataViewer on the dataset. Each query is dry-run first and must be one
+  SELECT; maximumBytesBilled (default 1073741824) and queryTimeoutMs (default 30000) bound
+  every job. tables limits the exposed tables. Queries use GoogleSQL.
+
 Environment:
   OPENAI_API_KEY     Required for text sources and subsequent AI commands.
   OPENAI_MODEL       Model name (default: gpt-4o-mini).
   OPENAI_BASE_URL    Optional API base URL.
   AVA_FEISHU_APP_ID      Feishu app credentials for feishu-bitable sources.
   AVA_FEISHU_APP_SECRET
+  GOOGLE_APPLICATION_CREDENTIALS  Credentials file for bigquery sources.
+  GOOGLE_CLOUD_PROJECT   Default BigQuery job project.
   Model settings are fixed when the dataset is loaded.
 
 In a terminal, shows the dataset ID and suggested next commands.
@@ -137,11 +154,22 @@ Examples:
   ava source "https://my.feishu.cn/wiki/<nodeToken>?table=<tableId>"
   ava source @feishu.json
   ava source @sqlserver.json
+  ava source @bigquery.json
 
 SQL Server:
   Pass a "sqlserver" config via @file or stdin; its engine is selected automatically.
   Required options: host, database, user, password. Use a read-only SQL login.
   TLS certificate verification is enabled by default. Queries use T-SQL.
+
+bigquery.json:
+{
+  "type": "bigquery",
+  "options": {
+    "projectId": "<project-id>",
+    "dataset": "bigquery-public-data.thelook_ecommerce",
+    "keyFilename": "<service-account-key>.json"
+  }
+}
 
 feishu.json:
 {

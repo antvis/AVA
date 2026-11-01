@@ -77,6 +77,7 @@ export type EngineConfig =
   | { type: 'supabase' }
   | { type: 'clickhouse' }
   | { type: 'sqlserver' }
+  | { type: 'bigquery' }
   | { type: string; [option: string]: unknown };
 
 /**
@@ -103,7 +104,8 @@ export interface AnalysisConfig extends ExecutionOptions {
  * - file types: `csv-file`, `json-file`, `parquet` (read through DuckDB's readers)
  * - database types: `mysql`, `postgresql`, `sqlite`, `mongodb` (ATTACH through DuckDB's extension)
  * - direct query types: `clickhouse` (schema discovered and SQL executed through ClickHouse's HTTP API)
- * - cloud types: `supabase` (schema discovered and SQL executed through the Supabase Management API — data never leaves the SaaS; handled by SaasDBEngine)
+ * - cloud types: `supabase` (schema discovered and SQL executed through the Supabase Management API — data never leaves the SaaS; handled by SaasDBEngine),
+ *   `bigquery` (schema discovered and GoogleSQL executed as read-only BigQuery query jobs)
  */
 export type SourceType =
   | 'csv'
@@ -121,7 +123,8 @@ export type SourceType =
   | 'clickhouse'
   | 'feishu-bitable'
   | 'tencent-smartsheet'
-  | 'sqlserver';
+  | 'sqlserver'
+  | 'bigquery';
 
 /**
  * DuckDB read_csv reader options.
@@ -486,6 +489,55 @@ export type ClickHouseSourceOptions = Omit<ClickHouseClientConfigOptions, 'host'
   password?: string;
 };
 
+/**
+ * Google credentials in the JSON formats Google Cloud writes: a service account key, or the
+ * user credentials saved by `gcloud auth application-default login`.
+ */
+export type BigQueryCredentials =
+  | {
+      type: 'service_account';
+      client_email: string;
+      private_key: string;
+      private_key_id?: string;
+      project_id?: string;
+      token_uri?: string;
+      [field: string]: unknown;
+    }
+  | {
+      type: 'authorized_user';
+      client_id: string;
+      client_secret: string;
+      refresh_token: string;
+      quota_project_id?: string;
+      [field: string]: unknown;
+    };
+
+/**
+ * Options for BigQuery data sources. Schema is read through the BigQuery API and GoogleSQL runs as
+ * read-only query jobs, so data stays in BigQuery. Supply at most one of accessToken, credentials and
+ * keyFilename; without them, Application Default Credentials are used.
+ */
+export interface BigQuerySourceOptions {
+  /** Dataset to expose: a dataset ID in `projectId`, or `project.dataset` for another project's dataset. */
+  dataset: string;
+  /** Project that runs and pays for query jobs. Defaults to GOOGLE_CLOUD_PROJECT or the credentials' project. */
+  projectId?: string;
+  /** Tables and views to expose; defaults to every queryable table in the dataset. */
+  tables?: string[];
+  /** Path to a service account key or `authorized_user` credentials file. */
+  keyFilename?: string;
+  /** Parsed service account key or `authorized_user` credentials. */
+  credentials?: BigQueryCredentials;
+  /** OAuth 2.0 access token, or a function returning a current one; refreshing it is the caller's job. */
+  accessToken?: string | (() => Promise<string>);
+  /** Bytes billed allowed per query; larger queries fail without charge. Default 1 GiB (1073741824). */
+  maximumBytesBilled?: number;
+  /** Time allowed per query in milliseconds before the job is cancelled. Default 30000. */
+  queryTimeoutMs?: number;
+  /** BigQuery API root URL, such as a regional or Private Service Connect endpoint. Default `https://bigquery.googleapis.com`. */
+  apiEndpoint?: string;
+}
+
 export interface FeishuBitableSourceOptions {
   url?: string;
   appToken?: string;
@@ -541,6 +593,7 @@ export interface SQLServerSourceOptions {
  * - database types (mysql/postgresql/sqlite/mongodb): ATTACH through DuckDB's extension
  * - direct query types (clickhouse): schema/SQL over ClickHouse's HTTP API
  * - cloud types (supabase): schema/SQL over the Management API (SaasDBEngine)
+ * - cloud types (bigquery): schema over the BigQuery API, GoogleSQL as read-only query jobs
  */
 export type DataSourceConfig =
   | { type: 'csv'; options: CSVSourceOptions }
@@ -558,7 +611,8 @@ export type DataSourceConfig =
   | { type: 'clickhouse'; options: ClickHouseSourceOptions }
   | { type: 'feishu-bitable'; options: FeishuBitableSourceOptions }
   | { type: 'tencent-smartsheet'; options: TencentDocsSourceOptions }
-  | { type: 'sqlserver'; options: SQLServerSourceOptions };
+  | { type: 'sqlserver'; options: SQLServerSourceOptions }
+  | { type: 'bigquery'; options: BigQuerySourceOptions };
 
 /**
  * File formats readable by DuckDB's readers (csv-file maps to csv, json-file to json).

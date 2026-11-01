@@ -62,6 +62,7 @@ const inputTypes = new Set([
   'SQLiteSourceOptions',
   'MongoDBSourceOptions',
   'SupabaseSourceOptions',
+  'BigQuerySourceOptions',
 ]);
 const tableFields = new Set(
   [...sourceText.matchAll(/^\| `([^`]+)`\s*\|/gm)].map((match) => match[1].split('.').at(-1))

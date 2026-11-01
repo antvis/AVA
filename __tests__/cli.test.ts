@@ -175,7 +175,34 @@ describe('source', () => {
     }
   });
 
-  it.each(['duckdb', 'python', 'javascript', 'supabase', 'clickhouse', 'sqlserver'])(
+  it('loads a BigQuery config with a key file relative to the working directory', async () => {
+    const directory = await mkdtemp(join(tmpdir(), 'ava-cli-test-'));
+    try {
+      const file = join(directory, 'bigquery.json');
+      const options = { projectId: 'jobs', dataset: 'bigquery-public-data.thelook_ecommerce', keyFilename: 'key.json' };
+      await writeFile(file, JSON.stringify({ type: 'bigquery', options }));
+      await execute(['source', `@${file}`]);
+      expect(createSession).toHaveBeenCalledExactlyOnceWith(
+        { type: 'bigquery', options: { ...options, keyFilename: resolve('key.json') } },
+        { model: 'gpt-4o-mini' },
+        undefined
+      );
+      await writeFile(file, JSON.stringify({ type: 'bigquery', options: { ...options, location: 'US' } }));
+      await expect(run(['source', `@${file}`])).rejects.toThrow('Unrecognized key');
+      expect(createSession).toHaveBeenCalledOnce();
+    } finally {
+      await rm(directory, { recursive: true, force: true });
+    }
+  });
+
+  it('documents BigQuery sources in source help', async () => {
+    const help = await execute(['source', '--help']);
+    expect(help).toContain('bigquery.json');
+    expect(help).toContain('roles/bigquery.jobUser');
+    expect(help).toContain('maximumBytesBilled');
+  });
+
+  it.each(['duckdb', 'python', 'javascript', 'supabase', 'clickhouse', 'sqlserver', 'bigquery'])(
     'passes an explicit %s engine with a source config',
     async (engine) => {
       const directory = await mkdtemp(join(tmpdir(), 'ava-cli-test-'));

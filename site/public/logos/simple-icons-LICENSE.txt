@@ -1,9 +1,10 @@
-MongoDB and Supabase icons from Simple Icons v16.0.0.
+MongoDB, Supabase and Google BigQuery icons from Simple Icons v16.0.0.
 https://github.com/simple-icons/simple-icons/tree/16.0.0
 
 Upstream sources:
 MongoDB: https://www.mongodb.com/pressroom
 Supabase: https://github.com/supabase/supabase/blob/4031a7549f5d46da7bc79c01d56be4177dc7c114/packages/common/assets/images/supabase-logo-wordmark--light.svg
+Google BigQuery: https://cloud.google.com/icons
 
 Brand trademarks remain the property of their respective owners.
 

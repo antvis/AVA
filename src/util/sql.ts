@@ -31,6 +31,11 @@ export function sqlIdentifier(name: string): string {
   return `"${name.replace(/"/g, '""')}"`;
 }
 
+/** Quote a BigQuery GoogleSQL identifier; backslashes and backticks are escaped with a backslash. */
+export function bigQueryIdentifier(name: string): string {
+  return `\`${name.replace(/[\\`]/g, '\\$&')}\``;
+}
+
 /** Serialize a single DuckDB reader option value (string/number/boolean/array/map) */
 function serializeOptionValue(value: unknown): string | null {
   if (typeof value === 'string') return sqlStringLiteral(value);

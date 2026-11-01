@@ -38,8 +38,31 @@ await ava.source({
 
 使用 `url` 或 `host`，并提供必填的 `database`。`username` 的优先级高于别名 `user`。查询通过官方 ClickHouse 客户端执行，并启用只读设置。
 
+<Heading as="h2" id="bigquery">BigQuery</Heading>
+
+```typescript
+const ava = new AVA({
+  llm: { model: 'YOUR_MODEL', apiKey: process.env.OPENAI_API_KEY },
+  engine: { type: 'bigquery' },
+});
+await ava.source({
+  type: 'bigquery',
+  options: {
+    projectId: 'YOUR_PROJECT_ID',
+    dataset: 'bigquery-public-data.thelook_ecommerce',
+    keyFilename: './service-account.json',
+  },
+});
+
+const result = await ava.analyze('销售额最高的 5 个商品类别是哪些？');
+```
+
+引擎通过 BigQuery API 读取表元数据，并在 `projectId` 中以查询作业执行 GoogleSQL，数据行不会被复制出 BigQuery。每条语句先做 dry run，必须是单条 `SELECT`。每个作业都受 `maximumBytesBilled`（默认 1 GiB）和 `queryTimeoutMs`（默认 30 秒）约束，超时的作业会被取消。凭证可以来自服务账号密钥、`gcloud` 应用默认凭证、Google Cloud 元数据服务器，或应用提供的访问令牌。
+
+生成的查询按名称引用数据源中的表，其他需要引用的标识符用反引号包裹，并用 `UNNEST` 读取 `ARRAY` 列。统计信息使用 GoogleSQL 聚合计算；`median` 使用 `PERCENTILE_CONT`，会再读取一次该列。统计查询和其他查询一样计费，因此在模型需要了解取值格式时选择 `top_values` 等指标即可，例如 Google Analytics `event_date` 列中 `YYYYMMDD` 格式的字符串。
+
 <Heading as="h2" id="shared-workflow">共同工作流</Heading>
 
-两种引擎都支持 `schema()`、`profile()`、`translate()`、`query()` 和 `analyze()`。在 JavaScript API 中，数据源类型与引擎类型需要匹配。使用结束后调用 `await ava.dispose()` 释放资源。
+这些引擎都支持 `schema()`、`profile()`、`translate()`、`query()` 和 `analyze()`。在 JavaScript API 中，数据源类型与引擎类型需要匹配。使用结束后调用 `await ava.dispose()` 释放资源。
 
-完整配置表见 [Supabase 参数](/documentation/data/sources/#supabase)和 [ClickHouse 选项](/documentation/data/sources/#clickhouse)。
+完整配置表见 [Supabase 参数](/documentation/data/sources/#supabase)、[ClickHouse 选项](/documentation/data/sources/#clickhouse)和 [BigQuery 选项](/documentation/data/sources/#bigquery)。

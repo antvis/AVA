@@ -6,7 +6,7 @@ This documentation covers AVA 4.0. Install `@antv/ava@4` with Node.js 22.13.0 or
 
 The core workflow is `source()` → `analyze()` → `visualize()`. `source()` replaces the current dataset and returns no value; use `schema()` to inspect it and `profile()` for statistics. Use `suggest()` to discover questions, `translate()` and `query()` to control query execution, or `recommend()` and `viz()` to control chart generation. Always await `dispose()` when finished.
 
-DuckDB is the default Node.js engine. JavaScript supports browsers and Node.js; Python, Supabase, and ClickHouse provide additional Node.js execution options. Follow the linked guides for source support, configuration, and complete API signatures.
+DuckDB is the default Node.js engine. JavaScript supports browsers and Node.js; Python, Supabase, ClickHouse, and BigQuery provide additional Node.js execution options. Follow the linked guides for source support, configuration, and complete API signatures.
 
 ## Get started
 
