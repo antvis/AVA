@@ -10,7 +10,7 @@ const DISCUSSION = 'https://github.com/antvis/AVA/issues/1035';
 const PROJECTS = [
   {
     name: 'AVA Notebook',
-    category: 'Analysis workspace',
+    origin: 'community',
     description: 'Revisit the SQL, results, and evidence behind your analysis in an editable notebook.',
     status: 'In development',
     href: 'https://github.com/yvonneyx/ava-notebook',
@@ -20,7 +20,7 @@ const PROJECTS = [
   },
   {
     name: 'DeepSeek Harness',
-    category: 'dsh-antv-ava',
+    origin: 'community',
     description: 'Bring AVA v4 queries, streaming narratives, and AntV charts into DSH conversations.',
     status: 'Community integration',
     href: 'https://github.com/HellowVirgil/dsh-antv-ava',
@@ -30,7 +30,7 @@ const PROJECTS = [
   },
   {
     name: 'DuckDB-Wasm',
-    category: 'Browser engine',
+    origin: 'community',
     description: 'Run SQL on CSV data in a browser worker, then analyze and visualize with AVA.',
     status: 'Community extension',
     href: 'https://github.com/yvonneyx/ava-engine-duckdb-wasm',
@@ -39,7 +39,7 @@ const PROJECTS = [
   },
   {
     name: 'ava-observability',
-    category: 'Tracing & diagnostics',
+    origin: 'community',
     description: 'Trace analysis steps, timings, and SQL attempts through AVA’s public events.',
     status: 'Community extension',
     href: 'https://github.com/lyw405/ava-observability',
@@ -48,7 +48,7 @@ const PROJECTS = [
   },
   {
     name: 'AVA Agent Skill',
-    category: 'Agent workflow',
+    origin: 'official',
     description: 'Explore data and generate charts directly from the AI agent you already use.',
     status: 'Agent Skill',
     href: 'https://github.com/antvis/AVA',
@@ -58,7 +58,7 @@ const PROJECTS = [
   },
   {
     name: 'AI Dou',
-    category: 'Game analytics',
+    origin: 'community',
     description: 'Review AI card games through match data, analysis, and visual recaps.',
     status: 'In development',
     href: 'https://github.com/Keikeikm/ai-dou',
@@ -68,7 +68,7 @@ const PROJECTS = [
   },
   {
     name: 'AVA Feishu Bot',
-    category: 'Feishu integration',
+    origin: 'community',
     description: 'A proposed chat bot for querying files and returning answers and charts in Feishu.',
     status: 'Planned',
     href: `${DISCUSSION}#issuecomment-6342091466`,
@@ -77,7 +77,7 @@ const PROJECTS = [
   },
   {
     name: 'AVA Feishu Plugin',
-    category: 'Feishu integration',
+    origin: 'community',
     description: 'A proposed Bitable plugin for analyzing and visualizing data inside Feishu.',
     status: 'Planned',
     href: `${DISCUSSION}#issuecomment-6342091466`,
@@ -155,30 +155,30 @@ function ProjectCard({
         )}
       </div>
       <div className={styles.cardBody}>
-        <span className={styles.category}>{project.category}</span>
-        <h3>{project.name}</h3>
-        <p>{project.description}</p>
-        <div className={styles.cardFooter}>
-          <span className={styles.status} data-planned={project.status === 'Planned'}>
-            {project.status}
+        <div className={styles.cardHeading}>
+          <h3>{project.name}</h3>
+          <span className={styles.originTag} data-origin={project.origin}>
+            <span>{project.origin === 'official' ? 'Official' : 'Community'}</span>
           </span>
-          <a
-            href={project.href}
-            tabIndex={duplicate ? -1 : undefined}
-            target="_blank"
-            rel="noopener noreferrer"
-            aria-label={`${project.status === 'Planned' ? 'GitHub proposal' : 'GitHub repository'}: ${
-              project.repository
-            }`}
-            title={project.repository}
-          >
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-              <path d="M12 .75a11.25 11.25 0 0 0-3.56 21.92c.56.1.77-.24.77-.54v-2.1c-3.13.68-3.79-1.33-3.79-1.33-.51-1.3-1.25-1.65-1.25-1.65-1.02-.7.08-.69.08-.69 1.13.08 1.72 1.16 1.72 1.16 1 1.72 2.63 1.22 3.27.93.1-.73.4-1.22.72-1.5-2.5-.28-5.13-1.25-5.13-5.56 0-1.23.44-2.23 1.16-3.02-.12-.28-.5-1.43.11-2.98 0 0 .95-.3 3.1 1.15a10.8 10.8 0 0 1 5.64 0c2.15-1.46 3.09-1.15 3.09-1.15.61 1.55.23 2.7.11 2.98a4.35 4.35 0 0 1 1.16 3.02c0 4.33-2.64 5.27-5.15 5.55.4.35.76 1.03.76 2.08v3.11c0 .3.2.65.77.54A11.25 11.25 0 0 0 12 .75Z" />
-            </svg>
-            <span className={styles.repository}>{project.repository}</span>
-            <span aria-hidden="true">↗</span>
-          </a>
         </div>
+        <a
+          className={styles.repoLink}
+          href={project.href}
+          tabIndex={duplicate ? -1 : undefined}
+          target="_blank"
+          rel="noopener noreferrer"
+          aria-label={`${project.status === 'Planned' ? 'GitHub proposal' : 'GitHub repository'}: ${
+            project.repository
+          }`}
+          title={project.repository}
+        >
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+            <path d="M12 .75a11.25 11.25 0 0 0-3.56 21.92c.56.1.77-.24.77-.54v-2.1c-3.13.68-3.79-1.33-3.79-1.33-.51-1.3-1.25-1.65-1.25-1.65-1.02-.7.08-.69.08-.69 1.13.08 1.72 1.16 1.72 1.16 1 1.72 2.63 1.22 3.27.93.1-.73.4-1.22.72-1.5-2.5-.28-5.13-1.25-5.13-5.56 0-1.23.44-2.23 1.16-3.02-.12-.28-.5-1.43.11-2.98 0 0 .95-.3 3.1 1.15a10.8 10.8 0 0 1 5.64 0c2.15-1.46 3.09-1.15 3.09-1.15.61 1.55.23 2.7.11 2.98a4.35 4.35 0 0 1 1.16 3.02c0 4.33-2.64 5.27-5.15 5.55.4.35.76 1.03.76 2.08v3.11c0 .3.2.65.77.54A11.25 11.25 0 0 0 12 .75Z" />
+          </svg>
+          <span className={styles.repository}>{project.repository}</span>
+          <span aria-hidden="true">↗</span>
+        </a>
+        <p>{project.description}</p>
       </div>
     </article>
   );
@@ -247,7 +247,6 @@ export default function Ecosystem() {
           description="Projects, extensions, and ideas from the AVA community."
           align="left"
         />
-        <span className={styles.projectCount}>{PROJECTS.length} projects & integrations</span>
       </div>
       <div
         id="ecosystem-projects"

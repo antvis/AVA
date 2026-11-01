@@ -1,8 +1,9 @@
 .grid {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 26px;
-  margin-top: 44px;
+  gap: 28px;
+  max-width: 1080px;
+  margin: 64px auto 0;
 }
 .card {
   --wash: #b1def7;
@@ -11,6 +12,7 @@
   display: flex;
   flex-direction: column;
   min-width: 0;
+  min-height: 390px;
   overflow: hidden;
   isolation: isolate;
   border: 1px solid #e2e8ec;
@@ -55,16 +57,16 @@
 }
 .card > p {
   min-height: 48px;
-  margin: 16px 28px 0;
+  margin: 16px 28px 28px;
   text-align: center;
   color: #6a7880;
-  font-size: 15px;
+  font-size: 14px;
   line-height: 1.6;
 }
 .art {
   position: relative;
   height: 190px;
-  margin-top: 28px;
+  margin-top: auto;
   flex-shrink: 0;
   color: #56707d;
 }
@@ -351,89 +353,6 @@
 .chartTag span {
   font-size: 10px;
 }
-.localBoundary {
-  position: absolute;
-  top: 3px;
-  left: 11%;
-  width: 78%;
-  height: calc(100% - 35px);
-  min-height: 80px;
-  border: 1px dashed #8fb5be;
-  border-radius: 12px;
-  background: #ffffff34;
-}
-.boundaryLabel {
-  position: absolute;
-  top: -7px;
-  left: 14px;
-  padding: 0 6px;
-  background: #e4f2f3;
-  color: #7197a0;
-  font-size: 9px;
-}
-.shield {
-  position: absolute;
-  top: 50%;
-  left: 13%;
-  display: grid;
-  place-items: center;
-  width: 56px;
-  height: 56px;
-  transform: translateY(-50%) rotate(-6deg);
-  border: 1px solid white;
-  border-radius: 15px;
-  background: #fffffff2;
-  color: #5c98a4;
-  box-shadow: 0 5px 14px #477a8814;
-}
-.localConnector {
-  position: absolute;
-  left: 33%;
-  top: 50%;
-  width: 25%;
-  height: 1px;
-  background: #ffffffe6;
-}
-.engineNodes {
-  position: absolute;
-  right: 10%;
-  top: 50%;
-  display: grid;
-  gap: 6px;
-  transform: translateY(-50%);
-}
-.engineNodes > span {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  min-width: 80px;
-  padding: 8px 12px;
-  border: 1px solid #fff;
-  border-radius: 7px;
-  background: #ffffffd9;
-  font-size: 10px;
-  color: #6e919a;
-  box-shadow: 0 3px 8px #477a8808;
-}
-.engineNodes i {
-  width: 4px;
-  height: 4px;
-  border-radius: 50%;
-  background: #99b5bd;
-}
-.endpoint {
-  position: absolute;
-  bottom: 9px;
-  left: 0;
-  width: 100%;
-  text-align: center;
-  font-size: 10px;
-  color: #7197a0;
-}
-.endpoint > span {
-  padding-inline: 7px;
-  color: #8fafb7;
-}
 .paperBack {
   position: absolute;
   top: 9px;
@@ -484,7 +403,8 @@
   border-radius: 3px;
   background: #dfc1a4;
 }
-.agentBlocks {
+.agentBlocks,
+.securityGraphic {
   display: block;
   width: 100%;
   height: 100%;
@@ -503,7 +423,10 @@
   .grid {
     grid-template-columns: 1fr;
     gap: 20px;
-    margin-top: 30px;
+    margin-top: 44px;
+  }
+  .card {
+    min-height: 0;
   }
   .card h3 {
     margin-top: 30px;
@@ -512,11 +435,11 @@
   .card > p {
     min-height: 0;
     margin: 12px 28px 0;
-    font-size: 15px;
+    font-size: 14px;
     line-height: 1.6;
   }
   .art {
-    height: 225px;
+    height: 210px;
     margin-top: 24px;
   }
   .sourceNode {
@@ -567,24 +490,6 @@
   }
   .columns span {
     font-size: 10px;
-  }
-  .localBoundary {
-    top: 12px;
-    height: calc(100% - 55px);
-  }
-  .shield {
-    width: 58px;
-    height: 58px;
-  }
-  .engineNodes {
-    gap: 12px;
-  }
-  .engineNodes > span {
-    padding: 10px 14px;
-    font-size: 12px;
-  }
-  .endpoint {
-    bottom: 18px;
   }
   .benchmarkSheet {
     top: 15px;

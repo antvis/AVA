@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import styles from './FeatureCards.module.css';
 import AgentBlocks from './AgentBlocks';
+import DataBoundary from './DataBoundary';
 
 function CardLink({ href, children }: { href: string; children: string }) {
   return (
@@ -30,7 +31,7 @@ export default function FeatureCards() {
           <br />
           One interface.
         </h3>
-        <p>Files, databases, and SaaS — one source interface for your agent.</p>
+        <p>A consistent data context lets your agent reason across different sources.</p>
         <div
           className={`${styles.art} ${styles.sources}`}
           role="img"
@@ -60,7 +61,7 @@ export default function FeatureCards() {
           <br />
           an evidence trail.
         </h3>
-        <p>Follow the executed query and results behind each answer.</p>
+        <p>Executed queries and their results give each answer a checkable basis.</p>
         <div
           className={`${styles.art} ${styles.evidence}`}
           role="img"
@@ -93,7 +94,7 @@ export default function FeatureCards() {
           <br />
           For your question.
         </h3>
-        <p>Recommend charts from your question and data. Export the spec or HTML.</p>
+        <p>The question and the shape of the data guide the chart choice.</p>
         <div
           className={`${styles.art} ${styles.charts}`}
           role="img"
@@ -131,45 +132,13 @@ export default function FeatureCards() {
           <br />
           Run AVA Locally.
         </h3>
-        <p>Process data locally. Choose the model endpoint for AI features.</p>
+        <p>You control where analysis runs and which model endpoint it uses.</p>
         <div
-          className={`${styles.art} ${styles.local}`}
+          className={styles.art}
           role="img"
-          aria-label="DuckDB and Python execute locally, with AI features using your chosen model endpoint"
+          aria-label="Local data processing inside a controlled environment, with a separate connection to your chosen model endpoint"
         >
-          <div className={styles.localBoundary} aria-hidden="true">
-            <span className={styles.boundaryLabel}>Local data processing</span>
-            <div className={styles.shield}>
-              <svg width="29" height="32" viewBox="0 0 32 36" fill="none">
-                <path
-                  d="m16 3 11 4v10c0 7-5 12-11 16C10 29 5 24 5 17V7l11-4Z"
-                  stroke="currentColor"
-                  strokeWidth="1.5"
-                />
-                <path
-                  d="m11 17 4 4 7-8"
-                  stroke="currentColor"
-                  strokeWidth="1.8"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                />
-              </svg>
-            </div>
-            <span className={styles.localConnector} />
-            <div className={styles.engineNodes}>
-              <span>
-                <i />
-                DuckDB
-              </span>
-              <span>
-                <i />
-                Python
-              </span>
-            </div>
-          </div>
-          <div className={styles.endpoint} aria-hidden="true">
-            AI context <span>↔</span> Your model endpoint
-          </div>
+          <DataBoundary />
         </div>
         <CardLink href="/documentation/engines/overview/">Explore local engines</CardLink>
       </article>
@@ -180,7 +149,7 @@ export default function FeatureCards() {
           <br />
           can inspect.
         </h3>
-        <p>Inspect published evaluations, including models, datasets, and scoring.</p>
+        <p>Accuracy is measured against reference answers under published test conditions.</p>
         <div
           className={`${styles.art} ${styles.evaluations}`}
           role="img"
@@ -214,11 +183,11 @@ export default function FeatureCards() {
           <br />
           Built to reuse.
         </h3>
-        <p>Use an Agent Skill, the command line, or the TypeScript SDK.</p>
+        <p>Your agent provides the reasoning; AVA executes the data workflow.</p>
         <div
           className={`${styles.art} ${styles.toolkit}`}
           role="img"
-          aria-label="Modular building blocks connect your agent to AVA Skill and data visualization"
+          aria-label="Claude and Codex building blocks connect to a central AVA Skill block"
         >
           <AgentBlocks />
         </div>
