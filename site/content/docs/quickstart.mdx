@@ -1,26 +1,32 @@
-Using AVA through an AI agent? Start with the [Agent Skill guide](/documentation/agent-skill/). This quickstart covers the TypeScript / JavaScript SDK.
+Using AVA through an AI agent? Start with the [Agent Skill guide](/documentation/agent-skill/). This quickstart uses the JavaScript SDK to answer a question and save a chart.
 
 ## Install
 
-Use Node.js **22.13.0 or later**, as required by the package. Install AVA 4.0.0 with your preferred package manager:
+Use Node.js **22.13 or later**. In your project directory, install AVA 4.x:
 
 ```bash
 npm install @antv/ava@4
-# or
-pnpm add @antv/ava@4
-# or
-yarn add @antv/ava@4
 ```
 
 ## Configure your model
 
-The example below reads `OPENAI_API_KEY` and optional `OPENAI_MODEL` / `OPENAI_BASE_URL` from your process environment. Set these before running it. AVA also accepts a preconfigured AI SDK model; see [model configuration](/documentation/configuration/).
+AVA uses a language model to generate queries and explain results. Set your provider credentials in the terminal where you will run the example:
+
+```bash
+export OPENAI_API_KEY='<your-api-key>'
+export OPENAI_MODEL='gpt-4o-mini'
+# For another OpenAI-compatible provider, set its model name above and API URL below:
+# export OPENAI_BASE_URL='https://your-provider.example/v1'
+```
+
+The example reads these variables explicitly. See [model configuration](/documentation/configuration/) for other providers and AI SDK model objects.
 
 ## Run your first analysis
 
-This complete Node.js example uses the default DuckDB engine. Save it as an ES module in a project with `@antv/ava` installed.
+Save this as `analysis.mjs`. It loads three rows with the default DuckDB engine, calculates revenue by region, and saves a chart:
 
 ```javascript
+import { writeFile } from 'node:fs/promises';
 import { AVA } from '@antv/ava';
 
 const ava = new AVA({
@@ -43,35 +49,42 @@ try {
     },
   });
 
-  const schema = await ava.schema();
-  const profile = await ava.profile();
-  console.log(schema.models, profile.models[0].metrics);
-
-  const result = await ava.analyze('Show total revenue by region');
-  console.log(result.text, result.data);
+  const result = await ava.analyze('Show total revenue by region as a column chart');
+  console.log(result.text);
+  console.table(result.data);
 
   const chart = await ava.visualize(result);
-  if (chart) console.log(chart.config);
+  if (chart) {
+    await writeFile('revenue.html', chart.html);
+    console.log('Saved revenue.html');
+  }
 } finally {
   await ava.dispose();
 }
 ```
 
-<Callout>
-  Loading, schema discovery, and profiling are separate. <code>schema()</code> discovers structure on first use;
-  <code>profile()</code> computes and retains statistics. Analysis obtains schema when needed.
-</Callout>
+Run it from the same directory:
 
-## Cleanup and errors
+```bash
+node analysis.mjs
+```
 
-`source()` replaces the current dataset and releases the previous engine. `dispose()` releases connections and engine resources and clears the schema and cached profile. Always await cleanup, including after a failed analysis.
+The answer should show **East: 200** and **West: 90**. Summary wording, row order, and column names can vary with the model. Open `revenue.html` in a browser with internet access to view the chart. If no chart is recommended, `visualize()` returns `null`.
+
+## What happens in this example
+
+- `source()` loads the data. Calling it again replaces the current source.
+- `analyze()` discovers table and column names, generates and executes a query, and summarizes the result. It returns rows in `data` and a summary in `text`.
+- `visualize()` uses the question and result rows to generate chart HTML.
+- `dispose()` releases connections and other engine resources, including when a call fails.
+
+You can inspect structure with `schema()`, compute statistics with `profile()`, or add business rules with `semantic()`. These are optional for this example.
 
 ## Next steps
 
-- [Data sources](/documentation/data/sources/) — connect files, inline data, and databases.
-- [Inspect your data](/documentation/data/schema/) — inspect structure and compute statistics.
-- [Define data semantics](/documentation/data/semantic/) — write business rules and reusable measures, with a worked sales example.
-- [Browser usage](/documentation/browser/) — use the frontend entry point.
-- [CLI](/documentation/reference/cli/) — work from your terminal.
+- [Data sources](/documentation/data/sources/) — load files or connect a database.
+- [Analyze data](/documentation/analysis/overview/) — read results, suggest questions, and run queries directly.
+- [Generate visualizations](/documentation/visualization/overview/) — customize chart generation and rendering.
+- [Browser usage](/documentation/browser/) — use the JavaScript engine in a frontend.
 
-See the [API Reference](/documentation/reference/api/) for every method and its input parameters.
+See the [API reference](/documentation/reference/api/) for signatures, parameters, and defaults.

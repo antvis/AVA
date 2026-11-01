@@ -100,7 +100,7 @@ if (result.truncated) {
 }
 ```
 
-`maxRows` is rounded down and clamped to `1`–`1000000`; values outside the safe integer range after rounding use the default. `maxResultBytes` is rounded down and clamped to at least `1`; non-finite values use the default. Both limits also apply to `query()` below. They bound the returned data, not the query's total processing time or memory use.
+These limits also apply to `query()`. They bound returned data, not execution time or memory. See [execution limits](/documentation/reference/api/#executionoptions) for accepted values.
 
 ## Suggest questions
 
@@ -147,27 +147,11 @@ These are illustrative suggestions, not fixed output. In your interface, use the
 
 At most `count` suggestions are returned; the array can be empty. The model is prompted to use the dataset's language for both the question and reason.
 
-### Analyze a suggestion
-
-```typescript
-if (suggestions.length > 0) {
-  const selected = suggestions[0];
-  const answer = await ava.analyze(selected.query);
-  console.log(selected.reason);
-  console.table(answer.data);
-}
-```
+Pass a suggestion's `query` to `analyze()` to answer it.
 
 ## Analysis strategies
 
-`analyze()` uses direct analysis by default. Choose a strategy per call when your question needs a different approach:
-
-| Strategy | Use it for                                                          |
-| -------- | ------------------------------------------------------------------- |
-| `direct` | A focused question answered by generating and executing a query.    |
-| `loop`   | Questions that benefit from intermediate exploration.               |
-
-See [Analysis strategies](/documentation/analysis/strategies/) for examples, retry controls, and step limits.
+`analyze()` uses direct analysis by default: generate and execute a query, then summarize the answer. Choose `loop` for questions that benefit from intermediate exploration. See [Analysis strategies](/documentation/analysis/strategies/) for examples, retries, and step limits.
 
 ## Translate and execute separately
 

@@ -8,7 +8,7 @@
 | ---------------------------------------------------------------------------------------------- | ----------------------------------------------------- |
 | [`ava.ts`](https://github.com/antvis/AVA/blob/ai/src/ava.ts)                                   | Public API, source state, and lifecycle               |
 | [`types.ts`](https://github.com/antvis/AVA/blob/ai/src/types.ts)                               | Configuration, engine, and result contracts           |
-| [`engines.ts`](https://github.com/antvis/AVA/blob/ai/src/engines.ts)                           | Internal engine registry                              |
+| [`engines.ts`](https://github.com/antvis/AVA/blob/ai/src/engines.ts)                           | Engine registry and public `registerEngine()` helper                              |
 | [`analysis/`](https://github.com/antvis/AVA/tree/ai/src/analysis/)                             | Direct and loop strategies                   |
 | [`duckdb/`](https://github.com/antvis/AVA/tree/ai/src/duckdb/)                                 | SQL engine, source loaders, and profiling             |
 | [`interpreter/javascript/`](https://github.com/antvis/AVA/tree/ai/src/interpreter/javascript/) | In-memory data and JavaScript execution               |
@@ -37,7 +37,7 @@
 
 ## Context and state
 
-An AVA instance owns one active engine and its schema/profile cache. `source()` loads data; `schema()` discovers structure on first use. `profile()` computes and retains fresh observations; the data model is assembled from cached metadata when needed. Reloading or disposal clears both caches.
+An AVA instance owns one active engine, cached schema and profile, and saved semantic definitions. `source()` loads data; `schema()` discovers structure on first use. `profile()` computes and retains fresh observations; the data model is assembled from cached metadata when needed. Analysis, translation, and suggestions combine these with semantic definitions. Reloading or disposal clears all three metadata inputs.
 
 Engines retain data and connections. Their `load()` returns no metadata; `schema()` discovers it, `profile(schema, options?)` computes observations, and `getDSL(query, dataModel)` consumes AVA's data model. Shared validators live in `util/schema.ts` and `util/profile.ts`.
 

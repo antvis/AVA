@@ -50,35 +50,50 @@ These events describe steps within analysis. Direct calls to `translate()` and `
 | Direct analysis step | `stepstart`: `{ step: 0 }` | `stepend`: `{ step: 0, action: 'SQL', text }` |
 | Loop iteration | `stepstart`: `{ step, finalAttempt? }` | `stepend`: `{ step, action, text, usage?, finalAttempt? }` |
 
-Failed end events carry `{ error }`. A step failure also carries `step`; the loop's final fallback includes `finalAttempt: true` on both step events. `step` is zero-based. See [analysis strategies](/documentation/analysis/strategies/) for these steps.
+`step` is zero-based. Direct analysis has one step covering translation, execution retries, and optional summarization. Loop analysis has one step per model response; its `action` is `EXPLORE`, `REFINE`, `SQL`, or `CONFIRM`, and `text` excludes that leading tag. The final fallback sets `finalAttempt: true` on both step events. See [analysis strategies](/documentation/analysis/strategies/).
 
-In direct analysis, one step wraps translation, all query retries, and optional summarization. `stepend` reports `action: 'SQL'` and the summary conclusion as `text`, or an empty string when summary is disabled. A recovered query error stays on `queryend`; exhausting retries or a translation/summary failure also produces `stepend.error`.
+A failed operation carries `data.error`. Failed step events also include `step`, any reported loop usage, and `finalAttempt` when applicable. A query error can be corrected by a later attempt; it does not necessarily mean the analysis failed. An error on `analyzeend` means the analysis stopped.
 
-In loop analysis, `stepstart` fires before the model call. `stepend` fires after the whole iteration, including all its queries, and reports the model's `action` (`EXPLORE`, `REFINE`, `SQL`, or `CONFIRM`), `text`, and `usage` when the model returned it. If response parsing or execution subsequently fails, `stepend` retains the reported `usage`; a model call that fails without returning usage cannot report it. The `text` excludes the leading protocol tag; the action is available separately in `action`. Iterations without queries still emit both step events. A recoverable query failure appears on `queryend`; the iteration can finish normally so the next step can correct it. A failure that stops the analysis appears on `stepend.error`, where `action` and `text` may be absent.
-
-For example, an exploration step followed by a refinement step emits:
-
-```text
-stepstart → querystart → queryend → stepend (action: EXPLORE)
-stepstart → stepend (action: REFINE)
-```
-
-For example, a successful direct `analyze()` typically emits:
+A successful direct analysis normally emits:
 
 ```text
 analyzestart → stepstart → translatestart → translateend → querystart → queryend
              → summarizestart → summarizeend → stepend → analyzeend
 ```
 
-Retries can repeat translation and query events. The summary is omitted when `includeSummary` is `false`.
+Retries repeat translation and query events. With `includeSummary: false`, summary events are omitted and the returned `text` is empty. Structured summary fields such as `queryExplanation` and `limitations` are available on `summarizeend`. Both the returned analysis `text` and direct `stepend.data.text` contain only `conclusion`, or an empty string when summarization is disabled.
 
-Direct and loop analysis events include `context.eventId` and `context.stepId`. Each start/end pair shares an internal `pairId`, producing event IDs `${pairId}:start` and `${pairId}:end`; each operation and retry gets a new pair ID.
+## Token usage
 
-In direct analysis, `stepId` groups events from the same analysis and `parentStepIds` is empty. The summary's `data.queryId` references the successful query-end event's complete ID, including `:end`.
+Read `event.data.usage` to observe model token counts:
 
-In loop analysis, each iteration has its own `stepId`, shared by its step and query events. `context.parentStepIds` is empty for the first iteration and contains the previous iteration's ID for later iterations. The final fallback gets a new step ID and follows the same rule.
+| Operation | Event carrying usage |
+| --- | --- |
+| Direct analysis or standalone `translate()` | `translateend` for each translation attempt. |
+| Direct analysis summary | `summarizeend`. |
+| Loop analysis | `stepend` for each model response, including the final fallback. |
 
-In both strategies, step events use `${stepId}:start` and `${stepId}:end` as their event IDs; each operation inside a step uses its own pair ID. Standalone `translate()` / `query()` calls do not currently include this context or emit step events.
+```typescript
+ava.on('*', (event) => {
+  if (event.data.usage) console.log(event.type, event.data.usage);
+});
+```
+
+`usage` follows AI SDK's `LanguageModelUsage`, including `inputTokens`, `outputTokens`, and `totalTokens`. Counts can be undefined when the provider does not report them. Loop steps retain reported usage if response parsing or later execution fails; a model call that fails without returning usage cannot report it.
+
+These events do not cover suggestions, chart generation, or text extraction. Treat them as analysis diagnostics, not a complete billing total.
+
+## Relate events to steps
+
+Analysis step, translation, query, and summary events emitted by `analyze()` include a `context` object:
+
+| Field | Meaning |
+| --- | --- |
+| `eventId` | Unique ID formatted as `<pairId>:start` or `<pairId>:end`. Each operation and retry gets a new pair ID. |
+| `stepId` | Groups a step and its operations. Step events use this ID as their pair ID. |
+| `parentStepIds` | Empty in direct analysis and the first loop step; later loop steps contain the previous step's ID. |
+
+The summary's `data.queryId` references the successful `queryend` event's full ID, including `:end`. Standalone `translate()` and `query()` calls do not include these context fields or emit step events.
 
 ## Listener parameters
 

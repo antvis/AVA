@@ -1,6 +1,6 @@
 ## Start a session
 
-After installing `@antv/ava`, use the `ava` binary (or `npx ava` for a local npm installation). Persistent sessions require macOS or Linux.
+After installing `@antv/ava`, use the `ava` binary (or `npx ava` for a local npm installation). Use Node.js 22.13 or later on macOS or Linux. Download [sales.csv](/examples/agent-skill/sales.csv) to try the commands below.
 
 ```bash
 ava source sales.csv > session.json
@@ -14,7 +14,7 @@ Structured source loading, schema, profile, query, and `viz` do not need a model
 
 ## Source inputs and engines
 
-`ava source` accepts a file or URL, `@file` containing a source configuration, or `-` for standard input. File extensions infer CSV, JSON, Parquet, Excel, and SQLite sources. Override with `--type` for path inputs; configuration files and stdin already include their type.
+`ava source` accepts a file or URL, `@file` containing a source configuration, or `-` for standard input. File extensions infer CSV, JSON, Parquet, Excel, and SQLite sources. Feishu and Lark Bitable URLs are detected automatically; see [credentials and link formats](/documentation/data/sources/#feishu-bitable). Override with `--type` for path inputs; configuration files and stdin already include their type.
 
 Use `--engine` to select an execution engine. The CLI infers Supabase and ClickHouse for matching source configurations; otherwise it defaults to DuckDB. This inference differs from the JavaScript constructor. The engine is fixed for the session. See [source configurations](/documentation/data/sources/) for connection and reader settings.
 

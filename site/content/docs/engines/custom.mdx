@@ -20,7 +20,7 @@ Registration returns no value and applies to the loaded SDK module in the curren
 
 AVA creates a new instance on each `source()` call. It disposes the previous engine before replacement, disposes an engine whose `load()` fails, and releases the active engine on `ava.dispose()`. Open connections in `load()` so failed loads can be cleaned up.
 
-The browser SDK exports the same `registerEngine` API from `@antv/ava/browser`; the supplied engine and its dependencies must support the browser runtime. Use a build that exports this API; older package versions with an internal-only registry need to be upgraded.
+The browser SDK exports the same `registerEngine` API from `@antv/ava/browser`; the supplied engine and its dependencies must support the browser runtime.
 
 ## Engine contract
 
@@ -188,7 +188,7 @@ Return raw JSON without Markdown. If neither metric answers the question, return
 }
 ```
 
-`execute()` validates commands even when called directly through `query()`. The exported `executionResult(rows, schema, options?)` helper applies AVA's row and byte limits; its [parameters](/documentation/reference/api/#executionresult-helper) are also listed in the API reference.
+`execute()` validates commands even when called directly through `query()`. The Node.js export `executionResult(rows, schema, options?)` applies AVA's row and byte limits; its [parameters](/documentation/reference/api/#executionresult-helper) are also listed in the API reference.
 
 This engine has a fixed command vocabulary, so its `getDSL()` accepts but does not use the supplied data model. It omits `profile()`; `analyze()`, `suggest()`, and `query()` still work, but `ava.profile()` reports that profiling is unsupported. The sample holds all input rows in memory; result limits bound the returned data, not the input size or aggregation work.
 

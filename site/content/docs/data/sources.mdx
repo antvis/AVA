@@ -54,6 +54,10 @@
     <strong>ClickHouse</strong>
     <span>Analytics database</span>
   </a>
+  <a href="#feishu-bitable">
+    <strong>Feishu Bitable / Lark</strong>
+    <span>Read a table</span>
+  </a>
   <a href="/documentation/engines/custom/">
     <img src="/logos/contribute.svg" alt="" width="28" height="28" />
     <strong>Custom extension</strong>
@@ -441,9 +445,25 @@ await ava.source({
 });
 ```
 
-Provide `url`, or both `appToken` and `tableId`, along with `appId` and `appSecret`. The CLI also reads credentials from `AVA_FEISHU_APP_ID` / `AVA_FEISHU_APP_SECRET` or `~/.ava/feishu.json`.
+| Field | Type | Required | Meaning |
+| --- | --- | --- | --- |
+| `url` | `string` | URL or `appToken` + `tableId` | Feishu or Lark Bitable link with `/base/` or `/wiki/`. |
+| `appToken` | `string` | Without URL | Bitable app token; must match the URL if both are supplied. |
+| `tableId` | `string` | Without URL; otherwise see below | Table to load; must match the URL's `table` parameter if both are supplied. |
+| `appId` | `string` | Yes in the SDK | App ID used to obtain a tenant access token. |
+| `appSecret` | `string` | Yes in the SDK | App secret for that app. |
 
-Both `/base/` and wiki-hosted `/wiki/` links are supported. Wiki links require wiki read access and wiki space membership so the app can resolve the Bitable. The `view` query parameter is ignored. Complex cells (people, attachments, links, formulas, locations, and groups) are flattened to comma-separated text.
+The app needs read access to the Bitable. Wiki links also require wiki read access and membership of the wiki space. If the link omits `table`, AVA uses the only table; when there are several, it reports their names and IDs so you can choose one. The whole table is loaded; a link's `view` filter is ignored. Complex cells are flattened to comma-separated text.
+
+The CLI detects Feishu and Lark Bitable links automatically:
+
+```bash
+export AVA_FEISHU_APP_ID='<your-app-id>'
+export AVA_FEISHU_APP_SECRET='<your-app-secret>'
+ava source 'https://my.feishu.cn/base/APP_TOKEN?table=TABLE_ID'
+```
+
+The CLI resolves credentials from the source config, then these environment variables, then `~/.ava/feishu.json` containing `{ "appId": "...", "appSecret": "..." }`. SDK callers must pass them in `options` as shown above. Feishu Docs and Sheets links are not supported.
 
 ## Supabase
 
@@ -502,59 +522,11 @@ await ava.source({
 
 AVA requires an endpoint even though the underlying client has a localhost default.
 
-### Forwarded client fields
+### Client options
 
-`ClickHouseSourceOptions` also accepts the following fields from `@clickhouse/client`. This table follows the installed client type declarations (1.23.1); these fields are owned by that dependency. AVA forwards them when creating the client.
+`ClickHouseSourceOptions` also accepts options from `@clickhouse/client`, including `request_timeout`, `http_headers`, `tls`, and `clickhouse_settings`. AVA forwards them when creating the client and enforces `readonly: '1'` on queries. Use the installed client's TypeScript declarations for advanced settings.
 
-| Field                          | Type                          | Default / meaning                                                                                          |
-| ------------------------------ | ----------------------------- | ---------------------------------------------------------------------------------------------------------- |
-| `pathname`                     | `string`                      | Empty; extra proxy path.                                                                                   |
-| `request_timeout`              | `number`                      | `30000` milliseconds.                                                                                      |
-| `max_open_connections`         | `number`                      | `10` sockets per host.                                                                                     |
-| `compression`                  | Object                        | Request and response compression; nested fields below.                                                     |
-| `access_token`                 | `string`                      | Unset; ClickHouse Cloud JWT. Do not combine with username/password.                                        |
-| `application`                  | `string`                      | Empty; application name.                                                                                   |
-| `clickhouse_settings`          | `ClickHouseSettings`          | Empty; server settings map. AVA enforces `readonly: '1'` on every query, overriding a conflicting setting. |
-| `log`                          | Object                        | Client logging options below.                                                                              |
-| `session_id`                   | `string`                      | Empty; no explicit server session.                                                                         |
-| `role`                         | `string \| string[]`          | Unset; server roles.                                                                                       |
-| `http_headers`                 | `Record<string, string>`      | Empty; additional request headers.                                                                         |
-| `additional_headers`           | `Record<string, string>`      | Deprecated client alias; use `http_headers`.                                                               |
-| `keep_alive`                   | Object                        | Socket reuse options below.                                                                                |
-| `json`                         | `Partial<JSONHandling>`       | Native `JSON.parse` / `JSON.stringify`; callbacks below.                                                   |
-| `tracer`                       | `ClickHouseTracer`            | Unset; client tracing implementation.                                                                      |
-| `use_multipart_params`         | `boolean`                     | `false`; always send query parameters as multipart data.                                                   |
-| `use_multipart_params_auto`    | `boolean`                     | `false`; use multipart when encoded parameters exceed 4096 characters.                                     |
-| `tls`                          | TLS options object            | Unset; certificate fields below.                                                                           |
-| `http_agent`                   | `http.Agent \| https.Agent`   | Unset; a custom agent supersedes `max_open_connections`, `tls`, and `keep_alive`. Experimental client API. |
-| `set_basic_auth_header`        | `boolean`                     | `true`; send a Basic Authorization header. Experimental.                                                   |
-| `capture_enhanced_stack_trace` | `boolean`                     | `false`; capture extended client stacks. Experimental.                                                     |
-| `max_response_headers_size`    | `number`                      | Unset; Node.js response header byte limit applies.                                                         |
-| `connection`                   | `Connection<Stream.Readable>` | Unset; experimental client backend connection. Overrides the default HTTP transport and its options.       |
-
-All forwarded fields are optional. Server settings are an extensible, server-version-dependent map rather than an AVA-defined finite list. The dependency's `ClickHouseSettings` type and your server determine accepted keys. Tracer, agent, logger, and connection objects implement the corresponding client contracts; they are not plain AVA configuration objects.
-
-### Nested client options
-
-| Field                                      | Type                                             | Required / default                                                          |
-| ------------------------------------------ | ------------------------------------------------ | --------------------------------------------------------------------------- |
-| `compression.response`                     | `boolean \| { codec: 'gzip' \| 'zstd' \| 'br' }` | Optional; `false`. `true` selects gzip.                                     |
-| `compression.request`                      | `boolean \| RequestCompression`                  | Optional; `false`. `true` selects gzip.                                     |
-| `compression.request.codec`                | `'gzip' \| 'zstd' \| 'br'`                       | Required in the object form.                                                |
-| `compression.request.level`                | `number`                                         | Optional for gzip/zstd; codec default.                                      |
-| `compression.request.quality`              | `number`                                         | Optional for Brotli; default `4`.                                           |
-| `log.LoggerClass`                          | `new () => Logger`                               | Optional; client's default logger.                                          |
-| `log.level`                                | `ClickHouseLogLevel`                             | Optional; `WARN`. Values: `TRACE`, `DEBUG`, `INFO`, `WARN`, `ERROR`, `OFF`. |
-| `keep_alive.enabled`                       | `boolean`                                        | Optional; `true`.                                                           |
-| `keep_alive.idle_socket_ttl`               | `number`                                         | Optional; `2500` ms; `0` disables idle socket management.                   |
-| `keep_alive.eagerly_destroy_stale_sockets` | `boolean`                                        | Optional; `false`.                                                          |
-| `tls.ca_cert`                              | `Buffer`                                         | Required when `tls` is supplied.                                            |
-| `tls.cert`                                 | `Buffer`                                         | Required for mutual TLS.                                                    |
-| `tls.key`                                  | `Buffer`                                         | Required for mutual TLS.                                                    |
-| `json.parse`                               | `<T>(input: string) => T`                        | Optional; parses a JSON string.                                             |
-| `json.stringify`                           | `<T>(input: T) => string`                        | Optional; serializes a value.                                               |
-
-Zstd compression requires Node.js 22.15 or newer in this client. Response compression may conflict with the engine's enforced read-only server settings; leave it disabled unless the server permits it.
+Response compression can conflict with the enforced read-only settings; leave it disabled unless the server permits it.
 
 ## SSH options
 

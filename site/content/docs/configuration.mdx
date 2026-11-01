@@ -26,7 +26,7 @@ const ava = new AVA({
 | `baseURL`      | `string`                              | No       | Optional API base URL                                                             |
 | `maxRetries`   | `number`                              | No       | Maximum retries for retryable model API failures. Default 3.                      |
 
-String model names use OpenAI-compatible **Chat Completions** by default. A supplied model object is used directly. Usage callbacks are not a complete accounting stream for every LLM request.
+String model names use OpenAI-compatible **Chat Completions** by default. A supplied model object is used directly.
 
 ## AI Gateway
 
@@ -41,6 +41,10 @@ const ava = new AVA({
 ```
 
 The gateway provider can also read `AI_GATEWAY_API_KEY` from the environment when an explicit key is omitted.
+
+## Token usage
+
+Analysis events report token usage when the model supplies it: `translateend` and `summarizeend` for direct analysis, or `stepend` for loop analysis. See [usage events](/documentation/reference/events/#token-usage) for coverage and fields.
 
 ## Separate retry controls
 

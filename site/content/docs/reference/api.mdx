@@ -68,7 +68,7 @@ Fields below belong to `config.llm`.
 | `baseURL`      | `string`                              | No       | Optional API base URL                                                             |
 | `maxRetries`   | `number`                              | No       | Maximum retries for retryable model API failures. Default 3.                      |
 
-String model names use OpenAI-compatible **Chat Completions** by default. A supplied model object is used directly. Usage callbacks are not a complete accounting stream for every LLM request.
+String model names use OpenAI-compatible **Chat Completions** by default. A supplied model object is used directly.
 
 #### Engine options
 
@@ -306,7 +306,7 @@ Requires a loaded source. Returns an [ExecutionResult](#executionresult) plus:
 | --------- | -------- | -------- | -------------------------- |
 | `query`   | `string` | Yes      | Natural-language question. |
 
-Requires a loaded source. Returns generated DSL without executing it; use `query()` to execute that string.
+Requires a loaded source. Returns a generated query string without executing it; use `query()` to execute that string. Token usage is available on the [`translateend` event](/documentation/reference/events/#token-usage), not in the return value.
 
 ### query
 
@@ -413,7 +413,7 @@ Registration affects the loaded SDK module only. See [Custom engines](/documenta
 
 `executionResult<T>(rows: T[], schema: QueryColumn[], options?: ExecutionOptions, upstreamTruncatedBy?: 'maxRows' | 'maxResultBytes'): ExecutionResult<T>`
 
-A synchronous helper exported by both SDK entry points for custom engine implementations. Import it from `@antv/ava` or `@antv/ava/browser`.
+A synchronous helper exported by the Node.js entry point for custom engine implementations. Import it from `@antv/ava`; it is not exported by `@antv/ava/browser`.
 
 | Parameter             | Type                              | Required | Meaning / default                                                                                    |
 | --------------------- | --------------------------------- | -------- | ---------------------------------------------------------------------------------------------------- |

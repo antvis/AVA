@@ -1,4 +1,4 @@
-AVA is a TypeScript framework for asking questions about data and turning the answers into visualizations. Use it through an Agent Skill, the JavaScript API, or the command line, with an execution engine that fits your environment.
+AVA is an open-source TypeScript library for analyzing data with natural-language questions. For example, ask ‘What is total revenue by region?’ and get calculated rows, a summary, and an optional chart.
 
 {/* Keep custom layouts in JSX expressions so formatting cannot introduce Markdown paragraphs. */}
 
@@ -38,7 +38,9 @@ AVA is a TypeScript framework for asking questions about data and turning the an
 
 ## The core workflow
 
-Connect a data source, inspect its structure, ask a question, and optionally generate a chart.
+AVA uses a language model to generate queries and explain results. An execution engine runs those queries against your data; DuckDB is the default in Node.js.
+
+Connect a data source, ask a question, and optionally generate a chart.
 
 {
 
@@ -51,10 +53,11 @@ Connect a data source, inspect its structure, ask a question, and optionally gen
 </div>
 }
 
-- **Discover the structure.** `schema()` reads tables and fields automatically; optionally use `profile()` for statistics and `semantic()` to add your business definitions. See [Inspect your data](/documentation/data/schema/).
-- **Ask better questions.** `suggest()` recommends questions using the schema and available profile.
-- **Analyze in natural language.** `analyze()` translates, executes, and summarizes a question using the selected strategy.
-- **Control individual steps.** Use `translate()` and `query()` separately, or `recommend()` and `viz()` for chart generation.
+- **Load data.** `source()` connects a file, database, or inline rows. AVA discovers table and column names when analysis needs them.
+- **Ask a question.** `analyze()` generates and executes a query, then returns result rows and a summary.
+- **Create a chart.** `visualize()` turns the question and result rows into chart HTML.
+
+Use `schema()` to inspect tables and columns, `profile()` to compute statistics, and `semantic()` to add business rules. These steps are optional. See [Inspect your data](/documentation/data/schema/).
 
 ## Choose an execution engine
 
@@ -68,67 +71,11 @@ Connect a data source, inspect its structure, ask a question, and optionally gen
 
 The [engine guide](/documentation/engines/overview/) explains supported sources and configuration.
 
-## Explore the documentation
+## Next steps
 
-Follow the workflow from your first dataset to a visual answer, then explore more control when you need it.
+Start with the [quickstart](/documentation/quickstart/) for a complete SDK example or the [Agent Skill guide](/documentation/agent-skill/) to work through your coding agent. Then follow [data sources](/documentation/data/sources/), [analysis](/documentation/analysis/overview/), and [visualization](/documentation/visualization/overview/) as needed.
 
-{
-
-<ol className="docs-timeline" role="list" aria-label="Documentation reading path">
-  <li>
-    <span className="docs-timeline-marker" aria-hidden="true">
-      01
-    </span>
-    <strong>
-      <a href="/documentation/quickstart/">Install and run AVA</a>
-    </strong>
-    <p>Set up your model and complete your first analysis with the quickstart.</p>
-  </li>
-  <li>
-    <span className="docs-timeline-marker" aria-hidden="true">
-      02
-    </span>
-    <strong>
-      <a href="/documentation/data/sources/">Connect and understand your data</a>
-    </strong>
-    <p>
-      Load files or databases, then inspect <a href="/documentation/data/schema/">schema and profiling results</a>.
-    </p>
-  </li>
-  <li>
-    <span className="docs-timeline-marker" aria-hidden="true">
-      03
-    </span>
-    <strong>
-      <a href="/documentation/analysis/overview/">Ask questions and analyze</a>
-    </strong>
-    <p>Discover useful questions, get answers, and choose an analysis strategy.</p>
-  </li>
-  <li>
-    <span className="docs-timeline-marker" aria-hidden="true">
-      04
-    </span>
-    <strong>
-      <a href="/documentation/visualization/overview/">Turn answers into charts</a>
-    </strong>
-    <p>Generate a visualization or control chart recommendation and rendering separately.</p>
-  </li>
-  <li>
-    <span className="docs-timeline-marker" aria-hidden="true">
-      05
-    </span>
-    <strong>
-      <a href="/documentation/configuration/">Configure and extend</a>
-    </strong>
-    <p>
-      Adjust your model setup, choose an <a href="/documentation/engines/overview/">execution engine</a>, or implement a{' '}
-      <a href="/documentation/engines/custom/">custom engine</a>.
-    </p>
-  </li>
-</ol>
-}
-
-Keep the [API Reference](/documentation/reference/api/) handy for parameters. The [architecture guide](/documentation/reference/architecture/) maps public capabilities to their source modules.
+Use the [API reference](/documentation/reference/api/) to look up parameters and return values.
 
 ## Resources
 
