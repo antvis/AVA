@@ -22,13 +22,13 @@ export default function ArtifactPanel({
   display?: ArtifactDisplay;
 }) {
   const hasChart = !!artifact.config;
-  const activeTab =
-    display?.chartOnly && hasChart
-      ? 'chart'
-      : (tab === 'chart' && !hasChart) || (tab === 'sql' && !artifact.code)
-      ? 'data'
-      : tab;
+  const activeTab = (tab === 'chart' && !hasChart) || (tab === 'sql' && !artifact.code) ? 'data' : tab;
   const tables = resultTables(artifact.data ?? []);
+  const report = artifact.report;
+  const tabs: ArtifactTab[] = (
+    report ? (['data', 'sql', 'chart'] as const) : (['chart', 'data', 'sql'] as const)
+  ).filter((t) => (t !== 'chart' || hasChart) && (t !== 'sql' || !!artifact.code));
+  const panelId = `${artifact.id}-view`;
 
   return (
     <section
@@ -40,7 +40,7 @@ export default function ArtifactPanel({
       style={{ animation: 'slide-in .4s ease-out' }}
       aria-label="Artifact panel"
     >
-      {!display?.chartOnly && (
+      {!report && (
         <header className="flex items-center gap-2 px-4 py-2 border-b border-zinc-100">
           <p className="min-w-0 flex-1 truncate text-[13px] font-medium text-zinc-800 font-mono">{artifact.title}</p>
           <button
@@ -54,33 +54,61 @@ export default function ArtifactPanel({
           </button>
         </header>
       )}
-      <div className="flex-1 min-h-0 flex flex-col">
-        {!display?.chartOnly && (
-          <div className="flex items-center gap-1 border-b border-zinc-100 px-3 py-1.5">
-            {(['chart', 'data', 'sql'] as const)
-              .filter((t) => (t !== 'chart' || hasChart) && (t !== 'sql' || !!artifact.code))
-              .map((t) => (
-                <button
-                  key={t}
-                  onClick={() => onTabChange(t)}
-                  className={`rounded-md px-2.5 py-1 text-[12px] font-medium transition-colors ${
-                    activeTab === t ? 'bg-zinc-100 text-zinc-800' : 'text-zinc-400 hover:text-zinc-600'
-                  }`}
-                >
-                  {t === 'sql' ? (live ? 'JavaScript' : 'SQL') : t[0].toUpperCase() + t.slice(1)}
-                </button>
-              ))}
-          </div>
+      <div className="soft-scroll flex-1 min-h-0 overflow-y-auto p-5">
+        {report && (
+          <dl className="space-y-3 border-b border-zinc-100 pb-4">
+            <div className="flex items-baseline gap-2.5">
+              <dt className="shrink-0 font-mono text-[13px] font-semibold text-zinc-400">Q:</dt>
+              <dd className="text-[13px] leading-relaxed text-zinc-600">{report.question}</dd>
+            </div>
+            <div className="flex items-baseline gap-2.5">
+              <dt className="shrink-0 font-mono text-[13px] font-semibold text-[#3d8ba3]">A:</dt>
+              <dd className="text-[14px] font-medium leading-relaxed text-zinc-800">{report.answer}</dd>
+            </div>
+          </dl>
         )}
-        <div className="soft-scroll flex-1 min-h-0 overflow-y-auto p-5">
+        <div
+          role="tablist"
+          aria-label="Artifact views"
+          className="sticky -top-5 z-10 mb-4 flex items-center gap-1 border-b border-zinc-100 bg-white py-2"
+        >
+          {tabs.map((t) => (
+            <button
+              key={t}
+              id={`${artifact.id}-${t}-tab`}
+              role="tab"
+              aria-selected={activeTab === t}
+              aria-controls={panelId}
+              tabIndex={activeTab === t ? 0 : -1}
+              onClick={() => onTabChange(t)}
+              onKeyDown={(event) => {
+                if (!['ArrowLeft', 'ArrowRight', 'Home', 'End'].includes(event.key)) return;
+                event.preventDefault();
+                const index = tabs.indexOf(t);
+                const nextIndex =
+                  event.key === 'Home'
+                    ? 0
+                    : event.key === 'End'
+                    ? tabs.length - 1
+                    : (index + (event.key === 'ArrowRight' ? 1 : -1) + tabs.length) % tabs.length;
+                onTabChange(tabs[nextIndex]);
+                event.currentTarget.parentElement
+                  ?.querySelectorAll<HTMLButtonElement>('[role="tab"]')
+                  [nextIndex]?.focus();
+              }}
+              className={`rounded-md px-3 py-1.5 text-[12px] font-medium transition-colors ${
+                activeTab === t ? 'bg-[#edf6fa] text-[#347c94]' : 'text-zinc-400 hover:text-zinc-600'
+              }`}
+            >
+              {t === 'sql' ? (live ? 'JavaScript' : 'SQL') : t[0].toUpperCase() + t.slice(1)}
+            </button>
+          ))}
+        </div>
+        <div id={panelId} role="tabpanel" aria-labelledby={`${artifact.id}-${activeTab}-tab`} tabIndex={0}>
           {activeTab === 'chart' && (
-            <>
-              {display?.chartHeader}
-              <div className="h-[320px]" role="img" aria-label={artifact.description}>
-                <GPTVisRenderer config={artifact.config ?? {}} />
-              </div>
-              {display?.chartFooter}
-            </>
+            <div className="h-[320px]" role="img" aria-label={artifact.description}>
+              <GPTVisRenderer config={artifact.config ?? {}} />
+            </div>
           )}
           {activeTab === 'data' &&
             (tables ? (
@@ -102,6 +130,18 @@ export default function ArtifactPanel({
             <CodePreview code={artifact.code ?? 'No query generated yet.'} language={live ? 'javascript' : 'sql'} />
           )}
         </div>
+        {report && (
+          <div className="mt-5 space-y-4 border-t border-zinc-100 pt-4">
+            <section>
+              <h3 className="text-[12px] font-semibold text-[#347c94]">Insight</h3>
+              <p className="mt-1.5 text-[13px] leading-relaxed text-zinc-600">{report.insight}</p>
+            </section>
+            <section>
+              <h3 className="text-[12px] font-semibold text-zinc-500">Limitations</h3>
+              <p className="mt-1.5 text-[12px] leading-relaxed text-zinc-500">{report.limitations}</p>
+            </section>
+          </div>
+        )}
       </div>
     </section>
   );

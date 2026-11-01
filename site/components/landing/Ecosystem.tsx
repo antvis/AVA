@@ -239,9 +239,9 @@ export default function Ecosystem() {
         <SectionHeading
           title={
             <span id="ecosystem-title">
-              See What Others
+              Built on AVA.
               <br />
-              Build with AVA.
+              Shared by the Community.
             </span>
           }
           description="Projects, extensions, and ideas from the AVA community."

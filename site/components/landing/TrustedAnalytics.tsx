@@ -6,26 +6,45 @@ import { SectionHeading, SectionLink } from './Section';
 
 // Evaluation results published in the repository (README / evals).
 const BENCHMARK = {
-  dataset: 'DataBench',
-  questions: '1,789 questions',
+  dataset: 'Spider2-Lite',
+  questions: '135 complex SQL questions · SQLite subset',
   link: '/documentation/reference/benchmarks/',
   contexts: [
-    { id: 'raw', label: 'Raw data', accuracy: 83.51 },
-    { id: 'schema-profile', label: 'Schema + Profile', accuracy: 84.18 },
-    { id: 'semantic', label: 'Semantic', accuracy: 93.01 },
+    { id: 'raw', label: 'Raw data', accuracy: 25.93 },
+    { id: 'schema-profile', label: 'Schema + Profile', accuracy: 33.33 },
+    { id: 'semantic', label: 'Semantic', accuracy: 80.74 },
   ],
 };
 
 const MECHANISMS = [
   {
+    icon: (
+      <>
+        <ellipse cx="12" cy="5" rx="8" ry="3" />
+        <path d="M4 5v14c0 1.66 3.58 3 8 3s8-1.34 8-3V5M4 12c0 1.66 3.58 3 8 3s8-1.34 8-3" />
+      </>
+    ),
     title: 'Grounded in your data.',
     detail: 'Your schema and data context give the analysis a factual starting point.',
   },
   {
+    icon: (
+      <>
+        <rect x="3" y="4" width="18" height="16" rx="3" />
+        <path d="m7 9 3 3-3 3m7 0h3" />
+      </>
+    ),
     title: 'Based on real computation.',
     detail: 'Answers are built from executed queries and returned results.',
   },
   {
+    icon: (
+      <>
+        <path d="M10 21H6a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h9l4 4v3M14 3v5h5M8 8h2m-2 4h2" />
+        <circle cx="16" cy="16" r="4" />
+        <path d="m19 19 3 3" />
+      </>
+    ),
     title: 'Open to inspection.',
     detail: 'Follow the queries and results behind the answer, and check them yourself.',
   },
@@ -71,7 +90,7 @@ const TrustedAnalytics: React.FC<{ id?: string }> = ({ id = 'benchmarks' }) => {
                 <h3 className="text-[24px] font-semibold tracking-[-0.025em] text-zinc-900">
                   Accuracy on {BENCHMARK.dataset}.
                 </h3>
-                <p className="mt-2 text-[14px] text-zinc-500">{BENCHMARK.questions} · Public benchmark</p>
+                <p className="mt-2 text-[14px] text-zinc-500">{BENCHMARK.questions}</p>
               </div>
 
               <div
@@ -119,15 +138,27 @@ const TrustedAnalytics: React.FC<{ id?: string }> = ({ id = 'benchmarks' }) => {
               {MECHANISMS.map((mech) => (
                 <li
                   key={mech.title}
-                  className="group flex-1 rounded-2xl bg-white p-6 transition-shadow duration-200 hover:shadow-[0_4px_16px_rgba(120,211,248,0.12)]"
+                  className="group flex flex-1 items-start gap-4 rounded-2xl bg-white p-6 transition-shadow duration-200 hover:shadow-[0_4px_16px_rgba(120,211,248,0.12)]"
                 >
-                  <h3 className="text-[24px] font-semibold text-zinc-900">{mech.title}</h3>
-                  <p
-                    className="mt-3 border-l-2 pl-3 text-[15px] leading-relaxed text-zinc-500 transition-colors group-hover:text-zinc-600"
-                    style={{ borderColor: 'color-mix(in srgb, var(--color-primary-dark) 40%, transparent)' }}
-                  >
-                    {mech.detail}
-                  </p>
+                  <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-[#edf7fa] text-[#568c9e]">
+                    <svg
+                      width="23"
+                      height="23"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="1.5"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      aria-hidden="true"
+                    >
+                      {mech.icon}
+                    </svg>
+                  </span>
+                  <div className="min-w-0">
+                    <h3 className="text-[24px] font-semibold text-zinc-900">{mech.title}</h3>
+                    <p className="mt-2 text-[15px] leading-relaxed text-zinc-500">{mech.detail}</p>
+                  </div>
                 </li>
               ))}
             </ul>

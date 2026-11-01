@@ -7,13 +7,12 @@ import useSimulatedStream from './useSimulatedStream';
 import { PRESET_MESSAGES } from './mockData';
 
 const artifactDisplay: ArtifactDisplay = {
-  chartOnly: true,
-  chartFooter: (
-    <p className="mt-3 rounded-lg border border-orange-100 bg-orange-50/60 px-3 py-2 text-[12px] leading-relaxed text-zinc-700">
-      <strong className="font-semibold text-orange-800">July is the inflection point.</strong> Revenue rose while gross
-      profit fell. Review discounts, product mix and unit costs.
-    </p>
-  ),
+  columns: [
+    { key: 'month', label: 'Month' },
+    { key: 'revenue_k', label: 'Revenue ($k)' },
+    { key: 'gross_profit_k', label: 'Gross profit ($k)' },
+    { key: 'margin_pct', label: 'Margin', suffix: '%' },
+  ],
 };
 
 export default function DemoChat() {
