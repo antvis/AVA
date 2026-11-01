@@ -20,7 +20,7 @@ export const CHART_CONFIG = {
   ],
   axisXTitle: '2026',
   theme: 'default',
-  style: { palette: ['#7ce2ff', '#e5ad7d'], backgroundColor: '#ffffff', startAtZero: true },
+  style: { palette: ['#7ce2ff', '#f28e82'], backgroundColor: 'transparent', startAtZero: true },
 } satisfies DualAxesConfig;
 
 /** DuckDB file sources are registered as the `data` view. */
