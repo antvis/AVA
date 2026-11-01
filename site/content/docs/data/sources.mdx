@@ -439,8 +439,8 @@ await ava.source({
   type: 'feishu-bitable',
   options: {
     url: 'https://my.feishu.cn/base/APP_TOKEN?table=TABLE_ID',
-    appId: process.env.AVA_FEISHU_APP_ID,
-    appSecret: process.env.AVA_FEISHU_APP_SECRET,
+    appId: 'YOUR_APP_ID',
+    appSecret: 'YOUR_APP_SECRET',
   },
 });
 ```
@@ -450,20 +450,10 @@ await ava.source({
 | `url` | `string` | URL or `appToken` + `tableId` | Feishu or Lark Bitable link with `/base/` or `/wiki/`. |
 | `appToken` | `string` | Without URL | Bitable app token; must match the URL if both are supplied. |
 | `tableId` | `string` | Without URL; otherwise see below | Table to load; must match the URL's `table` parameter if both are supplied. |
-| `appId` | `string` | Yes in the SDK | App ID used to obtain a tenant access token. |
-| `appSecret` | `string` | Yes in the SDK | App secret for that app. |
+| `appId` | `string` | Yes | App ID used to obtain a tenant access token. |
+| `appSecret` | `string` | Yes | App secret for that app. |
 
-The app needs read access to the Bitable. Wiki links also require wiki read access and membership of the wiki space. If the link omits `table`, AVA uses the only table; when there are several, it reports their names and IDs so you can choose one. The whole table is loaded; a link's `view` filter is ignored. Complex cells are flattened to comma-separated text.
-
-The CLI detects Feishu and Lark Bitable links automatically:
-
-```bash
-export AVA_FEISHU_APP_ID='<your-app-id>'
-export AVA_FEISHU_APP_SECRET='<your-app-secret>'
-ava source 'https://my.feishu.cn/base/APP_TOKEN?table=TABLE_ID'
-```
-
-The CLI resolves credentials from the source config, then these environment variables, then `~/.ava/feishu.json` containing `{ "appId": "...", "appSecret": "..." }`. SDK callers must pass them in `options` as shown above. Feishu Docs and Sheets links are not supported.
+The app needs read access to the Bitable. Wiki links also require wiki read access and membership of the wiki space. If the link omits `table`, AVA uses the only table; when there are several, it reports their names and IDs so you can choose one. The whole table is loaded; a link's `view` filter is ignored. Complex cells are flattened to comma-separated text. Feishu Docs and Sheets links are not supported.
 
 ## Supabase
 

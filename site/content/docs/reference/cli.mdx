@@ -1,6 +1,28 @@
+## Install
+
+Use Node.js **22.13 or later** on macOS or Linux:
+
+```bash
+npm install -g @antv/ava@4
+ava --help
+```
+
+## Model configuration
+
+Natural-language commands and text extraction require a model. Set these variables before loading a dataset:
+
+```bash
+export OPENAI_API_KEY='<your-api-key>'
+export OPENAI_MODEL='gpt-4o-mini'
+# For another OpenAI-compatible provider, set its model name and API URL:
+# export OPENAI_BASE_URL='https://your-provider.example/v1'
+```
+
+Structured source loading, schema inspection, profiling, direct queries, and rendering a chart spec do not need a model key. Session model settings are fixed when the source is loaded. Standalone `recommend` and `visualize` commands read the current environment.
+
 ## Start a session
 
-After installing `@antv/ava`, use the `ava` binary (or `npx ava` for a local npm installation). Use Node.js 22.13 or later on macOS or Linux. Download [sales.csv](/examples/agent-skill/sales.csv) to try the commands below.
+Download [sales.csv](/examples/agent-skill/sales.csv) to try the commands below. If you installed AVA locally instead of globally, use `npx ava` in place of `ava`.
 
 ```bash
 ava source sales.csv > session.json
@@ -10,13 +32,25 @@ ava schema "$DATASET_ID" > schema.json
 
 `source` returns a session ID after preparing the source. Schema discovery happens on demand; `schema` returns the source structure plus `language` (`name`, `fence`, and optional `instructions`) for writing queries. Repeated schema calls use the session's cached structure. Known queries can run without a separate schema call.
 
-Structured source loading, schema, profile, query, and `viz` do not need a model key. Set `OPENAI_API_KEY` and optional `OPENAI_MODEL` / `OPENAI_BASE_URL` before creating a session if you plan to use AI commands or a text source. Session model settings cannot be changed afterward.
-
 ## Source inputs and engines
 
-`ava source` accepts a file or URL, `@file` containing a source configuration, or `-` for standard input. File extensions infer CSV, JSON, Parquet, Excel, and SQLite sources. Feishu and Lark Bitable URLs are detected automatically; see [credentials and link formats](/documentation/data/sources/#feishu-bitable). Override with `--type` for path inputs; configuration files and stdin already include their type.
+`ava source` accepts a file or URL, `@file` containing a source configuration, or `-` for standard input. File extensions infer CSV, JSON, Parquet, Excel, and SQLite sources. Feishu and Lark Bitable URLs are detected automatically; see [Feishu Bitable and Lark](#feishu-bitable-and-lark) below. Override with `--type` for path inputs; configuration files and stdin already include their type.
 
-Use `--engine` to select an execution engine. The CLI infers Supabase and ClickHouse for matching source configurations; otherwise it defaults to DuckDB. This inference differs from the JavaScript constructor. The engine is fixed for the session. See [source configurations](/documentation/data/sources/) for connection and reader settings.
+Use `--engine` to select an execution engine. The CLI infers Supabase and ClickHouse for matching source configurations; otherwise it defaults to DuckDB. The engine is fixed for the session. The CLI accepts built-in engines only; use the [SDK](/documentation/engines/custom/) to register a custom engine. See [source configurations](/documentation/data/sources/) for connection and reader settings.
+
+### Feishu Bitable and Lark
+
+Set your app credentials, then pass a Bitable URL directly to `source`:
+
+```bash
+export AVA_FEISHU_APP_ID='<your-app-id>'
+export AVA_FEISHU_APP_SECRET='<your-app-secret>'
+ava source 'https://my.feishu.cn/base/APP_TOKEN?table=TABLE_ID'
+```
+
+Links with `/base/` or `/wiki/` on Feishu and Lark are supported. These sources use DuckDB. See the [source guide](/documentation/data/sources/#feishu-bitable) for access requirements, table selection, and cell conversion.
+
+Credentials are resolved in this order: source config fields `options.appId` / `options.appSecret`, `AVA_FEISHU_APP_ID` / `AVA_FEISHU_APP_SECRET`, then `~/.ava/feishu.json` containing `{ "appId": "...", "appSecret": "..." }`. When no credentials are available, an interactive terminal prompts for them, verifies them, and saves them to that file.
 
 ## Reuse saved metadata
 
@@ -50,7 +84,7 @@ ava translate "$DATASET_ID" "Total revenue by region"
 ava analyze "$DATASET_ID" "Total revenue by region" --strategy direct
 ```
 
-These operations discover schema if needed and use an available profile. The CLI supports `direct` and `loop`. Its `--max-rows` accepts 1–10,000 (default 200), while the JavaScript API allows a higher hard limit.
+These operations discover schema if needed and use an available profile. The CLI supports `direct` and `loop`. Its `--max-rows` accepts 1–10,000 (default 200).
 
 ## Charts without a dataset session
 
@@ -90,6 +124,8 @@ All commands accept `-h` / `--help` (boolean; optional). Every positional argume
 | `OPENAI_API_KEY`     | For AI commands and text extraction | Read before source creation for dataset sessions; read at command time for standalone `recommend` and `visualize`. |
 | `OPENAI_MODEL`       | No                                  | `gpt-4o-mini`.                                                                                                     |
 | `OPENAI_BASE_URL`    | No                                  | Provider default endpoint.                                                                                         |
+| `AVA_FEISHU_APP_ID` | For Bitable sources unless configured elsewhere | App ID; see [credential resolution](#feishu-bitable-and-lark). |
+| `AVA_FEISHU_APP_SECRET` | With `AVA_FEISHU_APP_ID` | App secret for the same app. |
 
 ## Session lifecycle
 

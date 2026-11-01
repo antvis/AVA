@@ -20,10 +20,10 @@ One prompt to get ready. Your agent checks the environment, installs AVA and the
 Install AVA's Agent Skill in the current project so you can analyze data and create charts for me.
 
 1. Check that this environment runs macOS or Linux, with Node.js 22.13 or later and npm available. Use an existing Node version manager if an upgrade is needed. If you cannot meet these requirements, explain what is missing.
-2. Install the CLI with `npm install -g @antv/ava@4`. Verify that `ava --help` and `ava source --help` work.
+2. Install the CLI with `npm install -g @antv/ava@4`. Verify the CLI installation.
 3. Install the skill for the detected agents in this project with `npx --yes skills add antvis/AVA --skill ava --yes`.
 4. Read the installed ava/SKILL.md and its environment setup reference. Verify the installed skill with `npx --yes skills list`.
-5. Smoke-test the CLI using a tiny CSV in a new temporary directory: load it with `ava source`, inspect it with `ava schema`, and execute a simple aggregate with `ava query`. Use the returned dataset ID and the actual table name from the schema. Dispose of this test session afterward.
+5. Smoke-test the CLI using a tiny CSV in a new temporary directory: load it, inspect its schema, and execute a simple aggregate using the installed skill instructions. Use the returned dataset ID and the actual table name from the schema. Dispose of this test session afterward.
 
 Use your own reasoning for analysis; do not ask me for an additional AVA model API key. Report the installed CLI version, skill location, and verification results. If anything fails, explain the error instead of claiming success. Tell me whether I need to start a new agent session to load the skill.
 ```
@@ -108,13 +108,9 @@ Reporting declined by $1,000, partly offsetting growth elsewhere. These figures 
   <a href="/examples/agent-skill/chart.json" download="chart.json">Download chart spec</a>
 </p>
 
-The sample query uses `data`, the table exposed by AVA's DuckDB CSV loader. For your own sources, have the agent inspect `ava schema` before writing a query. To render the saved chart spec yourself, download it and run:
+The sample query uses `data`, the table exposed by AVA's DuckDB CSV loader. For your own sources, have the agent inspect the schema before writing a query. To render a saved chart spec yourself, see [CLI chart rendering](/documentation/reference/cli/#charts-without-a-dataset-session).
 
-```bash
-ava viz --spec @chart.json --output revenue-change.html
-```
-
-Choose a new output path if that file already exists. The exported HTML needs internet access to load its chart renderer. Your agent's wording and chart design may differ; the calculations for this sample should match the table above.
+The exported HTML needs internet access to load its chart renderer. Your agent's wording and chart design may differ; the calculations for this sample should match the table above.
 
 ## Manual installation
 
@@ -130,22 +126,14 @@ This installs the CLI globally and the skill into the current project for detect
 Check the installation, then start a new agent session if needed to discover the skill:
 
 ```bash
-ava --help
-ava source --help
 npx --yes skills list
 ```
-
-## Model configuration
-
-The agent can perform the demo with `source`, `schema`, `query`, and `viz`, using its own reasoning. No separate AVA model configuration is needed for this path.
-
-AVA commands that call a model directly — `analyze`, `suggest`, `translate`, `recommend`, and `visualize` — and text extraction require [model configuration](/documentation/configuration/). For dataset sessions, set those model variables **before** running `ava source`.
 
 ## Troubleshooting
 
 - **The agent cannot find the skill.** Run `npx --yes skills list` from the project where you installed it. Check that your agent was selected, and start a new session.
 - **`ava` is not found.** Confirm the global npm installation succeeded and its binary directory is on the agent's `PATH`.
-- **The dataset is unavailable.** Sessions expire after 30 idle minutes. Reload the source and use the new dataset ID. Commands must run as the same user in the same runtime and temporary directory.
+- **The dataset is unavailable.** Ask the agent to reload the source. See [CLI session lifecycle](/documentation/reference/cli/#session-lifecycle) for expiry and cleanup.
 - **The chart is blank.** Check internet access to the chart renderer, inspect the chart spec, and use the results table to verify its values.
 
 See the [CLI reference](/documentation/reference/cli/) for command options, or read the [skill source](https://github.com/antvis/AVA/blob/ai/skills/ava/SKILL.md) for the agent's full workflow instructions.

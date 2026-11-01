@@ -1,4 +1,4 @@
-Implement an engine in your own application or package, register it with the SDK, then select it by name. Custom engine registration is available in the SDK only; the CLI accepts built-in engine names.
+Implement an engine in your own application or package, register it with the SDK, then select it by name.
 
 ## Register an engine
 
@@ -16,7 +16,7 @@ const ava = new AVA({
 
 Here `model` is a configured AI SDK model; the complete example below shows its setup. The implementation stays in your application. Register the engine before calling `source()`; no changes to AVA's source are needed.
 
-Registration returns no value and applies to the loaded SDK module in the current process. It does not register an engine in a separate CLI process. An unregistered name fails when `source()` tries to create the engine.
+Registration returns no value and applies to the loaded SDK module in the current process. An unregistered name fails when `source()` tries to create the engine.
 
 AVA creates a new instance on each `source()` call. It disposes the previous engine before replacement, disposes an engine whose `load()` fails, and releases the active engine on `ava.dispose()`. Open connections in `load()` so failed loads can be cleaned up.
 

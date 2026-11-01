@@ -150,20 +150,7 @@ Use your own file or download the [sample sales.csv](__tests__/datasets/sales.cs
 
 ## Use from the CLI
 
-The CLI requires macOS or Linux. To ask natural-language questions, set the model variables shown in the quickstart **before** loading a source:
-
-```bash
-ava source ./sales.csv
-```
-
-Use the dataset ID returned by `source`:
-
-```bash
-ava analyze '<your-dataset-id>' 'Compare January and February 2025 sales by product, including the change.'
-ava dispose '<your-dataset-id>'
-```
-
-`analyze` returns JSON. `dispose` releases the dataset session. See the [CLI reference](https://ava.antv.vision/documentation/reference/cli/) for direct queries, charts, and other commands.
+Use the CLI on macOS or Linux to inspect datasets, execute queries, and save charts. See the [CLI reference](https://ava.antv.vision/documentation/reference/cli/) for installation, model settings, and commands.
 
 ## Documentation
 
