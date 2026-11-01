@@ -28,7 +28,9 @@ body {
   font-family: var(--font-body);
 }
 
-h1, h2, h3 {
+h1,
+h2,
+h3 {
   font-family: var(--font-heading);
   font-weight: 600;
   letter-spacing: -0.04em;
@@ -40,7 +42,8 @@ h1, h2, h3 {
   line-height: 1.05;
 }
 
-code, pre {
+code,
+pre {
   font-family: var(--font-code);
 }
 
@@ -407,15 +410,6 @@ body {
   }
 }
 
-@keyframes hero-draw {
-  from {
-    stroke-dashoffset: 140;
-  }
-  to {
-    stroke-dashoffset: 0;
-  }
-}
-
 @keyframes hero-axis {
   from {
     transform: scaleX(0);
@@ -450,11 +444,8 @@ body {
   .hero-rise,
   .hero-axis,
   .hero-tick,
-  .hero-draw-path,
   .hero-sheen-text,
-  .hero-verse-anim,
-  .hero-char-anim,
-  .hero-spark-anim {
+  .hero-verse-anim {
     animation: none !important;
   }
   [style*='hero-drift'] {
@@ -481,38 +472,6 @@ body {
   }
 }
 
-@keyframes hero-char {
-  0% {
-    opacity: 0;
-    transform: translateY(26px) rotate(4deg) scale(1.08);
-    filter: blur(8px);
-  }
-  60% {
-    opacity: 1;
-    filter: blur(0);
-  }
-  75% {
-    transform: translateY(-4px) rotate(-1.2deg) scale(1.01);
-  }
-  100% {
-    opacity: 1;
-    transform: translateY(0) rotate(0deg) scale(1);
-    filter: blur(0);
-  }
-}
-
-@keyframes hero-spark {
-  0%,
-  100% {
-    transform: scale(1) rotate(0deg);
-    opacity: 0.9;
-  }
-  50% {
-    transform: scale(1.14) rotate(10deg);
-    opacity: 1;
-  }
-}
-
 @keyframes hero-drift {
   0%,
   100% {
@@ -531,9 +490,7 @@ body {
 .reveal {
   opacity: 0;
   transform: translateY(16px);
-  transition:
-    opacity 400ms cubic-bezier(0.22, 1, 0.36, 1),
-    transform 400ms cubic-bezier(0.22, 1, 0.36, 1);
+  transition: opacity 400ms cubic-bezier(0.22, 1, 0.36, 1), transform 400ms cubic-bezier(0.22, 1, 0.36, 1);
   will-change: opacity, transform;
 }
 .reveal-in {
@@ -563,20 +520,8 @@ body {
 /* Data source marquee — single row, seamless loop */
 .marquee-outer {
   /* soft fade on both edges */
-  mask-image: linear-gradient(
-    to right,
-    transparent,
-    #000 8%,
-    #000 92%,
-    transparent
-  );
-  -webkit-mask-image: linear-gradient(
-    to right,
-    transparent,
-    #000 8%,
-    #000 92%,
-    transparent
-  );
+  mask-image: linear-gradient(to right, transparent, #000 8%, #000 92%, transparent);
+  -webkit-mask-image: linear-gradient(to right, transparent, #000 8%, #000 92%, transparent);
 }
 .marquee-track {
   display: flex;

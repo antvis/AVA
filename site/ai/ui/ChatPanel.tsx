@@ -101,8 +101,6 @@ const ChatPanel: React.FC<{
             </div>
           )}
           {visible.map((msg, i) => {
-            const lastTool = msg.parts?.findLast(isToolUIPart);
-
             if (msg.role === 'user')
               return (
                 <div key={i} className="flex flex-col items-end gap-1.5">
@@ -197,15 +195,7 @@ const ChatPanel: React.FC<{
                         </div>
                       ) : null;
                     if (isToolUIPart(part)) {
-                      return (
-                        <ToolPart
-                          key={part.toolCallId}
-                          part={part}
-                          active={streamingIdx === i}
-                          diffs={part === lastTool ? msg.diffs : undefined}
-                          diffLines={msg.diffLines}
-                        />
-                      );
+                      return <ToolPart key={part.toolCallId} part={part} active={streamingIdx === i} />;
                     }
 
                     return null;

@@ -50,28 +50,6 @@ const GitHubStars: React.FC = () => {
 };
 
 /* ------------------------------------------------------------------ */
-/* Headline — character-by-character reveal                            */
-/* ------------------------------------------------------------------ */
-
-const StaggerChars: React.FC<{ text: string; startMs: number; stepMs?: number }> = ({ text, startMs, stepMs = 34 }) => (
-  <span aria-label={text} className="inline">
-    {text.split('').map((ch, i) => (
-      <span
-        key={i}
-        aria-hidden
-        className="hero-char-anim inline-block"
-        style={{
-          animation: `hero-char 720ms cubic-bezier(0.22,1,0.36,1) ${startMs + i * stepMs}ms both`,
-          whiteSpace: 'pre',
-        }}
-      >
-        {ch}
-      </span>
-    ))}
-  </span>
-);
-
-/* ------------------------------------------------------------------ */
 /* Rotating verse in the headline                                       */
 /* ------------------------------------------------------------------ */
 
@@ -82,19 +60,19 @@ const VERSE_MS = 2600;
 const Spark: React.FC = () => (
   <svg
     aria-hidden
-    className="hero-spark-anim ml-[0.18em] inline-block translate-y-[0.02em]"
+    className="ml-[0.18em] inline-block translate-y-[0.02em]"
     width="0.5em"
     height="0.5em"
     viewBox="0 0 24 24"
-    style={{ animation: 'hero-spark 3.4s ease-in-out infinite' }}
   >
     <path
       d="M11 3c.6 4.2 2.6 6.2 6.8 6.8-4.2.6-6.2 2.6-6.8 6.8-.6-4.2-2.6-6.2-6.8-6.8C8.4 9.2 10.4 7.2 11 3z"
-      style={{ fill: 'var(--color-primary-dark)' }}
+      fill="currentColor"
     />
     <path
       d="M17.5 13.5c.28 1.96 1.22 2.9 3.18 3.18-1.96.28-2.9 1.22-3.18 3.18-.28-1.96-1.22-2.9-3.18-3.18 1.96-.28 2.9-1.22 3.18-3.18z"
-      style={{ fill: 'var(--color-primary-light)' }}
+      fill="currentColor"
+      opacity="0.55"
     />
   </svg>
 );
@@ -148,7 +126,7 @@ const RotatingVerse: React.FC = () => {
       <span
         key={idx}
         aria-hidden
-        className="hero-verse-anim inline-block whitespace-pre text-[color:var(--color-primary-dark)]"
+        className="hero-verse-anim inline-block whitespace-pre"
         style={{ animation: `hero-verse ${VERSE_MS}ms cubic-bezier(0.22,1,0.36,1) both` }}
       >
         {verseContent(TITLE_VERSES[idx])}
@@ -189,40 +167,17 @@ const Banner: React.FC = () => (
 
         <h1 className="text-[length:clamp(30px,4.5vw,58px)] font-semibold leading-[1.22] max-md:leading-[1.25] tracking-[-0.045em] text-zinc-900 max-md:text-[length:clamp(27px,5vw,38px)]">
           <span className="whitespace-nowrap max-md:whitespace-normal">
-            <RotatingVerse /> <StaggerChars text="Visual Analytics." startMs={430} />
+            <RotatingVerse /> Visual Analytics.
           </span>
           <br />
-          <StaggerChars text="Open Source, Built for " startMs={900} />{' '}
-          <span className="relative whitespace-nowrap text-[color:var(--color-primary-dark)]">
-            <StaggerChars text="Agents." startMs={1680} />
-            {/* a single crafted accent: hand-drawn underline */}
-            <svg
-              aria-hidden
-              className="absolute -bottom-1 left-0 hidden w-full"
-              viewBox="0 0 120 8"
-              preserveAspectRatio="none"
-              fill="none"
-            >
-              <path
-                d="M2 5.5C24 2.5 62 2 118 3.8"
-                strokeWidth="3"
-                strokeLinecap="round"
-                opacity="0.9"
-                strokeDasharray="140"
-                style={{
-                  stroke: 'var(--color-primary-dark)',
-                  animation: 'hero-draw 600ms cubic-bezier(0.22,1,0.36,1) 1.95s both',
-                }}
-              />
-            </svg>
-          </span>
+          Open Source, Built for <span className="whitespace-nowrap">Agents.</span>
         </h1>
 
         <p
           className="hero-rise max-w-[520px] text-[14px] leading-[1.85] text-zinc-500 max-md:text-[13px]"
           style={{ animation: 'hero-rise 800ms cubic-bezier(0.22,1,0.36,1) 0.55s both' }}
         >
-          The open-source framework that gives AI agents the power to explore, analyze, and visualize data.
+          An open-source framework for AI agents to explore, analyze, and visualize data.
         </p>
 
         {/* actions */}
@@ -231,10 +186,10 @@ const Banner: React.FC = () => (
           style={{ animation: 'hero-rise 800ms cubic-bezier(0.22,1,0.36,1) 0.8s both' }}
         >
           <Link
-            href="/documentation/quickstart/"
+            href="/ai/"
             className="group inline-flex h-10 items-center gap-2 rounded-[9px] bg-[color:var(--color-primary-dark)] px-7 text-[13.5px] max-md:px-4 max-md:text-xs font-medium text-white shadow-[0_6px_16px_color-mix(in_srgb,var(--color-primary-dark)_28%,transparent)] transition-all duration-200 hover:shadow-[0_8px_20px_color-mix(in_srgb,var(--color-primary-dark)_38%,transparent)] hover:brightness-95 active:scale-[0.97]"
           >
-            Get Started
+            Try AVA
             <svg
               width="14"
               height="14"
@@ -283,10 +238,10 @@ const Banner: React.FC = () => (
             <span className="sr-only">(opens in a new tab)</span>
           </a>
           <Link
-            href="/ai"
+            href="/documentation/quickstart/"
             className="group inline-flex h-10 items-center gap-1.5 rounded-[9px] px-4 text-[13.5px] max-md:text-xs font-medium text-zinc-500 transition-colors duration-200 hover:text-[color:var(--color-primary-dark)] active:scale-[0.97]"
           >
-            AI
+            Get Started
             <svg
               width="13"
               height="13"

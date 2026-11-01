@@ -43,21 +43,6 @@ export function toDisplayMessage(source: AIUIMessage, datasetName: string): Mess
       };
     }
   }
-  if (message.artifact) {
-    const { code, config } = message.artifact;
-    const files = {
-      ...(code ? { 'query.js': code } : {}),
-      ...(config ? { 'visualization.json': JSON.stringify(config, null, 2) } : {}),
-    };
-
-    message.diffs = Object.entries(files).map(([file, content]) => ({ file, add: content.split('\n').length }));
-    message.diffLines = Object.fromEntries(
-      Object.entries(files).map(([file, content]) => [
-        file,
-        content.split('\n').map((text) => ({ text, tone: 'add' as const })),
-      ])
-    );
-  }
   return message;
 }
 

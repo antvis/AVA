@@ -3,13 +3,11 @@
 import React, { useState } from 'react';
 import type { Message } from './types';
 import ToolRow from './ToolRow';
-import FileDiffs from './FileDiffs';
 
 const ToolTrace: React.FC<{ msg: Message; live: Message['live'] }> = ({ msg, live }) => {
   const steps = msg.steps ?? [];
   const shown = live?.rowsShown ?? steps.length;
   const running = typeof live?.runningRow === 'number' ? live.runningRow : null;
-  const allRowsDone = shown >= steps.length && running === null;
   const [open, setOpen] = useState(true);
 
   if (!steps.length) return null;
@@ -71,8 +69,6 @@ const ToolTrace: React.FC<{ msg: Message; live: Message['live'] }> = ({ msg, liv
               </ToolRow>
             ))}
           </div>
-
-          {allRowsDone && <FileDiffs diffs={msg.diffs} diffLines={msg.diffLines} showMore />}
         </div>
       </div>
     </div>

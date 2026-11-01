@@ -23,9 +23,8 @@ const TABS: {
   {
     id: 'skill',
     label: 'Agent Skill',
-    heading: 'Give Your Agent a Data Analytics Skill.',
-    description:
-      'Equip compatible agents with a reusable workflow for exploring, analyzing, and visualizing data — using the agent’s own reasoning, with no separate model key.',
+    heading: 'Add the AVA Skill.',
+    description: 'Uses your agent’s own model.',
     language: 'bash',
     docHref: '/documentation/agent-skill/',
     docLabel: 'Agent Skill guide & demo',
@@ -33,9 +32,8 @@ const TABS: {
   {
     id: 'cli',
     label: 'CLI',
-    heading: 'Analytics from the Command Line.',
-    description:
-      'Explore data, execute queries, and generate visualizations directly from your terminal.',
+    heading: 'Use the command line.',
+    description: 'Explore and query data from your terminal.',
     language: 'bash',
     docHref: '/documentation/reference/cli/',
     docLabel: 'CLI documentation',
@@ -43,9 +41,8 @@ const TABS: {
   {
     id: 'sdk',
     label: 'SDK',
-    heading: 'Build Analytics into Your Application.',
-    description:
-      'Compose data analysis capabilities directly in your TypeScript applications.',
+    heading: 'Build with the SDK.',
+    description: 'Compose analysis APIs in your TypeScript app.',
     language: 'typescript',
     docHref: '/documentation/quickstart/',
     docLabel: 'SDK quickstart',
@@ -55,13 +52,18 @@ const TABS: {
 /* ---------------- code renderers (hand-tinted spans) ---------------- */
 
 const SkillCode: React.FC = () => (
-  <pre className="overflow-x-auto font-mono text-[12.5px] leading-[1.75] text-zinc-300">
+  <pre className="overflow-x-auto font-mono text-[14px] leading-[1.75] text-zinc-300">
     <code>
-      <span className="text-zinc-500">{'# install the skills for your agents'}</span>{'\n'}
-      <span className="text-[#89ddff]">{'$ '}</span><span className="text-[#82aaff]">npx</span> skills add antvis/AVA{'\n\n'}
-      <span className="text-zinc-500">{'# or add the marketplace in Claude Code'}</span>{'\n'}
-      <span className="text-[#89ddff]">{'$ '}</span><span className="text-[#82aaff]">/plugin</span> marketplace add antvis/AVA{'\n\n'}
-      <span className="text-zinc-500">{'# then, in a new agent session:'}</span>{'\n'}
+      <span className="text-zinc-500">{'# install the skills for your agents'}</span>
+      {'\n'}
+      <span className="text-[#89ddff]">{'$ '}</span>
+      <span className="text-[#82aaff]">npx</span> skills add antvis/AVA{'\n\n'}
+      <span className="text-zinc-500">{'# or add the marketplace in Claude Code'}</span>
+      {'\n'}
+      <span className="text-[#89ddff]">{'$ '}</span>
+      <span className="text-[#82aaff]">/plugin</span> marketplace add antvis/AVA{'\n\n'}
+      <span className="text-zinc-500">{'# then, in a new agent session:'}</span>
+      {'\n'}
       <span className="text-[#c3e88d]">
         &quot;Use the AVA skill to analyze /absolute/path/sales.csv,{'\n'}
         &nbsp;compare sales by region, and generate a chart.&quot;
@@ -71,15 +73,23 @@ const SkillCode: React.FC = () => (
 );
 
 const CliCode: React.FC = () => (
-  <pre className="overflow-x-auto font-mono text-[12.5px] leading-[1.75] text-zinc-300">
+  <pre className="overflow-x-auto font-mono text-[14px] leading-[1.75] text-zinc-300">
     <code>
-      <span className="text-zinc-500">{'# install (Node.js 22.13+, macOS / Linux)'}</span>{'\n'}
-      <span className="text-[#89ddff]">{'$ '}</span><span className="text-[#82aaff]">npm</span> install -g @antv/ava@4{'\n\n'}
-      <span className="text-[#89ddff]">{'$ '}</span><span className="text-[#82aaff]">ava</span> source sales.csv{'\n'}
-      <span className="text-[#89ddff]">{'$ '}</span><span className="text-[#82aaff]">ava</span> suggest &quot;$DATASET_ID&quot; --count 5{'\n'}
-      <span className="text-[#89ddff]">{'$ '}</span><span className="text-[#82aaff]">ava</span> analyze &quot;$DATASET_ID&quot; \{'\n'}
-      &nbsp;&nbsp;<span className="text-[#f78c6c]">&quot;What is the average sales value by region?&quot;</span>{'\n'}
-      <span className="text-[#89ddff]">{'$ '}</span><span className="text-[#82aaff]">ava</span> visualize --query <span className="text-[#f78c6c]">&quot;Compare average sales by region&quot;</span> \{'\n'}
+      <span className="text-zinc-500">{'# install (Node.js 22.13+, macOS / Linux)'}</span>
+      {'\n'}
+      <span className="text-[#89ddff]">{'$ '}</span>
+      <span className="text-[#82aaff]">npm</span> install -g @antv/ava@4{'\n\n'}
+      <span className="text-[#89ddff]">{'$ '}</span>
+      <span className="text-[#82aaff]">ava</span> source sales.csv{'\n'}
+      <span className="text-[#89ddff]">{'$ '}</span>
+      <span className="text-[#82aaff]">ava</span> suggest &quot;$DATASET_ID&quot; --count 5{'\n'}
+      <span className="text-[#89ddff]">{'$ '}</span>
+      <span className="text-[#82aaff]">ava</span> analyze &quot;$DATASET_ID&quot; \{'\n'}
+      &nbsp;&nbsp;<span className="text-[#f78c6c]">&quot;What is the average sales value by region?&quot;</span>
+      {'\n'}
+      <span className="text-[#89ddff]">{'$ '}</span>
+      <span className="text-[#82aaff]">ava</span> visualize --query{' '}
+      <span className="text-[#f78c6c]">&quot;Compare average sales by region&quot;</span> \{'\n'}
       &nbsp;&nbsp;--data @rows.json --output chart.html{'\n\n'}
       <span className="text-zinc-500">{'# output is JSON · sessions expire after 30 min idle'}</span>
     </code>
@@ -87,17 +97,29 @@ const CliCode: React.FC = () => (
 );
 
 const SdkCode: React.FC = () => (
-  <pre className="overflow-x-auto font-mono text-[12.5px] leading-[1.75] text-zinc-300">
+  <pre className="overflow-x-auto font-mono text-[14px] leading-[1.75] text-zinc-300">
     <code>
-      <span className="text-[#c792ea]">import</span> {'{ AVA }'} <span className="text-[#c792ea]">from</span> <span className="text-[#f78c6c]">&apos;@antv/ava&apos;</span>;{'\n\n'}
-      <span className="text-[#c792ea]">const</span> ava = <span className="text-[#c792ea]">new</span> <span className="text-[#82aaff]">AVA</span>({'{'}{'\n'}
-      &nbsp;&nbsp;llm: {'{'} model: <span className="text-[#f78c6c]">&apos;ling-1t&apos;</span>, apiKey, baseURL {'}'},{'\n'}
-      &nbsp;&nbsp;<span className="text-zinc-500">{'// engine: { type: \'duckdb\' } is the default'}</span>{'\n'}
+      <span className="text-[#c792ea]">import</span> {'{ AVA }'} <span className="text-[#c792ea]">from</span>{' '}
+      <span className="text-[#f78c6c]">&apos;@antv/ava&apos;</span>;{'\n\n'}
+      <span className="text-[#c792ea]">const</span> ava = <span className="text-[#c792ea]">new</span>{' '}
+      <span className="text-[#82aaff]">AVA</span>({'{'}
+      {'\n'}
+      &nbsp;&nbsp;llm: {'{'} model: <span className="text-[#f78c6c]">&apos;ling-1t&apos;</span>, apiKey, baseURL {'}'},
+      {'\n'}
+      &nbsp;&nbsp;<span className="text-zinc-500">{"// engine: { type: 'duckdb' } is the default"}</span>
+      {'\n'}
       {'}'});{'\n\n'}
-      <span className="text-[#c792ea]">await</span> ava.<span className="text-[#82aaff]">source</span>({'{'} type: <span className="text-[#f78c6c]">&apos;csv-file&apos;</span>, options: {'{'} path: <span className="text-[#f78c6c]">&apos;data/companies.csv&apos;</span> {'}'} {'}'});{'\n'}
-      <span className="text-[#c792ea]">const</span> result = <span className="text-[#c792ea]">await</span> ava.<span className="text-[#82aaff]">analyze</span>(<span className="text-[#f78c6c]">&apos;What is the average revenue by region?&apos;</span>);{'\n'}
-      <span className="text-[#c792ea]">const</span> viz = <span className="text-[#c792ea]">await</span> ava.<span className="text-[#82aaff]">visualize</span>(result);{'\n'}
-      console.<span className="text-[#82aaff]">log</span>(viz?.chartType); <span className="text-zinc-500">{'// e.g. \'column\''}</span>{'\n\n'}
+      <span className="text-[#c792ea]">await</span> ava.<span className="text-[#82aaff]">source</span>({'{'} type:{' '}
+      <span className="text-[#f78c6c]">&apos;csv-file&apos;</span>, options: {'{'} path:{' '}
+      <span className="text-[#f78c6c]">&apos;data/companies.csv&apos;</span> {'}'} {'}'});{'\n'}
+      <span className="text-[#c792ea]">const</span> result = <span className="text-[#c792ea]">await</span> ava.
+      <span className="text-[#82aaff]">analyze</span>(
+      <span className="text-[#f78c6c]">&apos;What is the average revenue by region?&apos;</span>);{'\n'}
+      <span className="text-[#c792ea]">const</span> viz = <span className="text-[#c792ea]">await</span> ava.
+      <span className="text-[#82aaff]">visualize</span>(result);{'\n'}
+      console.<span className="text-[#82aaff]">log</span>(viz?.chartType);{' '}
+      <span className="text-zinc-500">{"// e.g. 'column'"}</span>
+      {'\n\n'}
       <span className="text-[#c792ea]">await</span> ava.<span className="text-[#82aaff]">dispose</span>();
     </code>
   </pre>
@@ -163,14 +185,23 @@ const Integrate: React.FC<{ id?: string }> = ({ id = 'integrate' }) => {
   };
 
   return (
-    <section id={id} className="relative mx-6 overflow-hidden rounded-[24px] px-6 py-[88px] max-md:mx-2.5 max-md:px-1 max-md:py-14" aria-label="Integrate your way">
+    <section
+      id={id}
+      className="relative mx-6 overflow-hidden rounded-[24px] px-6 py-[88px] max-md:mx-2.5 max-md:px-1 max-md:py-14"
+      aria-label="Integrate your way"
+    >
       <div aria-hidden className="absolute inset-x-0 top-0 h-full bg-[#f6fbfe]" />
       <div className="relative mx-auto max-w-6xl px-6">
         <Reveal>
           <SectionHeading
-            eyebrow="Developer Experience"
-            title="Bring Analytics to Your Agent."
-            description="Integrate AVA through an Agent Skill, CLI, or SDK — on your terms."
+            title={
+              <>
+                Bring Analytics
+                <br />
+                to Your Agent.
+              </>
+            }
+            description="Choose an Agent Skill, CLI, or TypeScript SDK."
           />
         </Reveal>
 
@@ -185,10 +216,8 @@ const Integrate: React.FC<{ id?: string }> = ({ id = 'integrate' }) => {
                     role="tab"
                     aria-selected={tab === t.id}
                     onClick={() => setTab(t.id)}
-                    className={`relative shrink-0 rounded-t-lg px-4 py-2.5 text-[13.5px] font-medium transition-colors ${
-                      tab === t.id
-                        ? 'text-[color:var(--color-primary-dark)]'
-                        : 'text-zinc-400 hover:text-zinc-600'
+                    className={`relative shrink-0 rounded-t-lg px-4 py-2.5 text-[15px] font-medium transition-colors ${
+                      tab === t.id ? 'text-[color:var(--color-primary-dark)]' : 'text-zinc-400 hover:text-zinc-600'
                     }`}
                   >
                     {t.label}
@@ -205,7 +234,7 @@ const Integrate: React.FC<{ id?: string }> = ({ id = 'integrate' }) => {
               <button
                 onClick={copy}
                 aria-live="polite"
-                className={`mr-1 mb-1 flex shrink-0 items-center gap-1.5 rounded-md border px-2.5 py-1.5 font-mono text-[11.5px] transition-all ${
+                className={`mr-1 mb-1 flex shrink-0 items-center gap-1.5 rounded-md border px-2.5 py-1.5 font-mono text-[13px] transition-all ${
                   copied && copiedTab === tab
                     ? 'border-emerald-200 bg-emerald-50 text-emerald-600'
                     : 'border-zinc-200 text-zinc-500 hover:border-zinc-300 hover:text-zinc-700'
@@ -215,7 +244,15 @@ const Integrate: React.FC<{ id?: string }> = ({ id = 'integrate' }) => {
                   <>copied ✓</>
                 ) : (
                   <>
-                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden>
+                    <svg
+                      width="12"
+                      height="12"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="2"
+                      aria-hidden
+                    >
                       <rect x="9" y="9" width="12" height="12" rx="2" />
                       <path d="M5 15V5a2 2 0 0 1 2-2h10" />
                     </svg>
@@ -229,16 +266,10 @@ const Integrate: React.FC<{ id?: string }> = ({ id = 'integrate' }) => {
             <div className="grid gap-0 md:grid-cols-[2fr_3fr]">
               <div className="min-w-0 p-6">
                 <div key={`${tab}-text`} style={{ animation: 'fade-swap 280ms ease-out both' }}>
-                  <h3 className="text-[17px] font-semibold leading-snug text-zinc-900">
-                    {active.heading}
-                  </h3>
-                  <p className="mt-2 text-[13px] leading-relaxed text-zinc-500">
-                    {active.description}
-                  </p>
-                  <div className="mt-5">
-                    <SectionLink href={active.docHref}>
-                      {active.docLabel}
-                    </SectionLink>
+                  <h3 className="text-[24px] font-semibold leading-snug text-zinc-900">{active.heading}</h3>
+                  <p className="mt-4 text-[16px] leading-relaxed text-zinc-500">{active.description}</p>
+                  <div className="mt-6">
+                    <SectionLink href={active.docHref}>{active.docLabel}</SectionLink>
                   </div>
                 </div>
               </div>
@@ -253,7 +284,11 @@ const Integrate: React.FC<{ id?: string }> = ({ id = 'integrate' }) => {
                     {active.language === 'bash' ? 'bash' : 'agent.ts'}
                   </span>
                 </div>
-                <div className="bg-[#0d1420] p-4" key={`${tab}-code`} style={{ animation: 'fade-swap 280ms ease-out both' }}>
+                <div
+                  className="bg-[#0d1420] p-4"
+                  key={`${tab}-code`}
+                  style={{ animation: 'fade-swap 280ms ease-out both' }}
+                >
                   <Code />
                 </div>
               </div>
