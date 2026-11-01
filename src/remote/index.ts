@@ -5,3 +5,4 @@
 export { SupabaseEngine } from './supabase';
 export { ClickHouseEngine } from './clickhouse';
 export { SQLServerEngine } from './sqlserver';
+export { SnowflakeEngine } from './snowflake';
