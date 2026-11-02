@@ -1,6 +1,6 @@
 import { Heading } from '../../../../mdx-components';
 
-同一句“**按地区统计收入**”，口径不同，结果就可能不同。以下沿用[了解数据结构](/documentation/data/schema/)中的六笔订单，看看该怎样把口径说明白：
+同一句“ **按地区统计收入** ”，口径不同，结果就可能不同。以下沿用[了解数据结构](/documentation/data/schema/)中的六笔订单，看看该怎样把口径说明白：
 
 | order_id | region | status | amount | refund_amount | ordered_at |
 | --- | --- | --- | --- | --- | --- |
@@ -32,7 +32,7 @@ import { Heading } from '../../../../mdx-components';
 | 5 | 50 美元 | 退款缺失，按零处理。 |
 | 6 | 0 美元 | 已取消，排除。 |
 
-因此，East 的收入为 **150 美元**，West 为 **60 美元**。下面的语义定义将记录产生这些结果的规则。
+因此，East 的收入为 **150 美元** ，West 为 **60 美元** 。下面的语义定义将记录产生这些结果的规则。
 
 <Heading as="h2" id="write-the-definition">编写语义定义</Heading>
 
@@ -84,8 +84,8 @@ const semantic = {
 可以从三个部分理解：
 
 1. **`description` 和 `properties` 解释业务含义。** 共享描述定义收入口径；模型和列的属性说明行粒度、单位与空值含义。`unit`、`synonyms` 这样的键是注释信息，不是 SDK 的特殊选项。
-2. **`models` 将含义映射到数据。**`name: 'data'` 与自动发现的模型一致；计算列 `net_amount` 描述单笔订单的净额。未列出的物理列仍可通过 schema 使用。
-3. **`cubes` 定义可复用的分析口径。**`sales` 将指标与分组表达式组织在一起；`net_revenue` 同时包含状态过滤与退款计算；`dimensions` 提供地区分组，`timeDimensions` 提供下单日期分组。
+2. **`models` 将含义映射到数据。** `name: 'data'` 与自动发现的模型一致；计算列 `net_amount` 描述单笔订单的净额。未列出的物理列仍可通过 schema 使用。
+3. **`cubes` 定义可复用的分析口径。** `sales` 将指标与分组表达式组织在一起；`net_revenue` 同时包含状态过滤与退款计算；`dimensions` 提供地区分组，`timeDimensions` 提供下单日期分组。
 
 指标里包含了哪些记录可计入收入的规则，因此按地区或日期分组时，这些规则仍然生效。仅有计算列 `net_amount`，并不能决定哪些订单应计入收入。
 

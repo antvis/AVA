@@ -505,7 +505,7 @@ const semantic = {
 
 `models` is an ordered pair. `MANY_TO_ONE` means many rows in the first model can match one row in the second. `joinType` describes cardinality; it does not choose `LEFT JOIN` or `INNER JOIN`. The join condition must include all parts of a composite key.
 
-If you expose a relationship navigation column, set its `relationship` to the relationship's **name**, and its `type` to the target model name, for example `{ name: 'customer', type: 'customers', relationship: 'order_customer' }`. The physical foreign-key column remains `customer_id`.
+If you expose a relationship navigation column, set its `relationship` to the relationship's **name** , and its `type` to the target model name, for example `{ name: 'customer', type: 'customers', relationship: 'order_customer' }`. The physical foreign-key column remains `customer_id`.
 
 Check grain before aggregating across a join. Joining one order to many line items can repeat the order amount. A cardinality declaration supplies context; AVA does not verify uniqueness or automatically prevent double counting.
 

@@ -38,7 +38,7 @@ import CopyCode from '../../../components/docs/CopyCode';
 
 <Heading as="h2" id="what-the-skill-does">Agent 和 AVA 各负责什么</Heading>
 
-**Agent** 理解问题、规划分析、编写查询并解释结果；**AVA** 负责连接数据、执行查询和渲染图表。Skill 则告诉 Agent 怎样把这些工具串成完整的分析流程。
+**Agent** 理解问题、规划分析、编写查询并解释结果； **AVA** 负责连接数据、执行查询和渲染图表。Skill 则告诉 Agent 怎样把这些工具串成完整的分析流程。
 
 你可以让它比较不同时期、探索数据集、排查变化，或基于已核实的结果生成图表。从本地 CSV、JSON、Parquet、Excel、SQLite 文件开始，也可以使用已配置的[数据库连接](/documentation/data/sources/)。
 
@@ -50,7 +50,7 @@ import CopyCode from '../../../components/docs/CopyCode';
 
 <Heading as="h2" id="demo-explain-a-revenue-change">试一遍：收入变化从哪里来</Heading>
 
-这个可复现示例使用 **8 行模拟数据**：四款产品在 2025 年 1 月和 2 月的收入，单位为美元。下方结果由这份数据计算得出，用来展示交付内容，并非某次 Agent 对话的录屏。
+这个可复现示例使用 **8 行模拟数据** ：四款产品在 2025 年 1 月和 2 月的收入，单位为美元。下方结果由这份数据计算得出，用来展示交付内容，并非某次 Agent 对话的录屏。
 
 <Heading as="h3" id="1-get-the-data">1. 准备一份数据</Heading>
 
@@ -88,7 +88,7 @@ import CopyCode from '../../../components/docs/CopyCode';
   <figcaption>使用 AVA 渲染的交互图表。悬停可查看各产品数据；图表从 CDN 加载 GPT-Vis。</figcaption>
 </figure>
 
-Reporting 收入减少了 1,000 美元，抵消了其他产品的部分增长。这些数字能说明变化**发生在哪里**，但这份示例数据不足以解释**为什么会变化**。
+Reporting 收入减少了 1,000 美元，抵消了其他产品的部分增长。这些数字能说明变化 **发生在哪里** ，但这份示例数据不足以解释 **为什么会变化** 。
 
 | 产品 | 1 月（美元） | 2 月（美元） | 变化（美元） |
 | --- | --- | --- | --- |
@@ -118,7 +118,7 @@ ava viz --spec @chart.json --output revenue-change.html
 
 <Heading as="h2" id="manual-installation">手动安装</Heading>
 
-CLI 需要 **Node.js 22.13 或更高版本**、**macOS 或 Linux**，以及支持后台进程和 Unix socket 的环境。分别安装 CLI 和 Skill：
+CLI 需要 **Node.js 22.13 或更高版本** 、 **macOS 或 Linux** ，以及支持后台进程和 Unix socket 的环境。分别安装 CLI 和 Skill：
 
 ```bash
 npm install -g @antv/ava@4

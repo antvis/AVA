@@ -61,7 +61,7 @@ import { Heading } from '../../../../mdx-components';
 | `baseURL` | `string` | 否 | 可选的 API 基础地址。 |
 | `maxRetries` | `number` | 否 | 模型 API 可重试错误的最大重试次数，默认 3。 |
 
-以字符串传入模型名称时，默认使用兼容 OpenAI 的 **Chat Completions**；传入模型对象时则直接使用该对象。用量回调并不完整覆盖每次模型请求，不能用来汇总全部用量。
+以字符串传入模型名称时，默认使用兼容 OpenAI 的 **Chat Completions** ；传入模型对象时则直接使用该对象。用量回调并不完整覆盖每次模型请求，不能用来汇总全部用量。
 
 <h4 id="engine-options">引擎选项</h4>
 
@@ -473,7 +473,7 @@ Setter 接收选项对象，同步返回 `Semantic`。AVA 验证并复制结果�
 
 编写映射前，先调用 `schema()` 检查模型名称、来源引用与列类型。名称必须在所属模型内准确匹配。销售示例的内存 JSON 暴露为 `data`；其他数据源可能使用不同名称，并带有 catalog 或 schema 限定信息。
 
-`models` 中的每一项都需要 `name`，并且**只能选择一种** 来源，即使只是想给已有模型补充描述：
+`models` 中的每一项都需要 `name`，并且 **只能选择一种** 来源，即使只是想给已有模型补充描述：
 
 | 来源选择器 | 适用情况 | 示例 |
 | --- | --- | --- |
@@ -507,7 +507,7 @@ const semantic = {
 
 `models` 是有序模型对。`MANY_TO_ONE` 表示第一模型的多行可以匹配第二模型的一行。`joinType` 描述基数，不决定使用 `LEFT JOIN` 还是 `INNER JOIN`。复合键的连接条件需要包含所有键字段。
 
-如果暴露关系导航列，应将 `relationship` 设为关系的**名称**，将 `type` 设为目标模型名，例如 `{ name: 'customer', type: 'customers', relationship: 'order_customer' }`。物理外键列仍是 `customer_id`。
+如果暴露关系导航列，应将 `relationship` 设为关系的 **名称** ，将 `type` 设为目标模型名，例如 `{ name: 'customer', type: 'customers', relationship: 'order_customer' }`。物理外键列仍是 `customer_id`。
 
 跨表聚合前先检查行粒度。一笔订单连接多条明细时，订单金额可能被重复计算。基数声明只提供上下文，AVA 不会验证唯一性，也不会自动避免重复计数。
 
@@ -572,7 +572,7 @@ Setter 验证并复制返回对象。验证失败或 setter 抛错时，之前�
 
 <Heading as="h3" id="semantic-validation">语义验证</Heading>
 
-结构验证检查字段形状、必填项、来源选择器的互斥性及非空指标列表，但**不能证明** SQL 有效、引用对象存在、键声明成立、单位一致或业务规则正确。重复的语义模型名、同一模型内的重复列名，会在分析、翻译或推荐问题组装组合模型时被拒绝，而非仅由 setter 拒绝。
+结构验证检查字段形状、必填项、来源选择器的互斥性及非空指标列表，但 **不能证明** SQL 有效、引用对象存在、键声明成立、单位一致或业务规则正确。重复的语义模型名、同一模型内的重复列名，会在分析、翻译或推荐问题组装组合模型时被拒绝，而非仅由 setter 拒绝。
 
 为自己的数据定义口径时，可以沿用销售示例的验证流程：
 
