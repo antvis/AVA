@@ -23,7 +23,7 @@ export async function run(_args: string[], options: Options): Promise<unknown> {
 
   if (!query?.trim() || raw === undefined) throw new Error('--query and --data are required.');
 
-  const data = z.array(z.record(z.unknown())).parse(await readJSON(raw));
+  const data = z.array(z.record(z.string(), z.unknown())).parse(await readJSON(raw));
 
   const ava = new AVA({ llm: llmConfig(true) });
 
