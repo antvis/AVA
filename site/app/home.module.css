@@ -444,17 +444,15 @@
   color: #4c7a8c;
 }
 .benchmarks {
-  max-width: 1260px;
-  margin: 0 auto;
+  width: 100%;
 }
 .benchmarks > section {
-  border-radius: 16px;
-  padding-block: 112px;
+  border-radius: 0;
+  padding-block: 96px;
 }
 .benchmarks > section > div[aria-hidden] {
   background: linear-gradient(140deg, #f0f7fb, #eaf5fb) !important;
 }
-.benchmarks h2,
 .integration h2,
 .ecosystem h2 {
   font-size: clamp(36px, 4.2vw, 56px);
@@ -462,7 +460,17 @@
   letter-spacing: -0.04em;
   color: var(--home-ink);
 }
-.benchmarks :global(.max-w-2xl) > p,
+.home .benchmarks h2 {
+  font-size: clamp(30px, 3.1vw, 44px);
+}
+.benchmarks :global(.max-w-2xl) > p {
+  font-size: 14px;
+  line-height: 1.65;
+}
+.benchmarks a {
+  font-size: 13px;
+  color: var(--home-blue);
+}
 .integration :global(.max-w-2xl) > p {
   font-size: 16px;
   line-height: 1.7;
@@ -598,7 +606,6 @@
   .dataSection {
     padding-block: 112px 144px;
   }
-  .benchmarks > section,
   .integration > section,
   .ecosystem > section {
     padding-block: 112px;
@@ -734,8 +741,7 @@
     --source-offset: -8px;
   }
   .benchmarks > section {
-    margin-inline: 14px;
-    padding: 72px 0;
+    padding: 64px 0;
   }
   .benchmarks > section > div:last-child {
     padding-inline: 20px;
@@ -745,8 +751,8 @@
     border-radius: 12px;
   }
   .benchmarks :global([role='tab']) {
-    font-size: 12px;
-    padding-inline: 10px;
+    font-size: 11px;
+    padding-inline: 8px;
   }
   .integration {
     margin-top: 0;

@@ -1,19 +1,54 @@
 'use client';
 
-import React from 'react';
+import React, { useState } from 'react';
 import Reveal from './Reveal';
 import { SectionHeading, SectionLink } from './Section';
 
 // Evaluation results published in the repository (README / evals).
+interface BenchmarkContext {
+  id: string;
+  label: string;
+  accuracy: number;
+  latency: number;
+  tokens: number;
+}
+
 const BENCHMARK = {
-  dataset: 'Spider2-Lite',
-  questions: '135 complex SQL questions · SQLite subset',
+  dataset: 'DataBench',
+  questions: '1,789 questions',
+  model: 'GLM-5.1 · DuckDB · Direct',
   link: '/documentation/reference/benchmarks/',
   contexts: [
-    { id: 'raw', label: 'Raw data', accuracy: 25.93 },
-    { id: 'schema-profile', label: 'Schema + Profile', accuracy: 33.33 },
-    { id: 'semantic', label: 'Semantic', accuracy: 80.74 },
-  ],
+    {
+      id: 'raw',
+      label: 'Raw data',
+      accuracy: 83.51,
+      latency: 1.35,
+      tokens: 991,
+    },
+    {
+      id: 'schema-profile',
+      label: 'Schema + Profile',
+      accuracy: 84.18,
+      latency: 2.08,
+      tokens: 1990,
+    },
+    {
+      id: 'semantic',
+      label: 'Semantic',
+      accuracy: 93.01,
+      latency: 1.66,
+      tokens: 3288,
+    },
+  ] as BenchmarkContext[],
+};
+
+type Metric = 'accuracy' | 'latency' | 'tokens';
+
+const METRICS: Record<Metric, { label: string; fmt: (v: number) => string; best: 'max' | 'min' }> = {
+  accuracy: { label: 'Accuracy', fmt: (v) => `${v.toFixed(2)}%`, best: 'max' },
+  latency: { label: 'Avg. time / question', fmt: (v) => `${v.toFixed(2)} s`, best: 'min' },
+  tokens: { label: 'Avg. tokens / question', fmt: (v) => v.toLocaleString('en-US'), best: 'min' },
 };
 
 const MECHANISMS = [
@@ -51,10 +86,14 @@ const MECHANISMS = [
 ];
 
 const TrustedAnalytics: React.FC<{ id?: string }> = ({ id = 'benchmarks' }) => {
+  const [metric, setMetric] = useState<Metric>('accuracy');
+  const values = BENCHMARK.contexts.map((context) => context[metric]);
+  const max = Math.max(...values);
+
   return (
     <section
       id={id}
-      className="relative mx-6 overflow-hidden rounded-[24px] px-6 py-[88px] max-md:mx-2.5 max-md:px-1 max-md:py-14"
+      className="relative overflow-hidden px-6 py-24 max-md:px-0 max-md:py-16"
       aria-label="Trusted analytics"
     >
       <div
@@ -85,44 +124,119 @@ const TrustedAnalytics: React.FC<{ id?: string }> = ({ id = 'benchmarks' }) => {
         <div className="mt-7 grid items-stretch gap-5 lg:grid-cols-[5fr_4fr]">
           {/* ── left: benchmark ── */}
           <Reveal className="h-full">
-            <div className="flex h-full flex-col rounded-2xl bg-white p-6">
-              <div>
-                <h3 className="text-[24px] font-semibold tracking-[-0.025em] text-zinc-900">
-                  Accuracy on {BENCHMARK.dataset}.
-                </h3>
-                <p className="mt-2 text-[14px] text-zinc-500">{BENCHMARK.questions}</p>
+            <div className="flex h-full flex-col rounded-2xl bg-white p-5">
+              <div className="flex flex-col gap-5">
+                <div>
+                  <div className="font-mono text-[11px] tracking-[0.03em] text-zinc-500">
+                    Context · {BENCHMARK.dataset} · {BENCHMARK.questions}
+                  </div>
+                  <div className="mt-4 flex items-baseline gap-2">
+                    <span className="text-[clamp(40px,5vw,56px)] font-semibold leading-none tracking-[-0.03em] text-zinc-900 tabular-nums">
+                      {Math.max(...BENCHMARK.contexts.map((s) => s.accuracy)).toFixed(2)}
+                      <span className="text-[0.4em] font-medium text-zinc-400">%</span>
+                    </span>
+                  </div>
+                  <div className="mt-2 text-[12px] text-zinc-500">answer accuracy with Semantic</div>
+                  <div className="mt-1 font-mono text-[11.5px] text-zinc-400">model: {BENCHMARK.model}</div>
+                </div>
+                {/* metric switch — real data exists for all three */}
+                <div
+                  role="tablist"
+                  aria-label="Benchmark metric"
+                  className="grid w-full grid-cols-3 rounded-xl border border-zinc-200 bg-[#f8fbfc] p-1"
+                >
+                  {(Object.keys(METRICS) as Metric[]).map((m) => (
+                    <button
+                      key={m}
+                      role="tab"
+                      id={`${id}-${m}-tab`}
+                      aria-controls={`${id}-metric-panel`}
+                      aria-selected={metric === m}
+                      tabIndex={metric === m ? 0 : -1}
+                      data-metric={m}
+                      onKeyDown={(event) => {
+                        const keys = Object.keys(METRICS) as Metric[];
+                        const index = keys.indexOf(m);
+                        let next: Metric;
+                        if (event.key === 'ArrowRight') next = keys[(index + 1) % keys.length];
+                        else if (event.key === 'ArrowLeft') next = keys[(index + keys.length - 1) % keys.length];
+                        else if (event.key === 'Home') next = keys[0];
+                        else if (event.key === 'End') next = keys[keys.length - 1];
+                        else return;
+                        event.preventDefault();
+                        setMetric(next);
+                        event.currentTarget.parentElement
+                          ?.querySelector<HTMLButtonElement>(`[data-metric="${next}"]`)
+                          ?.focus();
+                      }}
+                      onClick={() => setMetric(m)}
+                      className={`rounded-lg px-2 py-2 text-[11px] leading-4 text-balance font-medium transition-all duration-200 ${
+                        metric === m
+                          ? 'bg-white text-zinc-900 shadow-[0_1px_2px_rgba(0,0,0,0.08)]'
+                          : 'text-zinc-500 hover:text-zinc-700'
+                      }`}
+                    >
+                      {METRICS[m].label}
+                    </button>
+                  ))}
+                </div>
               </div>
 
+              {/* comparison bars */}
               <div
-                className="my-8 flex flex-1 flex-col justify-center gap-6"
-                aria-label="Benchmark accuracy by context"
+                id={`${id}-metric-panel`}
+                role="tabpanel"
+                aria-labelledby={`${id}-${metric}-tab`}
+                tabIndex={0}
+                className="mt-7 flex flex-1 flex-col justify-end gap-4"
               >
-                {BENCHMARK.contexts.map((context) => (
-                  <div key={context.id}>
-                    <div className="mb-2 flex items-baseline justify-between gap-4">
-                      <span className="text-[14px] text-zinc-600">{context.label}</span>
-                      <span className="font-mono text-[18px] tabular-nums text-zinc-800">
-                        {context.accuracy.toFixed(2)}%
-                      </span>
-                    </div>
-                    <div className="h-2.5 overflow-hidden rounded-full bg-zinc-100">
-                      <div
-                        className="h-full rounded-full"
-                        style={{
-                          width: `${context.accuracy}%`,
-                          background:
-                            context.id === 'semantic'
+                {BENCHMARK.contexts.map((s) => {
+                  const m = METRICS[metric];
+                  const value = s[metric];
+                  const pct = metric === 'accuracy' ? value : (value / max) * 100;
+                  const isBest = m.best === 'max' ? value === max : value === Math.min(...values);
+                  return (
+                    <div key={s.id}>
+                      <div className="mb-1.5 flex items-baseline justify-between gap-4">
+                        <span className={`text-[12px] ${isBest ? 'font-medium text-zinc-800' : 'text-zinc-500'}`}>
+                          {s.label}
+                          {isBest && metric === 'accuracy' && (
+                            <span role="img" aria-label="Highest accuracy" className="ml-2 text-amber-700">
+                              ★
+                            </span>
+                          )}
+                        </span>
+                        <span
+                          className={`shrink-0 font-mono text-[12px] tabular-nums ${
+                            isBest ? 'text-[#22799b]' : 'text-zinc-400'
+                          }`}
+                        >
+                          {m.fmt(value)}
+                          {metric === 'accuracy' && s.id !== 'raw' && (
+                            <span className="ml-1 text-red-700">
+                              (+{(s.accuracy - BENCHMARK.contexts[0].accuracy).toFixed(2)} pp)
+                            </span>
+                          )}
+                        </span>
+                      </div>
+                      <div className="h-2 overflow-hidden rounded-full bg-zinc-100">
+                        <div
+                          className="h-full rounded-full transition-[width] duration-500 ease-[cubic-bezier(0.22,1,0.36,1)]"
+                          style={{
+                            width: `${pct}%`,
+                            background: isBest
                               ? 'linear-gradient(90deg, var(--color-primary), var(--color-primary-dark))'
                               : 'rgba(24,24,27,0.14)',
-                        }}
-                      />
+                          }}
+                        />
+                      </div>
                     </div>
-                  </div>
-                ))}
+                  );
+                })}
               </div>
 
-              <div className="border-t border-zinc-100 pt-4">
-                <SectionLink href={BENCHMARK.link}>Explore the evaluation</SectionLink>
+              <div className="mt-4 flex justify-end border-t border-zinc-100 pt-4">
+                <SectionLink href={BENCHMARK.link}>Read the full evaluation</SectionLink>
               </div>
             </div>
           </Reveal>
@@ -133,12 +247,12 @@ const TrustedAnalytics: React.FC<{ id?: string }> = ({ id = 'benchmarks' }) => {
               {MECHANISMS.map((mech) => (
                 <li
                   key={mech.title}
-                  className="group flex flex-1 items-start gap-4 rounded-2xl bg-white p-6 transition-shadow duration-200 hover:shadow-[0_4px_16px_rgba(120,211,248,0.12)]"
+                  className="group flex flex-1 items-start gap-3.5 rounded-2xl bg-white p-5 transition-shadow duration-200 hover:shadow-[0_4px_16px_rgba(120,211,248,0.12)]"
                 >
-                  <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-[#edf7fa] text-[#568c9e]">
+                  <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-[#edf7fa] text-[#568c9e]">
                     <svg
-                      width="23"
-                      height="23"
+                      width="21"
+                      height="21"
                       viewBox="0 0 24 24"
                       fill="none"
                       stroke="currentColor"
@@ -151,8 +265,8 @@ const TrustedAnalytics: React.FC<{ id?: string }> = ({ id = 'benchmarks' }) => {
                     </svg>
                   </span>
                   <div className="min-w-0">
-                    <h3 className="text-[24px] font-semibold text-zinc-900">{mech.title}</h3>
-                    <p className="mt-2 text-[15px] leading-relaxed text-zinc-500">{mech.detail}</p>
+                    <h3 className="text-[20px] font-semibold text-zinc-900">{mech.title}</h3>
+                    <p className="mt-2 text-[14px] leading-relaxed text-zinc-500">{mech.detail}</p>
                   </div>
                 </li>
               ))}
