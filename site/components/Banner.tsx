@@ -162,7 +162,7 @@ const Banner: React.FC = () => {
 
           <h1 className="text-[length:clamp(30px,4.5vw,58px)] font-semibold leading-[1.22] max-md:leading-[1.25] tracking-[-0.045em] text-zinc-900 max-md:text-[length:clamp(27px,5vw,38px)]">
             <span lang="en" className="whitespace-nowrap max-md:whitespace-normal">
-              <RotatingVerse /> Visual Analytics.
+              <RotatingVerse /> Visual Analytics
             </span>
             <br />
             <span>{t('slogan')}</span>
