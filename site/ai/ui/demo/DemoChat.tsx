@@ -1,10 +1,12 @@
 'use client';
 
-import { useState } from 'react';
+import { useLocale, useTranslations } from 'use-intl';
+import type { Locale } from '../../../lib/i18n';
+import { useMemo, useState } from 'react';
 import ChatWorkspace from '../ChatWorkspace';
 import type { Message, ArtifactDisplay } from '../types';
 import useSimulatedStream from './useSimulatedStream';
-import { PRESET_MESSAGES } from './mockData';
+import { getDemoMessages } from './mockData';
 
 const artifactDisplay: ArtifactDisplay = {
   columns: [
@@ -16,15 +18,27 @@ const artifactDisplay: ArtifactDisplay = {
 };
 
 export default function DemoChat() {
+  const locale = useLocale() as Locale;
+  const t = useTranslations('Demo');
+  const messages = useMemo(() => getDemoMessages(locale), [locale]);
   const [replayKey, setReplayKey] = useState(0);
   const [activeArtifact, setActiveArtifact] = useState<Message | null>(null);
-  const playback = useSimulatedStream(PRESET_MESSAGES, setActiveArtifact, replayKey);
+  const playback = useSimulatedStream(messages, setActiveArtifact, replayKey);
   return (
     <ChatWorkspace
       key={replayKey}
       playback={playback}
       activeArtifact={activeArtifact?.artifact}
-      artifactDisplay={artifactDisplay}
+      artifactDisplay={
+        locale === 'en'
+          ? artifactDisplay
+          : {
+              columns: artifactDisplay.columns!.map((column, i) => ({
+                ...column,
+                label: t(['month', 'revenue', 'profit', 'marginColumn'][i]),
+              })),
+            }
+      }
       onReplay={() => {
         setActiveArtifact(null);
         setReplayKey((key) => key + 1);

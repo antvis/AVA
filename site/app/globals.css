@@ -28,6 +28,26 @@ body {
   font-family: var(--font-body);
 }
 
+html[lang='zh-CN'] {
+  --font-body: 'MiSans VF', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+  --font-sans: var(--font-body);
+  --font-heading: var(--font-body);
+}
+
+html[lang='zh-CN'] body {
+  font-family: var(--font-body);
+  font-weight: 400;
+}
+
+html[lang='zh-CN'] :is(h1, h2, h3, h4, h5, h6) {
+  font-weight: 500;
+  letter-spacing: 0;
+}
+
+html[lang='zh-CN'] nav :is(a, button) {
+  font-weight: 500;
+}
+
 h1,
 h2,
 h3 {
@@ -149,26 +169,6 @@ body {
   }
 }
 
-/* beautifului.dev pixel-grid loader dot */
-.pixel-dot {
-  width: 5px;
-  height: 5px;
-  display: inline-block;
-  background: #18181b;
-  box-shadow: 0 5px 0 #18181b, 5px 0 0 #18181b, 10px 0 0 #18181b, -5px 5px 0 #18181b, 0 10px 0 #18181b,
-    10px 10px 0 #18181b, 0 -5px 0 #18181b, 10px -5px 0 #18181b, -5px 0 0 #18181b;
-  animation: pixel-shimmer 4s linear infinite alternate;
-}
-
-@keyframes pixel-shimmer {
-  from {
-    opacity: 1;
-  }
-  to {
-    opacity: 0.35;
-  }
-}
-
 /* ---- Tool Chips (beautifului.dev) entrance animations ---- */
 @keyframes fade-up {
   from {
@@ -220,30 +220,13 @@ body {
   }
 }
 
-/* ---- Loading state (beautifului.dev pixel-grid loader) ---- */
-.response-loading-pixel {
-  opacity: 0.15;
-  animation: pixel-on 650ms ease-in-out infinite;
-}
-
+/* ---- Loading state ---- */
 .response-loading-label {
   color: transparent;
   background-image: linear-gradient(90deg, var(--color-ink-3) 35%, var(--color-ink) 50%, var(--color-ink-3) 65%);
   background-size: 200% 100%;
   background-clip: text;
   animation: shimmer-text 1.4s linear infinite;
-}
-
-@keyframes pixel-on {
-  0%,
-  100% {
-    opacity: 0.15;
-    transform: none;
-  }
-  45%,
-  55% {
-    opacity: 1;
-  }
 }
 
 @keyframes shimmer-text {
@@ -256,7 +239,6 @@ body {
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .response-loading-pixel,
   .response-loading-label {
     animation: none;
   }
@@ -264,7 +246,6 @@ body {
     background: none;
     color: var(--color-ink-2);
   }
-  .pixel-dot,
   .animate-pulse,
   .animate-ping {
     animation: none !important;

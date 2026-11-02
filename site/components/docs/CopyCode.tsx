@@ -1,8 +1,19 @@
 'use client';
 
+import { useTranslations } from 'use-intl';
+
 import { useRef, useState, useEffect } from 'react';
 
-export default function CopyCode({ label, text, className = 'docs-copy' }: { label?: string; text?: string; className?: string }) {
+export default function CopyCode({
+  label,
+  text,
+  className = 'docs-copy',
+}: {
+  label?: string;
+  text?: string;
+  className?: string;
+}) {
+  const t = useTranslations('CopyCode');
   const button = useRef<HTMLButtonElement>(null);
   const timer = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
   const [status, setStatus] = useState('');
@@ -14,17 +25,17 @@ export default function CopyCode({ label, text, className = 'docs-copy' }: { lab
     if (value == null) return;
     try {
       await navigator.clipboard.writeText(value);
-      setStatus('Copied');
+      setStatus(t('copied'));
     } catch {
-      setStatus(text === undefined ? 'Select code to copy' : 'Copy failed. Try again');
+      setStatus(text === undefined ? t('selectCodeToCopy') : t('copyFailedTryAgain'));
     }
     clearTimeout(timer.current);
     timer.current = setTimeout(() => setStatus(''), 2500);
   }
 
   return (
-    <button ref={button} type="button" className={className} onClick={copy} aria-label={label || 'Copy code'}>
-      <span aria-live="polite">{status || label || 'Copy'}</span>
+    <button ref={button} type="button" className={className} onClick={copy} aria-label={label || t('copyCode')}>
+      <span aria-live="polite">{status || label || t('copy2')}</span>
       <svg
         width="14"
         height="14"

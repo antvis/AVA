@@ -1,5 +1,7 @@
 'use client';
 
+import { useTranslations } from 'use-intl';
+
 import { useEffect, useRef } from 'react';
 import { SectionHeading, SectionLink } from './Section';
 import styles from './Ecosystem.module.css';
@@ -11,7 +13,7 @@ const PROJECTS = [
   {
     name: 'AVA Notebook',
     origin: 'community',
-    description: 'Revisit the SQL, results, and evidence behind your analysis in an editable notebook.',
+    description: 'revisitTheSqlResultsAndEvidenceBehindYourAnalysisInAnEditableNotebook',
     status: 'In development',
     href: 'https://github.com/yvonneyx/ava-notebook',
     repository: 'yvonneyx/ava-notebook',
@@ -21,7 +23,7 @@ const PROJECTS = [
   {
     name: 'DeepSeek Harness',
     origin: 'community',
-    description: 'Bring AVA v4 queries, streaming narratives, and AntV charts into DSH conversations.',
+    description: 'bringAvaV4QueriesStreamingNarrativesAndAntvChartsIntoDshConversations',
     status: 'Community integration',
     href: 'https://github.com/HellowVirgil/dsh-antv-ava',
     repository: 'HellowVirgil/dsh-antv-ava',
@@ -31,7 +33,7 @@ const PROJECTS = [
   {
     name: 'DuckDB-Wasm',
     origin: 'community',
-    description: 'Run SQL on CSV data in a browser worker, then analyze and visualize with AVA.',
+    description: 'runSqlOnCsvDataInABrowserWorkerThenAnalyzeAndVisualizeWithAva',
     status: 'Community extension',
     href: 'https://github.com/yvonneyx/ava-engine-duckdb-wasm',
     repository: 'yvonneyx/ava-engine-duckdb-wasm',
@@ -41,7 +43,7 @@ const PROJECTS = [
   {
     name: 'ava-observability',
     origin: 'community',
-    description: 'Trace analysis steps, timings, and SQL attempts through AVA’s public events.',
+    description: 'traceAnalysisStepsTimingsAndSqlAttemptsThroughAvaSPublicEvents',
     status: 'Community extension',
     href: 'https://github.com/lyw405/ava-observability',
     repository: 'lyw405/ava-observability',
@@ -50,7 +52,7 @@ const PROJECTS = [
   {
     name: 'AVA Agent Skill',
     origin: 'official',
-    description: 'Explore data and generate charts directly from the AI agent you already use.',
+    description: 'exploreDataAndGenerateChartsDirectlyFromTheAiAgentYouAlreadyUse',
     status: 'Agent Skill',
     href: 'https://github.com/antvis/AVA',
     repository: 'antvis/AVA',
@@ -60,7 +62,7 @@ const PROJECTS = [
   {
     name: 'AI Dou',
     origin: 'community',
-    description: 'Review AI card games through match data, analysis, and visual recaps.',
+    description: 'reviewAiCardGamesThroughMatchDataAnalysisAndVisualRecaps',
     status: 'In development',
     href: 'https://github.com/Keikeikm/ai-dou',
     repository: 'Keikeikm/ai-dou',
@@ -70,7 +72,7 @@ const PROJECTS = [
   {
     name: 'AVA Feishu Bot',
     origin: 'community',
-    description: 'A proposed chat bot for querying files and returning answers and charts in Feishu.',
+    description: 'aProposedChatBotForQueryingFilesAndReturningAnswersAndChartsInFeishu',
     status: 'Planned',
     href: `${DISCUSSION}#issuecomment-6342091466`,
     repository: 'antvis/AVA #1035',
@@ -79,7 +81,7 @@ const PROJECTS = [
   {
     name: 'AVA Feishu Plugin',
     origin: 'community',
-    description: 'A proposed Bitable plugin for analyzing and visualizing data inside Feishu.',
+    description: 'aProposedBitablePluginForAnalyzingAndVisualizingDataInsideFeishu',
     status: 'Planned',
     href: `${DISCUSSION}#issuecomment-6342091466`,
     repository: 'antvis/AVA #1035',
@@ -88,10 +90,11 @@ const PROJECTS = [
 ];
 
 function ProjectVisual({ kind }: { kind: string }) {
+  const t = useTranslations('Ecosystem');
   if (kind === 'tracing') {
     return (
       <div className={styles.traceVisual} aria-hidden="true">
-        <strong>One run. Every step.</strong>
+        <strong>{t('oneRunEveryStep')}</strong>
         {['analyze', 'translate', 'query', 'summarize'].map((step, i) => (
           <div key={step}>
             <span>{step}</span>
@@ -104,13 +107,13 @@ function ProjectVisual({ kind }: { kind: string }) {
   return (
     <div className={styles.feishuVisual} aria-hidden="true">
       <img src="/logos/feishu-bitable.svg" alt="" width="32" height="32" />
-      <strong>{kind === 'feishu-bot' ? 'Ask in your conversation.' : 'Analyze in your Bitable.'}</strong>
+      <strong>{kind === 'feishu-bot' ? t('askInChat') : t('analyzeBitable')}</strong>
       <div>
-        <span>Feishu</span>
+        <span>{t('feishu')}</span>
         <i>↔</i>
         <span>AVA</span>
       </div>
-      <small>Integration proposal</small>
+      <small>{t('integrationProposal')}</small>
     </div>
   );
 }
@@ -124,15 +127,22 @@ function ProjectCard({
   index: number;
   duplicate?: boolean;
 }) {
+  const t = useTranslations('Ecosystem');
   return (
     <article
       className={styles.card}
       aria-roledescription="slide"
-      aria-label={`${index + 1} of ${PROJECTS.length}: ${project.name}`}
+      aria-label={t('slide', { index: index + 1, count: PROJECTS.length, name: project.name })}
     >
       <div className={styles.visual} data-kind={project.kind}>
         {'image' in project ? (
-          <img src={project.image} alt={`${project.name} project screenshot`} width="640" height="360" loading="lazy" />
+          <img
+            src={project.image}
+            alt={t('screenshot', { name: project.name })}
+            width="640"
+            height="360"
+            loading="lazy"
+          />
         ) : (
           <ProjectVisual kind={project.kind} />
         )}
@@ -141,7 +151,7 @@ function ProjectCard({
         <div className={styles.cardHeading}>
           <h3>{project.name}</h3>
           <span className={styles.originTag} data-origin={project.origin}>
-            <span>{project.origin === 'official' ? 'Official' : 'Community'}</span>
+            <span>{project.origin === 'official' ? t('official') : t('community')}</span>
           </span>
         </div>
         <a
@@ -150,9 +160,7 @@ function ProjectCard({
           tabIndex={duplicate ? -1 : undefined}
           target="_blank"
           rel="noopener noreferrer"
-          aria-label={`${project.status === 'Planned' ? 'GitHub proposal' : 'GitHub repository'}: ${
-            project.repository
-          }`}
+          aria-label={t(project.status === 'Planned' ? 'proposalLink' : 'repositoryLink', { name: project.repository })}
           title={project.repository}
         >
           <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
@@ -161,13 +169,14 @@ function ProjectCard({
           <span className={styles.repository}>{project.repository}</span>
           <span aria-hidden="true">↗</span>
         </a>
-        <p>{project.description}</p>
+        <p>{t(project.description)}</p>
       </div>
     </article>
   );
 }
 
 export default function Ecosystem() {
+  const t = useTranslations('Ecosystem');
   const trackRef = useRef<HTMLDivElement>(null);
   const groupRef = useRef<HTMLDivElement>(null);
   const interactingRef = useRef(false);
@@ -222,12 +231,12 @@ export default function Ecosystem() {
         <SectionHeading
           title={
             <span id="ecosystem-title">
-              Built on AVA.
+              {t('builtOnAVA')}
               <br />
-              Shared by the Community.
+              {t('sharedByTheCommunity')}
             </span>
           }
-          description="Projects, extensions, and ideas from the AVA community."
+          description={t('projectsExtensionsAndIdeasFromTheAVA')}
           align="left"
         />
       </div>
@@ -236,7 +245,7 @@ export default function Ecosystem() {
         ref={trackRef}
         className={styles.track}
         tabIndex={0}
-        aria-label="Ecosystem projects"
+        aria-label={t('ecosystemProjects')}
         onPointerEnter={(event) => {
           if (event.pointerType === 'mouse') interactingRef.current = true;
         }}
@@ -267,9 +276,9 @@ export default function Ecosystem() {
         </div>
       </div>
       <div className={styles.footer}>
-        <span>Built something with AVA?</span>
+        <span>{t('builtSomethingWithAVA')}</span>
         <SectionLink href={DISCUSSION} external>
-          Share your project
+          {t('shareYourProject')}
         </SectionLink>
       </div>
     </section>

@@ -1,0 +1,165 @@
+import { Heading } from '../../../../mdx-components';
+
+同一句“ **按地区统计收入** ”，口径不同，结果就可能不同。以下沿用[了解数据结构](/documentation/data/schema/)中的六笔订单，看看该怎样把口径说明白：
+
+| order_id | region | status | amount | refund_amount | ordered_at |
+| --- | --- | --- | --- | --- | --- |
+| 1 | East | paid | 120 | 20 | 2026-01-03 |
+| 2 | East | refunded | 80 | 80 | 2026-01-04 |
+| 3 | East | pending | 200 | 0 | 2026-01-05 |
+| 4 | West | paid | 90 | 30 | 2026-01-06 |
+| 5 | East | paid | 50 | `null` | 2026-01-07 |
+| 6 | West | cancelled | 500 | 0 | 2026-01-08 |
+
+数据结构能告诉 AVA，`amount` 和 `refund_amount` 是数值；但无法说明哪些订单该计入收入。你可以通过 `semantic()` 补充这层业务含义。
+
+<Heading as="h2" id="decide-what-revenue-means">先明确收入的口径</Heading>
+
+本例约定三条规则：
+
+- 计入 `paid` 和 `refunded` 订单，排除 `pending` 和 `cancelled` 订单。
+- 用原始金额减去累计退款；退款缺失时按零处理。金额单位为美元。
+- 按订单所属地区分组，时间维度使用原始下单日期。
+
+将这些规则应用到上面的数据：
+
+| 订单 | 计入收入的金额 | 原因 |
+| --- | --- | --- |
+| 1 | 100 美元 | 120 减去 20 的退款。 |
+| 2 | 0 美元 | 全额退款，80 减去 80。 |
+| 3 | 0 美元 | 待支付，排除。 |
+| 4 | 60 美元 | 90 减去 30 的退款。 |
+| 5 | 50 美元 | 退款缺失，按零处理。 |
+| 6 | 0 美元 | 已取消，排除。 |
+
+因此，East 的收入为 **150 美元** ，West 为 **60 美元** 。下面的语义定义将记录产生这些结果的规则。
+
+<Heading as="h2" id="write-the-definition">编写语义定义</Heading>
+
+将上表作为内存 JSON 加载后，DuckDB 会暴露名为 `data` 的表。对应的语义定义如下：
+
+```javascript
+/** @satisfies {import('@antv/ava').Semantic} */
+const semantic = {
+  description: 'Sales reporting in USD. Revenue means net revenue from paid and refunded orders. Pending and cancelled orders do not count. A missing refund is zero. Dates are order dates, not refund dates.',
+  properties: { owner: 'Sales operations' },
+  models: [{
+    name: 'data',
+    tableReference: { table: 'data' },
+    primaryKey: 'order_id',
+    properties: { description: 'One row per order; refunds are cumulative amounts on the original order.' },
+    columns: [
+      { name: 'amount', type: 'BIGINT', properties: { description: 'Order amount before refunds.', unit: 'USD' } },
+      { name: 'refund_amount', type: 'BIGINT', properties: { description: 'Cumulative refund, not a separate refund transaction. Null means zero.', unit: 'USD' } },
+      { name: 'status', type: 'VARCHAR', properties: { description: 'Only paid and refunded orders contribute to revenue.' } },
+      {
+        name: 'net_amount',
+        type: 'DOUBLE',
+        isCalculated: true,
+        expression: 'amount - COALESCE(refund_amount, 0)',
+        properties: { description: 'Per-order amount after refunds, before filtering by status.', unit: 'USD' },
+      },
+    ],
+  }],
+  cubes: [{
+    name: 'sales',
+    baseObject: 'data',
+    measures: [{
+      name: 'net_revenue',
+      expression: "SUM(CASE WHEN status IN ('paid', 'refunded') THEN amount - COALESCE(refund_amount, 0) ELSE 0 END)",
+      type: 'DOUBLE',
+      description: 'Revenue after refunds, counting only paid and refunded orders.',
+      properties: { unit: 'USD', synonyms: ['revenue', 'net sales'] },
+    }],
+    dimensions: [{ name: 'region', expression: 'region', type: 'VARCHAR' }],
+    timeDimensions: [{ name: 'order_date', expression: 'CAST(ordered_at AS DATE)', type: 'DATE' }],
+  }],
+};
+```
+
+<Callout>
+  **语义定义用于指导查询生成。** 它不会创建数据库对象，也不负责执行访问控制规则。
+</Callout>
+
+可以从三个部分理解：
+
+1. **`description` 和 `properties` 解释业务含义。** 共享描述定义收入口径；模型和列的属性说明行粒度、单位与空值含义。`unit`、`synonyms` 这样的键是注释信息，不是 SDK 的特殊选项。
+2. **`models` 将含义映射到数据。** `name: 'data'` 与自动发现的模型一致；计算列 `net_amount` 描述单笔订单的净额。未列出的物理列仍可通过 schema 使用。
+3. **`cubes` 定义可复用的分析口径。** `sales` 将指标与分组表达式组织在一起；`net_revenue` 同时包含状态过滤与退款计算；`dimensions` 提供地区分组，`timeDimensions` 提供下单日期分组。
+
+指标里包含了哪些记录可计入收入的规则，因此按地区或日期分组时，这些规则仍然生效。仅有计算列 `net_amount`，并不能决定哪些订单应计入收入。
+
+接入自己的数据源时，先查看 `await ava.schema()`。模型名和列名必须准确匹配，并保留物理数据源限定信息。每个语义模型必须且只能提供 `tableReference`、`refSql`、`baseObject` 之一；每列必须有 `name` 和 `type`。物理字段沿用发现的类型，计算字段则声明其结果类型。其他来源映射方式见[语义模型来源](/documentation/reference/api/#semantic-model-sources)。
+
+也可以从更简单的定义开始：`{ description: '这里填写业务规则。' }` 就是有效输入。随着问题深入，再用 models 说明字段含义、relationships 描述连接关系、cubes 定义可复用指标。
+
+<Heading as="h2" id="save-the-definition-and-see-the-result">保存定义并查看结果</Heading>
+
+完成 `ava` 配置并通过 `source()` 加载数据后，让 setter 返回这份定义：
+
+```typescript
+await ava.semantic(undefined, () => semantic);
+const saved = await ava.semantic();
+```
+
+`undefined` 表示使用默认选项；目前 semantic 没有可配置选项。Setter 会验证并保存一份副本，之后的 `analyze()`、`translate()` 和 `suggest()` 会将它与 schema、已有 profile 一起使用。
+
+<Heading as="h3" id="use-the-cli">通过 CLI 使用</Heading>
+
+先将定义保存为 JSON 文件，例如在应用中调用 `JSON.stringify(semantic, null, 2)`。用 `ava source` 加载数据源后，通过返回的数据集 ID 设置或读取定义：
+
+```sh
+ava semantic "$DATASET_ID" --file semantic.json
+ava semantic "$DATASET_ID" > semantic-readback.json
+```
+
+`--file` 接受不带 `@` 的普通文件路径，并替换会话中的完整定义。不传 `--file` 时读取当前定义，初始值为 `{}`。这两种操作都不需要模型密钥。加载内容为 `{}` 的文件即可清空定义；文件无效时，原有定义保持不变。
+
+保留这份 JSON 文件，方便后续会话复用；CLI 不会自动加载它。更新 schema 或 profile 会保留语义定义，新建数据源会话则需要重新设置。[AVA Skill](/documentation/agent-skill/) 会引导 Agent 与用户确认影响分析结果的业务口径，并记录已确认口径的来源和适用范围，供后续复用。查找定义文件、判断其是否适用于当前数据源，由 Agent 负责。
+
+`analyze`、`translate` 和 `suggest` 会将这些定义作为模型上下文。Agent 自行编写的 `query` DSL 需要显式体现业务规则；语义定义不会改写实际执行的查询。
+
+<Heading as="h3" id="query-using-the-definition">按业务口径查询</Heading>
+
+对于“按地区统计收入”，应用这些定义的查询可以写成：
+
+```sql
+SELECT
+  region,
+  CAST(SUM(
+    CASE WHEN status IN ('paid', 'refunded')
+      THEN amount - COALESCE(refund_amount, 0)
+      ELSE 0
+    END
+  ) AS DOUBLE) AS net_revenue
+FROM data
+GROUP BY region
+ORDER BY region;
+```
+
+上面六笔订单的结果为：
+
+| region | net_revenue（美元） |
+| --- | --- |
+| East | 150 |
+| West | 60 |
+
+这只是一个示例查询。模型生成的 SQL 写法和列别名可能不同。
+
+逻辑模型、cube、view 或计算列不会自动变成可直接查询的数据库对象。例如，SQL 使用 `net_amount` 时，需要展开其表达式，或在子查询、CTE 中定义它。上面的查询直接嵌入指标表达式，读取物理表 `data`。
+
+<Heading as="h2" id="check-and-maintain-your-definition">验证并维护定义</Heading>
+
+将定义用于实际问题前，先完成以下检查：
+
+1. 与数据负责人确认行粒度、单位、记录范围、空值处理和时间含义。涉及表连接时，检查同一行是否被重复计数。
+2. 用结果已知的小数据集测试表达式，覆盖本例中的退款、排除订单等边界情况。
+3. 检查生成的 SQL，并将执行结果与已知答案对照。Setter 验证的是对象结构，不能证明 SQL 或业务逻辑正确。
+
+将完整定义保存在应用代码或 JSON 文件中，并与数据契约一起管理版本。
+
+<Callout>
+  **每次 setter 都会替换完整定义。** 加载新数据源或调用 `dispose()` 会清除语义，因此加载数据源后需要重新设置。更新 schema 或 profile 会保留语义。
+</Callout>
+
+准确的字段结构、来源映射、关系、视图、合并规则及验证错误见 [API 参考中的语义字段](/documentation/reference/api/#semantic-fields)。其他上下文输入见[了解数据结构](/documentation/data/schema/)，方法签名见 [AVA API](/documentation/reference/api/#semantic)。

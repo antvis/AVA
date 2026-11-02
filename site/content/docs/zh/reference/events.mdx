@@ -1,0 +1,91 @@
+import { Heading } from '../../../../mdx-components';
+
+事件描述 AVA 在一次操作中的执行过程，可以用于显示进度、查看生成的查询或排查失败。最终结果仍通过操作的返回值获取。
+
+<Heading as="h2" id="subscribe-to-events">订阅事件</Heading>
+
+在操作开始前注册监听器。可以按名称订阅特定事件，也可以用 `'*'` 监听全部事件：
+
+```typescript
+import { AVA } from '@antv/ava';
+
+const ava = new AVA({ llm: { model: 'your-model' } });
+const listener = (event) => console.log(event.type, event.data);
+
+ava.on('*', listener);
+try {
+  await ava.source({ type: 'json', options: { data: [{ sales: 120 }] } });
+} finally {
+  ava.off('*', listener);
+  await ava.dispose();
+}
+```
+
+取消订阅时请传入同一个监听器引用。事件类和常量没有通过公开包导出，请直接使用本页列出的事件名称字符串。
+
+<Heading as="h2" id="read-an-event">读取事件</Heading>
+
+每个 AVA 事件都包含小写的 `type` 和 `data` 对象。例如，上面的 `sourcestart` 在 `data` 中包含 `{ type: 'json' }`。`analyze()` 内部的分析事件还带有 `context`，用于标识所属步骤，并将关联的开始、结束事件配对。
+
+操作通常先发出开始事件，再发出结束事件。失败的结束事件在 `data.error` 中包含 `message`；原始错误为 `Error` 时还包含 `name`。部分失败可以恢复：查询失败后可能重试，因此即使 `analyze()` 最终成功，`queryend` 也可能报告过错误。不可恢复的失败会让操作抛错。未加载数据就调用 `analyze()` 等前置条件错误，可能发生在开始事件之前。
+
+<Heading as="h2" id="event-reference">事件参考</Heading>
+
+<Heading as="h3" id="lifecycle-events">生命周期事件</Heading>
+
+以下事件描述 AVA 的操作。成功时，结束事件的 `data` 为 `{}`，方法单独返回结果。
+
+| 操作 | 开始事件与数据 | 结束事件 |
+| --- | --- | --- |
+| 创建引擎 | `createstart`：`{}` | `createend` |
+| 释放引擎 | `disposestart`：`{}` | `disposeend` |
+| 加载数据源 | `sourcestart`：`{ type }` | `sourceend` |
+| 发现或设置 schema | `schemastart`：`{}` | `schemaend` |
+| 计算或设置 profile | `profilestart`：`{}` | `profileend` |
+| 设置业务语义 | `semanticstart`：`{}` | `semanticend` |
+| 分析问题 | `analyzestart`：`{ query }` | `analyzeend` |
+| 将结果可视化 | `visualizestart`：`{ query }` | `visualizeend` |
+| 推荐问题 | `suggeststart`：`{}` | `suggestend` |
+
+加载数据源还可能触发引擎释放和创建事件。读取 schema 缓存、读取业务语义不会发出事件；其他方法内部按需发现 schema，也不会发出 `schema` 事件。`recommend()`、`viz()` 没有独立事件。
+
+<Heading as="h3" id="analysis-events">分析事件</Heading>
+
+以下事件描述分析步骤，以及生成或执行的语句。表中给出成功时的结束事件数据；失败时改为包含 `error`。失败步骤还包含 `step`，适用时包含 `finalAttempt`。Question 是自然语言问题，`dsl` 则是 SQL、Python 等可执行语句。
+
+| 操作 | 开始事件与数据 | 成功结束事件与数据 |
+| --- | --- | --- |
+| 分析步骤 | `stepstart`：`{ step, finalAttempt? }` | `stepend`：`{ step, action, text, usage?, finalAttempt? }` |
+| 翻译问题 | `translatestart`：`{ query, attempt? }` | `translateend`：`{ dsl, usage? }` |
+| 执行语句 | `querystart`：`{ dsl }` | `queryend`：`{ data, schema, rowCount?, truncated?, truncatedBy? }` |
+| 总结结果 | `summarizestart`：`{ queryId }` | `summarizeend`：`{ queryExplanation, conclusion, limitations?, nextStep?, usage? }` |
+
+`?` 表示可选字段。`queryend` 中，`data` 包含返回行，`schema` 描述列；截断字段用于标识是否触发结果限制。完整结构见[查询结果](/documentation/reference/api/#executionresult)。
+
+`step`、`attempt` 从零开始。分析内部的翻译开始事件包含 `attempt`，`finalAttempt` 标记常规步数上限之后的额外步骤。步骤动作包括 `EXPLORE`（检查数据）、`REFINE`（调整计划）、`SQL`（执行答案查询）、`CONFIRM`（验证答案）。`text` 不包含开头的动作标签。
+
+存在 `usage` 时，它描述本次模型调用的 token 用量。模型返回后，即使解析或执行失败，步骤也可能保留用量。Token 字段取决于服务商；调用失败且未返回用量时，无法从事件中统计。AVA 不发出汇总用量事件。`queryend` 描述执行过程，不携带模型用量。
+
+<Heading as="h3" id="event-context">事件上下文</Heading>
+
+`analyze()` 内部发出的分析事件包含 `context` 对象：
+
+| 字段 | 含义 |
+| --- | --- |
+| `eventId` | 唯一事件 ID。配对的开始、结束事件共享前缀，分别使用 `:start`、`:end` 后缀。 |
+| `stepId` | 事件所属步骤的 ID。 |
+| `parentStepIds` | 当前步骤依赖的其他步骤 ID。 |
+
+步骤事件以 `stepId` 为前缀；步骤内的操作有独立的配对 ID，每次重试都会新建一对。`summarizestart.data.queryId` 引用成功的 `queryend.context.eventId`，包含 `:end` 后缀。独立调用 `translate()`、`query()` 时会发出各自事件，但不包含分析 `context` 或步骤事件。
+
+<Heading as="h2" id="listener-parameters">监听器参数</Heading>
+
+| 方法 | 行为 |
+| --- | --- |
+| `on(name, listener, once?)` | 订阅事件；可选的 `once` 默认为 `false`。 |
+| `once(name, listener)` | 订阅一次调用。 |
+| `off(name?, listener?)` | 删除一个监听器、指定名称的全部监听器，或省略参数时删除全部监听器。删除单个监听器时需传入订阅时的同一引用。 |
+| `emit(name, ...args)` | 手动发出事件。 |
+| `getEvents()` | 返回监听器注册表。 |
+
+事件同步分发：`on`、`once`、`off` 返回 emitter；同步监听器抛出的错误会向外传播，异步监听器不会被等待。事件数据不会复制，需要快照时请自行使用 `structuredClone(event)`。

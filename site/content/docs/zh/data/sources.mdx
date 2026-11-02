@@ -1,0 +1,570 @@
+import { Heading } from '../../../../mdx-components';
+
+<nav className="docs-source-grid" aria-label="选择数据源">
+  <a href="#csv">
+    <img src="/logos/csv.svg" alt="" width="28" height="28" />
+    <strong>CSV</strong>
+    <span>内存数据与文件</span>
+  </a>
+  <a href="#json">
+    <img src="/logos/json.svg" alt="" width="28" height="28" />
+    <strong>JSON</strong>
+    <span>内存数据与文件</span>
+  </a>
+  <a href="#parquet">
+    <img src="/logos/parquet.svg" alt="" width="28" height="28" />
+    <strong>Parquet</strong>
+    <span>列式文件</span>
+  </a>
+  <a href="#excel">
+    <img src="/logos/excel.svg" alt="" width="28" height="28" />
+    <strong>Excel</strong>
+    <span>工作簿与工作表</span>
+  </a>
+  <a href="#text">
+    <img src="/logos/text.svg" alt="" width="28" height="28" />
+    <strong>文本</strong>
+    <span>模型提取</span>
+  </a>
+  <a href="#sqlite">
+    <img src="/logos/sqlite.svg" alt="" width="28" height="28" />
+    <strong>SQLite</strong>
+    <span>本地数据库</span>
+  </a>
+  <a href="#mysql">
+    <img src="/logos/mysql.svg" alt="" width="28" height="28" />
+    <strong>MySQL</strong>
+    <span>数据库</span>
+  </a>
+  <a href="#postgresql">
+    <img src="/logos/postgresql.svg" alt="" width="28" height="28" />
+    <strong>PostgreSQL</strong>
+    <span>数据库</span>
+  </a>
+  <a href="#mongodb">
+    <img src="/logos/mongodb.svg" alt="" width="28" height="28" />
+    <strong>MongoDB</strong>
+    <span>文档数据库</span>
+  </a>
+  <a href="#supabase">
+    <img src="/logos/supabase.svg" alt="" width="28" height="28" />
+    <strong>Supabase</strong>
+    <span>云数据库</span>
+  </a>
+  <a href="#clickhouse">
+    <img src="/logos/clickhouse.svg" alt="" width="28" height="28" />
+    <strong>ClickHouse</strong>
+    <span>分析型数据库</span>
+  </a>
+  <a href="/zh/documentation/engines/custom/">
+    <img src="/logos/contribute.svg" alt="" width="28" height="28" />
+    <strong>自定义扩展</strong>
+    <span>注册自己的引擎</span>
+  </a>
+</nav>
+
+在上方找到你的数据类型，再参照对应示例，填入自己的路径或连接信息。CSV 和 JSON 既可以读文件，也可以直接传入内容。
+
+<Heading as="h2" id="connect-a-source">接入数据源</Heading>
+
+创建 AVA 实例，然后调用 `source(config)`，传入数据位置与读取设置：
+
+```typescript
+import { AVA } from '@antv/ava';
+
+const ava = new AVA({
+  llm: { model: 'YOUR_MODEL', apiKey: process.env.OPENAI_API_KEY },
+});
+
+await ava.source({
+  type: 'json',
+  options: { data: [{ city: 'Hangzhou', revenue: 120 }] },
+});
+
+const schema = await ava.schema();
+```
+
+| 参数 | 类型 | 必填 | 含义 |
+| --------- | ---------------------- | -------- | -------------------------------------------------------------------------------------------------------------------------------------------- |
+| `type` | `SourceType` | 是 | 支持 `csv`、`csv-file`、`json`、`json-file`、`parquet`、`excel`、`text`、`sqlite`、`mysql`、`postgresql`、`mongodb`、`supabase`、`clickhouse`、`feishu-bitable`。 |
+| `options` | 数据源对应的对象 | 是 | 使用下方对应的数据源参数表，字段名均相对于 `options`。 |
+
+`source()` 没有返回值，负责为执行准备数据。结构发现会推迟到 `schema()` 或其他操作需要时进行。再次调用 `source()` 会替换当前数据源并清空元数据缓存。使用 `schema()` 查看表名与字段名，结束后调用 `await ava.dispose()`。
+
+示例均在 Node.js 中运行。Supabase 和 ClickHouse 的示例同时给出了必需的构造函数配置。前端应用请参考[浏览器用法](/documentation/browser/)。
+
+<Heading as="h2" id="csv">CSV</Heading>
+
+<Heading as="h3" id="inline-csv">直接传入 CSV</Heading>
+
+设置 `type: 'csv'`，以字符串传入 CSV 内容。
+
+```typescript
+await ava.source({
+  type: 'csv',
+  options: { csv: 'city,revenue\nHangzhou,120\nShanghai,200' },
+});
+```
+
+| 字段 | 类型 | 必填 | 含义与默认值 |
+| --------- | ---------------- | -------- | ------------------------------------------ |
+| `csv` | `string` | 是 | 原始 CSV 字符串。 |
+| `options` | `CSVReadOptions` | 否 | [CSV 读取选项](#csv-reader-options)。 |
+
+<Heading as="h3" id="csv-files">读取 CSV 文件</Heading>
+
+设置 `type: 'csv-file'`，传入本地路径或 HTTP(S) URL。URL 需要鉴权时，可在 `options.headers` 中提供请求头。
+
+```typescript
+await ava.source({
+  type: 'csv-file',
+  options: {
+    path: 'https://example.com/sales.csv',
+    headers: { Authorization: 'Bearer YOUR_TOKEN' },
+    options: { header: true, delim: ';' },
+  },
+});
+```
+
+| 字段 | 类型 | 必填 | 含义与默认值 |
+| --------- | ------------------------ | -------- | ---------------------------------------------------- |
+| `path` | `string` | 是 | 本地文件路径或 HTTP(S) URL。 |
+| `headers` | `Record<string, string>` | 否 | 远程数据源的 HTTP 请求头，例如 Authorization。 |
+| `options` | `CSVReadOptions` | 否 | [CSV 读取选项](#csv-reader-options)。 |
+
+<Heading as="h3" id="csv-reader-options">CSV 读取选项</Heading>
+
+DuckDB 引擎的 `csv`、`csv-file` 数据源可在 `options.options` 中使用以下字段，全部可选。AVA 将显式提供的值转发给 `read_csv`；省略时使用 DuckDB 的默认值或自动检测结果。下表说明各读取选项自身的默认值，实际表头、分隔符和类型也可能由自动检测确定。
+
+| 字段 | 类型 | 必填 | 含义与默认值 |
+| ---------------------- | ------------------------------------ | -------- | ----------------------------------------------------------------------------------------------- |
+| `header` | `boolean` | 否 | 文件首行是否包含列名，默认 false。 |
+| `names` | `string[]` | 否 | 列名列表。 |
+| `columns` | `Record<string, string>` | 否 | 列名到类型的映射，例如 &#123; col1: 'INTEGER' &#125;；设置后关闭结构自动检测。 |
+| `types` | `string[] \| Record<string, string>` | 否 | 按位置提供类型列表，或按列名提供类型映射。 |
+| `all_varchar` | `boolean` | 否 | 跳过类型检测，将所有列读为 VARCHAR，默认 false。 |
+| `normalize_names` | `boolean` | 否 | 移除列名中的非字母数字字符，并为保留字添加下划线前缀。 |
+| `force_not_null` | `string[]` | 否 | 不参与 NULL 字符串匹配的列。 |
+| `delim` | `string` | 否 | 字段分隔符，最多 4 字节，默认 `','`。 |
+| `quote` | `string` | 否 | 引号字符，默认 `'"'`。 |
+| `escape` | `string` | 否 | 引号包裹的字段内，用于转义引号的字符，默认 `'"'`。 |
+| `comment` | `string` | 否 | 注释起始字符。 |
+| `new_line` | `string` | 否 | 换行符：`'\r'`、`'\n'` 或 `'\r\n'`。 |
+| `auto_detect` | `boolean` | 否 | 自动检测 CSV 参数，默认 true。 |
+| `auto_type_candidates` | `string[]` | 否 | 检测列类型时考虑的候选类型，例如 `['BIGINT', 'DATE']`。 |
+| `dateformat` | `string` | 否 | 解析日期使用的格式。 |
+| `timestampformat` | `string` | 否 | 解析时间戳使用的格式。 |
+| `decimal_separator` | `string` | 否 | 数字的小数分隔符，默认 `'.'`。 |
+| `thousands` | `string` | 否 | 千位分隔符，须为单个字符，且与 decimal_separator 不同。 |
+| `nullstr` | `string \| string[]` | 否 | 代表 NULL 的一个或多个字符串。 |
+| `allow_quoted_nulls` | `boolean` | 否 | 允许将引号包裹的值转换成 NULL，默认 true。 |
+| `sample_size` | `number` | 否 | 自动检测时采样的行数，默认 20480。 |
+| `buffer_size` | `number` | 否 | 读取缓冲区大小，单位字节，默认 `16 * max_line_size`。 |
+| `files_to_sniff` | `number` | 否 | 多文件结构检测时采样的文件数；-1 表示全部，默认 10。 |
+| `max_line_size` | `number` | 否 | 单行大小上限，单位字节，默认 2000000。 |
+| `parallel` | `boolean` | 否 | 使用并行 CSV 读取器，默认 true。 |
+| `skip` | `number` | 否 | 跳过每个文件开头的行数，默认 0。 |
+| `ignore_errors` | `boolean` | 否 | 忽略解析错误，默认 false。 |
+| `null_padding` | `boolean` | 否 | 对较短的行在右侧补 NULL，默认 false。 |
+| `strict_mode` | `boolean` | 否 | 遇到任何问题即抛错，默认 true。 |
+| `store_rejects` | `boolean` | 否 | 跳过出错行并保存到拒绝记录表，默认 false。 |
+| `rejects_table` | `string` | 否 | 保存出错行的临时表名，默认 `'reject_errors'`。 |
+| `rejects_scan` | `string` | 否 | 保存出错扫描的临时表名，默认 `'reject_scans'`。 |
+| `rejects_limit` | `number` | 否 | 每个文件记录的出错行数上限；0 表示不限制，默认 0。 |
+| `encoding` | `string` | 否 | 文件编码，可选 `'utf-8'`、`'utf-16'`、`'latin-1'`，默认 `'utf-8'`。 |
+| `compression` | `string` | 否 | 压缩方式，可选 `'none'`、`'gzip'`、`'zstd'`，默认根据扩展名检测。 |
+| `union_by_name` | `boolean` | 否 | 多个文件按列名而非列位置对齐，默认 false。 |
+| `hive_partitioning` | `boolean` | 否 | 将路径解释为 Hive 分区路径，默认自动检测。 |
+| `filename` | `boolean` | 否 | 为每行添加保存来源文件路径的 `filename` 列，默认 false。 |
+
+<Heading as="h2" id="json">JSON</Heading>
+
+<Heading as="h3" id="inline-json">直接传入 JSON</Heading>
+
+设置 `type: 'json'`，传入对象数组。
+
+```typescript
+await ava.source({
+  type: 'json',
+  options: { data: [{ city: 'Hangzhou', revenue: 120 }] },
+});
+```
+
+| 字段 | 类型 | 必填 | 含义与默认值 |
+| ------ | ------- | -------- | ---------------------- |
+| `data` | `any[]` | 是 | 待加载的数据行数组。 |
+| `options` | `JSONReadOptions` | 否 | 下方的 DuckDB 读取参数。 |
+
+<Heading as="h3" id="json-files">读取 JSON 文件</Heading>
+
+设置 `type: 'json-file'`，传入本地路径或 HTTP(S) URL。
+
+```typescript
+await ava.source({
+  type: 'json-file',
+  options: {
+    path: './sales.json',
+    options: { columns: { city: 'VARCHAR', revenue: 'DOUBLE' }, sample_size: -1 },
+  },
+});
+```
+
+| 字段 | 类型 | 必填 | 含义与默认值 |
+| --------- | ------------------------ | -------- | ---------------------------------------------------- |
+| `path` | `string` | 是 | 本地文件路径或 HTTP(S) URL。 |
+| `headers` | `Record<string, string>` | 否 | 远程数据源的 HTTP 请求头，例如 Authorization。 |
+| `options` | `JSONReadOptions` | 否 | 下方的 DuckDB 读取参数。 |
+
+<Heading as="h3" id="json-reader-options">JSON 读取选项</Heading>
+
+使用 DuckDB 时，两种 JSON 数据源均接受 `options.options`，所有字段可选。
+`JSONReadOptions` 暴露完整的 [DuckDB JSON 读取参数](https://duckdb.org/docs/current/data/json/loading_json)：
+
+| 参数 | 类型 | 默认值 | 含义 |
+| --- | --- | --- | --- |
+| `auto_detect` | `boolean` | `true` | 推断数据结构。 |
+| `columns` | `Record<string, string>` | 未设置 | 列名到 DuckDB 类型的映射，同时用于选择列。 |
+| `compression` | `'auto_detect' \| 'none' \| 'gzip' \| 'zstd'` | `'auto_detect'` | 压缩编解码方式。 |
+| `dateformat` | `string` | `'iso'` | 日期格式。 |
+| `field_appearance_threshold` | `number` | `0.1` | 稀疏对象推断为 MAP 的阈值。 |
+| `filename` | `boolean` | `false` | 在 `SELECT *` 中包含文件名。 |
+| `format` | `'auto' \| 'unstructured' \| 'newline_delimited' \| 'array'` | `'auto'` | `read_json` 的输入组织形式。 |
+| `hive_partitioning` | `boolean` | 自动检测 | 根据路径识别分区。 |
+| `ignore_errors` | `boolean` | `false` | 跳过错误，仅适用于 NDJSON。 |
+| `map_inference_threshold` | `number` | `200` | STRUCT 子字段数量阈值；-1 关闭 MAP 推断。 |
+| `maximum_depth` | `number` | `-1` | 结构推断深度；-1 表示不限。 |
+| `maximum_object_size` | `number` | `16777216` | 单个对象的字节上限。 |
+| `maximum_sample_files` | `number` | `32` | 采样文件数量。 |
+| `records` | `'auto' \| 'true' \| 'false'` | `'auto'` | 是否展开对象。 |
+| `sample_size` | `number` | `20480` | 采样对象数量；-1 扫描全部。 |
+| `timestampformat` | `string` | `'iso'` | 时间戳格式。 |
+| `union_by_name` | `boolean` | `false` | 合并数据结构。 |
+
+内存数据会序列化为未压缩的 JSON 数组，请选择与此兼容的读取选项。
+远程文件会下载到临时路径，读取压缩 URL 时应显式设置 `compression`。
+
+<Heading as="h2" id="parquet">Parquet</Heading>
+
+从本地路径或 HTTP(S) URL 读取 Parquet 文件。
+
+```typescript
+await ava.source({
+  type: 'parquet',
+  options: { path: './sales.parquet' },
+});
+```
+
+| 字段 | 类型 | 必填 | 含义与默认值 |
+| --------- | ------------------------ | -------- | ---------------------------------------------------- |
+| `path` | `string` | 是 | 本地文件路径或 HTTP(S) URL。 |
+| `headers` | `Record<string, string>` | 否 | 远程数据源的 HTTP 请求头，例如 Authorization。 |
+
+<Heading as="h2" id="excel">Excel</Heading>
+
+从本地路径或 HTTP(S) URL 读取 `.xlsx` 工作簿。每个被选中的工作表会成为一张独立的表，以工作表名称命名。调用 `schema()` 可查看生成的表与列。
+
+```typescript
+await ava.source({
+  type: 'excel',
+  options: {
+    path: './sales.xlsx',
+    sheets: [
+      { sheet: 'Sales', range: 'A3:F100', header: true },
+      { sheet: 'Costs', range: 'B2:C50', header: false },
+    ],
+  },
+});
+```
+
+<Heading as="h3" id="source-options">数据源选项</Heading>
+
+| 字段 | 类型 | 必填 | 含义与默认值 |
+| --- | --- | --- | --- |
+| `path` | `string` | 是 | 本地文件路径或 HTTP(S) URL。 |
+| `headers` | `Record<string, string>` | 否 | 远程数据源的 HTTP 请求头，例如 Authorization。 |
+| `sheets` | `ExcelSheetOptions[]` | 否 | 要加载的工作表及各自的读取设置；省略时加载全部工作表，并使用 `header: true`。 |
+
+<Heading as="h3" id="sheet-selection-and-reader-options">工作表选择与读取选项</Heading>
+
+`sheets` 中的每一项都包含必填的 `sheet`，以及可选的 `ExcelReadOptions` 字段。读取选项直接放在工作表项上，写法如上例所示。
+
+| 字段 | 类型 | 默认值 | 含义 |
+| --- | --- | --- | --- |
+| `sheet` | `string` | 必填 | 精确的工作表名称，同时作为表名。 |
+| `range` | `string` | 由引擎推断 | 包含首尾边界的 A1 矩形范围，例如 `B3:F100`。 |
+| `header` | `boolean` | `true` | 将所选范围的第一行作为列名；设为 false 时保留为数据。 |
+| `all_varchar` | `boolean` | `false` | 仅 DuckDB：将所有单元格读为 VARCHAR。 |
+| `ignore_errors` | `boolean` | `false` | 仅 DuckDB：类型转换失败的单元格改为 NULL。 |
+| `stop_at_empty` | `boolean` | 有 `range` 时为 `false`，否则为 `true` | 仅 DuckDB：遇到第一个空行时停止读取。 |
+| `empty_as_varchar` | `boolean` | `false` | 仅 DuckDB：将空单元格推断为 VARCHAR，而非 DOUBLE。 |
+
+提供 `sheets` 时，列表不能为空；每个工作表名必须存在且只能出现一次。范围必须是有效、有界的 A1 矩形。无效选择及不受支持的字段会被拒绝。
+
+<Heading as="h3" id="engine-behavior">引擎行为</Heading>
+
+两种引擎都支持 `sheet`、`range` 和 `header`。Python 引擎会拒绝上表中的四个 DuckDB 专用选项。
+
+DuckDB 的读取选项遵循 [`read_xlsx`](https://duckdb.org/docs/current/core_extensions/excel#reading-xlsx-files)，但 AVA 默认 `header` 为 true，而非自动推断。例如，要将混合类型单元格保留为文本，并继续读取空行之后的数据：
+
+```typescript
+await ava.source({
+  type: 'excel',
+  options: {
+    path: './sales.xlsx',
+    sheets: [{ sheet: 'Sales', all_varchar: true, stop_at_empty: false }],
+  },
+});
+```
+
+DuckDB 会拒绝含有字面 XML 实体文本工作表名的工作簿，例如 `Sales &amp; Tax`，因为 Excel 扩展可能将它与另一张表混淆。请重命名这些工作表，或使用 Python 引擎。普通的 &、引号和 Unicode 名称均受支持。
+
+<Heading as="h2" id="text">文本</Heading>
+
+从非结构化文本中提取数据行。这种数据源会调用已配置的模型。
+
+```typescript
+await ava.source({
+  type: 'text',
+  options: { text: 'Hangzhou revenue was 120. Shanghai revenue was 200.' },
+});
+```
+
+| 字段 | 类型 | 必填 | 含义与默认值 |
+| ------ | -------- | -------- | -------------------------------------------------------- |
+| `text` | `string` | 是 | 使用已配置模型提取的非结构化文本。 |
+
+<Heading as="h2" id="sqlite">SQLite</Heading>
+
+以只读模式打开本地 SQLite 数据库。
+
+```typescript
+await ava.source({
+  type: 'sqlite',
+  options: { path: './analytics.sqlite' },
+});
+```
+
+| 字段 | 类型 | 必填 | 含义与默认值 |
+| ------ | -------- | -------- | -------------------------------- |
+| `path` | `string` | 是 | 本地 SQLite 数据库文件路径。 |
+
+<Heading as="h2" id="mysql">MySQL</Heading>
+
+连接数据库并发现其中的表。
+
+```typescript
+await ava.source({
+  type: 'mysql',
+  options: {
+    host: 'localhost',
+    database: 'analytics',
+    user: 'reader',
+    password: process.env.MYSQL_PASSWORD,
+  },
+});
+```
+
+| 字段 | 类型 | 必填 | 含义与默认值 |
+| ---------- | ------------ | -------- | ------------------------------------------- |
+| `host` | `string` | 是 | 数据库主机名。 |
+| `port` | `number` | 否 | 默认 `3306`。 |
+| `database` | `string` | 是 | 要暴露的数据库。 |
+| `user` | `string` | 否 | 数据库用户，不提供则省略。 |
+| `password` | `string` | 否 | 数据库密码，不提供则省略。 |
+| `ssh` | `SSHOptions` | 否 | 可选的 [SSH 隧道](#ssh-options)。 |
+
+<Heading as="h2" id="postgresql">PostgreSQL</Heading>
+
+连接数据库并发现其中的表。
+
+```typescript
+await ava.source({
+  type: 'postgresql',
+  options: {
+    host: 'localhost',
+    database: 'analytics',
+    user: 'reader',
+    password: process.env.POSTGRES_PASSWORD,
+  },
+});
+```
+
+| 字段 | 类型 | 必填 | 含义与默认值 |
+| ---------- | ------------ | -------- | ------------------------------------------------ |
+| `host` | `string` | 是 | 数据库主机名。 |
+| `port` | `number` | 否 | 默认 `5432`。 |
+| `database` | `string` | 是 | 要暴露的数据库。 |
+| `user` | `string` | 否 | 数据库用户，不提供则省略。 |
+| `password` | `string` | 否 | 数据库密码，不提供则省略。 |
+| `schema` | `string` | 否 | 表所属的数据库 schema，默认 `public`。 |
+| `ssh` | `SSHOptions` | 否 | 可选的 [SSH 隧道](#ssh-options)。 |
+
+<Heading as="h2" id="mongodb">MongoDB</Heading>
+
+加载指定数据库中的集合。可以使用结构化连接字段，也可以提供优先级更高的 `connection`。
+
+```typescript
+await ava.source({
+  type: 'mongodb',
+  options: {
+    connection: process.env.MONGODB_URI!,
+    database: 'analytics',
+  },
+});
+```
+
+| 字段 | 类型 | 必填 | 含义与默认值 |
+| ----------------------------- | --------- | -------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `connection` | `string` | 否 | 高级连接字符串，例如 `host=localhost port=27017` 或 `mongodb://user:pass@host:27017/db`；提供后优先于所有结构化字段。 |
+| `host` | `string` | 否 | MongoDB 主机名或 IP 地址，默认 `localhost`。 |
+| `port` | `number` | 否 | MongoDB 端口号，默认 `27017`。 |
+| `database` | `string` | 是 | 包含待加载集合的数据库。 |
+| `user` | `string` | 否 | MongoDB 用户名。 |
+| `password` | `string` | 否 | MongoDB 密码。 |
+| `authSource` | `string` | 否 | 鉴权数据库，对应 MongoDB 的 `authSource`。 |
+| `srv` | `boolean` | 否 | 使用 SRV 连接格式，适用于 MongoDB Atlas。 |
+| `tls` | `boolean` | 否 | 启用 TLS/SSL 加密，别名为 `ssl`。 |
+| `ssl` | `boolean` | 否 | `tls` 的别名。 |
+| `tlsCAFile` | `string` | 否 | TLS 的 CA 证书文件路径。 |
+| `tlsAllowInvalidCertificates` | `boolean` | 否 | 允许无效证书，仅用于测试，默认 false。 |
+
+<Heading as="h2" id="feishu-bitable">飞书多维表格</Heading>
+
+在 Node.js 的 DuckDB 引擎中使用 `type: 'feishu-bitable'`。记录会暴露为名为 `data` 的只读视图。
+
+```typescript
+await ava.source({
+  type: 'feishu-bitable',
+  options: {
+    url: 'https://my.feishu.cn/base/APP_TOKEN?table=TABLE_ID',
+    appId: process.env.AVA_FEISHU_APP_ID,
+    appSecret: process.env.AVA_FEISHU_APP_SECRET,
+  },
+});
+```
+
+提供 `url`，或同时提供 `appToken` 与 `tableId`，并设置 `appId`、`appSecret`。CLI 也会从 `AVA_FEISHU_APP_ID`、`AVA_FEISHU_APP_SECRET` 或 `~/.ava/feishu.json` 读取凭证。
+
+支持 `/base/` 链接和知识库中的 `/wiki/` 链接。Wiki 链接要求应用具备知识库读取权限并加入相应知识空间，才能解析多维表格。URL 中的 `view` 参数会被忽略。人员、附件、链接、公式、位置、群组等复杂单元格会展开为逗号分隔的文本。
+
+<Heading as="h2" id="supabase">Supabase</Heading>
+
+提供项目标识与 Supabase Management API 访问令牌；应用负责获取和刷新令牌。
+
+```typescript
+const ava = new AVA({
+  llm: { model: 'YOUR_MODEL', apiKey: process.env.OPENAI_API_KEY },
+  engine: { type: 'supabase' },
+});
+await ava.source({
+  type: 'supabase',
+  options: {
+    projectRef: 'YOUR_PROJECT_REF',
+    accessToken: process.env.SUPABASE_ACCESS_TOKEN!,
+  },
+});
+```
+
+| 字段 | 类型 | 必填 | 含义与默认值 |
+| ------------- | -------- | -------- | --------------------------------------------------------------------------- |
+| `accessToken` | `string` | 是 | Supabase Management API OAuth 流程返回的 OAuth 访问令牌。 |
+| `projectRef` | `string` | 是 | 项目标识，可从 GET https://api.supabase.com/v1/projects 的结果中获取。 |
+
+<Heading as="h2" id="clickhouse">ClickHouse</Heading>
+
+提供服务端点和数据库。使用 `url` 或 `host`；同时存在时 `url` 优先。
+
+```typescript
+const ava = new AVA({
+  llm: { model: 'YOUR_MODEL', apiKey: process.env.OPENAI_API_KEY },
+  engine: { type: 'clickhouse' },
+});
+await ava.source({
+  type: 'clickhouse',
+  options: {
+    url: 'http://localhost:8123',
+    database: 'analytics',
+    username: 'reader',
+    password: process.env.CLICKHOUSE_PASSWORD,
+  },
+});
+```
+
+<Heading as="h3" id="connection-fields">连接字段</Heading>
+
+| 字段 | 类型 | 必填 | 含义与默认值 |
+| ---------- | -------- | --------------- | ------------------------------------------------------------------------- |
+| `host` | `string` | `host` 或 `url` | 主机名或 host:port；没有协议时，AVA 自动补上 `http://`。 |
+| `url` | `string` | `host` 或 `url` | 完整的服务 URL，优先于 `host`。 |
+| `port` | `number` | 否 | 覆盖端点中的端口号。 |
+| `database` | `string` | 是 | 要发现结构和执行查询的数据库。 |
+| `username` | `string` | 否 | 客户端用户名，优先于 `user`；客户端默认值为 `default`。 |
+| `user` | `string` | 否 | `username` 的别名。 |
+| `password` | `string` | 否 | 客户端密码，默认空字符串。 |
+
+虽然底层客户端默认可连接 localhost，AVA 仍要求显式提供端点。
+
+<Heading as="h3" id="forwarded-client-fields">透传的客户端字段</Heading>
+
+`ClickHouseSourceOptions` 也接受以下 `@clickhouse/client` 字段。下表基于已安装客户端的类型声明（1.23.1）；这些字段由该依赖定义，AVA 会在创建客户端时透传。
+
+| 字段 | 类型 | 默认值与含义 |
+| ------------------------------ | ----------------------------- | ---------------------------------------------------------------------------------------------------------- |
+| `pathname` | `string` | 默认为空，用于指定额外的代理路径。 |
+| `request_timeout` | `number` | 默认 30000 毫秒。 |
+| `max_open_connections` | `number` | 每个主机默认最多 10 个 socket 连接。 |
+| `compression` | 对象 | 请求和响应压缩，嵌套字段见下方。 |
+| `access_token` | `string` | 默认未设置，用于 ClickHouse Cloud JWT；不可与用户名、密码同时使用。 |
+| `application` | `string` | 默认为空，应用名称。 |
+| `clickhouse_settings` | `ClickHouseSettings` | 默认为空，服务端设置映射。AVA 每次查询都会强制 `readonly: '1'`，覆盖冲突设置。 |
+| `log` | 对象 | 客户端日志选项，见下方。 |
+| `session_id` | `string` | 默认为空，不显式指定服务端会话。 |
+| `role` | `string \| string[]` | 默认未设置，服务端角色。 |
+| `http_headers` | `Record<string, string>` | 默认为空，额外的 HTTP 请求头。 |
+| `additional_headers` | `Record<string, string>` | 已废弃的客户端别名，请使用 `http_headers`。 |
+| `keep_alive` | 对象 | Socket 复用选项，见下方。 |
+| `json` | `Partial<JSONHandling>` | 默认使用原生 `JSON.parse` / `JSON.stringify`；回调见下方。 |
+| `tracer` | `ClickHouseTracer` | 默认未设置，客户端追踪实现。 |
+| `use_multipart_params` | `boolean` | 默认 false，始终以 multipart 发送查询参数。 |
+| `use_multipart_params_auto` | `boolean` | 默认 false，编码后的参数超过 4096 个字符时使用 multipart。 |
+| `tls` | TLS 选项对象 | 默认未设置，证书字段见下方。 |
+| `http_agent` | `http.Agent \| https.Agent` | 默认未设置。自定义 agent 会取代 `max_open_connections`、`tls` 和 `keep_alive`；这是实验性客户端 API。 |
+| `set_basic_auth_header` | `boolean` | 默认 true，发送 Basic Authorization 请求头；实验性选项。 |
+| `capture_enhanced_stack_trace` | `boolean` | 默认 false，记录扩展客户端调用栈；实验性选项。 |
+| `max_response_headers_size` | `number` | 默认未设置，使用 Node.js 的响应头字节上限。 |
+| `connection` | `Connection<Stream.Readable>` | 默认未设置，实验性的客户端后端连接；会覆盖默认 HTTP 传输及其选项。 |
+
+透传字段全部可选。服务端设置是可扩展、与服务端版本有关的映射，并非 AVA 固定定义的字段清单；可用键由依赖的 `ClickHouseSettings` 类型和实际服务端共同决定。Tracer、agent、logger 与 connection 对象需要实现相应的客户端接口，并非普通的 AVA 配置对象。
+
+<Heading as="h3" id="nested-client-options">嵌套客户端选项</Heading>
+
+| 字段 | 类型 | 必填与默认值 |
+| ------------------------------------------ | ------------------------------------------------ | --------------------------------------------------------------------------- |
+| `compression.response` | `boolean \| { codec: 'gzip' \| 'zstd' \| 'br' }` | 可选，默认 false；true 表示使用 gzip。 |
+| `compression.request` | `boolean \| RequestCompression` | 可选，默认 false；true 表示使用 gzip。 |
+| `compression.request.codec` | `'gzip' \| 'zstd' \| 'br'` | 使用对象形式时必填。 |
+| `compression.request.level` | `number` | gzip / zstd 可选，默认使用编解码器的级别。 |
+| `compression.request.quality` | `number` | Brotli 可选，默认 4。 |
+| `log.LoggerClass` | `new () => Logger` | 可选，默认使用客户端的 logger。 |
+| `log.level` | `ClickHouseLogLevel` | 可选，默认 WARN；可选值为 TRACE、DEBUG、INFO、WARN、ERROR、OFF。 |
+| `keep_alive.enabled` | `boolean` | 可选，默认 true。 |
+| `keep_alive.idle_socket_ttl` | `number` | 可选，默认 2500 毫秒；0 表示禁用闲置 socket 管理。 |
+| `keep_alive.eagerly_destroy_stale_sockets` | `boolean` | 可选，默认 false。 |
+| `tls.ca_cert` | `Buffer` | 提供 `tls` 时必填。 |
+| `tls.cert` | `Buffer` | 双向 TLS 时必填。 |
+| `tls.key` | `Buffer` | 双向 TLS 时必填。 |
+| `json.parse` | `<T>(input: string) => T` | 可选，用于解析 JSON 字符串。 |
+| `json.stringify` | `<T>(input: T) => string` | 可选，用于序列化值。 |
+
+此客户端的 Zstd 压缩需要 Node.js 22.15 或更高版本。响应压缩可能与引擎强制的服务端只读设置冲突；除非服务端允许，否则请保持关闭。
+
+<Heading as="h2" id="ssh-options">SSH 选项</Heading>
+
+用于 MySQL 和 PostgreSQL，放在 `options.ssh` 中。
+
+| 字段 | 类型 | 必填 | 含义与默认值 |
+| ---------- | -------- | -------- | ------------------------------------------------------ |
+| `host` | `string` | 是 | SSH 服务器主机名。 |
+| `port` | `number` | 否 | 默认 `22`。 |
+| `user` | `string` | 是 | SSH 登录用户。 |
+| `password` | `string` | 否 | SSH 登录密码，不提供则不传密码。 |

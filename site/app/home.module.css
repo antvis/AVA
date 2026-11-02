@@ -1,5 +1,4 @@
 .home {
-  --demo-height: clamp(460px, calc(100dvh - 440px), 600px);
   --home-ink: #1b242a;
   --home-muted: #65747b;
   --home-blue: #22799b;
@@ -255,22 +254,22 @@
   margin: 0;
   padding-bottom: 0;
 }
-.demo [id='ai'] > div > section {
-  height: var(--demo-height);
+.demo [data-artifact-panel] {
+  border-color: #dce9ee;
+  border-radius: 16px;
+  background: linear-gradient(180deg, #f5fafc, #fff 140px);
+  box-shadow: 0 3px 12px -6px #335e701a;
 }
-.demo section[aria-label='Artifact panel'] [role='img'] {
-  height: clamp(240px, 26vw, 280px);
-  padding: 8px 4px;
-  border: 1px solid #dceef5;
-  border-radius: 20px;
+.demo [data-artifact-panel] [role='img'] {
+  height: clamp(220px, 24vw, 260px);
+  padding: 6px 2px;
+  border: 1px solid #e1edf1;
+  border-radius: 14px;
   isolation: isolate;
-  background: radial-gradient(ellipse at 90% 0%, #bceef566, transparent 65%),
-    radial-gradient(ellipse at 0% 100%, #ffdfce33, transparent 60%),
-    linear-gradient(145deg, #eaf9ff, #f7fcff 58%, #fff6ef);
-  box-shadow: inset 0 1px 0 #fff, 0 9px 24px -18px #4a8fa84d;
+  background: linear-gradient(180deg, #f6fbfd, #fff);
 }
 /* Blend the canvas's white surface into the chart card. */
-.demo section[aria-label='Artifact panel'] [role='img'] canvas {
+.demo [data-artifact-panel] [role='img'] canvas {
   mix-blend-mode: multiply;
 }
 .features {
@@ -460,9 +459,6 @@
   letter-spacing: -0.04em;
   color: var(--home-ink);
 }
-.home .benchmarks h2 {
-  font-size: clamp(30px, 3.1vw, 44px);
-}
 .benchmarks :global(.max-w-2xl) > p {
   font-size: 14px;
   line-height: 1.65;
@@ -600,8 +596,8 @@
   .heroIntro {
     padding-top: clamp(64px, 5.3vw, 92px);
   }
-  .demo [id='ai'] > div:has(> section[aria-label='Artifact panel']) {
-    grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr);
+  .demo [id='ai'] > div:has(> [data-artifact-panel]) {
+    grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr);
   }
   .dataSection {
     padding-block: 112px 144px;
@@ -649,7 +645,6 @@
 }
 @media (max-width: 767px) {
   .home {
-    --demo-height: clamp(400px, calc(100dvh - 360px), 520px);
     background-size: 100% 760px;
   }
   .home > header > div {
@@ -801,4 +796,30 @@
     scroll-behavior: auto;
     transition: none;
   }
+}
+
+/* Chinese copy uses a readable measure instead of Latin character widths. */
+:global(html[lang='zh-CN']) .heroIntro :is(h1, p) {
+  font-family: Arial, Helvetica, var(--font-body);
+}
+:global(html[lang='zh-CN']) .home > header nav a {
+  font-weight: 500;
+}
+:global(html[lang='zh-CN']) .heroIntro h1 {
+  font-family: var(--font-body);
+  font-weight: 400;
+}
+:global(html[lang='zh-CN']) .heroIntro h1 > span[lang='en'] {
+  letter-spacing: -0.04em;
+}
+:global(html[lang='zh-CN']) .heroIntro h1 > span:last-child {
+  display: inline-block;
+  max-width: 100%;
+  text-wrap: balance;
+}
+:global(html[lang='zh-CN']) .heroIntro p {
+  width: min(100%, 32em);
+  max-width: 32em;
+  text-wrap: pretty;
+  letter-spacing: 0;
 }
