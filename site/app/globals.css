@@ -36,12 +36,6 @@ h3 {
   letter-spacing: -0.04em;
 }
 
-.hero-title {
-  font-weight: 700;
-  letter-spacing: -0.055em;
-  line-height: 1.05;
-}
-
 code,
 pre {
   font-family: var(--font-code);
@@ -143,102 +137,6 @@ body {
   background-color: #f8fbfc;
 }
 
-/* Playful left-right jumping animation that respects prefers-reduced-motion */
-.ava-pulse {
-  display: inline-block;
-  animation: jump-horizontal 2s cubic-bezier(0.25, 0.46, 0.45, 0.94) infinite;
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .ava-pulse {
-    animation: none;
-  }
-}
-
-@keyframes jump-horizontal {
-  0% {
-    transform: translate(0, 0) scale(1, 1);
-    animation-timing-function: cubic-bezier(0.33, 0, 0.67, 0);
-  }
-  12.5% {
-    transform: translate(-3px, -8px) scale(0.9, 1.1);
-    animation-timing-function: cubic-bezier(0.33, 1, 0.67, 1);
-  }
-  25% {
-    transform: translate(-5px, 0) scale(1.1, 0.9);
-    animation-timing-function: cubic-bezier(0.33, 0, 0.67, 0);
-  }
-  37.5% {
-    transform: translate(-3px, -8px) scale(0.9, 1.1);
-    animation-timing-function: cubic-bezier(0.33, 1, 0.67, 1);
-  }
-  50% {
-    transform: translate(0, 0) scale(1, 1);
-    animation-timing-function: cubic-bezier(0.33, 0, 0.67, 0);
-  }
-  62.5% {
-    transform: translate(3px, -8px) scale(0.9, 1.1);
-    animation-timing-function: cubic-bezier(0.33, 1, 0.67, 1);
-  }
-  75% {
-    transform: translate(5px, 0) scale(1.1, 0.9);
-    animation-timing-function: cubic-bezier(0.33, 0, 0.67, 0);
-  }
-  87.5% {
-    transform: translate(3px, -8px) scale(0.9, 1.1);
-    animation-timing-function: cubic-bezier(0.33, 1, 0.67, 1);
-  }
-  100% {
-    transform: translate(0, 0) scale(1, 1);
-  }
-}
-
-/* Table styling for markdown-rendered tables in prose */
-.prose table {
-  width: 100%;
-  border-collapse: collapse;
-  margin-top: 0.5rem;
-  margin-bottom: 0.5rem;
-}
-
-.prose thead {
-  background-color: #f3f4f6;
-}
-
-.prose th {
-  border: 1px solid #d1d5db;
-  padding: 0.5rem 0.75rem;
-  text-align: left;
-  font-weight: 600;
-  color: #374151;
-}
-
-.prose td {
-  border: 1px solid #e5e7eb;
-  padding: 0.5rem 0.75rem;
-  color: #4b5563;
-}
-
-.prose tbody tr:nth-child(even) {
-  background-color: #f9fafb;
-}
-
-.prose tbody tr:hover {
-  background-color: #f3f4f6;
-}
-
-/* Suggestion tooltip animation */
-@keyframes fadeInUp {
-  from {
-    opacity: 0;
-    transform: translateX(-50%) translateY(4px);
-  }
-  to {
-    opacity: 1;
-    transform: translateX(-50%) translateY(0);
-  }
-}
-
 /* ---- AI (codex-style agent run) ---- */
 @keyframes slide-in {
   from {
@@ -268,28 +166,6 @@ body {
   }
   to {
     opacity: 0.35;
-  }
-}
-
-/* Step row entrance — used by AI steps trace */
-@keyframes step-in {
-  from {
-    opacity: 0;
-    transform: translateY(6px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-.animate-step-in {
-  animation: step-in 0.28s cubic-bezier(0.16, 1, 0.3, 1);
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .animate-step-in {
-    animation: none;
   }
 }
 
@@ -395,60 +271,9 @@ body {
   }
 }
 
-/* ── AI hero entrance motion ─────────────────────── */
-
-@keyframes hero-rise {
-  from {
-    opacity: 0;
-    transform: translateY(18px);
-    filter: blur(6px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-    filter: blur(0);
-  }
-}
-
-@keyframes hero-axis {
-  from {
-    transform: scaleX(0);
-  }
-  to {
-    transform: scaleX(1);
-  }
-}
-
-@keyframes hero-tick {
-  from {
-    opacity: 0;
-    transform: scaleY(0);
-  }
-  to {
-    opacity: 1;
-    transform: scaleY(1);
-  }
-}
-
-/* one gentle overlapped highlight sweep across the headline */
-@keyframes hero-sheen {
-  0% {
-    background-position: -200% 0;
-  }
-  100% {
-    background-position: 200% 0;
-  }
-}
-
+/* Only the rotating headline phrase animates. */
 @media (prefers-reduced-motion: reduce) {
-  .hero-rise,
-  .hero-axis,
-  .hero-tick,
-  .hero-sheen-text,
   .hero-verse-anim {
-    animation: none !important;
-  }
-  [style*='hero-drift'] {
     animation: none !important;
   }
 }
@@ -471,20 +296,6 @@ body {
     filter: blur(5px);
   }
 }
-
-@keyframes hero-drift {
-  0%,
-  100% {
-    translate: 0 0;
-  }
-  100% {
-    translate: 0 -6px;
-  }
-}
-
-/* ------------------------------------------------------------------ */
-/* Landing sections — shared motion & marquee primitives               */
-/* ------------------------------------------------------------------ */
 
 /* Scroll reveal (applied by <Reveal />) */
 .reveal {
@@ -514,62 +325,5 @@ body {
   to {
     opacity: 1;
     transform: none;
-  }
-}
-
-/* Data source marquee — single row, seamless loop */
-.marquee-outer {
-  /* soft fade on both edges */
-  mask-image: linear-gradient(to right, transparent, #000 8%, #000 92%, transparent);
-  -webkit-mask-image: linear-gradient(to right, transparent, #000 8%, #000 92%, transparent);
-}
-.marquee-track {
-  display: flex;
-  width: max-content;
-  animation: marquee-scroll 36s linear infinite;
-}
-.marquee-outer:hover .marquee-track,
-.marquee-outer:focus-within .marquee-track {
-  animation-play-state: paused;
-}
-.marquee-item {
-  display: flex;
-  align-items: center;
-  gap: 0.625rem;
-  padding: 0.5rem 1.25rem;
-  white-space: nowrap;
-}
-@keyframes marquee-scroll {
-  from {
-    transform: translateX(0);
-  }
-  to {
-    transform: translateX(-50%);
-  }
-}
-@media (prefers-reduced-motion: reduce) {
-  .marquee-outer {
-    mask-image: none;
-    -webkit-mask-image: none;
-    overflow-x: auto;
-  }
-  .marquee-track {
-    animation: none;
-  }
-}
-
-/* Animated data-flow line in the architecture diagram */
-.flow-line {
-  stroke-dasharray: 4 5;
-  animation: flow-dash 1.6s linear infinite;
-}
-@keyframes flow-dash {
-  to {
-    stroke-dashoffset: -9;
-  }
-}
-@media (prefers-reduced-motion: reduce) {
-  .flow-line {
-    animation: none;
   }
 }

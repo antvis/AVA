@@ -8,9 +8,10 @@ import ChatWorkspace from '../../ai/ui/ChatWorkspace';
 import SkillSetup from '../../ai/ui/SkillSetup';
 import { MAX_UPLOAD_SIZE_MB } from '../../ai/ui/constants';
 import useChat from '../../ai/ui/useChat';
-import { Header, Footer } from '../../components';
+import Header from '../../components/Header';
+import Footer from '../../components/Footer';
 import PageShell from '../../components/PageShell';
-import { DEFAULT_LLM_CONFIG, loadLLMConfig, saveLLMConfig } from '../../components/utils';
+import { DEFAULT_LLM_CONFIG, loadLLMConfig, saveLLMConfig } from '../../ai/ui/model-settings';
 
 export default function AIPage() {
   const [config, setConfig] = useState<LLMConfig>(DEFAULT_LLM_CONFIG);

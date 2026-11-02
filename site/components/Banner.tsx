@@ -146,18 +146,6 @@ const RotatingVerse: React.FC = () => {
 
 const Banner: React.FC = () => (
   <section className="relative">
-    {/* background — quiet editorial backdrop, styled like a chart plate */}
-    <div aria-hidden className="hidden">
-      {/* a barely-there wash behind the headline for depth */}
-      <span
-        className="absolute left-1/2 top-[150px] h-80 w-[52rem] max-w-[90vw] -translate-x-1/2 rounded-full opacity-60 blur-3xl"
-        style={{
-          background:
-            'radial-gradient(closest-side, color-mix(in srgb, var(--color-primary) 22%, transparent), transparent)',
-        }}
-      />
-    </div>
-
     <div className="relative">
       {/* ── hero content ── */}
       <div data-hero-content className="flex flex-col items-center gap-6 pb-11 text-center max-md:gap-5 max-md:pb-8">
@@ -176,12 +164,12 @@ const Banner: React.FC = () => (
           Open Source, Built for <span className="whitespace-nowrap">Agents.</span>
         </h1>
 
-        <p className="hero-rise max-w-[520px] text-[14px] leading-[1.85] text-zinc-500 max-md:text-[13px]">
+        <p className="max-w-[520px] text-[14px] leading-[1.85] text-zinc-500 max-md:text-[13px]">
           An open-source framework for AI agents to explore, analyze, and visualize data.
         </p>
 
         {/* actions */}
-        <div data-hero-actions className="hero-rise mt-3 flex flex-wrap items-center justify-center gap-3 max-md:gap-2">
+        <div data-hero-actions className="mt-3 flex flex-wrap items-center justify-center gap-3 max-md:gap-2">
           <Link
             href="/ai/"
             className="group inline-flex h-10 items-center gap-2 rounded-[9px] bg-[color:var(--color-primary-dark)] px-7 text-[13.5px] max-md:px-4 max-md:text-xs font-medium text-white shadow-[0_6px_16px_color-mix(in_srgb,var(--color-primary-dark)_28%,transparent)] transition-all duration-200 hover:shadow-[0_8px_20px_color-mix(in_srgb,var(--color-primary-dark)_38%,transparent)] hover:brightness-95 active:scale-[0.97]"

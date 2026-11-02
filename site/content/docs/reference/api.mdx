@@ -1,4 +1,4 @@
-Use this reference to look up signatures, inputs, and return values after following the [quickstart](/documentation/quickstart/). The AVA data and visualization methods are asynchronous; the event methods and exported helpers are synchronous.
+Use this reference to look up signatures, inputs, and return values after following the [quickstart](/documentation/quickstart/). The AVA data and visualization methods are asynchronous; the event methods are synchronous. For engine extension points, see [Custom engines](/documentation/engines/custom/).
 
 ## API at a glance
 
@@ -32,10 +32,6 @@ Use this reference to look up signatures, inputs, and return values after follow
 <tr><td><a href="#event-methods"><code>off(name?, listener?)</code></a></td><td>Remove listeners.</td></tr>
 <tr><td><a href="#event-methods"><code>emit(name, ...args)</code></a></td><td>Emit an event.</td></tr>
 <tr><td><a href="#event-methods"><code>getEvents()</code></a></td><td>Return the listener registry.</td></tr>
-</tbody>
-<tbody>
-<tr><th scope="rowgroup" rowSpan={2}><a href="#engine-extensions">Engine extensions</a></th><td><a href="#registerengine"><code>registerEngine(type, engineClass)</code></a></td><td>Register a custom engine.</td></tr>
-<tr><td><a href="#executionresult-helper"><code>executionResult(rows, schema, options?, upstreamTruncatedBy?)</code></a></td><td>Bound an engine’s results.</td></tr>
 </tbody>
 </table>
 </div>
@@ -394,36 +390,6 @@ Returns a standalone HTML string. Does not require a loaded source or call a mod
 ### Event methods
 
 AVA inherits synchronous `on`, `once`, `off`, `emit`, and `getEvents` methods from the AntV event emitter. See [event method parameters](/documentation/reference/events/#listener-parameters).
-
-## Engine extensions
-
-### registerEngine
-
-`registerEngine(type: string, engineClass: EngineClass): void`
-
-Exported by both SDK entry points. Register an engine implemented in your own application before loading a source.
-
-| Parameter     | Type                                                                              | Required | Meaning                                                                                             |
-| ------------- | --------------------------------------------------------------------------------- | -------- | --------------------------------------------------------------------------------------------------- |
-| `type`        | `string`                                                                          | Yes      | Engine name. Re-registering replaces the constructor used for future loads.                         |
-| `engineClass` | `new (llmConfig: LLMConfig, options?: Record<string, unknown>) => AnalysisEngine` | Yes      | Engine class. AVA passes its model configuration and remaining engine options to each new instance. |
-
-Registration affects the loaded SDK module only. See [Custom engines](/documentation/engines/custom/) for a complete external implementation and lifecycle details.
-
-### executionResult helper
-
-`executionResult<T>(rows: T[], schema: QueryColumn[], options?: ExecutionOptions, upstreamTruncatedBy?: 'maxRows' | 'maxResultBytes'): ExecutionResult<T>`
-
-A synchronous helper exported by both SDK entry points for custom engine implementations. Import it from `@antv/ava` or `@antv/ava/browser`.
-
-| Parameter             | Type                              | Required | Meaning / default                                                                                    |
-| --------------------- | --------------------------------- | -------- | ---------------------------------------------------------------------------------------------------- |
-| `rows`                | `T[]`                             | Yes      | Rows produced by the engine.                                                                         |
-| `schema`              | `QueryColumn[]`                   | Yes      | Output columns; each has `name: string` and optional `type: string`.                                 |
-| `options`             | `ExecutionOptions`                | No       | `{}`; uses the [execution limits](#executionoptions) above.                                          |
-| `upstreamTruncatedBy` | `'maxRows'` or `'maxResultBytes'` | No       | Preserve truncation already reported by an upstream executor unless a local limit truncates further. |
-
-Returns bounded `data`, `schema`, and either `rowCount` for a complete result or truncation metadata for a partial result. Throws if an individual result field exceeds 1 MiB. The helper bounds already-produced rows; it does not limit query execution or input memory use.
 
 ## Semantic model reference
 

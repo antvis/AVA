@@ -8,6 +8,8 @@ pnpm dev
 pnpm build
 ```
 
+The production build is a static export. Serve `out/` with a static web server; it does not use `next start`.
+
 Use Node.js 22.13 or newer. From a fresh checkout, build the root `@antv/ava` package before building the site.
 
 ## Documentation

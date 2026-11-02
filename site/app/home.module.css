@@ -243,11 +243,6 @@
   background: white;
   transform: translateY(-2px);
 }
-.heroIntro .heroNote {
-  margin-top: 16px;
-  font-size: 10px;
-  color: #6c8794;
-}
 .demo {
   width: min(1100px, 68%);
   margin: 0 auto;
