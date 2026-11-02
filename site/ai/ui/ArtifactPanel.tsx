@@ -2,11 +2,13 @@
 
 import { useTranslations } from 'use-intl';
 
-import GPTVisRenderer from '../../components/GPTVisRenderer';
+import { lazy, Suspense } from 'react';
 import CodePreview from './CodePreview';
 import { resultTables } from './utils';
 import MetadataTable from './MetadataTable';
 import type { Message, ArtifactDisplay, ArtifactTab } from './types';
+
+const GPTVisRenderer = lazy(() => import('../../components/GPTVisRenderer'));
 
 export default function ArtifactPanel({
   artifact,
@@ -111,7 +113,15 @@ export default function ArtifactPanel({
         <div id={panelId} role="tabpanel" aria-labelledby={`${artifact.id}-${activeTab}-tab`} tabIndex={0}>
           {activeTab === 'chart' && (
             <div className="h-[320px]" role="img" aria-label={artifact.description}>
-              <GPTVisRenderer config={artifact.config ?? {}} />
+              <Suspense
+                fallback={
+                  <div role="status" className="flex h-full items-center justify-center text-xs text-zinc-500">
+                    {t('loadingChart')}
+                  </div>
+                }
+              >
+                <GPTVisRenderer config={artifact.config ?? {}} />
+              </Suspense>
             </div>
           )}
           {activeTab === 'data' &&
