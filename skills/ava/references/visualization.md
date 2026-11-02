@@ -54,11 +54,12 @@ Use the branch for the intent from Step 2.
 - IF there are many categories: sort by value and keep Top N.
 
 **Part-to-whole**
-- IF the data is hierarchical (parent/child): `treemap`.
-- ELSE IF there are 5 or fewer categories and all values are non-negative: `pie` (`innerRadius 0.6` for a donut). Values must be plain numbers, not percentages.
+- IF the data is a single percentage or progress: `liquid`, with `percent` from 0 to 1; otherwise use `bar` or `table`.
+- ELSE IF any value is negative: `bar`.
+- ELSE IF the total is zero: `table`.
+- ELSE IF the data is hierarchical (parent/child): `treemap`.
+- ELSE IF there are 5 or fewer categories: `pie` (`innerRadius 0.6` for a donut). Values must be plain numbers, not percentages, with a positive total.
 - ELSE IF there are more than 5 categories: merge the tail into "Other" and use `pie`, or use `bar`.
-- ELSE IF the data is a single percentage or progress: `liquid`.
-- ELSE IF any value is negative: `bar` (pie is invalid).
 
 **Relationship**
 - IF both fields are numeric: `scatter` (`group` for a third categorical dimension).
@@ -76,7 +77,7 @@ Use the branch for the intent from Step 2.
 - IF signed changes that sum to a total: `waterfall` (mark the total with `isTotal true`). ELSE: `column`.
 
 **Flow**
-- IF `source`/`target`/`value` pairs: `sankey`. ELSE: `table`.
+- IF `source`/`target`/`value` pairs form an acyclic flow: `sankey`. ELSE: `table`.
 
 **Intersection**
 - IF set sizes and overlaps: `venn`. ELSE: `table`.
@@ -91,16 +92,18 @@ Use the branch for the intent from Step 2.
 
 Map actual fields to the fields below. Unless noted otherwise, fields belong to each item in the `data` array; `value`, `x`, and `y` are numeric. When there are two dimensions, put the axis dimension in `time`/`category` and the other in `group`.
 
+These are all 19 chart types registered by the CLI. `summary` is not registered and cannot be passed to `ava viz`.
+
 | `chartType` | Data fields or structure |
 | --- | --- |
 | `column`, `bar` | `category`, `value`, optional `group`; `stack` or `group true` |
 | `line` | `time`, `value`, optional `group` |
-| `area` | `time`, `value`, optional `group`; only `area` supports `stack` |
+| `area` | `time`, `value`, optional `group`; `config.stack: true` for stacked area |
 | `pie` | `category`, `value`; `innerRadius` 0.6 creates a donut chart |
 | `scatter` | `x`, `y`, optional `group` |
 | `histogram` | Array of raw numeric observations |
 | `boxplot`, `violin` | `category`, `value`; multiple observations per category |
-| `radar` | `name`, `value` |
+| `radar` | `name`, `value`, optional `group` |
 | `funnel` | `category`, `value`, ordered by stage |
 | `waterfall` | `category`, `value`; mark the total item with `"isTotal": true` |
 | `liquid` | Top-level `percent`, from 0 to 1; no `data` array |
@@ -111,21 +114,20 @@ Map actual fields to the fields below. Unless noted otherwise, fields belong to 
 | `table` | Fields from the original rows |
 | `dual-axes` | Top-level `categories` and `series` arrays; each series has `type` (`column` or `line`), `axisYTitle`, and numeric `data` aligned with `categories` |
 
-Optional properties, supported only where listed:
+Config properties used by AVA's chart generator:
 
 | Property | Applies to |
 | --- | --- |
 | `title`, `theme` (`default`, `light`, `dark`, `academy`), `style` (`backgroundColor`, `palette` array) | All charts |
-| `axisXTitle`, `axisYTitle` | Charts with axes (not `pie`, `radar`, `funnel`, `liquid`, `treemap`, `sankey`) |
+| `axisXTitle`, `axisYTitle` | `line`, `area`, `column`, `bar`, `scatter`, `histogram`, `boxplot`, `violin`, `waterfall` |
+| `axisXTitle`, `series[].axisYTitle` | `dual-axes` |
 | `binNumber` | `histogram` |
 | `align` | `radar` |
 | `shape` (`rect`, `circle`, `pin`, `triangle`) | `liquid` |
 | `label` on a set | `venn` |
 | `nodeAlign` (`left`, `center`, `right`, `justify`) | `sankey` |
-| `style.palette` order `[increase, decrease, total]` | `waterfall` |
-| `style.startAtZero` | `dual-axes`, `boxplot`, `violin` |
 
-JSON patterns for the less obvious structures:
+JSON config fragments for the less obvious structures (wrap each in `{ "chartType": "…", "config": … }` for `--spec`):
 
 ```json
 { "type": "histogram", "data": [68, 72, 85], "binNumber": 10 }
@@ -152,7 +154,7 @@ Then build the Spec:
 
 A Spec is a JSON object with exactly two keys: `chartType`, the chart type string, and `config`, the GPT-Vis JSON config object.
 
-- `config.type` must equal `chartType`.
+- Set `config.type` to `chartType` for consistency; the CLI fills or overrides it with `chartType` before rendering.
 - Put the fields from the table above directly in `config`. Use plain numbers for numeric values; put units in the title or axis title.
 - The chart size adapts to its container, so do not set `width` or `height`.
 
@@ -185,3 +187,13 @@ The returned `output` is the absolute path to the HTML file. Existing files are 
 The CLI validates only the Spec structure and chart type; it does not verify that the config renders correctly. If a browser is available, preview the chart and check the field mappings, ordering, title, units, and data range. If you do not preview it, say so. Label Top N selections and aggregated categories in the chart.
 
 If rendering fails, fix the error and retry up to two times. If it still fails, provide the results table and explain why the chart could not be rendered.
+
+## CLI Entry Points
+
+| Command | Input | Result | Model required |
+| --- | --- | --- | --- |
+| `viz --spec @chart.json --output chart.html` | Complete Spec; inline JSON, `@file`, or stdin `-` | Absolute `output` path | No |
+| `recommend --query "…" --data @rows.json` | Question and array of row objects | Spec, or `null` when no chart fits | Yes |
+| `visualize --query "…" --data @rows.json --output chart.html` | Question and array of row objects | Spec and HTML, plus `output` when requested; or `null` | Yes |
+
+None requires a dataset ID. For `recommend`/`visualize`, `--data` accepts inline JSON, `@file`, or stdin `-`; even histogram input must be row objects. A manual histogram Spec instead uses numeric observations in `config.data`. Model setup is described in [Setup](setup.md).
