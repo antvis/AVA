@@ -250,12 +250,6 @@ Contributions are welcome. Include tests, examples, and documentation with new f
 
 Run `npm test` to test your changes. For model-backed tests, copy `.env.example` to `.env` and add your model settings.
 
-## 🔗 Related Projects
-
-- [GPT-Vis](https://github.com/antvis/GPT-Vis) - Visualization components
-- [Chart Visualization Skills](https://github.com/antvis/chart-visualization-skills) - LLM skills for charts
-- [Vercel AI SDK](https://sdk.vercel.ai/) - LLM integration
-
 ## 📑 Papers
 
 [VizLinter](https://vegalite-linter.idvxlab.com/) - Chen, Q., Sun, F., Xu, X., Chen, Z., Wang, J. and Cao, N., 2021. VizLinter: A Linter and Fixer Framework for Data Visualization. *IEEE transactions on visualization and computer graphics*, 28(1), pp.206-216.
