@@ -84,14 +84,14 @@ The script asserts the computed rows and numerical tolerance rather than relying
 ## Automated checks
 
 - `npm run build`: passed CommonJS and ESM builds.
-- `npx vitest run tencent --maxWorkers=2`: 86 offline tests passed; 1 live test skipped by default.
+- `npx vitest run tencent __tests__/duckdb/util/file.test.ts`: 102 tests passed and 3 skipped on Windows (one opt-in live test and two Unix-only filesystem tests).
 - Explicit live read-only test: 1 passed with `AVA_TENCENT_INTEGRATION=1`.
 - ESLint on all changed/new TypeScript files: passed.
 - `git diff --check`: passed.
 - Updated source documentation compiled successfully with `@mdx-js/mdx` and `remark-gfm` (syntax/table validation only, not a full Next.js build).
 - Full repository lint: passed on Windows and Linux after the focused baseline fixes described below.
-- Windows `npm test`: **555 passed, 54 skipped**, zero failures or unhandled worker errors. Skips are optional external-service/model integration suites.
-- Linux `npm test -- --maxWorkers=2`: **555 passed, 54 skipped**, zero failures or unhandled worker errors. Linux build and lint also passed.
+- Windows `npm test`: **564 passed, 56 skipped**, zero failures or unhandled worker errors. Skips include optional external-service/model integration suites and the two Unix-only filesystem tests.
+- Linux `npm test -- --maxWorkers=2`: **566 passed, 54 skipped**, zero failures or unhandled worker errors, including the actual Unix mode and symlink tests. Linux build and lint also passed.
 - Real Linux CLI E2E: passed `source → schema → query → analyze → dispose`, including both business questions against the real Tencent Docs source and DeepSeek model, plus rejection of schema access after disposal. Run with `node --env-file=.env.local examples/tencent-docs/cli-e2e.mjs --with-model` on Linux/macOS.
 - Full documentation-site build: passed (`cd site && npm run build`, Next.js 16.4.3). `npm run check:docs` passed for 22 static MDX pages and 1,338 documentation links, including anchors, metadata, code blocks and the Tencent Docs option table.
 
@@ -107,6 +107,15 @@ The earlier baseline comparison remains useful historical evidence, but the iden
 6. Documentation-site verification exposed Windows file-URL/route-separator/CRLF handling issues. These now use `fileURLToPath`, normalized route separators and normalized Markdown newlines. The pinned `@ai-sdk/react` 4.0.145 brought its own older `ai` 7.0.141 types, conflicting with the installed `ai` 7.0.159. Updating the React SDK range to `^4.0.163` aligns those types; the real site build/type check now passes without casts or suppressed errors.
 
 These baseline fixes are isolated from the Tencent Docs connector in a prerequisite commit so maintainers can review or extract them independently. The local results above do not imply that hosted upstream CI has passed.
+
+## Copilot review follow-up
+
+Both high-severity findings on PR #1055 were reproduced against the implementation and addressed:
+
+1. The shared temporary-file helper now uses a random UUID and exclusive `wx` creation with mode `0600` before writing any content. Tests cover permissions under Unix umask `022`, preservation of pre-existing files/symlinks, and cleanup after a failed write. The permission and symlink tests passed in the real Linux environment described above, not just through mocked filesystem calls.
+2. SmartSheet conversion now consumes validated pages incrementally, without retaining all raw records. Expanded JSON has an independent 16 MiB UTF-8 budget (including keys, nulls, record IDs, brackets and commas) and a 1,000,000-cell budget (including `_record_id`). Reported record totals are checked against the effective cell-based row cap before conversion. Regression tests cover a sparse 100,000-record / 1,000-field response and exact byte/cell boundaries; no partial snapshot is returned on rejection.
+
+After these changes, the Windows and Linux full suites, lint/build checks, and documentation-site build/checks were rerun with the results recorded above. The real source `analyze.mjs --verify-only` also passed again with `pageSize: 2` and the same business totals. The two real model/CLI runs above are historical validation of the original integration; they were not rerun for this hardening-only follow-up.
 
 ## Maintainer review notes
 

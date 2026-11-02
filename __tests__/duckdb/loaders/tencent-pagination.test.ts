@@ -12,6 +12,19 @@ function read(pages: unknown[], maximum = 100) {
 }
 
 describe('Tencent Docs pagination integrity', () => {
+  it('consumes validated records before fetching the next page without retaining raw records', async () => {
+    const consume = vi.fn();
+    const call = vi
+      .fn()
+      .mockResolvedValueOnce({ records: [row('r1')], total: 2, has_more: true, next: 1 })
+      .mockImplementationOnce(async () => {
+        expect(consume).toHaveBeenCalledExactlyOnceWith(row('r1'));
+        return { records: [row('r2')], total: 2, has_more: false, next: 0 };
+      });
+    expect(await readPages({ call }, 'smartsheet.list_records', args, 'records', 2, 100, consume)).toEqual([]);
+    expect(consume.mock.calls.map((call) => call[0])).toEqual([row('r1'), row('r2')]);
+  });
+
   it('follows the explicit next offset through a short final page', async () => {
     const { call, result } = read([
       { records: [row('r1'), row('r2')], total: 3, has_more: true, next: 2 },

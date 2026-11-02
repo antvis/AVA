@@ -5,6 +5,7 @@
  * URL is downloaded to a temp file first. Node.js only.
  */
 
+import { randomUUID } from 'node:crypto';
 import * as fs from 'node:fs/promises';
 import * as os from 'node:os';
 import { dirname, join } from 'node:path';
@@ -17,11 +18,21 @@ import type { CSVReadOptions, JSONReadOptions, FileFormat, LoadedSource } from '
 
 const noopCleanup = async (): Promise<void> => {};
 
-/** Write content to a unique temp file and return its path */
+/** Create an owner-only temp file exclusively, before writing any source data. */
 export async function writeTempFile(content: string | Buffer, ext: string): Promise<string> {
-  const tmpFile = join(os.tmpdir(), `ava-source-${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`);
-  await fs.writeFile(tmpFile, content);
-  return tmpFile;
+  const tmpFile = join(os.tmpdir(), `ava-source-${randomUUID()}.${ext}`);
+  // Open outside the cleanup block: EEXIST must never unlink another file or
+  // follow/truncate a pre-existing symlink at the candidate path.
+  const file = await fs.open(tmpFile, 'wx', 0o600);
+  try {
+    await file.writeFile(content);
+    await file.close();
+    return tmpFile;
+  } catch (error) {
+    await file.close().catch(() => undefined);
+    await fs.unlink(tmpFile).catch(() => undefined);
+    throw error;
+  }
 }
 
 /** Download a remote URL to a temp file and return its path */

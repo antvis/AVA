@@ -96,4 +96,25 @@ describe('Tencent Docs read orchestration', () => {
     await expect(readTencentTable(options)).rejects.toThrow('pagination failed');
     expect(mock.close).toHaveBeenCalledOnce();
   });
+
+  it('rejects sparse expansion bombs using the first record-page total, before conversion', async () => {
+    const fields = Array.from({ length: 1000 }, (_, i) => ({
+      field_id: `f${i}`,
+      field_title: `c${i}`,
+      field_type: 'number',
+    }));
+    mock.call.mockImplementation(async (tool: string, args: { offset: number }) =>
+      tool === 'smartsheet.list_fields'
+        ? {
+            fields: fields.slice(args.offset, args.offset + 100),
+            total: 1000,
+            has_more: args.offset + 100 < 1000,
+            next: args.offset + 100,
+          }
+        : { records: [{ record_id: 'empty', field_values: [] }], total: 100000, has_more: true, next: 1 }
+    );
+    await expect(readTencentTable({ ...options, maxRecords: 100000 })).rejects.toThrow('read limit');
+    expect(mock.call.mock.calls.filter((call) => call[0] === 'smartsheet.list_records')).toHaveLength(1);
+    expect(mock.close).toHaveBeenCalledOnce();
+  });
 });

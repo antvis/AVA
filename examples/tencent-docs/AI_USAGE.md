@@ -22,4 +22,6 @@ AI assistance was used to inspect issue requirements and existing loaders, compa
 
 ## Review still required
 
+Copilot subsequently identified two valid high-severity issues: shared temporary-file permissions and sparse-to-dense memory amplification. AI-assisted follow-up fixed both and added filesystem/budget regression tests. Verification included real Linux `0600`/symlink checks, full Windows/Linux suites, lint/build, the documentation site, and another live read-only deterministic source check. AI review is treated as evidence to investigate, not automatic approval; the real model/CLI business examples were not rerun for this follow-up.
+
 The contributor and maintainers should review the code and supporting evidence before merge and confirm the public source/config contract. Real Linux CLI validation, local Windows/Linux root checks, the full documentation-site build and static documentation checks have passed; hosted upstream CI has not run. No performance, universal field-compatibility or transactional-snapshot guarantees are inferred from the small local fixture.

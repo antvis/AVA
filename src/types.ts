@@ -503,7 +503,7 @@ export interface TencentDocsSourceOptions {
   token?: string;
   /** Records per request, 1–100. Default 100. */
   pageSize?: number;
-  /** Fail instead of silently truncating. Default 10,000; maximum 100,000. */
+  /** Fail instead of truncating. Default 10,000; max 100,000, also bounded by expanded snapshot budgets. */
   maxRecords?: number;
   /** Whole-load deadline, including connection, pagination and retries. Default 60,000 ms. */
   timeoutMs?: number;
