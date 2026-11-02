@@ -799,6 +799,21 @@
 }
 
 /* Chinese copy uses a readable measure instead of Latin character widths. */
+:global(html[lang='zh-CN']) .heroIntro :is(h1, p) {
+  font-family: Arial, Helvetica, var(--font-body);
+}
+:global(html[lang='zh-CN']) .home > header nav a {
+  font-weight: 500;
+}
+:global(html[lang='zh-CN']) .heroIntro h1 > span[lang='en'] {
+  font-weight: 400;
+  letter-spacing: -0.04em;
+}
+:global(html[lang='zh-CN']) .heroIntro h1 > span:last-child {
+  display: inline-block;
+  max-width: 100%;
+  text-wrap: balance;
+}
 :global(html[lang='zh-CN']) .heroIntro p {
   width: min(100%, 32em);
   max-width: 32em;
