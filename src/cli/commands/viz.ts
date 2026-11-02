@@ -28,7 +28,7 @@ export async function run(_args: string[], options: Options): Promise<unknown> {
   if (raw === undefined) throw new Error('--spec is required.');
 
   const spec = z
-    .object({ chartType: z.string(), config: z.record(z.unknown()) })
+    .object({ chartType: z.string(), config: z.record(z.string(), z.unknown()) })
     .strict()
     .parse(await readJSON(raw));
 
@@ -36,7 +36,10 @@ export async function run(_args: string[], options: Options): Promise<unknown> {
 
   const ava = new AVA({ llm: { model: 'unused' } });
 
-  return await writeHTML(output, await ava.viz({ ...spec, config: { ...spec.config, type: spec.chartType } } as ChartSpec));
+  return await writeHTML(
+    output,
+    await ava.viz({ ...spec, config: { ...spec.config, type: spec.chartType } } as ChartSpec)
+  );
 }
 
 export const help = `${description}.

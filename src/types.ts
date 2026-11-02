@@ -3,7 +3,7 @@
  */
 
 import type { ClickHouseClientConfigOptions } from '@clickhouse/client';
-import type { LanguageModelUsage, LanguageModel } from 'ai';
+import type { LanguageModel, LanguageModelUsage } from 'ai';
 import type { AnalysisEvent } from './event';
 
 /**
@@ -30,8 +30,6 @@ export interface LLMConfig {
   baseURL?: string;
   /** Maximum retries for retryable model API failures. Default 3. */
   maxRetries?: number;
-  /** Optional callback for SQL-generation token usage */
-  onQueryUsage?: (usage: LanguageModelUsage) => void;
 }
 
 /**
@@ -487,11 +485,11 @@ export type ClickHouseSourceOptions = Omit<ClickHouseClientConfigOptions, 'host'
 };
 
 export interface FeishuBitableSourceOptions {
-  url?:string;
-  appToken?:string;
+  url?: string;
+  appToken?: string;
   tableId?: string;
-  appId?:string;
-  appSecret?:string;
+  appId?: string;
+  appSecret?: string;
 }
 
 /** Read-only snapshot of one Tencent Docs SmartSheet table (Node.js / DuckDB). */
@@ -646,6 +644,12 @@ export interface QueryLanguage {
   instructions?: string;
 }
 
+/** Executable DSL and its model usage, when available. */
+export interface TranslationResult {
+  dsl: string;
+  usage?: LanguageModelUsage;
+}
+
 /**
  * An analysis engine: loads a data source, turns natural-language queries
  * into its executable DSL (SQL) via LLM, and executes it.
@@ -662,7 +666,7 @@ export interface AnalysisEngine {
   /** Compute statistics for the loaded data. */
   profile?(schema: Schema, options?: ProfileOptions): Promise<Profile>;
   /** Generate the executable DSL (SQL) for a natural-language query */
-  getDSL(query: string, dataModel: DataModel): Promise<string>;
+  getDSL(query: string, dataModel: DataModel): Promise<TranslationResult>;
   /** Execute one DSL statement with a bounded result. */
   execute<T = Record<string, unknown>>(dsl: string, options?: ExecutionOptions): Promise<ExecutionResult<T>>;
   /** Release resources (temp files, database connections) */
@@ -685,7 +689,9 @@ export interface QueryColumn {
 
 /** A bounded query result. */
 export interface ExecutionResult<T = Record<string, unknown>> {
+  /** Columns returned by the query, in result order. */
   schema: QueryColumn[];
+  /** Rows returned within the configured result limits. */
   data: T[];
   /** Present only when the result was truncated. */
   truncated?: true;
@@ -702,8 +708,7 @@ export type AnalysisStrategyConfig =
       /** Execution correction retries after the initial attempt. defaults to 2. */
       maxRetries?: number;
     }
-  | { type: 'loop'; maxSteps?: number }
-  | { type: 'subset' };
+  | { type: 'loop'; maxSteps?: number };
 
 /** Unified data structure, profiling results and semantics for AVA. */
 
@@ -936,7 +941,7 @@ export type AnalysisStrategy = (
  */
 export interface QueryDialect<TContext = void> {
   /** Generate the executable DSL (SQL) for a natural-language query. */
-  getDSL(query: string, dataModel: DataModel): Promise<string>;
+  getDSL(query: string, dataModel: DataModel): Promise<TranslationResult>;
   /** Validate one read-only statement and return the DSL to execute, normalized if needed. */
   validateDSL(dsl: string, context: TContext): Promise<string>;
 }

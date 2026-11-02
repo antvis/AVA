@@ -55,19 +55,7 @@ function ask(label: string, echo: boolean) {
 }
 
 export function feishuBindError(code: unknown, msg: unknown): Error {
-  const id = Number(code);
-  if (id === 21001) {
-    return new Error(
-      [
-        `飞书应用绑定失败: ${String(code)} ${String(msg ?? '')}`,
-        '飞书开放平台按平台策略拒绝了这个应用，它无法换取 tenant_access_token。',
-        '常见原因是应用用豆包等个人账号登录 open.feishu.cn 创建；请改用绑定手机号的飞书账号重新创建自建应用后再试。',
-      ].join('\n')
-    );
-  }
-  return new Error(
-    `飞书应用绑定失败: ${String(code ?? 'unknown')} ${String(msg ?? '')}（请检查 App ID / App Secret 是否正确）`
-  );
+  return new Error(`飞书应用绑定失败: ${String(code ?? 'unknown')} ${String(msg ?? '')}`);
 }
 
 async function bindFeishu(url?: string) {
@@ -98,7 +86,7 @@ async function bindFeishu(url?: string) {
         }
       | undefined;
     if (!body) {
-      throw new Error(`飞书应用绑定失败: ${origin} 返回的不是 JSON，请确认应用属于该站点（feishu.cn 或 larksuite.com）`);
+      throw new Error(`飞书应用绑定失败: ${origin} 返回的不是 JSON`);
     }
     if (Number(body.code) === 21001) {
       throw feishuBindError(body.code, body.msg);

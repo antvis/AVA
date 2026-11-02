@@ -37,7 +37,7 @@ Use the datasetId returned by ava source. Returns analysis as JSON.
 Requires OPENAI_API_KEY to have been set before loading that dataset.
 
 Options:
-  --strategy <type>       direct, loop, or subset (default: direct).
+  --strategy <type>       direct or loop (default: direct).
   --max-rows <n>          Maximum result rows, 1-10000 (default: 200).
   --max-result-bytes <n>  Positive integer byte limit for result data
                          (default: 1048576, or 1 MiB).

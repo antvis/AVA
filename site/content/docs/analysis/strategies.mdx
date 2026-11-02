@@ -1,4 +1,4 @@
-Choose how AVA turns a question into an answer: a direct query, a reasoning loop, or analysis with selected profile context. The examples assume `ava` already has a loaded source, as shown in [Analyze data](/documentation/analysis/overview/).
+Choose how AVA turns a question into an answer: a direct query or a reasoning loop. The examples assume `ava` already has a loaded source, as shown in [Analyze data](/documentation/analysis/overview/).
 
 ## Choose a strategy
 
@@ -8,7 +8,6 @@ Choose a strategy per `analyze()` call:
 | -------- | ---------------------------------------------------------------------------------------------------------- | ----------------------------------------------------- |
 | `direct` | Generate a query, execute it, and optionally summarize. Can retry failed execution with a corrected query. | Start here for a focused question.                    |
 | `loop`   | Explore, reason, and execute queries over multiple steps before returning an answer.                       | Questions that benefit from intermediate exploration. |
-| `subset` | Keep the full schema, select relevant profile statistics, then run direct analysis.                        | Focus a large profile on the question.                |
 
 ## Strategy options
 
@@ -16,7 +15,7 @@ All strategy inputs are nested under `config.strategy`:
 
 | Field        | Type                                | Required                    | Default / behavior                                                                |
 | ------------ | ----------------------------------- | --------------------------- | --------------------------------------------------------------------------------- |
-| `type`       | `'direct'`, `'loop'`, or `'subset'` | When `strategy` is provided | Selects the strategy.                                                             |
+| `type`       | `'direct'` or `'loop'` | When `strategy` is provided | Selects the strategy.                                                             |
 | `maxRetries` | `number`                            | No; `direct` only           | `2` correction retries after the first attempt when `type: 'direct'` is explicit. |
 | `maxSteps`   | `number`                            | No; `loop` only             | `12` normal reasoning steps.                                                      |
 
@@ -84,35 +83,3 @@ const result = await ava.analyze('Compare regional revenue and explain the diffe
 Execution errors inside the normal loop become feedback for the next step. Model-call failures and invalid action responses stop the analysis instead. Model API retries still follow `llm.maxRetries`, so `maxSteps` is not a strict count of all model calls.
 
 On the usual `CONFIRM` path, `text` contains the verification and conclusion. At the step limit or after the final attempt, it uses an earlier confirmation if present, otherwise the result data serialized as JSON. `includeSummary: false` always leaves `text` empty; Loop does not run a separate summarization call.
-
-## Subset
-
-Select the profile statistics relevant to the question before running Direct analysis. This reduces the statistical context sent to query generation; it does **not** remove tables or fields from the schema or filter the underlying data.
-
-<figure
-  className="docs-strategy-flow"
-  tabIndex={0}
-  aria-label="Subset analysis flowchart; scroll horizontally on narrow screens"
->
-  <img
-    src="/diagrams/analysis-subset.svg"
-    width="680"
-    height="686"
-    alt="Subset: reuse or compute a profile. If available, select relevant table and field statistics while preserving the full schema. Keep all profile details if nothing is selected, or use the original context if no profile exists. Then run Direct analysis."
-  />
-</figure>
-
-```typescript
-const result = await ava.analyze('What is total revenue by region?', {
-  strategy: { type: 'subset' },
-});
-```
-
-Subset uses an available profile or asks AVA to compute and retain one if the engine supports it. Later analyses reuse the complete profile; selection only affects the current analysis. Call `ava.profile()` to refresh statistics. Selection preserves the complete schema; without a profile or a positive selection, the original context is kept. Subset has no additional options.
-
-An empty schema, a profiling failure, or a selector failure stops analysis; those errors do not fall back to Direct. Once selection succeeds, the current implementation uses Direct with **10** execution correction retries and the same optional summary behavior.
-
-<Callout>
-  The current subset selector uses <code>typesafe-ai/jev</code> through AI SDK's evaluator. This selection step requires
-  access to that service in addition to your configured analysis model; it does not use <code>llm.model</code>.
-</Callout>

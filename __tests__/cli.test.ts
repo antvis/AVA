@@ -186,7 +186,7 @@ describe('source', () => {
   it.each(['invalid', '', '{"type":"python","execute":"custom"}'])(
     'rejects invalid engine %s before creating a session',
     async (engine) => {
-      await expect(run(['source', 'sales.csv', '--engine', engine])).rejects.toThrow('Invalid enum value');
+      await expect(run(['source', 'sales.csv', '--engine', engine])).rejects.toThrow('Invalid option');
       expect(createSession).not.toHaveBeenCalled();
     }
   );
@@ -305,7 +305,8 @@ describe('dataset commands', () => {
     { args: ['query', '--dsl', 'result = 1', '--engine', 'python'], error: 'Unknown option' },
     { args: ['suggest', '--count', '0'], error: '--count must be an integer' },
     { args: ['profile', '--metrics', 'mean,'], error: '--metrics contains an empty item.' },
-    { args: ['analyze', 'Total sales?', '--strategy', 'invalid'], error: 'Invalid enum value' },
+    { args: ['analyze', 'Total sales?', '--strategy', 'invalid'], error: 'Invalid option' },
+    { args: ['analyze', 'Total sales?', '--strategy', 'subset'], error: 'Invalid option' },
   ])('rejects invalid $args before sending a request', async ({ args: [command, ...args], error }) => {
     await expect(run([command, datasetId, ...args])).rejects.toThrow(error);
     expect(request).not.toHaveBeenCalled();

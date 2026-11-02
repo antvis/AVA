@@ -91,14 +91,12 @@ describe('wiki-hosted Bitable', () => {
     );
   });
 
-  it('explains the wiki space grant when the node cannot be resolved', async () => {
+  it('passes through the wiki API error without adding permission advice', async () => {
     stubFetch({ node: { code: 131006, msg: 'permission denied' } });
 
-    const error = await readTable({ url: wikiUrl, appId: 'id', appSecret: 'secret' }).catch((e: Error) => e);
-    expect(error).toBeInstanceOf(Error);
-    expect((error as Error).message).toContain('could not be resolved');
-    expect((error as Error).message).toContain('131006');
-    expect((error as Error).message).toContain('wiki space');
+    await expect(readTable({ url: wikiUrl, appId: 'id', appSecret: 'secret' })).rejects.toEqual(
+      new Error('Feishu Error 131006: permission denied')
+    );
   });
 
   it('keeps rejecting an appToken that disagrees with the link', async () => {

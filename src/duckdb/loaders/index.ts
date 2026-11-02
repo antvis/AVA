@@ -3,7 +3,6 @@
  * that the engine registers as one or more views.
  */
 
-
 import { loadCSV } from './csv';
 import { loadCSVFile } from './csv-file';
 import { loadExcel } from './excel';

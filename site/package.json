@@ -5,8 +5,6 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
-    "start": "next start",
-    "lint": "next lint",
     "check:docs": "node scripts/check-docs.mjs"
   },
   "dependencies": {
@@ -19,35 +17,28 @@
     "@next/mdx": "16.1.6",
     "@tailwindcss/postcss": "^4.1.18",
     "ai": "^7.0.141",
-    "autoprefixer": "^10.4.24",
-    "buffer": "^6.0.3",
     "next": "^16.1.6",
     "react": "^19.2.4",
     "react-dom": "^19.2.4",
-    "react-markdown": "^10.1.0",
     "read-excel-file": "^9.3.10",
     "rehype-pretty-code": "^0.14.5",
     "rehype-slug": "^6.0.0",
     "remark-gfm": "^4.0.1",
     "shiki": "^4.5.0",
     "streamdown": "^2.7.0",
-    "zod": "^3.25.76"
+    "zod": "^4.6.6"
   },
   "devDependencies": {
     "@types/mdx": "^2.0.14",
     "@types/node": "^24.10.10",
     "@types/react": "^19.2.5",
     "@types/react-dom": "^19.2.3",
-    "eslint": "^9.39.1",
-    "eslint-config-next": "^15.1.6",
     "postcss": "^8.4.49",
     "tailwindcss": "^4.1.18",
     "typescript": "~5.9.3"
   },
-
-    "optionalDependencies": {
-      "@tailwindcss/oxide-darwin-arm64": "*"
-    }
-  ,
+  "optionalDependencies": {
+    "@tailwindcss/oxide-darwin-arm64": "*"
+  },
   "repository": "https://github.com/antvis/AVA.git"
 }

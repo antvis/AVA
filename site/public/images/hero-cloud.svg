@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 440" fill="none">
+  <defs>
+    <linearGradient id="cloud" x1="275" y1="115" x2="365" y2="388" gradientUnits="userSpaceOnUse">
+      <stop stop-color="white" stop-opacity=".92"/>
+      <stop offset=".48" stop-color="#f5fbff" stop-opacity=".72"/>
+      <stop offset="1" stop-color="white" stop-opacity="0"/>
+    </linearGradient>
+    <linearGradient id="haze" x1="150" y1="65" x2="485" y2="185" gradientUnits="userSpaceOnUse">
+      <stop stop-color="white" stop-opacity="0"/>
+      <stop offset=".45" stop-color="white" stop-opacity=".65"/>
+      <stop offset="1" stop-color="white" stop-opacity="0"/>
+    </linearGradient>
+    <filter id="soft" x="-15%" y="-30%" width="130%" height="160%" color-interpolation-filters="sRGB">
+      <feGaussianBlur stdDeviation="9"/>
+    </filter>
+    <filter id="veil" x="-15%" y="-40%" width="130%" height="180%" color-interpolation-filters="sRGB">
+      <feGaussianBlur stdDeviation="4"/>
+    </filter>
+  </defs>
+  <path d="M38 296c-22-48 10-89 62-86-6-43 27-76 70-71 17-57 90-70 127-20 36-11 79 10 84 48 50-16 96 6 109 47 51-8 93 21 90 61 40-5 77 18 83 55 10 47-42 76-101 69L99 406C29 409-9 350 38 296Z" fill="url(#cloud)" filter="url(#soft)"/>
+  <path d="M20 304c12-34 40-50 76-45 3-32 32-54 63-48 13-45 61-58 93-24 34-15 71 5 77 34 42-6 73 13 84 44 44-6 84 20 81 54 52-7 94 12 103 41L43 401 20 304Z" fill="url(#cloud)" opacity=".6" filter="url(#veil)"/>
+  <path d="M128 105c40-17 54-8 77-29 22-24 52-23 78-4 28-18 55-9 70 14 44-11 70 10 90 29 37-1 69 6 91 25-132 7-288 5-406-8-22-3-24-17 0-27Z" fill="url(#haze)" opacity=".55" filter="url(#soft)"/>
+</svg>

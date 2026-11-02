@@ -15,7 +15,7 @@ import {
 import { createSession } from '../core/session';
 import { toDisplayMessage } from './utils';
 import type { AIDataset } from '../core/types';
-import { parseCSV, parseExcel } from '../../components/utils';
+import { parseCSV, parseExcel } from '../core/files';
 
 export default function useChat({ config, onConfigure }: { config: LLMConfig; onConfigure: () => void }): LiveChat {
   const ready = !!config.apiKey?.trim() && (typeof config.model !== 'string' || !!config.model.trim());

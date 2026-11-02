@@ -13,10 +13,12 @@ import { generateText } from 'ai';
 
 import { languageModel } from '../util/model';
 import { stringifyDataModel } from '../util/data-model';
-import { AnalysisEvent, AnalysisEventType } from '../event';
+import { AnalysisEvent, AnalysisEventType, eventPair } from '../event';
 import { serializeError } from '../util/error';
 
+import type { LanguageModelUsage } from 'ai';
 import type { AnalysisStrategy, QueryLanguage, ExecutionResult } from '../types';
+import type { SerializedError } from '../util/error';
 
 const DEFAULT_MAX_STEPS = 12;
 
@@ -176,14 +178,23 @@ const transcriptPrompt = (transcript: string[]) => {
  * Explore, refine, execute, and verify SQL before returning an answer.
  */
 export const loopAnalysis: AnalysisStrategy = async (query, config, { dataModel, engine, llm, emit }) => {
+  let stepId: string | undefined;
+  let parentStepIds: string[] = [];
+  const emitEvent = (type: AnalysisEventType, data: object, eventId: string) =>
+    emit(new AnalysisEvent(type, data, { stepId, parentStepIds, eventId }));
+
   const dataset = stringifyDataModel(dataModel);
   const transcript: string[] = [];
   let sql: string | undefined;
   let result: ExecutionResult | undefined;
   let lastConfirmation: string | undefined;
-  const maxSteps = (config.strategy as { maxSteps?: number })?.maxSteps ?? DEFAULT_MAX_STEPS;
+  const maxSteps = (config.strategy?.type === 'loop' ? config.strategy.maxSteps : undefined) ?? DEFAULT_MAX_STEPS;
 
   for (let step = 0; step < maxSteps; step += 1) {
+    parentStepIds = stepId ? [stepId] : [];
+    const stepEvent = eventPair(emitEvent, AnalysisEventType.STEP_START, AnalysisEventType.STEP_END);
+    stepId = stepEvent.pairId;
+
     const prompt = `${loopPrompt(engine.language, config.includeSummary !== false)}
 
     # DATABASE CONTEXT
@@ -194,20 +205,22 @@ export const loopAnalysis: AnalysisStrategy = async (query, config, { dataModel,
 
     ${transcriptPrompt(transcript)}`;
 
-    emit(new AnalysisEvent(AnalysisEventType.REASON_START, { step }));
+    stepEvent.start({ step });
 
-    let text: string;
-    let action: string;
+    let usage: LanguageModelUsage | undefined;
+    let text: string | undefined;
+    let action: string | undefined;
+    let stepError: SerializedError | undefined;
     let queries: string[] = [];
     try {
-      const response = await generateText({
+      const { text: responseText, usage: responseUsage } = await generateText({
         model: languageModel(llm),
         maxRetries: llm.maxRetries ?? 3,
         prompt,
       });
-      llm.onQueryUsage?.(response.usage);
 
-      text = response.text.trim();
+      usage = responseUsage;
+      text = responseText.trim();
       action = text.match(/^\[(EXPLORE|REFINE|SQL|CONFIRM)\]/)?.[1];
       if (!action) throw new Error('Loop response must begin with [EXPLORE], [REFINE], [SQL], or [CONFIRM]');
 
@@ -221,74 +234,76 @@ export const loopAnalysis: AnalysisStrategy = async (query, config, { dataModel,
           );
         }
       }
-    } catch (error) {
-      emit(new AnalysisEvent(AnalysisEventType.REASON_END, { step, error: serializeError(error) }));
+      transcript.push(`Assistant:\n${text}`);
+      text = text.slice(action.length + 2).trimStart();
 
-      throw error;
-    }
+      if (action === 'REFINE') continue;
 
-    emit(new AnalysisEvent(AnalysisEventType.REASON_END, { step, action, text }));
+      if (action === 'CONFIRM') {
+        if (!sql || !result) {
+          lastConfirmation = text;
+          transcript.push('Runtime:\nNo final SQL has executed successfully yet. Continue the loop.');
+          continue;
+        }
 
-    transcript.push(`Assistant:\n${text}`);
-
-    if (action === 'REFINE') continue;
-
-    if (action === 'CONFIRM') {
-      if (!sql || !result) {
-        lastConfirmation = text;
-        transcript.push('Runtime:\nNo final SQL has executed successfully yet. Continue the loop.');
-        continue;
+        return {
+          query,
+          ...result,
+          sql,
+          text: config.includeSummary === false ? '' : text,
+        };
       }
 
-      return {
-        query,
-        ...result,
-        sql,
-        text: config.includeSummary === false ? '' : text.replace(/^\[CONFIRM\]\s*/, ''),
-      };
-    }
+      const observations: string[] = [];
 
-    const observations: string[] = [];
+      for (const proposal of queries) {
+        const queryEvent = eventPair(emitEvent, AnalysisEventType.QUERY_START, AnalysisEventType.QUERY_END);
+        queryEvent.start({ dsl: proposal });
 
-    for (const proposal of queries) {
-      const statement = proposal;
+        let execution: ExecutionResult;
+        try {
+          execution = await engine.execute(proposal, config);
+        } catch (error) {
+          queryEvent.end({ error: serializeError(error) });
 
-      emit(new AnalysisEvent(AnalysisEventType.QUERY_START, { dsl: statement }));
+          if (action === 'SQL') result = undefined;
 
-      let execution: ExecutionResult;
-      try {
-        execution = await engine.execute(statement, config);
-      } catch (error) {
-        emit(new AnalysisEvent(AnalysisEventType.QUERY_END, { error: serializeError(error) }));
+          observations.push(
+            `Proposed statement (${engine.language.name}):
+          ${proposal}
+          Error:
+          ${error instanceof Error ? error.message : String(error)}`
+          );
 
-        if (action === 'SQL') result = undefined;
+          continue;
+        }
+
+        queryEvent.end(execution);
 
         observations.push(
           `Proposed statement (${engine.language.name}):
           ${proposal}
-          Error:
-          ${error instanceof Error ? error.message : String(error)}`
-        );
-
-        continue;
-      }
-
-      emit(new AnalysisEvent(AnalysisEventType.QUERY_END, execution));
-
-      observations.push(
-        `Proposed statement (${engine.language.name}):
-          ${proposal}
           Result:
           ${JSON.stringify(execution)}`
-      );
+        );
 
-      if (action === 'SQL') {
-        sql = statement;
-        result = execution;
+        if (action === 'SQL') {
+          sql = proposal;
+          result = execution;
+        }
+      }
+
+      transcript.push(`Runtime:\n${observations.join('\n\n')}`);
+    } catch (error) {
+      stepError = serializeError(error);
+      throw error;
+    } finally {
+      if (stepError) {
+        stepEvent.end({ step, usage, error: stepError });
+      } else {
+        stepEvent.end({ step, usage, action, text });
       }
     }
-
-    transcript.push(`Runtime:\n${observations.join('\n\n')}`);
   }
 
   // The last normal step may execute the final SQL without leaving another step for CONFIRM.
@@ -298,21 +313,23 @@ export const loopAnalysis: AnalysisStrategy = async (query, config, { dataModel,
       query,
       ...result,
       sql,
-      text:
-        config.includeSummary === false
-          ? ''
-          : lastConfirmation?.replace(/^\[CONFIRM\]\s*/, '') ?? JSON.stringify(result.data, null, 2),
+      text: config.includeSummary === false ? '' : lastConfirmation ?? JSON.stringify(result.data, null, 2),
     };
   }
 
   // maxSteps limits the normal loop. If it ends without final SQL, allow exactly one
   // history-aware SQL-only turn and adopt its executed result without another CONFIRM.
-  emit(new AnalysisEvent(AnalysisEventType.REASON_START, { step: maxSteps, finalAttempt: true }));
+  parentStepIds = stepId ? [stepId] : [];
+  const stepEvent = eventPair(emitEvent, AnalysisEventType.STEP_START, AnalysisEventType.STEP_END);
+  stepId = stepEvent.pairId;
+  stepEvent.start({ step: maxSteps, finalAttempt: true });
 
-  let finalText: string;
+  let usage: LanguageModelUsage | undefined;
+  let finalText: string | undefined;
+  let stepError: SerializedError | undefined;
   let statement: string;
   try {
-    const finalResponse = await generateText({
+    const { text: responseText, usage: responseUsage } = await generateText({
       model: languageModel(llm),
       maxRetries: llm.maxRetries ?? 3,
       prompt: `${loopPrompt(engine.language, config.includeSummary !== false)}
@@ -331,60 +348,49 @@ export const loopAnalysis: AnalysisStrategy = async (query, config, { dataModel,
       engine.language.name
     } statement.`,
     });
-    llm.onQueryUsage?.(finalResponse.usage);
 
-    finalText = finalResponse.text.trim();
+    usage = responseUsage;
+    finalText = responseText.trim();
     const proposals = codeBlocks(finalText, engine.language.fence);
     if (!finalText.startsWith('[SQL]') || proposals.length !== 1) {
       throw new Error(`Loop final fallback response must contain exactly one ${engine.language.fence} code block`);
     }
+    finalText = finalText.replace(/^\[SQL\]\s*/, '');
 
     statement = proposals[0];
-  } catch (error) {
-    emit(
-      new AnalysisEvent(AnalysisEventType.REASON_END, {
-        step: maxSteps,
-        finalAttempt: true,
-        error: serializeError(error),
-      })
-    );
 
+    const queryEvent = eventPair(emitEvent, AnalysisEventType.QUERY_START, AnalysisEventType.QUERY_END);
+    queryEvent.start({ dsl: statement });
+
+    let execution: ExecutionResult;
+    try {
+      execution = await engine.execute(statement, config);
+    } catch (error) {
+      queryEvent.end({ error: serializeError(error) });
+
+      throw new Error(
+        `Loop final statement failed: ${error instanceof Error ? error.message : String(error)}\nLast attempted ${
+          engine.language.name
+        } statement:\n${statement}`
+      );
+    }
+
+    queryEvent.end(execution);
+
+    return {
+      query,
+      ...execution,
+      sql: statement,
+      text: config.includeSummary === false ? '' : lastConfirmation ?? JSON.stringify(execution.data, null, 2),
+    };
+  } catch (error) {
+    stepError = serializeError(error);
     throw error;
+  } finally {
+    if (stepError) {
+      stepEvent.end({ step: maxSteps, finalAttempt: true, usage, error: stepError });
+    } else {
+      stepEvent.end({ step: maxSteps, finalAttempt: true, usage, action: 'SQL', text: finalText });
+    }
   }
-
-  emit(
-    new AnalysisEvent(AnalysisEventType.REASON_END, {
-      step: maxSteps,
-      finalAttempt: true,
-      action: 'SQL',
-      text: finalText,
-    })
-  );
-
-  emit(new AnalysisEvent(AnalysisEventType.QUERY_START, { dsl: statement }));
-
-  let execution: ExecutionResult;
-  try {
-    execution = await engine.execute(statement, config);
-  } catch (error) {
-    emit(new AnalysisEvent(AnalysisEventType.QUERY_END, { error: serializeError(error) }));
-
-    throw new Error(
-      `Loop final statement failed: ${error instanceof Error ? error.message : String(error)}\nLast attempted ${
-        engine.language.name
-      } statement:\n${statement}`
-    );
-  }
-
-  emit(new AnalysisEvent(AnalysisEventType.QUERY_END, execution));
-
-  return {
-    query,
-    ...execution,
-    sql: statement,
-    text:
-      config.includeSummary === false
-        ? ''
-        : lastConfirmation?.replace(/^\[CONFIRM\]\s*/, '') ?? JSON.stringify(execution.data, null, 2),
-  };
 };

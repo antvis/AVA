@@ -1,63 +1,89 @@
-## Listen to events
+Events report what AVA is doing while an operation runs. You can use them to show progress, inspect generated queries, or diagnose failures. The operation’s return value contains its final result.
 
-`AVA` extends the AntV event emitter. Listen with string event names; event constants are not re-exported by the public package entry points.
+## Subscribe to events
+
+Register a listener before starting the operation. Subscribe to a specific event by name, or use `'*'` to listen to all events:
 
 ```typescript
-ava.on('translatestart', (event) => {
-  console.log('Translating:', event.data);
-});
-ava.on('queryend', (event) => {
-  console.log('Query completed:', event.data);
-});
+import { AVA } from '@antv/ava';
+
+const ava = new AVA({ llm: { model: 'your-model' } });
+const listener = (event) => console.log(event.type, event.data);
+
+ava.on('*', listener);
+try {
+  await ava.source({ type: 'json', options: { data: [{ sales: 120 }] } });
+} finally {
+  ava.off('*', listener);
+  await ava.dispose();
+}
 ```
 
-Each emitted event has `type` and `data`. End events can include a serialized `error`; receiving an end event alone does not imply success.
+Use the same listener reference to unsubscribe. Event classes and constants are not exported by the public package, so use the event names listed on this page as strings.
+
+## Read an event
+
+Every AVA event has a lowercase `type` and a `data` object. For example, the `sourcestart` event above contains `{ type: 'json' }` in `data`. Analysis events emitted within `analyze()` also carry `context`, which identifies their step and pairs related start and end events.
+
+An operation usually emits a start event and then an end event. A failed end event carries `data.error` with a `message` and, for an `Error`, a `name`. Some failures are recoverable: a query can fail and be retried, so `queryend` may report an error even if `analyze()` eventually succeeds. An unrecovered failure rejects the operation. A precondition failure, such as calling `analyze()` before loading a source, can occur before its start event.
+
+## Event reference
+
+### Lifecycle events
+
+These events describe AVA operations. On success, end-event `data` is `{}`; the method returns the result separately.
+
+| Operation | Start event and data | End event |
+| --- | --- | --- |
+| Create an engine | `createstart`: `{}` | `createend` |
+| Dispose an engine | `disposestart`: `{}` | `disposeend` |
+| Load a source | `sourcestart`: `{ type }` | `sourceend` |
+| Discover or set schema | `schemastart`: `{}` | `schemaend` |
+| Compute or set profile | `profilestart`: `{}` | `profileend` |
+| Set semantic definitions | `semanticstart`: `{}` | `semanticend` |
+| Analyze a question | `analyzestart`: `{ query }` | `analyzeend` |
+| Visualize a result | `visualizestart`: `{ query }` | `visualizeend` |
+| Suggest questions | `suggeststart`: `{}` | `suggestend` |
+
+Loading a source can also emit engine disposal and creation events. Cached schema reads and semantic reads emit no events; schema discovery performed internally by other methods does not emit `schema` events. `recommend()` and `viz()` do not have their own events.
+
+### Analysis events
+
+These events describe analysis steps and the statements they produce or execute. The table shows successful end-event data; on failure, the end event carries `error` instead. A failed step also carries `step` and, when applicable, `finalAttempt`. A question is natural language; `dsl` is an executable statement, such as SQL or Python code.
+
+| Operation | Start event and data | Successful end event and data |
+| --- | --- | --- |
+| Analysis step | `stepstart`: `{ step, finalAttempt? }` | `stepend`: `{ step, action, text, usage?, finalAttempt? }` |
+| Translate a question | `translatestart`: `{ query, attempt? }` | `translateend`: `{ dsl, usage? }` |
+| Execute a statement | `querystart`: `{ dsl }` | `queryend`: `{ data, schema, rowCount?, truncated?, truncatedBy? }` |
+| Summarize a result | `summarizestart`: `{ queryId }` | `summarizeend`: `{ queryExplanation, conclusion, limitations?, nextStep?, usage? }` |
+
+`?` marks an optional field. In `queryend`, `data` contains the returned rows and `schema` describes their columns; truncation fields indicate when a result limit was reached. See [query results](/documentation/reference/api/#executionresult) for the full result structure.
+
+`step` and `attempt` are zero-based. `attempt` is present on translation starts within analysis. `finalAttempt` marks an additional step after the normal step limit. Step actions are `EXPLORE` (inspect data), `REFINE` (revise the plan), `SQL` (execute an answer statement), and `CONFIRM` (verify the answer). The `text` field does not include the leading action tag.
+
+Where present, `usage` describes token usage for the model call. A step can retain usage when parsing or execution fails after the model has returned. Token fields depend on the provider, and a failed call that returns no usage cannot be counted from the events. AVA does not emit an aggregate usage event. `queryend` describes execution and carries no model usage.
+
+### Event context
+
+Analysis events emitted within `analyze()` include a `context` object:
+
+| Field | Meaning |
+| --- | --- |
+| `eventId` | Unique event ID. A start/end pair shares an ID prefix and uses `:start` and `:end` suffixes. |
+| `stepId` | ID of the step containing the event. |
+| `parentStepIds` | IDs of steps that this step depends on. |
+
+Step event IDs use `stepId` as their prefix; operations within a step have separate pair IDs. Each retry gets a new pair. `summarizestart.data.queryId` references the successful `queryend.context.eventId`, including `:end`. Standalone `translate()` and `query()` emit their respective events without analysis `context` or step events.
 
 ## Listener parameters
 
-These inherited methods are synchronous. `on()`, `once()`, and `off()` return the emitter.
+| Method | Behavior |
+| --- | --- |
+| `on(name, listener, once?)` | Subscribe; the optional `once` flag defaults to `false`. |
+| `once(name, listener)` | Subscribe for one invocation. |
+| `off(name?, listener?)` | Remove a listener, all listeners for a name, or all listeners if omitted. Pass the same listener reference used to subscribe. |
+| `emit(name, ...args)` | Emit an event manually. |
+| `getEvents()` | Return the listener registry. |
 
-| Method                     | Parameter  | Type       | Required / default                                        |
-| -------------------------- | ---------- | ---------- | --------------------------------------------------------- |
-| `on(evt, callback, once?)` | `evt`      | `string`   | Required event name.                                      |
-| `on(evt, callback, once?)` | `callback` | `Function` | Required listener; receives the emitted event.            |
-| `on(evt, callback, once?)` | `once`     | `boolean`  | Optional; `false`; remove after one invocation when true. |
-| `once(evt, callback)`      | `evt`      | `string`   | Required event name.                                      |
-| `once(evt, callback)`      | `callback` | `Function` | Required one-time listener.                               |
-| `off(evt?, callback?)`     | `evt`      | `string`   | Optional; omit to remove all listeners.                   |
-| `off(evt?, callback?)`     | `callback` | `Function` | Optional; omit to remove every listener for the event.    |
-| `emit(evt, ...args)`       | `evt`      | `string`   | Required event name to emit manually.                     |
-| `emit(evt, ...args)`       | `args`     | `any[]`    | Optional rest arguments passed to listeners.              |
-
-`emit()` returns no value. `getEvents()` takes no parameters and returns the emitter's listener registry. Use `off()` with the same function reference that was passed to `on()` to remove a particular listener.
-
-## Event pairs
-
-| Stage            | Start / end                               |
-| ---------------- | ----------------------------------------- |
-| Engine creation  | `createstart` / `createend`               |
-| Engine cleanup   | `disposestart` / `disposeend`             |
-| Source loading   | `sourcestart` / `sourceend`               |
-| Schema discovery | `schemastart` / `schemaend`               |
-| Profiling        | `profilestart` / `profileend`             |
-| Semantic setter  | `semanticstart` / `semanticend`           |
-| Analysis         | `analyzestart` / `analyzeend`             |
-| Translation      | `translatestart` / `translateend`         |
-| Query execution  | `querystart` / `queryend`                 |
-| Summarization    | `summarizestart` / `summarizeend`         |
-| Subset selection | `selectcontextstart` / `selectcontextend` |
-| Loop reasoning   | `reasonstart` / `reasonend`               |
-| Visualization    | `visualizestart` / `visualizeend`         |
-| Suggestions      | `suggeststart` / `suggestend`             |
-
-## Lifecycle
-
-`source()` creates the engine and loads data. It does not emit schema events. The first operation needing uncached structure emits `schemastart` / `schemaend`; imported and cached schema skip these events. Each `profile()` call computes statistics and emits profiling events; schema events occur inside them if discovery is needed.
-
-Replacing a source disposes its engine and clears metadata. `dispose()` clears state even if engine cleanup fails. Await operations before switching sources.
-
-Translation events can include `query`, `attempt`, and `dsl`; query events include the DSL or result. Reasoning events include the loop step and action.
-
-`semantic()` emits its event pair when a setter is supplied; reading saved definitions emits no events.
-
-Schema, profiling, and semantic setter failures emit an end event with `data.error` and reject the method’s Promise.
+Event dispatch is synchronous: `on`, `once`, and `off` return the emitter, synchronous listener errors propagate, and async listeners are not awaited. Event data is not copied; use `structuredClone(event)` if you need a snapshot.

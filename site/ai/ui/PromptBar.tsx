@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useEffect, useRef, useState } from 'react';
+import Link from 'next/link';
 import type { LiveChat } from './types';
 import { parseToken } from './utils';
 import { PROMPT_SOURCES, PROMPT_COMMANDS, PROMPT_MODELS, ATTACH_FILES, DICTATION_TEXT } from './constants';
@@ -399,46 +400,58 @@ const PromptBar: React.FC<{
               </PIcon>
             </button>
 
-            <textarea
-              ref={inputRef}
-              disabled={!!live && busy}
-              rows={1}
-              value={draft}
-              onChange={(event) => {
-                setDraft(event.target.value);
-                setDismissed(false);
-                setOpenMenu(null);
-              }}
-              onKeyDown={(event) => {
-                if (menu && rows.length > 0) {
-                  if (event.key === 'ArrowDown' || event.key === 'ArrowUp') {
-                    event.preventDefault();
-                    setEngaged(true);
-                    setActive((current) => (current + (event.key === 'ArrowDown' ? 1 : rows.length - 1)) % rows.length);
-                    return;
-                  }
-                  if ((event.key === 'Enter' && !event.shiftKey) || event.key === 'Tab') {
-                    event.preventDefault();
-                    pick(rows[active]);
-                    return;
-                  }
-                }
-                if (event.key === 'Escape') {
-                  setDismissed(true);
+            {!live ? (
+              <Link
+                href="/ai/"
+                aria-label="Ask about your data in the AI playground"
+                className="col-start-2 row-start-1 min-h-7 min-w-0 w-full truncate px-1 py-[5px] text-[13px] leading-[18px] text-zinc-400 transition-colors hover:text-zinc-600"
+              >
+                Ask about your data…
+              </Link>
+            ) : (
+              <textarea
+                ref={inputRef}
+                disabled={!!live && busy}
+                rows={1}
+                value={draft}
+                onChange={(event) => {
+                  setDraft(event.target.value);
+                  setDismissed(false);
                   setOpenMenu(null);
-                  return;
-                }
-                if (event.key === 'Enter' && !event.shiftKey && !event.nativeEvent.isComposing) {
-                  event.preventDefault();
-                  send();
-                }
-              }}
-              placeholder={listening ? 'Listening…' : placeholder ?? 'Write a message…'}
-              aria-label="Prompt"
-              className={`min-h-7 px-1 py-[5px] text-[13px] leading-[18px] min-w-0 w-full resize-none bg-transparent text-zinc-800 outline-none [overflow-wrap:anywhere] placeholder:text-zinc-400 ${
-                expanded ? 'col-span-full col-start-1 row-start-1' : 'col-start-2 row-start-1'
-              }`}
-            />
+                }}
+                onKeyDown={(event) => {
+                  if (menu && rows.length > 0) {
+                    if (event.key === 'ArrowDown' || event.key === 'ArrowUp') {
+                      event.preventDefault();
+                      setEngaged(true);
+                      setActive(
+                        (current) => (current + (event.key === 'ArrowDown' ? 1 : rows.length - 1)) % rows.length
+                      );
+                      return;
+                    }
+                    if ((event.key === 'Enter' && !event.shiftKey) || event.key === 'Tab') {
+                      event.preventDefault();
+                      pick(rows[active]);
+                      return;
+                    }
+                  }
+                  if (event.key === 'Escape') {
+                    setDismissed(true);
+                    setOpenMenu(null);
+                    return;
+                  }
+                  if (event.key === 'Enter' && !event.shiftKey && !event.nativeEvent.isComposing) {
+                    event.preventDefault();
+                    send();
+                  }
+                }}
+                placeholder={listening ? 'Listening…' : placeholder ?? 'Write a message…'}
+                aria-label="Prompt"
+                className={`min-h-7 px-1 py-[5px] text-[13px] leading-[18px] min-w-0 w-full resize-none bg-transparent text-zinc-800 outline-none [overflow-wrap:anywhere] placeholder:text-zinc-400 ${
+                  expanded ? 'col-span-full col-start-1 row-start-1' : 'col-start-2 row-start-1'
+                }`}
+              />
+            )}
 
             {/* model picker */}
             <button

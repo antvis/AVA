@@ -50,7 +50,7 @@ ava translate "$DATASET_ID" "Total revenue by region"
 ava analyze "$DATASET_ID" "Total revenue by region" --strategy direct
 ```
 
-These operations discover schema if needed and use an available profile. The CLI supports `direct`, `loop`, and `subset`. Its `--max-rows` accepts 1–10,000 (default 200), while the JavaScript API allows a higher hard limit.
+These operations discover schema if needed and use an available profile. The CLI supports `direct` and `loop`. Its `--max-rows` accepts 1–10,000 (default 200), while the JavaScript API allows a higher hard limit.
 
 ## Charts without a dataset session
 
@@ -72,7 +72,7 @@ All commands accept `-h` / `--help` (boolean; optional). Every positional argume
 | `schema` | `dataset-id` | Optional `--file`: path to an existing schema JSON file. |
 | `profile` | `dataset-id` | Optional `--file`: path to an existing profile JSON file. Otherwise, `--metrics` selects comma-separated metric names; defaults to the [standard metric set](/documentation/reference/api/#profile). An empty string computes no statistics. |
 | `suggest`   | `dataset-id`                           | `--count`: integer `1`–`100`; default `3`.                                                                                                                                                            |
-| `analyze`   | `dataset-id`, natural-language `query` | `--strategy`: `direct` (default), `loop`, `subset`; `--max-rows` and `--max-result-bytes` below.                                                                                                      |
+| `analyze`   | `dataset-id`, natural-language `query` | `--strategy`: `direct` (default), `loop`; `--max-rows` and `--max-result-bytes` below.                                                                                                      |
 | `translate` | `dataset-id`, natural-language `query` | No additional flags.                                                                                                                                                                                  |
 | `query`     | `dataset-id`                           | Required `--dsl`: code, `@file`, or `-`; non-empty and at most 512 KiB. Optional `--max-rows` and `--max-result-bytes` below.                                                                         |
 | `visualize` | None                                   | Required `--query`: text; required `--data`: JSON array of objects, `@file`, or `-`; optional `-o` / `--output`: new HTML file path.                                                                  |

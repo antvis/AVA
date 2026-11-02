@@ -9,6 +9,7 @@ import { registerEngine } from './engines';
 registerEngine('javascript', JavaScriptEngine);
 
 export { AVA } from './ava';
+export { registerEngine } from './engines';
 export type { JavaScriptEngine } from './interpreter/javascript';
 export type {
   DataModel,
@@ -39,6 +40,7 @@ export type {
   JSONReadOptions,
   ClickHouseSourceOptions,
   AnalysisEngine,
+  TranslationResult,
   ExecutionOptions,
   ExecutionResult,
   QueryLanguage,

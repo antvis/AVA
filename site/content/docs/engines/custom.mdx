@@ -33,13 +33,13 @@ Implement the exported [AnalysisEngine interface](https://github.com/antvis/AVA/
 | `load(config)`              | `DataSourceConfig`                                                                               | `Promise<void>`; prepare data and connections for execution.                          |
 | `schema()`                  | None                                                                                             | `Promise<Schema>`; discover the loaded source structure.                              |
 | `profile(schema, options?)` | Required `Schema`, optional `ProfileOptions`                                                     | Optional method returning `Promise<Profile>`; compute against the supplied structure. |
-| `getDSL(query, dataModel)`  | Required query string and `DataModel`                                                            | `Promise<string>` in the engine's language.                                           |
+| `getDSL(query, dataModel)` | Required query string and `DataModel` | `Promise<TranslationResult>` with `dsl` and optional `usage`.                                           |
 | `execute(dsl, options?)`    | Required DSL string; optional [ExecutionOptions](/documentation/reference/api/#executionoptions) | `Promise<ExecutionResult<T>>`; enforce validation and result bounds.                  |
 | `dispose()`                 | None                                                                                             | `Promise<void>`; release connections, files, and other resources.                     |
 
 AVA owns schema/profile caching. `load()` prepares resources; `schema()` discovers structure on demand. `execute()` must work without prior discovery. Profiling uses the supplied schema; query generation uses the supplied data model. Discovery failure leaves the engine available for retry or queries.
 
-To migrate an older engine, move discovery out of `load()` into `schema()`, change `load()` to return `Promise<void>`, and add the required schema/data-model parameters. Keep `dispose()` safe after partial loading.
+To migrate an older engine, move discovery out of `load()` into `schema()`, change `load()` to return `Promise<void>`, add the required schema/data-model parameters, and return `{ dsl, usage? }` from `getDSL()`. Keep `dispose()` safe after partial loading.
 
 | `QueryLanguage` field | Type     | Required | Meaning                                                  |
 | --------------------- | -------- | -------- | -------------------------------------------------------- |
@@ -71,6 +71,7 @@ import { generateText, type LanguageModel } from 'ai';
 import { executionResult } from '@antv/ava';
 import type {
   AnalysisEngine,
+  TranslationResult,
   DataModel,
   DataSourceConfig,
   ExecutionOptions,
@@ -134,7 +135,7 @@ export class SalesEngine implements AnalysisEngine {
     };
   }
 
-  async getDSL(query: string, _dataModel: DataModel): Promise<string> {
+  async getDSL(query: string, _dataModel: DataModel): Promise<TranslationResult> {
     if (!this.sales) throw new Error('Load a source first.');
     const { text, usage } = await generateText({
       model: this.model,
@@ -143,8 +144,7 @@ export class SalesEngine implements AnalysisEngine {
 Return raw JSON without Markdown. If neither metric answers the question, return {"metric":"unsupported"}.`,
       prompt: query,
     });
-    this.llm.onQueryUsage?.(usage);
-    return text.trim();
+    return { dsl: text.trim(), usage };
   }
 
   async execute<T = Record<string, unknown>>(dsl: string, options?: ExecutionOptions): Promise<ExecutionResult<T>> {
@@ -188,7 +188,7 @@ Return raw JSON without Markdown. If neither metric answers the question, return
 }
 ```
 
-`execute()` validates commands even when called directly through `query()`. The exported `executionResult(rows, schema, options?)` helper applies AVA's row and byte limits; its [parameters](/documentation/reference/api/#executionresult-helper) are also listed in the API reference.
+`execute()` validates commands even when called directly through `query()`. The exported `executionResult(rows, schema, options?)` helper applies AVA's row and byte limits; see its [parameters below](#executionresult-helper).
 
 This engine has a fixed command vocabulary, so its `getDSL()` accepts but does not use the supplied data model. It omits `profile()`; `analyze()`, `suggest()`, and `query()` still work, but `ava.profile()` reports that profiling is unsupported. The sample holds all input rows in memory; result limits bound the returned data, not the input size or aggregation work.
 
@@ -241,3 +241,33 @@ try {
 ```
 
 The example omits profiling and disables analysis retries and summaries. `answer.sql` contains the JSON command, `answer.data` contains the computed rows, and `answer.text` is empty. Use `query()` when the required command is already known.
+
+## Extension reference
+
+### registerEngine
+
+`registerEngine(type: string, engineClass: EngineClass): void`
+
+Exported by both SDK entry points. Register an engine implemented in your own application before loading a source.
+
+| Parameter     | Type                                                                              | Required | Meaning                                                                                             |
+| ------------- | --------------------------------------------------------------------------------- | -------- | --------------------------------------------------------------------------------------------------- |
+| `type`        | `string`                                                                          | Yes      | Engine name. Re-registering replaces the constructor used for future loads.                         |
+| `engineClass` | `new (llmConfig: LLMConfig, options?: Record<string, unknown>) => AnalysisEngine` | Yes      | Engine class. AVA passes its model configuration and remaining engine options to each new instance. |
+
+Registration affects the loaded SDK module only.
+
+### executionResult helper
+
+`executionResult<T>(rows: T[], schema: QueryColumn[], options?: ExecutionOptions, upstreamTruncatedBy?: 'maxRows' | 'maxResultBytes'): ExecutionResult<T>`
+
+A synchronous helper exported by the Node.js SDK for custom engine implementations. Import it from `@antv/ava`.
+
+| Parameter             | Type                              | Required | Meaning / default                                                                                    |
+| --------------------- | --------------------------------- | -------- | ---------------------------------------------------------------------------------------------------- |
+| `rows`                | `T[]`                             | Yes      | Rows produced by the engine.                                                                         |
+| `schema`              | `QueryColumn[]`                   | Yes      | Output columns; each has `name: string` and optional `type: string`.                                 |
+| `options`             | `ExecutionOptions`                | No       | `{}`; uses the [execution limits](/documentation/reference/api/#executionoptions).                                          |
+| `upstreamTruncatedBy` | `'maxRows'` or `'maxResultBytes'` | No       | Preserve truncation already reported by an upstream executor unless a local limit truncates further. |
+
+Returns bounded `data`, `schema`, and either `rowCount` for a complete result or truncation metadata for a partial result. Throws if an individual result field exceeds 1 MiB. The helper bounds already-produced rows; it does not limit query execution or input memory use.
