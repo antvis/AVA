@@ -4,7 +4,6 @@ import { parseArgs } from 'node:util';
 import { fileURLToPath } from 'node:url';
 
 import { llmConfig, modelMetadata } from '../model.ts';
-import { createUsage } from '../../_shared/usage.js';
 import { integer } from '../../_shared/args.js';
 import { atomicJson, readJson, sha256 } from '../../_shared/files.js';
 
@@ -140,8 +139,7 @@ export async function main(
 
   await Promise.all(
     Array.from({ length: Math.min(concurrency, pending.length) }, async () => {
-      let usage = createUsage();
-      const ava = new AVA({ engine: { type: engine }, llm: { ...config, onQueryUsage: (value) => usage.add(value) } });
+      const ava = new AVA({ engine: { type: engine }, llm: config });
       try {
         while (cursor < pending.length) {
           const sample = pending[cursor++];
@@ -149,7 +147,6 @@ export async function main(
           let sql = '';
           let answer = '';
           let error = '';
-          usage = createUsage();
           try {
             const source = { type: 'parquet' as const, options: { path: dataPaths?.[sample.suite] ?? sample.dataPath } };
             const question = `${sample.question}\nReturn the ${sample.answerType} answer in one column named answer.`;
@@ -171,9 +168,9 @@ export async function main(
               error,
               typeof config.model === 'string' ? config.model : config.model.modelId,
               Date.now() - startedAt,
-              usage.value.inputTokens ?? '',
-              usage.value.outputTokens ?? '',
-              usage.value.totalTokens ?? '',
+              '',
+              '',
+              '',
             ].map(csvCell).join(',')}\n`,
           );
           process.stdout.write(`${answer ? 'done' : 'failed'} ${sample.id}\n`);

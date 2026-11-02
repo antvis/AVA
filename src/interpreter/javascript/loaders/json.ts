@@ -10,10 +10,7 @@ export async function loadJson(options: JsonSourceOptions): Promise<any[]> {
   if (!Array.isArray(data)) {
     throw new Error('Data must be an array');
   }
-  if (
-    data.length > 0 &&
-    !data.every((item) => typeof item === 'object' && item !== null && !Array.isArray(item))
-  ) {
+  if (data.length > 0 && !data.every((item) => typeof item === 'object' && item !== null && !Array.isArray(item))) {
     throw new Error('All items in the array must be plain objects');
   }
 

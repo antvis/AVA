@@ -3,6 +3,7 @@ import { MockLanguageModelV4 } from 'ai/test';
 import { createOpenAI } from '@ai-sdk/openai';
 
 import { analyze } from '../src/analysis';
+import { DuckDBQueryDialect } from '../src/query/duckdb';
 
 import type { AnalysisEngine } from '../src/types';
 import type { AnalysisEvent } from '../src/event';
@@ -27,7 +28,7 @@ function setup() {
   const model = new MockLanguageModelV4({ doGenerate });
   const engine = {
     language: { name: 'SQL', fence: 'sql' },
-    getDSL: vi.fn().mockResolvedValue('SELECT 1'),
+    getDSL: vi.fn().mockResolvedValue({ dsl: 'SELECT 1' }),
     execute: vi.fn().mockResolvedValue(execution),
   };
   const emit = vi.fn();
@@ -250,9 +251,65 @@ describe('directAnalysis', () => {
     expectStepContexts(events);
   });
 
+  it('reports DSL generation usage for each execution attempt', async () => {
+    const { runtime, engine, emit } = setup();
+    const model = new MockLanguageModelV4({
+      doGenerate: vi.fn().mockResolvedValueOnce(response('BAD SQL')).mockResolvedValueOnce(response('SELECT 1')),
+    });
+    const dialect = new DuckDBQueryDialect({ model });
+    engine.getDSL.mockImplementation((query, dataModel) => dialect.getDSL(query, dataModel));
+    engine.execute.mockRejectedValueOnce(new Error('Invalid SQL'));
+
+    await analyze('Give me one', { includeSummary: false, strategy: { type: 'direct', maxRetries: 1 } }, runtime);
+
+    const translations = emit.mock.calls.map(([event]) => event).filter(({ type }) => type === 'translateend');
+    expect(translations.map(({ data }) => data)).toEqual([
+      expect.objectContaining({ dsl: 'BAD SQL', usage: expect.objectContaining({ inputTokens: 10, outputTokens: 5 }) }),
+      expect.objectContaining({
+        dsl: 'SELECT 1',
+        usage: expect.objectContaining({ inputTokens: 10, outputTokens: 5 }),
+      }),
+    ]);
+  });
+
+  it('keeps usage separate for concurrent translations on the same engine', async () => {
+    const { runtime, engine } = setup();
+    let releaseFirst: () => void = () => {};
+    const firstWait = new Promise<void>((resolve) => {
+      releaseFirst = resolve;
+    });
+    let calls = 0;
+    const model = new MockLanguageModelV4({
+      doGenerate: async () => {
+        const call = ++calls;
+        if (call === 1) await firstWait;
+        else releaseFirst();
+        const result = response(`SELECT ${call}`);
+        result.usage.inputTokens.total = call * 10;
+        return result;
+      },
+    });
+    const dialect = new DuckDBQueryDialect({ model });
+    engine.getDSL.mockImplementation((query, dataModel) => dialect.getDSL(query, dataModel));
+    const firstEmit = vi.fn();
+    const secondEmit = vi.fn();
+    await Promise.all([
+      analyze('First', { includeSummary: false }, { ...runtime, emit: firstEmit }),
+      analyze('Second', { includeSummary: false }, { ...runtime, emit: secondEmit }),
+    ]);
+    expect(firstEmit.mock.calls.find(([event]) => event.type === 'translateend')?.[0].data).toMatchObject({
+      dsl: 'SELECT 1',
+      usage: { inputTokens: 10 },
+    });
+    expect(secondEmit.mock.calls.find(([event]) => event.type === 'translateend')?.[0].data).toMatchObject({
+      dsl: 'SELECT 2',
+      usage: { inputTokens: 20 },
+    });
+  });
+
   it('retries a failed query with its DSL and error as correction context', async () => {
     const { runtime, engine, doGenerate, emit } = setup();
-    engine.getDSL.mockResolvedValueOnce('BAD SQL');
+    engine.getDSL.mockResolvedValueOnce({ dsl: 'BAD SQL' });
     engine.execute.mockRejectedValueOnce(new Error('Invalid SQL'));
 
     const result = await analyze('Give me one', { strategy: { type: 'direct', maxRetries: 1 } }, runtime);
@@ -365,6 +422,9 @@ it('wraps loop queries in steps across exploration, refinement, and confirmation
     'stepstart',
     'stepend',
   ]);
+  expect(events.filter(({ type }) => type === 'stepend').map(({ data }) => data.usage)).toEqual(
+    Array(4).fill(expect.objectContaining({ inputTokens: 10, outputTokens: 5 }))
+  );
   expect(events.filter(({ type }) => type === 'stepend').map(({ data }) => data.action)).toEqual([
     'EXPLORE',
     'REFINE',
@@ -387,7 +447,12 @@ it('wraps loop queries in steps across exploration, refinement, and confirmation
     error: { message: 'Invalid SQL' },
   });
   expect(events.filter(({ type }) => type === 'stepend').every(({ data }) => !data.error)).toBe(true);
-  expect(events.at(-1).data).toEqual({ step: 3, action: 'CONFIRM', text: 'Result verified.' });
+  expect(events.at(-1).data).toMatchObject({
+    step: 3,
+    action: 'CONFIRM',
+    text: 'Result verified.',
+    usage: { inputTokens: 10, outputTokens: 5 },
+  });
   expectStepContexts(events);
 });
 
@@ -404,8 +469,9 @@ it('links the loop fallback to the previous step', async () => {
     { step: 0 },
     { step: 1, finalAttempt: true },
   ]);
-  expect(events.at(-1).data).toEqual({
+  expect(events.at(-1).data).toMatchObject({
     step: 1,
+    usage: { inputTokens: 10, outputTokens: 5 },
     finalAttempt: true,
     action: 'SQL',
     text: '```sql\nSELECT 1\n```',
@@ -430,7 +496,12 @@ it('closes an early confirmation step before continuing to a query', async () =>
     'queryend',
     'stepend',
   ]);
-  expect(events[1].data).toEqual({ step: 0, action: 'CONFIRM', text: 'No query yet.' });
+  expect(events[1].data).toMatchObject({
+    step: 0,
+    action: 'CONFIRM',
+    text: 'No query yet.',
+    usage: { inputTokens: 10, outputTokens: 5 },
+  });
   expectStepContexts(events);
 });
 
@@ -444,8 +515,19 @@ it('ends a recoverable failed SQL step before the fallback starts', async () => 
   const events = emit.mock.calls.map(([event]) => event);
   const ends = events.filter(({ type }) => type === 'stepend');
   expect(ends.map(({ data }) => data)).toEqual([
-    { step: 0, action: 'SQL', text: '```sql\nSELECT 1\n```' },
-    { step: 1, finalAttempt: true, action: 'SQL', text: '```sql\nSELECT 1\n```' },
+    expect.objectContaining({
+      step: 0,
+      action: 'SQL',
+      text: '```sql\nSELECT 1\n```',
+      usage: expect.objectContaining({ inputTokens: 10, outputTokens: 5 }),
+    }),
+    expect.objectContaining({
+      step: 1,
+      finalAttempt: true,
+      action: 'SQL',
+      text: '```sql\nSELECT 1\n```',
+      usage: expect.objectContaining({ inputTokens: 10, outputTokens: 5 }),
+    }),
   ]);
   expect(events[2].data.error.message).toBe('Query failed');
   expectStepContexts(events);
@@ -476,6 +558,8 @@ it.each([
 
   const events = emit.mock.calls.map(([event]) => event);
   expect(events.at(-1)).toMatchObject({ type: 'stepend', data: { step: 0, error: { message: failure.message } } });
+  if (phase === 'model') expect(events.at(-1).data.usage).toBeUndefined();
+  else expect(events.at(-1).data.usage).toMatchObject({ inputTokens: 10, outputTokens: 5 });
   if (maxSteps === 0) expect(events.at(-1).data.finalAttempt).toBe(true);
   if (phase === 'query') {
     expect(events.map(({ type }) => type)).toEqual(['stepstart', 'querystart', 'queryend', 'stepend']);

@@ -4,7 +4,7 @@ import { PgParser, unwrapParseResult } from '@supabase/pg-parser';
 import { languageModel } from '../util/model';
 import { stringifyDataModel } from '../util/data-model';
 
-import type { LLMConfig, QueryDialect, DataModel } from '../types';
+import type { TranslationResult, LLMConfig, QueryDialect, DataModel } from '../types';
 
 const MUTATING_NODES = new Set(['InsertStmt', 'UpdateStmt', 'DeleteStmt', 'MergeStmt']);
 
@@ -23,7 +23,7 @@ export class PostgreSQLQueryDialect implements QueryDialect {
 
   constructor(private readonly llmConfig: LLMConfig) {}
 
-  async getDSL(query: string, dataModel: DataModel): Promise<string> {
+  async getDSL(query: string, dataModel: DataModel): Promise<TranslationResult> {
     const prompt = `You are a SQL expert. Given the following dataset profile and user query, generate a SQL query to answer the question.
 
 Dataset Context:
@@ -38,12 +38,12 @@ Generate ONLY the SQL query without any explanation or markdown formatting. Refe
       maxRetries: this.llmConfig.maxRetries ?? 3,
       prompt,
     });
-    this.llmConfig.onQueryUsage?.(usage);
 
-    return text
+    const dsl = text
       .trim()
       .replace(/^```(?:sql)?\s*|\s*```$/gi, '')
       .trim();
+    return { dsl, usage };
   }
 
   async validateDSL(sql: string): Promise<string> {

@@ -12,8 +12,7 @@ import { forEachConcurrent } from '../../_shared/concurrency.js';
 import { pendingSamples, validateResume } from '../../_shared/resume.js';
 import { readSemantic, readStrategy, workflow } from '../workflow.ts';
 import { llmConfig, modelMetadata } from '../model.ts';
-import { createUsage } from '../../_shared/usage.js';
-import type { AnalysisStrategyConfig, LLMConfig, Semantic } from '../../../lib/index.js';
+import type { AnalysisStrategyConfig, Semantic } from '../../../lib/index.js';
 
 type Sample = { question_id: number; db_id: string; question: string; evidence?: string };
 const workflowRoot = fileURLToPath(new URL('../', import.meta.url));
@@ -177,7 +176,6 @@ export async function main(argv = process.argv.slice(2)) {
     scoreTimeoutMs: scoreTimeout,
     concurrency,
     modelContext: 'ava-profile + question + evidence + SQL answer constraints' + (semantics.size ? ' + semantic' : '') + (values['database-description'] ? ' + database_description' : ''),
-    usageScope: 'onQueryUsage callbacks',
     resources: Object.fromEntries(files.map((file) => [relative(root, file), sha256(file)])),
     implementation: Object.fromEntries(
       [
@@ -189,7 +187,6 @@ export async function main(argv = process.argv.slice(2)) {
         join(workflowRoot, 'workflow.ts'),
         join(workflowRoot, 'model.ts'),
         join(workflowRoot, '../_shared/model-env.js'),
-        join(workflowRoot, '../_shared/usage.js'),
         join(workflowRoot, '../_shared/files.js'),
         join(workflowRoot, '../_shared/args.js'),
         ...['index.js', 'score.js', 'compare.py'].map((file) => join(workflowRoot, '../BIRD', file)),
@@ -232,10 +229,8 @@ export async function main(argv = process.argv.slice(2)) {
         if (existsSync(file)) unlinkSync(file);
       }
       const startedAt = Date.now();
-      const usage = createUsage();
-      const onQueryUsage: LLMConfig['onQueryUsage'] = usage.add;
       const ava = new AVA({
-        llm: { ...config, onQueryUsage },
+        llm: config,
         engine: { type: 'duckdb', queryTimeoutMs: timeout, memoryLimit: values['memory-limit'] },
       });
       for (const [event, stage] of [
@@ -272,7 +267,6 @@ export async function main(argv = process.argv.slice(2)) {
         question_id: sample.question_id,
         db_id: sample.db_id,
         elapsedMs: Date.now() - startedAt,
-        usage: usage.value,
       });
       process.stdout.write(`${record.status} ${id}\n`);
     });

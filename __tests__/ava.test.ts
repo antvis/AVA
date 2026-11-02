@@ -65,7 +65,7 @@ describe('AVA', () => {
       await ava.source({ type: 'json', options: { data: [{ value: 2 }] } });
       expect((await ava.query('const result = data;')).data).toEqual([{ value: 2 }]);
       expect(discover).not.toHaveBeenCalled();
-      vi.spyOn(ava.engine!, 'getDSL').mockResolvedValue('const result = data;');
+      vi.spyOn(ava.engine!, 'getDSL').mockResolvedValue({ dsl: 'const result = data;' });
       vi.spyOn(suggestions, 'generateSuggestions').mockResolvedValue([]);
       const computeProfile = vi.spyOn(ava.engine!, 'profile');
       const onSchema = vi.fn();
@@ -185,7 +185,7 @@ describe('AVA', () => {
     await expect(ava.analyze('Total value')).rejects.toThrow('No data loaded');
     expect(onEvent).not.toHaveBeenCalled();
     await ava.source({ type: 'json', options: { data: [{ value: 2 }] } });
-    vi.spyOn(ava.engine!, 'getDSL').mockResolvedValue('SELECT SUM(value) AS total FROM data');
+    vi.spyOn(ava.engine!, 'getDSL').mockResolvedValue({ dsl: 'SELECT SUM(value) AS total FROM data' });
     const query = 'Total value';
     const config = { includeSummary: false, strategy: { type: 'direct' as const, maxRetries: 0 } };
 
@@ -248,13 +248,15 @@ describe('AVA', () => {
     expect(onEvent).not.toHaveBeenCalled();
     await ava.source({ type: 'json', options: { data: [{ value: 2 }] } });
     const schema = await ava.schema();
-    const getDSL = vi.spyOn(ava.engine!, 'getDSL').mockResolvedValue('SELECT SUM(value) FROM data');
+    const getDSL = vi
+      .spyOn(ava.engine!, 'getDSL')
+      .mockResolvedValue({ dsl: 'SELECT SUM(value) FROM data', usage: { inputTokens: 10 } as never });
     const execute = vi.spyOn(ava.engine!, 'execute');
 
     await expect(ava['translate']('Total value')).resolves.toBe('SELECT SUM(value) FROM data');
     expect(onEvent.mock.calls.map(([event]) => event)).toEqual([
       { type: 'translatestart', data: { query: 'Total value' } },
-      { type: 'translateend', data: { dsl: 'SELECT SUM(value) FROM data' } },
+      { type: 'translateend', data: { dsl: 'SELECT SUM(value) FROM data', usage: { inputTokens: 10 } } },
     ]);
     expect(getDSL).toHaveBeenLastCalledWith('Total value', schema);
     const snapshot = getDSL.mock.calls.at(-1)![1];
@@ -404,7 +406,7 @@ describe('AVA', () => {
       expect(engine.dispose).toHaveBeenCalledOnce();
 
       await ava.source(source);
-      const getDSL = vi.spyOn(ava.engine!, 'getDSL').mockResolvedValue('const result = data;');
+      const getDSL = vi.spyOn(ava.engine!, 'getDSL').mockResolvedValue({ dsl: 'const result = data;' });
       await ava.translate('Rows');
       expect(getDSL).toHaveBeenLastCalledWith('Rows', await ava.schema());
     });
@@ -518,7 +520,7 @@ describe('AVA metadata setters', () => {
           type === 'duckdb'
             ? 'SELECT SUM(value) AS total FROM data'
             : 'const result = [{ total: stat.sum(data, "value") }];';
-        const getDSL = vi.spyOn(ava.engine!, 'getDSL').mockResolvedValue(dsl);
+        const getDSL = vi.spyOn(ava.engine!, 'getDSL').mockResolvedValue({ dsl });
         const suggest = vi.spyOn(suggestions, 'generateSuggestions').mockResolvedValue([]);
         await ava.translate('Total');
         const context = getDSL.mock.calls[0][1];
@@ -602,7 +604,7 @@ describe('AVA metadata setters', () => {
           type === 'duckdb'
             ? 'SELECT SUM(value) AS total FROM data'
             : 'const result = [{total: stat.sum(data, "value")}];';
-        const getDSL = vi.spyOn(restored.engine!, 'getDSL').mockResolvedValue(dsl);
+        const getDSL = vi.spyOn(restored.engine!, 'getDSL').mockResolvedValue({ dsl });
         const suggest = vi.spyOn(suggestions, 'generateSuggestions').mockResolvedValue([]);
         const compute = vi.spyOn(restored.engine!, 'profile');
         exported.models[0].columns[0].name = 'changed by caller';
@@ -639,7 +641,7 @@ describe('AVA metadata setters', () => {
 
         await restored.source(source);
         await restored.schema(undefined, () => expectedSchema);
-        const nextDSL = vi.spyOn(restored.engine!, 'getDSL').mockResolvedValue(dsl);
+        const nextDSL = vi.spyOn(restored.engine!, 'getDSL').mockResolvedValue({ dsl });
         await restored.translate('Total');
         expect(nextDSL).toHaveBeenLastCalledWith('Total', expectedSchema);
         expect(discover).not.toHaveBeenCalled();
@@ -718,7 +720,7 @@ describe('AVA metadata setters', () => {
       expect(schemaEnd.mock.calls[0][0].data.error.message).toBe('setter failed');
       expect(profileEnd.mock.calls[0][0].data.error.message).toBe('setter failed');
       expect(await ava.schema()).toEqual(schema);
-      const getDSL = vi.spyOn(ava.engine!, 'getDSL').mockResolvedValue('const result = data;');
+      const getDSL = vi.spyOn(ava.engine!, 'getDSL').mockResolvedValue({ dsl: 'const result = data;' });
       await ava.translate('Rows');
       expect(getDSL).toHaveBeenLastCalledWith('Rows', buildDataModel({ schema, profile }));
       await ava.schema(undefined, () => schema);
@@ -744,7 +746,7 @@ describe('AVA metadata setters', () => {
       expect(await ava.semantic()).toEqual({});
       const discover = vi.spyOn(ava.engine!, 'schema');
       expect(discover).not.toHaveBeenCalled();
-      const getDSL = vi.spyOn(ava.engine!, 'getDSL').mockResolvedValue('const result = data;');
+      const getDSL = vi.spyOn(ava.engine!, 'getDSL').mockResolvedValue({ dsl: 'const result = data;' });
       await ava.translate('Rows');
       expect(discover).toHaveBeenCalledOnce();
       expect(getDSL).toHaveBeenLastCalledWith('Rows', schema);
