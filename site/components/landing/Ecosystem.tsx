@@ -130,7 +130,7 @@ function ProjectCard({
       aria-roledescription="slide"
       aria-label={`${index + 1} of ${PROJECTS.length}: ${project.name}`}
     >
-      <div className={styles.visual}>
+      <div className={styles.visual} data-kind={project.kind}>
         {'image' in project ? (
           <img src={project.image} alt={`${project.name} project screenshot`} width="640" height="360" loading="lazy" />
         ) : (

@@ -61,6 +61,16 @@
   height: 100%;
   object-fit: contain;
 }
+.visual[data-kind='sql'] {
+  height: auto;
+  aspect-ratio: 4 / 3;
+  background: #191919;
+}
+.visual[data-kind='sql'] > img {
+  object-fit: contain;
+  object-position: center;
+  transform: scale(1.25);
+}
 .cardBody {
   display: flex;
   flex-direction: column;
