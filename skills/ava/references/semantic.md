@@ -1,12 +1,17 @@
 # Semantic
 
-Semantic stores reusable business meaning, such as metric formulas, eligible records, units, time conventions, and join rules. It grows incrementally as analysis clarifies these meanings.
+Semantic stores reusable business meaning: metric formulas, eligible records, units, time conventions, and join rules. Knowledge grows incrementally; CLI writes replace a complete snapshot.
 
-## Keep a Local Definition
+## File
 
-Use the user's location or existing project convention; otherwise use `.ava/semantics/<source-key>.json`. Choose a stable key for the source and reporting scope, not the temporary session ID. Keep the file outside disposable outputs and the installed skill.
+| Item | Rule |
+| --- | --- |
+| Location | Use the user's location or project convention; otherwise `.ava/semantics/<source-key>.json`. |
+| Identity | Use a stable source/reporting-scope key, not the temporary session ID. |
+| Contents | Reusable definitions with their source, scope, and provenance. |
+| Exclude | Temporary filters, guesses, answers, profile statistics, credentials, and personal records. |
 
-Start with a plain-language definition:
+Keep the file outside disposable outputs and the installed skill. Start with plain language:
 
 ```json
 {
@@ -20,24 +25,45 @@ Start with a plain-language definition:
 }
 ```
 
-Adapt this example to the actual evidence. Record documentation as its source rather than labeling it user-confirmed. Add structured `models`, `relationships`, `views`, or `cubes` only when useful. Model names must match the schema; each model needs exactly one of `tableReference`, `refSql`, or `baseObject`, and columns need `name` and `type`. Put measure eligibility rules in its expression or base.
+Adapt the example to the actual evidence. Attribute documented rules to their source instead of labeling them user-confirmed. Add `models`, `relationships`, `views`, or `cubes` only when useful. Model names must match the schema; each model needs exactly one of `tableReference`, `refSql`, or `baseObject`, and columns need `name` and `type`. Put measure eligibility rules in its expression or base.
 
-## Read, Merge, and Write
+## Incremental Maintenance
 
-1. Read the existing local file and `ava semantic "$DATASET_ID"`. Check source identity, scope, effective period, and required fields before reuse; matching field names alone are insufficient.
-2. Add newly established rules or revise affected ones. Preserve unrelated definitions and their provenance. Temporary report overrides stay in task context; clarify material conflicts before changing a reusable default. Preserve history for lasting corrections.
-3. Write the complete candidate to a temporary file and load it:
+```text
+Local file + current session + established changes
+                       |
+                Check scope / merge
+                       |
+                Complete candidate
+                       |
+             ava semantic --file
+                 /           \
+              error         success
+                |              |
+         Keep old file   Check returned value
+                               |
+                        Replace local file
+```
 
-   ```sh
-   ava semantic "$DATASET_ID" --file semantic-candidate.json
-   ```
+| Step | Operation |
+| --- | --- |
+| Read | Read the local file and `ava semantic "$DATASET_ID"`. Check source identity, scope, effective period, and required fields; matching field names alone are insufficient. |
+| Merge | Add new rules or revise affected ones. Preserve unrelated definitions and provenance. Clarify material conflicts; temporary report overrides stay in task context. Preserve history for lasting corrections. |
+| Load | Write a complete temporary candidate; run `ava semantic "$DATASET_ID" --file semantic-candidate.json`. Pass a plain path without `@`. |
+| Save | Check the returned definition before replacing the local file. On load/save failure, retain the previous durable file and report what succeeded. |
 
-4. Check the returned definition, then replace the local file with the accepted candidate. If loading or saving fails, retain the previous durable file and report what succeeded.
+`--file` replaces the **entire session definition**. Combine applicable rules before loading; partial files do not merge automatically. Keep each durable file within its source/scope. If the user requests no persistence, keep task context without a durable file.
 
-Knowledge is maintained incrementally, but `--file` **replaces the entire session definition**. It takes a plain path without `@`. Do not load partial files sequentially expecting a merge; combine applicable rules first and keep each durable file within its source/scope. Keep temporary filters, guesses, answers, profile statistics, credentials, and personal records out of semantic.
+## Runtime Behavior
 
-## Apply and Reuse
+| Operation | Behavior |
+| --- | --- |
+| Read | Returns the current definition, initially `{}`. |
+| Invalid write | Preserves the previous session value. |
+| Load `{}` | Clears session semantic. |
+| Update schema/profile | Retains semantic. |
+| New session | Starts empty; reload compatible local definitions. |
+| `analyze`, `translate`, `suggest` | Receive loaded semantic as model context. |
+| `query` | Executes supplied code; the agent must implement the business rules explicitly. |
 
-Structure validation does not verify business meaning or SQL correctness. Check new expressions with targeted queries and relevant edge cases. `analyze`, `translate`, and `suggest` use loaded semantic as model context; agent-written `query` code must implement the rules explicitly.
-
-Reading returns the current definition, initially `{}`. Invalid writes preserve the previous value; loading `{}` clears it. Schema/profile updates retain semantic. New sessions start empty, so reload compatible local definitions. If the installed CLI lacks `semantic`, use an updated build; do not substitute `schema --file`.
+Structure validation does not verify business meaning or SQL correctness. Check new expressions with targeted queries and relevant edge cases. If the CLI lacks `semantic`, use an updated build; do not substitute `schema --file`.
