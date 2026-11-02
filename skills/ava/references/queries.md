@@ -1,5 +1,15 @@
 # Queries and Results
 
+## Inspect as Needed
+
+Use schema for structure, targeted queries for specific facts, and profile for broader statistics. For example:
+
+```sh
+ava profile "$DATASET_ID" --metrics row_count,null_count,min,max,mean > profile.json
+```
+
+Each profile call recomputes statistics. `--metrics` replaces the defaults and applies to eligible columns across all tables; it cannot filter by table or column. Prefer targeted queries on large remote sources.
+
 ## Run a Query
 
 `ava schema` discovers structure on demand and caches it. Use its `models`, `tableReference`, `columns`, and `language`. Write the query according to `language.name` and, when provided, `language.instructions`. Apply confirmed [business definitions](semantic.md) explicitly; `query` executes the supplied DSL without applying semantic filters or expressions for you. Save the query as UTF-8 and run it with `--dsl`:
