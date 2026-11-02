@@ -6,6 +6,7 @@ import { z } from 'zod';
 import { excelOptionsSchema } from '../../util/excel';
 import { profileMetadataSchema } from '../../util/profile';
 import { schemaMetadataSchema } from '../../util/schema';
+import { semanticMetadataSchema } from '../../util/data-model';
 
 import type { DataSourceConfig } from '../../types';
 
@@ -123,6 +124,7 @@ const execution = {
 
 export const requestSchema = z.discriminatedUnion('command', [
   z.object({ command: z.literal('schema'), schema: schemaMetadataSchema.optional() }).strict(),
+  z.object({ command: z.literal('semantic'), semantic: semanticMetadataSchema.optional() }).strict(),
   z
     .object({
       command: z.literal('profile'),

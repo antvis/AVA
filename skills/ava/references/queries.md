@@ -2,7 +2,7 @@
 
 ## Run a Query
 
-`ava schema` discovers structure on demand and caches it. Use its table names, columns, and `language`. Write the query according to `language.name` and, when provided, `language.instructions`. Save the query as UTF-8 and run it with `--dsl`:
+`ava schema` discovers structure on demand and caches it. Use its `models`, `tableReference`, `columns`, and `language`. Write the query according to `language.name` and, when provided, `language.instructions`. Apply confirmed [business definitions](semantic.md) explicitly; `query` executes the supplied DSL without applying semantic filters or expressions for you. Save the query as UTF-8 and run it with `--dsl`:
 
 ```sh
 ava query "$DATASET_ID" --dsl @query.sql > result.json

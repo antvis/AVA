@@ -35,7 +35,7 @@ To use the Python Engine, add `--engine python` to the `source` command.
 
 Reuse a session if you already have a valid `datasetId`. When working across terminals, recover the ID from the saved file instead of relying on an environment variable from another process.
 
-Use `tables` in the schema to find actual table names, columns, and types. Use `language` to identify the query language and execution conventions. Read the relevant sections of [Queries and Results](references/queries.md) as needed. Do not assume fields or relationships that are not in the schema.
+Use `models`, their `tableReference`, and `columns` in the schema to find actual table names, fields, and types. Use `language` to identify the query language and execution conventions. Read the relevant sections of [Queries and Results](references/queries.md) as needed. Do not assume fields or relationships that are not in the schema.
 
 ### Explore the Data
 
@@ -49,11 +49,21 @@ ava profile "$DATASET_ID" --metrics row_count,null_count,min,max,mean > profile.
 
 Each `profile` call recomputes statistics. `--metrics` replaces the default metrics and applies to eligible columns across all tables; it cannot filter by table or column. For large remote tables, prefer targeted queries to avoid unnecessary full profiles.
 
-Treat statistics, relationships, and business definitions that were not returned as unknown. Do not make assumptions.
+Treat statistics, relationships, and business definitions without supporting evidence as unknown. Observed values and column names alone do not establish business meaning.
 
 ## 2. Query and Analyze
 
 Translate the user's question into the population, metric definitions, filters, grouping, time range, and units needed for the analysis.
+
+### Resolve and Reuse Business Definitions
+
+Before calculating business metrics, read the session's definitions with `ava semantic "$DATASET_ID"` and look for relevant saved definitions in the user's specified location or the project's `.ava/semantics/` directory. Check their source, scope, and referenced fields against the current task and schema before reuse. For clarification, persistence, conflicts, and the JSON format, read [Business Semantics](references/semantic.md).
+
+When an unresolved definition could materially change the answer, ask the user before computing the affected metric. Explain the concrete choice, such as paid amount versus amount after refunds, and offer a recommendation when justified. Batch related gaps; continue independent exploration while waiting. Reuse applicable confirmed definitions without asking again. If the user explicitly delegates a choice, state the assumption and keep it task-specific unless they confirm it as a reusable rule.
+
+After confirmation, record reusable business meaning with its source and scope in a local Semantic JSON file, then load the complete definition with `ava semantic "$DATASET_ID" --file <path>`. Preserve unrelated definitions: each write replaces the whole session definition. Keep unresolved guesses, one-off filters, and computed results out of reusable semantics. Respect requests not to save; use task-local context instead.
+
+Semantic guides `analyze`, `translate`, and `suggest`. When writing `query` DSL yourself, apply the same definitions explicitly; AVA does not rewrite the query or create database objects from semantic metadata. Reload saved definitions after creating a new session.
 
 Write queries against the actual schema. Perform aggregation, sorting, and statistical calculations in the execution engine whenever possible instead of returning large volumes of raw data to the agent.
 
@@ -97,7 +107,7 @@ Deliver results according to the user's goal:
 - **Query generation:** Provide the query and its assumptions, and state whether it was run and validated.
 - **Data visualization:** Provide the chart artifact and any necessary interpretation.
 
-Keep reproducible queries, necessary results, and chart files. Focus the response on the conclusions the user cares about; there is no need to list every tool call.
+Keep reproducible queries, necessary results, and chart files. State the metric definition used and link any semantic file created or updated so the user can inspect and reuse it. If saving or loading failed, distinguish the confirmed definition from what was actually persisted. Focus the response on the conclusions the user cares about; there is no need to list every tool call.
 
 Never describe an unrun query, an unverified conclusion, or an ungenerated chart as completed.
 
