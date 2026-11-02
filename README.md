@@ -95,7 +95,7 @@ const ava = new AVA({
 });
 ```
 
-### 1. Load 📂🔌
+### 1. Load
 
 ```typescript
 await ava.source({ type: 'csv-file', options: { path: './sales.csv' } });
@@ -112,7 +112,7 @@ await ava.source({ type: 'csv-file', options: { path: './sales.csv' } });
 > | 2025-01-02 | Office Chair | 680.20 |
 > | 2025-01-04 | Monitor | 2,191.20 |
 
-### 2. Explore 🔍🧠
+### 2. Explore
 
 Inspect the structure and data quality, then add [business definitions](https://ava.antv.vision/documentation/data/semantic/):
 
@@ -133,7 +133,7 @@ await ava.semantic(undefined, () => ({
 > | Quality | 240 rows; 1 missing `region` and 1 missing `quantity` |
 > | Semantics | `sales` is after discounts; monthly comparisons use `order_date` |
 
-### 3. Suggest 💡💬
+### 3. Suggest
 
 ```typescript
 const suggestions = await ava.suggest(3);
@@ -146,7 +146,7 @@ const suggestions = await ava.suggest(3);
 > - Which products contributed most to the sales decline?
 > - How do sales and profit vary by region?
 
-### 4. Analyze 🧮📈
+### 4. Analyze
 
 ```typescript
 const result = await ava.analyze(
@@ -167,7 +167,7 @@ const result = await ava.analyze(
 > | Standing Desk | 9,655.80 | 5,546.10 | −4,109.70 |
 > | Monitor | 6,536.25 | 4,731.00 | −1,805.25 |
 
-### 5. Visualize 📊✨
+### 5. Visualize
 
 ```typescript
 const chart = await ava.visualize({
