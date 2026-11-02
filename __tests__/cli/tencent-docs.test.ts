@@ -12,7 +12,7 @@ vi.mock('../../src/cli/session/client', () => ({ createSession: vi.fn() }));
 afterEach(() => {
   vi.clearAllMocks();
 });
-const config = { type: 'tencent-docs-smartsheet', options: { fileId: 'file', sheetId: 'sheet' } };
+const config = { type: 'tencent-smartsheet', options: { fileId: 'file', sheetId: 'sheet' } };
 
 describe('Tencent Docs CLI source config', () => {
   it('accepts a token-free config so the loader can use the inherited environment', async () => {

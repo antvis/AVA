@@ -562,7 +562,7 @@ Load one authorized SmartSheet table through Tencent Docs' official MCP service,
 
 ```typescript
 await ava.source({
-  type: 'tencent-docs-smartsheet',
+  type: 'tencent-smartsheet',
   options: { fileId: '<file-id>', sheetId: '<sheet-id>' },
 });
 ```
@@ -583,7 +583,7 @@ For the CLI, put the same source configuration in a JSON file and run `ava sourc
 
 Supported MCP field types are `text`, `number`, `currency`, `percentage`, `progress`, `checkbox`, `dateTime`, `createdTime`, `modifiedTime`, `singleSelect`, `phoneNumber`, and `email`. Other field types are omitted. Field titles become column names; `_record_id` preserves source identity. Duplicate/reserved column names and invalid supported values fail the load. Numbers use `DOUBLE`, dates use UTC `TIMESTAMPTZ`, omitted cells use null, and empty rows are retained. Empty tables keep their declared column types.
 
-Fields and records are fully paginated. Missing/repeated IDs, inconsistent paging and changing totals/field metadata fail instead of silently loading partial data. Limits are 1,000 fields and 16 MiB for response streams/paginated reads. Expanded snapshots have independent limits of 16 MiB of UTF-8 JSON and 1,000,000 cells (including nulls and `_record_id`); the effective row limit is also capped by `floor(1000000 / (supported field count + 1))`. Validated pages are converted incrementally; no complete raw record array is retained, and over-budget dense rows are not retained. Temporary source files are created exclusively with owner-only `0600` permissions before writing data. Authentication, permission and daily quota failures are not retried. Tokens are never included in connector diagnostics. The connector calls only field/record read tools; the model cannot select remote write tools.
+Fields and records are fully paginated. Missing/repeated IDs, inconsistent paging and changing totals/field metadata fail instead of silently loading partial data. Limits are 1,000 fields and 16 MiB for response streams/paginated reads. Expanded snapshots have independent limits of 16 MiB of UTF-8 JSON and 1,000,000 cells (including nulls and `_record_id`); the effective row limit is also capped by `floor(1000000 / (supported field count + 1))`. Validated pages are converted incrementally; no complete raw record array is retained, and over-budget dense rows are not retained. Temporary source files are created exclusively with owner-only `0600` permissions before writing data. Authentication, permission and daily quota failures are not retried. Upstream error codes/messages and SDK/network causes are preserved; HTTP failures retain status, request IDs and up to 8 KiB of response diagnostics. The configured Token is redacted, but provider diagnostics may include document context; review errors before sharing logs. The connector calls only field/record read tools; the model cannot select remote write tools.
 
 This is a load-time snapshot, not live synchronization. Stop source edits during loading: the provider does not expose a transactional multi-page snapshot, so same-count edits cannot all be detected. Model-based analysis uses the configured model provider; use non-sensitive test data for initial validation.
 

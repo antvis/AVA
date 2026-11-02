@@ -13,7 +13,7 @@ const ERROR_MESSAGES: Record<number, string> = {
 };
 
 export class TencentDocsError extends Error {
-  constructor(message: string, readonly code?: number) {
+  constructor(message: string, readonly code?: number, readonly cause?: unknown, readonly status?: number) {
     super(`Tencent Docs: ${message}`);
     this.name = 'TencentDocsError';
   }
@@ -23,15 +23,75 @@ export function isObject(value: unknown): value is Record<string, unknown> {
   return value !== null && typeof value === 'object' && !Array.isArray(value);
 }
 
-function apiError(code: number): TencentDocsError {
-  // Never echo upstream messages: they can contain credentials or private cell values.
-  return new TencentDocsError(ERROR_MESSAGES[code] ?? `API request failed (code ${code}).`, code);
+function apiError(code: number, message?: string, cause?: unknown, status?: number): TencentDocsError {
+  const hint = ERROR_MESSAGES[code];
+  return new TencentDocsError(
+    [`API request failed (code ${code}).`, message, hint].filter(Boolean).join(' '),
+    code,
+    cause,
+    status
+  );
+}
+
+function upstreamMessage(value: Record<string, unknown>): string | undefined {
+  const error = isObject(value.error) ? value.error : value;
+  const message = error.message ?? error.msg ?? (typeof value.error === 'string' ? value.error : undefined);
+  return typeof message === 'string' ? message : undefined;
+}
+
+/** Preserve upstream error properties/cause chains, redacting only the configured credential. */
+function redactToken(value: unknown, token: string, seen = new Map<object, unknown>()): unknown {
+  if (typeof value === 'string') return token ? value.split(token).join('[REDACTED]') : value;
+  if (value === null || typeof value !== 'object') return value;
+  if (seen.has(value)) return seen.get(value);
+  const copy = Array.isArray(value) ? [] : Object.create(Object.getPrototypeOf(value));
+  seen.set(value, copy);
+  const descriptors = Object.getOwnPropertyDescriptors(value);
+  // V8 exposes stack through a lazy accessor with native Error state. Materialize
+  // it on the original, then copy/redact the string rather than copying the getter.
+  if (value instanceof Error) {
+    for (const key of ['name', 'message', 'stack'] as const) {
+      if (typeof value[key] === 'string') {
+        descriptors[key] = { value: value[key], writable: true, configurable: true, enumerable: false };
+      }
+    }
+  }
+  for (const descriptor of Object.values(descriptors)) {
+    if ('value' in descriptor) descriptor.value = redactToken(descriptor.value, token, seen);
+  }
+  Object.defineProperties(copy, descriptors);
+  return copy;
+}
+
+/** Keep HTTP diagnostics bounded independently of successful MCP response limits. */
+async function httpErrorBody(response: Response): Promise<string> {
+  const reader = response.body?.getReader();
+  if (!reader) return '';
+  const decoder = new TextDecoder();
+  let text = '';
+  let remaining = 8192;
+  try {
+    while (remaining > 0) {
+      const { done, value } = await reader.read();
+      if (done) break;
+      const chunk = value.subarray(0, remaining);
+      text += decoder.decode(chunk, { stream: true });
+      remaining -= chunk.byteLength;
+    }
+    return text + decoder.decode() + (remaining === 0 ? ' [diagnostic body truncated at 8 KiB]' : '');
+  } finally {
+    await reader.cancel().catch(() => undefined);
+  }
+}
+
+function upstreamCode(value: Record<string, unknown>): unknown {
+  return value.code ?? value.ret ?? (isObject(value.error) ? value.error.code : undefined);
 }
 
 function checkError(value: Record<string, unknown>): void {
-  const code = value.code ?? value.ret ?? (isObject(value.error) ? value.error.code : undefined);
-  if (typeof code === 'number' && code !== 0) throw apiError(code);
-  if (value.error) throw new TencentDocsError('Tool returned an error.');
+  const code = upstreamCode(value);
+  if (typeof code === 'number' && code !== 0) throw apiError(code, upstreamMessage(value), value);
+  if (value.error) throw new TencentDocsError(upstreamMessage(value) ?? 'Tool returned an error.', undefined, value);
 }
 
 /** Prefer structuredContent; require exactly one JSON text block otherwise. */
@@ -50,11 +110,25 @@ export function decodeToolResult(result: unknown): Record<string, unknown> {
       }
     }
   }
-  if (isObject(body)) checkError(body);
-  if (result.isError) throw new TencentDocsError('MCP tool reported failure.');
+  if (isObject(body)) {
+    checkError(body);
+    if (isObject(body.data)) checkError(body.data);
+  }
+  if (result.isError) {
+    const text = Array.isArray(result.content)
+      ? result.content
+          .filter((item) => isObject(item) && item.type === 'text' && typeof item.text === 'string')
+          .map((item) => item.text)
+          .join('\n')
+      : '';
+    throw new TencentDocsError(
+      (isObject(body) ? upstreamMessage(body) : undefined) || text || 'MCP tool reported failure.',
+      undefined,
+      result
+    );
+  }
   if (!isObject(body)) throw new TencentDocsError('Expected a JSON object from the MCP tool.');
   if (isObject(body.data)) {
-    checkError(body.data);
     return body.data;
   }
   return body;
@@ -65,10 +139,12 @@ export type TencentReadTool = 'smartsheet.list_fields' | 'smartsheet.list_record
 
 export class TencentDocsClient {
   private readonly client = new Client({ name: 'ava-tencent-docs', version: '1.0.0' });
+  private token = '';
 
   constructor(private readonly signal: AbortSignal, private readonly maxRetries: number) {}
 
   async connect(token: string): Promise<void> {
+    this.token = token;
     const transport = new StreamableHTTPClientTransport(new URL(ENDPOINT), {
       requestInit: { headers: { Authorization: token } },
       fetch: async (input, init) => {
@@ -82,9 +158,10 @@ export class TencentDocsClient {
           let response: Response;
           try {
             response = await fetch(input, { ...init, signal, redirect: 'error' });
-          } catch {
-            if (signal.aborted) throw new TencentDocsError('Load deadline exceeded.');
-            if (attempt >= this.maxRetries) throw new TencentDocsError('Network request failed.');
+          } catch (error) {
+            if (signal.aborted)
+              throw new TencentDocsError('Load deadline exceeded.', undefined, redactToken(error, token));
+            if (attempt >= this.maxRetries) throw redactToken(error, token);
             await delay(500 * 2 ** attempt, undefined, { signal });
             continue;
           }
@@ -112,23 +189,43 @@ export class TencentDocsClient {
           const waitMs = retryAfter
             ? Math.max(0, /^\d+$/.test(retryAfter) ? Number(retryAfter) * 1000 : Date.parse(retryAfter) - Date.now())
             : 500 * 2 ** attempt;
-          await response.body?.cancel();
           if ([429, 502, 503, 504].includes(status) && attempt < this.maxRetries && waitMs <= 30000) {
+            await response.body?.cancel();
             await delay(waitMs, undefined, { signal });
             continue;
           }
-          if (status === 401) throw apiError(400006);
-          if (status === 403) throw apiError(400005);
-          if (status === 429) throw apiError(400007);
-          throw new TencentDocsError(`HTTP request failed (status ${status}).`, status);
+          const body = await httpErrorBody(response);
+          let payload: unknown = body;
+          try {
+            payload = JSON.parse(body);
+          } catch {
+            // Non-JSON HTTP diagnostics are useful too (for example gateway errors).
+          }
+          const requestId = response.headers.get('x-request-id') ?? response.headers.get('x-log-id');
+          const diagnostic = `HTTP request failed (status ${status} ${response.statusText}).${
+            requestId ? ` Request ID: ${requestId}.` : ''
+          }${body ? ` ${body}` : ''}`;
+          const upstream = isObject(payload) ? upstreamCode(payload) : undefined;
+          const code =
+            typeof upstream === 'number' && upstream !== 0
+              ? upstream
+              : status === 401
+              ? 400006
+              : status === 403
+              ? 400005
+              : status === 429
+              ? 400007
+              : status;
+          throw redactToken(apiError(code, diagnostic, { body: payload, requestId }, status), token);
         }
       },
     });
     try {
       await this.client.connect(transport, { signal: this.signal });
     } catch (error) {
-      if (error instanceof TencentDocsError) throw error;
-      throw new TencentDocsError(this.signal.aborted ? 'Load deadline exceeded.' : 'MCP connection failed.');
+      const upstream = redactToken(error, token);
+      if (this.signal.aborted) throw new TencentDocsError('Load deadline exceeded.', undefined, upstream);
+      throw upstream;
     }
   }
 
@@ -141,16 +238,15 @@ export class TencentDocsClient {
         const result = await this.client.callTool({ name, arguments: args }, { signal: this.signal });
         return decodeToolResult(result);
       } catch (error) {
-        if (this.signal.aborted) throw new TencentDocsError('Load deadline exceeded.');
+        const upstream = redactToken(error, this.token);
+        if (this.signal.aborted) throw new TencentDocsError('Load deadline exceeded.', undefined, upstream);
         const code = error instanceof TencentDocsError ? error.code : isObject(error) ? error.code : undefined;
         // Daily quota exhaustion is not retried. Only the documented transient service error is.
         if (code === 400010 && attempt < this.maxRetries) {
           await delay(500 * 2 ** attempt, undefined, { signal: this.signal });
           continue;
         }
-        if (error instanceof TencentDocsError) throw error;
-        if (typeof code === 'number') throw apiError(code);
-        throw new TencentDocsError('MCP read request failed.');
+        throw upstream;
       }
     }
   }

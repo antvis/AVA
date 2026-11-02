@@ -51,7 +51,7 @@ const ava = new AVA({ llm: {
   baseURL: process.env.OPENAI_BASE_URL,
 } });
 try {
-  await ava.source({ type: 'tencent-docs-smartsheet', options: {
+  await ava.source({ type: 'tencent-smartsheet', options: {
     fileId: process.env.TENCENT_DOCS_FILE_ID,
     sheetId: process.env.TENCENT_DOCS_SHEET_ID,
   } });
@@ -116,7 +116,7 @@ Field discovery is capped at 1,000 fields. Response streams and paginated reads 
 
 Fields and records are fully paginated; the connector rejects invalid offsets, duplicate IDs, changing totals and incomplete final pages. Supported field metadata is rechecked after the records are read. Stop editing the source while importing: the provider does not offer a transactionally consistent multi-page snapshot, and same-count edits cannot all be detected. This is a load-time snapshot, not live synchronization.
 
-HTTP 429/502/503/504 and network failures have bounded retries within the overall deadline. `Retry-After` waits over 30 seconds are not attempted. Tool error 400010 is retried; authentication, permission and daily quota errors are not. Raw provider error text is not exposed because it may contain private data. The endpoint is fixed, and redirects are refused. Temporary source files are created exclusively with mode `0600` before any contents are written; existing files/symlinks are never overwritten, and failed writes clean up their own partial file. After loading, data is materialized in memory and its temporary JSON file is deleted, so analysis does not whitelist a temporary directory.
+HTTP 429/502/503/504 and network failures have bounded retries within the overall deadline. `Retry-After` waits over 30 seconds are not attempted. Tool error 400010 is retried; authentication, permission and daily quota errors are not. Upstream error codes and messages are retained alongside known-code hints. SDK/network failures preserve their error type, stack, code, data and cause chain rather than being replaced by a generic failure. HTTP failures include status, request ID when present and up to 8 KiB of upstream response diagnostics (with truncation marked); `TencentDocsError.code`, `.status` and `.cause` expose structured details to SDK callers. The configured Token is redacted from diagnostic strings and nested error properties. Upstream diagnostics can still contain document IDs or other provider-returned context, so review errors before publishing logs. The endpoint is fixed, and redirects are refused. Temporary source files are created exclusively with mode `0600` before any contents are written; existing files/symlinks are never overwritten, and failed writes clean up their own partial file. After loading, data is materialized in memory and its temporary JSON file is deleted, so analysis does not whitelist a temporary directory.
 
 ## Reproduce the two business examples
 

@@ -53,7 +53,7 @@ export async function run([dataset]: string[], options: Options): Promise<{ data
 
   const config = sourceConfig.parse(input);
 
-  if (config.type === 'tencent-docs-smartsheet' && engine !== undefined && engine !== 'duckdb') {
+  if (config.type === 'tencent-smartsheet' && engine !== undefined && engine !== 'duckdb') {
     throw new Error('Tencent Docs SmartSheet sources require the duckdb engine.');
   }
 
@@ -114,7 +114,7 @@ Feishu Bitable:
   Docx and Sheets links are not supported.
 
 Environment:
-  TENCENT_DOCS_TOKEN Tencent Docs MCP Authorization value for tencent-docs-smartsheet.
+  TENCENT_DOCS_TOKEN Tencent Docs MCP Authorization value for tencent-smartsheet.
   OPENAI_API_KEY     Required for text sources and subsequent AI commands.
   OPENAI_MODEL       Model name (default: gpt-4o-mini).
   OPENAI_BASE_URL    Optional API base URL.
@@ -154,7 +154,7 @@ feishu.json:
 
 Tencent Docs SmartSheet (Node.js / DuckDB):
   tencent-docs.json:
-    { "type": "tencent-docs-smartsheet", "options": { "fileId": "<file-id>", "sheetId": "<sheet-id>" } }
+    { "type": "tencent-smartsheet", "options": { "fileId": "<file-id>", "sheetId": "<sheet-id>" } }
   Set TENCENT_DOCS_TOKEN before loading. Only supported scalar fields are exposed.
   Reads a complete, bounded snapshot into data; _record_id preserves source identity.
   Explicit IDs are required; document sharing URLs are not auto-detected.

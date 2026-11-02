@@ -1,7 +1,7 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { AVA } from '../../../src';
-import { loadTencentDocs } from '../../../src/duckdb/loaders/tencent-docs-smartsheet';
+import { loadTencentDocs } from '../../../src/duckdb/loaders/tencent-smartsheet';
 import { convertRecord, supportedFields } from '../../../src/duckdb/loaders/tencent/convert';
 import { readTencentTable } from '../../../src/duckdb/loaders/tencent/read';
 import sales from '../../../examples/tencent-docs/sales.json';
@@ -40,7 +40,7 @@ const options = { fileId: 'file', sheetId: 'sheet', token: 'test-token' };
 
 describe('Tencent Docs AVA / DuckDB integration (offline)', () => {
   it('loads a typed snapshot and verifies the two business examples independently of an LLM', async () => {
-    await ava.source({ type: 'tencent-docs-smartsheet', options });
+    await ava.source({ type: 'tencent-smartsheet', options });
     const schema = await ava.schema();
     expect(schema.models[0].columns.map((column) => [column.name, column.type])).toEqual([
       ['_record_id', 'VARCHAR'],
@@ -71,7 +71,7 @@ describe('Tencent Docs AVA / DuckDB integration (offline)', () => {
       fields,
       rows: [convertRecord(fields, { record_id: 'empty', field_values: [] })],
     });
-    await ava.source({ type: 'tencent-docs-smartsheet', options });
+    await ava.source({ type: 'tencent-smartsheet', options });
     const result = await ava.query('SELECT *, typeof("数字") AS number_type FROM data');
     expect(result.data).toEqual([
       { _record_id: 'empty', 文本: null, 数字: null, 单选: null, 日期: null, number_type: 'DOUBLE' },
@@ -80,7 +80,7 @@ describe('Tencent Docs AVA / DuckDB integration (offline)', () => {
 
   it('preserves schema for a zero-record table', async () => {
     vi.mocked(readTencentTable).mockResolvedValue({ fields, rows: [] });
-    await ava.source({ type: 'tencent-docs-smartsheet', options });
+    await ava.source({ type: 'tencent-smartsheet', options });
     expect((await ava.query('SELECT * FROM data')).data).toEqual([]);
     expect((await ava.schema()).models[0].columns).toHaveLength(5);
   });
@@ -94,7 +94,7 @@ describe('Tencent Docs AVA / DuckDB integration (offline)', () => {
 
   it('releases the failed engine and never exposes a partial dataset', async () => {
     vi.mocked(readTencentTable).mockRejectedValue(new Error('incomplete snapshot'));
-    await expect(ava.source({ type: 'tencent-docs-smartsheet', options })).rejects.toThrow('incomplete snapshot');
+    await expect(ava.source({ type: 'tencent-smartsheet', options })).rejects.toThrow('incomplete snapshot');
     expect(ava.engine).toBeNull();
   });
 });

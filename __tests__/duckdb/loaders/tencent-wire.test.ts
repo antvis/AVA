@@ -1,12 +1,51 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
 
 import { AVA } from '../../../src';
+import { TencentDocsClient } from '../../../src/duckdb/loaders/tencent/client';
 
 afterEach(() => {
   vi.unstubAllGlobals();
 });
 
 describe('Tencent Docs actual MCP SDK wire integration (offline)', () => {
+  it('preserves actual SDK JSON-RPC errors and redacts credentials in diagnostic data', async () => {
+    vi.stubGlobal(
+      'fetch',
+      vi.fn(async (_input, init) => {
+        if (!init?.body) return new Response(null, { status: 405 });
+        const request = JSON.parse(String(init.body));
+        if (request.id === undefined) return new Response(null, { status: 202 });
+        if (request.method === 'initialize') {
+          return Response.json({
+            jsonrpc: '2.0',
+            id: request.id,
+            result: {
+              protocolVersion: '2025-03-26',
+              capabilities: { tools: {} },
+              serverInfo: { name: 'mock-tencent', version: '1' },
+            },
+          });
+        }
+        return Response.json({
+          jsonrpc: '2.0',
+          id: request.id,
+          error: { code: -32602, message: 'missing file scope', data: { request_id: 'req-123', token: 'fake-token' } },
+        });
+      })
+    );
+    const client = new TencentDocsClient(new AbortController().signal, 0);
+    try {
+      await client.connect('fake-token');
+      await expect(client.call('smartsheet.list_fields', {})).rejects.toMatchObject({
+        code: -32602,
+        message: expect.stringContaining('missing file scope'),
+        data: { request_id: 'req-123', token: '[REDACTED]' },
+      });
+    } finally {
+      await client.close();
+    }
+  });
+
   it('aborts a stalled handshake within the whole-load deadline', async () => {
     vi.stubGlobal(
       'fetch',
@@ -22,7 +61,7 @@ describe('Tencent Docs actual MCP SDK wire integration (offline)', () => {
     try {
       await expect(
         ava.source({
-          type: 'tencent-docs-smartsheet',
+          type: 'tencent-smartsheet',
           options: {
             fileId: 'file',
             sheetId: 'sheet',
@@ -85,7 +124,7 @@ describe('Tencent Docs actual MCP SDK wire integration (offline)', () => {
     const ava = new AVA({ llm: { model: 'offline' } });
     try {
       await ava.source({
-        type: 'tencent-docs-smartsheet',
+        type: 'tencent-smartsheet',
         options: { fileId: 'file', sheetId: 'sheet', token: 'fake-token', pageSize: 1 },
       });
       expect((await ava.query('SELECT sum(amount) AS total FROM data')).data).toEqual([{ total: 3 }]);

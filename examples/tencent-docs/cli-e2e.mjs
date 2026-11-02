@@ -41,7 +41,7 @@ try {
   const path = join(directory, 'source.json');
   await writeFile(
     path,
-    JSON.stringify({ type: 'tencent-docs-smartsheet', options: { fileId, sheetId, pageSize: 2 } }),
+    JSON.stringify({ type: 'tencent-smartsheet', options: { fileId, sheetId, pageSize: 2 } }),
     { mode: 0o600 }
   );
   ({ datasetId } = await command('source', `@${path}`));

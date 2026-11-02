@@ -1,5 +1,5 @@
 {
-  "type": "tencent-docs-smartsheet",
+  "type": "tencent-smartsheet",
   "options": {
     "fileId": "<file-id>",
     "sheetId": "<sheet-id>",

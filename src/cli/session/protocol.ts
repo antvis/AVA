@@ -113,7 +113,7 @@ const sourceSchema = z.discriminatedUnion('type', [
     .strict(),
   z.object({ type: z.literal('clickhouse'), options: clickhouse }).strict(),
   z.object({ type: z.literal('feishu-bitable'), options: feishuBitable }).strict(),
-  z.object({ type: z.literal('tencent-docs-smartsheet'), options: tencentDocsOptionsSchema }).strict(),
+  z.object({ type: z.literal('tencent-smartsheet'), options: tencentDocsOptionsSchema }).strict(),
 ]);
 
 export const sourceConfig = sourceSchema.transform((value) => value as DataSourceConfig);

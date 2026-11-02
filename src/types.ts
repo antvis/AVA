@@ -119,7 +119,7 @@ export type SourceType =
   | 'supabase'
   | 'clickhouse'
   | 'feishu-bitable'
-  | 'tencent-docs-smartsheet';
+  | 'tencent-smartsheet';
 
 /**
  * DuckDB read_csv reader options.
@@ -532,7 +532,7 @@ export type DataSourceConfig =
   | { type: 'supabase'; options: SupabaseSourceOptions }
   | { type: 'clickhouse'; options: ClickHouseSourceOptions }
   | { type: 'feishu-bitable'; options: FeishuBitableSourceOptions }
-  | { type: 'tencent-docs-smartsheet'; options: TencentDocsSourceOptions };
+  | { type: 'tencent-smartsheet'; options: TencentDocsSourceOptions };
 
 /**
  * File formats readable by DuckDB's readers (csv-file maps to csv, json-file to json).

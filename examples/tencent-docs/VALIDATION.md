@@ -5,10 +5,11 @@ Date: 2026-11-02 (Asia/Shanghai). This is a local verification record, not a cla
 ## Environment
 
 - Base: `origin/oss-camp2026`, commit `ac19d54d4155edc9a98d6db44024ab6bf2ce283f`.
+- The maintainer-feedback follow-up includes the latest target-branch changes through `3b664834` (merged in `63c33a81`).
 - Development branch: `codex/tencent-docs-source`.
 - Windows, Node.js 22.21.0, npm 10.9.4.
 - Linux verification: Debian Bookworm userland from the official Node `22-bookworm-slim` image, Node.js 22.23.4 / npm 10.9.9, running in a temporary chroot on WSL2 Linux 6.6.87.2. This was a genuine Linux process/socket environment, not a mocked `process.platform`. Docker Desktop's daemon was unavailable, so no Docker-engine validation is claimed.
-- AVA 4.0.0-beta.1; `@modelcontextprotocol/client` 2.4.0.
+- AVA 4.0.0 for the latest follow-up checks (initial integration: 4.0.0-beta.1); `@modelcontextprotocol/client` 2.4.0.
 - Tencent Docs official MCP service, an authorized dedicated SmartSheet.
 - Model: DeepSeek `deepseek-flash`, discovered through the provider's models endpoint and called through its OpenAI-compatible Chat Completions endpoint.
 - No real credentials, document IDs or provider response traces are included in this report.
@@ -84,16 +85,16 @@ The script asserts the computed rows and numerical tolerance rather than relying
 ## Automated checks
 
 - `npm run build`: passed CommonJS and ESM builds.
-- `npx vitest run tencent __tests__/duckdb/util/file.test.ts`: 102 tests passed and 3 skipped on Windows (one opt-in live test and two Unix-only filesystem tests).
+- `npx vitest run tencent __tests__/duckdb/util/file.test.ts`: 112 tests passed and 3 skipped on Windows (one opt-in live test and two Unix-only filesystem tests).
 - Explicit live read-only test: 1 passed with `AVA_TENCENT_INTEGRATION=1`.
 - ESLint on all changed/new TypeScript files: passed.
 - `git diff --check`: passed.
 - Updated source documentation compiled successfully with `@mdx-js/mdx` and `remark-gfm` (syntax/table validation only, not a full Next.js build).
 - Full repository lint: passed on Windows and Linux after the focused baseline fixes described below.
-- Windows `npm test`: **564 passed, 56 skipped**, zero failures or unhandled worker errors. Skips include optional external-service/model integration suites and the two Unix-only filesystem tests.
-- Linux `npm test -- --maxWorkers=2`: **566 passed, 54 skipped**, zero failures or unhandled worker errors, including the actual Unix mode and symlink tests. Linux build and lint also passed.
+- Windows `npm test`: **615 passed, 56 skipped**, zero failures or unhandled worker errors. Skips include optional external-service/model integration suites and the two Unix-only filesystem tests.
+- Linux `npm test -- --maxWorkers=2`: **617 passed, 54 skipped**, zero failures or unhandled worker errors, including the actual Unix mode and symlink tests. Linux build and lint also passed.
 - Real Linux CLI E2E: passed `source → schema → query → analyze → dispose`, including both business questions against the real Tencent Docs source and DeepSeek model, plus rejection of schema access after disposal. Run with `node --env-file=.env.local examples/tencent-docs/cli-e2e.mjs --with-model` on Linux/macOS.
-- Full documentation-site build: passed (`cd site && npm run build`, Next.js 16.4.3). `npm run check:docs` passed for 22 static MDX pages and 1,338 documentation links, including anchors, metadata, code blocks and the Tencent Docs option table.
+- Full documentation-site build: passed (`cd site && npm run build`, Next.js 16.4.3). `npm run check:docs` passed for 22 static MDX pages and 1,379 documentation links, including anchors, metadata, code blocks and the Tencent Docs option table.
 
 ## Baseline check failures resolved locally
 
@@ -116,6 +117,13 @@ Both high-severity findings on PR #1055 were reproduced against the implementati
 2. SmartSheet conversion now consumes validated pages incrementally, without retaining all raw records. Expanded JSON has an independent 16 MiB UTF-8 budget (including keys, nulls, record IDs, brackets and commas) and a 1,000,000-cell budget (including `_record_id`). Reported record totals are checked against the effective cell-based row cap before conversion. Regression tests cover a sparse 100,000-record / 1,000-field response and exact byte/cell boundaries; no partial snapshot is returned on rejection.
 
 After these changes, the Windows and Linux full suites, lint/build checks, and documentation-site build/checks were rerun with the results recorded above. The real source `analyze.mjs --verify-only` also passed again with `pageSize: 2` and the same business totals. The two real model/CLI runs above are historical validation of the original integration; they were not rerun for this hardening-only follow-up.
+
+## Maintainer feedback follow-up
+
+- Renamed the source discriminator and loader file to `tencent-smartsheet` to match `feishu-bitable`. SDK/CLI registration, validation, tests, runnable examples and documentation use the same name. This is still an unreleased source, so no alias for the former draft name is retained.
+- Preserve upstream codes/messages and diagnostic payloads, including unknown codes, `message`/`msg`, nested envelopes, plain-text MCP failures, and SDK/network error properties/cause chains. Known-code hints supplement rather than replace the upstream message. HTTP failures preserve the HTTP status separately, upstream codes where available, request IDs, and a bounded 8 KiB response body with a truncation marker. Only the configured credential is redacted; other upstream diagnostic context is deliberately retained.
+- Added regressions for those diagnostic paths, nested credential redaction, bounded HTTP bodies, and a genuine SDK JSON-RPC error through the mocked wire (not a mocked SDK class). Existing retry, deadline, read-only and snapshot-budget tests remain enabled.
+- Reran the full Windows/Linux checks and site checks above, plus the real read-only SDK fixture check and Linux CLI `source → schema → query → dispose` under the new source name. No new model calls or fixture writes were performed for this follow-up; the two real natural-language analyses above remain previous validation evidence.
 
 ## Maintainer review notes
 

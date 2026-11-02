@@ -8,7 +8,7 @@ describe.skipIf(process.env.AVA_TENCENT_INTEGRATION !== '1')('Tencent Docs live 
     const ava = new AVA({ llm: { model: 'offline-verification' } });
     try {
       await ava.source({
-        type: 'tencent-docs-smartsheet',
+        type: 'tencent-smartsheet',
         options: {
           fileId: process.env.TENCENT_DOCS_FILE_ID!,
           sheetId: process.env.TENCENT_DOCS_SHEET_ID!,
