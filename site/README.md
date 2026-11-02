@@ -47,7 +47,7 @@ The reading order is introduction → quickstart → data → analysis → visua
 
 ## Languages
 
-English keeps `/`, `/ai/`, and `/documentation/`. Chinese uses the corresponding `/zh/` paths. Both are exported as real HTML; there is no middleware or language redirect.
+English keeps `/`, `/ai/`, and `/documentation/`. Chinese uses the corresponding `/zh/` paths. Both are exported as real HTML without middleware. Only `/` checks the browser's primary language before hydration: Chinese (`zh` or `zh-*`) opens `/zh/`, while other languages use English. An explicit choice from the language switch takes precedence and is saved in localStorage. If storage is blocked, skip automatic redirection so both languages remain reachable. Direct links to `/zh/`, documentation, or the AI playground keep their specified language; query strings and anchors survive homepage redirection.
 
 - Shared presentation lives in `components/Home.tsx`, `ai/ui/AIPage.tsx`, and `components/docs/`; route files only choose the language.
 - `messages/en.json` and `messages/zh.json` hold UI copy. Use `useTranslations` in client components and `getTranslator` for server-rendered text. Keep matching keys; write Chinese copy for Chinese readers.

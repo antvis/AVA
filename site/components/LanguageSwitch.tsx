@@ -2,6 +2,7 @@
 
 import { usePathname } from 'next/navigation';
 import { getLocale, localeHref } from '../lib/i18n';
+import { LANGUAGE_STORAGE_KEY } from '../lib/language-preference';
 
 export default function LanguageSwitch() {
   const pathname = usePathname();
@@ -10,6 +11,13 @@ export default function LanguageSwitch() {
   return (
     <a
       href={localeHref(`${pathname.replace(/\/$/, '')}/`, nextLocale)}
+      onClick={() => {
+        try {
+          localStorage.setItem(LANGUAGE_STORAGE_KEY, nextLocale);
+        } catch {
+          // Language switching still works when browser storage is unavailable.
+        }
+      }}
       lang={nextLocale === 'zh' ? 'zh-CN' : 'en'}
       hrefLang={nextLocale === 'zh' ? 'zh-CN' : 'en'}
       className="inline-flex size-9 shrink-0 items-center justify-center rounded-lg text-zinc-600 transition-colors hover:bg-zinc-100 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cyan-600"

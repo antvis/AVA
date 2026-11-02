@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import '../app/globals.css';
 import I18nProvider from './I18nProvider';
 import { messages, type Locale } from '../lib/i18n';
+import { languageRedirectScript } from '../lib/language-preference';
 
 const metadata: Metadata = {
   title: 'AVA - AI-Native Visual Analytics | AntV',
@@ -55,6 +56,7 @@ export default function RootDocument({ children, locale }: { children: React.Rea
   return (
     <html lang={locale === 'zh' ? 'zh-CN' : 'en'}>
       <head>
+        <script dangerouslySetInnerHTML={{ __html: languageRedirectScript }} />
         <script
           dangerouslySetInnerHTML={{
             __html: `
