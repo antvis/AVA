@@ -70,15 +70,6 @@
   </tr>
 </table>
 
-## 🎯 Benchmarks
-
-> [!NOTE]
-> **Context and accuracy**
->
-> <img src="https://mdn.alipayobjects.com/huamei_aphk1k/afts/img/A*XjhtSbWcb70AAAAAUlAAAAgAegfkAQ/original" width="100%" alt="DataBench and Spider2-Lite evaluation results comparing raw data, schema and profile, and semantic context.">
->
-> [Evaluation setup and reports →](https://ava.antv.vision/documentation/reference/benchmarks/)
-
 ## 🚀 Getting started
 
 Install AVA 4.0 with Node.js 22.13+:
@@ -218,6 +209,17 @@ const chart = await ava.visualize({
 > **Missing a data source? 💡🛠️**
 >
 > **[💬 Open an issue](https://github.com/antvis/AVA/issues/new/choose)** · **[🛠️ Submit a pull request](https://github.com/antvis/AVA/compare)**
+
+## 🎯 Benchmarks
+
+We evaluate AVA on established benchmarks to measure the accuracy and efficiency of its data analysis.
+
+> [!NOTE]
+> **Context and accuracy**
+>
+> <img src="https://mdn.alipayobjects.com/huamei_aphk1k/afts/img/A*XjhtSbWcb70AAAAAUlAAAAgAegfkAQ/original" width="100%" alt="DataBench and Spider2-Lite evaluation results comparing raw data, schema and profile, and semantic context.">
+>
+> [Evaluation setup and reports →](https://ava.antv.vision/documentation/reference/benchmarks/)
 
 ## 🧩 More ways to use AVA
 
