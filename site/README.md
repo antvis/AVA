@@ -34,7 +34,7 @@ To add a chapter:
 1. Add an MDX file in the appropriate folder. Use `##` / `###` headings; the page title comes from the navigation metadata.
 2. Add its title, description, group, and slug to `lib/docs.ts`. Order controls the sidebar and previous/next links.
 3. Add an explicit MDX import to `content/docs/index.ts`.
-4. Add the route to `public/sitemap.xml` and `public/llms.txt`; keep the repository-root `llms.txt` synchronized with `public/llms.txt`.
+4. Add the route to `public/sitemap.xml` and `public/llms.txt`.
 5. Run `pnpm build` and `pnpm check:docs`.
 
 `/documentation/` serves the introduction. Every other URL follows the MDX file path, for example `data/sources.mdx` becomes `/documentation/data/sources/`. All routes are statically generated for GitHub Pages.
@@ -53,4 +53,4 @@ English keeps `/`, `/ai/`, and `/documentation/`. Chinese uses the corresponding
 - `messages/en.json` and `messages/zh.json` hold UI copy. Use `useTranslations` in client components and `getTranslator` for server-rendered text. Keep matching keys; write Chinese copy for Chinese readers.
 - `content/docs/en/` and `content/docs/zh/` use matching slugs. Keep API names, units, and behavior aligned. Preserve stable heading IDs even when wording differs.
 - Use `LocaleLink` for internal navigation. Assets and external URLs keep their original paths. Language switching opens the matching page, reloads the document, and starts a new AI conversation.
-- When adding a chapter, update both locales, explicit MDX imports, sitemap, and both `llms.txt` copies. Run `pnpm build` and `pnpm check:docs` to verify both languages.
+- When adding a chapter, update both locales, explicit MDX imports, `public/sitemap.xml`, and `public/llms.txt`. Run `pnpm build` and `pnpm check:docs` to verify both languages.
