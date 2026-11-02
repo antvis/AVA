@@ -1,31 +1,27 @@
 import type { DualAxesConfig } from '@antv/gpt-vis';
-import type { Message, ToolStep, ToolDiff, ToolDiffLine } from '../types';
+import type { Message, ToolStep } from '../types';
 
 import { MONTHLY_SALES } from '../constants';
 
 /** One result set for the chart and its inspectable data table. */
 export const ARTIFACT_DATA = MONTHLY_SALES.map(({ month, revenue, gross_profit }) => ({
   month: new Date(month).toLocaleString('en-US', { month: 'short', timeZone: 'UTC' }),
-  revenueK: revenue / 1000,
-  grossProfitK: gross_profit / 1000,
-  marginPct: Number(((100 * gross_profit) / revenue).toFixed(1)),
+  revenue_k: revenue / 1000,
+  gross_profit_k: gross_profit / 1000,
+  margin_pct: Number(((100 * gross_profit) / revenue).toFixed(1)),
 }));
 
 export const CHART_CONFIG = {
   type: 'dual-axes',
   categories: ARTIFACT_DATA.map((row) => row.month),
   series: [
-    { type: 'column', axisYTitle: 'Revenue ($k)', data: ARTIFACT_DATA.map((row) => row.revenueK) },
-    { type: 'line', axisYTitle: 'Gross margin (%)', data: ARTIFACT_DATA.map((row) => row.marginPct) },
+    { type: 'column', axisYTitle: 'Revenue ($k)', data: ARTIFACT_DATA.map((row) => row.revenue_k) },
+    { type: 'line', axisYTitle: 'Gross margin (%)', data: ARTIFACT_DATA.map((row) => row.margin_pct) },
   ],
-  title: 'Revenue & gross margin',
   axisXTitle: '2026',
   theme: 'default',
-  style: { palette: ['#0891b2', '#e88245'], backgroundColor: '#ffffff', startAtZero: true },
+  style: { palette: ['#7ce2ff', '#f28e82'], backgroundColor: 'transparent', startAtZero: true },
 } satisfies DualAxesConfig;
-
-/** Pretty-printed GPT-Vis JSON config, shown in the run diff. */
-export const CHART_JSON = JSON.stringify(CHART_CONFIG, null, 2);
 
 /** DuckDB file sources are registered as the `data` view. */
 export const ARTIFACT_SQL = [
@@ -111,18 +107,6 @@ const RUN_STEPS: ToolStep[] = [
 
 const ASSISTANT_TEXT = `Revenue more than doubled, but profitability did not improve at the same pace.\n\n- **Growth:** $120k → $260k revenue from Jan to Sep (**+116.7%**).\n- **Watch July:** revenue rose **13.3%** from June, yet gross profit fell **2.1%**. Gross margin hit **19%**, the period low.\n- **Recovery:** September reached **27% margin** and **$70.2k gross profit**; margin was still 3 percentage points below January.\n\n**Next step:** inspect July’s discounts, product mix and unit costs before scaling the same sales tactics. These totals flag the issue, but do not establish its cause.`;
 
-const RUN_DIFF_LINES: Record<string, ToolDiffLine[]> = {
-  'analysis.sql': ARTIFACT_SQL.split('\n').map((text) => ({ text, tone: 'add' })),
-  'growth-quality.json': CHART_JSON.split('\n')
-    .slice(0, 6)
-    .map((text) => ({ text, tone: 'add' })),
-};
-
-const RUN_DIFFS: ToolDiff[] = [
-  { file: 'analysis.sql', add: ARTIFACT_SQL.split('\n').length },
-  { file: 'growth-quality.json', add: CHART_JSON.split('\n').length },
-];
-
 const QUESTION =
   'Is our revenue growth profitable? Compare monthly revenue and gross margin for Jan–Sep 2026, flag the weakest month, and show the trend in a dual-axis chart.';
 
@@ -131,22 +115,22 @@ export const PRESET_MESSAGES: Message[] = [
   {
     role: 'assistant',
     steps: RUN_STEPS,
-    diffs: RUN_DIFFS,
-    diffLines: RUN_DIFF_LINES,
     text: ASSISTANT_TEXT,
     artifact: {
       id: 'demo-growth-quality',
       title: 'growth-quality.html',
       description: 'Revenue & gross margin · Jan–Sep 2026 · Dual Axes',
+      report: {
+        question: QUESTION,
+        answer: 'Revenue more than doubled, while gross margin slipped from 30% to 27%. July was weakest at 19%.',
+        insight:
+          'July’s revenue rose 13.3% from June, while gross profit fell 2.1%. Review discounts, product mix and unit costs.',
+        limitations:
+          'Gross margin excludes operating expenses. Monthly totals cannot explain whether discounts, product mix or costs caused the change.',
+      },
       config: CHART_CONFIG,
       code: ARTIFACT_SQL,
       data: ARTIFACT_DATA,
     },
   },
-];
-
-export const ARTIFACT_METRICS = [
-  { label: 'Revenue growth', value: '+116.7%', detail: 'Jan → Sep' },
-  { label: 'Lowest margin', value: '19%', detail: 'July · period low' },
-  { label: 'Margin recovery', value: '+8 pp', detail: 'Jul → Sep' },
 ];

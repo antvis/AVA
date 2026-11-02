@@ -18,6 +18,7 @@ const NAV: { title: string; links: { label: string; href: string; external?: boo
       { label: 'Features', href: '/#analytics' },
       { label: 'Integrations', href: '/#integrate' },
       { label: 'Benchmarks', href: '/#benchmarks' },
+      { label: 'Ecosystem', href: '/#ecosystem' },
     ],
   },
   {
@@ -45,7 +46,9 @@ const NAV: { title: string; links: { label: string; href: string; external?: boo
       { label: 'AntV', href: 'https://antv.antgroup.com/', external: true },
       { label: 'G2', href: 'https://g2.antv.vision/', external: true },
       { label: 'G6', href: 'https://g6.antv.vision/', external: true },
-      { label: 'S2', href: 'https://s2.antv.vision/', external: true },
+      { label: 'L7', href: 'https://l7.antv.antgroup.com/', external: true },
+      { label: 'GPT-Vis', href: 'https://gpt-vis.antv.vision/', external: true },
+      { label: 'Infographic', href: 'https://infographic.antv.vision/', external: true },
     ],
   },
 ];
@@ -65,16 +68,13 @@ const Footer: React.FC = () => (
             <span className="text-[17px] font-semibold text-zinc-900">AVA</span>
           </Link>
           <p className="mt-3 text-[12.5px] leading-relaxed text-zinc-500">
-            An open-source, AI-native visual analytics framework — built for AI agents, from the
-            AntV team.
+            AI-Native Visual Analytics. Open Source, Built for Agents.
           </p>
         </div>
 
         {NAV.map((group) => (
           <nav key={group.title} aria-label={group.title}>
-            <h3 className="font-mono text-[11px] uppercase tracking-[0.16em] text-zinc-400">
-              {group.title}
-            </h3>
+            <h3 className="font-mono text-[11px] uppercase tracking-[0.16em] text-zinc-400">{group.title}</h3>
             <ul className="mt-4 flex flex-col gap-2.5">
               {group.links.map((l) => (
                 <li key={l.label}>
@@ -103,9 +103,7 @@ const Footer: React.FC = () => (
       </div>
 
       <div className="mt-12 flex flex-col items-start justify-between gap-4 border-t border-zinc-200/70 pt-6 sm:flex-row sm:items-center">
-        <p className="text-[12px] text-zinc-400">
-          © 2026 AntV · Released under the MIT License.
-        </p>
+        <p className="text-[12px] text-zinc-400">© 2026 AntV · Released under the MIT License.</p>
         <a
           href={GITHUB}
           target="_blank"

@@ -1,4 +1,4 @@
-Use this reference to look up signatures, inputs, and return values after following the [quickstart](/documentation/quickstart/). The AVA data and visualization methods are asynchronous; the event methods and exported helpers are synchronous.
+Use this reference to look up signatures, inputs, and return values after following the [quickstart](/documentation/quickstart/). The AVA data and visualization methods are asynchronous. See [Events](/documentation/reference/events/) for lifecycle subscriptions and [Custom engines](/documentation/engines/custom/) for engine extension points.
 
 ## API at a glance
 
@@ -26,16 +26,7 @@ Use this reference to look up signatures, inputs, and return values after follow
 <tr><td><span className="docs-api-tag">More control</span> <a href="#viz"><code>viz(spec)</code></a></td><td>Render a chart specification.</td></tr>
 </tbody>
 <tbody>
-<tr><th scope="rowgroup" rowSpan={6}><a href="#cleanup-and-events">Cleanup and events</a></th><td><a href="#dispose"><code>dispose()</code></a></td><td>Release resources.</td></tr>
-<tr><td><a href="#event-methods"><code>on(name, listener, once?)</code></a></td><td>Subscribe to an event.</td></tr>
-<tr><td><a href="#event-methods"><code>once(name, listener)</code></a></td><td>Subscribe for one invocation.</td></tr>
-<tr><td><a href="#event-methods"><code>off(name?, listener?)</code></a></td><td>Remove listeners.</td></tr>
-<tr><td><a href="#event-methods"><code>emit(name, ...args)</code></a></td><td>Emit an event.</td></tr>
-<tr><td><a href="#event-methods"><code>getEvents()</code></a></td><td>Return the listener registry.</td></tr>
-</tbody>
-<tbody>
-<tr><th scope="rowgroup" rowSpan={2}><a href="#engine-extensions">Engine extensions</a></th><td><a href="#registerengine"><code>registerEngine(type, engineClass)</code></a></td><td>Register a custom engine.</td></tr>
-<tr><td><a href="#executionresult-helper"><code>executionResult(rows, schema, options?, upstreamTruncatedBy?)</code></a></td><td>Bound an engine’s results.</td></tr>
+<tr><th scope="rowgroup" rowSpan={1}><a href="#cleanup">Cleanup</a></th><td><a href="#dispose"><code>dispose()</code></a></td><td>Release resources.</td></tr>
 </tbody>
 </table>
 </div>
@@ -384,45 +375,11 @@ Neither requires a loaded source. Both use the model and return `null` for empty
 
 Returns a standalone HTML string. Does not require a loaded source or call a model. See [chart specifications](/documentation/visualization/overview/#recommend).
 
-## Cleanup and events
+## Cleanup
 
 ### dispose
 
 `dispose(): Promise<void>` takes no parameters. Releases the current engine and clears the schema, profile, and semantic definitions. Await it in a `finally` block.
-
-### Event methods
-
-AVA inherits synchronous `on`, `once`, `off`, `emit`, and `getEvents` methods from the AntV event emitter. See [event method parameters](/documentation/reference/events/#listener-parameters).
-
-## Engine extensions
-
-### registerEngine
-
-`registerEngine(type: string, engineClass: EngineClass): void`
-
-Exported by both SDK entry points. Register an engine implemented in your own application before loading a source.
-
-| Parameter     | Type                                                                              | Required | Meaning                                                                                             |
-| ------------- | --------------------------------------------------------------------------------- | -------- | --------------------------------------------------------------------------------------------------- |
-| `type`        | `string`                                                                          | Yes      | Engine name. Re-registering replaces the constructor used for future loads.                         |
-| `engineClass` | `new (llmConfig: LLMConfig, options?: Record<string, unknown>) => AnalysisEngine` | Yes      | Engine class. AVA passes its model configuration and remaining engine options to each new instance. |
-
-Registration affects the loaded SDK module only. See [Custom engines](/documentation/engines/custom/) for a complete external implementation and lifecycle details.
-
-### executionResult helper
-
-`executionResult<T>(rows: T[], schema: QueryColumn[], options?: ExecutionOptions, upstreamTruncatedBy?: 'maxRows' | 'maxResultBytes'): ExecutionResult<T>`
-
-A synchronous helper exported by both SDK entry points for custom engine implementations. Import it from `@antv/ava` or `@antv/ava/browser`.
-
-| Parameter             | Type                              | Required | Meaning / default                                                                                    |
-| --------------------- | --------------------------------- | -------- | ---------------------------------------------------------------------------------------------------- |
-| `rows`                | `T[]`                             | Yes      | Rows produced by the engine.                                                                         |
-| `schema`              | `QueryColumn[]`                   | Yes      | Output columns; each has `name: string` and optional `type: string`.                                 |
-| `options`             | `ExecutionOptions`                | No       | `{}`; uses the [execution limits](#executionoptions) above.                                          |
-| `upstreamTruncatedBy` | `'maxRows'` or `'maxResultBytes'` | No       | Preserve truncation already reported by an upstream executor unless a local limit truncates further. |
-
-Returns bounded `data`, `schema`, and either `rowCount` for a complete result or truncation metadata for a partial result. Throws if an individual result field exceeds 1 MiB. The helper bounds already-produced rows; it does not limit query execution or input memory use.
 
 ## Semantic model reference
 
@@ -609,7 +566,7 @@ Omitting a section retains the corresponding schema context. If adding a relatio
 
 Changing the schema clears the saved profile and retains semantic definitions. Profiling replaces observations and retains semantic definitions. Loading another source or calling `dispose()` clears all three. Reapply your saved definition after loading a new source, and review mappings if its structure changed. Calls require a loaded source; a failed source replacement leaves no active source.
 
-The setter validates and copies its returned object. A validation failure or thrown error leaves the previous semantic definition in place. A setter emits `semanticstart` and `semanticend`; a plain read emits neither. See [Events](/documentation/reference/events/).
+The setter validates and copies its returned object. A validation failure or thrown error leaves the previous semantic definition in place.
 
 ### Semantic validation
 
