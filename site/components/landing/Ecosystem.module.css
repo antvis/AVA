@@ -48,7 +48,7 @@
   overflow: hidden;
 }
 .visual {
-  height: clamp(138px, 21svh, 180px);
+  aspect-ratio: 16 / 9;
   margin: 12px 12px 0;
   overflow: hidden;
   border: 1px solid #e1edf3;
@@ -62,14 +62,11 @@
   object-fit: contain;
 }
 .visual[data-kind='sql'] {
-  height: auto;
-  aspect-ratio: 4 / 3;
   background: #191919;
 }
 .visual[data-kind='sql'] > img {
-  object-fit: contain;
+  object-fit: cover;
   object-position: center;
-  transform: scale(1.25);
 }
 .cardBody {
   display: flex;
@@ -273,9 +270,6 @@
   .card {
     flex-basis: min(82vw, 344px);
     width: min(82vw, 344px);
-  }
-  .visual {
-    height: 170px;
   }
   .footer {
     align-items: flex-start;
