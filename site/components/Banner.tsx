@@ -160,15 +160,12 @@ const Banner: React.FC = () => {
             <GitHubStars />
           </span>
 
-          <h1
-            lang="en"
-            className="text-[length:clamp(30px,4.5vw,58px)] font-semibold leading-[1.22] max-md:leading-[1.25] tracking-[-0.045em] text-zinc-900 max-md:text-[length:clamp(27px,5vw,38px)]"
-          >
-            <span className="whitespace-nowrap max-md:whitespace-normal">
+          <h1 className="text-[length:clamp(30px,4.5vw,58px)] font-semibold leading-[1.22] max-md:leading-[1.25] tracking-[-0.045em] text-zinc-900 max-md:text-[length:clamp(27px,5vw,38px)]">
+            <span lang="en" className="whitespace-nowrap max-md:whitespace-normal">
               <RotatingVerse /> Visual Analytics.
             </span>
             <br />
-            Open Source, Built for <span className="whitespace-nowrap">Agents.</span>
+            <span>{t('slogan')}</span>
           </h1>
 
           <p className="max-w-[520px] text-[14px] leading-[1.85] text-zinc-500 max-md:text-[13px]">
