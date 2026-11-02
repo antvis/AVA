@@ -184,8 +184,6 @@ await ava.dispose();
 > [!NOTE]
 > **Chart preview**
 >
-> Open `sales-change.html` in a browser with internet access.
->
 > <img src=".github/assets/sales-change.png" width="800" alt="Sales change by product from January to February 2025, with decreases in red and increases in green.">
 >
 > *Powered by [GPT-Vis](https://gpt-vis.antv.vision/).*
