@@ -3,12 +3,7 @@
   <img width="200" height="120" src="https://mdn.alipayobjects.com/huamei_qa8qxu/afts/img/A*yOHIQ48aRwgAAAAAAAAAAAAADmJ7AQ/original" alt="AVA logo">
 </div>
 
-[AVA](https://github.com/antvis/AVA) (<img src="https://mdn.alipayobjects.com/huamei_qa8qxu/afts/img/A*QzIsSrfsCW0AAAAAAAAAAAAADmJ7AQ/original" width="16" alt="AVA examples"> Visual Analytics) is a technology framework designed for more convenient visual analytics. The first **A** has multiple meanings: AI native, Automated, Augmented, and **VA** stands for Visual Analytics. It can assist users in unstructured data loading, data processing and analysis, as well as visualization code generation.
-
 <p align="center">
-  <a href="https://github.com/antvis/ava">
-    <img src="https://img.shields.io/badge/GitHub-000000?style=for-the-badge&logo=github&logoColor=white" alt="GitHub" />
-  </a>
   <a href="https://ava.antv.vision">
     <img src="https://img.shields.io/badge/Website-2F54EB?style=for-the-badge" alt="Website" />
   </a>
@@ -18,31 +13,64 @@
   <a href="https://ava.antv.vision/ai/">
     <img src="https://img.shields.io/badge/AI%20Agent-EB2F96?style=for-the-badge" alt="AI Agent" />
   </a>
-  <a href="https://ava.antv.vision/llms.txt">
-    <img src="https://img.shields.io/badge/LLMS-FA8C16?style=for-the-badge" alt="llms" />
-  </a>
   <a href="https://sive.antv.antgroup.com/" title="A data analysis app built with AVA">
     <img src="https://img.shields.io/badge/Try%20Sive-13A8A8?style=for-the-badge" alt="Try Sive" />
   </a>
+  <a href="https://github.com/antvis/ava">
+    <img src="https://img.shields.io/badge/GitHub-000000?style=for-the-badge&logo=github&logoColor=white" alt="GitHub" />
+  </a>
+  <a href="https://ava.antv.vision/llms.txt">
+    <img src="https://img.shields.io/badge/LLMS-FA8C16?style=for-the-badge" alt="llms" />
+  </a>
 </p>
 
-<p align="center">
-  <img width="800" alt="AVA demo" src=".github/assets/demo.gif" />
-</p>
+[AVA](https://github.com/antvis/AVA) (<img src="https://mdn.alipayobjects.com/huamei_qa8qxu/afts/img/A*QzIsSrfsCW0AAAAAAAAAAAAADmJ7AQ/original" width="16" alt="AVA examples"> Visual Analytics) is a technology framework designed for more convenient visual analytics. **A** stands for AI-native, Automated, and Augmented; **VA** stands for Visual Analytics.
 
-## ✨ Features
+> [!NOTE]
+> **Think of AVA as PandasAI for JavaScript. 💬📊🤖**
+>
+> It brings natural-language data analysis and visualization to your apps and AI agents.
 
-- 💬 **[Natural-language analysis](https://ava.antv.vision/documentation/analysis/overview/)** — Turn questions into executable queries, computed results, and summaries.
-- 📊 **[Visualization](https://ava.antv.vision/documentation/visualization/overview/)** — Recommend chart types and generate chart specifications and HTML.
-- 🔍 **[Data profiling](https://ava.antv.vision/documentation/data/schema/#profile-a-dataset)** — Inspect tables and calculate missing-value counts, ranges, and averages.
-- 💡 **[Question suggestions](https://ava.antv.vision/documentation/analysis/overview/#suggest-questions)** — Discover useful questions based on your data's structure and available statistics.
-- 🔌 **[App and agent integration](https://ava.antv.vision/documentation/agent-skill/)** — Use AVA through its SDK, CLI, or agent skill.
-- ⚙️ **[Multiple execution engines](https://ava.antv.vision/documentation/engines/overview/)** — Use DuckDB, Python/pandas, or remote databases in Node.js, and JavaScript in browsers.
-- 🧩 **[Composable workflows](https://ava.antv.vision/documentation/analysis/overview/#translate-and-execute-separately)** — Combine data loading, query generation, direct queries, and chart rendering.
+## ✨ Why AVA?
+
+<table width="100%">
+  <tr>
+    <td width="33%" valign="top">
+      <h3>🔌 Unified data access</h3>
+      <p>Connect <strong>files and databases</strong> through one interface.</p>
+      <a href="https://ava.antv.vision/documentation/data/sources/">Data sources →</a>
+    </td>
+    <td width="33%" valign="top">
+      <h3>🔎 Grounded answers</h3>
+      <p>Inspect the <strong>queries and results</strong> behind each answer.</p>
+      <a href="https://ava.antv.vision/documentation/analysis/overview/">Trusted analysis →</a>
+    </td>
+    <td width="33%" valign="top">
+      <h3>📊 Smart visualization</h3>
+      <p>Get charts guided by <strong>your question and data</strong>.</p>
+      <a href="https://ava.antv.vision/documentation/visualization/overview/">Visualization →</a>
+    </td>
+  </tr>
+  <tr>
+    <td width="33%" valign="top">
+      <h3>💻 Local execution</h3>
+      <p>Choose <strong>where analysis runs</strong> and which model endpoint it uses.</p>
+      <a href="https://ava.antv.vision/documentation/engines/overview/">Execution engines →</a>
+    </td>
+    <td width="33%" valign="top">
+      <h3>🎯 Published benchmarks</h3>
+      <p>Check accuracy against <strong>reference answers</strong> under published test conditions.</p>
+      <a href="https://ava.antv.vision/documentation/reference/benchmarks/">Benchmarks →</a>
+    </td>
+    <td width="33%" valign="top">
+      <h3>🤖 Agent integration</h3>
+      <p>Your agent reasons; <strong>AVA executes</strong> the data workflow.</p>
+      <a href="https://ava.antv.vision/documentation/agent-skill/">Agent integration →</a>
+    </td>
+  </tr>
+</table>
 
 ## 🚀 Getting started
-
-### 📦 Installation
 
 Install AVA 4.0 with Node.js 22.13+:
 
@@ -50,15 +78,12 @@ Install AVA 4.0 with Node.js 22.13+:
 npm install @antv/ava@4
 ```
 
-### 💻 Usage
+## 💻 Usage
 
-Investigate a monthly sales decline: measure the change, identify the largest contributors, and visualize the breakdown.
-
-#### Load data
-
-Download [sales.csv](__tests__/datasets/sales.csv) to your working directory. The sample contains 240 orders across 2025, with products, regions, channels, sales, and profit.
+Download [sales.csv](__tests__/datasets/sales.csv) and configure your model:
 
 ```typescript
+import { writeFile } from 'node:fs/promises';
 import { AVA } from '@antv/ava';
 
 const ava = new AVA({
@@ -68,60 +93,83 @@ const ava = new AVA({
     // baseURL: '<your-provider-api-url>',
   },
 });
+```
 
+### 1. Load 📂🔌
+
+```typescript
 await ava.source({ type: 'csv-file', options: { path: './sales.csv' } });
 ```
 
-#### Ask questions
+> [!NOTE]
+> **Data preview**
+>
+> First 3 of 240 rows, selected columns:
+>
+> | order_date | product | sales |
+> | --- | --- | ---: |
+> | 2025-01-01 | Monitor | 224.10 |
+> | 2025-01-02 | Office Chair | 680.20 |
+> | 2025-01-04 | Monitor | 2,191.20 |
 
-Measure the overall change using `sales`, the amount after discounts:
+### 2. Explore 🔍🧠
+
+Inspect the structure and data quality, then add [business definitions](https://ava.antv.vision/documentation/data/semantic/):
 
 ```typescript
-const overview = await ava.analyze(`
-  Compare total sales in January and February 2025 using the sales column.
-  Include the change and percentage change.
-`);
-console.log(overview.text);
+const schema = await ava.schema();
+const profile = await ava.profile({ metrics: ['row_count', 'null_count'] });
+await ava.semantic(undefined, () => ({
+  description: 'Use the sales column for amounts after discounts and order_date for monthly comparisons.',
+}));
 ```
 
-Expected: sales fell from **38,897.18 to 21,804.11**, down **17,093.07 (43.94%)**.
+> [!NOTE]
+> **Analysis context**
+>
+> | Context | Details |
+> | --- | --- |
+> | Structure | `data`: 12 columns |
+> | Quality | 240 rows; 1 missing `region` and 1 missing `quantity` |
+> | Semantics | `sales` is after discounts; monthly comparisons use `order_date` |
 
-Find the products contributing to the decline:
+### 3. Suggest 💡💬
 
 ```typescript
-const result = await ava.analyze(`
-  Compare January and February 2025 sales by product using the sales column.
-  Show both months and the change, ordered by the largest decline.
-`);
-console.log(result.text);
-console.table(result.data);
+const suggestions = await ava.suggest(3);
 ```
 
-Expected breakdown:
+> [!NOTE]
+> **Suggested questions** (examples)
+>
+> - How did sales change from January to February 2025?
+> - Which products contributed most to the sales decline?
+> - How do sales and profit vary by region?
 
-| Product | January sales | February sales | Change |
-| --- | ---: | ---: | ---: |
-| Laptop | 19,688.10 | 3,596.00 | −16,092.10 |
-| Standing Desk | 9,655.80 | 5,546.10 | −4,109.70 |
-| Monitor | 6,536.25 | 4,731.00 | −1,805.25 |
-| Pen Set | 232.20 | 127.71 | −104.49 |
-| Bookshelf | 1,225.50 | 1,251.30 | +25.80 |
-| Copy Paper | 59.19 | 137.06 | +77.87 |
-| Notebook | 31.50 | 137.03 | +105.53 |
-| Keyboard | 215.64 | 1,015.31 | +799.67 |
-| Office Chair | 1,253.00 | 5,262.60 | +4,009.60 |
-
-Laptops contributed the largest decline, while office chairs delivered the largest increase.
-
-<!-- Image placeholder: monthly sales comparison, 43.94% decline, and product contribution table. -->
-
-#### Visualize charts
-
-Chart each product's contribution to the sales change:
+### 4. Analyze 🧮📈
 
 ```typescript
-import { writeFile } from 'node:fs/promises';
+const result = await ava.analyze(
+  'Compare January and February 2025 sales by product. Show both months and the change, ordered by the largest decline.'
+);
+```
 
+> [!NOTE]
+> **Analysis result**
+>
+> Total sales fell **43.94%**, led by a **16,092.10** decline in laptop sales.
+>
+> First 3 of 9 products:
+>
+> | Product | January sales | February sales | Change |
+> | --- | ---: | ---: | ---: |
+> | Laptop | 19,688.10 | 3,596.00 | −16,092.10 |
+> | Standing Desk | 9,655.80 | 5,546.10 | −4,109.70 |
+> | Monitor | 6,536.25 | 4,731.00 | −1,805.25 |
+
+### 5. Visualize 📊✨
+
+```typescript
 const chart = await ava.visualize({
   query: 'Plot the sales change by product from January to February 2025 as a bar chart.',
   data: result.data,
@@ -129,80 +177,46 @@ const chart = await ava.visualize({
 if (chart) {
   await writeFile('sales-change.html', chart.html);
 }
-```
 
-Open `sales-change.html` in a browser with internet access.
-
-<img src=".github/assets/sales-change.png" width="600" alt="Sales change by product from January to February 2025, with decreases in red and increases in green.">
-
-#### Find questions to explore
-
-Get suggested questions for your data:
-
-```typescript
-const suggestions = await ava.suggest();
-console.log(suggestions);
-```
-
-> 💡 **Suggested questions**
->
-> How do sales change month by month?
->
-> Which products contribute the most profit?
->
-> How do sales compare across channels?
-
-#### Understand your data
-
-Check missing values and sales ranges:
-
-```typescript
-console.log(await ava.schema());
-console.log(await ava.profile({ metrics: ['row_count', 'null_count', 'min', 'max'] }));
-```
-
-The sample has one missing `region` and one missing `quantity`.
-
-Release resources when finished:
-
-```typescript
 await ava.dispose();
 ```
 
-## 🔌 Connect your data
+> [!NOTE]
+> **Chart preview**
+>
+> Open `sales-change.html` in a browser with internet access.
+>
+> <img src=".github/assets/sales-change.png" width="800" alt="Sales change by product from January to February 2025, with decreases in red and increases in green.">
+>
+> *Powered by [GPT-Vis](https://gpt-vis.antv.vision/).*
 
-Connect files and databases, or load inline data.
+## 🔌 Connect your data
 
 <table width="100%">
   <tr>
-    <td align="center" width="25%"><a href="https://ava.antv.vision/documentation/data/sources/#csv"><img src="site/public/logos/csv.svg" width="32" height="32" alt="CSV" /><br />CSV</a></td>
-    <td align="center" width="25%"><a href="https://ava.antv.vision/documentation/data/sources/#json"><img src="site/public/logos/json.svg" width="32" height="32" alt="JSON" /><br />JSON</a></td>
-    <td align="center" width="25%"><a href="https://ava.antv.vision/documentation/data/sources/#parquet"><img src="site/public/logos/parquet.svg" width="32" height="32" alt="Parquet" /><br />Parquet</a></td>
-    <td align="center" width="25%"><a href="https://ava.antv.vision/documentation/data/sources/#excel"><img src="site/public/logos/excel.svg" width="32" height="32" alt="Excel" /><br />Excel</a></td>
+    <td align="center" width="14%"><a href="https://ava.antv.vision/documentation/data/sources/#csv"><img src="https://mdn.alipayobjects.com/huamei_aphk1k/afts/img/A*SEIZRJCeCuYAAAAAQBAAAAgAegfkAQ/original" width="32" height="32" alt="CSV" /><br />CSV</a></td>
+    <td align="center" width="14%"><a href="https://ava.antv.vision/documentation/data/sources/#json"><img src="https://mdn.alipayobjects.com/huamei_aphk1k/afts/img/A*VBNjQJDMvMIAAAAAHYAAAAgAegfkAQ/original" width="32" height="32" alt="JSON" /><br />JSON</a></td>
+    <td align="center" width="14%"><a href="https://ava.antv.vision/documentation/data/sources/#parquet"><img src="https://mdn.alipayobjects.com/huamei_aphk1k/afts/img/A*-_h8RrPPA54AAAAAFkAAAAgAegfkAQ/original" width="32" height="32" alt="Parquet" /><br />Parquet</a></td>
+    <td align="center" width="14%"><a href="https://ava.antv.vision/documentation/data/sources/#excel"><img src="https://mdn.alipayobjects.com/huamei_aphk1k/afts/img/A*GfCXT7Mb_5gAAAAAQCAAAAgAegfkAQ/original" width="32" height="32" alt="Excel" /><br />Excel</a></td>
+    <td align="center" width="14%"><a href="https://ava.antv.vision/documentation/data/sources/#text"><img src="https://mdn.alipayobjects.com/huamei_aphk1k/afts/img/A*XrY8SK_9fGwAAAAAEsAAAAgAegfkAQ/original" width="32" height="32" alt="Text" /><br />Text</a></td>
+    <td align="center" width="14%"><a href="https://ava.antv.vision/documentation/data/sources/#feishu-bitable"><img src="https://mdn.alipayobjects.com/huamei_aphk1k/afts/img/A*Rly3Rou8Wv8AAAAAQFAAAAgAegfkAQ/original" width="32" height="32" alt="Feishu Bitable" /><br />Feishu Bitable</a></td>
+    <td align="center" width="14%"><a href="https://ava.antv.vision/documentation/data/sources/#csv-files"><img src="https://mdn.alipayobjects.com/huamei_aphk1k/afts/img/A*wH-PT4nF70wAAAAAMkAAAAgAegfkAQ/original" width="32" height="32" alt="Tencent Docs" /><br />Tencent Docs</a></td>
   </tr>
   <tr>
-    <td align="center"><a href="https://ava.antv.vision/documentation/data/sources/#sqlite"><img src="site/public/logos/sqlite.svg" width="32" height="32" alt="SQLite" /><br />SQLite</a></td>
-    <td align="center"><a href="https://ava.antv.vision/documentation/data/sources/#mysql"><img src="site/public/logos/mysql.svg" width="32" height="32" alt="MySQL" /><br />MySQL</a></td>
-    <td align="center"><a href="https://ava.antv.vision/documentation/data/sources/#postgresql"><img src="site/public/logos/postgresql.svg" width="32" height="32" alt="PostgreSQL" /><br />PostgreSQL</a></td>
-    <td align="center"><a href="https://ava.antv.vision/documentation/data/sources/#mongodb"><img src="site/public/logos/mongodb.svg" width="32" height="32" alt="MongoDB" /><br />MongoDB</a></td>
-  </tr>
-  <tr>
-    <td align="center"><a href="https://ava.antv.vision/documentation/data/sources/#clickhouse"><img src="site/public/logos/clickhouse.svg" width="32" height="32" alt="ClickHouse" /><br />ClickHouse</a></td>
-    <td align="center"><a href="https://ava.antv.vision/documentation/data/sources/#supabase"><img src="site/public/logos/supabase.svg" width="32" height="32" alt="Supabase" /><br />Supabase</a></td>
-    <td align="center"><a href="https://ava.antv.vision/documentation/data/sources/#text"><img src="site/public/logos/text.svg" width="32" height="32" alt="Text extraction" /><br />Text (LLM)</a></td>
-    <td align="center"><a href="https://ava.antv.vision/documentation/engines/custom/"><img src="site/public/logos/contribute.svg" width="32" height="32" alt="Custom engine" /><br />Custom engine</a></td>
+    <td align="center"><a href="https://ava.antv.vision/documentation/data/sources/#sqlite"><img src="https://mdn.alipayobjects.com/huamei_aphk1k/afts/img/A*3xulRYi0wWkAAAAAQBAAAAgAegfkAQ/original" width="32" height="32" alt="SQLite" /><br />SQLite</a></td>
+    <td align="center"><a href="https://ava.antv.vision/documentation/data/sources/#mysql"><img src="https://mdn.alipayobjects.com/huamei_aphk1k/afts/img/A*8TDeSpgXAi0AAAAAQEAAAAgAegfkAQ/original" width="32" height="32" alt="MySQL" /><br />MySQL</a></td>
+    <td align="center"><a href="https://ava.antv.vision/documentation/data/sources/#postgresql"><img src="https://mdn.alipayobjects.com/huamei_aphk1k/afts/img/A*h6xsS5N0EbcAAAAAQFAAAAgAegfkAQ/original" width="32" height="32" alt="PostgreSQL" /><br />PostgreSQL</a></td>
+    <td align="center"><a href="https://ava.antv.vision/documentation/engines/custom/"><img src="https://mdn.alipayobjects.com/huamei_aphk1k/afts/img/A*XVBPSaYT6p0AAAAAQJAAAAgAegfkAQ/original" width="32" height="32" alt="SQL Server" /><br />SQL Server</a></td>
+    <td align="center"><a href="https://ava.antv.vision/documentation/data/sources/#mongodb"><img src="https://mdn.alipayobjects.com/huamei_aphk1k/afts/img/A*5VYbTakXL7EAAAAAIlAAAAgAegfkAQ/original" width="32" height="32" alt="MongoDB" /><br />MongoDB</a></td>
+    <td align="center"><a href="https://ava.antv.vision/documentation/data/sources/#supabase"><img src="https://mdn.alipayobjects.com/huamei_aphk1k/afts/img/A*IWbeTqNDuu4AAAAAFFAAAAgAegfkAQ/original" width="32" height="32" alt="Supabase" /><br />Supabase</a></td>
+    <td align="center"><a href="https://ava.antv.vision/documentation/data/sources/#clickhouse"><img src="https://mdn.alipayobjects.com/huamei_aphk1k/afts/img/A*o0VuQ5NvHZ8AAAAAELAAAAgAegfkAQ/original" width="32" height="32" alt="ClickHouse" /><br />ClickHouse</a></td>
   </tr>
 </table>
 
-Load an Excel workbook with `source()`:
-
-```typescript
-await ava.source({ type: 'excel', options: { path: './sales.xlsx' } });
-```
-
-See the [data source guide](https://ava.antv.vision/documentation/data/sources/) for connection settings and engine support.
-
-For browser applications, use `@antv/ava/browser` with inline data. See [runtime configuration](https://ava.antv.vision/documentation/browser/).
+> [!TIP]
+> **Missing a data source? 💡🛠️**
+>
+> **[💬 Open an issue](https://github.com/antvis/AVA/issues/new/choose)** · **[🛠️ Submit a pull request](https://github.com/antvis/AVA/compare)**
 
 ## 🧩 More ways to use AVA
 
@@ -210,46 +224,25 @@ The agent and CLI workflows run on Node.js 22.13+ on macOS or Linux.
 
 ### Use with an Agent
 
-Your agent plans the analysis; AVA runs queries and creates charts.
-
-```bash
-npm install -g @antv/ava@4
-npx skills add antvis/AVA
-```
-
-In a new agent session, ask:
+Ask your AI agent:
 
 ```text
-Use the AVA skill to analyze ./sales.csv. Compare January and February 2025
-sales, identify the products contributing most to the change, and save a chart.
+Install the AVA CLI with `npm install -g @antv/ava@4` and the AVA skill
+with `npx skills add antvis/AVA`. Verify that both are ready to use.
 ```
 
-This workflow uses your agent's existing model. See [agent setup](https://ava.antv.vision/documentation/agent-skill/).
+[Agent setup guide →](https://ava.antv.vision/documentation/agent-skill/)
 
 ### Use from the CLI
 
-Configure your model and load a CSV:
+Load and analyze data from your terminal:
 
 ```bash
-npm install -g @antv/ava@4
-
-export OPENAI_API_KEY='<your-api-key>'
-export OPENAI_MODEL='<your-model>'
-# export OPENAI_BASE_URL='<your-provider-api-url>'
-
 ava source ./sales.csv
+ava analyze '<dataset-id>' 'Compare January and February 2025 sales by product.'
 ```
 
-Use the dataset ID returned by `source`:
-
-```bash
-ava analyze '<your-dataset-id>' 'Compare January and February 2025 sales by product, including the change.'
-ava dispose '<your-dataset-id>'
-```
-
-`analyze` returns the answer as JSON. `dispose` releases the dataset. See [all CLI commands](https://ava.antv.vision/documentation/reference/cli/).
-
-Feishu Bitable links are detected automatically, both `/base/` links and wiki-hosted `/wiki/` links resolved through the wiki API: `ava source "https://<tenant>.feishu.cn/base/<app_token>?table=<table_id>"` or `ava source "https://<tenant>.feishu.cn/wiki/<node_token>?table=<table_id>"`. Provide credentials through the source config, `AVA_FEISHU_APP_ID`/`AVA_FEISHU_APP_SECRET`, or `~/.ava/feishu.json`; see the [data source guide](skills/ava/references/sources.md#feishu-bitable).
+See the [CLI guide](https://ava.antv.vision/documentation/reference/cli/) for setup and commands.
 
 ## 📚 Resources
 
@@ -260,7 +253,7 @@ Feishu Bitable links are detected automatically, both `/base/` links and wiki-ho
 - [Benchmarks](https://ava.antv.vision/documentation/reference/benchmarks/) — Evaluation results
 - [Issues](https://github.com/antvis/AVA/issues) — Bug reports and feature requests
 
-## 🤝 Developer Contributions
+## 🤝🛠️ Contributing
 
 Contributions are welcome. Include tests, examples, and documentation with new features.
 
