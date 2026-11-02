@@ -1,6 +1,6 @@
 'use client';
 
-import { useLocale, useTranslations } from 'use-intl';
+import { useTranslations } from 'use-intl';
 
 import React, { useState } from 'react';
 import Reveal from './Reveal';
@@ -135,7 +135,6 @@ const CODE: Record<TabId, React.FC> = { skill: SkillCode, cli: CliCode, sdk: Sdk
 
 const Integrate: React.FC<{ id?: string }> = ({ id = 'integrate' }) => {
   const t = useTranslations('Integrate');
-  const locale = useLocale();
   const [tab, setTab] = useState<TabId>('skill');
   const [copied, setCopied] = useState(false);
   const [copiedTab, setCopiedTab] = useState<TabId>('skill');
@@ -259,13 +258,7 @@ const Integrate: React.FC<{ id?: string }> = ({ id = 'integrate' }) => {
                   key={`${tab}-code`}
                   style={{ animation: 'fade-swap 280ms ease-out both' }}
                 >
-                  {locale === 'zh' ? (
-                    <pre className="overflow-x-auto whitespace-pre font-mono text-[14px] leading-[1.75] text-zinc-300">
-                      <code>{codeText}</code>
-                    </pre>
-                  ) : (
-                    <Code />
-                  )}
+                  <Code />
                 </div>
               </div>
             </div>

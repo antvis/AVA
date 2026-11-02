@@ -191,9 +191,9 @@
     "buildWithTheSdk": "把分析能力集成到应用。",
     "composeAnalysisApisInYourTypescriptApp": "在 TypeScript 应用中组合数据分析 API。",
     "sdkQuickstart": "SDK 快速开始",
-    "code_skill": "# 为当前项目中的 Agent 安装 Skill\nnpx skills add antvis/AVA\n\n# 或在 Claude Code 中添加市场\n/plugin marketplace add antvis/AVA\n\n# 开启新会话后，可以这样提问：\n\"用 AVA Skill 分析 /absolute/path/sales.csv，比较各地区销售情况并生成图表。\"",
-    "code_cli": "# 安装（Node.js 22.13+，macOS / Linux）\nnpm install -g @antv/ava@4\n\nava source sales.csv\nava suggest \"$DATASET_ID\" --count 5\nava analyze \"$DATASET_ID\" \\\n  \"各地区的平均销售额是多少？\"\nava visualize --query \"比较各地区的平均销售额\" \\\n  --data @rows.json --output chart.html\n\n# 输出为 JSON，会话空闲 30 分钟后过期",
-    "code_sdk": "import { AVA } from '@antv/ava';\n\nconst ava = new AVA({\n  llm: { model: 'ling-1t', apiKey, baseURL },\n  // 默认使用 DuckDB 引擎\n});\n\nawait ava.source({ type: 'csv-file', options: { path: 'data/companies.csv' } });\nconst result = await ava.analyze('各地区的平均收入是多少？');\nconst viz = await ava.visualize(result);\nconsole.log(viz?.chartType); // 例如 column\n\nawait ava.dispose();"
+    "code_skill": "# install the skills for your agents\nnpx skills add antvis/AVA\n\n# or add the marketplace in Claude Code\n/plugin marketplace add antvis/AVA\n\n# then, in a new agent session:\n\"Use the AVA skill to analyze /absolute/path/sales.csv, compare sales by region, and generate a chart.\"",
+    "code_cli": "# install (Node.js 22.13+, macOS / Linux)\nnpm install -g @antv/ava@4\n\nava source sales.csv\nava suggest \"$DATASET_ID\" --count 5\nava analyze \"$DATASET_ID\" \\\n  \"What is the average sales value by region?\"\nava visualize --query \"Compare average sales by region\" \\\n  --data @rows.json --output chart.html\n\n# output is JSON · sessions expire after 30 min idle",
+    "code_sdk": "import { AVA } from '@antv/ava';\n\nconst ava = new AVA({\n  llm: { model: 'ling-1t', apiKey, baseURL },\n  // engine: { type: 'duckdb' } is the default\n});\n\nawait ava.source({ type: 'csv-file', options: { path: 'data/companies.csv' } });\nconst result = await ava.analyze('What is the average revenue by region?');\nconst viz = await ava.visualize(result);\nconsole.log(viz?.chartType); // e.g. 'column'\n\nawait ava.dispose();"
   },
   "TrustedAnalytics": {
     "trustedAnalytics": "可验证的分析",
