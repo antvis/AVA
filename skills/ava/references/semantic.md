@@ -1,6 +1,6 @@
 # Semantic
 
-Semantic stores reusable business meaning: metric formulas, eligible records, units, time conventions, and join rules. Knowledge grows incrementally; CLI writes replace a complete snapshot.
+Semantic stores reusable business meaning: metric formulas, eligible records, units, time conventions, and join rules.
 
 ## File
 
@@ -29,22 +29,6 @@ Adapt the example to the actual evidence. Attribute documented rules to their so
 
 ## Incremental Maintenance
 
-```text
-Local file + current session + established changes
-                       |
-                Check scope / merge
-                       |
-                Complete candidate
-                       |
-             ava semantic --file
-                 /           \
-              error         success
-                |              |
-         Keep old file   Check returned value
-                               |
-                        Replace local file
-```
-
 | Step | Operation |
 | --- | --- |
 | Read | Read the local file and `ava semantic "$DATASET_ID"`. Check source identity, scope, effective period, and required fields; matching field names alone are insufficient. |
@@ -52,7 +36,7 @@ Local file + current session + established changes
 | Load | Write a complete temporary candidate; run `ava semantic "$DATASET_ID" --file semantic-candidate.json`. Pass a plain path without `@`. |
 | Save | Check the returned definition before replacing the local file. On load/save failure, retain the previous durable file and report what succeeded. |
 
-`--file` replaces the **entire session definition**. Combine applicable rules before loading; partial files do not merge automatically. Keep each durable file within its source/scope. If the user requests no persistence, keep task context without a durable file.
+Knowledge is maintained incrementally, but `--file` **replaces the entire session definition**. Combine applicable rules before loading; partial files do not merge automatically. Keep each durable file within its source/scope.
 
 ## Runtime Behavior
 

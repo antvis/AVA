@@ -9,7 +9,7 @@ The agent reasons and explains; AVA loads data, executes calculations, and rende
 
 ## Analysis Flow
 
-Use the steps needed for the request; reuse work that is already usable.
+Reuse available sessions, definitions, and results; take only the steps the request needs.
 
 ```text
 Request -> Reuse context -> Resolve gaps -> Compute -> Check -> Deliver
@@ -17,13 +17,9 @@ Request -> Reuse context -> Resolve gaps -> Compute -> Check -> Deliver
                                  +-- missing context ---+
 ```
 
-| Stage | Action |
-| --- | --- |
-| Reuse context | Reuse sessions, results, and definitions. Load with `ava source` only when needed; use its returned `datasetId`. Default to DuckDB. |
-| Resolve gaps | Inspect `ava schema` for actual fields, mappings, and language. Use targeted queries or optional `profile` for facts. Resolve business meaning as described below. |
-| Compute | Write calculations against the actual schema and agreed meaning. Aggregate in the engine. `query` executes supplied code; semantic does not automatically apply filters or create database objects. |
-| Check | Verify population, grain, time, units, joins, nulls, denominators, and truncation. Cross-check key results when useful; reconcile contributions with the overall change. Investigate discrepancies rather than changing definitions to fit. |
-| Deliver | Answer with findings, definition used, and limitations. Keep reproducible queries and necessary results. Link created or updated semantic files. State what was not run or verified. |
+- Load with `ava source` only when needed; use its returned `datasetId`. Default to DuckDB. Inspect `ava schema` for actual fields, source mappings, and query language.
+- Calculate against the agreed meaning and actual schema. Check population, grain, time, units, joins, nulls, denominators, and truncation; reconcile contributions with the overall change. Investigate discrepancies rather than changing definitions to fit.
+- Deliver findings, the definition used, and limitations. Keep reproducible queries and necessary results; link new or updated semantic files. State what was not run or verified.
 
 For charts, use actual data or verified results. For recommendations only, explain the chart type and field mapping.
 
@@ -34,12 +30,12 @@ Check the request, documentation, `ava semantic`, and local definitions in the u
 | Situation | Decision |
 | --- | --- |
 | A definition matches the source and task | Reuse it without asking again. |
-| A factual detail is missing, such as status values | Inspect the data. |
+| A factual detail is missing, such as status values | Use targeted queries or optional `profile`. |
 | An unresolved business choice would materially change the answer, such as whether revenue includes refunds | Ask the user before computing the affected metric. |
 | The user delegates a choice | Disclose the assumption; keep it task-specific unless confirmed for reuse. |
-| Reusable meaning becomes established | Add or revise it in Semantic JSON, preserving unrelated rules and recording source and scope. |
+| Reusable meaning becomes established | Incrementally update project Semantic JSON with source and scope; preserve unrelated rules. |
 
-Start small and enrich semantic as analysis clarifies more. Keep temporary filters, unconfirmed assumptions, and computed answers in task context. Respect requests not to save.
+Start with the definitions the task establishes. Respect requests not to save.
 
 ## References
 
