@@ -1,6 +1,12 @@
 ---
 name: ava
-description: Use the AVA CLI to explore files and databases, clarify and reuse business definitions, run SQL/Python/JavaScript analysis, and create interactive HTML charts.
+description: >-
+  Use the AVA CLI for data access, exploration, querying, analysis, and
+  visualization with CSV, Excel, JSON, and Parquet files, databases, and
+  Feishu Bitable. Supports inspecting schemas and data quality,
+  SQL/Python/JavaScript queries, transformation and aggregation,
+  clarifying and reusing business definitions, metric and trend analysis,
+  chart recommendations, and interactive HTML charts.
 ---
 
 # AVA
