@@ -138,6 +138,7 @@ export type PostgreSQLSourceOptions = Extract<SourceConfigInput, { type: 'postgr
 export type SupabaseSourceOptions = Extract<SourceConfigInput, { type: 'supabase' }>['options'];
 export type SQLServerSourceOptions = Extract<SourceConfigInput, { type: 'sqlserver' }>['options'];
 export type FeishuBitableSourceOptions = Extract<SourceConfigInput, { type: 'feishu-bitable' }>['options'];
+export type TencentDocsSourceOptions = Extract<SourceConfigInput, { type: 'tencent-smartsheet' }>['options'];
 export type GitHubSourceOptions = Extract<SourceConfigInput, { type: 'github' }>['options'];
 export type CSVReadOptions = z.input<typeof csvReadOptionsSchema>;
 export type JSONReadOptions = z.input<typeof jsonReadOptionsSchema>;

@@ -17,6 +17,7 @@ import { clickhouseSourceSchema } from './clickhouse';
 import { sqlserverSourceSchema } from './sqlserver';
 import { snowflakeSourceSchema } from './snowflake';
 import { feishuBitableSourceSchema } from './feishu-bitable';
+import { tencentDocsSourceSchema } from './tencent-smartsheet';
 import { githubSourceSchema } from './github';
 
 /** Engines reuse these shapes and narrow only the options they can execute. */
@@ -37,6 +38,7 @@ export const sourceSchemas = {
   sqlserver: sqlserverSourceSchema,
   snowflake: snowflakeSourceSchema,
   'feishu-bitable': feishuBitableSourceSchema,
+  'tencent-smartsheet': tencentDocsSourceSchema,
   github: githubSourceSchema,
 };
 
@@ -58,5 +60,6 @@ export const sourceInputSchema = z.discriminatedUnion('type', [
   sourceSchemas.sqlserver,
   sourceSchemas.snowflake,
   sourceSchemas['feishu-bitable'],
+  sourceSchemas['tencent-smartsheet'],
   sourceSchemas.github,
 ]);
