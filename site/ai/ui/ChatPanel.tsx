@@ -58,7 +58,7 @@ const ChatPanel: React.FC<{
         className={`overflow-hidden flex min-h-0 flex-col ${
           live
             ? 'h-[clamp(520px,calc(100dvh-290px),780px)] max-md:h-[clamp(460px,calc(100dvh-250px),680px)]'
-            : 'h-[510px] max-md:h-[460px]'
+            : 'h-[560px] max-md:h-[500px]'
         }`}
       >
         {heading}
@@ -265,7 +265,7 @@ const ChatPanel: React.FC<{
                   </div>
                 )}
                 {streamingIdx === i && !msg.dataset && <ResponseLoading />}
-                {msg.artifact && streamingIdx !== i && (
+                {live && msg.artifact && streamingIdx !== i && (
                   <ArtifactChip
                     title={msg.artifact.title}
                     description={msg.artifact.description}

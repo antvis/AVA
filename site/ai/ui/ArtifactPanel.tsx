@@ -41,7 +41,7 @@ export default function ArtifactPanel({
       className={`overflow-hidden flex flex-col ${
         live
           ? 'h-[clamp(520px,calc(100dvh-290px),780px)] max-md:h-[clamp(460px,calc(100dvh-250px),680px)]'
-          : 'h-[510px] max-md:h-[460px]'
+          : 'h-[560px] max-md:h-[500px]'
       } border border-[rgb(242,242,237)] rounded-xl shadow-xs`}
       style={{ animation: 'slide-in .4s ease-out' }}
       aria-label={t('artifactPanel')}

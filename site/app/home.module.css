@@ -1,5 +1,4 @@
 .home {
-  --demo-height: clamp(460px, calc(100dvh - 440px), 600px);
   --home-ink: #1b242a;
   --home-muted: #65747b;
   --home-blue: #22799b;
@@ -254,9 +253,6 @@
 .demo > main {
   margin: 0;
   padding-bottom: 0;
-}
-.demo [id='ai'] > div > section {
-  height: var(--demo-height);
 }
 .demo [data-artifact-panel] [role='img'] {
   height: clamp(240px, 26vw, 280px);
@@ -646,7 +642,6 @@
 }
 @media (max-width: 767px) {
   .home {
-    --demo-height: clamp(400px, calc(100dvh - 360px), 520px);
     background-size: 100% 760px;
   }
   .home > header > div {
