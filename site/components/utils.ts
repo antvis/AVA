@@ -3,9 +3,9 @@ import { readSheet } from 'read-excel-file/browser';
 
 // Default LLM config
 export const DEFAULT_LLM_CONFIG: LLMConfig = {
-  model: 'ling-1t',
+  model: 'deepseek-flash',
   apiKey: '',
-  baseURL: 'https://api.tbox.cn/api/llm/v1',
+  baseURL: 'https://api.deepseek.com',
 };
 
 // Load LLM config from localStorage

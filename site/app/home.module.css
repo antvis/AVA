@@ -1,7 +1,3 @@
-.canvas {
-  padding: clamp(24px, 5vw, 96px);
-  background: #e8e8e8;
-}
 .home {
   --demo-height: clamp(460px, calc(100dvh - 440px), 600px);
   --home-ink: #1b242a;
@@ -9,13 +5,11 @@
   --home-blue: #22799b;
   color: var(--home-ink);
   overflow: clip;
-  border: 1px solid #ffffffd9;
   background-color: #fff;
   background-image: linear-gradient(180deg, #89ccf8 0%, #b4e4fb 44%, #e8f7fe 76%, #fff 100%);
   background-position: center top;
   background-size: 100% 1080px;
   background-repeat: no-repeat;
-  box-shadow: 0 1px 4px #6d7b8314;
 }
 .home h1,
 .home h2,
@@ -652,9 +646,6 @@
   }
 }
 @media (max-width: 767px) {
-  .canvas {
-    padding: 12px;
-  }
   .home {
     --demo-height: clamp(400px, calc(100dvh - 360px), 520px);
     background-size: 100% 760px;

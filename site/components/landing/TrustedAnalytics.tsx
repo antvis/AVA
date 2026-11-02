@@ -122,12 +122,7 @@ const TrustedAnalytics: React.FC<{ id?: string }> = ({ id = 'benchmarks' }) => {
               </div>
 
               <div className="border-t border-zinc-100 pt-4">
-                <p className="text-[12px] leading-relaxed text-zinc-500">
-                  Semantic uses reference-assisted calibration on the same questions (in-sample).
-                </p>
-                <div className="mt-3">
-                  <SectionLink href={BENCHMARK.link}>Explore the evaluation</SectionLink>
-                </div>
+                <SectionLink href={BENCHMARK.link}>Explore the evaluation</SectionLink>
               </div>
             </div>
           </Reveal>

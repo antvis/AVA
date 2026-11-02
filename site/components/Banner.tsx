@@ -203,7 +203,6 @@ const Banner: React.FC = () => (
           </Link>
           <a
             href="https://sive.antv.antgroup.com/"
-            title="Built with AVA"
             target="_blank"
             rel="noopener noreferrer"
             className="group inline-flex h-10 items-center gap-2.5 whitespace-nowrap rounded-[9px] border border-zinc-300 bg-white/80 px-5 text-zinc-700 transition-colors hover:border-cyan-400 hover:bg-white focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-cyan-600"
@@ -215,7 +214,10 @@ const Banner: React.FC = () => (
               height={24}
               className="size-6 shrink-0 object-contain"
             />
-            <span className="text-[13.5px] font-medium leading-none max-md:text-xs">Try Sive</span>
+            <span className="flex flex-col items-start gap-1">
+              <span className="text-[13.5px] font-medium leading-none max-md:text-xs">Try Sive</span>
+              <span className="text-[9.5px] font-normal leading-none text-[#607482]">Built With AVA</span>
+            </span>
             <svg
               width="12"
               height="12"

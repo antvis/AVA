@@ -10,6 +10,76 @@ interface ModelConfigProps {
   onSave: (config: LLMConfig) => void;
 }
 
+function APIKeyHelp() {
+  const [open, setOpen] = useState(false);
+
+  return (
+    <div
+      className="relative"
+      onMouseEnter={() => setOpen(true)}
+      onMouseLeave={() => setOpen(false)}
+      onFocusCapture={() => setOpen(true)}
+      onBlurCapture={(event) => {
+        if (!event.currentTarget.contains(event.relatedTarget)) setOpen(false);
+      }}
+      onKeyDown={(event) => {
+        if (event.key === 'Escape') {
+          event.currentTarget.querySelector('button')?.focus();
+          setOpen(false);
+          event.stopPropagation();
+        }
+      }}
+    >
+      <button
+        type="button"
+        aria-expanded={open}
+        aria-controls="api-key-help"
+        onClick={() => setOpen(true)}
+        className="text-xs text-[#38798e] underline decoration-[#38798e]/35 underline-offset-4 hover:text-ink"
+      >
+        Don’t have an API key?
+      </button>
+      {open && (
+        <div id="api-key-help" className="absolute right-0 top-full z-10 w-[min(320px,calc(100vw-80px))] pt-3">
+          <section
+            aria-label="API key providers"
+            className="rounded-2xl border border-gray-200 bg-white p-4 text-left shadow-[0_12px_36px_#183a4a24]"
+          >
+            <p className="mb-3 text-xs font-medium text-gray-800">Choose where to get your key</p>
+            <a
+              href="https://platform.deepseek.com/api_keys"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center justify-between text-sm font-medium text-[#38798e] hover:underline"
+            >
+              Get a DeepSeek key <span aria-hidden="true">↗</span>
+              <span className="sr-only">(opens in a new tab)</span>
+            </a>
+            <p className="mt-1 text-xs leading-5 text-gray-500">
+              Start with DeepSeek. Keep the default model and Base URL, then paste your key.
+            </p>
+            <div className="mt-3 border-t border-gray-100 pt-3">
+              <a
+                href="https://zenmux.ai/platform/pay-as-you-go"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center justify-between text-sm font-medium text-[#38798e] hover:underline"
+              >
+                Get a ZenMux key <span aria-hidden="true">↗</span>
+                <span className="sr-only">(opens in a new tab)</span>
+              </a>
+              <p className="mt-1 text-xs leading-5 text-gray-500">
+                For more model providers, use <span className="font-mono text-[11px]">https://zenmux.ai/api/v1</span>{' '}
+                and copy the model ID from ZenMux’s model page.
+              </p>
+            </div>
+          </section>
+        </div>
+      )}
+    </div>
+  );
+}
+
 const ModelConfig: React.FC<ModelConfigProps> = ({ isOpen, onClose, config, onSave, disabled = false }) => {
   const [localConfig, setLocalConfig] = useState(config);
 
@@ -63,14 +133,17 @@ const ModelConfig: React.FC<ModelConfigProps> = ({ isOpen, onClose, config, onSa
               value={typeof localConfig.model === 'string' ? localConfig.model : localConfig.model.modelId}
               onChange={(e) => setLocalConfig({ ...localConfig, model: e.target.value })}
               className="w-full px-4 py-2.5 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[color:var(--color-primary)]/50 focus:border-[color:var(--color-primary)] transition-all"
-              placeholder="e.g., ling-1t, gpt-4"
+              placeholder="deepseek-flash"
             />
           </div>
 
           <div>
-            <label htmlFor="llm-api-key" className="block text-sm font-medium text-gray-700 mb-2">
-              API Key
-            </label>
+            <div className="mb-2 flex items-center justify-between gap-2">
+              <label htmlFor="llm-api-key" className="text-sm font-medium text-gray-700">
+                API Key
+              </label>
+              <APIKeyHelp />
+            </div>
             <input
               id="llm-api-key"
               type="password"
@@ -92,7 +165,7 @@ const ModelConfig: React.FC<ModelConfigProps> = ({ isOpen, onClose, config, onSa
               value={localConfig.baseURL || ''}
               onChange={(e) => setLocalConfig({ ...localConfig, baseURL: e.target.value })}
               className="w-full px-4 py-2.5 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[color:var(--color-primary)]/50 focus:border-[color:var(--color-primary)] transition-all"
-              placeholder="https://api.example.com/v1"
+              placeholder="https://api.deepseek.com"
             />
           </div>
         </div>

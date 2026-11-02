@@ -77,146 +77,144 @@ function Arrow() {
 
 export default function Home() {
   return (
-    <div className={styles.canvas}>
-      <PageShell>
-        <div className={styles.home}>
-          <a className={styles.skipLink} href="#analytics">
-            Skip to features
-          </a>
-          <Header />
-          <div className={styles.hero}>
-            <div className={styles.heroIntro}>
-              <Banner />
-            </div>
-            <div className={styles.demo} aria-label="Interactive demo using sample data">
-              <DemoChat />
-            </div>
+    <PageShell>
+      <div className={styles.home}>
+        <a className={styles.skipLink} href="#analytics">
+          Skip to features
+        </a>
+        <Header />
+        <div className={styles.hero}>
+          <div className={styles.heroIntro}>
+            <Banner />
           </div>
-
-          <section id="analytics" className={styles.features} aria-labelledby="features-title">
-            <div className={styles.sectionHeading}>
-              <h2 id="features-title">
-                From Raw Data to
-                <br />
-                Answers You Can Inspect.
-              </h2>
-            </div>
-            <FeatureCards />
-          </section>
-
-          <section id="data" className={styles.dataSection} aria-labelledby="data-title">
-            <div className={styles.dataCopy}>
-              <h2 id="data-title">
-                Connect Your Data.
-                <br />
-                Run Anywhere.
-              </h2>
-              <div className={styles.sourceCategories}>
-                <span>Files</span>
-                <span>Databases</span>
-                <span>SaaS</span>
-              </div>
-              <Link href="/documentation/data/sources/" className={styles.textLink}>
-                All data sources <Arrow />
-              </Link>
-            </div>
-            <div className={styles.sourcePanel}>
-              <div className={styles.sourceWindow}>
-                <div className={styles.sourceGrid}>
-                  {SOURCES.map(([label, logo, detail]) => (
-                    <Link key={label} href={`/documentation/data/sources/#${logo}`}>
-                      <span className={styles.sourceIcon}>
-                        <img src={`/logos/${logo}.svg`} alt="" width="32" height="32" loading="lazy" />
-                      </span>
-                      <span>{label}</span>
-                      {['csv', 'json'].includes(logo) && <small>{detail}</small>}
-                    </Link>
-                  ))}
-                </div>
-                <div className={styles.sourceHub} aria-hidden="true">
-                  <span />
-                  <div>
-                    <svg
-                      width="16"
-                      height="16"
-                      viewBox="0 0 24 24"
-                      fill="none"
-                      stroke="currentColor"
-                      strokeWidth="1.5"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                    >
-                      <path d="M5 5v5a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V5M12 12v7" />
-                      <circle cx="5" cy="4" r="2" />
-                      <circle cx="19" cy="4" r="2" />
-                      <circle cx="12" cy="21" r="2" />
-                    </svg>
-                    AVA
-                  </div>
-                  <span />
-                </div>
-              </div>
-            </div>
-          </section>
-
-          <div className={styles.benchmarks}>
-            <TrustedAnalytics />
+          <div className={styles.demo} aria-label="Interactive demo using sample data">
+            <DemoChat />
           </div>
-          <div className={styles.integration}>
-            <Integrate />
-          </div>
-
-          <div className={styles.ecosystem}>
-            <Ecosystem />
-          </div>
-
-          <section className={styles.faq} aria-labelledby="faq-title">
-            <div className={styles.sectionHeading}>
-              <h2 id="faq-title">
-                How AVA Works.
-                <br />
-                What You Need to Start.
-              </h2>
-            </div>
-            <div className={styles.faqList}>
-              {FAQS.map(({ question, answer }) => (
-                <details key={question}>
-                  <summary>
-                    {question}
-                    <span aria-hidden="true">+</span>
-                  </summary>
-                  <div>{answer}</div>
-                </details>
-              ))}
-            </div>
-          </section>
-          <section className={styles.closing} aria-labelledby="closing-title">
-            <h2 id="closing-title">
-              Your agent’s next skill?
-              <br />
-              <span>Understanding your data.</span>
-            </h2>
-            <p>Connect, analyze, and visualize — with the tools your agent needs.</p>
-            <div className={styles.actions}>
-              <Link href="/documentation/quickstart/" className={styles.primaryButton}>
-                Get Started <Arrow />
-              </Link>
-              <a
-                href="https://github.com/antvis/AVA"
-                target="_blank"
-                rel="noopener noreferrer"
-                className={styles.secondaryButton}
-              >
-                Explore GitHub <Arrow />
-              </a>
-            </div>
-            <div className={styles.closingSignature} aria-hidden="true">
-              a<span>v</span>a.
-            </div>
-          </section>
-          <Footer />
         </div>
-      </PageShell>
-    </div>
+
+        <section id="analytics" className={styles.features} aria-labelledby="features-title">
+          <div className={styles.sectionHeading}>
+            <h2 id="features-title">
+              From Raw Data to
+              <br />
+              Answers You Can Inspect.
+            </h2>
+          </div>
+          <FeatureCards />
+        </section>
+
+        <section id="data" className={styles.dataSection} aria-labelledby="data-title">
+          <div className={styles.dataCopy}>
+            <h2 id="data-title">
+              Connect Your Data.
+              <br />
+              Run Anywhere.
+            </h2>
+            <div className={styles.sourceCategories}>
+              <span>Files</span>
+              <span>Databases</span>
+              <span>SaaS</span>
+            </div>
+            <Link href="/documentation/data/sources/" className={styles.textLink}>
+              All data sources <Arrow />
+            </Link>
+          </div>
+          <div className={styles.sourcePanel}>
+            <div className={styles.sourceWindow}>
+              <div className={styles.sourceGrid}>
+                {SOURCES.map(([label, logo, detail]) => (
+                  <Link key={label} href={`/documentation/data/sources/#${logo}`}>
+                    <span className={styles.sourceIcon}>
+                      <img src={`/logos/${logo}.svg`} alt="" width="32" height="32" loading="lazy" />
+                    </span>
+                    <span>{label}</span>
+                    {['csv', 'json'].includes(logo) && <small>{detail}</small>}
+                  </Link>
+                ))}
+              </div>
+              <div className={styles.sourceHub} aria-hidden="true">
+                <span />
+                <div>
+                  <svg
+                    width="16"
+                    height="16"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="1.5"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  >
+                    <path d="M5 5v5a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V5M12 12v7" />
+                    <circle cx="5" cy="4" r="2" />
+                    <circle cx="19" cy="4" r="2" />
+                    <circle cx="12" cy="21" r="2" />
+                  </svg>
+                  AVA
+                </div>
+                <span />
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <div className={styles.benchmarks}>
+          <TrustedAnalytics />
+        </div>
+        <div className={styles.integration}>
+          <Integrate />
+        </div>
+
+        <div className={styles.ecosystem}>
+          <Ecosystem />
+        </div>
+
+        <section className={styles.faq} aria-labelledby="faq-title">
+          <div className={styles.sectionHeading}>
+            <h2 id="faq-title">
+              How AVA Works.
+              <br />
+              What You Need to Start.
+            </h2>
+          </div>
+          <div className={styles.faqList}>
+            {FAQS.map(({ question, answer }) => (
+              <details key={question}>
+                <summary>
+                  {question}
+                  <span aria-hidden="true">+</span>
+                </summary>
+                <div>{answer}</div>
+              </details>
+            ))}
+          </div>
+        </section>
+        <section className={styles.closing} aria-labelledby="closing-title">
+          <h2 id="closing-title">
+            Your agent’s next skill?
+            <br />
+            <span>Understanding your data.</span>
+          </h2>
+          <p>Connect, analyze, and visualize — with the tools your agent needs.</p>
+          <div className={styles.actions}>
+            <Link href="/documentation/quickstart/" className={styles.primaryButton}>
+              Get Started <Arrow />
+            </Link>
+            <a
+              href="https://github.com/antvis/AVA"
+              target="_blank"
+              rel="noopener noreferrer"
+              className={styles.secondaryButton}
+            >
+              Explore GitHub <Arrow />
+            </a>
+          </div>
+          <div className={styles.closingSignature} aria-hidden="true">
+            a<span>v</span>a.
+          </div>
+        </section>
+        <Footer />
+      </div>
+    </PageShell>
   );
 }
