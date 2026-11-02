@@ -120,7 +120,8 @@ export type SourceType =
   | 'mongodb'
   | 'supabase'
   | 'clickhouse'
-  | 'feishu-bitable';
+  | 'feishu-bitable'
+  | 'tencent-docs-smartsheet';
 
 /**
  * DuckDB read_csv reader options.
@@ -493,6 +494,23 @@ export interface FeishuBitableSourceOptions {
   appSecret?:string;
 }
 
+/** Read-only snapshot of one Tencent Docs SmartSheet table (Node.js / DuckDB). */
+export interface TencentDocsSourceOptions {
+  /** file_id accepted by Tencent Docs MCP (including a document's encoded ID). */
+  fileId: string;
+  sheetId: string;
+  /** Exact Authorization value from Tencent Docs; falls back to TENCENT_DOCS_TOKEN. */
+  token?: string;
+  /** Records per request, 1–100. Default 100. */
+  pageSize?: number;
+  /** Fail instead of silently truncating. Default 10,000; maximum 100,000. */
+  maxRecords?: number;
+  /** Whole-load deadline, including connection, pagination and retries. Default 60,000 ms. */
+  timeoutMs?: number;
+  /** Retries for transient failures only, 0–5. Default 2. */
+  maxRetries?: number;
+}
+
 /**
  * External data source configuration for loadSource.
  * - inline types (csv/json/text): data is materialized into JS memory
@@ -515,7 +533,8 @@ export type DataSourceConfig =
   | { type: 'mongodb'; options: MongoDBSourceOptions }
   | { type: 'supabase'; options: SupabaseSourceOptions }
   | { type: 'clickhouse'; options: ClickHouseSourceOptions }
-  | { type: 'feishu-bitable'; options: FeishuBitableSourceOptions };
+  | { type: 'feishu-bitable'; options: FeishuBitableSourceOptions }
+  | { type: 'tencent-docs-smartsheet'; options: TencentDocsSourceOptions };
 
 /**
  * File formats readable by DuckDB's readers (csv-file maps to csv, json-file to json).

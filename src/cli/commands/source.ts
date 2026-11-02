@@ -51,6 +51,10 @@ export async function run([dataset]: string[], options: Options): Promise<{ data
 
   const config = sourceConfig.parse(input);
 
+  if (config.type === 'tencent-docs-smartsheet' && engine !== undefined && engine !== 'duckdb') {
+    throw new Error('Tencent Docs SmartSheet sources require the duckdb engine.');
+  }
+
   if ('path' in config.options && !/^https?:\/\//i.test(config.options.path)) {
     config.options.path = resolve(config.options.path);
   }
@@ -108,6 +112,7 @@ Feishu Bitable:
   Docx and Sheets links are not supported.
 
 Environment:
+  TENCENT_DOCS_TOKEN Tencent Docs MCP Authorization value for tencent-docs-smartsheet.
   OPENAI_API_KEY     Required for text sources and subsequent AI commands.
   OPENAI_MODEL       Model name (default: gpt-4o-mini).
   OPENAI_BASE_URL    Optional API base URL.
@@ -124,6 +129,7 @@ Python requires python3 and pandas; local Python execution is not sandboxed.
 JavaScript accepts inline csv/json/text configs. Use ava schema to inspect the query language.
 
 Examples:
+  ava source @tencent-docs.json
   ava source sales.csv
   ava source sales.csv --engine python
   ava source @source.json
@@ -143,4 +149,12 @@ feishu.json:
 }
     Provide url or both appToken and tableId; they must name the same table.
     Keep appSecret out of version control and logs.
+
+Tencent Docs SmartSheet (Node.js / DuckDB):
+  tencent-docs.json:
+    { "type": "tencent-docs-smartsheet", "options": { "fileId": "<file-id>", "sheetId": "<sheet-id>" } }
+  Set TENCENT_DOCS_TOKEN before loading. Only supported scalar fields are exposed.
+  Reads a complete, bounded snapshot into data; _record_id preserves source identity.
+  Explicit IDs are required; document sharing URLs are not auto-detected.
+  Dataset sessions require macOS/Linux; on Windows use the SDK or WSL.
 `;

@@ -1,0 +1,11 @@
+{
+  "type": "tencent-docs-smartsheet",
+  "options": {
+    "fileId": "<file-id>",
+    "sheetId": "<sheet-id>",
+    "pageSize": 100,
+    "maxRecords": 10000,
+    "timeoutMs": 60000,
+    "maxRetries": 2
+  }
+}
