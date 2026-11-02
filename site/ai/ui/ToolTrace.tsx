@@ -40,7 +40,6 @@ const ToolTrace: React.FC<{ msg: Message; live: Message['live'] }> = ({ msg, liv
           <path d="M6 9l6 6 6-6" />
         </svg>
         <span className="tabular-nums">{headerText}</span>
-        {running !== null && <span className="inline-block pixel-dot scale-50" />}
       </button>
 
       {/* tool call rows */}

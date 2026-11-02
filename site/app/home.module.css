@@ -258,7 +258,7 @@
 .demo [id='ai'] > div > section {
   height: var(--demo-height);
 }
-.demo section[aria-label='Artifact panel'] [role='img'] {
+.demo [data-artifact-panel] [role='img'] {
   height: clamp(240px, 26vw, 280px);
   padding: 8px 4px;
   border: 1px solid #dceef5;
@@ -270,7 +270,7 @@
   box-shadow: inset 0 1px 0 #fff, 0 9px 24px -18px #4a8fa84d;
 }
 /* Blend the canvas's white surface into the chart card. */
-.demo section[aria-label='Artifact panel'] [role='img'] canvas {
+.demo [data-artifact-panel] [role='img'] canvas {
   mix-blend-mode: multiply;
 }
 .features {
@@ -597,7 +597,7 @@
   .heroIntro {
     padding-top: clamp(64px, 5.3vw, 92px);
   }
-  .demo [id='ai'] > div:has(> section[aria-label='Artifact panel']) {
+  .demo [id='ai'] > div:has(> [data-artifact-panel]) {
     grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr);
   }
   .dataSection {

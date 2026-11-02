@@ -35,6 +35,7 @@ export default function ArtifactPanel({
 
   return (
     <section
+      data-artifact-panel
       className={`overflow-hidden flex flex-col ${
         live
           ? 'h-[clamp(520px,calc(100dvh-290px),780px)] max-md:h-[clamp(460px,calc(100dvh-250px),680px)]'
