@@ -1,6 +1,8 @@
-<h2 id="import-the-browser-build">使用浏览器入口</h2>
+import { Heading } from '../../../mdx-components';
 
-前端从 `@antv/ava/browser` 导入。这个入口只注册 JavaScript 引擎，需要显式设置 `engine.type`；构造器不会自动把默认 DuckDB 换成浏览器引擎。
+<Heading as="h2" id="import-the-browser-build">引入浏览器版本</Heading>
+
+浏览器入口只注册 JavaScript 引擎，使用时需要显式选择；否则 `AVA` 构造函数默认使用 DuckDB。
 
 ```typescript
 import { AVA } from '@antv/ava/browser';
@@ -25,16 +27,19 @@ try {
 }
 ```
 
-<h2 id="supported-sources">可以接入哪些数据</h2>
+<Heading as="h2" id="supported-sources">支持的数据源</Heading>
 
-支持直接传入 `json`、`csv` 和 `text`。其中，文本提取会调用模型。本地文件路径和直接数据库连接需要 Node.js 引擎；网页上传文件后，可以先在前端读取，再把内容作为内存数据传入。
+支持内存中的 `json`、`csv` 和 `text`。文本提取会调用已配置的模型。文件路径与数据库直连需要在 Node.js 引擎中使用。
 
-<h2 id="natural-language-analysis">用自然语言分析</h2>
+<Heading as="h2" id="natural-language-analysis">自然语言分析</Heading>
 
-`analyze()`、`translate()`、`suggest()` 和图表推荐需要可用的模型配置。只填模型名称，不代表已经提供调用凭证。数据统计和已知代码的直接执行可以不调用模型。
+调用 `analyze()`、`translate()`、`suggest()` 或图表推荐前，请先完成模型服务商配置。仅填写模型名称，并不代表已经提供这些操作需要的凭证。
 
-共享 API Key 放在服务端；个人体验场景可在运行时由用户提供凭证。
+<Callout>
+  公用 API 密钥应保留在服务端。如果浏览器流程需要用户自行提供凭证，请在
+  运行时获取。
+</Callout>
 
-<h2 id="execution-behavior">代码如何执行</h2>
+<Heading as="h2" id="execution-behavior">执行方式</Heading>
 
-生成的 JavaScript 从 `data`、`stat` 读取上下文，并把最终结果赋给 `result`。浏览器中通过带 `sandbox="allow-scripts"` 的 iframe 和限制性 CSP 执行。输入输出约定见 [JavaScript 引擎](/documentation/engines/javascript/)。
+生成的 JavaScript 可以读取 `data` 和 `stat`，并将最终输出赋给 `result`。浏览器在带有 `sandbox="allow-scripts"` 和严格内容安全策略的 iframe 中执行代码。具体约定见 [JavaScript 引擎](/documentation/engines/javascript/)。

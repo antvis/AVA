@@ -1,31 +1,50 @@
-<h2 id="source-map">从公开能力找到源码</h2>
+import { Heading } from '../../../../mdx-components';
 
-| 位置 | 职责 |
-| --- | --- |
-| [src/ava.ts](https://github.com/antvis/AVA/blob/ai/src/ava.ts) | 公开 API、数据状态、引擎生命周期与上下文组合。 |
-| [src/types.ts](https://github.com/antvis/AVA/blob/ai/src/types.ts) | 公开类型与引擎契约。 |
-| [src/analysis/](https://github.com/antvis/AVA/tree/ai/src/analysis/) | direct 与 loop 策略。 |
-| [src/duckdb/](https://github.com/antvis/AVA/tree/ai/src/duckdb/) | DuckDB、数据源加载与统计。 |
-| [src/interpreter/javascript/](https://github.com/antvis/AVA/tree/ai/src/interpreter/javascript/) | 内存数据与 JavaScript 执行。 |
-| [src/interpreter/python/](https://github.com/antvis/AVA/tree/ai/src/interpreter/python/) | pandas 执行与数据源验证。 |
-| [src/remote/](https://github.com/antvis/AVA/tree/ai/src/remote/) | Supabase、ClickHouse 远程执行。 |
-| [src/query/](https://github.com/antvis/AVA/tree/ai/src/query/) | 查询生成与方言验证。 |
-| [src/visualization/](https://github.com/antvis/AVA/tree/ai/src/visualization/) | 图表推荐、GPT-Vis 配置与 HTML。 |
-| [src/suggest/](https://github.com/antvis/AVA/tree/ai/src/suggest/) | 分析问题推荐。 |
-| [src/event/](https://github.com/antvis/AVA/tree/ai/src/event/) | 事件类型与载荷。 |
-| [src/cli/](https://github.com/antvis/AVA/tree/ai/src/cli/) | 命令行和本地持久会话。 |
-| [src/util/](https://github.com/antvis/AVA/tree/ai/src/util/) | 模型解析、元数据验证、指标与结果限制。 |
+<Heading as="h2" id="public-entry-points">公开入口</Heading>
 
-<h2 id="method-to-module">方法如何衔接</h2>
+[`index.ts`](https://github.com/antvis/AVA/blob/ai/src/index.ts) 注册全部 Node.js 引擎，导出 `AVA` 和公开类型；[`index.browser.ts`](https://github.com/antvis/AVA/blob/ai/src/index.browser.ts) 只注册 JavaScript。[`ava.ts`](https://github.com/antvis/AVA/blob/ai/src/ava.ts) 协调数据源状态、数据模型、事件与引擎生命周期。
 
-source、schema、dispose 由 ava.ts 统筹。profile 交给引擎计算；analyze 分发到 direct 或 loop；translate、query 分别调用引擎 getDSL、execute。recommend 生成图表建议与配置，viz 包装 HTML，visualize 组合二者。
+<Heading as="h2" id="source-directory-map">源码目录</Heading>
 
-<h2 id="context-and-state">状态与上下文归谁管理</h2>
+| 源码 | 职责 |
+| ---------------------------------------------------------------------------------------------- | ----------------------------------------------------- |
+| [`ava.ts`](https://github.com/antvis/AVA/blob/ai/src/ava.ts) | 公开 API、数据源状态与生命周期 |
+| [`types.ts`](https://github.com/antvis/AVA/blob/ai/src/types.ts) | 配置、引擎与结果接口约定 |
+| [`engines.ts`](https://github.com/antvis/AVA/blob/ai/src/engines.ts) | 内部引擎注册表 |
+| [`analysis/`](https://github.com/antvis/AVA/tree/ai/src/analysis/) | Direct 与 Loop 分析策略 |
+| [`duckdb/`](https://github.com/antvis/AVA/tree/ai/src/duckdb/) | SQL 引擎、数据源加载器与统计 |
+| [`interpreter/javascript/`](https://github.com/antvis/AVA/tree/ai/src/interpreter/javascript/) | 内存数据与 JavaScript 执行 |
+| [`interpreter/python/`](https://github.com/antvis/AVA/tree/ai/src/interpreter/python/) | pandas 执行与数据源验证 |
+| [`remote/supabase/`](https://github.com/antvis/AVA/tree/ai/src/remote/supabase/) | Management API、结构发现与统计 |
+| [`remote/clickhouse/`](https://github.com/antvis/AVA/tree/ai/src/remote/clickhouse/) | 远程 SQL、结构发现与统计 |
+| [`query/`](https://github.com/antvis/AVA/tree/ai/src/query/) | 查询生成与方言验证 |
+| [`visualization/`](https://github.com/antvis/AVA/tree/ai/src/visualization/) | 图表推荐、GPT-Vis 配置与 HTML 生成 |
+| [`suggest/`](https://github.com/antvis/AVA/tree/ai/src/suggest/) | 分析问题推荐 |
+| [`event/`](https://github.com/antvis/AVA/tree/ai/src/event/) | 事件类型与载荷 |
+| [`cli/`](https://github.com/antvis/AVA/tree/ai/src/cli/) | 命令与本地数据集会话 |
+| [`util/`](https://github.com/antvis/AVA/tree/ai/src/util/) | 模型解析、结构定义、指标与结果限制 |
 
-一个 AVA 实例持有一个活动引擎，以及结构、统计和语义。source 加载，schema 按需发现，profile 更新观察结果；分析需要时组合为 DataModel。重新加载或释放会清空这些上下文。
+<Heading as="h2" id="method-to-module">方法与模块的对应关系</Heading>
 
-引擎持有实际数据与连接，load 不返回元数据；schema 发现结构，profile 接收结构，getDSL 接收组合后的 DataModel。策略运行时共用引擎、模型配置、数据模型和事件发射器。
+| 公开方法 | 职责与实现 |
+| ------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `source()` / `schema()` / `dispose()` | [`ava.ts`](https://github.com/antvis/AVA/blob/ai/src/ava.ts) 中的数据源状态与引擎生命周期 |
+| `profile()` | 各引擎实现统计计算，共享指标约定位于 [`util/profile.ts`](https://github.com/antvis/AVA/blob/ai/src/util/profile.ts) |
+| `analyze()` | 分发到 [`analysis/direct.ts`](https://github.com/antvis/AVA/blob/ai/src/analysis/direct.ts) 或 [`analysis/loop.ts`](https://github.com/antvis/AVA/blob/ai/src/analysis/loop.ts) |
+| `translate()` / `query()` | 引擎的 `getDSL()` / `execute()` |
+| `suggest()` | [`suggest/index.ts`](https://github.com/antvis/AVA/blob/ai/src/suggest/index.ts) |
+| `recommend()` | [`visualization/advisor.ts`](https://github.com/antvis/AVA/blob/ai/src/visualization/advisor.ts) 与配置生成 |
+| `viz()` | [`visualization/generator.ts`](https://github.com/antvis/AVA/blob/ai/src/visualization/generator.ts) 中的 HTML 包装 |
+| `visualize()` | 组合 `recommend()` 和 `viz()` |
 
-<h2 id="documentation-organization">文档如何组织</h2>
+<Heading as="h2" id="context-and-state">上下文与状态</Heading>
 
-每个主题是独立 MDX，按语言放在 `site/content/docs/en/` 与 `site/content/docs/zh/`，内部保持相同的 data、analysis、visualization、engines、reference 结构。共享 slug 和章节顺序让中英文可以按页切换。
+每个 AVA 实例持有一个活动引擎及其 schema、profile 缓存。`source()` 加载数据，`schema()` 在首次使用时发现结构；`profile()` 重新计算并保存统计信息；需要时再由缓存元数据组装数据模型。重新加载或释放实例会清空两类缓存。
+
+引擎持有数据与连接。`load()` 不返回元数据，`schema()` 发现结构，`profile(schema, options?)` 计算统计信息，`getDSL(query, dataModel)` 使用 AVA 组装的数据模型。共享验证逻辑位于 `util/schema.ts` 与 `util/profile.ts`。
+
+分析策略共享一个运行时，其中包括引擎、模型配置、数据模型与事件发射器。查询结果限制通过共享工具统一规范化。
+
+<Heading as="h2" id="documentation-organization">文档组织方式</Heading>
+
+每个主题都是 `site/content/docs/` 下的独立 MDX 文件，按 `data/`、`analysis/`、`visualization/`、`engines/`、`reference/` 分组。这样的组织对应公开能力，无需将每个内部辅助函数都拆成独立的用户文档。

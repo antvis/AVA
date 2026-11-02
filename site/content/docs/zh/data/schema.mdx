@@ -1,6 +1,6 @@
-拿到一份数据，先分清三件事：**结构是什么、数据实际怎样、业务上怎么算。**它们分别由 Schema、Profile 和 Semantic 描述。
+import { Heading } from '../../../../mdx-components';
 
-下面这六条订单也会用于[业务语义示例](/documentation/data/semantic/)：
+先从下面六笔订单看起：看看它们有哪些字段，数据分布如何，再想清楚收入该按什么口径计算。下一篇[补充业务语义](/documentation/data/semantic/)会继续使用这份数据。
 
 | order_id | region | status | amount | refund_amount | ordered_at |
 | --- | --- | --- | --- | --- | --- |
@@ -11,8 +11,14 @@
 | 5 | East | paid | 50 | `null` | 2026-01-07 |
 | 6 | West | cancelled | 500 | 0 | 2026-01-08 |
 
+<Callout>
+  **AVA 负责发现结构、计算统计信息；业务含义由你补充：** 哪些订单计入收入，退款又该怎样处理。
+</Callout>
+
 <details>
-<summary>加载这份示例数据</summary>
+<summary>将这张表作为内存 JSON 加载</summary>
+
+配置好 `ava` 后，加载下面的数据。默认 DuckDB 引擎会将它暴露为名为 `data` 的模型。
 
 ```typescript
 const orders = [
@@ -29,12 +35,14 @@ await ava.source({ type: 'json', options: { data: orders } });
 
 </details>
 
-<h2 id="schema-the-structure-ava-discovers">Schema：先知道有哪些表和字段</h2>
+<Heading as="h2" id="schema-the-structure-ava-discovers">Schema：自动发现的数据结构</Heading>
 
 ```typescript
 const schema = await ava.schema();
 console.log(schema.models[0]);
 ```
+
+这张表发现的模型如下：
 
 ```json
 {
@@ -51,11 +59,11 @@ console.log(schema.models[0]);
 }
 ```
 
-通常不需要手写 Schema。字段类型、catalog、schema 等来源信息取决于引擎；数据库还可能提供声明的键和表间关系。`notNull: false` 表示没有声明非空约束，并不等于已经发现了空值。
+这是自动发现的结构起点，无需手写。类型和数据源限定信息取决于引擎；数据库源也可能提供已声明的键和关系。`notNull: false` 表示未声明非空约束，并不表示实际发现了空值。
 
-分析需要结构时会自动发现，因此单独调用 `schema()` 是为了查看或提供结构，不是每次分析的必经步骤。
+分析需要时，AVA 也会自动发现结构，因此不一定要主动调用 `schema()`。
 
-<h2 id="profile-statistics-ava-computes">Profile：再看看数据的实际情况</h2>
+<Heading as="h2" id="profile-statistics-ava-computes">Profile：按需计算的统计信息</Heading>
 
 ```typescript
 const profile = await ava.profile({
@@ -63,11 +71,24 @@ const profile = await ava.profile({
 });
 ```
 
-统计会告诉你这张表有 6 行、退款字段存在缺失，以及各字段的范围或分布。统计缺失表示没有计算，不能当成零。
+同一张表的统计结果包括：
 
-`profile()` 默认计算 `row_count`、`null_count`、`distinct_count`、`top_values`、`min`、`max`、`mean`。显式传入 `metrics` 会替换默认列表；每次计算结果也会替换旧统计。它不调用大模型，但扫描大数据仍可能产生计算成本。
+| 观察项 | Profile 中的位置 | 值 |
+| --- | --- | --- |
+| 总行数 | 模型的 `metrics.row_count` | 6 |
+| 退款缺失数 | `refund_amount` 列的 `metrics.null_count` | 1 |
+| 最小订单金额 | `amount` 列的 `metrics.min` | 50 |
+| 最大订单金额 | `amount` 列的 `metrics.max` | 500 |
 
-<h2 id="semantic-the-business-meaning-you-supply">Semantic：把业务口径说清楚</h2>
+<Callout>
+  **最大值 500 来自一笔已取消的订单。** 统计描述的是实际存储的数据；哪些记录算收入，应在业务语义中定义。
+</Callout>
+
+统计计算可选，需要引擎支持，并可能扫描数据，但不会调用大模型。其他统计项见[指标选项](/documentation/reference/api/#metrics)。
+
+<Heading as="h2" id="semantic-the-meaning-you-add">Semantic：由你补充的业务含义</Heading>
+
+表里有已支付、已退款、待支付和已取消的订单。哪些应计入收入？这需要你提供业务规则：
 
 ```typescript
 await ava.semantic(undefined, () => ({
@@ -85,10 +106,6 @@ await ava.semantic(undefined, () => ({
 }));
 ```
 
-数据结构知道 `amount` 是数字，却不知道待支付订单是否应计入收入。把有效状态、退款处理、单位和时间含义写进业务语义，模型才有依据生成符合口径的查询。
+`description` 说明业务口径；`sales` cube 指定来源（`data`）、收入计算（`measures`）和地区分组（`dimensions`）。自动发现的列无需重复声明，仍可使用。Cube 用于指导查询生成，不会创建数据库对象。
 
-<h2 id="use-the-three-inputs-together">三种上下文如何配合</h2>
-
-Schema 是结构起点，Profile 增加观察结果，Semantic 补充业务含义。分析、翻译与推荐问题会按需组合这些信息。读取三个方法时，返回的仍是各自输入，不是合并后的整体数据模型。
-
-替换 Schema 会清空 Profile，保留 Semantic；重算 Profile 保留 Semantic。重新加载数据或 `dispose()` 会清空三者。业务口径的完整示例见[补充业务语义](/documentation/data/semantic/)。
+继续阅读[补充业务语义](/documentation/data/semantic/)，查看完整示例与 SQL 结果：**East 150 美元，West 60 美元**。字段格式、手动覆盖与更新规则见 [API 参考](/documentation/reference/api/#schema)。

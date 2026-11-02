@@ -1,25 +1,133 @@
-AVA Skill 让你日常使用的 AI Agent 直接分析文件或数据库。Agent 负责理解问题、规划与解读，AVA CLI 负责数据接入、查询执行和图表输出，沿用 Agent 自己的模型。
+import { Heading } from '../../../mdx-components';
 
-<h2 id="install-the-skill">把安装交给 Agent</h2>
+import CopyCode from '../../../components/docs/CopyCode';
 
-将下面的提示词交给终端中的 AI Agent：
+<section className="docs-skill-install docs-code-block" aria-labelledby="install-with-your-agent">
+
+<span className="docs-skill-install-eyebrow">从你的 Agent 开始</span>
+
+<Heading as="h2" id="install-with-your-agent">把安装交给 Agent</Heading>
+
+把下面的提示词发给 Agent，它会帮你检查环境、装好 AVA 和 Skill，再实际跑一遍，确认可以开始分析。
+
+<div className="docs-skill-install-action">
+  <CopyCode label="复制安装提示词" />
+  <span>粘贴到你使用的终端 AI Agent 中。</span>
+</div>
+
+<details>
+<summary>查看安装提示词</summary>
 
 ```text
-请在当前项目安装 AVA Agent Skill。
-先检查 macOS 或 Linux、Node.js 22.13 及以上版本和 npm。
-运行 npm install -g @antv/ava@4，再运行 npx --yes skills add antvis/AVA --skill ava --yes。
-阅读安装后的 ava/SKILL.md 和环境配置说明，核对 ava --help、ava source --help 和 skills list。
-在临时目录用一份小 CSV 验证加载、结构发现与聚合查询，完成后释放会话。
-使用你自己的推理能力，不要让我额外配置 AVA 模型 API Key。
-请报告安装位置、版本、实际验证结果，以及是否需要开启新的 Agent 会话。
+请在当前项目安装 AVA Agent Skill，让你可以帮我分析数据、生成图表。
+
+1. 检查当前环境是否为 macOS 或 Linux，是否具备 Node.js 22.13 或更高版本以及 npm。需要升级时，优先使用已有的 Node 版本管理器；无法满足要求时，说明缺少什么。
+2. 运行 `npm install -g @antv/ava@4` 安装 CLI，并确认 `ava --help`、`ava source --help` 可以正常执行。
+3. 为当前项目检测到的 Agent 安装 Skill：`npx --yes skills add antvis/AVA --skill ava --yes`。
+4. 阅读安装后的 ava/SKILL.md 及其环境配置参考，使用 `npx --yes skills list` 确认安装结果。
+5. 在新建的临时目录中，用一份很小的 CSV 验证 CLI：通过 `ava source` 加载，使用 `ava schema` 查看结构，再运行 `ava query` 完成一次简单聚合。使用实际返回的数据集 ID 和 schema 中的表名，验证后释放测试会话。
+
+分析时使用你自身的推理能力，不要额外向我要 AVA 模型 API 密钥。完成后告诉我 CLI 版本、Skill 安装位置和验证结果。如果某一步失败，请说明具体错误，不要宣称成功；同时说明是否需要开启新的 Agent 会话来加载 Skill。
 ```
 
-需要手动安装时：
+</details>
+
+习惯自己运行命令？可以直接按[手动安装](#manual-installation)操作。
+
+</section>
+
+<Heading as="h2" id="what-the-skill-does">Agent 和 AVA 各负责什么</Heading>
+
+**Agent** 理解问题、规划分析、编写查询并解释结果；**AVA** 负责连接数据、执行查询和渲染图表。Skill 则告诉 Agent 怎样把这些工具串成完整的分析流程。
+
+你可以让它比较不同时期、探索数据集、排查变化，或基于已核实的结果生成图表。从本地 CSV、JSON、Parquet、Excel、SQLite 文件开始，也可以使用已配置的[数据库连接](/documentation/data/sources/)。
+
+<Callout>
+  Skill 的核心流程沿用 Agent 已有的模型。加载结构化数据、查看结构、
+  计算统计信息、执行查询，以及根据图表配置渲染结果，都不需要额外的 AVA 模型密钥。
+  Agent 自身的模型调用仍按其服务商的规则计费。
+</Callout>
+
+<Heading as="h2" id="demo-explain-a-revenue-change">试一遍：收入变化从哪里来</Heading>
+
+这个可复现示例使用 **8 行模拟数据**：四款产品在 2025 年 1 月和 2 月的收入，单位为美元。下方结果由这份数据计算得出，用来展示交付内容，并非某次 Agent 对话的录屏。
+
+<Heading as="h3" id="1-get-the-data">1. 准备一份数据</Heading>
+
+<a href="/examples/agent-skill/sales.csv" download="sales.csv">下载 sales.csv</a>，保存到工作目录。
+
+<Heading as="h3" id="2-ask-your-agent">2. 把分析需求交给 Agent</Heading>
+
+安装完成后开启新的 Agent 会话，再粘贴下面的提示词。如果 CSV 存在其他位置，请替换为实际文件路径。
+
+```text
+请用 AVA Skill 分析 ./sales.csv。
+
+比较 2025 年 1 月和 2 月的收入合计，单位为美元。
+计算收入增减金额和变化比例，再按产品拆解变化，找出贡献最大的产品。
+核对各产品的变化之和是否等于整体变化，不要推断数据里没有提供的原因。
+
+在新建的输出目录中，将各产品收入变化绘制为水平条形图，保存为 revenue-change.html。
+同时提供简短结论、结果表和实际执行的查询，方便我复现分析。
+```
+
+<Heading as="h3" id="3-explore-the-result">3. 查看并核对结果</Heading>
+
+<figure className="docs-skill-demo">
+  <div className="docs-skill-demo-summary">
+    <span>2025 年 1 月 → 2 月 · 收入示例</span>
+    <strong>$30,000 → $37,500</strong>
+    <p>收入增长 <b>25%</b>（增加 7,500 美元）。Analytics 贡献了 6,000 美元，占净增量的 80%。</p>
+  </div>
+  <iframe
+    src="/examples/agent-skill/revenue-change.html"
+    title="各产品收入变化：Analytics +6000、Automation +2000、Support +500、Reporting -1000 美元"
+    loading="lazy"
+    sandbox="allow-scripts"
+  />
+  <figcaption>使用 AVA 渲染的交互图表。悬停可查看各产品数据；图表从 CDN 加载 GPT-Vis。</figcaption>
+</figure>
+
+Reporting 收入减少了 1,000 美元，抵消了其他产品的部分增长。这些数字能说明变化**发生在哪里**，但这份示例数据不足以解释**为什么会变化**。
+
+| 产品 | 1 月（美元） | 2 月（美元） | 变化（美元） |
+| --- | --- | --- | --- |
+| Analytics | 12,000 | 18,000 | +6,000 |
+| Automation | 8,000 | 10,000 | +2,000 |
+| Support | 4,000 | 4,500 | +500 |
+| Reporting | 6,000 | 5,000 | −1,000 |
+| **合计** | **30,000** | **37,500** | **+7,500** |
+
+<p>
+  <a href="/examples/agent-skill/revenue-change.html" target="_blank" rel="noopener noreferrer">打开图表 ↗</a>
+  {' · '}
+  <a href="/examples/agent-skill/revenue-change.html" download="revenue-change.html">下载 HTML</a>
+  {' · '}
+  <a href="/examples/agent-skill/revenue-change.txt" download="revenue-change.txt">下载 SQL</a>
+  {' · '}
+  <a href="/examples/agent-skill/chart.json" download="chart.json">下载图表配置</a>
+</p>
+
+示例查询使用 `data` 表，这是 AVA 的 DuckDB CSV 加载器暴露的表名。分析自己的数据时，应先让 Agent 运行 `ava schema`，再根据实际结构编写查询。如果想自行渲染已保存的图表配置，下载后运行：
+
+```bash
+ava viz --spec @chart.json --output revenue-change.html
+```
+
+如果输出文件已存在，请换一个新的路径。导出的 HTML 需要联网加载图表渲染器。Agent 的措辞和图表设计可能不同，但这份示例的计算结果应与上表一致。
+
+<Heading as="h2" id="manual-installation">手动安装</Heading>
+
+CLI 需要 **Node.js 22.13 或更高版本**、**macOS 或 Linux**，以及支持后台进程和 Unix socket 的环境。分别安装 CLI 和 Skill：
 
 ```bash
 npm install -g @antv/ava@4
 npx --yes skills add antvis/AVA --skill ava --yes
 ```
+
+这会全局安装 CLI，并为当前项目中检测到的 Agent 安装 Skill。[Skill 安装器](https://github.com/vercel-labs/skills#options)也支持用 `--agent` 指定 Agent，或用 `--global` 跨项目安装。
+
+检查安装结果；如果 Agent 尚未发现 Skill，开启一个新会话：
 
 ```bash
 ava --help
@@ -27,32 +135,17 @@ ava source --help
 npx --yes skills list
 ```
 
-安装完成后开启新的 Agent 会话，让它加载 Skill。安装工具检测到的 Agent、项目范围和实际 Skill 路径，以输出为准。
+<Heading as="h2" id="model-configuration">什么时候需要配置模型</Heading>
 
-<h2 id="try-a-complete-analysis">从一个具体问题开始</h2>
+Agent 可以用自身的推理能力，结合 `source`、`schema`、`query` 和 `viz` 完成这个示例。这条流程不需要单独配置 AVA 的模型。
 
-```text
-用 AVA Skill 分析 ./sales.csv，比较各地区销售情况并保存图表。
-请附上实际执行的查询、结果表和分析限制，方便我核对。
-先确认数据字段和统计情况，有不明确的指标口径请说明。
-```
+直接调用模型的 AVA 命令——`analyze`、`suggest`、`translate`、`recommend`、`visualize`——以及文本提取，都需要[模型配置](/documentation/configuration/)。使用数据集会话时，请在运行 `ava source` **之前** 设置相关模型环境变量。
 
-Agent 可以先用 source、schema、profile 了解数据，再执行自己编写的查询，最后生成图表。结构化加载、直接查询和渲染已有配置不需要额外模型 Key；如果使用 analyze、suggest、recommend 这些由 CLI 自己调用模型的命令，仍需要相应配置。
+<Heading as="h2" id="troubleshooting">常见问题</Heading>
 
-<h2 id="demo-revenue-and-gross-margin">示例：收入涨了，盈利质量呢</h2>
+- **Agent 找不到 Skill。** 在安装 Skill 的项目目录运行 `npx --yes skills list`，确认安装时选中了你的 Agent，再开启新会话。
+- **找不到 `ava` 命令。** 检查 npm 全局安装是否成功，以及可执行文件目录是否在 Agent 的 `PATH` 中。
+- **数据集不可用。** 会话闲置 30 分钟后会过期。重新加载数据源并使用新的数据集 ID。相关命令需要由同一用户，在相同的运行环境和临时目录中执行。
+- **图表为空白。** 检查是否能联网加载图表渲染器，核对图表配置，并用结果表验证数值。
 
-示例数据覆盖 2026 年 1—9 月，收入从 12 万美元涨到 26 万美元，但毛利率从 30% 降至 27%。7 月收入环比增长 13.3%，毛利反而下降 2.1%，毛利率只有 19%。
-
-这个例子强调的是检查依据：先核对收入与毛利的单位，再计算毛利率，保留时间顺序，同时说明月度汇总不足以判断折扣、成本或产品组合中的哪一项造成变化。
-
-你可以下载[示例 CSV](/examples/agent-skill/sales.csv)、[图表配置](/examples/agent-skill/chart.json)、[分析说明](/examples/agent-skill/revenue-change.txt)，或[打开生成的图表](/examples/agent-skill/revenue-change.html)。这些文件保留原始数据和英文示例内容，方便与源码核对。
-
-<h2 id="render-a-chart">保存可分享的图表</h2>
-
-已有配置时用 viz 渲染为新 HTML 文件：
-
-```bash
-ava viz --spec @chart.json --output revenue-change.html
-```
-
-更完整的终端流程与参数见 [CLI 指南](/documentation/reference/cli/)；想把同样能力集成进应用，见 [SDK 快速开始](/documentation/quickstart/)。
+命令选项见 [CLI 参考](/documentation/reference/cli/)；Agent 的完整工作流说明见 [Skill 源码](https://github.com/antvis/AVA/blob/ai/skills/ava/SKILL.md)。

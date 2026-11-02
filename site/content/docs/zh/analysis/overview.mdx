@@ -1,23 +1,37 @@
-已经加载数据后，可以直接向 `analyze()` 提问；还没想好问什么，可以用 `suggest()` 寻找方向。需要先审阅代码再执行时，把流程拆成 `translate()` 和 `query()`。
+import { Heading } from '../../../../mdx-components';
 
-下面沿用[快速开始](/documentation/quickstart/)里的销售数据：East 两条记录收入为 120、80，West 一条为 90。
+已经有明确的问题，直接调用 `analyze()`；还没想好从哪里入手，可以先用 `suggest()` 找分析方向。想先检查生成的代码、再决定是否执行，就把 `translate()` 和 `query()` 分开调用。
 
-<h2 id="analyze-a-question">直接提问</h2>
+下面的示例假定已经配置好 `ava`，并通过 `source()` 加载了数据。安装与完整配置示例见[安装与快速开始](/documentation/quickstart/)。
+
+示例沿用快速开始中的小型销售数据集：
+
+| region | revenue |
+| ------ | ------- |
+| East | 120 |
+| West | 90 |
+| East | 80 |
+
+<Heading as="h2" id="analyze-a-question">提出分析问题</Heading>
+
+将自然语言问题传给 `analyze()`：
 
 ```typescript
-const result = await ava.analyze('各地区的总收入分别是多少？');
+const result = await ava.analyze('What is total revenue by region?');
 console.log(result.text);
 console.table(result.data);
 ```
 
-`analyze()` 会按需取得表结构，结合已计算的统计信息和[业务语义](/documentation/data/semantic/)，生成查询、执行查询，再整理结论。它返回数据和文字；图表需要另外调用 `visualize()`。
+`analyze()` 按需获取 schema，结合已有 profile 和你提供的[业务语义](/documentation/data/semantic/)，生成查询、执行并整理答案。业务语义可以说明哪些订单计入收入等规则。它返回数据与文字，不会直接生成图表。
 
-<h2 id="read-the-result">先看结果，再看结论</h2>
+<Heading as="h2" id="read-the-result">读懂返回结果</Heading>
+
+上面的问题可能返回如下结果。结论的措辞、生成的查询和列别名会随模型而变化。
 
 ```json
 {
-  "query": "各地区的总收入分别是多少？",
-  "text": "East 地区收入合计 200，West 地区为 90。",
+  "query": "What is total revenue by region?",
+  "text": "East has total revenue of 200, compared with 90 for West.",
   "schema": [{ "name": "region" }, { "name": "total_revenue" }],
   "data": [
     { "region": "East", "total_revenue": 200 },
@@ -27,32 +41,37 @@ console.table(result.data);
 }
 ```
 
-示例只是返回结构的说明；结论措辞、查询和列别名会随模型变化。展示前请检查 `schema`，不要假设模型总会生成同一个聚合列名。
+| 字段 | 类型 | 含义 |
+| ------------- | ------------------------------------------- | -------------------------------------------------------------------------------------------- |
+| `query` | `string` | 原始问题。 |
+| `text` | `string` | 模型生成的总结；`includeSummary` 为 false 时为空字符串。 |
+| `schema` | `QueryColumn[]` | 返回列的定义，每列包含 `name: string` 和可选的 `type: string`。 |
+| `data` | `Record<string, unknown>[]` | 可用于展示、导出或可视化的结果行。 |
+| `rowCount` | `number`，可选 | 结果完整时的行数，不是输入数据集的总行数。 |
+| `sql` | `string`，可选 | 实际执行的查询；使用 Python 或 JavaScript 引擎时，这个字段名仍保持不变。 |
+| `markdown` | `string`，可选 | 返回时提供的 Markdown 内容。 |
+| `truncated` | `true`，可选 | 实际数据超过结果限制，返回结果不完整。 |
+| `truncatedBy` | `'maxRows'` 或 `'maxResultBytes'`，可选 | 触发截断的限制项。 |
 
-| 字段 | 你可以怎么用 |
-| --- | --- |
-| `query` | 用户原始问题。 |
-| `text` | 分析结论；关闭 `includeSummary` 时为空字符串。 |
-| `schema` | 结果列信息，每列包含 `name`，可能还有 `type`。 |
-| `data` | 返回的数据行，可用于展示、导出或生成图表。 |
-| `sql` | 实际执行的语句；Python 和 JavaScript 引擎也沿用这个字段名。 |
-| `markdown` | 可选的 Markdown 内容。 |
-| `rowCount` | 已知时返回完整结果的行数，不是输入数据集大小。 |
-| `truncated` | 为 `true` 时，结果因限制而截断。 |
-| `truncatedBy` | 导致截断的 `maxRows` 或 `maxResultBytes`。 |
+请通过 `schema` 读取实际返回的列名，不要假定模型一定使用 `total_revenue` 这个别名。
 
-<h2 id="configure-an-analysis">控制返回内容</h2>
+<Heading as="h2" id="configure-an-analysis">配置一次分析</Heading>
 
-| 参数 | 默认值 | 作用 |
-| --- | --- | --- |
-| `query` | 必填 | 自然语言问题。 |
-| `config.includeSummary` | `true` | 是否生成文字总结。 |
-| `config.maxRows` | `200` | 最多返回多少行。 |
-| `config.maxResultBytes` | `1048576` | 结果序列化后的字节上限，即 1 MiB。 |
-| `config.strategy` | 直接分析 | 选择[分析策略](/documentation/analysis/strategies/)。 |
+`analyze(query: string, config?: AnalysisConfig)` 接受以下输入：
+
+| 参数 | 类型 | 必填 | 默认值与行为 |
+| ----------------------- | ------------------------ | -------- | ---------------------------------------------------------------------------------------------- |
+| `query` | `string` | 是 | 自然语言问题。 |
+| `config` | `AnalysisConfig` | 否 | `{}`。 |
+| `config.includeSummary` | `boolean` | 否 | `true`；设为 `false` 可跳过结果总结。 |
+| `config.maxRows` | `number` | 否 | `200`，限制返回行数。 |
+| `config.maxResultBytes` | `number` | 否 | `1048576`（1 MiB），限制序列化后的结果数据大小。 |
+| `config.strategy` | `AnalysisStrategyConfig` | 否 | 默认直接分析，详见[策略选项](/documentation/analysis/strategies/#strategy-options)。 |
+
+例如，最多返回 100 行，并跳过文字总结：
 
 ```typescript
-const result = await ava.analyze('各地区的总收入分别是多少？', {
+const result = await ava.analyze('What is total revenue by region?', {
   includeSummary: false,
   maxRows: 100,
   maxResultBytes: 1048576,
@@ -62,7 +81,20 @@ console.log(result.text); // ''
 console.table(result.data);
 ```
 
-<h3 id="handle-partial-results">识别不完整的结果</h3>
+<Heading as="h3" id="handle-partial-results">处理不完整的结果</Heading>
+
+假设这份两地区的结果使用了 `maxRows: 1`，简化后的返回内容可能是：
+
+```json
+{
+  "schema": [{ "name": "region" }, { "name": "total_revenue" }],
+  "data": [{ "region": "East", "total_revenue": 200 }],
+  "truncated": true,
+  "truncatedBy": "maxRows"
+}
+```
+
+这只是部分答案。将它作为完整结果展示前，应先检查截断字段：
 
 ```typescript
 if (result.truncated) {
@@ -70,9 +102,11 @@ if (result.truncated) {
 }
 ```
 
-结果被截断时，要向读者说明当前看到的是部分结果。`maxRows` 向下取整，并限制在 1 到 1,000,000 之间；取整后不在安全整数范围内则回到默认值。`maxResultBytes` 对有限值向下取整，最小为 1；非有限值使用默认值。这两个限制也适用于 `query()`，约束的是返回数据，不是整个查询的时间或内存。
+`maxRows` 向下取整后限制在 `1`—`1000000` 之间；取整后超出安全整数范围则使用默认值。`maxResultBytes` 向下取整后最小为 `1`，非有限值使用默认值。这两项限制也适用于下面的 `query()`；它们约束返回数据，并不限制查询的总耗时或内存消耗。
 
-<h2 id="suggest-questions">让 AVA 推荐问题</h2>
+<Heading as="h2" id="suggest-questions">推荐分析问题</Heading>
+
+使用 `suggest()` 获取分析方向。也可以先计算 profile，为上下文补充统计信息；这一步可选，且不调用大模型。
 
 ```typescript
 await ava.profile();
@@ -80,13 +114,42 @@ const suggestions = await ava.suggest(2);
 console.log(suggestions);
 ```
 
-`count` 默认 `3`。这一步需要已加载的数据，并调用模型；已有统计信息时使用统计，否则主要依赖结构。`profile()` 本身不调用模型。
+| 参数 | 类型 | 必填 | 默认值与行为 |
+| --------- | -------- | -------- | ------------------------------------- |
+| `count` | `number` | 否 | `3`，期望获取的推荐问题数量。 |
 
-<h3 id="suggestion-results">理解推荐分数</h3>
+`suggest()` 需要先加载数据源，并会调用已配置的模型。有最新 profile 时使用 profile，否则使用 schema。
 
-每项包含 `query`、`score`、`reason`。`score` 会限制到 0—1 并降序排列，表示问题的参考价值，不是答案正确的概率。返回项最多为 `count`，也可能为空。模型会按数据集语言生成问题与理由。
+<Heading as="h3" id="suggestion-results">推荐结果</Heading>
 
-<h3 id="analyze-a-suggestion">分析感兴趣的问题</h3>
+对于销售数据集，返回数组可能如下：
+
+```json
+[
+  {
+    "query": "What is total revenue by region?",
+    "score": 0.95,
+    "reason": "Compare each region's contribution to overall revenue."
+  },
+  {
+    "query": "What is average revenue per record in each region?",
+    "score": 0.82,
+    "reason": "Compare typical record values across regions with different record counts."
+  }
+]
+```
+
+这些只是示例，并非固定输出。在界面中可以这样使用各字段：
+
+| 字段 | 类型 | 使用方式 |
+| -------- | -------- | ------------------------------------------------------------------------------------------------------------------------------------ |
+| `query` | `string` | 展示为可选择的问题，并传给 `analyze()`。 |
+| `score` | `number` | 用于排序。数值限制在 0—1 之间，并按降序排列；它表示问题的分析价值，不是答案的可信度。 |
+| `reason` | `string` | 解释这个问题为什么值得分析，例如展示在问题下方。 |
+
+最多返回 `count` 条推荐，也可能返回空数组。提示词会要求模型让问题和推荐理由沿用数据集的语言。
+
+<Heading as="h3" id="analyze-a-suggestion">分析推荐的问题</Heading>
 
 ```typescript
 if (suggestions.length > 0) {
@@ -97,14 +160,23 @@ if (suggestions.length > 0) {
 }
 ```
 
-<h2 id="analysis-strategies">选择直接分析还是多步探索</h2>
+<Heading as="h2" id="analysis-strategies">分析策略</Heading>
 
-问题目标明确时先用 `direct`；需要先观察数据、逐步验证时可以使用 `loop`。重试与步数设置见[分析策略](/documentation/analysis/strategies/)。
+`analyze()` 默认直接分析。如果问题需要不同的处理方式，可以为每次调用指定策略：
 
-<h2 id="translate-and-execute-separately">先审阅查询，再执行</h2>
+| 策略 | 适用情况 |
+| -------- | ------------------------------------------------------------------- |
+| `direct` | 问题明确，生成并执行一个查询即可回答。 |
+| `loop` | 需要先做中间探索，再形成答案。 |
+
+示例、重试控制与步数限制见[分析策略](/documentation/analysis/strategies/)。
+
+<Heading as="h2" id="translate-and-execute-separately">分开生成与执行查询</Heading>
+
+用 `translate()` 先查看生成的代码，再决定是否交给 `query()` 执行：
 
 ```typescript
-const dsl = await ava.translate('各地区的总收入分别是多少？');
+const dsl = await ava.translate('What is total revenue by region?');
 console.log(dsl); // Display the generated query for review.
 
 // Run this step when your application is ready to execute the query.
@@ -115,17 +187,29 @@ const rows = await ava.query(dsl, {
 console.table(rows.data);
 ```
 
-`translate(query)` 结合模型与数据上下文返回代码字符串，不执行。`query(dsl, options?)` 在当前引擎中执行你给出的代码，不经过模型翻译、总结或自动纠错。两者都需要加载数据；直接查询的返回值不包含分析层的 `query`、`text`、`sql` 字段。
+| 方法 | 参数 | 类型 | 必填与默认值 |
+| ---------------------- | ------------------------ | ------------------ | --------------------------------------------------------------- |
+| `translate(query)` | `query` | `string` | 必填，自然语言问题。 |
+| `query(dsl, options?)` | `dsl` | `string` | 必填，使用当前引擎语言的可执行语句。 |
+| `query(dsl, options?)` | `options` | `ExecutionOptions` | 可选，默认值见下方。 |
+| `query(dsl, options?)` | `options.maxRows` | `number` | 可选，`200`；边界规则与 `analyze()` 相同。 |
+| `query(dsl, options?)` | `options.maxResultBytes` | `number` | 可选，`1048576`；边界规则与 `analyze()` 相同。 |
 
-默认 Node.js 引擎生成 SQL，其他引擎使用对应的 SQL 方言、Python 或 JavaScript。SQL 引擎执行只读校验；其他语言的执行边界取决于环境。
+两个方法都需要先加载数据源。`translate()` 结合模型、schema 和已有 profile，返回字符串；`query()` 直接执行传入语句，不会做模型翻译、总结或自动纠错。
 
-<h2 id="errors-and-cleanup">错误不是“没有结果”</h2>
+默认 Node.js 配置生成 SQL；其他引擎则使用各自的 SQL 方言、Python 或 JavaScript。SQL 引擎会验证查询是否只读；Python 和 JavaScript 的执行限制取决于各自的环境。
 
-数据未加载、模型请求失败、推荐结果无法解析或执行重试耗尽，都会以异常结束。请区分失败与空结果，并在结束时释放资源。
+`query()` 返回前文介绍的 `schema`、`data` 和可选截断信息，但不包含分析结果中的 `query`、`text`、`sql` 字段。
+
+<Heading as="h2" id="errors-and-cleanup">错误处理与资源清理</Heading>
+
+未加载数据源、模型请求失败、推荐结果无法解析，或重试后仍执行失败等情况，都会让调用抛出错误。不要把错误当成没有数据的答案。
+
+在分析调用外处理错误，并在使用结束后释放实例：
 
 ```typescript
 try {
-  const result = await ava.analyze('各地区的总收入分别是多少？');
+  const result = await ava.analyze('What is total revenue by region?');
   console.table(result.data);
 } catch (error) {
   console.error('Analysis failed:', error);
@@ -134,4 +218,4 @@ try {
 }
 ```
 
-重新调用 `source()` 会切换数据，并清空结构、统计与业务语义；如果仍需要它们，请针对新数据重新提供或计算。
+请始终等待清理完成。再次调用 `source()` 会替换数据集，并清空 schema 和 profile 缓存；新数据源需要统计信息时，请重新调用 `profile()`。

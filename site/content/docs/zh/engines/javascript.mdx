@@ -1,4 +1,6 @@
-<h2 id="configure">启用 JavaScript</h2>
+import { Heading } from '../../../../mdx-components';
+
+<Heading as="h2" id="configure">配置</Heading>
 
 ```typescript
 import { AVA } from '@antv/ava/browser';
@@ -9,11 +11,11 @@ const ava = new AVA({
 });
 ```
 
-Node.js 可以从 `@antv/ava` 导入；前端使用 `@antv/ava/browser`。两种入口都需要显式选择 JavaScript 引擎。
+JavaScript 引擎支持内存 CSV、JSON 和文本，数据保存在一个内存数组中。加载文本需要调用模型。
 
-<h2 id="supported-sources">加载内存数据</h2>
+<Heading as="h2" id="query-bindings">查询中的变量</Heading>
 
-支持内存 CSV、JSON 和文本；文本提取会调用模型。示例：
+查询可以使用 `data` 和辅助对象 `stat`，并且必须将输出赋给 `result`。
 
 ```typescript
 await ava.source({
@@ -23,12 +25,10 @@ await ava.source({
 const result = await ava.query('const result = [{ revenue: data.reduce((sum, row) => sum + row.revenue, 0) }];');
 ```
 
-本地文件路径和直接数据库连接不由这个引擎处理。
+执行前会克隆输入数据。非数组结果会被规范化为包含 `value` 字段的一行，再应用结果限制。
 
-<h2 id="query-bindings">查询中的变量</h2>
+<Heading as="h2" id="execution-environments">执行环境</Heading>
 
-`data` 是已加载的数据，`stat` 提供统计上下文。查询代码把结果赋给 `result`，例如 `const result = data;`。请保留实际字段名，不要为了界面语言重命名用户数据。
+Node.js 中的代码在 `node:vm` 上下文中运行，超时为 10 秒；浏览器中则在带有严格 CSP 的沙箱 iframe 中运行，响应超时同为 10 秒。
 
-<h2 id="execution">运行边界</h2>
-
-浏览器中使用限制性 CSP 和带 `sandbox="allow-scripts"` 的 iframe；Node.js 使用自身的执行环境。两种环境的执行等待上限均为 10 秒；Node.js 使用 `node:vm`。输入在执行前复制，非数组结果会规范为含 `value` 字段的一行，再应用返回结果限制。不要把任意语言的执行边界理解为同一种安全隔离机制。
+两种机制的隔离能力不同。Node.js VM 不能作为抵御恶意代码的安全边界；如果应用接受不可信的可执行代码，需要部署合适的隔离环境。

@@ -1,8 +1,10 @@
-这一页带你用 TypeScript / JavaScript SDK 跑通一次分析。希望直接交给 AI Agent 操作，可以从 [Agent Skill](/documentation/agent-skill/) 开始。
+import { Heading } from '../../../mdx-components';
 
-<h2 id="install">安装</h2>
+这篇指南带你用 TypeScript / JavaScript SDK 跑通从加载数据到生成图表的流程。如果希望直接让 AI Agent 帮你分析数据，可以从 [Agent Skill 指南](/documentation/agent-skill/)开始。
 
-运行环境需要 **Node.js 22.13.0 或更高版本**。安装 AVA 4.x：
+<Heading as="h2" id="install">准备环境并安装</Heading>
+
+请使用软件包要求的 **Node.js 22.13.0 或更高版本**。选择你熟悉的包管理器，安装 AVA 4.0.0：
 
 ```bash
 npm install @antv/ava@4
@@ -12,13 +14,13 @@ pnpm add @antv/ava@4
 yarn add @antv/ava@4
 ```
 
-<h2 id="configure-your-model">连接模型</h2>
+<Heading as="h2" id="configure-your-model">连接模型</Heading>
 
-下面的示例从环境变量读取 `OPENAI_API_KEY`，并可选读取 `OPENAI_MODEL` 和 `OPENAI_BASE_URL`。运行前请配置好这些变量。也可以直接传入 AI SDK 模型实例，详见[模型设置](/documentation/configuration/)。
+下面的示例从进程环境中读取 `OPENAI_API_KEY`，以及可选的 `OPENAI_MODEL`、`OPENAI_BASE_URL`。请先设置这些变量再运行示例。AVA 也接受预先配置好的 AI SDK 模型实例，详见[模型配置](/documentation/configuration/)。
 
-<h2 id="run-your-first-analysis">跑通第一份数据</h2>
+<Heading as="h2" id="run-your-first-analysis">跑通一次分析</Heading>
 
-把下面的代码保存为 ES Module，在已经安装 AVA 的 Node.js 项目中执行。默认使用 DuckDB 引擎。
+这是一个完整的 Node.js 示例，使用默认的 DuckDB 引擎。请在已经安装 `@antv/ava` 的项目中，将它保存为 ES 模块后运行。
 
 ```javascript
 import { AVA } from '@antv/ava';
@@ -47,7 +49,7 @@ try {
   const profile = await ava.profile();
   console.log(schema.models, profile.models[0].metrics);
 
-  const result = await ava.analyze('按地区汇总收入');
+  const result = await ava.analyze('Show total revenue by region');
   console.log(result.text, result.data);
 
   const chart = await ava.visualize(result);
@@ -57,17 +59,21 @@ try {
 }
 ```
 
-`schema()` 在首次需要时发现结构；`profile()` 额外计算统计信息并保留结果。自然语言分析会按需取得结构，因此不必为了调用 `analyze()` 而机械地执行所有步骤。
+<Callout>
+  数据加载、结构发现和统计计算是三个独立步骤。<code>schema()</code> 在首次调用时发现结构；
+  <code>profile()</code> 计算并缓存统计信息。分析过程会在需要时获取结构。
+</Callout>
 
-<h2 id="cleanup-and-errors">释放资源与处理错误</h2>
+<Heading as="h2" id="cleanup-and-errors">用完后释放资源</Heading>
 
-`source()` 会替换当前数据源，并释放原引擎。`dispose()` 释放连接和引擎资源，清空结构、统计与业务语义。分析失败时也要等待清理完成，推荐放在 `finally` 中。
+`source()` 会替换当前数据集并释放之前的引擎。`dispose()` 会释放连接和引擎资源，清空数据结构与统计缓存。无论分析是否成功，都应等待清理完成。
 
-<h2 id="next-steps">下一步做什么</h2>
+<Heading as="h2" id="next-steps">接下来可以做什么</Heading>
 
-- 数据来自文件或数据库？看[接入数据](/documentation/data/sources/)。
-- 想知道字段与统计怎么用？看[了解你的数据](/documentation/data/schema/)。
-- 有专门的指标口径？看[业务语义示例](/documentation/data/semantic/)。
-- 需要前端集成或命令行？看[浏览器用法](/documentation/browser/)与 [CLI](/documentation/reference/cli/)。
+- [接入数据](/documentation/data/sources/)：连接文件、内存数据和数据库。
+- [了解数据结构](/documentation/data/schema/)：查看结构并按需计算统计信息。
+- [补充业务语义](/documentation/data/semantic/)：通过销售示例了解业务规则与可复用指标。
+- [浏览器用法](/documentation/browser/)：使用前端入口。
+- [命令行工具](/documentation/reference/cli/)：在终端中完成数据工作流。
 
-完整方法签名与输入字段见 [API 参考](/documentation/reference/api/)。
+各方法及其输入参数见 [API 参考](/documentation/reference/api/)。

@@ -1,6 +1,6 @@
-<h2 id="configure">使用 DuckDB</h2>
+import { Heading } from '../../../../mdx-components';
 
-DuckDB 是 Node.js SDK 的默认引擎，适合用 SQL 统一分析内存数据、文件与可连接的数据源。
+<Heading as="h2" id="configure">配置</Heading>
 
 ```typescript
 const ava = new AVA({
@@ -15,24 +15,30 @@ const ava = new AVA({
 });
 ```
 
-<h2 id="engine-options">引擎参数</h2>
+DuckDB 是 Node.js 的默认引擎。它创建内存实例，将数据源注册为表或视图；生成 SQL 时使用 schema 和可选的 profile。
 
-| 字段 | 类型 | 用法 |
-| --- | --- | --- |
-| `memoryLimit` | `string` | 默认 `'512MB'`，控制 DuckDB 内存上限。 |
-| `threads` | `number` | 默认 `1` 个工作线程。 |
-| `maxTempDirectorySize` | `string` | 临时目录大小上限，例如 `'1GB'`；未设置时不限制。 |
-| `allowCommunityExtensions` | `boolean` | 在需要时显式允许加载社区扩展。 |
-| `queryTimeoutMs` | `number` | 查询超时，默认 `30000` 毫秒。 |
+<Heading as="h2" id="engine-options">引擎选项</Heading>
 
-<h2 id="supported-sources">数据源与查询</h2>
+将 `engine.type` 设为 `duckdb`。`engine` 接受的全部额外字段如下。
 
-支持内存 CSV、JSON、文本提取，CSV、JSON、Parquet、Excel 文件，以及 SQLite、MySQL、PostgreSQL、MongoDB。连接字段与读取选项见[接入数据](/documentation/data/sources/)。
+| 字段 | 类型 | 必填 | 含义与默认值 |
+| -------------------------- | --------- | -------- | ------------------------------------------------------------------------------- |
+| `memoryLimit` | `string` | 否 | 内存限制，例如 `'512MB'`，默认 `'512MB'`。 |
+| `threads` | `number` | 否 | 工作线程数，默认 1。 |
+| `maxTempDirectorySize` | `string` | 否 | 临时溢写目录的大小上限，例如 `'1GB'`；不设置则不限制。 |
+| `queryTimeoutMs` | `number` | 否 | 单次查询超时，单位毫秒，默认 30000。 |
+| `allowCommunityExtensions` | `boolean` | 否 | 数据源加载明确需要社区扩展时，允许启用 DuckDB 社区扩展。 |
 
-文件和内存数据通常暴露为 `data` 视图；Excel 可以按工作表暴露多张表。请先查看 `schema()` 的实际名称与类型，不要把示例表名当成所有数据源的固定约定。
+<Heading as="h2" id="resource-limits">资源限制</Heading>
 
-<h2 id="execution">执行与资源清理</h2>
+默认内存上限为 512 MB，使用一个工作线程，查询超时为 30 秒。`maxTempDirectorySize` 可选，省略时不会设置溢写目录大小上限。
 
-执行前会检查 SQL 是否只读。结果行数与大小限制由 `query()`、`analyze()` 的选项控制，和执行超时分别生效。结束后等待 `dispose()` 完成，以释放连接和引擎资源。
+这些选项与限制返回结果的 `maxRows`、`maxResultBytes` 相互独立。
 
-数据源注册后，引擎会限制外部访问并锁定配置。社区扩展默认关闭，MongoDB 等需要扩展的数据源有对应处理；必要时可显式设置 `allowCommunityExtensions`。
+<Heading as="h2" id="source-support">数据源支持</Heading>
+
+支持内存 CSV、JSON、文本，本地或远程 CSV、JSON、Parquet、Excel，以及 MySQL、PostgreSQL、SQLite、MongoDB 数据源。配置方式见[接入数据](/documentation/data/sources/)。
+
+<Heading as="h2" id="query-access">查询访问限制</Heading>
+
+注册数据源后，引擎会限制外部访问并锁定配置，查询方言会验证语句是否只读。社区扩展默认关闭；加载器会处理 MongoDB 等依赖社区扩展的数据源，需要时也可用 `allowCommunityExtensions` 显式允许。

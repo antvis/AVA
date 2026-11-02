@@ -1,38 +1,139 @@
-AVA 是 AntV 开源的可视分析框架，给 AI Agent 一套从数据接入到图表交付的工具。你提出问题，Agent 负责规划，AVA 负责执行；查询、结果和图表都可以检查，方便你判断结论是否站得住脚。
+import { Heading } from '../../../mdx-components';
 
-<h2 id="choose-your-starting-point">选择适合你的开始方式</h2>
+想让 Agent 帮你分析文件，或把数据分析能力接进自己的产品？AVA 把数据接入、查询执行和图表生成串成了一套工具。你可以安装 Agent Skill 直接使用，也可以通过 TypeScript / JavaScript SDK、命令行接入，再按运行环境选择合适的执行引擎。
 
-| 你想做什么 | 从哪里开始 |
-| --- | --- |
-| 先看一次完整体验 | [打开 AI 体验](/ai/) |
-| 让已有 Agent 分析文件或数据库 | [安装 Agent Skill](/documentation/agent-skill/) |
-| 在产品中集成数据分析能力 | [SDK 快速开始](/documentation/quickstart/) |
-| 在终端加载数据、执行查询、生成图表 | [命令行工具](/documentation/reference/cli/) |
-| 在前端直接处理内存数据 | [浏览器用法](/documentation/browser/) |
+{/* Keep custom layouts in JSX expressions so formatting cannot introduce Markdown paragraphs. */}
 
-<h2 id="the-analysis-workflow">从问题到发现</h2>
+{
 
-1. **接入数据。**通过 `source()` 加载文件、内存数据或数据库。
-2. **了解数据。**`schema()` 发现结构，`profile()` 按需计算统计信息。知道字段长什么样，再决定怎么问。
-3. **说明业务口径。**有特殊指标、状态过滤或时间含义时，用 `semantic()` 补充背景。
-4. **执行分析。**`analyze()` 根据问题生成并执行查询，返回数据和结论。
-5. **呈现结果。**`visualize()` 选择图表并生成独立 HTML；也可以分开推荐和渲染。
+<div className="docs-cards">
+  <a href="/zh/documentation/agent-skill/">
+    <span className="docs-card-icon" aria-hidden="true">
+      ↗
+    </span>
+    <strong>让 Agent 帮你分析</strong>
+    <span>从安装 Skill 到拿到分析结果，跟着示例跑一遍。</span>
+  </a>
+  <a href="/zh/documentation/quickstart/">
+    <span className="docs-card-icon" aria-hidden="true">
+      ↗
+    </span>
+    <strong>在项目中接入</strong>
+    <span>安装 SDK，在 Node.js 里跑通第一次分析。</span>
+  </a>
+  <a href="/zh/documentation/browser/">
+    <span className="docs-card-icon" aria-hidden="true">
+      ⌘
+    </span>
+    <strong>在前端分析数据</strong>
+    <span>使用 JavaScript 引擎，直接在浏览器里完成分析。</span>
+  </a>
+  <a href="/zh/documentation/reference/cli/">
+    <span className="docs-card-icon" aria-hidden="true">
+      ›_
+    </span>
+    <strong>在终端里分析</strong>
+    <span>加载数据、执行查询、导出图表，都用命令完成。</span>
+  </a>
+</div>
+}
 
-这些步骤可以按需组合。已经有查询语句时，直接用 `query()`；已有结果数据时，可以直接生成图表。
+<Heading as="h2" id="the-core-workflow">核心工作流</Heading>
 
-<h2 id="what-ava-provides">AVA 负责哪些工作</h2>
+先接入数据，看看有哪些表和字段，再提出问题。拿到结果后，可以继续把它画成图表。
 
-AVA 连接模型与执行环境，提供统一的数据上下文、查询执行、分析策略和图表生成接口。Agent Skill 使用 Agent 本身的推理能力；SDK 的自然语言分析则调用你配置的模型。
+{
 
-分析并不会自动证明业务判断正确。你可以查看实际查询、检查结果是否截断，再结合指标口径验证结论。
+<div className="docs-pipeline">
+  <span>接入数据</span>
+  <span aria-hidden="true">→</span>
+  <span>分析数据</span>
+  <span aria-hidden="true">→</span>
+  <span>生成图表</span>
+</div>
+}
 
-<h2 id="next-steps">继续了解</h2>
+- **先看清数据有什么。** `schema()` 自动发现表和字段；需要统计信息时调用 `profile()`，有业务口径要交代时使用 `semantic()`。参见[了解数据结构](/documentation/data/schema/)。
+- **不知道从哪里问起？** `suggest()` 会结合数据结构和已有统计信息，推荐值得分析的问题。
+- **直接描述你要分析什么。** `analyze()` 按所选策略生成查询、执行并整理结论。
+- **也可以只用其中一步。** 想先看代码再执行，就分开调用 `translate()` 和 `query()`；已有结果要画图，可以分别使用 `recommend()` 和 `viz()`。
 
-- [接入数据](/documentation/data/sources/)：找到你的数据源与参数。
-- [了解数据结构](/documentation/data/schema/)：从结构、统计到业务含义。
-- [补充业务语义](/documentation/data/semantic/)：用一个销售示例理解口径与映射。
-- [分析数据](/documentation/analysis/overview/)：提问、推荐问题，或分开生成与执行查询。
-- [生成图表](/documentation/visualization/overview/)：让数据有合适的表达。
-- [连接模型](/documentation/configuration/)与[选择引擎](/documentation/engines/overview/)：配置自己的运行方式。
+<Heading as="h2" id="choose-an-execution-engine">选择执行引擎</Heading>
 
-源码与讨论：[GitHub](https://github.com/antvis/AVA)、[问题反馈](https://github.com/antvis/AVA/issues)、[AntV 社区](https://antv.vision/)。
+| 引擎 | 查询语言 | 运行环境 |
+| ---------- | --------------- | ------------------------------ |
+| DuckDB | SQL | Node.js，默认引擎 |
+| JavaScript | JavaScript | 浏览器和 Node.js |
+| Python | Python / pandas | Node.js，需提供 Python 执行器 |
+| Supabase | PostgreSQL SQL | Node.js，远程执行 |
+| ClickHouse | ClickHouse SQL | Node.js，远程执行 |
+
+各引擎支持的数据源和配置方式见[执行引擎](/documentation/engines/overview/)。
+
+<Heading as="h2" id="explore-the-documentation">按这个顺序上手</Heading>
+
+第一次使用，可以跟着下面的顺序走完一遍。熟悉基本流程后，再按项目需要调整模型、执行环境，或扩展自己的引擎。
+
+{
+
+<ol className="docs-timeline" role="list" aria-label="文档阅读路径">
+  <li>
+    <span className="docs-timeline-marker" aria-hidden="true">
+      01
+    </span>
+    <strong>
+      <a href="/zh/documentation/quickstart/">跑通第一次分析</a>
+    </strong>
+    <p>安装 SDK，连接模型，用一份小数据确认整条流程能跑通。</p>
+  </li>
+  <li>
+    <span className="docs-timeline-marker" aria-hidden="true">
+      02
+    </span>
+    <strong>
+      <a href="/zh/documentation/data/sources/">换成自己的数据</a>
+    </strong>
+    <p>
+      接入文件或数据库，再查看<a href="/zh/documentation/data/schema/">数据结构与统计信息</a>，确认字段和数据质量。
+    </p>
+  </li>
+  <li>
+    <span className="docs-timeline-marker" aria-hidden="true">
+      03
+    </span>
+    <strong>
+      <a href="/zh/documentation/analysis/overview/">围绕业务问题展开分析</a>
+    </strong>
+    <p>让 AVA 推荐问题，或直接提出需求；需要先探索再回答时，换用合适的分析策略。</p>
+  </li>
+  <li>
+    <span className="docs-timeline-marker" aria-hidden="true">
+      04
+    </span>
+    <strong>
+      <a href="/zh/documentation/visualization/overview/">把分析结果画出来</a>
+    </strong>
+    <p>直接生成图表，也可以先保存配置，等需要时再渲染。</p>
+  </li>
+  <li>
+    <span className="docs-timeline-marker" aria-hidden="true">
+      05
+    </span>
+    <strong>
+      <a href="/zh/documentation/configuration/">配置与扩展</a>
+    </strong>
+    <p>
+      调整模型配置，选择<a href="/zh/documentation/engines/overview/">执行引擎</a>，或实现{' '}
+      <a href="/zh/documentation/engines/custom/">自定义引擎</a>。
+    </p>
+  </li>
+</ol>
+}
+
+查阅参数时可以直接打开 [API 参考](/documentation/reference/api/)；想了解公开能力对应的源码模块，可以阅读[架构说明](/documentation/reference/architecture/)。
+
+<Heading as="h2" id="resources">项目与社区</Heading>
+
+- [GitHub 仓库](https://github.com/antvis/AVA)
+- [反馈问题](https://github.com/antvis/AVA/issues)
+- [AntV 社区](https://antv.vision/)

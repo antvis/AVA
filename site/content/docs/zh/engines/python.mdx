@@ -1,4 +1,6 @@
-<h2 id="configure">启用 Python</h2>
+import { Heading } from '../../../../mdx-components';
+
+<Heading as="h2" id="configure">配置</Heading>
 
 ```typescript
 const ava = new AVA({
@@ -7,32 +9,39 @@ const ava = new AVA({
 });
 ```
 
-本地环境需要 `python3` 和 pandas；读取 Excel、Parquet 时还可能需要对应的 pandas 可选依赖。
+本地执行需要 `python3` 和 pandas。读取 Excel、Parquet 等文件格式时，可能还需要安装 pandas 的可选依赖。
 
-<Callout>本地 Python 执行不在沙箱中。需要隔离时，通过 `execute` 接入自己管理的执行环境。</Callout>
+<Callout>
+  本地 Python 执行没有沙箱隔离。如果需要这一边界，请通过 <code>execute</code> 回调接入
+  你自己的隔离执行环境。
+</Callout>
 
-<h2 id="engine-options">引擎参数</h2>
+<Heading as="h2" id="engine-options">引擎选项</Heading>
 
-| 字段 | 类型 | 默认行为 |
-| --- | --- | --- |
-| `execute` | `(code: string) => Promise<ExecutionResult>` | 不提供时在本地用 python3 执行；提供后交给你的执行器运行完整脚本。 |
-| `queryTimeoutMs` | `number` | 默认 `30000` 毫秒，控制客户端等待与本地进程执行时限。 |
+将 `engine.type` 设为 `python`。`engine` 接受的全部额外字段如下。
 
-<h2 id="supported-sources">支持的数据</h2>
+| 字段 | 类型 | 必填 | 含义与默认值 |
+| ---------------- | -------------------------------------------- | -------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `execute` | `(code: string) => Promise<ExecutionResult>` | 否 | 用自定义环境替换本地 python3 执行。本地执行没有沙箱；回调应运行完整 Python 脚本，将其 JSON 输出作为 ExecutionResult 返回。脚本已包含数据加载和结果限制；远程执行超时需另行配置。 |
+| `queryTimeoutMs` | `number` | 否 | 客户端等待上限及本地进程执行时限，默认 30000 毫秒。 |
 
-支持内存 CSV、JSON，以及本地或 HTTP(S) 地址的 CSV、JSON、Excel、Parquet 文件。不接收文本提取或数据库源。`source()` 保存验证后的配置，实际读取发生在查询或元数据计算时，每次查询都会重新读取输入。
+<Heading as="h2" id="supported-sources">支持的数据源</Heading>
 
-<h2 id="query-bindings">Python 查询约定</h2>
+支持内存 CSV、JSON，以及 CSV、JSON、Excel、Parquet 文件；文件可以是本地路径或 HTTP(S) URL。不支持文本提取和数据库源。`source()` 保存经过验证的配置，实际读取发生在执行查询或计算元数据时；每次查询都会重新加载输入。
 
-`pd` 是 pandas；`tables` 按表名提供 DataFrame。只有一张表时还会提供 `df`。把最终值赋给 `result`。
+<Heading as="h2" id="query-bindings">查询中的变量</Heading>
+
+`pd` 指向 pandas；DataFrame 按 schema 表名存放在 `tables` 中。只有一张表时，还可直接使用 `df`。最终值需赋给 `result`。
 
 ```typescript
 const result = await ava.query("result = df.groupby('region', as_index=False)['revenue'].sum()");
 ```
 
-DataFrame 和 Series 的索引不会自动成为返回列，需要时先 `reset_index()`。不同执行之间不保留变量和数据修改。
+DataFrame 和 Series 的索引不会自动返回；索引值有业务含义时，请使用 `reset_index()`。每次执行都从原始输入重新开始，修改和变量不会跨调用保留。
 
-<h2 id="supply-a-python-executor">接入自己的 Python 执行服务</h2>
+<Heading as="h2" id="supply-a-python-executor">提供 Python 执行器</Heading>
+
+你可以保留 AVA 的 Python 查询生成与数据源处理逻辑，只替换完整脚本的运行位置：
 
 ```typescript
 import { AVA, type ExecutionResult } from '@antv/ava';
@@ -56,8 +65,11 @@ const ava = new AVA({
 });
 ```
 
-`YOUR_EXECUTOR` 代表你管理的服务，并非 AVA 的接口。服务需要运行包含数据加载与结果限制的完整脚本，解析 JSON 输出，返回 `ExecutionResult`，失败时拒绝 Promise。
+`YOUR_EXECUTOR` 是你自己的应用服务，不是 AVA 提供的端点。它需要使用 Python 和 pandas 执行传入脚本，解析 JSON 输出，并返回 `ExecutionResult`。请在服务边界验证响应。脚本中的本地文件路径也必须在执行器环境中存在；也可以改用内存数据或执行器可访问的 URL。
 
-在服务边界验证返回结构，并自行设置执行期限和资源上限。HTTP 请求取消只代表客户端不再等待，不保证远程任务已经停止。脚本中的本地路径也必须在执行环境中存在；否则使用内存数据或可访问的 URL。
+| 回调参数与结果 | 类型 | 必填 | 含义 |
+| --------------------------- | -------------------------- | -------- | ----------------------------------------------------------------------------------------- |
+| `code` | `string` | 是 | 包含数据加载和结果限制的完整脚本。 |
+| 返回的 Promise | `Promise<ExecutionResult>` | 是 | 成功时返回 `schema`、`data` 和适用的截断信息；失败时拒绝 Promise。 |
 
-返回结构见 [ExecutionResult](/documentation/reference/api/#executionresult)。
+完整引擎字段见[引擎选项](#engine-options)，返回结构见[执行结果](/documentation/reference/api/#executionresult)。超时与资源限制应由服务自身执行；中止 HTTP 请求只会结束客户端等待。

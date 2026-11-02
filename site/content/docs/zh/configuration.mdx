@@ -1,6 +1,6 @@
-<h2 id="constructor">创建实例</h2>
+import { Heading } from '../../../mdx-components';
 
-模型配置放在 `llm` 中；省略 `engine` 时，SDK 默认选择 DuckDB。前端应用需要显式选择 `javascript`。
+<Heading as="h2" id="constructor">构造函数</Heading>
 
 ```typescript
 import { AVA } from '@antv/ava';
@@ -16,19 +16,21 @@ const ava = new AVA({
 });
 ```
 
-<h2 id="model-options">模型参数</h2>
+`llm` 为必填项。不传 `engine` 时使用 DuckDB；前端应用必须显式选择 `javascript`。
 
-| 字段 | 类型 | 必填 | 用法 |
-| --- | --- | --- | --- |
-| `provider` | `'openai' \| 'gateway'` | 否 | 默认按兼容 OpenAI 的 Chat Completions 协议调用；Gateway 可读取 `AI_GATEWAY_API_KEY`。 |
-| `model` | `string \| LanguageModel` | 是 | 模型名称，或已经配置好的 AI SDK 模型实例。 |
-| `apiKey` | `string` | 否 | 模型服务提供方的 API Key。 |
-| `baseURL` | `string` | 否 | 自定义模型服务地址。 |
-| `maxRetries` | `number` | 否 | 可重试的模型调用错误最多重试几次，默认 `3`。 |
+<Heading as="h2" id="model-options">模型选项</Heading>
 
-传入字符串模型名时，默认走 Chat Completions；传入模型对象时直接使用该对象。模型使用量回调不是覆盖全部请求的完整计费流水。
+| 字段 | 类型 | 必填 | 含义与默认值 |
+| -------------- | ------------------------------------- | -------- | --------------------------------------------------------------------------------- |
+| `provider` | `'openai' \| 'gateway'` | 否 | 默认使用兼容 OpenAI 的 Chat Completions。Gateway 可读取 AI_GATEWAY_API_KEY。 |
+| `model` | `string \| LanguageModel` | 是 | 模型名称，或预先配置好的 AI SDK 模型实例。 |
+| `apiKey` | `string` | 否 | 模型服务商的 API 密钥。 |
+| `baseURL` | `string` | 否 | 可选的 API 基础地址。 |
+| `maxRetries` | `number` | 否 | 模型 API 可重试错误的最大重试次数，默认 3。 |
 
-<h2 id="ai-gateway">通过 AI Gateway 连接</h2>
+以字符串传入模型名称时，默认调用兼容 OpenAI 的 **Chat Completions**；传入模型对象时则直接使用该对象。用量回调并不完整覆盖每一次模型请求，不能据此汇总全部模型用量。
+
+<Heading as="h2" id="ai-gateway">AI Gateway</Heading>
 
 ```typescript
 const ava = new AVA({
@@ -40,12 +42,12 @@ const ava = new AVA({
 });
 ```
 
-没有显式传入 Key 时，Gateway 也可以读取环境变量 `AI_GATEWAY_API_KEY`。
+未显式传入密钥时，Gateway 也可以从环境变量 `AI_GATEWAY_API_KEY` 读取。
 
-<h2 id="separate-retry-controls">分清两种重试</h2>
+<Heading as="h2" id="separate-retry-controls">两类重试分别配置</Heading>
 
-`llm.maxRetries` 控制模型 API 调用重试；`direct` 策略中的 `maxRetries` 控制查询执行失败后的纠正重试。两者分别计数，配置示例见[分析策略](/documentation/analysis/strategies/)。
+`llm.maxRetries` 控制模型 API 的重试次数；`direct` 分析策略中的 `maxRetries` 则用于修正执行失败的查询。两者独立，详见[分析策略](/documentation/analysis/strategies/)。
 
-<h2 id="credentials-in-frontend-apps">前端如何提供凭证</h2>
+<Heading as="h2" id="credentials-in-frontend-apps">前端应用中的凭证</Heading>
 
-共享的模型密钥应保留在服务端。浏览器内的个人体验可以让用户在运行时填写，避免把 Key 写进源码或前端产物。
+共享的模型服务密钥应放在服务端。纯浏览器实验可以在运行时获取用户凭证，不要将密钥写入源码或打包进前端产物。

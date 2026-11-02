@@ -1,4 +1,6 @@
-<h2 id="supabase">连接 Supabase</h2>
+import { Heading } from '../../../../mdx-components';
+
+<Heading as="h2" id="supabase">Supabase</Heading>
 
 ```typescript
 const ava = new AVA({
@@ -14,9 +16,9 @@ await ava.source({
 });
 ```
 
-使用 `engine: { type: 'supabase' }`，并在数据源中提供 Management API OAuth 流程取得的 `accessToken` 和目标 `projectRef`。这个令牌不是项目的匿名 Key。引擎发现远程结构，并在对应 PostgreSQL 中执行查询。
+引擎按需发现 schema，通过 Supabase Management API 以只读请求执行 PostgreSQL 查询。应用负责获取和刷新访问令牌。查询结果会返回给 AVA，也可能被发给模型，用于生成分析总结。
 
-<h2 id="clickhouse">连接 ClickHouse</h2>
+<Heading as="h2" id="clickhouse">ClickHouse</Heading>
 
 ```typescript
 const ava = new AVA({
@@ -34,10 +36,10 @@ await ava.source({
 });
 ```
 
-使用 `engine: { type: 'clickhouse' }`，连接参数放在 `source()` 的 `options`。`url` 优先于 `host`，`username` 优先于 `user`；`port` 可以覆盖地址中的端口。
+使用 `url` 或 `host`，并提供必填的 `database`。`username` 的优先级高于别名 `user`。查询通过官方 ClickHouse 客户端执行，并启用只读设置。
 
-<h2 id="source-options">参数与执行位置</h2>
+<Heading as="h2" id="shared-workflow">共同工作流</Heading>
 
-完整参数见[数据源指南](/documentation/data/sources/#clickhouse)。两种远程引擎都不接受额外的 `engine` 构造字段。SDK 不会因为你传入远程数据源而自动选择引擎，需要显式配置。
+两种引擎都支持 `schema()`、`profile()`、`translate()`、`query()` 和 `analyze()`。在 JavaScript API 中，数据源类型与引擎类型需要匹配。使用结束后调用 `await ava.dispose()` 释放资源。
 
-查询执行于远程数据库，按对应 SQL 方言生成和校验。返回数据限制与远程服务的处理能力是不同层面的约束；连接权限由所提供的凭证决定。
+完整配置表见 [Supabase 参数](/documentation/data/sources/#supabase)和 [ClickHouse 选项](/documentation/data/sources/#clickhouse)。

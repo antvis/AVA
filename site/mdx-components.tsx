@@ -3,7 +3,7 @@ import type { ComponentProps, ReactNode } from 'react';
 import LocaleLink from './components/LocaleLink';
 import CopyCode from './components/docs/CopyCode';
 
-function Heading({ as: Tag, children, id }: ComponentProps<'h2'> & { as: 'h2' | 'h3' }) {
+export function Heading({ as: Tag, children, id }: ComponentProps<'h2'> & { as: 'h2' | 'h3' }) {
   return (
     <Tag id={id}>
       <a href={`#${id}`} className="docs-heading-link">

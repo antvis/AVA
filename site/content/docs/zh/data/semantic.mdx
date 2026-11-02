@@ -1,6 +1,6 @@
-同样问“各地区收入是多少”，有人直接把 `amount` 相加，有人只计算已支付订单，还有人会扣掉退款。AVA 不能只从字段类型知道你采用哪种口径，需要你把业务含义补充进去。
+import { Heading } from '../../../../mdx-components';
 
-沿用[数据结构指南](/documentation/data/schema/)中的订单：
+同一句“**按地区统计收入**”，口径不同，结果就可能不同。以下沿用[了解数据结构](/documentation/data/schema/)中的六笔订单，看看该怎样把口径说明白：
 
 | order_id | region | status | amount | refund_amount | ordered_at |
 | --- | --- | --- | --- | --- | --- |
@@ -11,17 +11,32 @@
 | 5 | East | paid | 50 | `null` | 2026-01-07 |
 | 6 | West | cancelled | 500 | 0 | 2026-01-08 |
 
-<h2 id="decide-what-revenue-means">先约定“收入”怎么算</h2>
+数据结构能告诉 AVA，`amount` 和 `refund_amount` 是数值；但无法说明哪些订单该计入收入。你可以通过 `semantic()` 补充这层业务含义。
 
-本例采用以下口径：
+<Heading as="h2" id="decide-what-revenue-means">先明确收入的口径</Heading>
 
-- 只计算 `paid`、`refunded`，不计算 `pending`、`cancelled`。
-- 原始金额减去累计退款，缺失的退款按零处理，单位为美元。
-- 按订单地区归属汇总，使用原始下单日期。
+本例约定三条规则：
 
-所以 East 的收入是 `(120 - 20) + (80 - 80) + 50 = 150`，West 是 `90 - 30 = 60`。待支付和已取消的两笔订单不计入。
+- 计入 `paid` 和 `refunded` 订单，排除 `pending` 和 `cancelled` 订单。
+- 用原始金额减去累计退款；退款缺失时按零处理。金额单位为美元。
+- 按订单所属地区分组，时间维度使用原始下单日期。
 
-<h2 id="write-the-semantic-definition">把口径写成可复用定义</h2>
+将这些规则应用到上面的数据：
+
+| 订单 | 计入收入的金额 | 原因 |
+| --- | --- | --- |
+| 1 | 100 美元 | 120 减去 20 的退款。 |
+| 2 | 0 美元 | 全额退款，80 减去 80。 |
+| 3 | 0 美元 | 待支付，排除。 |
+| 4 | 60 美元 | 90 减去 30 的退款。 |
+| 5 | 50 美元 | 退款缺失，按零处理。 |
+| 6 | 0 美元 | 已取消，排除。 |
+
+因此，East 的收入为 **150 美元**，West 为 **60 美元**。下面的语义定义将记录产生这些结果的规则。
+
+<Heading as="h2" id="write-the-definition">编写语义定义</Heading>
+
+将上表作为内存 JSON 加载后，DuckDB 会暴露名为 `data` 的表。对应的语义定义如下：
 
 ```javascript
 /** @satisfies {import('@antv/ava').Semantic} */
@@ -62,18 +77,34 @@ const semantic = {
 };
 ```
 
-先用 `schema()` 检查实际模型名、字段名、类型和来源限定信息。每个语义模型必须在 `tableReference`、`refSql`、`baseObject` 中选且只选一个；字段至少需要 `name` 和 `type`。
+<Callout>
+  **语义定义用于指导查询生成。** 它不会创建数据库对象，也不负责执行访问控制规则。
+</Callout>
 
-不必一开始就定义完整模型。一段 `description` 也合法：先说明业务口径，有字段解释、跨表关系或复用指标需求时，再逐步增加 models、relationships 和 cubes。
+可以从三个部分理解：
 
-<h2 id="save-the-definition-and-see-the-result">保存后，检查实际查询</h2>
+1. **`description` 和 `properties` 解释业务含义。** 共享描述定义收入口径；模型和列的属性说明行粒度、单位与空值含义。`unit`、`synonyms` 这样的键是注释信息，不是 SDK 的特殊选项。
+2. **`models` 将含义映射到数据。**`name: 'data'` 与自动发现的模型一致；计算列 `net_amount` 描述单笔订单的净额。未列出的物理列仍可通过 schema 使用。
+3. **`cubes` 定义可复用的分析口径。**`sales` 将指标与分组表达式组织在一起；`net_revenue` 同时包含状态过滤与退款计算；`dimensions` 提供地区分组，`timeDimensions` 提供下单日期分组。
+
+指标里包含了哪些记录可计入收入的规则，因此按地区或日期分组时，这些规则仍然生效。仅有计算列 `net_amount`，并不能决定哪些订单应计入收入。
+
+接入自己的数据源时，先查看 `await ava.schema()`。模型名和列名必须准确匹配，并保留物理数据源限定信息。每个语义模型必须且只能提供 `tableReference`、`refSql`、`baseObject` 之一；每列必须有 `name` 和 `type`。物理字段沿用发现的类型，计算字段则声明其结果类型。其他来源映射方式见[语义模型来源](/documentation/reference/api/#semantic-model-sources)。
+
+也可以从更简单的定义开始：`{ description: '这里填写业务规则。' }` 就是有效输入。随着问题深入，再用 models 说明字段含义、relationships 描述连接关系、cubes 定义可复用指标。
+
+<Heading as="h2" id="save-the-definition-and-see-the-result">保存定义并查看结果</Heading>
+
+完成 `ava` 配置并通过 `source()` 加载数据后，让 setter 返回这份定义：
 
 ```typescript
 await ava.semantic(undefined, () => semantic);
 const saved = await ava.semantic();
 ```
 
-Setter 保存验证后的副本。后续 `analyze()`、`translate()`、`suggest()` 会把它与结构和已有统计组合使用。按上述口径生成的 SQL 可以是：
+`undefined` 表示使用默认选项；目前 semantic 没有可配置选项。Setter 会验证并保存一份副本，之后的 `analyze()`、`translate()` 和 `suggest()` 会将它与 schema、已有 profile 一起使用。
+
+对于“按地区统计收入”，应用这些定义的查询可以写成：
 
 ```sql
 SELECT
@@ -89,21 +120,29 @@ GROUP BY region
 ORDER BY region;
 ```
 
+上面六笔订单的结果为：
+
 | region | net_revenue（美元） |
 | --- | --- |
 | East | 150 |
 | West | 60 |
 
-模型生成的别名和 SQL 形式可能不同，但业务口径和结果应能核对一致。
+这只是一个示例查询。模型生成的 SQL 写法和列别名可能不同。
 
-逻辑模型、计算字段、view 和 cube 都是给查询生成器的上下文，不会自动成为数据库对象。例如 `net_amount` 必须展开为表达式，或在子查询、CTE 中定义后才能执行。
+逻辑模型、cube、view 或计算列不会自动变成可直接查询的数据库对象。例如，SQL 使用 `net_amount` 时，需要展开其表达式，或在子查询、CTE 中定义它。上面的查询直接嵌入指标表达式，读取物理表 `data`。
 
-<h2 id="check-and-maintain-your-definition">口径也需要验证与维护</h2>
+<Heading as="h2" id="check-and-maintain-your-definition">验证并维护定义</Heading>
 
-先和数据负责人确认粒度、单位、有效记录、空值处理与时间含义；有连接时检查是否重复计数。再用已知答案的小数据集验证表达式，并核对 `translate()` 的输出和实际结果。
+将定义用于实际问题前，先完成以下检查：
 
-Setter 的结构校验不会证明 SQL 能执行，也不会证明业务规则正确。完整定义建议保存在应用代码或 JSON 中，与数据契约一起做版本管理。
+1. 与数据负责人确认行粒度、单位、记录范围、空值处理和时间含义。涉及表连接时，检查同一行是否被重复计数。
+2. 用结果已知的小数据集测试表达式，覆盖本例中的退款、排除订单等边界情况。
+3. 检查生成的 SQL，并将执行结果与已知答案对照。Setter 验证的是对象结构，不能证明 SQL 或业务逻辑正确。
 
-<Callout>每次 Setter 都替换完整定义，不是增量补丁。切换数据源或释放实例后需要重新提供；更新结构、统计则会保留它。</Callout>
+将完整定义保存在应用代码或 JSON 文件中，并与数据契约一起管理版本。
 
-字段形状、合并规则和错误排查见 [API 语义模型参考](/documentation/reference/api/#semantic-fields)。
+<Callout>
+  **每次 setter 都会替换完整定义。** 加载新数据源或调用 `dispose()` 会清除语义，因此加载数据源后需要重新设置。更新 schema 或 profile 会保留语义。
+</Callout>
+
+准确的字段结构、来源映射、关系、视图、合并规则及验证错误见 [API 参考中的语义字段](/documentation/reference/api/#semantic-fields)。其他上下文输入见[了解数据结构](/documentation/data/schema/)，方法签名见 [AVA API](/documentation/reference/api/#semantic)。

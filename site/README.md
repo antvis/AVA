@@ -51,6 +51,6 @@ English keeps `/`, `/ai/`, and `/documentation/`. Chinese uses the corresponding
 
 - Shared presentation lives in `components/Home.tsx`, `ai/ui/AIPage.tsx`, and `components/docs/`; route files only choose the language.
 - `messages/en.json` and `messages/zh.json` hold UI copy. Use `useTranslations` in client components and `getTranslator` for server-rendered text. Keep matching keys; write Chinese copy for Chinese readers.
-- `content/docs/en/` and `content/docs/zh/` use matching slugs. Keep API names, units, and behavior aligned. Preserve stable heading IDs even when wording differs.
+- `content/docs/en/` and `content/docs/zh/` use matching slugs, heading levels, examples, tables, callouts, and custom layouts. Write Chinese explanations for Chinese readers rather than matching English sentences; preserve the information, API names, units, and behavior. Preserve stable heading IDs even when wording differs.
 - Use `LocaleLink` for internal navigation. Assets and external URLs keep their original paths. Language switching opens the matching page, reloads the document, and starts a new AI conversation.
 - When adding a chapter, update both locales, explicit MDX imports, `public/sitemap.xml`, and `public/llms.txt`. Run `pnpm build` and `pnpm check:docs` to verify both languages.
