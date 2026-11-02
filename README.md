@@ -227,8 +227,7 @@ The agent and CLI workflows run on Node.js 22.13+ on macOS or Linux.
 Ask your AI agent:
 
 ```text
-Install the AVA CLI with `npm install -g @antv/ava@4` and the AVA skill
-with `npx skills add antvis/AVA`. Verify that both are ready to use.
+Install the AVA skill with `npx skills add antvis/AVA`, then follow its setup instructions.
 ```
 
 [Agent setup guide →](https://ava.antv.vision/documentation/agent-skill/)
