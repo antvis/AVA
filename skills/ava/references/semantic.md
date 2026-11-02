@@ -1,115 +1,84 @@
 # Business Semantics
 
-Semantic records reusable business meaning: metric formulas, field meanings, eligible records, units, time conventions, and join rules. Schema describes structure; profile contains observations such as row counts. Keep computed answers and profiling statistics out of semantic.
+Use this reference to select, store, and load reusable business definitions. The main skill covers deciding when a question needs clarification. Semantic files contain meaning and calculation rules; schema contains structure, and profile contains observed statistics.
 
-## Resolve Meaning Before Calculation
+## Select the Applicable Definition
 
-First inspect relevant session and saved definitions, source documentation, the user's explicit instructions, and the actual schema. Use targeted queries to establish physical facts such as status values or duplicate join keys. Queries cannot establish which statuses the business intends to count.
-
-Ask when plausible interpretations could materially change the requested answer and the available context does not resolve them. Clarify only the relevant gaps:
-
-| Ambiguity | What to resolve |
-| --- | --- |
-| Population and grain | Orders or order lines; eligible statuses; test records; distinct entity and deduplication rules. |
-| Formula | Gross or net amount; refunds, taxes, and discounts; ratio numerator and denominator; weighted or unweighted average. |
-| Time | Order, payment, or refund date; timezone; calendar or fiscal periods; period boundaries. |
-| Units and missing values | Currency and conversion rule; amount scale; whether null means zero, unknown, or excluded. |
-| Joins | Join keys and cardinality; unmatched records; prevention of double counting. |
-
-Do not turn this table into a questionnaire. For example: “Revenue could mean paid amount or paid amount minus refunds. Which should this report use? Should refunds follow the original order date or the refund date?” Mention existing definitions when they conflict. Ask about the scope of a correction when it is unclear whether it applies only to this report or changes the reusable definition.
-
-An explicit definition in the current request needs no repeated confirmation. Applicable documented definitions may also be reused with attribution. Samples, inferred names, and an agent's recommended default are not user confirmation. If a material answer is pending, wait on the affected computation. If the user delegates the choice, disclose the task-specific assumption without promoting it to a confirmed reusable rule. For noninteractive tasks, report the unresolved definition or clearly separate alternative calculations rather than silently choosing one.
-
-## Find and Reuse Definitions
-
-Read the current session:
+Read the session's current definition with:
 
 ```sh
 ava semantic "$DATASET_ID" > semantic-session.json
 ```
 
-Use an established project location or one supplied by the user. Otherwise keep reusable files in `.ava/semantics/<source-key>.json` under the analysis project, outside a disposable output folder. Choose a stable, descriptive key for the logical source and reporting scope, not the temporary `datasetId`. Search this location before creating a new file. Do not store learned definitions inside the installed skill.
+Use the user's location or an existing project convention for durable files. Otherwise use `.ava/semantics/<source-key>.json` under the analysis project. Choose a stable key for the logical source and reporting scope, not the temporary `datasetId`. Search there before creating a file, and keep learned definitions outside the installed skill and disposable output folders.
 
-Check applicability before loading: source identity (such as project-relative file, database/schema/table, or Bitable table), business scope, effective period when relevant, required fields/types, and query dialect. Matching column names alone do not make two sources equivalent. A new monthly export may reuse a known contract; a different tenant or changed refund meaning needs rechecking. Rediscover schema after reloading a source and revisit only the definitions affected by changes.
+Check the source identity (project-relative file, database/schema/table, or Bitable table), reporting scope, effective period when relevant, referenced fields/types, and dialect. Identical field names do not establish source identity. Monthly exports may share a known contract; another tenant or changed refund meaning needs rechecking. Refresh schema for a new session and revisit only affected definitions.
 
-Use the current explicit request for this task. If it differs from a saved rule, make the difference visible; do not silently change the shared default. An unclear conflict between saved or documented definitions needs clarification before use. Distinguish temporary overrides, permanent corrections, and rules that apply from a given date. Keep historical versions or use version control when changing an established definition; do not erase a valid historical rule.
+When definitions overlap, distinguish different scopes or effective periods from actual conflicts. Resolve material conflicts before combining them. An explicit request may override a rule for the current task without changing the saved default. For a permanent correction, retain history or use version control; confirmation date and effective date are different facts.
 
-## Record Confirmed Meaning
+## Represent Meaning as Semantic JSON
 
-Save only the reusable portion of a confirmation. “Revenue is paid amount minus cumulative refunds” can be reused; “show last month in East” is a query parameter unless the user defines it as a recurring reporting rule. Never save a pending guess as confirmed or include credentials, raw personal records, or full chat transcripts.
+Use AVA's `Semantic` shape. A `description` plus `properties` is enough for a plain-language rule. Add structured objects when they make the calculation reusable:
 
-Use AVA's `Semantic` JSON shape. Start with `description` and `properties`; add structured objects only when useful:
+| Object | Purpose and constraints |
+| --- | --- |
+| `models` | Source/field meaning and calculated expressions. Match discovered names and preserve physical qualifiers. Each model requires exactly one of `tableReference`, `refSql`, or `baseObject`; columns require `name` and `type`. |
+| `relationships` | Verified join conditions and cardinality. Observed uniqueness alone is not a permanent key contract. |
+| `views` | Reusable read-only query statements. |
+| `cubes` | Aggregation expressions, dimensions, and time dimensions. Put eligibility rules in the measure or its base so regrouping retains them. |
 
-- `models`: source/field descriptions and calculated expressions. Model names must match discovered names; each model needs exactly one of `tableReference`, `refSql`, or `baseObject`. Preserve physical qualifiers. Columns need `name` and `type`.
-- `relationships`: verified join conditions and cardinality. Observed uniqueness alone is not a permanent key contract.
-- `views`: reusable read-only query statements.
-- `cubes`: measures with aggregation expressions, dimensions, and time dimensions. Include eligibility rules in the measure or its base so a later grouping does not lose them.
+Record source identity and scope in `properties`, and evidence/provenance and confirmation date at the level of the rule they support. Attribute documentation to its actual source; use `confirmedBy: "user"` only for a user confirmation. Preserve provenance for unchanged rules. Add effective dates only when supplied. These property keys are agent conventions, not CLI-enforced applicability checks.
 
-Record source identity, reporting scope, confirmation evidence, and date in `properties`, at the level of the rule being confirmed. Preserve provenance for unchanged rules rather than marking the entire file newly confirmed. Record effective dates only when supplied, and distinguish them from the confirmation date. These properties are conventions for the agent, not CLI-enforced scope checks.
-
-For example, after a user confirms one row per order, USD net revenue from paid and refunded orders, cumulative refunds on the original order, order-date attribution, and zero for missing refunds, save:
+For example, a user confirms that this export contains one row per order, amounts are USD, revenue includes paid and refunded orders minus cumulative refunds, null refunds mean zero, and reporting follows the original order date:
 
 ```json
 {
-  "description": "Order reporting definitions for the sales export.",
+  "description": "One row per order. USD revenue follows the original order date and subtracts cumulative refunds; null refunds mean zero.",
   "properties": {
     "source": { "type": "csv-file", "path": "data/orders.csv" },
-    "scope": "Sales operations order reporting"
+    "scope": "Sales operations order reporting",
+    "confirmedBy": "user",
+    "confirmedAt": "2026-11-02"
   },
-  "models": [
-    {
-      "name": "data",
-      "tableReference": { "table": "data" },
-      "properties": {
-        "grain": "One row per order; refunds are cumulative on the original order.",
-        "confirmedBy": "user",
-        "confirmedAt": "2026-11-02"
-      }
-    }
-  ],
-  "cubes": [
-    {
-      "name": "sales",
-      "baseObject": "data",
-      "measures": [
-        {
-          "name": "net_revenue",
-          "expression": "SUM(CASE WHEN status IN ('paid', 'refunded') THEN amount - COALESCE(refund_amount, 0) ELSE 0 END)",
-          "type": "DOUBLE",
-          "description": "Net revenue; pending and cancelled orders do not count.",
-          "properties": {
-            "unit": "USD",
-            "synonyms": ["revenue", "net sales"],
-            "confirmedBy": "user",
-            "confirmedAt": "2026-11-02",
-            "confirmation": "Count paid and refunded orders, subtract cumulative refunds, and treat null refunds as zero. Attribute to the original order date."
-          }
-        }
-      ],
-      "dimensions": [{ "name": "region", "expression": "region", "type": "VARCHAR" }],
-      "timeDimensions": [{ "name": "order_date", "expression": "CAST(ordered_at AS DATE)", "type": "DATE" }]
-    }
-  ]
+  "cubes": [{
+    "name": "sales",
+    "baseObject": "data",
+    "measures": [{
+      "name": "net_revenue",
+      "expression": "SUM(CASE WHEN status IN ('paid', 'refunded') THEN amount - COALESCE(refund_amount, 0) ELSE 0 END)",
+      "type": "DOUBLE",
+      "description": "Paid and refunded orders after refunds; pending and cancelled orders do not count.",
+      "properties": { "unit": "USD", "synonyms": ["revenue", "net sales"] }
+    }],
+    "dimensions": [{ "name": "region", "expression": "region", "type": "VARCHAR" }],
+    "timeDimensions": [{ "name": "order_date", "expression": "CAST(ordered_at AS DATE)", "type": "DATE" }]
+  }]
 }
 ```
 
-Adapt the example to the actual schema, dialect, and confirmation; its names and rules are not defaults. A rule may be confirmed before its expression has been execution-validated; do not confuse the two.
+Adapt names, types, dialect, and rules to the actual source and evidence. `baseObject: "data"` refers to the discovered model; a separate semantic model is unnecessary unless adding model/field meaning or mappings. The example records one confirmation at the shared level; place later independent confirmations on the affected objects.
 
-## Load, Validate, and Maintain
+Save the reusable rule rather than the entire request. “Revenue is paid amount minus refunds” can be reused; “show last month in East” remains a query parameter unless it defines a recurring report. Keep pending guesses, computed answers, profiling `metrics`, credentials, raw personal records, and chat transcripts out of semantic.
 
-Each setter replaces the **complete** session definition. Read both the saved file and session first, reconcile definitions by name and scope, and preserve unrelated entries and properties. Do not shallow-merge arrays or replace the session with only the latest metric. When several files apply, build a combined task-local Semantic JSON after resolving overlaps; do not load them sequentially expecting a merge.
+## Replace a Complete Session Definition
 
-Write the complete candidate to a temporary JSON file, then load it:
+`--file` replaces the **whole** session definition. Read the saved file and session first, reconcile by name and scope, and preserve unrelated entries and properties. Do not shallow-merge arrays or load several files sequentially expecting them to merge. When multiple files apply, build a combined task-local JSON after resolving overlaps; keep each durable file within its own source/scope.
+
+Write a complete candidate to a temporary JSON file, then load and read it back:
 
 ```sh
 ava semantic "$DATASET_ID" --file semantic-candidate.json > semantic-applied.json
 ava semantic "$DATASET_ID" > semantic-readback.json
 ```
 
-`--file` takes a plain path, without `@`. The command validates structure and returns the saved definition. An invalid definition leaves the previous session value intact. Readback should match the intended full definition. After successful loading, replace the canonical local file with the validated candidate, preserving history where needed. If loading or saving fails, retain the previous reusable file and report what succeeded. If the user asks not to persist, keep task-specific context without creating a reusable file.
+Pass a plain path without `@`. The command validates structure and returns the saved definition. Invalid input leaves the old session definition intact. Verify readback against the intended snapshot before replacing the canonical local file. Preserve history where needed. On load/save failure, retain the previous durable file and report what actually succeeded. If the user requests no persistence, keep task context without a durable file.
 
-Structure validation does not check SQL correctness, source compatibility, or business truth. Validate new expressions with targeted queries and known examples, including exclusions, refunds, nulls, empty populations, and join multiplication as relevant. Compare the query with the confirmed rule. If evidence contradicts it, investigate the mapping or ask about the conflict; do not silently rewrite business meaning to fit the data.
+Structure validation does not establish SQL correctness, source compatibility, or business truth. Verify new expressions with targeted queries or known examples covering the relevant exclusions, refunds, nulls, denominators, and joins. Keep user confirmation distinct from expression execution-validation. If evidence conflicts with a rule, investigate or clarify instead of rewriting the meaning silently.
 
-`analyze`, `translate`, and `suggest` use the loaded definitions as model context. `query` executes exactly the DSL supplied by the agent: expand measure expressions, logical views, and calculated columns in SQL/CTEs or implement their meaning in Python/JavaScript. Semantic does not create physical columns or views, enforce filters, or grant access.
+## Reuse Across Calls and Sessions
 
-Schema/profile updates retain semantic. Disposal or session expiry loses it; keep the local JSON and reload applicable definitions for each new session. Reading semantic without `--file` returns the current value (initially `{}`), without model calls or statistical computation. A file containing `{}` explicitly clears the session definition; it does not delete saved files. If an installed CLI lacks `semantic`, use the project's updated build or upgrade it; until then, apply definitions in agent-written queries and disclose that session injection is unavailable. Do not use `schema --file` as a substitute.
+`analyze`, `translate`, and `suggest` receive loaded semantic as model context. `query` executes the supplied DSL: expand measures, logical views, and calculated columns in SQL/CTEs or implement them in Python/JavaScript. Semantic creates no physical database objects and enforces no filters or permissions.
+
+Reading semantic returns the saved value, initially `{}`, without model calls or statistical computation. A file containing `{}` explicitly clears session semantic without deleting local files. Schema/profile updates retain it; disposal or session expiry loses it. Keep the durable JSON and reload applicable definitions for each new session.
+
+If the installed CLI lacks `semantic`, use an updated build or upgrade it. Until available, apply known definitions in agent-written queries and disclose that session injection is unavailable. Do not substitute `schema --file` for semantic.
