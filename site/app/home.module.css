@@ -594,7 +594,7 @@
     padding-top: clamp(64px, 5.3vw, 92px);
   }
   .demo [id='ai'] > div:has(> [data-artifact-panel]) {
-    grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr);
+    grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr);
   }
   .dataSection {
     padding-block: 112px 144px;
