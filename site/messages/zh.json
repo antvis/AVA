@@ -2,7 +2,7 @@
   "Banner": {
     "nEW": "NEW",
     "introducingAVA40": "AVA 4.0，让 Agent 更懂数据",
-    "anOpenSourceFrameworkForAIAgents": "AVA 是一款面向 AI Agent 的开源可视分析框架，让 Agent 接入数据、完成分析，把发现变成看得懂的图表",
+    "anOpenSourceFrameworkForAIAgents": "面向 AI Agent 的开源数据分析框架，连接企业数据，以可信分析与可视化支撑业务决策",
     "tryAVA": "在线体验",
     "trySive": "体验 Sive",
     "builtWithAVA": "基于 AVA 构建",
