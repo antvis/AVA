@@ -1,0 +1,115 @@
+3:"$Sreact.fragment"
+4:"/_next/static/chunks/0xpkuc787v-p9.js"
+5:I[936064,["$4"],"default"]
+6:I[481497,["$4"],"default"]
+b:"/_next/static/chunks/20no9c33yqyzq.js"
+c:"/_next/static/chunks/024mr0my09zgj.js"
+d:"/_next/static/chunks/2mfxd9osm4z6w.js"
+e:"/_next/static/chunks/1bmh2fw63vq04.js"
+f:"/_next/static/chunks/1lxucu_dj41ds.js"
+10:I[400503,["$b","$c","$d","$e","$f"],"default"]
+11:I[697790,["$b","$c","$d","$e"],"default"]
+12:I[474333,["$b","$c","$d","$e"],"default"]
+17:I[5138,["$b","$c","$d","$e","$f"],"default"]
+23:"ViewportBoundary"
+24:I[675049,["$4"],"$23"]
+25:"MetadataBoundary"
+26:I[675049,["$4"],"$25"]
+27:"$Sreact.suspense"
+28:I[934035,["$4"],"IconMark"]
+:HL["/_next/static/chunks/0o-6jlwxqyz8v.css","style"]
+:HL["https://mdn.alipayobjects.com/huamei_qa8qxu/afts/img/A*A-lcQbVTpjwAAAAAAAAAAAAADmJ7AQ/original","image"]
+8:X
+8:C
+9:X
+18:T938,# 连接模型
+
+配置兼容 OpenAI 的服务、AI Gateway 或 AI SDK 模型。
+
+import { Heading } from '../../../mdx-components';
+
+<Heading as="h2" id="constructor">构造函数</Heading>
+
+```typescript
+import { AVA } from '@antv/ava';
+
+const ava = new AVA({
+  llm: {
+    model: 'YOUR_MODEL',
+    apiKey: process.env.OPENAI_API_KEY,
+    baseURL: process.env.OPENAI_BASE_URL,
+    maxRetries: 3,
+  },
+  engine: { type: 'duckdb' },
+});
+```
+
+`llm` 为必填项。不传 `engine` 时使用 DuckDB；前端应用必须显式选择 `javascript`。
+
+<Heading as="h2" id="model-options">模型选项</Heading>
+
+| 字段 | 类型 | 必填 | 含义与默认值 |
+| -------------- | ------------------------------------- | -------- | --------------------------------------------------------------------------------- |
+| `provider` | `'openai' \| 'gateway'` | 否 | 默认使用兼容 OpenAI 的 Chat Completions。Gateway 可读取 AI_GATEWAY_API_KEY。 |
+| `model` | `string \| LanguageModel` | 是 | 模型名称，或预先配置好的 AI SDK 模型实例。 |
+| `apiKey` | `string` | 否 | 模型服务商的 API 密钥。 |
+| `baseURL` | `string` | 否 | 可选的 API 基础地址。 |
+| `maxRetries` | `number` | 否 | 模型 API 可重试错误的最大重试次数，默认 3。 |
+
+以字符串传入模型名称时，默认调用兼容 OpenAI 的 **Chat Completions** ；传入模型对象时则直接使用该对象。用量回调并不完整覆盖每一次模型请求，不能据此汇总全部模型用量。
+
+<Heading as="h2" id="ai-gateway">AI Gateway</Heading>
+
+```typescript
+const ava = new AVA({
+  llm: {
+    provider: 'gateway',
+    model: 'openai/gpt-4o-mini',
+    apiKey: process.env.AI_GATEWAY_API_KEY,
+  },
+});
+```
+
+未显式传入密钥时，Gateway 也可以从环境变量 `AI_GATEWAY_API_KEY` 读取。
+
+<Heading as="h2" id="separate-retry-controls">两类重试分别配置</Heading>
+
+`llm.maxRetries` 控制模型 API 的重试次数；`direct` 分析策略中的 `maxRetries` 则用于修正执行失败的查询。两者独立，详见[分析策略](/documentation/analysis/strategies/)。
+
+<Heading as="h2" id="credentials-in-frontend-apps">前端应用中的凭证</Heading>
+
+共享的模型服务密钥应放在服务端。纯浏览器实验可以在运行时获取用户凭证，不要将密钥写入源码或打包进前端产物。
+16:[["children",{"s":"__PAGE__","h":160,"d":{"r":["$","$3","c",{"children":[[["$","main",null,{"className":"docs-main","id":"docs-content","children":[["$","div",null,{"className":"docs-page-toolbar","children":[["$","div",null,{"className":"docs-eyebrow","children":"进阶使用"}],["$","$L17","configuration",{"label":"复制 Markdown","text":"$18"}]]}],"$L19","$L1a","$L1b","$L1c","$L1d","$L1e"]}],"$L1f"],["$L20"],"$L21"]}],"p":"$@22","v":null,"s":"$9"}}]]
+14:[["children",{"s":{"n":"slug","t":"c","k":"configuration","s":[]},"h":65632,"d":{"r":["$","$3","c",{"children":[null,["$","$L5",null,{"parallelRouterKey":"children","template":["$","$L6",null,{}]}]]}],"p":"$@15","v":"$8","s":"$9"},"c":"$Q16"}]]
+a:[["children",{"s":"documentation","h":131168,"d":{"r":["$","$3","c",{"children":[[["$","link","0",{"rel":"stylesheet","href":"/_next/static/chunks/0o-6jlwxqyz8v.css","precedence":"next"}],["$","script","script-0",{"src":"/_next/static/chunks/2mfxd9osm4z6w.js","async":true}],["$","script","script-1",{"src":"/_next/static/chunks/1bmh2fw63vq04.js","async":true}]],["$","div",null,{"className":"docs-site","children":[["$","a",null,{"className":"docs-skip","href":"#docs-content","children":"跳至正文"}],["$","header",null,{"className":"docs-header","children":["$","div",null,{"className":"docs-header-inner","children":[["$","$L10",null,{"href":"/","className":"docs-brand","aria-label":"AVA 首页","children":[["$","img",null,{"src":"https://mdn.alipayobjects.com/huamei_qa8qxu/afts/img/A*A-lcQbVTpjwAAAAAAAAAAAAADmJ7AQ/original","alt":"","width":"80","height":"48"}],["$","strong",null,{"children":"AVA"}],["$","span",null,{"children":"使用文档"}]]}],["$","nav",null,{"aria-label":"主导航","className":"docs-header-links","children":[["$","$L10",null,{"href":"/","className":"docs-website","children":["官网首页"," ",["$","span",null,{"aria-hidden":"true","children":"↗"}]]}],["$","a",null,{"href":"https://github.com/antvis/AVA","className":"docs-github","children":["GitHub ",["$","span",null,{"aria-hidden":"true","children":"↗"}]]}],["$","$L11",null,{}],["$","$L10",null,{"href":"/ai/","className":"docs-ai","children":["AI 体验"," ",["$","span",null,{"aria-hidden":"true","children":"→"}]]}]]}]]}]}],["$","$L12",null,{"mobile":true}],["$","div",null,{"className":"docs-layout","children":[["$","aside",null,{"className":"docs-sidebar","children":[["$","$L10",null,{"href":"/documentation/","className":"docs-sidebar-label","children":[["$","span",null,{"className":"docs-book-icon","aria-hidden":"true","children":"▤"}]," ","使用文档"]}],["$","$L12",null,{}],["$","div",null,{"className":"docs-sidebar-footer","children":[["$","span",null,{"className":"docs-status-dot"}]," ","TypeScript · 开源"]}]]}],["$","$L5",null,{"parallelRouterKey":"children","template":["$","$L6",null,{}]}]]}]]}]]}],"p":"$@13","v":null,"s":"$9"},"c":"$Q14"}]]
+2:[["children",{"s":"zh","h":131136,"d":{"r":["$","$3","c",{"children":[null,["$","$L5",null,{"parallelRouterKey":"children","template":["$","$L6",null,{}]}]]}],"p":"$@7","v":"$8","s":"$9"},"c":"$Qa"}]]
+1:[["children",{"s":"(zh)","h":131120,"c":"$Q2"}]]
+0:{"t":{"t":{"s":"","h":131152,"c":"$Q1"},"h":{"r":["$","$3","h",{"children":[null,["$","$L24",null,{"children":[["$","meta","0",{"charSet":"utf-8"}],["$","meta","1",{"name":"viewport","content":"width=device-width, initial-scale=1"}]]}],["$","$L26",null,{"children":[["$","div",null,{"hidden":true,"children":["$","$27",null,{"name":"Next.Metadata","children":[["$","title","0",{"children":"连接模型 — AVA 文档"}],["$","meta","1",{"name":"description","content":"配置兼容 OpenAI 的服务、AI Gateway 或 AI SDK 模型。"}],["$","meta","2",{"name":"author","content":"AntV"}],["$","meta","3",{"name":"keywords","content":"AVA, visual analytics, AI-native, LLM, data visualization, natural language, data analysis, AntV, chart generation"}],["$","link","4",{"rel":"canonical","href":"https://ava.antv.vision/zh/documentation/configuration/"}],["$","link","5",{"rel":"alternate","hrefLang":"en","href":"https://ava.antv.vision/documentation/configuration/"}],["$","link","6",{"rel":"alternate","hrefLang":"zh-CN","href":"https://ava.antv.vision/zh/documentation/configuration/"}],["$","link","7",{"rel":"alternate","hrefLang":"x-default","href":"https://ava.antv.vision/documentation/configuration/"}],["$","meta","8",{"property":"og:title","content":"连接模型 — AVA 文档"}],["$","meta","9",{"property":"og:description","content":"配置兼容 OpenAI 的服务、AI Gateway 或 AI SDK 模型。"}],["$","meta","10",{"property":"og:url","content":"https://ava.antv.vision/zh/documentation/configuration/"}],["$","meta","11",{"property":"og:type","content":"article"}],["$","meta","12",{"name":"twitter:card","content":"summary"}],["$","meta","13",{"name":"twitter:title","content":"连接模型 — AVA 文档"}],["$","meta","14",{"name":"twitter:description","content":"配置兼容 OpenAI 的服务、AI Gateway 或 AI SDK 模型。"}],["$","link","15",{"rel":"icon","href":"https://mdn.alipayobjects.com/huamei_qa8qxu/afts/img/A*FBLnQIAzx6cAAAAAQDAAAAgAemJ7AQ/original"}],["$","$L28","16",{}]]}]}],null]}],null]}],"p":"$@29","v":null,"s":"$9"}},"a":"$@2a","u":"$@2b","b":"KHDYj3YqzeY5ppvGf10Fa"}
+33:I[754170,["$b","$c","$d","$e","$f"],"default"]
+34:I[675049,["$4"],"OutletBoundary"]
+19:["$","h1",null,{"children":"连接模型"}]
+1a:["$","p",null,{"className":"docs-description","children":"配置兼容 OpenAI 的服务、AI Gateway 或 AI SDK 模型。"}]
+1b:["$","article",null,{"className":"docs-prose","children":[["$","h2",null,{"id":"constructor","children":["$","a",null,{"href":"#constructor","className":"docs-heading-link","children":"构造函数"}]}],"\n",["$","figure",null,{"data-rehype-pretty-code-figure":"","children":["$","div",null,{"className":"docs-code-block","children":[["$","div",null,{"className":"docs-code-toolbar","children":[["$","span",null,{"children":"typescript"}],["$","$L17",null,{}]]}],["$","pre",null,{"tabIndex":"0","data-language":"typescript","data-theme":"github-light","children":["$","code",null,{"data-language":"typescript","data-theme":"github-light","style":{"display":"grid"},"children":[["$","span",null,{"data-line":"","children":[["$","span",null,{"style":{"color":"#D73A49"},"children":"import"}],["$","span",null,{"style":{"color":"#24292E"},"children":" { AVA } "}],["$","span",null,{"style":{"color":"#D73A49"},"children":"from"}],["$","span",null,{"style":{"color":"#032F62"},"children":" '@antv/ava'"}],["$","span",null,{"style":{"color":"#24292E"},"children":";"}]]}],"\n",["$","span",null,{"data-line":"","children":" "}],"\n",["$","span",null,{"data-line":"","children":[["$","span",null,{"style":{"color":"#D73A49"},"children":"const"}],["$","span",null,{"style":{"color":"#005CC5"},"children":" ava"}],["$","span",null,{"style":{"color":"#D73A49"},"children":" ="}],["$","span",null,{"style":{"color":"#D73A49"},"children":" new"}],["$","span",null,{"style":{"color":"#6F42C1"},"children":" AVA"}],["$","span",null,{"style":{"color":"#24292E"},"children":"({"}]]}],"\n",["$","span",null,{"data-line":"","children":["$","span",null,{"style":{"color":"#24292E"},"children":"  llm: {"}]}],"\n",["$","span",null,{"data-line":"","children":[["$","span",null,{"style":{"color":"#24292E"},"children":"    model: "}],["$","span",null,{"style":{"color":"#032F62"},"children":"'YOUR_MODEL'"}],["$","span",null,{"style":{"color":"#24292E"},"children":","}]]}],"\n",["$","span",null,{"data-line":"","children":[["$","span",null,{"style":{"color":"#24292E"},"children":"    apiKey: process.env."}],["$","span",null,{"style":{"color":"#005CC5"},"children":"OPENAI_API_KEY"}],["$","span",null,{"style":{"color":"#24292E"},"children":","}]]}],"\n",["$","span",null,{"data-line":"","children":[["$","span",null,{"style":{"color":"#24292E"},"children":"    baseURL: process.env."}],["$","span",null,{"style":{"color":"#005CC5"},"children":"OPENAI_BASE_URL"}],["$","span",null,{"style":{"color":"#24292E"},"children":","}]]}],"\n",["$","span",null,{"data-line":"","children":[["$","span",null,{"style":{"color":"#24292E"},"children":"    maxRetries: "}],["$","span",null,{"style":{"color":"#005CC5"},"children":"3"}],["$","span",null,{"style":{"color":"#24292E"},"children":","}]]}],"\n",["$","span",null,{"data-line":"","children":["$","span",null,{"style":{"color":"#24292E"},"children":"  },"}]}],"\n",["$","span",null,{"data-line":"","children":[["$","span",null,{"style":{"color":"#24292E"},"children":"  engine: { type: "}],["$","span",null,{"style":{"color":"#032F62"},"children":"'duckdb'"}],["$","span",null,{"style":{"color":"#24292E"},"children":" },"}]]}],"\n",["$","span",null,{"data-line":"","children":["$","span",null,{"style":{"color":"#24292E"},"children":"});"}]}]]}]}]]}]}],"\n",["$","p",null,{"children":[["$","code",null,{"children":"llm"}]," 为必填项。不传 ",["$","code",null,{"children":"engine"}]," 时使用 DuckDB；前端应用必须显式选择 ",["$","code",null,{"children":"javascript"}],"。"]}],"\n",["$","h2",null,{"id":"model-options","children":["$","a",null,{"href":"#model-options","className":"docs-heading-link","children":"模型选项"}]}],"\n",["$","div",null,{"className":"docs-table","children":["$","table",null,{"children":[["$","thead",null,{"children":["$","tr",null,{"children":[["$","th",null,{"children":"字段"}],["$","th",null,{"children":"类型"}],["$","th",null,{"children":"必填"}],["$","th",null,{"children":"含义与默认值"}]]}]}],["$","tbody",null,{"children":[["$","tr",null,{"children":[["$","td",null,{"children":["$","code",null,{"children":"provider"}]}],["$","td",null,{"children":["$","code",null,{"children":"'openai' | 'gateway'"}]}],["$","td",null,{"children":"否"}],["$","td",null,{"children":"默认使用兼容 OpenAI 的 Chat Completions。Gateway 可读取 AI_GATEWAY_API_KEY。"}]]}],["$","tr",null,{"children":[["$","td",null,{"children":["$","code",null,{"children":"model"}]}],["$","td",null,{"children":["$","code",null,{"children":"string | LanguageModel"}]}],["$","td",null,{"children":"是"}],["$","td",null,{"children":"模型名称，或预先配置好的 AI SDK 模型实例。"}]]}],["$","tr",null,{"children":[["$","td",null,{"children":["$","code",null,{"children":"apiKey"}]}],["$","td",null,{"children":["$","code",null,{"children":"string"}]}],["$","td",null,{"children":"否"}],["$","td",null,{"children":"模型服务商的 API 密钥。"}]]}],["$","tr",null,{"children":[["$","td",null,{"children":["$","code",null,{"children":"baseURL"}]}],["$","td",null,{"children":["$","code",null,{"children":"string"}]}],["$","td",null,{"children":"否"}],["$","td",null,{"children":"可选的 API 基础地址。"}]]}],["$","tr",null,{"children":[["$","td",null,{"children":["$","code",null,{"children":"maxRetries"}]}],["$","td",null,{"children":["$","code",null,{"children":"number"}]}],["$","td",null,{"children":"否"}],["$","td",null,{"children":"模型 API 可重试错误的最大重试次数，默认 3。"}]]}]]}]]}]}],"\n",["$","p",null,{"children":["以字符串传入模型名称时，默认调用兼容 OpenAI 的 ",["$","strong",null,{"children":"Chat Completions"}]," ；传入模型对象时则直接使用该对象。用量回调并不完整覆盖每一次模型请求，不能据此汇总全部模型用量。"]}],"\n","$L2c","\n","$L2d","\n","$L2e","\n","$L2f","\n","$L30","\n","$L31","\n","$L32"]}]
+1c:["$","div",null,{"className":"docs-page-meta","children":["$","a",null,{"href":"https://github.com/antvis/AVA/blob/ai/site/content/docs/zh/configuration.mdx","children":["在 GitHub 编辑本页"," ",["$","span",null,{"aria-hidden":"true","children":"↗"}]]}]}]
+1d:["$","nav",null,{"className":"docs-pagination","aria-label":"章节导航","children":[["$","$L10",null,{"href":"/documentation/visualization/overview/","children":[["$","span",null,{"children":"← 上一篇"}],["$","strong",null,{"children":"生成图表"}]]}],["$","$L10",null,{"href":"/documentation/browser/","className":"docs-next","children":[["$","span",null,{"children":"下一篇 →"}],["$","strong",null,{"children":"在浏览器中使用"}]]}]]}]
+1e:["$","footer",null,{"className":"docs-footer","children":[["$","span",null,{"children":"AVA · AntV 开源项目"}],["$","a",null,{"href":"https://github.com/antvis/AVA","children":"在 GitHub 查看源码 ↗"}]]}]
+1f:["$","$L33","configuration",{}]
+20:["$","script","script-0",{"src":"/_next/static/chunks/1lxucu_dj41ds.js","async":true}]
+21:["$","$L34",null,{"children":["$","$27",null,{"name":"Next.MetadataOutlet","children":"$@35"}]}]
+2b:true
+9:300
+2c:["$","h2",null,{"id":"ai-gateway","children":["$","a",null,{"href":"#ai-gateway","className":"docs-heading-link","children":"AI Gateway"}]}]
+2d:["$","figure",null,{"data-rehype-pretty-code-figure":"","children":["$","div",null,{"className":"docs-code-block","children":[["$","div",null,{"className":"docs-code-toolbar","children":[["$","span",null,{"children":"typescript"}],["$","$L17",null,{}]]}],["$","pre",null,{"tabIndex":"0","data-language":"typescript","data-theme":"github-light","children":["$","code",null,{"data-language":"typescript","data-theme":"github-light","style":{"display":"grid"},"children":[["$","span",null,{"data-line":"","children":[["$","span",null,{"style":{"color":"#D73A49"},"children":"const"}],["$","span",null,{"style":{"color":"#005CC5"},"children":" ava"}],["$","span",null,{"style":{"color":"#D73A49"},"children":" ="}],["$","span",null,{"style":{"color":"#D73A49"},"children":" new"}],["$","span",null,{"style":{"color":"#6F42C1"},"children":" AVA"}],["$","span",null,{"style":{"color":"#24292E"},"children":"({"}]]}],"\n",["$","span",null,{"data-line":"","children":["$","span",null,{"style":{"color":"#24292E"},"children":"  llm: {"}]}],"\n",["$","span",null,{"data-line":"","children":[["$","span",null,{"style":{"color":"#24292E"},"children":"    provider: "}],["$","span",null,{"style":{"color":"#032F62"},"children":"'gateway'"}],["$","span",null,{"style":{"color":"#24292E"},"children":","}]]}],"\n",["$","span",null,{"data-line":"","children":[["$","span",null,{"style":{"color":"#24292E"},"children":"    model: "}],["$","span",null,{"style":{"color":"#032F62"},"children":"'openai/gpt-4o-mini'"}],["$","span",null,{"style":{"color":"#24292E"},"children":","}]]}],"\n",["$","span",null,{"data-line":"","children":[["$","span",null,{"style":{"color":"#24292E"},"children":"    apiKey: process.env."}],["$","span",null,{"style":{"color":"#005CC5"},"children":"AI_GATEWAY_API_KEY"}],["$","span",null,{"style":{"color":"#24292E"},"children":","}]]}],"\n",["$","span",null,{"data-line":"","children":["$","span",null,{"style":{"color":"#24292E"},"children":"  },"}]}],"\n",["$","span",null,{"data-line":"","children":["$","span",null,{"style":{"color":"#24292E"},"children":"});"}]}]]}]}]]}]}]
+2e:["$","p",null,{"children":["未显式传入密钥时，Gateway 也可以从环境变量 ",["$","code",null,{"children":"AI_GATEWAY_API_KEY"}]," 读取。"]}]
+2f:["$","h2",null,{"id":"separate-retry-controls","children":["$","a",null,{"href":"#separate-retry-controls","className":"docs-heading-link","children":"两类重试分别配置"}]}]
+30:["$","p",null,{"children":[["$","code",null,{"children":"llm.maxRetries"}]," 控制模型 API 的重试次数；",["$","code",null,{"children":"direct"}]," 分析策略中的 ",["$","code",null,{"children":"maxRetries"}]," 则用于修正执行失败的查询。两者独立，详见",["$","$L10",null,{"href":"/documentation/analysis/strategies/","children":"分析策略"}],"。"]}]
+31:["$","h2",null,{"id":"credentials-in-frontend-apps","children":["$","a",null,{"href":"#credentials-in-frontend-apps","className":"docs-heading-link","children":"前端应用中的凭证"}]}]
+32:["$","p",null,{"children":"共享的模型服务密钥应放在服务端。纯浏览器实验可以在运行时获取用户凭证，不要将密钥写入源码或打包进前端产物。"}]
+35:null
+9:C
+2a:0
+15:"$undefined"
+13:"$undefined"
+7:"$undefined"
+29:"$undefined"
+22:"$undefined"

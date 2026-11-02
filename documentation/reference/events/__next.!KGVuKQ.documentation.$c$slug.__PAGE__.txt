@@ -1,0 +1,164 @@
+3:"$Sreact.fragment"
+4:"/_next/static/chunks/20no9c33yqyzq.js"
+5:"/_next/static/chunks/024mr0my09zgj.js"
+6:"/_next/static/chunks/2mfxd9osm4z6w.js"
+7:"/_next/static/chunks/1bmh2fw63vq04.js"
+8:"/_next/static/chunks/1lxucu_dj41ds.js"
+9:I[400503,["$4","$5","$6","$7","$8"],"default"]
+a:I[697790,["$4","$5","$6","$7"],"default"]
+b:I[474333,["$4","$5","$6","$7"],"default"]
+c:"/_next/static/chunks/0xpkuc787v-p9.js"
+d:I[936064,["$c"],"default"]
+e:I[481497,["$c"],"default"]
+15:I[5138,["$4","$5","$6","$7","$8"],"default"]
+21:"ViewportBoundary"
+22:I[675049,["$c"],"$21"]
+23:"MetadataBoundary"
+24:I[675049,["$c"],"$23"]
+25:"$Sreact.suspense"
+26:I[934035,["$c"],"IconMark"]
+:HL["/_next/static/chunks/0o-6jlwxqyz8v.css","style"]
+:HL["https://mdn.alipayobjects.com/huamei_qa8qxu/afts/img/A*A-lcQbVTpjwAAAAAAAAAAAAADmJ7AQ/original","image"]
+10:X
+13:X
+13:C
+16:T17c8,# Events
+
+Observe data loading, model work, query execution, and cleanup.
+
+Events report what AVA is doing while an operation runs. You can use them to show progress, inspect generated queries, or diagnose failures. The operation’s return value contains its final result.
+
+## Subscribe to events
+
+Register a listener before starting the operation. Subscribe to a specific event by name, or use `'*'` to listen to all events:
+
+```typescript
+import { AVA } from '@antv/ava';
+
+const ava = new AVA({ llm: { model: 'your-model' } });
+const listener = (event) => console.log(event.type, event.data);
+
+ava.on('*', listener);
+try {
+  await ava.source({ type: 'json', options: { data: [{ sales: 120 }] } });
+} finally {
+  ava.off('*', listener);
+  await ava.dispose();
+}
+```
+
+Use the same listener reference to unsubscribe. Event classes and constants are not exported by the public package, so use the event names listed on this page as strings.
+
+## Read an event
+
+Every AVA event has a lowercase `type` and a `data` object. For example, the `sourcestart` event above contains `{ type: 'json' }` in `data`. Analysis events emitted within `analyze()` also carry `context`, which identifies their step and pairs related start and end events.
+
+An operation usually emits a start event and then an end event. A failed end event carries `data.error` with a `message` and, for an `Error`, a `name`. Some failures are recoverable: a query can fail and be retried, so `queryend` may report an error even if `analyze()` eventually succeeds. An unrecovered failure rejects the operation. A precondition failure, such as calling `analyze()` before loading a source, can occur before its start event.
+
+## Event reference
+
+### Lifecycle events
+
+These events describe AVA operations. On success, end-event `data` is `{}`; the method returns the result separately.
+
+| Operation | Start event and data | End event |
+| --- | --- | --- |
+| Create an engine | `createstart`: `{}` | `createend` |
+| Dispose an engine | `disposestart`: `{}` | `disposeend` |
+| Load a source | `sourcestart`: `{ type }` | `sourceend` |
+| Discover or set schema | `schemastart`: `{}` | `schemaend` |
+| Compute or set profile | `profilestart`: `{}` | `profileend` |
+| Set semantic definitions | `semanticstart`: `{}` | `semanticend` |
+| Analyze a question | `analyzestart`: `{ query }` | `analyzeend` |
+| Visualize a result | `visualizestart`: `{ query }` | `visualizeend` |
+| Suggest questions | `suggeststart`: `{}` | `suggestend` |
+
+Loading a source can also emit engine disposal and creation events. Cached schema reads and semantic reads emit no events; schema discovery performed internally by other methods does not emit `schema` events. `recommend()` and `viz()` do not have their own events.
+
+### Analysis events
+
+These events describe analysis steps and the statements they produce or execute. The table shows successful end-event data; on failure, the end event carries `error` instead. A failed step also carries `step` and, when applicable, `finalAttempt`. A question is natural language; `dsl` is an executable statement, such as SQL or Python code.
+
+| Operation | Start event and data | Successful end event and data |
+| --- | --- | --- |
+| Analysis step | `stepstart`: `{ step, finalAttempt? }` | `stepend`: `{ step, action, text, usage?, finalAttempt? }` |
+| Translate a question | `translatestart`: `{ query, attempt? }` | `translateend`: `{ dsl, usage? }` |
+| Execute a statement | `querystart`: `{ dsl }` | `queryend`: `{ data, schema, rowCount?, truncated?, truncatedBy? }` |
+| Summarize a result | `summarizestart`: `{ queryId }` | `summarizeend`: `{ queryExplanation, conclusion, limitations?, nextStep?, usage? }` |
+
+`?` marks an optional field. In `queryend`, `data` contains the returned rows and `schema` describes their columns; truncation fields indicate when a result limit was reached. See [query results](/documentation/reference/api/#executionresult) for the full result structure.
+
+`step` and `attempt` are zero-based. `attempt` is present on translation starts within analysis. `finalAttempt` marks an additional step after the normal step limit. Step actions are `EXPLORE` (inspect data), `REFINE` (revise the plan), `SQL` (execute an answer statement), and `CONFIRM` (verify the answer). The `text` field does not include the leading action tag.
+
+Where present, `usage` describes token usage for the model call. A step can retain usage when parsing or execution fails after the model has returned. Token fields depend on the provider, and a failed call that returns no usage cannot be counted from the events. AVA does not emit an aggregate usage event. `queryend` describes execution and carries no model usage.
+
+### Event context
+
+Analysis events emitted within `analyze()` include a `context` object:
+
+| Field | Meaning |
+| --- | --- |
+| `eventId` | Unique event ID. A start/end pair shares an ID prefix and uses `:start` and `:end` suffixes. |
+| `stepId` | ID of the step containing the event. |
+| `parentStepIds` | IDs of steps that this step depends on. |
+
+Step event IDs use `stepId` as their prefix; operations within a step have separate pair IDs. Each retry gets a new pair. `summarizestart.data.queryId` references the successful `queryend.context.eventId`, including `:end`. Standalone `translate()` and `query()` emit their respective events without analysis `context` or step events.
+
+## Listener parameters
+
+| Method | Behavior |
+| --- | --- |
+| `on(name, listener, once?)` | Subscribe; the optional `once` flag defaults to `false`. |
+| `once(name, listener)` | Subscribe for one invocation. |
+| `off(name?, listener?)` | Remove a listener, all listeners for a name, or all listeners if omitted. Pass the same listener reference used to subscribe. |
+| `emit(name, ...args)` | Emit an event manually. |
+| `getEvents()` | Return the listener registry. |
+
+Event dispatch is synchronous: `on`, `once`, and `off` return the emitter, synchronous listener errors propagate, and async listeners are not awaited. Event data is not copied; use `structuredClone(event)` if you need a snapshot.
+14:[["children",{"s":"__PAGE__","h":160,"d":{"r":["$","$3","c",{"children":[[["$","main",null,{"className":"docs-main","id":"docs-content","children":[["$","div",null,{"className":"docs-page-toolbar","children":[["$","div",null,{"className":"docs-eyebrow","children":"API Reference"}],["$","$L15","reference/events",{"label":"Copy Markdown","text":"$16"}]]}],"$L17","$L18","$L19","$L1a","$L1b","$L1c"]}],"$L1d"],["$L1e"],"$L1f"]}],"p":"$@20","v":null,"s":"$10"}}]]
+11:[["children",{"s":{"n":"slug","t":"c","k":"reference/events","s":[]},"h":65632,"d":{"r":["$","$3","c",{"children":[null,["$","$Ld",null,{"parallelRouterKey":"children","template":["$","$Le",null,{}]}]]}],"p":"$@12","v":"$13","s":"$10"},"c":"$Q14"}]]
+2:[["children",{"s":"documentation","h":131136,"d":{"r":["$","$3","c",{"children":[[["$","link","0",{"rel":"stylesheet","href":"/_next/static/chunks/0o-6jlwxqyz8v.css","precedence":"next"}],["$","script","script-0",{"src":"/_next/static/chunks/2mfxd9osm4z6w.js","async":true}],["$","script","script-1",{"src":"/_next/static/chunks/1bmh2fw63vq04.js","async":true}]],["$","div",null,{"className":"docs-site","children":[["$","a",null,{"className":"docs-skip","href":"#docs-content","children":"Skip to content"}],["$","header",null,{"className":"docs-header","children":["$","div",null,{"className":"docs-header-inner","children":[["$","$L9",null,{"href":"/","className":"docs-brand","aria-label":"AVA home","children":[["$","img",null,{"src":"https://mdn.alipayobjects.com/huamei_qa8qxu/afts/img/A*A-lcQbVTpjwAAAAAAAAAAAAADmJ7AQ/original","alt":"","width":"80","height":"48"}],["$","strong",null,{"children":"AVA"}],["$","span",null,{"children":"Documentation"}]]}],["$","nav",null,{"aria-label":"Main navigation","className":"docs-header-links","children":[["$","$L9",null,{"href":"/","className":"docs-website","children":["Website"," ",["$","span",null,{"aria-hidden":"true","children":"↗"}]]}],["$","a",null,{"href":"https://github.com/antvis/AVA","className":"docs-github","children":["GitHub ",["$","span",null,{"aria-hidden":"true","children":"↗"}]]}],["$","$La",null,{}],["$","$L9",null,{"href":"/ai/","className":"docs-ai","children":["AI"," ",["$","span",null,{"aria-hidden":"true","children":"→"}]]}]]}]]}]}],["$","$Lb",null,{"mobile":true}],["$","div",null,{"className":"docs-layout","children":[["$","aside",null,{"className":"docs-sidebar","children":[["$","$L9",null,{"href":"/documentation/","className":"docs-sidebar-label","children":[["$","span",null,{"className":"docs-book-icon","aria-hidden":"true","children":"▤"}]," ","Documentation"]}],["$","$Lb",null,{}],["$","div",null,{"className":"docs-sidebar-footer","children":[["$","span",null,{"className":"docs-status-dot"}]," ","TypeScript · Open source"]}]]}],["$","$Ld",null,{"parallelRouterKey":"children","template":["$","$Le",null,{}]}]]}]]}]]}],"p":"$@f","v":null,"s":"$10"},"c":"$Q11"}]]
+1:[["children",{"s":"(en)","h":131120,"c":"$Q2"}]]
+0:{"t":{"t":{"s":"","h":131152,"c":"$Q1"},"h":{"r":["$","$3","h",{"children":[null,["$","$L22",null,{"children":[["$","meta","0",{"charSet":"utf-8"}],["$","meta","1",{"name":"viewport","content":"width=device-width, initial-scale=1"}]]}],["$","$L24",null,{"children":[["$","div",null,{"hidden":true,"children":["$","$25",null,{"name":"Next.Metadata","children":[["$","title","0",{"children":"Events — AVA Docs"}],["$","meta","1",{"name":"description","content":"Observe data loading, model work, query execution, and cleanup."}],["$","meta","2",{"name":"author","content":"AntV"}],["$","meta","3",{"name":"keywords","content":"AVA, visual analytics, AI-native, LLM, data visualization, natural language, data analysis, AntV, chart generation"}],["$","link","4",{"rel":"canonical","href":"https://ava.antv.vision/documentation/reference/events/"}],["$","link","5",{"rel":"alternate","hrefLang":"en","href":"https://ava.antv.vision/documentation/reference/events/"}],["$","link","6",{"rel":"alternate","hrefLang":"zh-CN","href":"https://ava.antv.vision/zh/documentation/reference/events/"}],["$","link","7",{"rel":"alternate","hrefLang":"x-default","href":"https://ava.antv.vision/documentation/reference/events/"}],["$","meta","8",{"property":"og:title","content":"Events — AVA Docs"}],["$","meta","9",{"property":"og:description","content":"Observe data loading, model work, query execution, and cleanup."}],["$","meta","10",{"property":"og:url","content":"https://ava.antv.vision/documentation/reference/events/"}],["$","meta","11",{"property":"og:type","content":"article"}],["$","meta","12",{"name":"twitter:card","content":"summary"}],["$","meta","13",{"name":"twitter:title","content":"Events — AVA Docs"}],["$","meta","14",{"name":"twitter:description","content":"Observe data loading, model work, query execution, and cleanup."}],["$","link","15",{"rel":"icon","href":"https://mdn.alipayobjects.com/huamei_qa8qxu/afts/img/A*FBLnQIAzx6cAAAAAQDAAAAgAemJ7AQ/original"}],["$","$L26","16",{}]]}]}],null]}],null]}],"p":"$@27","v":null,"s":"$10"}},"a":"$@28","u":"$@29","b":"KHDYj3YqzeY5ppvGf10Fa"}
+40:I[754170,["$4","$5","$6","$7","$8"],"default"]
+41:I[675049,["$c"],"OutletBoundary"]
+17:["$","h1",null,{"children":"Events"}]
+18:["$","p",null,{"className":"docs-description","children":"Observe data loading, model work, query execution, and cleanup."}]
+19:["$","article",null,{"className":"docs-prose","children":[["$","p",null,{"children":"Events report what AVA is doing while an operation runs. You can use them to show progress, inspect generated queries, or diagnose failures. The operation’s return value contains its final result."}],"\n",["$","h2",null,{"id":"subscribe-to-events","children":["$","a",null,{"href":"#subscribe-to-events","className":"docs-heading-link","children":"Subscribe to events"}]}],"\n",["$","p",null,{"children":["Register a listener before starting the operation. Subscribe to a specific event by name, or use ",["$","code",null,{"children":"'*'"}]," to listen to all events:"]}],"\n",["$","figure",null,{"data-rehype-pretty-code-figure":"","children":["$","div",null,{"className":"docs-code-block","children":[["$","div",null,{"className":"docs-code-toolbar","children":[["$","span",null,{"children":"typescript"}],["$","$L15",null,{}]]}],["$","pre",null,{"tabIndex":"0","data-language":"typescript","data-theme":"github-light","children":["$","code",null,{"data-language":"typescript","data-theme":"github-light","style":{"display":"grid"},"children":[["$","span",null,{"data-line":"","children":[["$","span",null,{"style":{"color":"#D73A49"},"children":"import"}],["$","span",null,{"style":{"color":"#24292E"},"children":" { AVA } "}],["$","span",null,{"style":{"color":"#D73A49"},"children":"from"}],["$","span",null,{"style":{"color":"#032F62"},"children":" '@antv/ava'"}],["$","span",null,{"style":{"color":"#24292E"},"children":";"}]]}],"\n",["$","span",null,{"data-line":"","children":" "}],"\n",["$","span",null,{"data-line":"","children":[["$","span",null,{"style":{"color":"#D73A49"},"children":"const"}],["$","span",null,{"style":{"color":"#005CC5"},"children":" ava"}],["$","span",null,{"style":{"color":"#D73A49"},"children":" ="}],["$","span",null,{"style":{"color":"#D73A49"},"children":" new"}],["$","span",null,{"style":{"color":"#6F42C1"},"children":" AVA"}],["$","span",null,{"style":{"color":"#24292E"},"children":"({ llm: { model: "}],["$","span",null,{"style":{"color":"#032F62"},"children":"'your-model'"}],["$","span",null,{"style":{"color":"#24292E"},"children":" } });"}]]}],"\n",["$","span",null,{"data-line":"","children":[["$","span",null,{"style":{"color":"#D73A49"},"children":"const"}],["$","span",null,{"style":{"color":"#6F42C1"},"children":" listener"}],["$","span",null,{"style":{"color":"#D73A49"},"children":" ="}],["$","span",null,{"style":{"color":"#24292E"},"children":" ("}],["$","span",null,{"style":{"color":"#E36209"},"children":"event"}],["$","span",null,{"style":{"color":"#24292E"},"children":") "}],["$","span",null,{"style":{"color":"#D73A49"},"children":"=>"}],["$","span",null,{"style":{"color":"#24292E"},"children":" console."}],["$","span",null,{"style":{"color":"#6F42C1"},"children":"log"}],["$","span",null,{"style":{"color":"#24292E"},"children":"(event.type, event.data);"}]]}],"\n",["$","span",null,{"data-line":"","children":" "}],"\n",["$","span",null,{"data-line":"","children":[["$","span",null,{"style":{"color":"#24292E"},"children":"ava."}],["$","span",null,{"style":{"color":"#6F42C1"},"children":"on"}],["$","span",null,{"style":{"color":"#24292E"},"children":"("}],["$","span",null,{"style":{"color":"#032F62"},"children":"'*'"}],["$","span",null,{"style":{"color":"#24292E"},"children":", listener);"}]]}],"\n",["$","span",null,{"data-line":"","children":[["$","span",null,{"style":{"color":"#D73A49"},"children":"try"}],["$","span",null,{"style":{"color":"#24292E"},"children":" {"}]]}],"\n",["$","span",null,{"data-line":"","children":[["$","span",null,{"style":{"color":"#D73A49"},"children":"  await"}],["$","span",null,{"style":{"color":"#24292E"},"children":" ava."}],["$","span",null,{"style":{"color":"#6F42C1"},"children":"source"}],["$","span",null,{"style":{"color":"#24292E"},"children":"({ type: "}],["$","span",null,{"style":{"color":"#032F62"},"children":"'json'"}],["$","span",null,{"style":{"color":"#24292E"},"children":", options: { data: [{ sales: "}],["$","span",null,{"style":{"color":"#005CC5"},"children":"120"}],["$","span",null,{"style":{"color":"#24292E"},"children":" }] } });"}]]}],"\n",["$","span",null,{"data-line":"","children":[["$","span",null,{"style":{"color":"#24292E"},"children":"} "}],["$","span",null,{"style":{"color":"#D73A49"},"children":"finally"}],["$","span",null,{"style":{"color":"#24292E"},"children":" {"}]]}],"\n",["$","span",null,{"data-line":"","children":[["$","span",null,{"style":{"color":"#24292E"},"children":"  ava."}],["$","span",null,{"style":{"color":"#6F42C1"},"children":"off"}],["$","span",null,{"style":{"color":"#24292E"},"children":"("}],["$","span",null,{"style":{"color":"#032F62"},"children":"'*'"}],["$","span",null,{"style":{"color":"#24292E"},"children":", listener);"}]]}],"\n",["$","span",null,{"data-line":"","children":[["$","span",null,{"style":{"color":"#D73A49"},"children":"  await"}],["$","span",null,{"style":{"color":"#24292E"},"children":" ava."}],["$","span",null,{"style":{"color":"#6F42C1"},"children":"dispose"}],["$","span",null,{"style":{"color":"#24292E"},"children":"();"}]]}],"\n",["$","span",null,{"data-line":"","children":["$","span",null,{"style":{"color":"#24292E"},"children":"}"}]}]]}]}]]}]}],"\n","$L2a","\n","$L2b","\n","$L2c","\n","$L2d","\n","$L2e","\n","$L2f","\n","$L30","\n","$L31","\n","$L32","\n","$L33","\n","$L34","\n","$L35","\n","$L36","\n","$L37","\n","$L38","\n","$L39","\n","$L3a","\n","$L3b","\n","$L3c","\n","$L3d","\n","$L3e","\n","$L3f"]}]
+1a:["$","div",null,{"className":"docs-page-meta","children":["$","a",null,{"href":"https://github.com/antvis/AVA/blob/ai/site/content/docs/en/reference/events.mdx","children":["Edit this page on GitHub"," ",["$","span",null,{"aria-hidden":"true","children":"↗"}]]}]}]
+1b:["$","nav",null,{"className":"docs-pagination","aria-label":"Chapter navigation","children":[["$","$L9",null,{"href":"/documentation/reference/api/","children":[["$","span",null,{"children":"← Previous"}],["$","strong",null,{"children":"AVA API"}]]}],["$","$L9",null,{"href":"/documentation/reference/cli/","className":"docs-next","children":[["$","span",null,{"children":"Next →"}],["$","strong",null,{"children":"Command-line interface"}]]}]]}]
+1c:["$","footer",null,{"className":"docs-footer","children":[["$","span",null,{"children":"AVA · An AntV project"}],["$","a",null,{"href":"https://github.com/antvis/AVA","children":"Open source on GitHub ↗"}]]}]
+1d:["$","$L40","reference/events",{}]
+1e:["$","script","script-0",{"src":"/_next/static/chunks/1lxucu_dj41ds.js","async":true}]
+1f:["$","$L41",null,{"children":["$","$25",null,{"name":"Next.MetadataOutlet","children":"$@42"}]}]
+29:true
+10:300
+2a:["$","p",null,{"children":"Use the same listener reference to unsubscribe. Event classes and constants are not exported by the public package, so use the event names listed on this page as strings."}]
+2b:["$","h2",null,{"id":"read-an-event","children":["$","a",null,{"href":"#read-an-event","className":"docs-heading-link","children":"Read an event"}]}]
+2c:["$","p",null,{"children":["Every AVA event has a lowercase ",["$","code",null,{"children":"type"}]," and a ",["$","code",null,{"children":"data"}]," object. For example, the ",["$","code",null,{"children":"sourcestart"}]," event above contains ",["$","code",null,{"children":"{ type: 'json' }"}]," in ",["$","code",null,{"children":"data"}],". Analysis events emitted within ",["$","code",null,{"children":"analyze()"}]," also carry ",["$","code",null,{"children":"context"}],", which identifies their step and pairs related start and end events."]}]
+2d:["$","p",null,{"children":["An operation usually emits a start event and then an end event. A failed end event carries ",["$","code",null,{"children":"data.error"}]," with a ",["$","code",null,{"children":"message"}]," and, for an ",["$","code",null,{"children":"Error"}],", a ",["$","code",null,{"children":"name"}],". Some failures are recoverable: a query can fail and be retried, so ",["$","code",null,{"children":"queryend"}]," may report an error even if ",["$","code",null,{"children":"analyze()"}]," eventually succeeds. An unrecovered failure rejects the operation. A precondition failure, such as calling ",["$","code",null,{"children":"analyze()"}]," before loading a source, can occur before its start event."]}]
+2e:["$","h2",null,{"id":"event-reference","children":["$","a",null,{"href":"#event-reference","className":"docs-heading-link","children":"Event reference"}]}]
+2f:["$","h3",null,{"id":"lifecycle-events","children":["$","a",null,{"href":"#lifecycle-events","className":"docs-heading-link","children":"Lifecycle events"}]}]
+30:["$","p",null,{"children":["These events describe AVA operations. On success, end-event ",["$","code",null,{"children":"data"}]," is ",["$","code",null,{"children":"{}"}],"; the method returns the result separately."]}]
+31:["$","div",null,{"className":"docs-table","children":["$","table",null,{"children":[["$","thead",null,{"children":["$","tr",null,{"children":[["$","th",null,{"children":"Operation"}],["$","th",null,{"children":"Start event and data"}],["$","th",null,{"children":"End event"}]]}]}],["$","tbody",null,{"children":[["$","tr",null,{"children":[["$","td",null,{"children":"Create an engine"}],["$","td",null,{"children":[["$","code",null,{"children":"createstart"}],": ",["$","code",null,{"children":"{}"}]]}],["$","td",null,{"children":["$","code",null,{"children":"createend"}]}]]}],["$","tr",null,{"children":[["$","td",null,{"children":"Dispose an engine"}],["$","td",null,{"children":[["$","code",null,{"children":"disposestart"}],": ",["$","code",null,{"children":"{}"}]]}],["$","td",null,{"children":["$","code",null,{"children":"disposeend"}]}]]}],["$","tr",null,{"children":[["$","td",null,{"children":"Load a source"}],["$","td",null,{"children":[["$","code",null,{"children":"sourcestart"}],": ",["$","code",null,{"children":"{ type }"}]]}],["$","td",null,{"children":["$","code",null,{"children":"sourceend"}]}]]}],["$","tr",null,{"children":[["$","td",null,{"children":"Discover or set schema"}],["$","td",null,{"children":[["$","code",null,{"children":"schemastart"}],": ",["$","code",null,{"children":"{}"}]]}],["$","td",null,{"children":["$","code",null,{"children":"schemaend"}]}]]}],["$","tr",null,{"children":[["$","td",null,{"children":"Compute or set profile"}],["$","td",null,{"children":[["$","code",null,{"children":"profilestart"}],": ",["$","code",null,{"children":"{}"}]]}],["$","td",null,{"children":["$","code",null,{"children":"profileend"}]}]]}],["$","tr",null,{"children":[["$","td",null,{"children":"Set semantic definitions"}],["$","td",null,{"children":[["$","code",null,{"children":"semanticstart"}],": ",["$","code",null,{"children":"{}"}]]}],["$","td",null,{"children":["$","code",null,{"children":"semanticend"}]}]]}],["$","tr",null,{"children":[["$","td",null,{"children":"Analyze a question"}],["$","td",null,{"children":[["$","code",null,{"children":"analyzestart"}],": ",["$","code",null,{"children":"{ query }"}]]}],["$","td",null,{"children":["$","code",null,{"children":"analyzeend"}]}]]}],["$","tr",null,{"children":[["$","td",null,{"children":"Visualize a result"}],["$","td",null,{"children":[["$","code",null,{"children":"visualizestart"}],": ",["$","code",null,{"children":"{ query }"}]]}],["$","td",null,{"children":["$","code",null,{"children":"visualizeend"}]}]]}],["$","tr",null,{"children":[["$","td",null,{"children":"Suggest questions"}],["$","td",null,{"children":[["$","code",null,{"children":"suggeststart"}],": ",["$","code",null,{"children":"{}"}]]}],["$","td",null,{"children":["$","code",null,{"children":"suggestend"}]}]]}]]}]]}]}]
+32:["$","p",null,{"children":["Loading a source can also emit engine disposal and creation events. Cached schema reads and semantic reads emit no events; schema discovery performed internally by other methods does not emit ",["$","code",null,{"children":"schema"}]," events. ",["$","code",null,{"children":"recommend()"}]," and ",["$","code",null,{"children":"viz()"}]," do not have their own events."]}]
+33:["$","h3",null,{"id":"analysis-events","children":["$","a",null,{"href":"#analysis-events","className":"docs-heading-link","children":"Analysis events"}]}]
+34:["$","p",null,{"children":["These events describe analysis steps and the statements they produce or execute. The table shows successful end-event data; on failure, the end event carries ",["$","code",null,{"children":"error"}]," instead. A failed step also carries ",["$","code",null,{"children":"step"}]," and, when applicable, ",["$","code",null,{"children":"finalAttempt"}],". A question is natural language; ",["$","code",null,{"children":"dsl"}]," is an executable statement, such as SQL or Python code."]}]
+35:["$","div",null,{"className":"docs-table","children":["$","table",null,{"children":[["$","thead",null,{"children":["$","tr",null,{"children":[["$","th",null,{"children":"Operation"}],["$","th",null,{"children":"Start event and data"}],["$","th",null,{"children":"Successful end event and data"}]]}]}],["$","tbody",null,{"children":[["$","tr",null,{"children":[["$","td",null,{"children":"Analysis step"}],["$","td",null,{"children":[["$","code",null,{"children":"stepstart"}],": ",["$","code",null,{"children":"{ step, finalAttempt? }"}]]}],["$","td",null,{"children":[["$","code",null,{"children":"stepend"}],": ",["$","code",null,{"children":"{ step, action, text, usage?, finalAttempt? }"}]]}]]}],["$","tr",null,{"children":[["$","td",null,{"children":"Translate a question"}],["$","td",null,{"children":[["$","code",null,{"children":"translatestart"}],": ",["$","code",null,{"children":"{ query, attempt? }"}]]}],["$","td",null,{"children":[["$","code",null,{"children":"translateend"}],": ",["$","code",null,{"children":"{ dsl, usage? }"}]]}]]}],["$","tr",null,{"children":[["$","td",null,{"children":"Execute a statement"}],["$","td",null,{"children":[["$","code",null,{"children":"querystart"}],": ",["$","code",null,{"children":"{ dsl }"}]]}],["$","td",null,{"children":[["$","code",null,{"children":"queryend"}],": ",["$","code",null,{"children":"{ data, schema, rowCount?, truncated?, truncatedBy? }"}]]}]]}],["$","tr",null,{"children":[["$","td",null,{"children":"Summarize a result"}],["$","td",null,{"children":[["$","code",null,{"children":"summarizestart"}],": ",["$","code",null,{"children":"{ queryId }"}]]}],["$","td",null,{"children":[["$","code",null,{"children":"summarizeend"}],": ",["$","code",null,{"children":"{ queryExplanation, conclusion, limitations?, nextStep?, usage? }"}]]}]]}]]}]]}]}]
+36:["$","p",null,{"children":[["$","code",null,{"children":"?"}]," marks an optional field. In ",["$","code",null,{"children":"queryend"}],", ",["$","code",null,{"children":"data"}]," contains the returned rows and ",["$","code",null,{"children":"schema"}]," describes their columns; truncation fields indicate when a result limit was reached. See ",["$","$L9",null,{"href":"/documentation/reference/api/#executionresult","children":"query results"}]," for the full result structure."]}]
+37:["$","p",null,{"children":[["$","code",null,{"children":"step"}]," and ",["$","code",null,{"children":"attempt"}]," are zero-based. ",["$","code",null,{"children":"attempt"}]," is present on translation starts within analysis. ",["$","code",null,{"children":"finalAttempt"}]," marks an additional step after the normal step limit. Step actions are ",["$","code",null,{"children":"EXPLORE"}]," (inspect data), ",["$","code",null,{"children":"REFINE"}]," (revise the plan), ",["$","code",null,{"children":"SQL"}]," (execute an answer statement), and ",["$","code",null,{"children":"CONFIRM"}]," (verify the answer). The ",["$","code",null,{"children":"text"}]," field does not include the leading action tag."]}]
+38:["$","p",null,{"children":["Where present, ",["$","code",null,{"children":"usage"}]," describes token usage for the model call. A step can retain usage when parsing or execution fails after the model has returned. Token fields depend on the provider, and a failed call that returns no usage cannot be counted from the events. AVA does not emit an aggregate usage event. ",["$","code",null,{"children":"queryend"}]," describes execution and carries no model usage."]}]
+39:["$","h3",null,{"id":"event-context","children":["$","a",null,{"href":"#event-context","className":"docs-heading-link","children":"Event context"}]}]
+3a:["$","p",null,{"children":["Analysis events emitted within ",["$","code",null,{"children":"analyze()"}]," include a ",["$","code",null,{"children":"context"}]," object:"]}]
+3b:["$","div",null,{"className":"docs-table","children":["$","table",null,{"children":[["$","thead",null,{"children":["$","tr",null,{"children":[["$","th",null,{"children":"Field"}],["$","th",null,{"children":"Meaning"}]]}]}],["$","tbody",null,{"children":[["$","tr",null,{"children":[["$","td",null,{"children":["$","code",null,{"children":"eventId"}]}],["$","td",null,{"children":["Unique event ID. A start/end pair shares an ID prefix and uses ",["$","code",null,{"children":":start"}]," and ",["$","code",null,{"children":":end"}]," suffixes."]}]]}],["$","tr",null,{"children":[["$","td",null,{"children":["$","code",null,{"children":"stepId"}]}],["$","td",null,{"children":"ID of the step containing the event."}]]}],["$","tr",null,{"children":[["$","td",null,{"children":["$","code",null,{"children":"parentStepIds"}]}],["$","td",null,{"children":"IDs of steps that this step depends on."}]]}]]}]]}]}]
+3c:["$","p",null,{"children":["Step event IDs use ",["$","code",null,{"children":"stepId"}]," as their prefix; operations within a step have separate pair IDs. Each retry gets a new pair. ",["$","code",null,{"children":"summarizestart.data.queryId"}]," references the successful ",["$","code",null,{"children":"queryend.context.eventId"}],", including ",["$","code",null,{"children":":end"}],". Standalone ",["$","code",null,{"children":"translate()"}]," and ",["$","code",null,{"children":"query()"}]," emit their respective events without analysis ",["$","code",null,{"children":"context"}]," or step events."]}]
+3d:["$","h2",null,{"id":"listener-parameters","children":["$","a",null,{"href":"#listener-parameters","className":"docs-heading-link","children":"Listener parameters"}]}]
+3e:["$","div",null,{"className":"docs-table","children":["$","table",null,{"children":[["$","thead",null,{"children":["$","tr",null,{"children":[["$","th",null,{"children":"Method"}],["$","th",null,{"children":"Behavior"}]]}]}],["$","tbody",null,{"children":[["$","tr",null,{"children":[["$","td",null,{"children":["$","code",null,{"children":"on(name, listener, once?)"}]}],["$","td",null,{"children":["Subscribe; the optional ",["$","code",null,{"children":"once"}]," flag defaults to ",["$","code",null,{"children":"false"}],"."]}]]}],["$","tr",null,{"children":[["$","td",null,{"children":["$","code",null,{"children":"once(name, listener)"}]}],["$","td",null,{"children":"Subscribe for one invocation."}]]}],["$","tr",null,{"children":[["$","td",null,{"children":["$","code",null,{"children":"off(name?, listener?)"}]}],["$","td",null,{"children":"Remove a listener, all listeners for a name, or all listeners if omitted. Pass the same listener reference used to subscribe."}]]}],["$","tr",null,{"children":[["$","td",null,{"children":["$","code",null,{"children":"emit(name, ...args)"}]}],["$","td",null,{"children":"Emit an event manually."}]]}],["$","tr",null,{"children":[["$","td",null,{"children":["$","code",null,{"children":"getEvents()"}]}],["$","td",null,{"children":"Return the listener registry."}]]}]]}]]}]}]
+3f:["$","p",null,{"children":["Event dispatch is synchronous: ",["$","code",null,{"children":"on"}],", ",["$","code",null,{"children":"once"}],", and ",["$","code",null,{"children":"off"}]," return the emitter, synchronous listener errors propagate, and async listeners are not awaited. Event data is not copied; use ",["$","code",null,{"children":"structuredClone(event)"}]," if you need a snapshot."]}]
+42:null
+10:C
+28:0
+12:"$undefined"
+f:"$undefined"
+27:"$undefined"
+20:"$undefined"

@@ -1,0 +1,106 @@
+3:"$Sreact.fragment"
+4:"/_next/static/chunks/0xpkuc787v-p9.js"
+5:I[936064,["$4"],"default"]
+6:I[481497,["$4"],"default"]
+b:"/_next/static/chunks/20no9c33yqyzq.js"
+c:"/_next/static/chunks/024mr0my09zgj.js"
+d:"/_next/static/chunks/2mfxd9osm4z6w.js"
+e:"/_next/static/chunks/1bmh2fw63vq04.js"
+f:"/_next/static/chunks/1lxucu_dj41ds.js"
+10:I[400503,["$b","$c","$d","$e","$f"],"default"]
+11:I[697790,["$b","$c","$d","$e"],"default"]
+12:I[474333,["$b","$c","$d","$e"],"default"]
+17:I[5138,["$b","$c","$d","$e","$f"],"default"]
+23:"ViewportBoundary"
+24:I[675049,["$4"],"$23"]
+25:"MetadataBoundary"
+26:I[675049,["$4"],"$25"]
+27:"$Sreact.suspense"
+28:I[934035,["$4"],"IconMark"]
+:HL["/_next/static/chunks/0o-6jlwxqyz8v.css","style"]
+:HL["https://mdn.alipayobjects.com/huamei_qa8qxu/afts/img/A*A-lcQbVTpjwAAAAAAAAAAAAADmJ7AQ/original","image"]
+8:X
+8:C
+9:X
+18:T90c,# DuckDB
+
+用 SQL 分析内存数据、文件及可连接的数据库。
+
+import { Heading } from '../../../../mdx-components';
+
+<Heading as="h2" id="configure">配置</Heading>
+
+```typescript
+const ava = new AVA({
+  llm: { model: 'YOUR_MODEL', apiKey: process.env.OPENAI_API_KEY },
+  engine: {
+    type: 'duckdb',
+    memoryLimit: '512MB',
+    threads: 1,
+    queryTimeoutMs: 30000,
+    maxTempDirectorySize: '1GB',
+  },
+});
+```
+
+DuckDB 是 Node.js 的默认引擎。它创建内存实例，将数据源注册为表或视图；生成 SQL 时使用 schema 和可选的 profile。
+
+<Heading as="h2" id="engine-options">引擎选项</Heading>
+
+将 `engine.type` 设为 `duckdb`。`engine` 接受的全部额外字段如下。
+
+| 字段 | 类型 | 必填 | 含义与默认值 |
+| -------------------------- | --------- | -------- | ------------------------------------------------------------------------------- |
+| `memoryLimit` | `string` | 否 | 内存限制，例如 `'512MB'`，默认 `'512MB'`。 |
+| `threads` | `number` | 否 | 工作线程数，默认 1。 |
+| `maxTempDirectorySize` | `string` | 否 | 临时溢写目录的大小上限，例如 `'1GB'`；不设置则不限制。 |
+| `queryTimeoutMs` | `number` | 否 | 单次查询超时，单位毫秒，默认 30000。 |
+| `allowCommunityExtensions` | `boolean` | 否 | 数据源加载明确需要社区扩展时，允许启用 DuckDB 社区扩展。 |
+
+<Heading as="h2" id="resource-limits">资源限制</Heading>
+
+默认内存上限为 512 MB，使用一个工作线程，查询超时为 30 秒。`maxTempDirectorySize` 可选，省略时不会设置溢写目录大小上限。
+
+这些选项与限制返回结果的 `maxRows`、`maxResultBytes` 相互独立。
+
+<Heading as="h2" id="source-support">数据源支持</Heading>
+
+支持内存 CSV、JSON、文本，本地或远程 CSV、JSON、Parquet、Excel，以及 MySQL、PostgreSQL、SQLite、MongoDB 数据源。配置方式见[接入数据](/documentation/data/sources/)。
+
+<Heading as="h2" id="query-access">查询访问限制</Heading>
+
+注册数据源后，引擎会限制外部访问并锁定配置，查询方言会验证语句是否只读。社区扩展默认关闭；加载器会处理 MongoDB 等依赖社区扩展的数据源，需要时也可用 `allowCommunityExtensions` 显式允许。
+16:[["children",{"s":"__PAGE__","h":160,"d":{"r":["$","$3","c",{"children":[[["$","main",null,{"className":"docs-main","id":"docs-content","children":[["$","div",null,{"className":"docs-page-toolbar","children":[["$","div",null,{"className":"docs-eyebrow","children":"执行引擎"}],["$","$L17","engines/duckdb",{"label":"复制 Markdown","text":"$18"}]]}],"$L19","$L1a","$L1b","$L1c","$L1d","$L1e"]}],"$L1f"],["$L20"],"$L21"]}],"p":"$@22","v":null,"s":"$9"}}]]
+14:[["children",{"s":{"n":"slug","t":"c","k":"engines/duckdb","s":[]},"h":65632,"d":{"r":["$","$3","c",{"children":[null,["$","$L5",null,{"parallelRouterKey":"children","template":["$","$L6",null,{}]}]]}],"p":"$@15","v":"$8","s":"$9"},"c":"$Q16"}]]
+a:[["children",{"s":"documentation","h":131168,"d":{"r":["$","$3","c",{"children":[[["$","link","0",{"rel":"stylesheet","href":"/_next/static/chunks/0o-6jlwxqyz8v.css","precedence":"next"}],["$","script","script-0",{"src":"/_next/static/chunks/2mfxd9osm4z6w.js","async":true}],["$","script","script-1",{"src":"/_next/static/chunks/1bmh2fw63vq04.js","async":true}]],["$","div",null,{"className":"docs-site","children":[["$","a",null,{"className":"docs-skip","href":"#docs-content","children":"跳至正文"}],["$","header",null,{"className":"docs-header","children":["$","div",null,{"className":"docs-header-inner","children":[["$","$L10",null,{"href":"/","className":"docs-brand","aria-label":"AVA 首页","children":[["$","img",null,{"src":"https://mdn.alipayobjects.com/huamei_qa8qxu/afts/img/A*A-lcQbVTpjwAAAAAAAAAAAAADmJ7AQ/original","alt":"","width":"80","height":"48"}],["$","strong",null,{"children":"AVA"}],["$","span",null,{"children":"使用文档"}]]}],["$","nav",null,{"aria-label":"主导航","className":"docs-header-links","children":[["$","$L10",null,{"href":"/","className":"docs-website","children":["官网首页"," ",["$","span",null,{"aria-hidden":"true","children":"↗"}]]}],["$","a",null,{"href":"https://github.com/antvis/AVA","className":"docs-github","children":["GitHub ",["$","span",null,{"aria-hidden":"true","children":"↗"}]]}],["$","$L11",null,{}],["$","$L10",null,{"href":"/ai/","className":"docs-ai","children":["AI 体验"," ",["$","span",null,{"aria-hidden":"true","children":"→"}]]}]]}]]}]}],["$","$L12",null,{"mobile":true}],["$","div",null,{"className":"docs-layout","children":[["$","aside",null,{"className":"docs-sidebar","children":[["$","$L10",null,{"href":"/documentation/","className":"docs-sidebar-label","children":[["$","span",null,{"className":"docs-book-icon","aria-hidden":"true","children":"▤"}]," ","使用文档"]}],["$","$L12",null,{}],["$","div",null,{"className":"docs-sidebar-footer","children":[["$","span",null,{"className":"docs-status-dot"}]," ","TypeScript · 开源"]}]]}],["$","$L5",null,{"parallelRouterKey":"children","template":["$","$L6",null,{}]}]]}]]}]]}],"p":"$@13","v":null,"s":"$9"},"c":"$Q14"}]]
+2:[["children",{"s":"zh","h":131136,"d":{"r":["$","$3","c",{"children":[null,["$","$L5",null,{"parallelRouterKey":"children","template":["$","$L6",null,{}]}]]}],"p":"$@7","v":"$8","s":"$9"},"c":"$Qa"}]]
+1:[["children",{"s":"(zh)","h":131120,"c":"$Q2"}]]
+0:{"t":{"t":{"s":"","h":131152,"c":"$Q1"},"h":{"r":["$","$3","h",{"children":[null,["$","$L24",null,{"children":[["$","meta","0",{"charSet":"utf-8"}],["$","meta","1",{"name":"viewport","content":"width=device-width, initial-scale=1"}]]}],["$","$L26",null,{"children":[["$","div",null,{"hidden":true,"children":["$","$27",null,{"name":"Next.Metadata","children":[["$","title","0",{"children":"DuckDB — AVA 文档"}],["$","meta","1",{"name":"description","content":"用 SQL 分析内存数据、文件及可连接的数据库。"}],["$","meta","2",{"name":"author","content":"AntV"}],["$","meta","3",{"name":"keywords","content":"AVA, visual analytics, AI-native, LLM, data visualization, natural language, data analysis, AntV, chart generation"}],["$","link","4",{"rel":"canonical","href":"https://ava.antv.vision/zh/documentation/engines/duckdb/"}],["$","link","5",{"rel":"alternate","hrefLang":"en","href":"https://ava.antv.vision/documentation/engines/duckdb/"}],["$","link","6",{"rel":"alternate","hrefLang":"zh-CN","href":"https://ava.antv.vision/zh/documentation/engines/duckdb/"}],["$","link","7",{"rel":"alternate","hrefLang":"x-default","href":"https://ava.antv.vision/documentation/engines/duckdb/"}],["$","meta","8",{"property":"og:title","content":"DuckDB — AVA 文档"}],["$","meta","9",{"property":"og:description","content":"用 SQL 分析内存数据、文件及可连接的数据库。"}],["$","meta","10",{"property":"og:url","content":"https://ava.antv.vision/zh/documentation/engines/duckdb/"}],["$","meta","11",{"property":"og:type","content":"article"}],["$","meta","12",{"name":"twitter:card","content":"summary"}],["$","meta","13",{"name":"twitter:title","content":"DuckDB — AVA 文档"}],["$","meta","14",{"name":"twitter:description","content":"用 SQL 分析内存数据、文件及可连接的数据库。"}],["$","link","15",{"rel":"icon","href":"https://mdn.alipayobjects.com/huamei_qa8qxu/afts/img/A*FBLnQIAzx6cAAAAAQDAAAAgAemJ7AQ/original"}],["$","$L28","16",{}]]}]}],null]}],null]}],"p":"$@29","v":null,"s":"$9"}},"a":"$@2a","u":"$@2b","b":"KHDYj3YqzeY5ppvGf10Fa"}
+33:I[754170,["$b","$c","$d","$e","$f"],"default"]
+34:I[675049,["$4"],"OutletBoundary"]
+19:["$","h1",null,{"children":"DuckDB"}]
+1a:["$","p",null,{"className":"docs-description","children":"用 SQL 分析内存数据、文件及可连接的数据库。"}]
+1b:["$","article",null,{"className":"docs-prose","children":[["$","h2",null,{"id":"configure","children":["$","a",null,{"href":"#configure","className":"docs-heading-link","children":"配置"}]}],"\n",["$","figure",null,{"data-rehype-pretty-code-figure":"","children":["$","div",null,{"className":"docs-code-block","children":[["$","div",null,{"className":"docs-code-toolbar","children":[["$","span",null,{"children":"typescript"}],["$","$L17",null,{}]]}],["$","pre",null,{"tabIndex":"0","data-language":"typescript","data-theme":"github-light","children":["$","code",null,{"data-language":"typescript","data-theme":"github-light","style":{"display":"grid"},"children":[["$","span",null,{"data-line":"","children":[["$","span",null,{"style":{"color":"#D73A49"},"children":"const"}],["$","span",null,{"style":{"color":"#005CC5"},"children":" ava"}],["$","span",null,{"style":{"color":"#D73A49"},"children":" ="}],["$","span",null,{"style":{"color":"#D73A49"},"children":" new"}],["$","span",null,{"style":{"color":"#6F42C1"},"children":" AVA"}],["$","span",null,{"style":{"color":"#24292E"},"children":"({"}]]}],"\n",["$","span",null,{"data-line":"","children":[["$","span",null,{"style":{"color":"#24292E"},"children":"  llm: { model: "}],["$","span",null,{"style":{"color":"#032F62"},"children":"'YOUR_MODEL'"}],["$","span",null,{"style":{"color":"#24292E"},"children":", apiKey: process.env."}],["$","span",null,{"style":{"color":"#005CC5"},"children":"OPENAI_API_KEY"}],["$","span",null,{"style":{"color":"#24292E"},"children":" },"}]]}],"\n",["$","span",null,{"data-line":"","children":["$","span",null,{"style":{"color":"#24292E"},"children":"  engine: {"}]}],"\n",["$","span",null,{"data-line":"","children":[["$","span",null,{"style":{"color":"#24292E"},"children":"    type: "}],["$","span",null,{"style":{"color":"#032F62"},"children":"'duckdb'"}],["$","span",null,{"style":{"color":"#24292E"},"children":","}]]}],"\n",["$","span",null,{"data-line":"","children":[["$","span",null,{"style":{"color":"#24292E"},"children":"    memoryLimit: "}],["$","span",null,{"style":{"color":"#032F62"},"children":"'512MB'"}],["$","span",null,{"style":{"color":"#24292E"},"children":","}]]}],"\n",["$","span",null,{"data-line":"","children":[["$","span",null,{"style":{"color":"#24292E"},"children":"    threads: "}],["$","span",null,{"style":{"color":"#005CC5"},"children":"1"}],["$","span",null,{"style":{"color":"#24292E"},"children":","}]]}],"\n",["$","span",null,{"data-line":"","children":[["$","span",null,{"style":{"color":"#24292E"},"children":"    queryTimeoutMs: "}],["$","span",null,{"style":{"color":"#005CC5"},"children":"30000"}],["$","span",null,{"style":{"color":"#24292E"},"children":","}]]}],"\n",["$","span",null,{"data-line":"","children":[["$","span",null,{"style":{"color":"#24292E"},"children":"    maxTempDirectorySize: "}],["$","span",null,{"style":{"color":"#032F62"},"children":"'1GB'"}],["$","span",null,{"style":{"color":"#24292E"},"children":","}]]}],"\n",["$","span",null,{"data-line":"","children":["$","span",null,{"style":{"color":"#24292E"},"children":"  },"}]}],"\n",["$","span",null,{"data-line":"","children":["$","span",null,{"style":{"color":"#24292E"},"children":"});"}]}]]}]}]]}]}],"\n",["$","p",null,{"children":"DuckDB 是 Node.js 的默认引擎。它创建内存实例，将数据源注册为表或视图；生成 SQL 时使用 schema 和可选的 profile。"}],"\n",["$","h2",null,{"id":"engine-options","children":["$","a",null,{"href":"#engine-options","className":"docs-heading-link","children":"引擎选项"}]}],"\n",["$","p",null,{"children":["将 ",["$","code",null,{"children":"engine.type"}]," 设为 ",["$","code",null,{"children":"duckdb"}],"。",["$","code",null,{"children":"engine"}]," 接受的全部额外字段如下。"]}],"\n",["$","div",null,{"className":"docs-table","children":["$","table",null,{"children":[["$","thead",null,{"children":["$","tr",null,{"children":[["$","th",null,{"children":"字段"}],["$","th",null,{"children":"类型"}],["$","th",null,{"children":"必填"}],["$","th",null,{"children":"含义与默认值"}]]}]}],["$","tbody",null,{"children":[["$","tr",null,{"children":[["$","td",null,{"children":["$","code",null,{"children":"memoryLimit"}]}],["$","td",null,{"children":["$","code",null,{"children":"string"}]}],["$","td",null,{"children":"否"}],["$","td",null,{"children":["内存限制，例如 ",["$","code",null,{"children":"'512MB'"}],"，默认 ",["$","code",null,{"children":"'512MB'"}],"。"]}]]}],["$","tr",null,{"children":[["$","td",null,{"children":["$","code",null,{"children":"threads"}]}],["$","td",null,{"children":["$","code",null,{"children":"number"}]}],["$","td",null,{"children":"否"}],["$","td",null,{"children":"工作线程数，默认 1。"}]]}],["$","tr",null,{"children":[["$","td",null,{"children":["$","code",null,{"children":"maxTempDirectorySize"}]}],["$","td",null,{"children":["$","code",null,{"children":"string"}]}],["$","td",null,{"children":"否"}],["$","td",null,{"children":["临时溢写目录的大小上限，例如 ",["$","code",null,{"children":"'1GB'"}],"；不设置则不限制。"]}]]}],["$","tr",null,{"children":[["$","td",null,{"children":["$","code",null,{"children":"queryTimeoutMs"}]}],["$","td",null,{"children":["$","code",null,{"children":"number"}]}],["$","td",null,{"children":"否"}],["$","td",null,{"children":"单次查询超时，单位毫秒，默认 30000。"}]]}],["$","tr",null,{"children":[["$","td",null,{"children":["$","code",null,{"children":"allowCommunityExtensions"}]}],["$","td",null,{"children":["$","code",null,{"children":"boolean"}]}],["$","td",null,{"children":"否"}],["$","td",null,{"children":"数据源加载明确需要社区扩展时，允许启用 DuckDB 社区扩展。"}]]}]]}]]}]}],"\n","$L2c","\n","$L2d","\n","$L2e","\n","$L2f","\n","$L30","\n","$L31","\n","$L32"]}]
+1c:["$","div",null,{"className":"docs-page-meta","children":["$","a",null,{"href":"https://github.com/antvis/AVA/blob/ai/site/content/docs/zh/engines/duckdb.mdx","children":["在 GitHub 编辑本页"," ",["$","span",null,{"aria-hidden":"true","children":"↗"}]]}]}]
+1d:["$","nav",null,{"className":"docs-pagination","aria-label":"章节导航","children":[["$","$L10",null,{"href":"/documentation/engines/overview/","children":[["$","span",null,{"children":"← 上一篇"}],["$","strong",null,{"children":"选择执行引擎"}]]}],["$","$L10",null,{"href":"/documentation/engines/python/","className":"docs-next","children":[["$","span",null,{"children":"下一篇 →"}],["$","strong",null,{"children":"Python"}]]}]]}]
+1e:["$","footer",null,{"className":"docs-footer","children":[["$","span",null,{"children":"AVA · AntV 开源项目"}],["$","a",null,{"href":"https://github.com/antvis/AVA","children":"在 GitHub 查看源码 ↗"}]]}]
+1f:["$","$L33","engines/duckdb",{}]
+20:["$","script","script-0",{"src":"/_next/static/chunks/1lxucu_dj41ds.js","async":true}]
+21:["$","$L34",null,{"children":["$","$27",null,{"name":"Next.MetadataOutlet","children":"$@35"}]}]
+2b:true
+9:300
+2c:["$","h2",null,{"id":"resource-limits","children":["$","a",null,{"href":"#resource-limits","className":"docs-heading-link","children":"资源限制"}]}]
+2d:["$","p",null,{"children":["默认内存上限为 512 MB，使用一个工作线程，查询超时为 30 秒。",["$","code",null,{"children":"maxTempDirectorySize"}]," 可选，省略时不会设置溢写目录大小上限。"]}]
+2e:["$","p",null,{"children":["这些选项与限制返回结果的 ",["$","code",null,{"children":"maxRows"}],"、",["$","code",null,{"children":"maxResultBytes"}]," 相互独立。"]}]
+2f:["$","h2",null,{"id":"source-support","children":["$","a",null,{"href":"#source-support","className":"docs-heading-link","children":"数据源支持"}]}]
+30:["$","p",null,{"children":["支持内存 CSV、JSON、文本，本地或远程 CSV、JSON、Parquet、Excel，以及 MySQL、PostgreSQL、SQLite、MongoDB 数据源。配置方式见",["$","$L10",null,{"href":"/documentation/data/sources/","children":"接入数据"}],"。"]}]
+31:["$","h2",null,{"id":"query-access","children":["$","a",null,{"href":"#query-access","className":"docs-heading-link","children":"查询访问限制"}]}]
+32:["$","p",null,{"children":["注册数据源后，引擎会限制外部访问并锁定配置，查询方言会验证语句是否只读。社区扩展默认关闭；加载器会处理 MongoDB 等依赖社区扩展的数据源，需要时也可用 ",["$","code",null,{"children":"allowCommunityExtensions"}]," 显式允许。"]}]
+35:null
+9:C
+2a:0
+15:"$undefined"
+13:"$undefined"
+7:"$undefined"
+29:"$undefined"
+22:"$undefined"

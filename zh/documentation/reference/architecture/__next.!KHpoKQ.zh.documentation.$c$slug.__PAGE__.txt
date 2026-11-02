@@ -1,0 +1,112 @@
+3:"$Sreact.fragment"
+4:"/_next/static/chunks/0xpkuc787v-p9.js"
+5:I[936064,["$4"],"default"]
+6:I[481497,["$4"],"default"]
+b:"/_next/static/chunks/20no9c33yqyzq.js"
+c:"/_next/static/chunks/024mr0my09zgj.js"
+d:"/_next/static/chunks/2mfxd9osm4z6w.js"
+e:"/_next/static/chunks/1bmh2fw63vq04.js"
+f:"/_next/static/chunks/1lxucu_dj41ds.js"
+10:I[400503,["$b","$c","$d","$e","$f"],"default"]
+11:I[697790,["$b","$c","$d","$e"],"default"]
+12:I[474333,["$b","$c","$d","$e"],"default"]
+17:I[5138,["$b","$c","$d","$e","$f"],"default"]
+23:"ViewportBoundary"
+24:I[675049,["$4"],"$23"]
+25:"MetadataBoundary"
+26:I[675049,["$4"],"$25"]
+27:"$Sreact.suspense"
+28:I[934035,["$4"],"IconMark"]
+:HL["/_next/static/chunks/0o-6jlwxqyz8v.css","style"]
+:HL["https://mdn.alipayobjects.com/huamei_qa8qxu/afts/img/A*A-lcQbVTpjwAAAAAAAAAAAAADmJ7AQ/original","image"]
+8:X
+8:C
+9:X
+18:T138b,# 架构与源码导航
+
+从公开 API 出发，找到对应的实现与扩展位置。
+
+import { Heading } from '../../../../mdx-components';
+
+<Heading as="h2" id="public-entry-points">公开入口</Heading>
+
+[`index.ts`](https://github.com/antvis/AVA/blob/ai/src/index.ts) 注册全部 Node.js 引擎，导出 `AVA` 和公开类型；[`index.browser.ts`](https://github.com/antvis/AVA/blob/ai/src/index.browser.ts) 只注册 JavaScript。[`ava.ts`](https://github.com/antvis/AVA/blob/ai/src/ava.ts) 协调数据源状态、数据模型、事件与引擎生命周期。
+
+<Heading as="h2" id="source-directory-map">源码目录</Heading>
+
+| 源码 | 职责 |
+| ---------------------------------------------------------------------------------------------- | ----------------------------------------------------- |
+| [`ava.ts`](https://github.com/antvis/AVA/blob/ai/src/ava.ts) | 公开 API、数据源状态与生命周期 |
+| [`types.ts`](https://github.com/antvis/AVA/blob/ai/src/types.ts) | 配置、引擎与结果接口约定 |
+| [`engines.ts`](https://github.com/antvis/AVA/blob/ai/src/engines.ts) | 内部引擎注册表 |
+| [`analysis/`](https://github.com/antvis/AVA/tree/ai/src/analysis/) | Direct 与 Loop 分析策略 |
+| [`duckdb/`](https://github.com/antvis/AVA/tree/ai/src/duckdb/) | SQL 引擎、数据源加载器与统计 |
+| [`interpreter/javascript/`](https://github.com/antvis/AVA/tree/ai/src/interpreter/javascript/) | 内存数据与 JavaScript 执行 |
+| [`interpreter/python/`](https://github.com/antvis/AVA/tree/ai/src/interpreter/python/) | pandas 执行与数据源验证 |
+| [`remote/supabase/`](https://github.com/antvis/AVA/tree/ai/src/remote/supabase/) | Management API、结构发现与统计 |
+| [`remote/clickhouse/`](https://github.com/antvis/AVA/tree/ai/src/remote/clickhouse/) | 远程 SQL、结构发现与统计 |
+| [`query/`](https://github.com/antvis/AVA/tree/ai/src/query/) | 查询生成与方言验证 |
+| [`visualization/`](https://github.com/antvis/AVA/tree/ai/src/visualization/) | 图表推荐、GPT-Vis 配置与 HTML 生成 |
+| [`suggest/`](https://github.com/antvis/AVA/tree/ai/src/suggest/) | 分析问题推荐 |
+| [`event/`](https://github.com/antvis/AVA/tree/ai/src/event/) | 事件类型与载荷 |
+| [`cli/`](https://github.com/antvis/AVA/tree/ai/src/cli/) | 命令与本地数据集会话 |
+| [`util/`](https://github.com/antvis/AVA/tree/ai/src/util/) | 模型解析、结构定义、指标与结果限制 |
+
+<Heading as="h2" id="method-to-module">方法与模块的对应关系</Heading>
+
+| 公开方法 | 职责与实现 |
+| ------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `source()` / `schema()` / `dispose()` | [`ava.ts`](https://github.com/antvis/AVA/blob/ai/src/ava.ts) 中的数据源状态与引擎生命周期 |
+| `profile()` | 各引擎实现统计计算，共享指标约定位于 [`util/profile.ts`](https://github.com/antvis/AVA/blob/ai/src/util/profile.ts) |
+| `analyze()` | 分发到 [`analysis/direct.ts`](https://github.com/antvis/AVA/blob/ai/src/analysis/direct.ts) 或 [`analysis/loop.ts`](https://github.com/antvis/AVA/blob/ai/src/analysis/loop.ts) |
+| `translate()` / `query()` | 引擎的 `getDSL()` / `execute()` |
+| `suggest()` | [`suggest/index.ts`](https://github.com/antvis/AVA/blob/ai/src/suggest/index.ts) |
+| `recommend()` | [`visualization/advisor.ts`](https://github.com/antvis/AVA/blob/ai/src/visualization/advisor.ts) 与配置生成 |
+| `viz()` | [`visualization/generator.ts`](https://github.com/antvis/AVA/blob/ai/src/visualization/generator.ts) 中的 HTML 包装 |
+| `visualize()` | 组合 `recommend()` 和 `viz()` |
+
+<Heading as="h2" id="context-and-state">上下文与状态</Heading>
+
+每个 AVA 实例持有一个活动引擎及其 schema、profile 缓存。`source()` 加载数据，`schema()` 在首次使用时发现结构；`profile()` 重新计算并保存统计信息；需要时再由缓存元数据组装数据模型。重新加载或释放实例会清空两类缓存。
+
+引擎持有数据与连接。`load()` 不返回元数据，`schema()` 发现结构，`profile(schema, options?)` 计算统计信息，`getDSL(query, dataModel)` 使用 AVA 组装的数据模型。共享验证逻辑位于 `util/schema.ts` 与 `util/profile.ts`。
+
+分析策略共享一个运行时，其中包括引擎、模型配置、数据模型与事件发射器。查询结果限制通过共享工具统一规范化。
+
+<Heading as="h2" id="documentation-organization">文档组织方式</Heading>
+
+每个主题都是 `site/content/docs/` 下的独立 MDX 文件，按 `data/`、`analysis/`、`visualization/`、`engines/`、`reference/` 分组。这样的组织对应公开能力，无需将每个内部辅助函数都拆成独立的用户文档。
+16:[["children",{"s":"__PAGE__","h":160,"d":{"r":["$","$3","c",{"children":[[["$","main",null,{"className":"docs-main","id":"docs-content","children":[["$","div",null,{"className":"docs-page-toolbar","children":[["$","div",null,{"className":"docs-eyebrow","children":"更多资源"}],["$","$L17","reference/architecture",{"label":"复制 Markdown","text":"$18"}]]}],"$L19","$L1a","$L1b","$L1c","$L1d","$L1e"]}],"$L1f"],["$L20"],"$L21"]}],"p":"$@22","v":null,"s":"$9"}}]]
+14:[["children",{"s":{"n":"slug","t":"c","k":"reference/architecture","s":[]},"h":65632,"d":{"r":["$","$3","c",{"children":[null,["$","$L5",null,{"parallelRouterKey":"children","template":["$","$L6",null,{}]}]]}],"p":"$@15","v":"$8","s":"$9"},"c":"$Q16"}]]
+a:[["children",{"s":"documentation","h":131168,"d":{"r":["$","$3","c",{"children":[[["$","link","0",{"rel":"stylesheet","href":"/_next/static/chunks/0o-6jlwxqyz8v.css","precedence":"next"}],["$","script","script-0",{"src":"/_next/static/chunks/2mfxd9osm4z6w.js","async":true}],["$","script","script-1",{"src":"/_next/static/chunks/1bmh2fw63vq04.js","async":true}]],["$","div",null,{"className":"docs-site","children":[["$","a",null,{"className":"docs-skip","href":"#docs-content","children":"跳至正文"}],["$","header",null,{"className":"docs-header","children":["$","div",null,{"className":"docs-header-inner","children":[["$","$L10",null,{"href":"/","className":"docs-brand","aria-label":"AVA 首页","children":[["$","img",null,{"src":"https://mdn.alipayobjects.com/huamei_qa8qxu/afts/img/A*A-lcQbVTpjwAAAAAAAAAAAAADmJ7AQ/original","alt":"","width":"80","height":"48"}],["$","strong",null,{"children":"AVA"}],["$","span",null,{"children":"使用文档"}]]}],["$","nav",null,{"aria-label":"主导航","className":"docs-header-links","children":[["$","$L10",null,{"href":"/","className":"docs-website","children":["官网首页"," ",["$","span",null,{"aria-hidden":"true","children":"↗"}]]}],["$","a",null,{"href":"https://github.com/antvis/AVA","className":"docs-github","children":["GitHub ",["$","span",null,{"aria-hidden":"true","children":"↗"}]]}],["$","$L11",null,{}],["$","$L10",null,{"href":"/ai/","className":"docs-ai","children":["AI 体验"," ",["$","span",null,{"aria-hidden":"true","children":"→"}]]}]]}]]}]}],["$","$L12",null,{"mobile":true}],["$","div",null,{"className":"docs-layout","children":[["$","aside",null,{"className":"docs-sidebar","children":[["$","$L10",null,{"href":"/documentation/","className":"docs-sidebar-label","children":[["$","span",null,{"className":"docs-book-icon","aria-hidden":"true","children":"▤"}]," ","使用文档"]}],["$","$L12",null,{}],["$","div",null,{"className":"docs-sidebar-footer","children":[["$","span",null,{"className":"docs-status-dot"}]," ","TypeScript · 开源"]}]]}],["$","$L5",null,{"parallelRouterKey":"children","template":["$","$L6",null,{}]}]]}]]}]]}],"p":"$@13","v":null,"s":"$9"},"c":"$Q14"}]]
+2:[["children",{"s":"zh","h":131136,"d":{"r":["$","$3","c",{"children":[null,["$","$L5",null,{"parallelRouterKey":"children","template":["$","$L6",null,{}]}]]}],"p":"$@7","v":"$8","s":"$9"},"c":"$Qa"}]]
+1:[["children",{"s":"(zh)","h":131120,"c":"$Q2"}]]
+0:{"t":{"t":{"s":"","h":131152,"c":"$Q1"},"h":{"r":["$","$3","h",{"children":[null,["$","$L24",null,{"children":[["$","meta","0",{"charSet":"utf-8"}],["$","meta","1",{"name":"viewport","content":"width=device-width, initial-scale=1"}]]}],["$","$L26",null,{"children":[["$","div",null,{"hidden":true,"children":["$","$27",null,{"name":"Next.Metadata","children":[["$","title","0",{"children":"架构与源码导航 — AVA 文档"}],["$","meta","1",{"name":"description","content":"从公开 API 出发，找到对应的实现与扩展位置。"}],["$","meta","2",{"name":"author","content":"AntV"}],["$","meta","3",{"name":"keywords","content":"AVA, visual analytics, AI-native, LLM, data visualization, natural language, data analysis, AntV, chart generation"}],["$","link","4",{"rel":"canonical","href":"https://ava.antv.vision/zh/documentation/reference/architecture/"}],["$","link","5",{"rel":"alternate","hrefLang":"en","href":"https://ava.antv.vision/documentation/reference/architecture/"}],["$","link","6",{"rel":"alternate","hrefLang":"zh-CN","href":"https://ava.antv.vision/zh/documentation/reference/architecture/"}],["$","link","7",{"rel":"alternate","hrefLang":"x-default","href":"https://ava.antv.vision/documentation/reference/architecture/"}],["$","meta","8",{"property":"og:title","content":"架构与源码导航 — AVA 文档"}],["$","meta","9",{"property":"og:description","content":"从公开 API 出发，找到对应的实现与扩展位置。"}],["$","meta","10",{"property":"og:url","content":"https://ava.antv.vision/zh/documentation/reference/architecture/"}],["$","meta","11",{"property":"og:type","content":"article"}],["$","meta","12",{"name":"twitter:card","content":"summary"}],["$","meta","13",{"name":"twitter:title","content":"架构与源码导航 — AVA 文档"}],["$","meta","14",{"name":"twitter:description","content":"从公开 API 出发，找到对应的实现与扩展位置。"}],["$","link","15",{"rel":"icon","href":"https://mdn.alipayobjects.com/huamei_qa8qxu/afts/img/A*FBLnQIAzx6cAAAAAQDAAAAgAemJ7AQ/original"}],["$","$L28","16",{}]]}]}],null]}],null]}],"p":"$@29","v":null,"s":"$9"}},"a":"$@2a","u":"$@2b","b":"KHDYj3YqzeY5ppvGf10Fa"}
+33:I[754170,["$b","$c","$d","$e","$f"],"default"]
+34:I[675049,["$4"],"OutletBoundary"]
+19:["$","h1",null,{"children":"架构与源码导航"}]
+1a:["$","p",null,{"className":"docs-description","children":"从公开 API 出发，找到对应的实现与扩展位置。"}]
+1b:["$","article",null,{"className":"docs-prose","children":[["$","h2",null,{"id":"public-entry-points","children":["$","a",null,{"href":"#public-entry-points","className":"docs-heading-link","children":"公开入口"}]}],"\n",["$","p",null,{"children":[["$","$L10",null,{"href":"https://github.com/antvis/AVA/blob/ai/src/index.ts","children":["$","code",null,{"children":"index.ts"}]}]," 注册全部 Node.js 引擎，导出 ",["$","code",null,{"children":"AVA"}]," 和公开类型；",["$","$L10",null,{"href":"https://github.com/antvis/AVA/blob/ai/src/index.browser.ts","children":["$","code",null,{"children":"index.browser.ts"}]}]," 只注册 JavaScript。",["$","$L10",null,{"href":"https://github.com/antvis/AVA/blob/ai/src/ava.ts","children":["$","code",null,{"children":"ava.ts"}]}]," 协调数据源状态、数据模型、事件与引擎生命周期。"]}],"\n",["$","h2",null,{"id":"source-directory-map","children":["$","a",null,{"href":"#source-directory-map","className":"docs-heading-link","children":"源码目录"}]}],"\n",["$","div",null,{"className":"docs-table","children":["$","table",null,{"children":[["$","thead",null,{"children":["$","tr",null,{"children":[["$","th",null,{"children":"源码"}],["$","th",null,{"children":"职责"}]]}]}],["$","tbody",null,{"children":[["$","tr",null,{"children":[["$","td",null,{"children":["$","$L10",null,{"href":"https://github.com/antvis/AVA/blob/ai/src/ava.ts","children":["$","code",null,{"children":"ava.ts"}]}]}],["$","td",null,{"children":"公开 API、数据源状态与生命周期"}]]}],["$","tr",null,{"children":[["$","td",null,{"children":["$","$L10",null,{"href":"https://github.com/antvis/AVA/blob/ai/src/types.ts","children":["$","code",null,{"children":"types.ts"}]}]}],["$","td",null,{"children":"配置、引擎与结果接口约定"}]]}],["$","tr",null,{"children":[["$","td",null,{"children":["$","$L10",null,{"href":"https://github.com/antvis/AVA/blob/ai/src/engines.ts","children":["$","code",null,{"children":"engines.ts"}]}]}],["$","td",null,{"children":"内部引擎注册表"}]]}],["$","tr",null,{"children":[["$","td",null,{"children":["$","$L10",null,{"href":"https://github.com/antvis/AVA/tree/ai/src/analysis/","children":["$","code",null,{"children":"analysis/"}]}]}],["$","td",null,{"children":"Direct 与 Loop 分析策略"}]]}],["$","tr",null,{"children":[["$","td",null,{"children":["$","$L10",null,{"href":"https://github.com/antvis/AVA/tree/ai/src/duckdb/","children":["$","code",null,{"children":"duckdb/"}]}]}],["$","td",null,{"children":"SQL 引擎、数据源加载器与统计"}]]}],["$","tr",null,{"children":[["$","td",null,{"children":["$","$L10",null,{"href":"https://github.com/antvis/AVA/tree/ai/src/interpreter/javascript/","children":["$","code",null,{"children":"interpreter/javascript/"}]}]}],["$","td",null,{"children":"内存数据与 JavaScript 执行"}]]}],["$","tr",null,{"children":[["$","td",null,{"children":["$","$L10",null,{"href":"https://github.com/antvis/AVA/tree/ai/src/interpreter/python/","children":["$","code",null,{"children":"interpreter/python/"}]}]}],["$","td",null,{"children":"pandas 执行与数据源验证"}]]}],["$","tr",null,{"children":[["$","td",null,{"children":["$","$L10",null,{"href":"https://github.com/antvis/AVA/tree/ai/src/remote/supabase/","children":["$","code",null,{"children":"remote/supabase/"}]}]}],["$","td",null,{"children":"Management API、结构发现与统计"}]]}],["$","tr",null,{"children":[["$","td",null,{"children":["$","$L10",null,{"href":"https://github.com/antvis/AVA/tree/ai/src/remote/clickhouse/","children":["$","code",null,{"children":"remote/clickhouse/"}]}]}],["$","td",null,{"children":"远程 SQL、结构发现与统计"}]]}],["$","tr",null,{"children":[["$","td",null,{"children":["$","$L10",null,{"href":"https://github.com/antvis/AVA/tree/ai/src/query/","children":["$","code",null,{"children":"query/"}]}]}],["$","td",null,{"children":"查询生成与方言验证"}]]}],["$","tr",null,{"children":[["$","td",null,{"children":["$","$L10",null,{"href":"https://github.com/antvis/AVA/tree/ai/src/visualization/","children":["$","code",null,{"children":"visualization/"}]}]}],["$","td",null,{"children":"图表推荐、GPT-Vis 配置与 HTML 生成"}]]}],["$","tr",null,{"children":[["$","td",null,{"children":["$","$L10",null,{"href":"https://github.com/antvis/AVA/tree/ai/src/suggest/","children":["$","code",null,{"children":"suggest/"}]}]}],["$","td",null,{"children":"分析问题推荐"}]]}],["$","tr",null,{"children":[["$","td",null,{"children":["$","$L10",null,{"href":"https://github.com/antvis/AVA/tree/ai/src/event/","children":["$","code",null,{"children":"event/"}]}]}],["$","td",null,{"children":"事件类型与载荷"}]]}],["$","tr",null,{"children":[["$","td",null,{"children":["$","$L10",null,{"href":"https://github.com/antvis/AVA/tree/ai/src/cli/","children":["$","code",null,{"children":"cli/"}]}]}],["$","td",null,{"children":"命令与本地数据集会话"}]]}],["$","tr",null,{"children":[["$","td",null,{"children":["$","$L10",null,{"href":"https://github.com/antvis/AVA/tree/ai/src/util/","children":["$","code",null,{"children":"util/"}]}]}],["$","td",null,{"children":"模型解析、结构定义、指标与结果限制"}]]}]]}]]}]}],"\n",["$","h2",null,{"id":"method-to-module","children":["$","a",null,{"href":"#method-to-module","className":"docs-heading-link","children":"方法与模块的对应关系"}]}],"\n","$L2c","\n","$L2d","\n","$L2e","\n","$L2f","\n","$L30","\n","$L31","\n","$L32"]}]
+1c:["$","div",null,{"className":"docs-page-meta","children":["$","a",null,{"href":"https://github.com/antvis/AVA/blob/ai/site/content/docs/zh/reference/architecture.mdx","children":["在 GitHub 编辑本页"," ",["$","span",null,{"aria-hidden":"true","children":"↗"}]]}]}]
+1d:["$","nav",null,{"className":"docs-pagination","aria-label":"章节导航","children":[["$","$L10",null,{"href":"/documentation/reference/benchmarks/","children":[["$","span",null,{"children":"← 上一篇"}],["$","strong",null,{"children":"评测结果"}]]}],["$","div",null,{}]]}]
+1e:["$","footer",null,{"className":"docs-footer","children":[["$","span",null,{"children":"AVA · AntV 开源项目"}],["$","a",null,{"href":"https://github.com/antvis/AVA","children":"在 GitHub 查看源码 ↗"}]]}]
+1f:["$","$L33","reference/architecture",{}]
+20:["$","script","script-0",{"src":"/_next/static/chunks/1lxucu_dj41ds.js","async":true}]
+21:["$","$L34",null,{"children":["$","$27",null,{"name":"Next.MetadataOutlet","children":"$@35"}]}]
+2b:true
+9:300
+2c:["$","div",null,{"className":"docs-table","children":["$","table",null,{"children":[["$","thead",null,{"children":["$","tr",null,{"children":[["$","th",null,{"children":"公开方法"}],["$","th",null,{"children":"职责与实现"}]]}]}],["$","tbody",null,{"children":[["$","tr",null,{"children":[["$","td",null,{"children":[["$","code",null,{"children":"source()"}]," / ",["$","code",null,{"children":"schema()"}]," / ",["$","code",null,{"children":"dispose()"}]]}],["$","td",null,{"children":[["$","$L10",null,{"href":"https://github.com/antvis/AVA/blob/ai/src/ava.ts","children":["$","code",null,{"children":"ava.ts"}]}]," 中的数据源状态与引擎生命周期"]}]]}],["$","tr",null,{"children":[["$","td",null,{"children":["$","code",null,{"children":"profile()"}]}],["$","td",null,{"children":["各引擎实现统计计算，共享指标约定位于 ",["$","$L10",null,{"href":"https://github.com/antvis/AVA/blob/ai/src/util/profile.ts","children":["$","code",null,{"children":"util/profile.ts"}]}]]}]]}],["$","tr",null,{"children":[["$","td",null,{"children":["$","code",null,{"children":"analyze()"}]}],["$","td",null,{"children":["分发到 ",["$","$L10",null,{"href":"https://github.com/antvis/AVA/blob/ai/src/analysis/direct.ts","children":["$","code",null,{"children":"analysis/direct.ts"}]}]," 或 ",["$","$L10",null,{"href":"https://github.com/antvis/AVA/blob/ai/src/analysis/loop.ts","children":["$","code",null,{"children":"analysis/loop.ts"}]}]]}]]}],["$","tr",null,{"children":[["$","td",null,{"children":[["$","code",null,{"children":"translate()"}]," / ",["$","code",null,{"children":"query()"}]]}],["$","td",null,{"children":["引擎的 ",["$","code",null,{"children":"getDSL()"}]," / ",["$","code",null,{"children":"execute()"}]]}]]}],["$","tr",null,{"children":[["$","td",null,{"children":["$","code",null,{"children":"suggest()"}]}],["$","td",null,{"children":["$","$L10",null,{"href":"https://github.com/antvis/AVA/blob/ai/src/suggest/index.ts","children":["$","code",null,{"children":"suggest/index.ts"}]}]}]]}],["$","tr",null,{"children":[["$","td",null,{"children":["$","code",null,{"children":"recommend()"}]}],["$","td",null,{"children":[["$","$L10",null,{"href":"https://github.com/antvis/AVA/blob/ai/src/visualization/advisor.ts","children":["$","code",null,{"children":"visualization/advisor.ts"}]}]," 与配置生成"]}]]}],["$","tr",null,{"children":[["$","td",null,{"children":["$","code",null,{"children":"viz()"}]}],["$","td",null,{"children":[["$","$L10",null,{"href":"https://github.com/antvis/AVA/blob/ai/src/visualization/generator.ts","children":["$","code",null,{"children":"visualization/generator.ts"}]}]," 中的 HTML 包装"]}]]}],["$","tr",null,{"children":[["$","td",null,{"children":["$","code",null,{"children":"visualize()"}]}],["$","td",null,{"children":["组合 ",["$","code",null,{"children":"recommend()"}]," 和 ",["$","code",null,{"children":"viz()"}]]}]]}]]}]]}]}]
+2d:["$","h2",null,{"id":"context-and-state","children":["$","a",null,{"href":"#context-and-state","className":"docs-heading-link","children":"上下文与状态"}]}]
+2e:["$","p",null,{"children":["每个 AVA 实例持有一个活动引擎及其 schema、profile 缓存。",["$","code",null,{"children":"source()"}]," 加载数据，",["$","code",null,{"children":"schema()"}]," 在首次使用时发现结构；",["$","code",null,{"children":"profile()"}]," 重新计算并保存统计信息；需要时再由缓存元数据组装数据模型。重新加载或释放实例会清空两类缓存。"]}]
+2f:["$","p",null,{"children":["引擎持有数据与连接。",["$","code",null,{"children":"load()"}]," 不返回元数据，",["$","code",null,{"children":"schema()"}]," 发现结构，",["$","code",null,{"children":"profile(schema, options?)"}]," 计算统计信息，",["$","code",null,{"children":"getDSL(query, dataModel)"}]," 使用 AVA 组装的数据模型。共享验证逻辑位于 ",["$","code",null,{"children":"util/schema.ts"}]," 与 ",["$","code",null,{"children":"util/profile.ts"}],"。"]}]
+30:["$","p",null,{"children":"分析策略共享一个运行时，其中包括引擎、模型配置、数据模型与事件发射器。查询结果限制通过共享工具统一规范化。"}]
+31:["$","h2",null,{"id":"documentation-organization","children":["$","a",null,{"href":"#documentation-organization","className":"docs-heading-link","children":"文档组织方式"}]}]
+32:["$","p",null,{"children":["每个主题都是 ",["$","code",null,{"children":"site/content/docs/"}]," 下的独立 MDX 文件，按 ",["$","code",null,{"children":"data/"}],"、",["$","code",null,{"children":"analysis/"}],"、",["$","code",null,{"children":"visualization/"}],"、",["$","code",null,{"children":"engines/"}],"、",["$","code",null,{"children":"reference/"}]," 分组。这样的组织对应公开能力，无需将每个内部辅助函数都拆成独立的用户文档。"]}]
+35:null
+9:C
+2a:0
+15:"$undefined"
+13:"$undefined"
+7:"$undefined"
+29:"$undefined"
+22:"$undefined"

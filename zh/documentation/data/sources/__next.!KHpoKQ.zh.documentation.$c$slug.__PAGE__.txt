@@ -1,0 +1,757 @@
+3:"$Sreact.fragment"
+4:"/_next/static/chunks/0xpkuc787v-p9.js"
+5:I[936064,["$4"],"default"]
+6:I[481497,["$4"],"default"]
+b:"/_next/static/chunks/20no9c33yqyzq.js"
+c:"/_next/static/chunks/024mr0my09zgj.js"
+d:"/_next/static/chunks/2mfxd9osm4z6w.js"
+e:"/_next/static/chunks/1bmh2fw63vq04.js"
+f:"/_next/static/chunks/1lxucu_dj41ds.js"
+10:I[400503,["$b","$c","$d","$e","$f"],"default"]
+11:I[697790,["$b","$c","$d","$e"],"default"]
+12:I[474333,["$b","$c","$d","$e"],"default"]
+17:I[5138,["$b","$c","$d","$e","$f"],"default"]
+23:"ViewportBoundary"
+24:I[675049,["$4"],"$23"]
+25:"MetadataBoundary"
+26:I[675049,["$4"],"$25"]
+27:"$Sreact.suspense"
+28:I[934035,["$4"],"IconMark"]
+:HL["/_next/static/chunks/0o-6jlwxqyz8v.css","style"]
+:HL["https://mdn.alipayobjects.com/huamei_qa8qxu/afts/img/A*A-lcQbVTpjwAAAAAAAAAAAAADmJ7AQ/original","image"]
+8:X
+8:C
+9:X
+18:T710a,# 接入数据
+
+连接内存数据、文件、数据库和飞书多维表格。
+
+import { Heading } from '../../../../mdx-components';
+
+<nav className="docs-source-grid" aria-label="选择数据源">
+  <a href="#csv">
+    <img src="/logos/csv.svg" alt="" width="28" height="28" />
+    <strong>CSV</strong>
+    <span>内存数据与文件</span>
+  </a>
+  <a href="#json">
+    <img src="/logos/json.svg" alt="" width="28" height="28" />
+    <strong>JSON</strong>
+    <span>内存数据与文件</span>
+  </a>
+  <a href="#parquet">
+    <img src="/logos/parquet.svg" alt="" width="28" height="28" />
+    <strong>Parquet</strong>
+    <span>列式文件</span>
+  </a>
+  <a href="#excel">
+    <img src="/logos/excel.svg" alt="" width="28" height="28" />
+    <strong>Excel</strong>
+    <span>工作簿与工作表</span>
+  </a>
+  <a href="#text">
+    <img src="/logos/text.svg" alt="" width="28" height="28" />
+    <strong>文本</strong>
+    <span>模型提取</span>
+  </a>
+  <a href="#sqlite">
+    <img src="/logos/sqlite.svg" alt="" width="28" height="28" />
+    <strong>SQLite</strong>
+    <span>本地数据库</span>
+  </a>
+  <a href="#mysql">
+    <img src="/logos/mysql.svg" alt="" width="28" height="28" />
+    <strong>MySQL</strong>
+    <span>数据库</span>
+  </a>
+  <a href="#postgresql">
+    <img src="/logos/postgresql.svg" alt="" width="28" height="28" />
+    <strong>PostgreSQL</strong>
+    <span>数据库</span>
+  </a>
+  <a href="#mongodb">
+    <img src="/logos/mongodb.svg" alt="" width="28" height="28" />
+    <strong>MongoDB</strong>
+    <span>文档数据库</span>
+  </a>
+  <a href="#supabase">
+    <img src="/logos/supabase.svg" alt="" width="28" height="28" />
+    <strong>Supabase</strong>
+    <span>云数据库</span>
+  </a>
+  <a href="#clickhouse">
+    <img src="/logos/clickhouse.svg" alt="" width="28" height="28" />
+    <strong>ClickHouse</strong>
+    <span>分析型数据库</span>
+  </a>
+  <a href="/zh/documentation/engines/custom/">
+    <img src="/logos/contribute.svg" alt="" width="28" height="28" />
+    <strong>自定义扩展</strong>
+    <span>注册自己的引擎</span>
+  </a>
+</nav>
+
+在上方找到你的数据类型，再参照对应示例，填入自己的路径或连接信息。CSV 和 JSON 既可以读文件，也可以直接传入内容。
+
+<Heading as="h2" id="connect-a-source">接入数据源</Heading>
+
+创建 AVA 实例，然后调用 `source(config)`，传入数据位置与读取设置：
+
+```typescript
+import { AVA } from '@antv/ava';
+
+const ava = new AVA({
+  llm: { model: 'YOUR_MODEL', apiKey: process.env.OPENAI_API_KEY },
+});
+
+await ava.source({
+  type: 'json',
+  options: { data: [{ city: 'Hangzhou', revenue: 120 }] },
+});
+
+const schema = await ava.schema();
+```
+
+| 参数 | 类型 | 必填 | 含义 |
+| --------- | ---------------------- | -------- | -------------------------------------------------------------------------------------------------------------------------------------------- |
+| `type` | `SourceType` | 是 | 支持 `csv`、`csv-file`、`json`、`json-file`、`parquet`、`excel`、`text`、`sqlite`、`mysql`、`postgresql`、`mongodb`、`supabase`、`clickhouse`、`feishu-bitable`。 |
+| `options` | 数据源对应的对象 | 是 | 使用下方对应的数据源参数表，字段名均相对于 `options`。 |
+
+`source()` 没有返回值，负责为执行准备数据。结构发现会推迟到 `schema()` 或其他操作需要时进行。再次调用 `source()` 会替换当前数据源并清空元数据缓存。使用 `schema()` 查看表名与字段名，结束后调用 `await ava.dispose()`。
+
+示例均在 Node.js 中运行。Supabase 和 ClickHouse 的示例同时给出了必需的构造函数配置。前端应用请参考[浏览器用法](/documentation/browser/)。
+
+<Heading as="h2" id="csv">CSV</Heading>
+
+<Heading as="h3" id="inline-csv">直接传入 CSV</Heading>
+
+设置 `type: 'csv'`，以字符串传入 CSV 内容。
+
+```typescript
+await ava.source({
+  type: 'csv',
+  options: { csv: 'city,revenue\nHangzhou,120\nShanghai,200' },
+});
+```
+
+| 字段 | 类型 | 必填 | 含义与默认值 |
+| --------- | ---------------- | -------- | ------------------------------------------ |
+| `csv` | `string` | 是 | 原始 CSV 字符串。 |
+| `options` | `CSVReadOptions` | 否 | [CSV 读取选项](#csv-reader-options)。 |
+
+<Heading as="h3" id="csv-files">读取 CSV 文件</Heading>
+
+设置 `type: 'csv-file'`，传入本地路径或 HTTP(S) URL。URL 需要鉴权时，可在 `options.headers` 中提供请求头。
+
+```typescript
+await ava.source({
+  type: 'csv-file',
+  options: {
+    path: 'https://example.com/sales.csv',
+    headers: { Authorization: 'Bearer YOUR_TOKEN' },
+    options: { header: true, delim: ';' },
+  },
+});
+```
+
+| 字段 | 类型 | 必填 | 含义与默认值 |
+| --------- | ------------------------ | -------- | ---------------------------------------------------- |
+| `path` | `string` | 是 | 本地文件路径或 HTTP(S) URL。 |
+| `headers` | `Record<string, string>` | 否 | 远程数据源的 HTTP 请求头，例如 Authorization。 |
+| `options` | `CSVReadOptions` | 否 | [CSV 读取选项](#csv-reader-options)。 |
+
+<Heading as="h3" id="csv-reader-options">CSV 读取选项</Heading>
+
+DuckDB 引擎的 `csv`、`csv-file` 数据源可在 `options.options` 中使用以下字段，全部可选。AVA 将显式提供的值转发给 `read_csv`；省略时使用 DuckDB 的默认值或自动检测结果。下表说明各读取选项自身的默认值，实际表头、分隔符和类型也可能由自动检测确定。
+
+| 字段 | 类型 | 必填 | 含义与默认值 |
+| ---------------------- | ------------------------------------ | -------- | ----------------------------------------------------------------------------------------------- |
+| `header` | `boolean` | 否 | 文件首行是否包含列名，默认 false。 |
+| `names` | `string[]` | 否 | 列名列表。 |
+| `columns` | `Record<string, string>` | 否 | 列名到类型的映射，例如 &#123; col1: 'INTEGER' &#125;；设置后关闭结构自动检测。 |
+| `types` | `string[] \| Record<string, string>` | 否 | 按位置提供类型列表，或按列名提供类型映射。 |
+| `all_varchar` | `boolean` | 否 | 跳过类型检测，将所有列读为 VARCHAR，默认 false。 |
+| `normalize_names` | `boolean` | 否 | 移除列名中的非字母数字字符，并为保留字添加下划线前缀。 |
+| `force_not_null` | `string[]` | 否 | 不参与 NULL 字符串匹配的列。 |
+| `delim` | `string` | 否 | 字段分隔符，最多 4 字节，默认 `','`。 |
+| `quote` | `string` | 否 | 引号字符，默认 `'"'`。 |
+| `escape` | `string` | 否 | 引号包裹的字段内，用于转义引号的字符，默认 `'"'`。 |
+| `comment` | `string` | 否 | 注释起始字符。 |
+| `new_line` | `string` | 否 | 换行符：`'\r'`、`'\n'` 或 `'\r\n'`。 |
+| `auto_detect` | `boolean` | 否 | 自动检测 CSV 参数，默认 true。 |
+| `auto_type_candidates` | `string[]` | 否 | 检测列类型时考虑的候选类型，例如 `['BIGINT', 'DATE']`。 |
+| `dateformat` | `string` | 否 | 解析日期使用的格式。 |
+| `timestampformat` | `string` | 否 | 解析时间戳使用的格式。 |
+| `decimal_separator` | `string` | 否 | 数字的小数分隔符，默认 `'.'`。 |
+| `thousands` | `string` | 否 | 千位分隔符，须为单个字符，且与 decimal_separator 不同。 |
+| `nullstr` | `string \| string[]` | 否 | 代表 NULL 的一个或多个字符串。 |
+| `allow_quoted_nulls` | `boolean` | 否 | 允许将引号包裹的值转换成 NULL，默认 true。 |
+| `sample_size` | `number` | 否 | 自动检测时采样的行数，默认 20480。 |
+| `buffer_size` | `number` | 否 | 读取缓冲区大小，单位字节，默认 `16 * max_line_size`。 |
+| `files_to_sniff` | `number` | 否 | 多文件结构检测时采样的文件数；-1 表示全部，默认 10。 |
+| `max_line_size` | `number` | 否 | 单行大小上限，单位字节，默认 2000000。 |
+| `parallel` | `boolean` | 否 | 使用并行 CSV 读取器，默认 true。 |
+| `skip` | `number` | 否 | 跳过每个文件开头的行数，默认 0。 |
+| `ignore_errors` | `boolean` | 否 | 忽略解析错误，默认 false。 |
+| `null_padding` | `boolean` | 否 | 对较短的行在右侧补 NULL，默认 false。 |
+| `strict_mode` | `boolean` | 否 | 遇到任何问题即抛错，默认 true。 |
+| `store_rejects` | `boolean` | 否 | 跳过出错行并保存到拒绝记录表，默认 false。 |
+| `rejects_table` | `string` | 否 | 保存出错行的临时表名，默认 `'reject_errors'`。 |
+| `rejects_scan` | `string` | 否 | 保存出错扫描的临时表名，默认 `'reject_scans'`。 |
+| `rejects_limit` | `number` | 否 | 每个文件记录的出错行数上限；0 表示不限制，默认 0。 |
+| `encoding` | `string` | 否 | 文件编码，可选 `'utf-8'`、`'utf-16'`、`'latin-1'`，默认 `'utf-8'`。 |
+| `compression` | `string` | 否 | 压缩方式，可选 `'none'`、`'gzip'`、`'zstd'`，默认根据扩展名检测。 |
+| `union_by_name` | `boolean` | 否 | 多个文件按列名而非列位置对齐，默认 false。 |
+| `hive_partitioning` | `boolean` | 否 | 将路径解释为 Hive 分区路径，默认自动检测。 |
+| `filename` | `boolean` | 否 | 为每行添加保存来源文件路径的 `filename` 列，默认 false。 |
+
+<Heading as="h2" id="json">JSON</Heading>
+
+<Heading as="h3" id="inline-json">直接传入 JSON</Heading>
+
+设置 `type: 'json'`，传入对象数组。
+
+```typescript
+await ava.source({
+  type: 'json',
+  options: { data: [{ city: 'Hangzhou', revenue: 120 }] },
+});
+```
+
+| 字段 | 类型 | 必填 | 含义与默认值 |
+| ------ | ------- | -------- | ---------------------- |
+| `data` | `any[]` | 是 | 待加载的数据行数组。 |
+| `options` | `JSONReadOptions` | 否 | 下方的 DuckDB 读取参数。 |
+
+<Heading as="h3" id="json-files">读取 JSON 文件</Heading>
+
+设置 `type: 'json-file'`，传入本地路径或 HTTP(S) URL。
+
+```typescript
+await ava.source({
+  type: 'json-file',
+  options: {
+    path: './sales.json',
+    options: { columns: { city: 'VARCHAR', revenue: 'DOUBLE' }, sample_size: -1 },
+  },
+});
+```
+
+| 字段 | 类型 | 必填 | 含义与默认值 |
+| --------- | ------------------------ | -------- | ---------------------------------------------------- |
+| `path` | `string` | 是 | 本地文件路径或 HTTP(S) URL。 |
+| `headers` | `Record<string, string>` | 否 | 远程数据源的 HTTP 请求头，例如 Authorization。 |
+| `options` | `JSONReadOptions` | 否 | 下方的 DuckDB 读取参数。 |
+
+<Heading as="h3" id="json-reader-options">JSON 读取选项</Heading>
+
+使用 DuckDB 时，两种 JSON 数据源均接受 `options.options`，所有字段可选。
+`JSONReadOptions` 暴露完整的 [DuckDB JSON 读取参数](https://duckdb.org/docs/current/data/json/loading_json)：
+
+| 参数 | 类型 | 默认值 | 含义 |
+| --- | --- | --- | --- |
+| `auto_detect` | `boolean` | `true` | 推断数据结构。 |
+| `columns` | `Record<string, string>` | 未设置 | 列名到 DuckDB 类型的映射，同时用于选择列。 |
+| `compression` | `'auto_detect' \| 'none' \| 'gzip' \| 'zstd'` | `'auto_detect'` | 压缩编解码方式。 |
+| `dateformat` | `string` | `'iso'` | 日期格式。 |
+| `field_appearance_threshold` | `number` | `0.1` | 稀疏对象推断为 MAP 的阈值。 |
+| `filename` | `boolean` | `false` | 在 `SELECT *` 中包含文件名。 |
+| `format` | `'auto' \| 'unstructured' \| 'newline_delimited' \| 'array'` | `'auto'` | `read_json` 的输入组织形式。 |
+| `hive_partitioning` | `boolean` | 自动检测 | 根据路径识别分区。 |
+| `ignore_errors` | `boolean` | `false` | 跳过错误，仅适用于 NDJSON。 |
+| `map_inference_threshold` | `number` | `200` | STRUCT 子字段数量阈值；-1 关闭 MAP 推断。 |
+| `maximum_depth` | `number` | `-1` | 结构推断深度；-1 表示不限。 |
+| `maximum_object_size` | `number` | `16777216` | 单个对象的字节上限。 |
+| `maximum_sample_files` | `number` | `32` | 采样文件数量。 |
+| `records` | `'auto' \| 'true' \| 'false'` | `'auto'` | 是否展开对象。 |
+| `sample_size` | `number` | `20480` | 采样对象数量；-1 扫描全部。 |
+| `timestampformat` | `string` | `'iso'` | 时间戳格式。 |
+| `union_by_name` | `boolean` | `false` | 合并数据结构。 |
+
+内存数据会序列化为未压缩的 JSON 数组，请选择与此兼容的读取选项。
+远程文件会下载到临时路径，读取压缩 URL 时应显式设置 `compression`。
+
+<Heading as="h2" id="parquet">Parquet</Heading>
+
+从本地路径或 HTTP(S) URL 读取 Parquet 文件。
+
+```typescript
+await ava.source({
+  type: 'parquet',
+  options: { path: './sales.parquet' },
+});
+```
+
+| 字段 | 类型 | 必填 | 含义与默认值 |
+| --------- | ------------------------ | -------- | ---------------------------------------------------- |
+| `path` | `string` | 是 | 本地文件路径或 HTTP(S) URL。 |
+| `headers` | `Record<string, string>` | 否 | 远程数据源的 HTTP 请求头，例如 Authorization。 |
+
+<Heading as="h2" id="excel">Excel</Heading>
+
+从本地路径或 HTTP(S) URL 读取 `.xlsx` 工作簿。每个被选中的工作表会成为一张独立的表，以工作表名称命名。调用 `schema()` 可查看生成的表与列。
+
+```typescript
+await ava.source({
+  type: 'excel',
+  options: {
+    path: './sales.xlsx',
+    sheets: [
+      { sheet: 'Sales', range: 'A3:F100', header: true },
+      { sheet: 'Costs', range: 'B2:C50', header: false },
+    ],
+  },
+});
+```
+
+<Heading as="h3" id="source-options">数据源选项</Heading>
+
+| 字段 | 类型 | 必填 | 含义与默认值 |
+| --- | --- | --- | --- |
+| `path` | `string` | 是 | 本地文件路径或 HTTP(S) URL。 |
+| `headers` | `Record<string, string>` | 否 | 远程数据源的 HTTP 请求头，例如 Authorization。 |
+| `sheets` | `ExcelSheetOptions[]` | 否 | 要加载的工作表及各自的读取设置；省略时加载全部工作表，并使用 `header: true`。 |
+
+<Heading as="h3" id="sheet-selection-and-reader-options">工作表选择与读取选项</Heading>
+
+`sheets` 中的每一项都包含必填的 `sheet`，以及可选的 `ExcelReadOptions` 字段。读取选项直接放在工作表项上，写法如上例所示。
+
+| 字段 | 类型 | 默认值 | 含义 |
+| --- | --- | --- | --- |
+| `sheet` | `string` | 必填 | 精确的工作表名称，同时作为表名。 |
+| `range` | `string` | 由引擎推断 | 包含首尾边界的 A1 矩形范围，例如 `B3:F100`。 |
+| `header` | `boolean` | `true` | 将所选范围的第一行作为列名；设为 false 时保留为数据。 |
+| `all_varchar` | `boolean` | `false` | 仅 DuckDB：将所有单元格读为 VARCHAR。 |
+| `ignore_errors` | `boolean` | `false` | 仅 DuckDB：类型转换失败的单元格改为 NULL。 |
+| `stop_at_empty` | `boolean` | 有 `range` 时为 `false`，否则为 `true` | 仅 DuckDB：遇到第一个空行时停止读取。 |
+| `empty_as_varchar` | `boolean` | `false` | 仅 DuckDB：将空单元格推断为 VARCHAR，而非 DOUBLE。 |
+
+提供 `sheets` 时，列表不能为空；每个工作表名必须存在且只能出现一次。范围必须是有效、有界的 A1 矩形。无效选择及不受支持的字段会被拒绝。
+
+<Heading as="h3" id="engine-behavior">引擎行为</Heading>
+
+两种引擎都支持 `sheet`、`range` 和 `header`。Python 引擎会拒绝上表中的四个 DuckDB 专用选项。
+
+DuckDB 的读取选项遵循 [`read_xlsx`](https://duckdb.org/docs/current/core_extensions/excel#reading-xlsx-files)，但 AVA 默认 `header` 为 true，而非自动推断。例如，要将混合类型单元格保留为文本，并继续读取空行之后的数据：
+
+```typescript
+await ava.source({
+  type: 'excel',
+  options: {
+    path: './sales.xlsx',
+    sheets: [{ sheet: 'Sales', all_varchar: true, stop_at_empty: false }],
+  },
+});
+```
+
+DuckDB 会拒绝含有字面 XML 实体文本工作表名的工作簿，例如 `Sales &amp; Tax`，因为 Excel 扩展可能将它与另一张表混淆。请重命名这些工作表，或使用 Python 引擎。普通的 &、引号和 Unicode 名称均受支持。
+
+<Heading as="h2" id="text">文本</Heading>
+
+从非结构化文本中提取数据行。这种数据源会调用已配置的模型。
+
+```typescript
+await ava.source({
+  type: 'text',
+  options: { text: 'Hangzhou revenue was 120. Shanghai revenue was 200.' },
+});
+```
+
+| 字段 | 类型 | 必填 | 含义与默认值 |
+| ------ | -------- | -------- | -------------------------------------------------------- |
+| `text` | `string` | 是 | 使用已配置模型提取的非结构化文本。 |
+
+<Heading as="h2" id="sqlite">SQLite</Heading>
+
+以只读模式打开本地 SQLite 数据库。
+
+```typescript
+await ava.source({
+  type: 'sqlite',
+  options: { path: './analytics.sqlite' },
+});
+```
+
+| 字段 | 类型 | 必填 | 含义与默认值 |
+| ------ | -------- | -------- | -------------------------------- |
+| `path` | `string` | 是 | 本地 SQLite 数据库文件路径。 |
+
+<Heading as="h2" id="mysql">MySQL</Heading>
+
+连接数据库并发现其中的表。
+
+```typescript
+await ava.source({
+  type: 'mysql',
+  options: {
+    host: 'localhost',
+    database: 'analytics',
+    user: 'reader',
+    password: process.env.MYSQL_PASSWORD,
+  },
+});
+```
+
+| 字段 | 类型 | 必填 | 含义与默认值 |
+| ---------- | ------------ | -------- | ------------------------------------------- |
+| `host` | `string` | 是 | 数据库主机名。 |
+| `port` | `number` | 否 | 默认 `3306`。 |
+| `database` | `string` | 是 | 要暴露的数据库。 |
+| `user` | `string` | 否 | 数据库用户，不提供则省略。 |
+| `password` | `string` | 否 | 数据库密码，不提供则省略。 |
+| `ssh` | `SSHOptions` | 否 | 可选的 [SSH 隧道](#ssh-options)。 |
+
+<Heading as="h2" id="postgresql">PostgreSQL</Heading>
+
+连接数据库并发现其中的表。
+
+```typescript
+await ava.source({
+  type: 'postgresql',
+  options: {
+    host: 'localhost',
+    database: 'analytics',
+    user: 'reader',
+    password: process.env.POSTGRES_PASSWORD,
+  },
+});
+```
+
+| 字段 | 类型 | 必填 | 含义与默认值 |
+| ---------- | ------------ | -------- | ------------------------------------------------ |
+| `host` | `string` | 是 | 数据库主机名。 |
+| `port` | `number` | 否 | 默认 `5432`。 |
+| `database` | `string` | 是 | 要暴露的数据库。 |
+| `user` | `string` | 否 | 数据库用户，不提供则省略。 |
+| `password` | `string` | 否 | 数据库密码，不提供则省略。 |
+| `schema` | `string` | 否 | 表所属的数据库 schema，默认 `public`。 |
+| `ssh` | `SSHOptions` | 否 | 可选的 [SSH 隧道](#ssh-options)。 |
+
+<Heading as="h2" id="mongodb">MongoDB</Heading>
+
+加载指定数据库中的集合。可以使用结构化连接字段，也可以提供优先级更高的 `connection`。
+
+```typescript
+await ava.source({
+  type: 'mongodb',
+  options: {
+    connection: process.env.MONGODB_URI!,
+    database: 'analytics',
+  },
+});
+```
+
+| 字段 | 类型 | 必填 | 含义与默认值 |
+| ----------------------------- | --------- | -------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `connection` | `string` | 否 | 高级连接字符串，例如 `host=localhost port=27017` 或 `mongodb://user:pass@host:27017/db`；提供后优先于所有结构化字段。 |
+| `host` | `string` | 否 | MongoDB 主机名或 IP 地址，默认 `localhost`。 |
+| `port` | `number` | 否 | MongoDB 端口号，默认 `27017`。 |
+| `database` | `string` | 是 | 包含待加载集合的数据库。 |
+| `user` | `string` | 否 | MongoDB 用户名。 |
+| `password` | `string` | 否 | MongoDB 密码。 |
+| `authSource` | `string` | 否 | 鉴权数据库，对应 MongoDB 的 `authSource`。 |
+| `srv` | `boolean` | 否 | 使用 SRV 连接格式，适用于 MongoDB Atlas。 |
+| `tls` | `boolean` | 否 | 启用 TLS/SSL 加密，别名为 `ssl`。 |
+| `ssl` | `boolean` | 否 | `tls` 的别名。 |
+| `tlsCAFile` | `string` | 否 | TLS 的 CA 证书文件路径。 |
+| `tlsAllowInvalidCertificates` | `boolean` | 否 | 允许无效证书，仅用于测试，默认 false。 |
+
+<Heading as="h2" id="feishu-bitable">飞书多维表格</Heading>
+
+在 Node.js 的 DuckDB 引擎中使用 `type: 'feishu-bitable'`。记录会暴露为名为 `data` 的只读视图。
+
+```typescript
+await ava.source({
+  type: 'feishu-bitable',
+  options: {
+    url: 'https://my.feishu.cn/base/APP_TOKEN?table=TABLE_ID',
+    appId: process.env.AVA_FEISHU_APP_ID,
+    appSecret: process.env.AVA_FEISHU_APP_SECRET,
+  },
+});
+```
+
+提供 `url`，或同时提供 `appToken` 与 `tableId`，并设置 `appId`、`appSecret`。CLI 也会从 `AVA_FEISHU_APP_ID`、`AVA_FEISHU_APP_SECRET` 或 `~/.ava/feishu.json` 读取凭证。
+
+支持 `/base/` 链接和知识库中的 `/wiki/` 链接。Wiki 链接要求应用具备知识库读取权限并加入相应知识空间，才能解析多维表格。URL 中的 `view` 参数会被忽略。人员、附件、链接、公式、位置、群组等复杂单元格会展开为逗号分隔的文本。
+
+<Heading as="h2" id="supabase">Supabase</Heading>
+
+提供项目标识与 Supabase Management API 访问令牌；应用负责获取和刷新令牌。
+
+```typescript
+const ava = new AVA({
+  llm: { model: 'YOUR_MODEL', apiKey: process.env.OPENAI_API_KEY },
+  engine: { type: 'supabase' },
+});
+await ava.source({
+  type: 'supabase',
+  options: {
+    projectRef: 'YOUR_PROJECT_REF',
+    accessToken: process.env.SUPABASE_ACCESS_TOKEN!,
+  },
+});
+```
+
+| 字段 | 类型 | 必填 | 含义与默认值 |
+| ------------- | -------- | -------- | --------------------------------------------------------------------------- |
+| `accessToken` | `string` | 是 | Supabase Management API OAuth 流程返回的 OAuth 访问令牌。 |
+| `projectRef` | `string` | 是 | 项目标识，可从 GET https://api.supabase.com/v1/projects 的结果中获取。 |
+
+<Heading as="h2" id="clickhouse">ClickHouse</Heading>
+
+提供服务端点和数据库。使用 `url` 或 `host`；同时存在时 `url` 优先。
+
+```typescript
+const ava = new AVA({
+  llm: { model: 'YOUR_MODEL', apiKey: process.env.OPENAI_API_KEY },
+  engine: { type: 'clickhouse' },
+});
+await ava.source({
+  type: 'clickhouse',
+  options: {
+    url: 'http://localhost:8123',
+    database: 'analytics',
+    username: 'reader',
+    password: process.env.CLICKHOUSE_PASSWORD,
+  },
+});
+```
+
+<Heading as="h3" id="connection-fields">连接字段</Heading>
+
+| 字段 | 类型 | 必填 | 含义与默认值 |
+| ---------- | -------- | --------------- | ------------------------------------------------------------------------- |
+| `host` | `string` | `host` 或 `url` | 主机名或 host:port；没有协议时，AVA 自动补上 `http://`。 |
+| `url` | `string` | `host` 或 `url` | 完整的服务 URL，优先于 `host`。 |
+| `port` | `number` | 否 | 覆盖端点中的端口号。 |
+| `database` | `string` | 是 | 要发现结构和执行查询的数据库。 |
+| `username` | `string` | 否 | 客户端用户名，优先于 `user`；客户端默认值为 `default`。 |
+| `user` | `string` | 否 | `username` 的别名。 |
+| `password` | `string` | 否 | 客户端密码，默认空字符串。 |
+
+虽然底层客户端默认可连接 localhost，AVA 仍要求显式提供端点。
+
+<Heading as="h3" id="forwarded-client-fields">透传的客户端字段</Heading>
+
+`ClickHouseSourceOptions` 也接受以下 `@clickhouse/client` 字段。下表基于已安装客户端的类型声明（1.23.1）；这些字段由该依赖定义，AVA 会在创建客户端时透传。
+
+| 字段 | 类型 | 默认值与含义 |
+| ------------------------------ | ----------------------------- | ---------------------------------------------------------------------------------------------------------- |
+| `pathname` | `string` | 默认为空，用于指定额外的代理路径。 |
+| `request_timeout` | `number` | 默认 30000 毫秒。 |
+| `max_open_connections` | `number` | 每个主机默认最多 10 个 socket 连接。 |
+| `compression` | 对象 | 请求和响应压缩，嵌套字段见下方。 |
+| `access_token` | `string` | 默认未设置，用于 ClickHouse Cloud JWT；不可与用户名、密码同时使用。 |
+| `application` | `string` | 默认为空，应用名称。 |
+| `clickhouse_settings` | `ClickHouseSettings` | 默认为空，服务端设置映射。AVA 每次查询都会强制 `readonly: '1'`，覆盖冲突设置。 |
+| `log` | 对象 | 客户端日志选项，见下方。 |
+| `session_id` | `string` | 默认为空，不显式指定服务端会话。 |
+| `role` | `string \| string[]` | 默认未设置，服务端角色。 |
+| `http_headers` | `Record<string, string>` | 默认为空，额外的 HTTP 请求头。 |
+| `additional_headers` | `Record<string, string>` | 已废弃的客户端别名，请使用 `http_headers`。 |
+| `keep_alive` | 对象 | Socket 复用选项，见下方。 |
+| `json` | `Partial<JSONHandling>` | 默认使用原生 `JSON.parse` / `JSON.stringify`；回调见下方。 |
+| `tracer` | `ClickHouseTracer` | 默认未设置，客户端追踪实现。 |
+| `use_multipart_params` | `boolean` | 默认 false，始终以 multipart 发送查询参数。 |
+| `use_multipart_params_auto` | `boolean` | 默认 false，编码后的参数超过 4096 个字符时使用 multipart。 |
+| `tls` | TLS 选项对象 | 默认未设置，证书字段见下方。 |
+| `http_agent` | `http.Agent \| https.Agent` | 默认未设置。自定义 agent 会取代 `max_open_connections`、`tls` 和 `keep_alive`；这是实验性客户端 API。 |
+| `set_basic_auth_header` | `boolean` | 默认 true，发送 Basic Authorization 请求头；实验性选项。 |
+| `capture_enhanced_stack_trace` | `boolean` | 默认 false，记录扩展客户端调用栈；实验性选项。 |
+| `max_response_headers_size` | `number` | 默认未设置，使用 Node.js 的响应头字节上限。 |
+| `connection` | `Connection<Stream.Readable>` | 默认未设置，实验性的客户端后端连接；会覆盖默认 HTTP 传输及其选项。 |
+
+透传字段全部可选。服务端设置是可扩展、与服务端版本有关的映射，并非 AVA 固定定义的字段清单；可用键由依赖的 `ClickHouseSettings` 类型和实际服务端共同决定。Tracer、agent、logger 与 connection 对象需要实现相应的客户端接口，并非普通的 AVA 配置对象。
+
+<Heading as="h3" id="nested-client-options">嵌套客户端选项</Heading>
+
+| 字段 | 类型 | 必填与默认值 |
+| ------------------------------------------ | ------------------------------------------------ | --------------------------------------------------------------------------- |
+| `compression.response` | `boolean \| { codec: 'gzip' \| 'zstd' \| 'br' }` | 可选，默认 false；true 表示使用 gzip。 |
+| `compression.request` | `boolean \| RequestCompression` | 可选，默认 false；true 表示使用 gzip。 |
+| `compression.request.codec` | `'gzip' \| 'zstd' \| 'br'` | 使用对象形式时必填。 |
+| `compression.request.level` | `number` | gzip / zstd 可选，默认使用编解码器的级别。 |
+| `compression.request.quality` | `number` | Brotli 可选，默认 4。 |
+| `log.LoggerClass` | `new () => Logger` | 可选，默认使用客户端的 logger。 |
+| `log.level` | `ClickHouseLogLevel` | 可选，默认 WARN；可选值为 TRACE、DEBUG、INFO、WARN、ERROR、OFF。 |
+| `keep_alive.enabled` | `boolean` | 可选，默认 true。 |
+| `keep_alive.idle_socket_ttl` | `number` | 可选，默认 2500 毫秒；0 表示禁用闲置 socket 管理。 |
+| `keep_alive.eagerly_destroy_stale_sockets` | `boolean` | 可选，默认 false。 |
+| `tls.ca_cert` | `Buffer` | 提供 `tls` 时必填。 |
+| `tls.cert` | `Buffer` | 双向 TLS 时必填。 |
+| `tls.key` | `Buffer` | 双向 TLS 时必填。 |
+| `json.parse` | `<T>(input: string) => T` | 可选，用于解析 JSON 字符串。 |
+| `json.stringify` | `<T>(input: T) => string` | 可选，用于序列化值。 |
+
+此客户端的 Zstd 压缩需要 Node.js 22.15 或更高版本。响应压缩可能与引擎强制的服务端只读设置冲突；除非服务端允许，否则请保持关闭。
+
+<Heading as="h2" id="ssh-options">SSH 选项</Heading>
+
+用于 MySQL 和 PostgreSQL，放在 `options.ssh` 中。
+
+| 字段 | 类型 | 必填 | 含义与默认值 |
+| ---------- | -------- | -------- | ------------------------------------------------------ |
+| `host` | `string` | 是 | SSH 服务器主机名。 |
+| `port` | `number` | 否 | 默认 `22`。 |
+| `user` | `string` | 是 | SSH 登录用户。 |
+| `password` | `string` | 否 | SSH 登录密码，不提供则不传密码。 |
+16:[["children",{"s":"__PAGE__","h":160,"d":{"r":["$","$3","c",{"children":[[["$","main",null,{"className":"docs-main","id":"docs-content","children":[["$","div",null,{"className":"docs-page-toolbar","children":[["$","div",null,{"className":"docs-eyebrow","children":"理解与接入数据"}],["$","$L17","data/sources",{"label":"复制 Markdown","text":"$18"}]]}],"$L19","$L1a","$L1b","$L1c","$L1d","$L1e"]}],"$L1f"],["$L20"],"$L21"]}],"p":"$@22","v":null,"s":"$9"}}]]
+14:[["children",{"s":{"n":"slug","t":"c","k":"data/sources","s":[]},"h":65632,"d":{"r":["$","$3","c",{"children":[null,["$","$L5",null,{"parallelRouterKey":"children","template":["$","$L6",null,{}]}]]}],"p":"$@15","v":"$8","s":"$9"},"c":"$Q16"}]]
+a:[["children",{"s":"documentation","h":131168,"d":{"r":["$","$3","c",{"children":[[["$","link","0",{"rel":"stylesheet","href":"/_next/static/chunks/0o-6jlwxqyz8v.css","precedence":"next"}],["$","script","script-0",{"src":"/_next/static/chunks/2mfxd9osm4z6w.js","async":true}],["$","script","script-1",{"src":"/_next/static/chunks/1bmh2fw63vq04.js","async":true}]],["$","div",null,{"className":"docs-site","children":[["$","a",null,{"className":"docs-skip","href":"#docs-content","children":"跳至正文"}],["$","header",null,{"className":"docs-header","children":["$","div",null,{"className":"docs-header-inner","children":[["$","$L10",null,{"href":"/","className":"docs-brand","aria-label":"AVA 首页","children":[["$","img",null,{"src":"https://mdn.alipayobjects.com/huamei_qa8qxu/afts/img/A*A-lcQbVTpjwAAAAAAAAAAAAADmJ7AQ/original","alt":"","width":"80","height":"48"}],["$","strong",null,{"children":"AVA"}],["$","span",null,{"children":"使用文档"}]]}],["$","nav",null,{"aria-label":"主导航","className":"docs-header-links","children":[["$","$L10",null,{"href":"/","className":"docs-website","children":["官网首页"," ",["$","span",null,{"aria-hidden":"true","children":"↗"}]]}],["$","a",null,{"href":"https://github.com/antvis/AVA","className":"docs-github","children":["GitHub ",["$","span",null,{"aria-hidden":"true","children":"↗"}]]}],["$","$L11",null,{}],["$","$L10",null,{"href":"/ai/","className":"docs-ai","children":["AI 体验"," ",["$","span",null,{"aria-hidden":"true","children":"→"}]]}]]}]]}]}],["$","$L12",null,{"mobile":true}],["$","div",null,{"className":"docs-layout","children":[["$","aside",null,{"className":"docs-sidebar","children":[["$","$L10",null,{"href":"/documentation/","className":"docs-sidebar-label","children":[["$","span",null,{"className":"docs-book-icon","aria-hidden":"true","children":"▤"}]," ","使用文档"]}],["$","$L12",null,{}],["$","div",null,{"className":"docs-sidebar-footer","children":[["$","span",null,{"className":"docs-status-dot"}]," ","TypeScript · 开源"]}]]}],["$","$L5",null,{"parallelRouterKey":"children","template":["$","$L6",null,{}]}]]}]]}]]}],"p":"$@13","v":null,"s":"$9"},"c":"$Q14"}]]
+2:[["children",{"s":"zh","h":131136,"d":{"r":["$","$3","c",{"children":[null,["$","$L5",null,{"parallelRouterKey":"children","template":["$","$L6",null,{}]}]]}],"p":"$@7","v":"$8","s":"$9"},"c":"$Qa"}]]
+1:[["children",{"s":"(zh)","h":131120,"c":"$Q2"}]]
+0:{"t":{"t":{"s":"","h":131152,"c":"$Q1"},"h":{"r":["$","$3","h",{"children":[null,["$","$L24",null,{"children":[["$","meta","0",{"charSet":"utf-8"}],["$","meta","1",{"name":"viewport","content":"width=device-width, initial-scale=1"}]]}],["$","$L26",null,{"children":[["$","div",null,{"hidden":true,"children":["$","$27",null,{"name":"Next.Metadata","children":[["$","title","0",{"children":"接入数据 — AVA 文档"}],["$","meta","1",{"name":"description","content":"连接内存数据、文件、数据库和飞书多维表格。"}],["$","meta","2",{"name":"author","content":"AntV"}],["$","meta","3",{"name":"keywords","content":"AVA, visual analytics, AI-native, LLM, data visualization, natural language, data analysis, AntV, chart generation"}],["$","link","4",{"rel":"canonical","href":"https://ava.antv.vision/zh/documentation/data/sources/"}],["$","link","5",{"rel":"alternate","hrefLang":"en","href":"https://ava.antv.vision/documentation/data/sources/"}],["$","link","6",{"rel":"alternate","hrefLang":"zh-CN","href":"https://ava.antv.vision/zh/documentation/data/sources/"}],["$","link","7",{"rel":"alternate","hrefLang":"x-default","href":"https://ava.antv.vision/documentation/data/sources/"}],["$","meta","8",{"property":"og:title","content":"接入数据 — AVA 文档"}],["$","meta","9",{"property":"og:description","content":"连接内存数据、文件、数据库和飞书多维表格。"}],["$","meta","10",{"property":"og:url","content":"https://ava.antv.vision/zh/documentation/data/sources/"}],["$","meta","11",{"property":"og:type","content":"article"}],["$","meta","12",{"name":"twitter:card","content":"summary"}],["$","meta","13",{"name":"twitter:title","content":"接入数据 — AVA 文档"}],["$","meta","14",{"name":"twitter:description","content":"连接内存数据、文件、数据库和飞书多维表格。"}],["$","link","15",{"rel":"icon","href":"https://mdn.alipayobjects.com/huamei_qa8qxu/afts/img/A*FBLnQIAzx6cAAAAAQDAAAAgAemJ7AQ/original"}],["$","$L28","16",{}]]}]}],null]}],null]}],"p":"$@29","v":null,"s":"$9"}},"a":"$@2a","u":"$@2b","b":"KHDYj3YqzeY5ppvGf10Fa"}
+8d:I[754170,["$b","$c","$d","$e","$f"],"default"]
+8e:I[675049,["$4"],"OutletBoundary"]
+:HL["/logos/csv.svg","image"]
+:HL["/logos/json.svg","image"]
+:HL["/logos/parquet.svg","image"]
+:HL["/logos/excel.svg","image"]
+:HL["/logos/text.svg","image"]
+:HL["/logos/sqlite.svg","image"]
+:HL["/logos/mysql.svg","image"]
+:HL["/logos/postgresql.svg","image"]
+:HL["/logos/mongodb.svg","image"]
+:HL["/logos/supabase.svg","image"]
+:HL["/logos/clickhouse.svg","image"]
+:HL["/logos/contribute.svg","image"]
+19:["$","h1",null,{"children":"接入数据"}]
+1a:["$","p",null,{"className":"docs-description","children":"连接内存数据、文件、数据库和飞书多维表格。"}]
+1b:["$","article",null,{"className":"docs-prose","children":[["$","nav",null,{"className":"docs-source-grid","aria-label":"选择数据源","children":[["$","a",null,{"href":"#csv","children":[["$","img",null,{"src":"/logos/csv.svg","alt":"","width":"28","height":"28"}],["$","strong",null,{"children":"CSV"}],["$","span",null,{"children":"内存数据与文件"}]]}],["$","a",null,{"href":"#json","children":[["$","img",null,{"src":"/logos/json.svg","alt":"","width":"28","height":"28"}],["$","strong",null,{"children":"JSON"}],["$","span",null,{"children":"内存数据与文件"}]]}],["$","a",null,{"href":"#parquet","children":[["$","img",null,{"src":"/logos/parquet.svg","alt":"","width":"28","height":"28"}],["$","strong",null,{"children":"Parquet"}],["$","span",null,{"children":"列式文件"}]]}],["$","a",null,{"href":"#excel","children":[["$","img",null,{"src":"/logos/excel.svg","alt":"","width":"28","height":"28"}],["$","strong",null,{"children":"Excel"}],["$","span",null,{"children":"工作簿与工作表"}]]}],["$","a",null,{"href":"#text","children":[["$","img",null,{"src":"/logos/text.svg","alt":"","width":"28","height":"28"}],["$","strong",null,{"children":"文本"}],["$","span",null,{"children":"模型提取"}]]}],["$","a",null,{"href":"#sqlite","children":[["$","img",null,{"src":"/logos/sqlite.svg","alt":"","width":"28","height":"28"}],["$","strong",null,{"children":"SQLite"}],["$","span",null,{"children":"本地数据库"}]]}],["$","a",null,{"href":"#mysql","children":[["$","img",null,{"src":"/logos/mysql.svg","alt":"","width":"28","height":"28"}],["$","strong",null,{"children":"MySQL"}],["$","span",null,{"children":"数据库"}]]}],["$","a",null,{"href":"#postgresql","children":[["$","img",null,{"src":"/logos/postgresql.svg","alt":"","width":"28","height":"28"}],["$","strong",null,{"children":"PostgreSQL"}],["$","span",null,{"children":"数据库"}]]}],["$","a",null,{"href":"#mongodb","children":[["$","img",null,{"src":"/logos/mongodb.svg","alt":"","width":"28","height":"28"}],["$","strong",null,{"children":"MongoDB"}],["$","span",null,{"children":"文档数据库"}]]}],["$","a",null,{"href":"#supabase","children":[["$","img",null,{"src":"/logos/supabase.svg","alt":"","width":"28","height":"28"}],["$","strong",null,{"children":"Supabase"}],["$","span",null,{"children":"云数据库"}]]}],["$","a",null,{"href":"#clickhouse","children":[["$","img",null,{"src":"/logos/clickhouse.svg","alt":"","width":"28","height":"28"}],["$","strong",null,{"children":"ClickHouse"}],["$","span",null,{"children":"分析型数据库"}]]}],["$","a",null,{"href":"/zh/documentation/engines/custom/","children":[["$","img",null,{"src":"/logos/contribute.svg","alt":"","width":"28","height":"28"}],["$","strong",null,{"children":"自定义扩展"}],["$","span",null,{"children":"注册自己的引擎"}]]}]]}],"\n",["$","p",null,{"children":"在上方找到你的数据类型，再参照对应示例，填入自己的路径或连接信息。CSV 和 JSON 既可以读文件，也可以直接传入内容。"}],"\n",["$","h2",null,{"id":"connect-a-source","children":["$","a",null,{"href":"#connect-a-source","className":"docs-heading-link","children":"接入数据源"}]}],"\n",["$","p",null,{"children":["创建 AVA 实例，然后调用 ",["$","code",null,{"children":"source(config)"}],"，传入数据位置与读取设置："]}],"\n",["$","figure",null,{"data-rehype-pretty-code-figure":"","children":["$","div",null,{"className":"docs-code-block","children":[["$","div",null,{"className":"docs-code-toolbar","children":[["$","span",null,{"children":"typescript"}],["$","$L17",null,{}]]}],["$","pre",null,{"tabIndex":"0","data-language":"typescript","data-theme":"github-light","children":["$","code",null,{"data-language":"typescript","data-theme":"github-light","style":{"display":"grid"},"children":[["$","span",null,{"data-line":"","children":[["$","span",null,{"style":{"color":"#D73A49"},"children":"import"}],["$","span",null,{"style":{"color":"#24292E"},"children":" { AVA } "}],["$","span",null,{"style":{"color":"#D73A49"},"children":"from"}],["$","span",null,{"style":{"color":"#032F62"},"children":" '@antv/ava'"}],["$","span",null,{"style":{"color":"#24292E"},"children":";"}]]}],"\n",["$","span",null,{"data-line":"","children":" "}],"\n",["$","span",null,{"data-line":"","children":[["$","span",null,{"style":{"color":"#D73A49"},"children":"const"}],["$","span",null,{"style":{"color":"#005CC5"},"children":" ava"}],["$","span",null,{"style":{"color":"#D73A49"},"children":" ="}],["$","span",null,{"style":{"color":"#D73A49"},"children":" new"}],["$","span",null,{"style":{"color":"#6F42C1"},"children":" AVA"}],["$","span",null,{"style":{"color":"#24292E"},"children":"({"}]]}],"\n",["$","span",null,{"data-line":"","children":[["$","span",null,{"style":{"color":"#24292E"},"children":"  llm: { model: "}],["$","span",null,{"style":{"color":"#032F62"},"children":"'YOUR_MODEL'"}],["$","span",null,{"style":{"color":"#24292E"},"children":", apiKey: process.env."}],["$","span",null,{"style":{"color":"#005CC5"},"children":"OPENAI_API_KEY"}],["$","span",null,{"style":{"color":"#24292E"},"children":" },"}]]}],"\n",["$","span",null,{"data-line":"","children":["$","span",null,{"style":{"color":"#24292E"},"children":"});"}]}],"\n",["$","span",null,{"data-line":"","children":" "}],"\n",["$","span",null,{"data-line":"","children":[["$","span",null,{"style":{"color":"#D73A49"},"children":"await"}],["$","span",null,{"style":{"color":"#24292E"},"children":" ava."}],["$","span",null,{"style":{"color":"#6F42C1"},"children":"source"}],["$","span",null,{"style":{"color":"#24292E"},"children":"({"}]]}],"\n",["$","span",null,{"data-line":"","children":[["$","span",null,{"style":{"color":"#24292E"},"children":"  type: "}],"$L2c","$L2d"]}],"\n","$L2e","\n","$L2f","\n","$L30","\n","$L31"]}]}]]}]}],"\n","$L32","\n","$L33","\n","$L34","\n","$L35","\n","$L36","\n","$L37","\n","$L38","\n","$L39","\n","$L3a","\n","$L3b","\n","$L3c","\n","$L3d","\n","$L3e","\n","$L3f","\n","$L40","\n","$L41","\n","$L42","\n","$L43","\n","$L44","\n","$L45","\n","$L46","\n","$L47","\n","$L48","\n","$L49","\n","$L4a","\n","$L4b","\n","$L4c","\n","$L4d","\n","$L4e","\n","$L4f","\n","$L50","\n","$L51","\n","$L52","\n","$L53","\n","$L54","\n","$L55","\n","$L56","\n","$L57","\n","$L58","\n","$L59","\n","$L5a","\n","$L5b","\n","$L5c","\n","$L5d","\n","$L5e","\n","$L5f","\n","$L60","\n","$L61","\n","$L62","\n","$L63","\n","$L64","\n","$L65","\n","$L66","\n","$L67","\n","$L68","\n","$L69","\n","$L6a","\n","$L6b","\n","$L6c","\n","$L6d","\n","$L6e","\n","$L6f","\n","$L70","\n","$L71","\n","$L72","\n","$L73","\n","$L74","\n","$L75","\n","$L76","\n","$L77","\n","$L78","\n","$L79","\n","$L7a","\n","$L7b","\n","$L7c","\n","$L7d","\n","$L7e","\n","$L7f","\n","$L80","\n","$L81","\n","$L82","\n","$L83","\n","$L84","\n","$L85","\n","$L86","\n","$L87","\n","$L88","\n","$L89","\n","$L8a","\n","$L8b","\n","$L8c"]}]
+1c:["$","div",null,{"className":"docs-page-meta","children":["$","a",null,{"href":"https://github.com/antvis/AVA/blob/ai/site/content/docs/zh/data/sources.mdx","children":["在 GitHub 编辑本页"," ",["$","span",null,{"aria-hidden":"true","children":"↗"}]]}]}]
+1d:["$","nav",null,{"className":"docs-pagination","aria-label":"章节导航","children":[["$","$L10",null,{"href":"/documentation/quickstart/","children":[["$","span",null,{"children":"← 上一篇"}],["$","strong",null,{"children":"安装与快速开始"}]]}],["$","$L10",null,{"href":"/documentation/data/schema/","className":"docs-next","children":[["$","span",null,{"children":"下一篇 →"}],["$","strong",null,{"children":"了解你的数据"}]]}]]}]
+1e:["$","footer",null,{"className":"docs-footer","children":[["$","span",null,{"children":"AVA · AntV 开源项目"}],["$","a",null,{"href":"https://github.com/antvis/AVA","children":"在 GitHub 查看源码 ↗"}]]}]
+1f:["$","$L8d","data/sources",{}]
+20:["$","script","script-0",{"src":"/_next/static/chunks/1lxucu_dj41ds.js","async":true}]
+21:["$","$L8e",null,{"children":["$","$27",null,{"name":"Next.MetadataOutlet","children":"$@8f"}]}]
+2b:true
+9:300
+2c:["$","span",null,{"style":{"color":"#032F62"},"children":"'json'"}]
+2d:["$","span",null,{"style":{"color":"#24292E"},"children":","}]
+2e:["$","span",null,{"data-line":"","children":[["$","span",null,{"style":{"color":"#24292E"},"children":"  options: { data: [{ city: "}],["$","span",null,{"style":{"color":"#032F62"},"children":"'Hangzhou'"}],["$","span",null,{"style":{"color":"#24292E"},"children":", revenue: "}],["$","span",null,{"style":{"color":"#005CC5"},"children":"120"}],["$","span",null,{"style":{"color":"#24292E"},"children":" }] },"}]]}]
+2f:["$","span",null,{"data-line":"","children":["$","span",null,{"style":{"color":"#24292E"},"children":"});"}]}]
+30:["$","span",null,{"data-line":"","children":" "}]
+31:["$","span",null,{"data-line":"","children":[["$","span",null,{"style":{"color":"#D73A49"},"children":"const"}],["$","span",null,{"style":{"color":"#005CC5"},"children":" schema"}],["$","span",null,{"style":{"color":"#D73A49"},"children":" ="}],["$","span",null,{"style":{"color":"#D73A49"},"children":" await"}],["$","span",null,{"style":{"color":"#24292E"},"children":" ava."}],["$","span",null,{"style":{"color":"#6F42C1"},"children":"schema"}],["$","span",null,{"style":{"color":"#24292E"},"children":"();"}]]}]
+32:["$","div",null,{"className":"docs-table","children":["$","table",null,{"children":[["$","thead",null,{"children":["$","tr",null,{"children":[["$","th",null,{"children":"参数"}],["$","th",null,{"children":"类型"}],["$","th",null,{"children":"必填"}],["$","th",null,{"children":"含义"}]]}]}],["$","tbody",null,{"children":[["$","tr",null,{"children":[["$","td",null,{"children":["$","code",null,{"children":"type"}]}],["$","td",null,{"children":["$","code",null,{"children":"SourceType"}]}],["$","td",null,{"children":"是"}],["$","td",null,{"children":["支持 ",["$","code",null,{"children":"csv"}],"、",["$","code",null,{"children":"csv-file"}],"、",["$","code",null,{"children":"json"}],"、",["$","code",null,{"children":"json-file"}],"、",["$","code",null,{"children":"parquet"}],"、",["$","code",null,{"children":"excel"}],"、",["$","code",null,{"children":"text"}],"、",["$","code",null,{"children":"sqlite"}],"、",["$","code",null,{"children":"mysql"}],"、",["$","code",null,{"children":"postgresql"}],"、",["$","code",null,{"children":"mongodb"}],"、",["$","code",null,{"children":"supabase"}],"、",["$","code",null,{"children":"clickhouse"}],"、",["$","code",null,{"children":"feishu-bitable"}],"。"]}]]}],["$","tr",null,{"children":[["$","td",null,{"children":["$","code",null,{"children":"options"}]}],["$","td",null,{"children":"数据源对应的对象"}],["$","td",null,{"children":"是"}],["$","td",null,{"children":["使用下方对应的数据源参数表，字段名均相对于 ",["$","code",null,{"children":"options"}],"。"]}]]}]]}]]}]}]
+33:["$","p",null,{"children":[["$","code",null,{"children":"source()"}]," 没有返回值，负责为执行准备数据。结构发现会推迟到 ",["$","code",null,{"children":"schema()"}]," 或其他操作需要时进行。再次调用 ",["$","code",null,{"children":"source()"}]," 会替换当前数据源并清空元数据缓存。使用 ",["$","code",null,{"children":"schema()"}]," 查看表名与字段名，结束后调用 ",["$","code",null,{"children":"await ava.dispose()"}],"。"]}]
+34:["$","p",null,{"children":["示例均在 Node.js 中运行。Supabase 和 ClickHouse 的示例同时给出了必需的构造函数配置。前端应用请参考",["$","$L10",null,{"href":"/documentation/browser/","children":"浏览器用法"}],"。"]}]
+35:["$","h2",null,{"id":"csv","children":["$","a",null,{"href":"#csv","className":"docs-heading-link","children":"CSV"}]}]
+36:["$","h3",null,{"id":"inline-csv","children":["$","a",null,{"href":"#inline-csv","className":"docs-heading-link","children":"直接传入 CSV"}]}]
+37:["$","p",null,{"children":["设置 ",["$","code",null,{"children":"type: 'csv'"}],"，以字符串传入 CSV 内容。"]}]
+38:["$","figure",null,{"data-rehype-pretty-code-figure":"","children":["$","div",null,{"className":"docs-code-block","children":[["$","div",null,{"className":"docs-code-toolbar","children":[["$","span",null,{"children":"typescript"}],["$","$L17",null,{}]]}],["$","pre",null,{"tabIndex":"0","data-language":"typescript","data-theme":"github-light","children":["$","code",null,{"data-language":"typescript","data-theme":"github-light","style":{"display":"grid"},"children":[["$","span",null,{"data-line":"","children":[["$","span",null,{"style":{"color":"#D73A49"},"children":"await"}],["$","span",null,{"style":{"color":"#24292E"},"children":" ava."}],["$","span",null,{"style":{"color":"#6F42C1"},"children":"source"}],["$","span",null,{"style":{"color":"#24292E"},"children":"({"}]]}],"\n",["$","span",null,{"data-line":"","children":[["$","span",null,{"style":{"color":"#24292E"},"children":"  type: "}],["$","span",null,{"style":{"color":"#032F62"},"children":"'csv'"}],["$","span",null,{"style":{"color":"#24292E"},"children":","}]]}],"\n",["$","span",null,{"data-line":"","children":[["$","span",null,{"style":{"color":"#24292E"},"children":"  options: { csv: "}],["$","span",null,{"style":{"color":"#032F62"},"children":"'city,revenue"}],["$","span",null,{"style":{"color":"#005CC5"},"children":"\\n"}],["$","span",null,{"style":{"color":"#032F62"},"children":"Hangzhou,120"}],["$","span",null,{"style":{"color":"#005CC5"},"children":"\\n"}],["$","span",null,{"style":{"color":"#032F62"},"children":"Shanghai,200'"}],["$","span",null,{"style":{"color":"#24292E"},"children":" },"}]]}],"\n",["$","span",null,{"data-line":"","children":["$","span",null,{"style":{"color":"#24292E"},"children":"});"}]}]]}]}]]}]}]
+39:["$","div",null,{"className":"docs-table","children":["$","table",null,{"children":[["$","thead",null,{"children":["$","tr",null,{"children":[["$","th",null,{"children":"字段"}],["$","th",null,{"children":"类型"}],["$","th",null,{"children":"必填"}],["$","th",null,{"children":"含义与默认值"}]]}]}],["$","tbody",null,{"children":[["$","tr",null,{"children":[["$","td",null,{"children":["$","code",null,{"children":"csv"}]}],["$","td",null,{"children":["$","code",null,{"children":"string"}]}],["$","td",null,{"children":"是"}],["$","td",null,{"children":"原始 CSV 字符串。"}]]}],["$","tr",null,{"children":[["$","td",null,{"children":["$","code",null,{"children":"options"}]}],["$","td",null,{"children":["$","code",null,{"children":"CSVReadOptions"}]}],["$","td",null,{"children":"否"}],["$","td",null,{"children":[["$","$L10",null,{"href":"#csv-reader-options","children":"CSV 读取选项"}],"。"]}]]}]]}]]}]}]
+3a:["$","h3",null,{"id":"csv-files","children":["$","a",null,{"href":"#csv-files","className":"docs-heading-link","children":"读取 CSV 文件"}]}]
+3b:["$","p",null,{"children":["设置 ",["$","code",null,{"children":"type: 'csv-file'"}],"，传入本地路径或 HTTP(S) URL。URL 需要鉴权时，可在 ",["$","code",null,{"children":"options.headers"}]," 中提供请求头。"]}]
+3c:["$","figure",null,{"data-rehype-pretty-code-figure":"","children":["$","div",null,{"className":"docs-code-block","children":[["$","div",null,{"className":"docs-code-toolbar","children":[["$","span",null,{"children":"typescript"}],["$","$L17",null,{}]]}],["$","pre",null,{"tabIndex":"0","data-language":"typescript","data-theme":"github-light","children":["$","code",null,{"data-language":"typescript","data-theme":"github-light","style":{"display":"grid"},"children":[["$","span",null,{"data-line":"","children":[["$","span",null,{"style":{"color":"#D73A49"},"children":"await"}],["$","span",null,{"style":{"color":"#24292E"},"children":" ava."}],["$","span",null,{"style":{"color":"#6F42C1"},"children":"source"}],["$","span",null,{"style":{"color":"#24292E"},"children":"({"}]]}],"\n",["$","span",null,{"data-line":"","children":[["$","span",null,{"style":{"color":"#24292E"},"children":"  type: "}],["$","span",null,{"style":{"color":"#032F62"},"children":"'csv-file'"}],["$","span",null,{"style":{"color":"#24292E"},"children":","}]]}],"\n",["$","span",null,{"data-line":"","children":["$","span",null,{"style":{"color":"#24292E"},"children":"  options: {"}]}],"\n",["$","span",null,{"data-line":"","children":[["$","span",null,{"style":{"color":"#24292E"},"children":"    path: "}],["$","span",null,{"style":{"color":"#032F62"},"children":"'https://example.com/sales.csv'"}],["$","span",null,{"style":{"color":"#24292E"},"children":","}]]}],"\n",["$","span",null,{"data-line":"","children":[["$","span",null,{"style":{"color":"#24292E"},"children":"    headers: { Authorization: "}],["$","span",null,{"style":{"color":"#032F62"},"children":"'Bearer YOUR_TOKEN'"}],["$","span",null,{"style":{"color":"#24292E"},"children":" },"}]]}],"\n",["$","span",null,{"data-line":"","children":[["$","span",null,{"style":{"color":"#24292E"},"children":"    options: { header: "}],["$","span",null,{"style":{"color":"#005CC5"},"children":"true"}],["$","span",null,{"style":{"color":"#24292E"},"children":", delim: "}],["$","span",null,{"style":{"color":"#032F62"},"children":"';'"}],["$","span",null,{"style":{"color":"#24292E"},"children":" },"}]]}],"\n",["$","span",null,{"data-line":"","children":["$","span",null,{"style":{"color":"#24292E"},"children":"  },"}]}],"\n",["$","span",null,{"data-line":"","children":["$","span",null,{"style":{"color":"#24292E"},"children":"});"}]}]]}]}]]}]}]
+3d:["$","div",null,{"className":"docs-table","children":["$","table",null,{"children":[["$","thead",null,{"children":["$","tr",null,{"children":[["$","th",null,{"children":"字段"}],["$","th",null,{"children":"类型"}],["$","th",null,{"children":"必填"}],["$","th",null,{"children":"含义与默认值"}]]}]}],["$","tbody",null,{"children":[["$","tr",null,{"children":[["$","td",null,{"children":["$","code",null,{"children":"path"}]}],["$","td",null,{"children":["$","code",null,{"children":"string"}]}],["$","td",null,{"children":"是"}],["$","td",null,{"children":"本地文件路径或 HTTP(S) URL。"}]]}],["$","tr",null,{"children":[["$","td",null,{"children":["$","code",null,{"children":"headers"}]}],["$","td",null,{"children":["$","code",null,{"children":"Record<string, string>"}]}],["$","td",null,{"children":"否"}],["$","td",null,{"children":"远程数据源的 HTTP 请求头，例如 Authorization。"}]]}],["$","tr",null,{"children":[["$","td",null,{"children":["$","code",null,{"children":"options"}]}],["$","td",null,{"children":["$","code",null,{"children":"CSVReadOptions"}]}],["$","td",null,{"children":"否"}],["$","td",null,{"children":[["$","$L10",null,{"href":"#csv-reader-options","children":"CSV 读取选项"}],"。"]}]]}]]}]]}]}]
+3e:["$","h3",null,{"id":"csv-reader-options","children":["$","a",null,{"href":"#csv-reader-options","className":"docs-heading-link","children":"CSV 读取选项"}]}]
+3f:["$","p",null,{"children":["DuckDB 引擎的 ",["$","code",null,{"children":"csv"}],"、",["$","code",null,{"children":"csv-file"}]," 数据源可在 ",["$","code",null,{"children":"options.options"}]," 中使用以下字段，全部可选。AVA 将显式提供的值转发给 ",["$","code",null,{"children":"read_csv"}],"；省略时使用 DuckDB 的默认值或自动检测结果。下表说明各读取选项自身的默认值，实际表头、分隔符和类型也可能由自动检测确定。"]}]
+40:["$","div",null,{"className":"docs-table","children":["$","table",null,{"children":[["$","thead",null,{"children":["$","tr",null,{"children":[["$","th",null,{"children":"字段"}],["$","th",null,{"children":"类型"}],["$","th",null,{"children":"必填"}],["$","th",null,{"children":"含义与默认值"}]]}]}],["$","tbody",null,{"children":[["$","tr",null,{"children":[["$","td",null,{"children":["$","code",null,{"children":"header"}]}],["$","td",null,{"children":["$","code",null,{"children":"boolean"}]}],["$","td",null,{"children":"否"}],["$","td",null,{"children":"文件首行是否包含列名，默认 false。"}]]}],["$","tr",null,{"children":[["$","td",null,{"children":["$","code",null,{"children":"names"}]}],["$","td",null,{"children":["$","code",null,{"children":"string[]"}]}],["$","td",null,{"children":"否"}],["$","td",null,{"children":"列名列表。"}]]}],["$","tr",null,{"children":[["$","td",null,{"children":["$","code",null,{"children":"columns"}]}],["$","td",null,{"children":["$","code",null,{"children":"Record<string, string>"}]}],["$","td",null,{"children":"否"}],["$","td",null,{"children":"列名到类型的映射，例如 { col1: 'INTEGER' }；设置后关闭结构自动检测。"}]]}],["$","tr",null,{"children":[["$","td",null,{"children":["$","code",null,{"children":"types"}]}],["$","td",null,{"children":["$","code",null,{"children":"string[] | Record<string, string>"}]}],["$","td",null,{"children":"否"}],["$","td",null,{"children":"按位置提供类型列表，或按列名提供类型映射。"}]]}],["$","tr",null,{"children":[["$","td",null,{"children":["$","code",null,{"children":"all_varchar"}]}],["$","td",null,{"children":["$","code",null,{"children":"boolean"}]}],["$","td",null,{"children":"否"}],["$","td",null,{"children":"跳过类型检测，将所有列读为 VARCHAR，默认 false。"}]]}],["$","tr",null,{"children":[["$","td",null,{"children":["$","code",null,{"children":"normalize_names"}]}],["$","td",null,{"children":["$","code",null,{"children":"boolean"}]}],["$","td",null,{"children":"否"}],["$","td",null,{"children":"移除列名中的非字母数字字符，并为保留字添加下划线前缀。"}]]}],["$","tr",null,{"children":[["$","td",null,{"children":["$","code",null,{"children":"force_not_null"}]}],["$","td",null,{"children":["$","code",null,{"children":"string[]"}]}],["$","td",null,{"children":"否"}],["$","td",null,{"children":"不参与 NULL 字符串匹配的列。"}]]}],["$","tr",null,{"children":[["$","td",null,{"children":["$","code",null,{"children":"delim"}]}],["$","td",null,{"children":["$","code",null,{"children":"string"}]}],["$","td",null,{"children":"否"}],["$","td",null,{"children":["字段分隔符，最多 4 字节，默认 ",["$","code",null,{"children":"','"}],"。"]}]]}],["$","tr",null,{"children":[["$","td",null,{"children":["$","code",null,{"children":"quote"}]}],["$","td",null,{"children":["$","code",null,{"children":"string"}]}],["$","td",null,{"children":"否"}],["$","td",null,{"children":["引号字符，默认 ",["$","code",null,{"children":"'\"'"}],"。"]}]]}],["$","tr",null,{"children":[["$","td",null,{"children":["$","code",null,{"children":"escape"}]}],["$","td",null,{"children":["$","code",null,{"children":"string"}]}],["$","td",null,{"children":"否"}],["$","td",null,{"children":["引号包裹的字段内，用于转义引号的字符，默认 ",["$","code",null,{"children":"'\"'"}],"。"]}]]}],["$","tr",null,{"children":[["$","td",null,{"children":["$","code",null,{"children":"comment"}]}],["$","td",null,{"children":["$","code",null,{"children":"string"}]}],["$","td",null,{"children":"否"}],["$","td",null,{"children":"注释起始字符。"}]]}],["$","tr",null,{"children":[["$","td",null,{"children":["$","code",null,{"children":"new_line"}]}],["$","td",null,{"children":["$","code",null,{"children":"string"}]}],["$","td",null,{"children":"否"}],["$","td",null,{"children":["换行符：",["$","code",null,{"children":"'\\r'"}],"、",["$","code",null,{"children":"'\\n'"}]," 或 ",["$","code",null,{"children":"'\\r\\n'"}],"。"]}]]}],["$","tr",null,{"children":[["$","td",null,{"children":["$","code",null,{"children":"auto_detect"}]}],["$","td",null,{"children":["$","code",null,{"children":"boolean"}]}],["$","td",null,{"children":"否"}],["$","td",null,{"children":"自动检测 CSV 参数，默认 true。"}]]}],["$","tr",null,{"children":[["$","td",null,{"children":["$","code",null,{"children":"auto_type_candidates"}]}],["$","td",null,{"children":["$","code",null,{"children":"string[]"}]}],["$","td",null,{"children":"否"}],["$","td",null,{"children":["检测列类型时考虑的候选类型，例如 ",["$","code",null,{"children":"['BIGINT', 'DATE']"}],"。"]}]]}],["$","tr",null,{"children":[["$","td",null,{"children":["$","code",null,{"children":"dateformat"}]}],["$","td",null,{"children":["$","code",null,{"children":"string"}]}],["$","td",null,{"children":"否"}],["$","td",null,{"children":"解析日期使用的格式。"}]]}],["$","tr",null,{"children":[["$","td",null,{"children":["$","code",null,{"children":"timestampformat"}]}],["$","td",null,{"children":["$","code",null,{"children":"string"}]}],["$","td",null,{"children":"否"}],["$","td",null,{"children":"解析时间戳使用的格式。"}]]}],["$","tr",null,{"children":[["$","td",null,{"children":["$","code",null,{"children":"decimal_separator"}]}],["$","td",null,{"children":["$","code",null,{"children":"string"}]}],["$","td",null,{"children":"否"}],["$","td",null,{"children":["数字的小数分隔符，默认 ",["$","code",null,{"children":"'.'"}],"。"]}]]}],["$","tr",null,{"children":[["$","td",null,{"children":["$","code",null,{"children":"thousands"}]}],["$","td",null,{"children":["$","code",null,{"children":"string"}]}],["$","td",null,{"children":"否"}],["$","td",null,{"children":"千位分隔符，须为单个字符，且与 decimal_separator 不同。"}]]}],["$","tr",null,{"children":[["$","td",null,{"children":["$","code",null,{"children":"nullstr"}]}],["$","td",null,{"children":["$","code",null,{"children":"string | string[]"}]}],["$","td",null,{"children":"否"}],["$","td",null,{"children":"代表 NULL 的一个或多个字符串。"}]]}],["$","tr",null,{"children":[["$","td",null,{"children":["$","code",null,{"children":"allow_quoted_nulls"}]}],"$L90","$L91","$L92"]}],"$L93","$L94","$L95","$L96","$L97","$L98","$L99","$L9a","$L9b","$L9c","$L9d","$L9e","$L9f","$La0","$La1","$La2","$La3","$La4"]}]]}]}]
+41:["$","h2",null,{"id":"json","children":["$","a",null,{"href":"#json","className":"docs-heading-link","children":"JSON"}]}]
+42:["$","h3",null,{"id":"inline-json","children":["$","a",null,{"href":"#inline-json","className":"docs-heading-link","children":"直接传入 JSON"}]}]
+43:["$","p",null,{"children":["设置 ",["$","code",null,{"children":"type: 'json'"}],"，传入对象数组。"]}]
+44:["$","figure",null,{"data-rehype-pretty-code-figure":"","children":["$","div",null,{"className":"docs-code-block","children":[["$","div",null,{"className":"docs-code-toolbar","children":[["$","span",null,{"children":"typescript"}],["$","$L17",null,{}]]}],["$","pre",null,{"tabIndex":"0","data-language":"typescript","data-theme":"github-light","children":["$","code",null,{"data-language":"typescript","data-theme":"github-light","style":{"display":"grid"},"children":[["$","span",null,{"data-line":"","children":[["$","span",null,{"style":{"color":"#D73A49"},"children":"await"}],["$","span",null,{"style":{"color":"#24292E"},"children":" ava."}],["$","span",null,{"style":{"color":"#6F42C1"},"children":"source"}],["$","span",null,{"style":{"color":"#24292E"},"children":"({"}]]}],"\n",["$","span",null,{"data-line":"","children":[["$","span",null,{"style":{"color":"#24292E"},"children":"  type: "}],["$","span",null,{"style":{"color":"#032F62"},"children":"'json'"}],["$","span",null,{"style":{"color":"#24292E"},"children":","}]]}],"\n",["$","span",null,{"data-line":"","children":[["$","span",null,{"style":{"color":"#24292E"},"children":"  options: { data: [{ city: "}],["$","span",null,{"style":{"color":"#032F62"},"children":"'Hangzhou'"}],["$","span",null,{"style":{"color":"#24292E"},"children":", revenue: "}],["$","span",null,{"style":{"color":"#005CC5"},"children":"120"}],["$","span",null,{"style":{"color":"#24292E"},"children":" }] },"}]]}],"\n",["$","span",null,{"data-line":"","children":["$","span",null,{"style":{"color":"#24292E"},"children":"});"}]}]]}]}]]}]}]
+45:["$","div",null,{"className":"docs-table","children":["$","table",null,{"children":[["$","thead",null,{"children":["$","tr",null,{"children":[["$","th",null,{"children":"字段"}],["$","th",null,{"children":"类型"}],["$","th",null,{"children":"必填"}],["$","th",null,{"children":"含义与默认值"}]]}]}],["$","tbody",null,{"children":[["$","tr",null,{"children":[["$","td",null,{"children":["$","code",null,{"children":"data"}]}],["$","td",null,{"children":["$","code",null,{"children":"any[]"}]}],["$","td",null,{"children":"是"}],["$","td",null,{"children":"待加载的数据行数组。"}]]}],["$","tr",null,{"children":[["$","td",null,{"children":["$","code",null,{"children":"options"}]}],["$","td",null,{"children":["$","code",null,{"children":"JSONReadOptions"}]}],["$","td",null,{"children":"否"}],["$","td",null,{"children":"下方的 DuckDB 读取参数。"}]]}]]}]]}]}]
+46:["$","h3",null,{"id":"json-files","children":["$","a",null,{"href":"#json-files","className":"docs-heading-link","children":"读取 JSON 文件"}]}]
+47:["$","p",null,{"children":["设置 ",["$","code",null,{"children":"type: 'json-file'"}],"，传入本地路径或 HTTP(S) URL。"]}]
+48:["$","figure",null,{"data-rehype-pretty-code-figure":"","children":["$","div",null,{"className":"docs-code-block","children":[["$","div",null,{"className":"docs-code-toolbar","children":[["$","span",null,{"children":"typescript"}],["$","$L17",null,{}]]}],["$","pre",null,{"tabIndex":"0","data-language":"typescript","data-theme":"github-light","children":["$","code",null,{"data-language":"typescript","data-theme":"github-light","style":{"display":"grid"},"children":[["$","span",null,{"data-line":"","children":[["$","span",null,{"style":{"color":"#D73A49"},"children":"await"}],["$","span",null,{"style":{"color":"#24292E"},"children":" ava."}],["$","span",null,{"style":{"color":"#6F42C1"},"children":"source"}],["$","span",null,{"style":{"color":"#24292E"},"children":"({"}]]}],"\n",["$","span",null,{"data-line":"","children":[["$","span",null,{"style":{"color":"#24292E"},"children":"  type: "}],["$","span",null,{"style":{"color":"#032F62"},"children":"'json-file'"}],["$","span",null,{"style":{"color":"#24292E"},"children":","}]]}],"\n",["$","span",null,{"data-line":"","children":["$","span",null,{"style":{"color":"#24292E"},"children":"  options: {"}]}],"\n",["$","span",null,{"data-line":"","children":[["$","span",null,{"style":{"color":"#24292E"},"children":"    path: "}],["$","span",null,{"style":{"color":"#032F62"},"children":"'./sales.json'"}],["$","span",null,{"style":{"color":"#24292E"},"children":","}]]}],"\n",["$","span",null,{"data-line":"","children":[["$","span",null,{"style":{"color":"#24292E"},"children":"    options: { columns: { city: "}],["$","span",null,{"style":{"color":"#032F62"},"children":"'VARCHAR'"}],["$","span",null,{"style":{"color":"#24292E"},"children":", revenue: "}],["$","span",null,{"style":{"color":"#032F62"},"children":"'DOUBLE'"}],["$","span",null,{"style":{"color":"#24292E"},"children":" }, sample_size: "}],["$","span",null,{"style":{"color":"#D73A49"},"children":"-"}],["$","span",null,{"style":{"color":"#005CC5"},"children":"1"}],["$","span",null,{"style":{"color":"#24292E"},"children":" },"}]]}],"\n",["$","span",null,{"data-line":"","children":["$","span",null,{"style":{"color":"#24292E"},"children":"  },"}]}],"\n",["$","span",null,{"data-line":"","children":["$","span",null,{"style":{"color":"#24292E"},"children":"});"}]}]]}]}]]}]}]
+49:["$","div",null,{"className":"docs-table","children":["$","table",null,{"children":[["$","thead",null,{"children":["$","tr",null,{"children":[["$","th",null,{"children":"字段"}],["$","th",null,{"children":"类型"}],["$","th",null,{"children":"必填"}],["$","th",null,{"children":"含义与默认值"}]]}]}],["$","tbody",null,{"children":[["$","tr",null,{"children":[["$","td",null,{"children":["$","code",null,{"children":"path"}]}],["$","td",null,{"children":["$","code",null,{"children":"string"}]}],["$","td",null,{"children":"是"}],["$","td",null,{"children":"本地文件路径或 HTTP(S) URL。"}]]}],["$","tr",null,{"children":[["$","td",null,{"children":["$","code",null,{"children":"headers"}]}],["$","td",null,{"children":["$","code",null,{"children":"Record<string, string>"}]}],["$","td",null,{"children":"否"}],["$","td",null,{"children":"远程数据源的 HTTP 请求头，例如 Authorization。"}]]}],["$","tr",null,{"children":[["$","td",null,{"children":["$","code",null,{"children":"options"}]}],["$","td",null,{"children":["$","code",null,{"children":"JSONReadOptions"}]}],["$","td",null,{"children":"否"}],["$","td",null,{"children":"下方的 DuckDB 读取参数。"}]]}]]}]]}]}]
+4a:["$","h3",null,{"id":"json-reader-options","children":["$","a",null,{"href":"#json-reader-options","className":"docs-heading-link","children":"JSON 读取选项"}]}]
+4b:["$","p",null,{"children":["使用 DuckDB 时，两种 JSON 数据源均接受 ",["$","code",null,{"children":"options.options"}],"，所有字段可选。\n",["$","code",null,{"children":"JSONReadOptions"}]," 暴露完整的 ",["$","$L10",null,{"href":"https://duckdb.org/docs/current/data/json/loading_json","children":"DuckDB JSON 读取参数"}],"："]}]
+4c:["$","div",null,{"className":"docs-table","children":["$","table",null,{"children":[["$","thead",null,{"children":["$","tr",null,{"children":[["$","th",null,{"children":"参数"}],["$","th",null,{"children":"类型"}],["$","th",null,{"children":"默认值"}],["$","th",null,{"children":"含义"}]]}]}],["$","tbody",null,{"children":[["$","tr",null,{"children":[["$","td",null,{"children":["$","code",null,{"children":"auto_detect"}]}],["$","td",null,{"children":["$","code",null,{"children":"boolean"}]}],["$","td",null,{"children":["$","code",null,{"children":"true"}]}],["$","td",null,{"children":"推断数据结构。"}]]}],["$","tr",null,{"children":[["$","td",null,{"children":["$","code",null,{"children":"columns"}]}],["$","td",null,{"children":["$","code",null,{"children":"Record<string, string>"}]}],["$","td",null,{"children":"未设置"}],["$","td",null,{"children":"列名到 DuckDB 类型的映射，同时用于选择列。"}]]}],["$","tr",null,{"children":[["$","td",null,{"children":["$","code",null,{"children":"compression"}]}],["$","td",null,{"children":["$","code",null,{"children":"'auto_detect' | 'none' | 'gzip' | 'zstd'"}]}],["$","td",null,{"children":["$","code",null,{"children":"'auto_detect'"}]}],["$","td",null,{"children":"压缩编解码方式。"}]]}],["$","tr",null,{"children":[["$","td",null,{"children":["$","code",null,{"children":"dateformat"}]}],["$","td",null,{"children":["$","code",null,{"children":"string"}]}],["$","td",null,{"children":["$","code",null,{"children":"'iso'"}]}],["$","td",null,{"children":"日期格式。"}]]}],["$","tr",null,{"children":[["$","td",null,{"children":["$","code",null,{"children":"field_appearance_threshold"}]}],["$","td",null,{"children":["$","code",null,{"children":"number"}]}],["$","td",null,{"children":["$","code",null,{"children":"0.1"}]}],["$","td",null,{"children":"稀疏对象推断为 MAP 的阈值。"}]]}],["$","tr",null,{"children":[["$","td",null,{"children":["$","code",null,{"children":"filename"}]}],["$","td",null,{"children":["$","code",null,{"children":"boolean"}]}],["$","td",null,{"children":["$","code",null,{"children":"false"}]}],["$","td",null,{"children":["在 ",["$","code",null,{"children":"SELECT *"}]," 中包含文件名。"]}]]}],["$","tr",null,{"children":[["$","td",null,{"children":["$","code",null,{"children":"format"}]}],["$","td",null,{"children":["$","code",null,{"children":"'auto' | 'unstructured' | 'newline_delimited' | 'array'"}]}],["$","td",null,{"children":["$","code",null,{"children":"'auto'"}]}],["$","td",null,{"children":[["$","code",null,{"children":"read_json"}]," 的输入组织形式。"]}]]}],["$","tr",null,{"children":[["$","td",null,{"children":["$","code",null,{"children":"hive_partitioning"}]}],["$","td",null,{"children":["$","code",null,{"children":"boolean"}]}],["$","td",null,{"children":"自动检测"}],["$","td",null,{"children":"根据路径识别分区。"}]]}],["$","tr",null,{"children":[["$","td",null,{"children":["$","code",null,{"children":"ignore_errors"}]}],["$","td",null,{"children":["$","code",null,{"children":"boolean"}]}],["$","td",null,{"children":["$","code",null,{"children":"false"}]}],["$","td",null,{"children":"跳过错误，仅适用于 NDJSON。"}]]}],["$","tr",null,{"children":[["$","td",null,{"children":["$","code",null,{"children":"map_inference_threshold"}]}],["$","td",null,{"children":["$","code",null,{"children":"number"}]}],["$","td",null,{"children":["$","code",null,{"children":"200"}]}],["$","td",null,{"children":"STRUCT 子字段数量阈值；-1 关闭 MAP 推断。"}]]}],["$","tr",null,{"children":[["$","td",null,{"children":["$","code",null,{"children":"maximum_depth"}]}],["$","td",null,{"children":["$","code",null,{"children":"number"}]}],["$","td",null,{"children":["$","code",null,{"children":"-1"}]}],["$","td",null,{"children":"结构推断深度；-1 表示不限。"}]]}],["$","tr",null,{"children":[["$","td",null,{"children":["$","code",null,{"children":"maximum_object_size"}]}],["$","td",null,{"children":["$","code",null,{"children":"number"}]}],["$","td",null,{"children":["$","code",null,{"children":"16777216"}]}],["$","td",null,{"children":"单个对象的字节上限。"}]]}],["$","tr",null,{"children":[["$","td",null,{"children":["$","code",null,{"children":"maximum_sample_files"}]}],["$","td",null,{"children":["$","code",null,{"children":"number"}]}],["$","td",null,{"children":["$","code",null,{"children":"32"}]}],["$","td",null,{"children":"采样文件数量。"}]]}],["$","tr",null,{"children":[["$","td",null,{"children":["$","code",null,{"children":"records"}]}],["$","td",null,{"children":["$","code",null,{"children":"'auto' | 'true' | 'false'"}]}],["$","td",null,{"children":["$","code",null,{"children":"'auto'"}]}],["$","td",null,{"children":"是否展开对象。"}]]}],["$","tr",null,{"children":[["$","td",null,{"children":["$","code",null,{"children":"sample_size"}]}],["$","td",null,{"children":["$","code",null,{"children":"number"}]}],["$","td",null,{"children":["$","code",null,{"children":"20480"}]}],["$","td",null,{"children":"采样对象数量；-1 扫描全部。"}]]}],["$","tr",null,{"children":[["$","td",null,{"children":["$","code",null,{"children":"timestampformat"}]}],["$","td",null,{"children":["$","code",null,{"children":"string"}]}],["$","td",null,{"children":["$","code",null,{"children":"'iso'"}]}],["$","td",null,{"children":"时间戳格式。"}]]}],["$","tr",null,{"children":[["$","td",null,{"children":["$","code",null,{"children":"union_by_name"}]}],["$","td",null,{"children":["$","code",null,{"children":"boolean"}]}],["$","td",null,{"children":["$","code",null,{"children":"false"}]}],["$","td",null,{"children":"合并数据结构。"}]]}]]}]]}]}]
+4d:["$","p",null,{"children":["内存数据会序列化为未压缩的 JSON 数组，请选择与此兼容的读取选项。\n远程文件会下载到临时路径，读取压缩 URL 时应显式设置 ",["$","code",null,{"children":"compression"}],"。"]}]
+4e:["$","h2",null,{"id":"parquet","children":["$","a",null,{"href":"#parquet","className":"docs-heading-link","children":"Parquet"}]}]
+4f:["$","p",null,{"children":"从本地路径或 HTTP(S) URL 读取 Parquet 文件。"}]
+50:["$","figure",null,{"data-rehype-pretty-code-figure":"","children":["$","div",null,{"className":"docs-code-block","children":[["$","div",null,{"className":"docs-code-toolbar","children":[["$","span",null,{"children":"typescript"}],["$","$L17",null,{}]]}],["$","pre",null,{"tabIndex":"0","data-language":"typescript","data-theme":"github-light","children":["$","code",null,{"data-language":"typescript","data-theme":"github-light","style":{"display":"grid"},"children":[["$","span",null,{"data-line":"","children":[["$","span",null,{"style":{"color":"#D73A49"},"children":"await"}],["$","span",null,{"style":{"color":"#24292E"},"children":" ava."}],["$","span",null,{"style":{"color":"#6F42C1"},"children":"source"}],["$","span",null,{"style":{"color":"#24292E"},"children":"({"}]]}],"\n",["$","span",null,{"data-line":"","children":[["$","span",null,{"style":{"color":"#24292E"},"children":"  type: "}],["$","span",null,{"style":{"color":"#032F62"},"children":"'parquet'"}],["$","span",null,{"style":{"color":"#24292E"},"children":","}]]}],"\n",["$","span",null,{"data-line":"","children":[["$","span",null,{"style":{"color":"#24292E"},"children":"  options: { path: "}],["$","span",null,{"style":{"color":"#032F62"},"children":"'./sales.parquet'"}],["$","span",null,{"style":{"color":"#24292E"},"children":" },"}]]}],"\n",["$","span",null,{"data-line":"","children":["$","span",null,{"style":{"color":"#24292E"},"children":"});"}]}]]}]}]]}]}]
+51:["$","div",null,{"className":"docs-table","children":["$","table",null,{"children":[["$","thead",null,{"children":["$","tr",null,{"children":[["$","th",null,{"children":"字段"}],["$","th",null,{"children":"类型"}],["$","th",null,{"children":"必填"}],["$","th",null,{"children":"含义与默认值"}]]}]}],["$","tbody",null,{"children":[["$","tr",null,{"children":[["$","td",null,{"children":["$","code",null,{"children":"path"}]}],["$","td",null,{"children":["$","code",null,{"children":"string"}]}],["$","td",null,{"children":"是"}],["$","td",null,{"children":"本地文件路径或 HTTP(S) URL。"}]]}],["$","tr",null,{"children":[["$","td",null,{"children":["$","code",null,{"children":"headers"}]}],["$","td",null,{"children":["$","code",null,{"children":"Record<string, string>"}]}],["$","td",null,{"children":"否"}],["$","td",null,{"children":"远程数据源的 HTTP 请求头，例如 Authorization。"}]]}]]}]]}]}]
+52:["$","h2",null,{"id":"excel","children":["$","a",null,{"href":"#excel","className":"docs-heading-link","children":"Excel"}]}]
+53:["$","p",null,{"children":["从本地路径或 HTTP(S) URL 读取 ",["$","code",null,{"children":".xlsx"}]," 工作簿。每个被选中的工作表会成为一张独立的表，以工作表名称命名。调用 ",["$","code",null,{"children":"schema()"}]," 可查看生成的表与列。"]}]
+54:["$","figure",null,{"data-rehype-pretty-code-figure":"","children":["$","div",null,{"className":"docs-code-block","children":[["$","div",null,{"className":"docs-code-toolbar","children":[["$","span",null,{"children":"typescript"}],["$","$L17",null,{}]]}],["$","pre",null,{"tabIndex":"0","data-language":"typescript","data-theme":"github-light","children":["$","code",null,{"data-language":"typescript","data-theme":"github-light","style":{"display":"grid"},"children":[["$","span",null,{"data-line":"","children":[["$","span",null,{"style":{"color":"#D73A49"},"children":"await"}],["$","span",null,{"style":{"color":"#24292E"},"children":" ava."}],["$","span",null,{"style":{"color":"#6F42C1"},"children":"source"}],["$","span",null,{"style":{"color":"#24292E"},"children":"({"}]]}],"\n",["$","span",null,{"data-line":"","children":[["$","span",null,{"style":{"color":"#24292E"},"children":"  type: "}],["$","span",null,{"style":{"color":"#032F62"},"children":"'excel'"}],["$","span",null,{"style":{"color":"#24292E"},"children":","}]]}],"\n",["$","span",null,{"data-line":"","children":["$","span",null,{"style":{"color":"#24292E"},"children":"  options: {"}]}],"\n",["$","span",null,{"data-line":"","children":[["$","span",null,{"style":{"color":"#24292E"},"children":"    path: "}],["$","span",null,{"style":{"color":"#032F62"},"children":"'./sales.xlsx'"}],["$","span",null,{"style":{"color":"#24292E"},"children":","}]]}],"\n",["$","span",null,{"data-line":"","children":["$","span",null,{"style":{"color":"#24292E"},"children":"    sheets: ["}]}],"\n",["$","span",null,{"data-line":"","children":[["$","span",null,{"style":{"color":"#24292E"},"children":"      { sheet: "}],["$","span",null,{"style":{"color":"#032F62"},"children":"'Sales'"}],["$","span",null,{"style":{"color":"#24292E"},"children":", range: "}],["$","span",null,{"style":{"color":"#032F62"},"children":"'A3:F100'"}],["$","span",null,{"style":{"color":"#24292E"},"children":", header: "}],["$","span",null,{"style":{"color":"#005CC5"},"children":"true"}],["$","span",null,{"style":{"color":"#24292E"},"children":" },"}]]}],"\n",["$","span",null,{"data-line":"","children":[["$","span",null,{"style":{"color":"#24292E"},"children":"      { sheet: "}],["$","span",null,{"style":{"color":"#032F62"},"children":"'Costs'"}],["$","span",null,{"style":{"color":"#24292E"},"children":", range: "}],["$","span",null,{"style":{"color":"#032F62"},"children":"'B2:C50'"}],["$","span",null,{"style":{"color":"#24292E"},"children":", header: "}],["$","span",null,{"style":{"color":"#005CC5"},"children":"false"}],["$","span",null,{"style":{"color":"#24292E"},"children":" },"}]]}],"\n",["$","span",null,{"data-line":"","children":["$","span",null,{"style":{"color":"#24292E"},"children":"    ],"}]}],"\n",["$","span",null,{"data-line":"","children":["$","span",null,{"style":{"color":"#24292E"},"children":"  },"}]}],"\n",["$","span",null,{"data-line":"","children":["$","span",null,{"style":{"color":"#24292E"},"children":"});"}]}]]}]}]]}]}]
+55:["$","h3",null,{"id":"source-options","children":["$","a",null,{"href":"#source-options","className":"docs-heading-link","children":"数据源选项"}]}]
+56:["$","div",null,{"className":"docs-table","children":["$","table",null,{"children":[["$","thead",null,{"children":["$","tr",null,{"children":[["$","th",null,{"children":"字段"}],["$","th",null,{"children":"类型"}],["$","th",null,{"children":"必填"}],["$","th",null,{"children":"含义与默认值"}]]}]}],["$","tbody",null,{"children":[["$","tr",null,{"children":[["$","td",null,{"children":["$","code",null,{"children":"path"}]}],["$","td",null,{"children":["$","code",null,{"children":"string"}]}],["$","td",null,{"children":"是"}],["$","td",null,{"children":"本地文件路径或 HTTP(S) URL。"}]]}],["$","tr",null,{"children":[["$","td",null,{"children":["$","code",null,{"children":"headers"}]}],["$","td",null,{"children":["$","code",null,{"children":"Record<string, string>"}]}],["$","td",null,{"children":"否"}],["$","td",null,{"children":"远程数据源的 HTTP 请求头，例如 Authorization。"}]]}],["$","tr",null,{"children":[["$","td",null,{"children":["$","code",null,{"children":"sheets"}]}],["$","td",null,{"children":["$","code",null,{"children":"ExcelSheetOptions[]"}]}],["$","td",null,{"children":"否"}],["$","td",null,{"children":["要加载的工作表及各自的读取设置；省略时加载全部工作表，并使用 ",["$","code",null,{"children":"header: true"}],"。"]}]]}]]}]]}]}]
+57:["$","h3",null,{"id":"sheet-selection-and-reader-options","children":["$","a",null,{"href":"#sheet-selection-and-reader-options","className":"docs-heading-link","children":"工作表选择与读取选项"}]}]
+58:["$","p",null,{"children":[["$","code",null,{"children":"sheets"}]," 中的每一项都包含必填的 ",["$","code",null,{"children":"sheet"}],"，以及可选的 ",["$","code",null,{"children":"ExcelReadOptions"}]," 字段。读取选项直接放在工作表项上，写法如上例所示。"]}]
+59:["$","div",null,{"className":"docs-table","children":["$","table",null,{"children":[["$","thead",null,{"children":["$","tr",null,{"children":[["$","th",null,{"children":"字段"}],["$","th",null,{"children":"类型"}],["$","th",null,{"children":"默认值"}],["$","th",null,{"children":"含义"}]]}]}],["$","tbody",null,{"children":[["$","tr",null,{"children":[["$","td",null,{"children":["$","code",null,{"children":"sheet"}]}],["$","td",null,{"children":["$","code",null,{"children":"string"}]}],["$","td",null,{"children":"必填"}],["$","td",null,{"children":"精确的工作表名称，同时作为表名。"}]]}],["$","tr",null,{"children":[["$","td",null,{"children":["$","code",null,{"children":"range"}]}],["$","td",null,{"children":["$","code",null,{"children":"string"}]}],["$","td",null,{"children":"由引擎推断"}],["$","td",null,{"children":["包含首尾边界的 A1 矩形范围，例如 ",["$","code",null,{"children":"B3:F100"}],"。"]}]]}],["$","tr",null,{"children":[["$","td",null,{"children":["$","code",null,{"children":"header"}]}],["$","td",null,{"children":["$","code",null,{"children":"boolean"}]}],["$","td",null,{"children":["$","code",null,{"children":"true"}]}],["$","td",null,{"children":"将所选范围的第一行作为列名；设为 false 时保留为数据。"}]]}],["$","tr",null,{"children":[["$","td",null,{"children":["$","code",null,{"children":"all_varchar"}]}],["$","td",null,{"children":["$","code",null,{"children":"boolean"}]}],["$","td",null,{"children":["$","code",null,{"children":"false"}]}],["$","td",null,{"children":"仅 DuckDB：将所有单元格读为 VARCHAR。"}]]}],["$","tr",null,{"children":[["$","td",null,{"children":["$","code",null,{"children":"ignore_errors"}]}],["$","td",null,{"children":["$","code",null,{"children":"boolean"}]}],["$","td",null,{"children":["$","code",null,{"children":"false"}]}],["$","td",null,{"children":"仅 DuckDB：类型转换失败的单元格改为 NULL。"}]]}],["$","tr",null,{"children":[["$","td",null,{"children":["$","code",null,{"children":"stop_at_empty"}]}],["$","td",null,{"children":["$","code",null,{"children":"boolean"}]}],["$","td",null,{"children":["有 ",["$","code",null,{"children":"range"}]," 时为 ",["$","code",null,{"children":"false"}],"，否则为 ",["$","code",null,{"children":"true"}]]}],["$","td",null,{"children":"仅 DuckDB：遇到第一个空行时停止读取。"}]]}],["$","tr",null,{"children":[["$","td",null,{"children":["$","code",null,{"children":"empty_as_varchar"}]}],["$","td",null,{"children":["$","code",null,{"children":"boolean"}]}],["$","td",null,{"children":["$","code",null,{"children":"false"}]}],["$","td",null,{"children":"仅 DuckDB：将空单元格推断为 VARCHAR，而非 DOUBLE。"}]]}]]}]]}]}]
+5a:["$","p",null,{"children":["提供 ",["$","code",null,{"children":"sheets"}]," 时，列表不能为空；每个工作表名必须存在且只能出现一次。范围必须是有效、有界的 A1 矩形。无效选择及不受支持的字段会被拒绝。"]}]
+5b:["$","h3",null,{"id":"engine-behavior","children":["$","a",null,{"href":"#engine-behavior","className":"docs-heading-link","children":"引擎行为"}]}]
+5c:["$","p",null,{"children":["两种引擎都支持 ",["$","code",null,{"children":"sheet"}],"、",["$","code",null,{"children":"range"}]," 和 ",["$","code",null,{"children":"header"}],"。Python 引擎会拒绝上表中的四个 DuckDB 专用选项。"]}]
+5d:["$","p",null,{"children":["DuckDB 的读取选项遵循 ",["$","$L10",null,{"href":"https://duckdb.org/docs/current/core_extensions/excel#reading-xlsx-files","children":["$","code",null,{"children":"read_xlsx"}]}],"，但 AVA 默认 ",["$","code",null,{"children":"header"}]," 为 true，而非自动推断。例如，要将混合类型单元格保留为文本，并继续读取空行之后的数据："]}]
+5e:["$","figure",null,{"data-rehype-pretty-code-figure":"","children":["$","div",null,{"className":"docs-code-block","children":[["$","div",null,{"className":"docs-code-toolbar","children":[["$","span",null,{"children":"typescript"}],["$","$L17",null,{}]]}],["$","pre",null,{"tabIndex":"0","data-language":"typescript","data-theme":"github-light","children":["$","code",null,{"data-language":"typescript","data-theme":"github-light","style":{"display":"grid"},"children":[["$","span",null,{"data-line":"","children":[["$","span",null,{"style":{"color":"#D73A49"},"children":"await"}],["$","span",null,{"style":{"color":"#24292E"},"children":" ava."}],["$","span",null,{"style":{"color":"#6F42C1"},"children":"source"}],["$","span",null,{"style":{"color":"#24292E"},"children":"({"}]]}],"\n",["$","span",null,{"data-line":"","children":[["$","span",null,{"style":{"color":"#24292E"},"children":"  type: "}],["$","span",null,{"style":{"color":"#032F62"},"children":"'excel'"}],["$","span",null,{"style":{"color":"#24292E"},"children":","}]]}],"\n",["$","span",null,{"data-line":"","children":["$","span",null,{"style":{"color":"#24292E"},"children":"  options: {"}]}],"\n",["$","span",null,{"data-line":"","children":[["$","span",null,{"style":{"color":"#24292E"},"children":"    path: "}],["$","span",null,{"style":{"color":"#032F62"},"children":"'./sales.xlsx'"}],["$","span",null,{"style":{"color":"#24292E"},"children":","}]]}],"\n",["$","span",null,{"data-line":"","children":[["$","span",null,{"style":{"color":"#24292E"},"children":"    sheets: [{ sheet: "}],["$","span",null,{"style":{"color":"#032F62"},"children":"'Sales'"}],["$","span",null,{"style":{"color":"#24292E"},"children":", all_varchar: "}],["$","span",null,{"style":{"color":"#005CC5"},"children":"true"}],["$","span",null,{"style":{"color":"#24292E"},"children":", stop_at_empty: "}],["$","span",null,{"style":{"color":"#005CC5"},"children":"false"}],["$","span",null,{"style":{"color":"#24292E"},"children":" }],"}]]}],"\n",["$","span",null,{"data-line":"","children":["$","span",null,{"style":{"color":"#24292E"},"children":"  },"}]}],"\n",["$","span",null,{"data-line":"","children":["$","span",null,{"style":{"color":"#24292E"},"children":"});"}]}]]}]}]]}]}]
+5f:["$","p",null,{"children":["DuckDB 会拒绝含有字面 XML 实体文本工作表名的工作簿，例如 ",["$","code",null,{"children":"Sales &amp; Tax"}],"，因为 Excel 扩展可能将它与另一张表混淆。请重命名这些工作表，或使用 Python 引擎。普通的 &、引号和 Unicode 名称均受支持。"]}]
+60:["$","h2",null,{"id":"text","children":["$","a",null,{"href":"#text","className":"docs-heading-link","children":"文本"}]}]
+61:["$","p",null,{"children":"从非结构化文本中提取数据行。这种数据源会调用已配置的模型。"}]
+62:["$","figure",null,{"data-rehype-pretty-code-figure":"","children":["$","div",null,{"className":"docs-code-block","children":[["$","div",null,{"className":"docs-code-toolbar","children":[["$","span",null,{"children":"typescript"}],["$","$L17",null,{}]]}],["$","pre",null,{"tabIndex":"0","data-language":"typescript","data-theme":"github-light","children":["$","code",null,{"data-language":"typescript","data-theme":"github-light","style":{"display":"grid"},"children":[["$","span",null,{"data-line":"","children":[["$","span",null,{"style":{"color":"#D73A49"},"children":"await"}],["$","span",null,{"style":{"color":"#24292E"},"children":" ava."}],["$","span",null,{"style":{"color":"#6F42C1"},"children":"source"}],["$","span",null,{"style":{"color":"#24292E"},"children":"({"}]]}],"\n",["$","span",null,{"data-line":"","children":[["$","span",null,{"style":{"color":"#24292E"},"children":"  type: "}],["$","span",null,{"style":{"color":"#032F62"},"children":"'text'"}],["$","span",null,{"style":{"color":"#24292E"},"children":","}]]}],"\n",["$","span",null,{"data-line":"","children":[["$","span",null,{"style":{"color":"#24292E"},"children":"  options: { text: "}],["$","span",null,{"style":{"color":"#032F62"},"children":"'Hangzhou revenue was 120. Shanghai revenue was 200.'"}],["$","span",null,{"style":{"color":"#24292E"},"children":" },"}]]}],"\n",["$","span",null,{"data-line":"","children":["$","span",null,{"style":{"color":"#24292E"},"children":"});"}]}]]}]}]]}]}]
+63:["$","div",null,{"className":"docs-table","children":["$","table",null,{"children":[["$","thead",null,{"children":["$","tr",null,{"children":[["$","th",null,{"children":"字段"}],["$","th",null,{"children":"类型"}],["$","th",null,{"children":"必填"}],["$","th",null,{"children":"含义与默认值"}]]}]}],["$","tbody",null,{"children":["$","tr",null,{"children":[["$","td",null,{"children":["$","code",null,{"children":"text"}]}],["$","td",null,{"children":["$","code",null,{"children":"string"}]}],["$","td",null,{"children":"是"}],["$","td",null,{"children":"使用已配置模型提取的非结构化文本。"}]]}]}]]}]}]
+64:["$","h2",null,{"id":"sqlite","children":["$","a",null,{"href":"#sqlite","className":"docs-heading-link","children":"SQLite"}]}]
+65:["$","p",null,{"children":"以只读模式打开本地 SQLite 数据库。"}]
+66:["$","figure",null,{"data-rehype-pretty-code-figure":"","children":["$","div",null,{"className":"docs-code-block","children":[["$","div",null,{"className":"docs-code-toolbar","children":[["$","span",null,{"children":"typescript"}],["$","$L17",null,{}]]}],["$","pre",null,{"tabIndex":"0","data-language":"typescript","data-theme":"github-light","children":["$","code",null,{"data-language":"typescript","data-theme":"github-light","style":{"display":"grid"},"children":[["$","span",null,{"data-line":"","children":[["$","span",null,{"style":{"color":"#D73A49"},"children":"await"}],["$","span",null,{"style":{"color":"#24292E"},"children":" ava."}],["$","span",null,{"style":{"color":"#6F42C1"},"children":"source"}],["$","span",null,{"style":{"color":"#24292E"},"children":"({"}]]}],"\n",["$","span",null,{"data-line":"","children":[["$","span",null,{"style":{"color":"#24292E"},"children":"  type: "}],["$","span",null,{"style":{"color":"#032F62"},"children":"'sqlite'"}],["$","span",null,{"style":{"color":"#24292E"},"children":","}]]}],"\n",["$","span",null,{"data-line":"","children":[["$","span",null,{"style":{"color":"#24292E"},"children":"  options: { path: "}],["$","span",null,{"style":{"color":"#032F62"},"children":"'./analytics.sqlite'"}],["$","span",null,{"style":{"color":"#24292E"},"children":" },"}]]}],"\n",["$","span",null,{"data-line":"","children":["$","span",null,{"style":{"color":"#24292E"},"children":"});"}]}]]}]}]]}]}]
+67:["$","div",null,{"className":"docs-table","children":["$","table",null,{"children":[["$","thead",null,{"children":["$","tr",null,{"children":[["$","th",null,{"children":"字段"}],["$","th",null,{"children":"类型"}],["$","th",null,{"children":"必填"}],["$","th",null,{"children":"含义与默认值"}]]}]}],["$","tbody",null,{"children":["$","tr",null,{"children":[["$","td",null,{"children":["$","code",null,{"children":"path"}]}],["$","td",null,{"children":["$","code",null,{"children":"string"}]}],["$","td",null,{"children":"是"}],["$","td",null,{"children":"本地 SQLite 数据库文件路径。"}]]}]}]]}]}]
+68:["$","h2",null,{"id":"mysql","children":["$","a",null,{"href":"#mysql","className":"docs-heading-link","children":"MySQL"}]}]
+69:["$","p",null,{"children":"连接数据库并发现其中的表。"}]
+6a:["$","figure",null,{"data-rehype-pretty-code-figure":"","children":["$","div",null,{"className":"docs-code-block","children":[["$","div",null,{"className":"docs-code-toolbar","children":[["$","span",null,{"children":"typescript"}],["$","$L17",null,{}]]}],["$","pre",null,{"tabIndex":"0","data-language":"typescript","data-theme":"github-light","children":["$","code",null,{"data-language":"typescript","data-theme":"github-light","style":{"display":"grid"},"children":[["$","span",null,{"data-line":"","children":[["$","span",null,{"style":{"color":"#D73A49"},"children":"await"}],["$","span",null,{"style":{"color":"#24292E"},"children":" ava."}],["$","span",null,{"style":{"color":"#6F42C1"},"children":"source"}],["$","span",null,{"style":{"color":"#24292E"},"children":"({"}]]}],"\n",["$","span",null,{"data-line":"","children":[["$","span",null,{"style":{"color":"#24292E"},"children":"  type: "}],["$","span",null,{"style":{"color":"#032F62"},"children":"'mysql'"}],["$","span",null,{"style":{"color":"#24292E"},"children":","}]]}],"\n",["$","span",null,{"data-line":"","children":["$","span",null,{"style":{"color":"#24292E"},"children":"  options: {"}]}],"\n",["$","span",null,{"data-line":"","children":[["$","span",null,{"style":{"color":"#24292E"},"children":"    host: "}],["$","span",null,{"style":{"color":"#032F62"},"children":"'localhost'"}],["$","span",null,{"style":{"color":"#24292E"},"children":","}]]}],"\n",["$","span",null,{"data-line":"","children":[["$","span",null,{"style":{"color":"#24292E"},"children":"    database: "}],["$","span",null,{"style":{"color":"#032F62"},"children":"'analytics'"}],["$","span",null,{"style":{"color":"#24292E"},"children":","}]]}],"\n",["$","span",null,{"data-line":"","children":[["$","span",null,{"style":{"color":"#24292E"},"children":"    user: "}],["$","span",null,{"style":{"color":"#032F62"},"children":"'reader'"}],["$","span",null,{"style":{"color":"#24292E"},"children":","}]]}],"\n",["$","span",null,{"data-line":"","children":[["$","span",null,{"style":{"color":"#24292E"},"children":"    password: process.env."}],["$","span",null,{"style":{"color":"#005CC5"},"children":"MYSQL_PASSWORD"}],["$","span",null,{"style":{"color":"#24292E"},"children":","}]]}],"\n",["$","span",null,{"data-line":"","children":["$","span",null,{"style":{"color":"#24292E"},"children":"  },"}]}],"\n",["$","span",null,{"data-line":"","children":["$","span",null,{"style":{"color":"#24292E"},"children":"});"}]}]]}]}]]}]}]
+6b:["$","div",null,{"className":"docs-table","children":["$","table",null,{"children":[["$","thead",null,{"children":["$","tr",null,{"children":[["$","th",null,{"children":"字段"}],["$","th",null,{"children":"类型"}],["$","th",null,{"children":"必填"}],["$","th",null,{"children":"含义与默认值"}]]}]}],["$","tbody",null,{"children":[["$","tr",null,{"children":[["$","td",null,{"children":["$","code",null,{"children":"host"}]}],["$","td",null,{"children":["$","code",null,{"children":"string"}]}],["$","td",null,{"children":"是"}],["$","td",null,{"children":"数据库主机名。"}]]}],["$","tr",null,{"children":[["$","td",null,{"children":["$","code",null,{"children":"port"}]}],["$","td",null,{"children":["$","code",null,{"children":"number"}]}],["$","td",null,{"children":"否"}],["$","td",null,{"children":["默认 ",["$","code",null,{"children":"3306"}],"。"]}]]}],["$","tr",null,{"children":[["$","td",null,{"children":["$","code",null,{"children":"database"}]}],["$","td",null,{"children":["$","code",null,{"children":"string"}]}],["$","td",null,{"children":"是"}],["$","td",null,{"children":"要暴露的数据库。"}]]}],["$","tr",null,{"children":[["$","td",null,{"children":["$","code",null,{"children":"user"}]}],["$","td",null,{"children":["$","code",null,{"children":"string"}]}],["$","td",null,{"children":"否"}],["$","td",null,{"children":"数据库用户，不提供则省略。"}]]}],["$","tr",null,{"children":[["$","td",null,{"children":["$","code",null,{"children":"password"}]}],["$","td",null,{"children":["$","code",null,{"children":"string"}]}],["$","td",null,{"children":"否"}],["$","td",null,{"children":"数据库密码，不提供则省略。"}]]}],["$","tr",null,{"children":[["$","td",null,{"children":["$","code",null,{"children":"ssh"}]}],["$","td",null,{"children":["$","code",null,{"children":"SSHOptions"}]}],["$","td",null,{"children":"否"}],["$","td",null,{"children":["可选的 ",["$","$L10",null,{"href":"#ssh-options","children":"SSH 隧道"}],"。"]}]]}]]}]]}]}]
+6c:["$","h2",null,{"id":"postgresql","children":["$","a",null,{"href":"#postgresql","className":"docs-heading-link","children":"PostgreSQL"}]}]
+6d:["$","p",null,{"children":"连接数据库并发现其中的表。"}]
+6e:["$","figure",null,{"data-rehype-pretty-code-figure":"","children":["$","div",null,{"className":"docs-code-block","children":[["$","div",null,{"className":"docs-code-toolbar","children":[["$","span",null,{"children":"typescript"}],["$","$L17",null,{}]]}],["$","pre",null,{"tabIndex":"0","data-language":"typescript","data-theme":"github-light","children":["$","code",null,{"data-language":"typescript","data-theme":"github-light","style":{"display":"grid"},"children":[["$","span",null,{"data-line":"","children":[["$","span",null,{"style":{"color":"#D73A49"},"children":"await"}],["$","span",null,{"style":{"color":"#24292E"},"children":" ava."}],["$","span",null,{"style":{"color":"#6F42C1"},"children":"source"}],["$","span",null,{"style":{"color":"#24292E"},"children":"({"}]]}],"\n",["$","span",null,{"data-line":"","children":[["$","span",null,{"style":{"color":"#24292E"},"children":"  type: "}],["$","span",null,{"style":{"color":"#032F62"},"children":"'postgresql'"}],["$","span",null,{"style":{"color":"#24292E"},"children":","}]]}],"\n",["$","span",null,{"data-line":"","children":["$","span",null,{"style":{"color":"#24292E"},"children":"  options: {"}]}],"\n",["$","span",null,{"data-line":"","children":[["$","span",null,{"style":{"color":"#24292E"},"children":"    host: "}],["$","span",null,{"style":{"color":"#032F62"},"children":"'localhost'"}],["$","span",null,{"style":{"color":"#24292E"},"children":","}]]}],"\n",["$","span",null,{"data-line":"","children":[["$","span",null,{"style":{"color":"#24292E"},"children":"    database: "}],["$","span",null,{"style":{"color":"#032F62"},"children":"'analytics'"}],["$","span",null,{"style":{"color":"#24292E"},"children":","}]]}],"\n",["$","span",null,{"data-line":"","children":[["$","span",null,{"style":{"color":"#24292E"},"children":"    user: "}],["$","span",null,{"style":{"color":"#032F62"},"children":"'reader'"}],["$","span",null,{"style":{"color":"#24292E"},"children":","}]]}],"\n",["$","span",null,{"data-line":"","children":[["$","span",null,{"style":{"color":"#24292E"},"children":"    password: process.env."}],["$","span",null,{"style":{"color":"#005CC5"},"children":"POSTGRES_PASSWORD"}],["$","span",null,{"style":{"color":"#24292E"},"children":","}]]}],"\n",["$","span",null,{"data-line":"","children":["$","span",null,{"style":{"color":"#24292E"},"children":"  },"}]}],"\n",["$","span",null,{"data-line":"","children":["$","span",null,{"style":{"color":"#24292E"},"children":"});"}]}]]}]}]]}]}]
+6f:["$","div",null,{"className":"docs-table","children":["$","table",null,{"children":[["$","thead",null,{"children":["$","tr",null,{"children":[["$","th",null,{"children":"字段"}],["$","th",null,{"children":"类型"}],["$","th",null,{"children":"必填"}],["$","th",null,{"children":"含义与默认值"}]]}]}],["$","tbody",null,{"children":[["$","tr",null,{"children":[["$","td",null,{"children":["$","code",null,{"children":"host"}]}],["$","td",null,{"children":["$","code",null,{"children":"string"}]}],["$","td",null,{"children":"是"}],["$","td",null,{"children":"数据库主机名。"}]]}],["$","tr",null,{"children":[["$","td",null,{"children":["$","code",null,{"children":"port"}]}],["$","td",null,{"children":["$","code",null,{"children":"number"}]}],["$","td",null,{"children":"否"}],["$","td",null,{"children":["默认 ",["$","code",null,{"children":"5432"}],"。"]}]]}],["$","tr",null,{"children":[["$","td",null,{"children":["$","code",null,{"children":"database"}]}],["$","td",null,{"children":["$","code",null,{"children":"string"}]}],["$","td",null,{"children":"是"}],["$","td",null,{"children":"要暴露的数据库。"}]]}],["$","tr",null,{"children":[["$","td",null,{"children":["$","code",null,{"children":"user"}]}],["$","td",null,{"children":["$","code",null,{"children":"string"}]}],["$","td",null,{"children":"否"}],["$","td",null,{"children":"数据库用户，不提供则省略。"}]]}],["$","tr",null,{"children":[["$","td",null,{"children":["$","code",null,{"children":"password"}]}],["$","td",null,{"children":["$","code",null,{"children":"string"}]}],["$","td",null,{"children":"否"}],["$","td",null,{"children":"数据库密码，不提供则省略。"}]]}],["$","tr",null,{"children":[["$","td",null,{"children":["$","code",null,{"children":"schema"}]}],["$","td",null,{"children":["$","code",null,{"children":"string"}]}],["$","td",null,{"children":"否"}],["$","td",null,{"children":["表所属的数据库 schema，默认 ",["$","code",null,{"children":"public"}],"。"]}]]}],["$","tr",null,{"children":[["$","td",null,{"children":["$","code",null,{"children":"ssh"}]}],["$","td",null,{"children":["$","code",null,{"children":"SSHOptions"}]}],["$","td",null,{"children":"否"}],["$","td",null,{"children":["可选的 ",["$","$L10",null,{"href":"#ssh-options","children":"SSH 隧道"}],"。"]}]]}]]}]]}]}]
+70:["$","h2",null,{"id":"mongodb","children":["$","a",null,{"href":"#mongodb","className":"docs-heading-link","children":"MongoDB"}]}]
+71:["$","p",null,{"children":["加载指定数据库中的集合。可以使用结构化连接字段，也可以提供优先级更高的 ",["$","code",null,{"children":"connection"}],"。"]}]
+72:["$","figure",null,{"data-rehype-pretty-code-figure":"","children":["$","div",null,{"className":"docs-code-block","children":[["$","div",null,{"className":"docs-code-toolbar","children":[["$","span",null,{"children":"typescript"}],["$","$L17",null,{}]]}],["$","pre",null,{"tabIndex":"0","data-language":"typescript","data-theme":"github-light","children":["$","code",null,{"data-language":"typescript","data-theme":"github-light","style":{"display":"grid"},"children":[["$","span",null,{"data-line":"","children":[["$","span",null,{"style":{"color":"#D73A49"},"children":"await"}],["$","span",null,{"style":{"color":"#24292E"},"children":" ava."}],["$","span",null,{"style":{"color":"#6F42C1"},"children":"source"}],["$","span",null,{"style":{"color":"#24292E"},"children":"({"}]]}],"\n",["$","span",null,{"data-line":"","children":[["$","span",null,{"style":{"color":"#24292E"},"children":"  type: "}],["$","span",null,{"style":{"color":"#032F62"},"children":"'mongodb'"}],["$","span",null,{"style":{"color":"#24292E"},"children":","}]]}],"\n",["$","span",null,{"data-line":"","children":["$","span",null,{"style":{"color":"#24292E"},"children":"  options: {"}]}],"\n",["$","span",null,{"data-line":"","children":[["$","span",null,{"style":{"color":"#24292E"},"children":"    connection: process.env."}],["$","span",null,{"style":{"color":"#005CC5"},"children":"MONGODB_URI"}],["$","span",null,{"style":{"color":"#D73A49"},"children":"!"}],["$","span",null,{"style":{"color":"#24292E"},"children":","}]]}],"\n",["$","span",null,{"data-line":"","children":[["$","span",null,{"style":{"color":"#24292E"},"children":"    database: "}],["$","span",null,{"style":{"color":"#032F62"},"children":"'analytics'"}],["$","span",null,{"style":{"color":"#24292E"},"children":","}]]}],"\n",["$","span",null,{"data-line":"","children":["$","span",null,{"style":{"color":"#24292E"},"children":"  },"}]}],"\n",["$","span",null,{"data-line":"","children":["$","span",null,{"style":{"color":"#24292E"},"children":"});"}]}]]}]}]]}]}]
+73:["$","div",null,{"className":"docs-table","children":["$","table",null,{"children":[["$","thead",null,{"children":["$","tr",null,{"children":[["$","th",null,{"children":"字段"}],["$","th",null,{"children":"类型"}],["$","th",null,{"children":"必填"}],["$","th",null,{"children":"含义与默认值"}]]}]}],["$","tbody",null,{"children":[["$","tr",null,{"children":[["$","td",null,{"children":["$","code",null,{"children":"connection"}]}],["$","td",null,{"children":["$","code",null,{"children":"string"}]}],["$","td",null,{"children":"否"}],["$","td",null,{"children":["高级连接字符串，例如 ",["$","code",null,{"children":"host=localhost port=27017"}]," 或 ",["$","code",null,{"children":"mongodb://user:pass@host:27017/db"}],"；提供后优先于所有结构化字段。"]}]]}],["$","tr",null,{"children":[["$","td",null,{"children":["$","code",null,{"children":"host"}]}],["$","td",null,{"children":["$","code",null,{"children":"string"}]}],["$","td",null,{"children":"否"}],["$","td",null,{"children":["MongoDB 主机名或 IP 地址，默认 ",["$","code",null,{"children":"localhost"}],"。"]}]]}],["$","tr",null,{"children":[["$","td",null,{"children":["$","code",null,{"children":"port"}]}],["$","td",null,{"children":["$","code",null,{"children":"number"}]}],["$","td",null,{"children":"否"}],["$","td",null,{"children":["MongoDB 端口号，默认 ",["$","code",null,{"children":"27017"}],"。"]}]]}],["$","tr",null,{"children":[["$","td",null,{"children":["$","code",null,{"children":"database"}]}],["$","td",null,{"children":["$","code",null,{"children":"string"}]}],["$","td",null,{"children":"是"}],["$","td",null,{"children":"包含待加载集合的数据库。"}]]}],["$","tr",null,{"children":[["$","td",null,{"children":["$","code",null,{"children":"user"}]}],["$","td",null,{"children":["$","code",null,{"children":"string"}]}],["$","td",null,{"children":"否"}],["$","td",null,{"children":"MongoDB 用户名。"}]]}],["$","tr",null,{"children":[["$","td",null,{"children":["$","code",null,{"children":"password"}]}],["$","td",null,{"children":["$","code",null,{"children":"string"}]}],["$","td",null,{"children":"否"}],["$","td",null,{"children":"MongoDB 密码。"}]]}],["$","tr",null,{"children":[["$","td",null,{"children":["$","code",null,{"children":"authSource"}]}],["$","td",null,{"children":["$","code",null,{"children":"string"}]}],["$","td",null,{"children":"否"}],["$","td",null,{"children":["鉴权数据库，对应 MongoDB 的 ",["$","code",null,{"children":"authSource"}],"。"]}]]}],["$","tr",null,{"children":[["$","td",null,{"children":["$","code",null,{"children":"srv"}]}],["$","td",null,{"children":["$","code",null,{"children":"boolean"}]}],["$","td",null,{"children":"否"}],["$","td",null,{"children":"使用 SRV 连接格式，适用于 MongoDB Atlas。"}]]}],["$","tr",null,{"children":[["$","td",null,{"children":["$","code",null,{"children":"tls"}]}],["$","td",null,{"children":["$","code",null,{"children":"boolean"}]}],["$","td",null,{"children":"否"}],["$","td",null,{"children":["启用 TLS/SSL 加密，别名为 ",["$","code",null,{"children":"ssl"}],"。"]}]]}],["$","tr",null,{"children":[["$","td",null,{"children":["$","code",null,{"children":"ssl"}]}],["$","td",null,{"children":["$","code",null,{"children":"boolean"}]}],["$","td",null,{"children":"否"}],["$","td",null,{"children":[["$","code",null,{"children":"tls"}]," 的别名。"]}]]}],["$","tr",null,{"children":[["$","td",null,{"children":["$","code",null,{"children":"tlsCAFile"}]}],["$","td",null,{"children":["$","code",null,{"children":"string"}]}],["$","td",null,{"children":"否"}],["$","td",null,{"children":"TLS 的 CA 证书文件路径。"}]]}],["$","tr",null,{"children":[["$","td",null,{"children":["$","code",null,{"children":"tlsAllowInvalidCertificates"}]}],["$","td",null,{"children":["$","code",null,{"children":"boolean"}]}],["$","td",null,{"children":"否"}],["$","td",null,{"children":"允许无效证书，仅用于测试，默认 false。"}]]}]]}]]}]}]
+74:["$","h2",null,{"id":"feishu-bitable","children":["$","a",null,{"href":"#feishu-bitable","className":"docs-heading-link","children":"飞书多维表格"}]}]
+75:["$","p",null,{"children":["在 Node.js 的 DuckDB 引擎中使用 ",["$","code",null,{"children":"type: 'feishu-bitable'"}],"。记录会暴露为名为 ",["$","code",null,{"children":"data"}]," 的只读视图。"]}]
+76:["$","figure",null,{"data-rehype-pretty-code-figure":"","children":["$","div",null,{"className":"docs-code-block","children":[["$","div",null,{"className":"docs-code-toolbar","children":[["$","span",null,{"children":"typescript"}],["$","$L17",null,{}]]}],["$","pre",null,{"tabIndex":"0","data-language":"typescript","data-theme":"github-light","children":["$","code",null,{"data-language":"typescript","data-theme":"github-light","style":{"display":"grid"},"children":[["$","span",null,{"data-line":"","children":[["$","span",null,{"style":{"color":"#D73A49"},"children":"await"}],["$","span",null,{"style":{"color":"#24292E"},"children":" ava."}],["$","span",null,{"style":{"color":"#6F42C1"},"children":"source"}],["$","span",null,{"style":{"color":"#24292E"},"children":"({"}]]}],"\n",["$","span",null,{"data-line":"","children":[["$","span",null,{"style":{"color":"#24292E"},"children":"  type: "}],["$","span",null,{"style":{"color":"#032F62"},"children":"'feishu-bitable'"}],["$","span",null,{"style":{"color":"#24292E"},"children":","}]]}],"\n",["$","span",null,{"data-line":"","children":["$","span",null,{"style":{"color":"#24292E"},"children":"  options: {"}]}],"\n",["$","span",null,{"data-line":"","children":[["$","span",null,{"style":{"color":"#24292E"},"children":"    url: "}],["$","span",null,{"style":{"color":"#032F62"},"children":"'https://my.feishu.cn/base/APP_TOKEN?table=TABLE_ID'"}],["$","span",null,{"style":{"color":"#24292E"},"children":","}]]}],"\n",["$","span",null,{"data-line":"","children":[["$","span",null,{"style":{"color":"#24292E"},"children":"    appId: process.env."}],["$","span",null,{"style":{"color":"#005CC5"},"children":"AVA_FEISHU_APP_ID"}],["$","span",null,{"style":{"color":"#24292E"},"children":","}]]}],"\n",["$","span",null,{"data-line":"","children":[["$","span",null,{"style":{"color":"#24292E"},"children":"    appSecret: process.env."}],["$","span",null,{"style":{"color":"#005CC5"},"children":"AVA_FEISHU_APP_SECRET"}],["$","span",null,{"style":{"color":"#24292E"},"children":","}]]}],"\n",["$","span",null,{"data-line":"","children":["$","span",null,{"style":{"color":"#24292E"},"children":"  },"}]}],"\n",["$","span",null,{"data-line":"","children":["$","span",null,{"style":{"color":"#24292E"},"children":"});"}]}]]}]}]]}]}]
+77:["$","p",null,{"children":["提供 ",["$","code",null,{"children":"url"}],"，或同时提供 ",["$","code",null,{"children":"appToken"}]," 与 ",["$","code",null,{"children":"tableId"}],"，并设置 ",["$","code",null,{"children":"appId"}],"、",["$","code",null,{"children":"appSecret"}],"。CLI 也会从 ",["$","code",null,{"children":"AVA_FEISHU_APP_ID"}],"、",["$","code",null,{"children":"AVA_FEISHU_APP_SECRET"}]," 或 ",["$","code",null,{"children":"~/.ava/feishu.json"}]," 读取凭证。"]}]
+78:["$","p",null,{"children":["支持 ",["$","code",null,{"children":"/base/"}]," 链接和知识库中的 ",["$","code",null,{"children":"/wiki/"}]," 链接。Wiki 链接要求应用具备知识库读取权限并加入相应知识空间，才能解析多维表格。URL 中的 ",["$","code",null,{"children":"view"}]," 参数会被忽略。人员、附件、链接、公式、位置、群组等复杂单元格会展开为逗号分隔的文本。"]}]
+79:["$","h2",null,{"id":"supabase","children":["$","a",null,{"href":"#supabase","className":"docs-heading-link","children":"Supabase"}]}]
+7a:["$","p",null,{"children":"提供项目标识与 Supabase Management API 访问令牌；应用负责获取和刷新令牌。"}]
+7b:["$","figure",null,{"data-rehype-pretty-code-figure":"","children":["$","div",null,{"className":"docs-code-block","children":[["$","div",null,{"className":"docs-code-toolbar","children":[["$","span",null,{"children":"typescript"}],["$","$L17",null,{}]]}],["$","pre",null,{"tabIndex":"0","data-language":"typescript","data-theme":"github-light","children":["$","code",null,{"data-language":"typescript","data-theme":"github-light","style":{"display":"grid"},"children":[["$","span",null,{"data-line":"","children":[["$","span",null,{"style":{"color":"#D73A49"},"children":"const"}],["$","span",null,{"style":{"color":"#005CC5"},"children":" ava"}],["$","span",null,{"style":{"color":"#D73A49"},"children":" ="}],["$","span",null,{"style":{"color":"#D73A49"},"children":" new"}],["$","span",null,{"style":{"color":"#6F42C1"},"children":" AVA"}],["$","span",null,{"style":{"color":"#24292E"},"children":"({"}]]}],"\n",["$","span",null,{"data-line":"","children":[["$","span",null,{"style":{"color":"#24292E"},"children":"  llm: { model: "}],["$","span",null,{"style":{"color":"#032F62"},"children":"'YOUR_MODEL'"}],["$","span",null,{"style":{"color":"#24292E"},"children":", apiKey: process.env."}],["$","span",null,{"style":{"color":"#005CC5"},"children":"OPENAI_API_KEY"}],["$","span",null,{"style":{"color":"#24292E"},"children":" },"}]]}],"\n",["$","span",null,{"data-line":"","children":[["$","span",null,{"style":{"color":"#24292E"},"children":"  engine: { type: "}],["$","span",null,{"style":{"color":"#032F62"},"children":"'supabase'"}],["$","span",null,{"style":{"color":"#24292E"},"children":" },"}]]}],"\n",["$","span",null,{"data-line":"","children":["$","span",null,{"style":{"color":"#24292E"},"children":"});"}]}],"\n",["$","span",null,{"data-line":"","children":[["$","span",null,{"style":{"color":"#D73A49"},"children":"await"}],["$","span",null,{"style":{"color":"#24292E"},"children":" ava."}],["$","span",null,{"style":{"color":"#6F42C1"},"children":"source"}],["$","span",null,{"style":{"color":"#24292E"},"children":"({"}]]}],"\n",["$","span",null,{"data-line":"","children":[["$","span",null,{"style":{"color":"#24292E"},"children":"  type: "}],["$","span",null,{"style":{"color":"#032F62"},"children":"'supabase'"}],["$","span",null,{"style":{"color":"#24292E"},"children":","}]]}],"\n",["$","span",null,{"data-line":"","children":["$","span",null,{"style":{"color":"#24292E"},"children":"  options: {"}]}],"\n",["$","span",null,{"data-line":"","children":[["$","span",null,{"style":{"color":"#24292E"},"children":"    projectRef: "}],["$","span",null,{"style":{"color":"#032F62"},"children":"'YOUR_PROJECT_REF'"}],["$","span",null,{"style":{"color":"#24292E"},"children":","}]]}],"\n",["$","span",null,{"data-line":"","children":[["$","span",null,{"style":{"color":"#24292E"},"children":"    accessToken: process.env."}],["$","span",null,{"style":{"color":"#005CC5"},"children":"SUPABASE_ACCESS_TOKEN"}],["$","span",null,{"style":{"color":"#D73A49"},"children":"!"}],["$","span",null,{"style":{"color":"#24292E"},"children":","}]]}],"\n",["$","span",null,{"data-line":"","children":["$","span",null,{"style":{"color":"#24292E"},"children":"  },"}]}],"\n",["$","span",null,{"data-line":"","children":["$","span",null,{"style":{"color":"#24292E"},"children":"});"}]}]]}]}]]}]}]
+7c:["$","div",null,{"className":"docs-table","children":["$","table",null,{"children":[["$","thead",null,{"children":["$","tr",null,{"children":[["$","th",null,{"children":"字段"}],["$","th",null,{"children":"类型"}],["$","th",null,{"children":"必填"}],["$","th",null,{"children":"含义与默认值"}]]}]}],["$","tbody",null,{"children":[["$","tr",null,{"children":[["$","td",null,{"children":["$","code",null,{"children":"accessToken"}]}],["$","td",null,{"children":["$","code",null,{"children":"string"}]}],["$","td",null,{"children":"是"}],["$","td",null,{"children":"Supabase Management API OAuth 流程返回的 OAuth 访问令牌。"}]]}],["$","tr",null,{"children":[["$","td",null,{"children":["$","code",null,{"children":"projectRef"}]}],["$","td",null,{"children":["$","code",null,{"children":"string"}]}],["$","td",null,{"children":"是"}],["$","td",null,{"children":["项目标识，可从 GET ",["$","$L10",null,{"href":"https://api.supabase.com/v1/projects","children":"https://api.supabase.com/v1/projects"}]," 的结果中获取。"]}]]}]]}]]}]}]
+7d:["$","h2",null,{"id":"clickhouse","children":["$","a",null,{"href":"#clickhouse","className":"docs-heading-link","children":"ClickHouse"}]}]
+7e:["$","p",null,{"children":["提供服务端点和数据库。使用 ",["$","code",null,{"children":"url"}]," 或 ",["$","code",null,{"children":"host"}],"；同时存在时 ",["$","code",null,{"children":"url"}]," 优先。"]}]
+7f:["$","figure",null,{"data-rehype-pretty-code-figure":"","children":["$","div",null,{"className":"docs-code-block","children":[["$","div",null,{"className":"docs-code-toolbar","children":[["$","span",null,{"children":"typescript"}],["$","$L17",null,{}]]}],["$","pre",null,{"tabIndex":"0","data-language":"typescript","data-theme":"github-light","children":["$","code",null,{"data-language":"typescript","data-theme":"github-light","style":{"display":"grid"},"children":[["$","span",null,{"data-line":"","children":[["$","span",null,{"style":{"color":"#D73A49"},"children":"const"}],["$","span",null,{"style":{"color":"#005CC5"},"children":" ava"}],["$","span",null,{"style":{"color":"#D73A49"},"children":" ="}],["$","span",null,{"style":{"color":"#D73A49"},"children":" new"}],["$","span",null,{"style":{"color":"#6F42C1"},"children":" AVA"}],["$","span",null,{"style":{"color":"#24292E"},"children":"({"}]]}],"\n",["$","span",null,{"data-line":"","children":[["$","span",null,{"style":{"color":"#24292E"},"children":"  llm: { model: "}],["$","span",null,{"style":{"color":"#032F62"},"children":"'YOUR_MODEL'"}],["$","span",null,{"style":{"color":"#24292E"},"children":", apiKey: process.env."}],["$","span",null,{"style":{"color":"#005CC5"},"children":"OPENAI_API_KEY"}],["$","span",null,{"style":{"color":"#24292E"},"children":" },"}]]}],"\n",["$","span",null,{"data-line":"","children":[["$","span",null,{"style":{"color":"#24292E"},"children":"  engine: { type: "}],["$","span",null,{"style":{"color":"#032F62"},"children":"'clickhouse'"}],["$","span",null,{"style":{"color":"#24292E"},"children":" },"}]]}],"\n",["$","span",null,{"data-line":"","children":["$","span",null,{"style":{"color":"#24292E"},"children":"});"}]}],"\n",["$","span",null,{"data-line":"","children":[["$","span",null,{"style":{"color":"#D73A49"},"children":"await"}],["$","span",null,{"style":{"color":"#24292E"},"children":" ava."}],["$","span",null,{"style":{"color":"#6F42C1"},"children":"source"}],["$","span",null,{"style":{"color":"#24292E"},"children":"({"}]]}],"\n",["$","span",null,{"data-line":"","children":[["$","span",null,{"style":{"color":"#24292E"},"children":"  type: "}],["$","span",null,{"style":{"color":"#032F62"},"children":"'clickhouse'"}],["$","span",null,{"style":{"color":"#24292E"},"children":","}]]}],"\n",["$","span",null,{"data-line":"","children":["$","span",null,{"style":{"color":"#24292E"},"children":"  options: {"}]}],"\n",["$","span",null,{"data-line":"","children":[["$","span",null,{"style":{"color":"#24292E"},"children":"    url: "}],["$","span",null,{"style":{"color":"#032F62"},"children":"'http://localhost:8123'"}],["$","span",null,{"style":{"color":"#24292E"},"children":","}]]}],"\n",["$","span",null,{"data-line":"","children":[["$","span",null,{"style":{"color":"#24292E"},"children":"    database: "}],["$","span",null,{"style":{"color":"#032F62"},"children":"'analytics'"}],["$","span",null,{"style":{"color":"#24292E"},"children":","}]]}],"\n",["$","span",null,{"data-line":"","children":[["$","span",null,{"style":{"color":"#24292E"},"children":"    username: "}],["$","span",null,{"style":{"color":"#032F62"},"children":"'reader'"}],["$","span",null,{"style":{"color":"#24292E"},"children":","}]]}],"\n",["$","span",null,{"data-line":"","children":[["$","span",null,{"style":{"color":"#24292E"},"children":"    password: process.env."}],["$","span",null,{"style":{"color":"#005CC5"},"children":"CLICKHOUSE_PASSWORD"}],["$","span",null,{"style":{"color":"#24292E"},"children":","}]]}],"\n",["$","span",null,{"data-line":"","children":["$","span",null,{"style":{"color":"#24292E"},"children":"  },"}]}],"\n",["$","span",null,{"data-line":"","children":["$","span",null,{"style":{"color":"#24292E"},"children":"});"}]}]]}]}]]}]}]
+80:["$","h3",null,{"id":"connection-fields","children":["$","a",null,{"href":"#connection-fields","className":"docs-heading-link","children":"连接字段"}]}]
+81:["$","div",null,{"className":"docs-table","children":["$","table",null,{"children":[["$","thead",null,{"children":["$","tr",null,{"children":[["$","th",null,{"children":"字段"}],["$","th",null,{"children":"类型"}],["$","th",null,{"children":"必填"}],["$","th",null,{"children":"含义与默认值"}]]}]}],["$","tbody",null,{"children":[["$","tr",null,{"children":[["$","td",null,{"children":["$","code",null,{"children":"host"}]}],["$","td",null,{"children":["$","code",null,{"children":"string"}]}],["$","td",null,{"children":[["$","code",null,{"children":"host"}]," 或 ",["$","code",null,{"children":"url"}]]}],["$","td",null,{"children":["主机名或 host:port；没有协议时，AVA 自动补上 ",["$","code",null,{"children":"http://"}],"。"]}]]}],["$","tr",null,{"children":[["$","td",null,{"children":["$","code",null,{"children":"url"}]}],["$","td",null,{"children":["$","code",null,{"children":"string"}]}],["$","td",null,{"children":[["$","code",null,{"children":"host"}]," 或 ",["$","code",null,{"children":"url"}]]}],["$","td",null,{"children":["完整的服务 URL，优先于 ",["$","code",null,{"children":"host"}],"。"]}]]}],["$","tr",null,{"children":[["$","td",null,{"children":["$","code",null,{"children":"port"}]}],["$","td",null,{"children":["$","code",null,{"children":"number"}]}],["$","td",null,{"children":"否"}],["$","td",null,{"children":"覆盖端点中的端口号。"}]]}],["$","tr",null,{"children":[["$","td",null,{"children":["$","code",null,{"children":"database"}]}],["$","td",null,{"children":["$","code",null,{"children":"string"}]}],["$","td",null,{"children":"是"}],["$","td",null,{"children":"要发现结构和执行查询的数据库。"}]]}],["$","tr",null,{"children":[["$","td",null,{"children":["$","code",null,{"children":"username"}]}],["$","td",null,{"children":["$","code",null,{"children":"string"}]}],["$","td",null,{"children":"否"}],["$","td",null,{"children":["客户端用户名，优先于 ",["$","code",null,{"children":"user"}],"；客户端默认值为 ",["$","code",null,{"children":"default"}],"。"]}]]}],["$","tr",null,{"children":[["$","td",null,{"children":["$","code",null,{"children":"user"}]}],["$","td",null,{"children":["$","code",null,{"children":"string"}]}],["$","td",null,{"children":"否"}],["$","td",null,{"children":[["$","code",null,{"children":"username"}]," 的别名。"]}]]}],["$","tr",null,{"children":[["$","td",null,{"children":["$","code",null,{"children":"password"}]}],["$","td",null,{"children":["$","code",null,{"children":"string"}]}],["$","td",null,{"children":"否"}],["$","td",null,{"children":"客户端密码，默认空字符串。"}]]}]]}]]}]}]
+82:["$","p",null,{"children":"虽然底层客户端默认可连接 localhost，AVA 仍要求显式提供端点。"}]
+83:["$","h3",null,{"id":"forwarded-client-fields","children":["$","a",null,{"href":"#forwarded-client-fields","className":"docs-heading-link","children":"透传的客户端字段"}]}]
+84:["$","p",null,{"children":[["$","code",null,{"children":"ClickHouseSourceOptions"}]," 也接受以下 ",["$","code",null,{"children":"@clickhouse/client"}]," 字段。下表基于已安装客户端的类型声明（1.23.1）；这些字段由该依赖定义，AVA 会在创建客户端时透传。"]}]
+85:["$","div",null,{"className":"docs-table","children":["$","table",null,{"children":[["$","thead",null,{"children":["$","tr",null,{"children":[["$","th",null,{"children":"字段"}],["$","th",null,{"children":"类型"}],["$","th",null,{"children":"默认值与含义"}]]}]}],["$","tbody",null,{"children":[["$","tr",null,{"children":[["$","td",null,{"children":["$","code",null,{"children":"pathname"}]}],["$","td",null,{"children":["$","code",null,{"children":"string"}]}],["$","td",null,{"children":"默认为空，用于指定额外的代理路径。"}]]}],["$","tr",null,{"children":[["$","td",null,{"children":["$","code",null,{"children":"request_timeout"}]}],["$","td",null,{"children":["$","code",null,{"children":"number"}]}],["$","td",null,{"children":"默认 30000 毫秒。"}]]}],["$","tr",null,{"children":[["$","td",null,{"children":["$","code",null,{"children":"max_open_connections"}]}],["$","td",null,{"children":["$","code",null,{"children":"number"}]}],["$","td",null,{"children":"每个主机默认最多 10 个 socket 连接。"}]]}],["$","tr",null,{"children":[["$","td",null,{"children":["$","code",null,{"children":"compression"}]}],["$","td",null,{"children":"对象"}],["$","td",null,{"children":"请求和响应压缩，嵌套字段见下方。"}]]}],["$","tr",null,{"children":[["$","td",null,{"children":["$","code",null,{"children":"access_token"}]}],["$","td",null,{"children":["$","code",null,{"children":"string"}]}],["$","td",null,{"children":"默认未设置，用于 ClickHouse Cloud JWT；不可与用户名、密码同时使用。"}]]}],["$","tr",null,{"children":[["$","td",null,{"children":["$","code",null,{"children":"application"}]}],["$","td",null,{"children":["$","code",null,{"children":"string"}]}],["$","td",null,{"children":"默认为空，应用名称。"}]]}],["$","tr",null,{"children":[["$","td",null,{"children":["$","code",null,{"children":"clickhouse_settings"}]}],["$","td",null,{"children":["$","code",null,{"children":"ClickHouseSettings"}]}],["$","td",null,{"children":["默认为空，服务端设置映射。AVA 每次查询都会强制 ",["$","code",null,{"children":"readonly: '1'"}],"，覆盖冲突设置。"]}]]}],["$","tr",null,{"children":[["$","td",null,{"children":["$","code",null,{"children":"log"}]}],["$","td",null,{"children":"对象"}],["$","td",null,{"children":"客户端日志选项，见下方。"}]]}],["$","tr",null,{"children":[["$","td",null,{"children":["$","code",null,{"children":"session_id"}]}],["$","td",null,{"children":["$","code",null,{"children":"string"}]}],["$","td",null,{"children":"默认为空，不显式指定服务端会话。"}]]}],["$","tr",null,{"children":[["$","td",null,{"children":["$","code",null,{"children":"role"}]}],["$","td",null,{"children":["$","code",null,{"children":"string | string[]"}]}],["$","td",null,{"children":"默认未设置，服务端角色。"}]]}],["$","tr",null,{"children":[["$","td",null,{"children":["$","code",null,{"children":"http_headers"}]}],["$","td",null,{"children":["$","code",null,{"children":"Record<string, string>"}]}],["$","td",null,{"children":"默认为空，额外的 HTTP 请求头。"}]]}],["$","tr",null,{"children":[["$","td",null,{"children":["$","code",null,{"children":"additional_headers"}]}],["$","td",null,{"children":["$","code",null,{"children":"Record<string, string>"}]}],["$","td",null,{"children":["已废弃的客户端别名，请使用 ",["$","code",null,{"children":"http_headers"}],"。"]}]]}],["$","tr",null,{"children":[["$","td",null,{"children":["$","code",null,{"children":"keep_alive"}]}],["$","td",null,{"children":"对象"}],["$","td",null,{"children":"Socket 复用选项，见下方。"}]]}],["$","tr",null,{"children":[["$","td",null,{"children":["$","code",null,{"children":"json"}]}],["$","td",null,{"children":["$","code",null,{"children":"Partial<JSONHandling>"}]}],["$","td",null,{"children":["默认使用原生 ",["$","code",null,{"children":"JSON.parse"}]," / ",["$","code",null,{"children":"JSON.stringify"}],"；回调见下方。"]}]]}],["$","tr",null,{"children":[["$","td",null,{"children":["$","code",null,{"children":"tracer"}]}],["$","td",null,{"children":["$","code",null,{"children":"ClickHouseTracer"}]}],["$","td",null,{"children":"默认未设置，客户端追踪实现。"}]]}],["$","tr",null,{"children":[["$","td",null,{"children":["$","code",null,{"children":"use_multipart_params"}]}],["$","td",null,{"children":["$","code",null,{"children":"boolean"}]}],["$","td",null,{"children":"默认 false，始终以 multipart 发送查询参数。"}]]}],["$","tr",null,{"children":[["$","td",null,{"children":["$","code",null,{"children":"use_multipart_params_auto"}]}],["$","td",null,{"children":["$","code",null,{"children":"boolean"}]}],["$","td",null,{"children":"默认 false，编码后的参数超过 4096 个字符时使用 multipart。"}]]}],["$","tr",null,{"children":[["$","td",null,{"children":["$","code",null,{"children":"tls"}]}],["$","td",null,{"children":"TLS 选项对象"}],["$","td",null,{"children":"默认未设置，证书字段见下方。"}]]}],["$","tr",null,{"children":[["$","td",null,{"children":["$","code",null,{"children":"http_agent"}]}],["$","td",null,{"children":["$","code",null,{"children":"http.Agent | https.Agent"}]}],["$","td",null,{"children":["默认未设置。自定义 agent 会取代 ",["$","code",null,{"children":"max_open_connections"}],"、",["$","code",null,{"children":"tls"}]," 和 ",["$","code",null,{"children":"keep_alive"}],"；这是实验性客户端 API。"]}]]}],["$","tr",null,{"children":[["$","td",null,{"children":["$","code",null,{"children":"set_basic_auth_header"}]}],["$","td",null,{"children":["$","code",null,{"children":"boolean"}]}],["$","td",null,{"children":"默认 true，发送 Basic Authorization 请求头；实验性选项。"}]]}],["$","tr",null,{"children":[["$","td",null,{"children":["$","code",null,{"children":"capture_enhanced_stack_trace"}]}],["$","td",null,{"children":["$","code",null,{"children":"boolean"}]}],["$","td",null,{"children":"默认 false，记录扩展客户端调用栈；实验性选项。"}]]}],"$La5","$La6"]}]]}]}]
+86:["$","p",null,{"children":["透传字段全部可选。服务端设置是可扩展、与服务端版本有关的映射，并非 AVA 固定定义的字段清单；可用键由依赖的 ",["$","code",null,{"children":"ClickHouseSettings"}]," 类型和实际服务端共同决定。Tracer、agent、logger 与 connection 对象需要实现相应的客户端接口，并非普通的 AVA 配置对象。"]}]
+87:["$","h3",null,{"id":"nested-client-options","children":["$","a",null,{"href":"#nested-client-options","className":"docs-heading-link","children":"嵌套客户端选项"}]}]
+88:["$","div",null,{"className":"docs-table","children":["$","table",null,{"children":[["$","thead",null,{"children":["$","tr",null,{"children":[["$","th",null,{"children":"字段"}],["$","th",null,{"children":"类型"}],["$","th",null,{"children":"必填与默认值"}]]}]}],["$","tbody",null,{"children":[["$","tr",null,{"children":[["$","td",null,{"children":["$","code",null,{"children":"compression.response"}]}],["$","td",null,{"children":["$","code",null,{"children":"boolean | { codec: 'gzip' | 'zstd' | 'br' }"}]}],["$","td",null,{"children":"可选，默认 false；true 表示使用 gzip。"}]]}],["$","tr",null,{"children":[["$","td",null,{"children":["$","code",null,{"children":"compression.request"}]}],["$","td",null,{"children":["$","code",null,{"children":"boolean | RequestCompression"}]}],["$","td",null,{"children":"可选，默认 false；true 表示使用 gzip。"}]]}],["$","tr",null,{"children":[["$","td",null,{"children":["$","code",null,{"children":"compression.request.codec"}]}],["$","td",null,{"children":["$","code",null,{"children":"'gzip' | 'zstd' | 'br'"}]}],["$","td",null,{"children":"使用对象形式时必填。"}]]}],["$","tr",null,{"children":[["$","td",null,{"children":["$","code",null,{"children":"compression.request.level"}]}],["$","td",null,{"children":["$","code",null,{"children":"number"}]}],["$","td",null,{"children":"gzip / zstd 可选，默认使用编解码器的级别。"}]]}],["$","tr",null,{"children":[["$","td",null,{"children":["$","code",null,{"children":"compression.request.quality"}]}],["$","td",null,{"children":["$","code",null,{"children":"number"}]}],["$","td",null,{"children":"Brotli 可选，默认 4。"}]]}],["$","tr",null,{"children":[["$","td",null,{"children":["$","code",null,{"children":"log.LoggerClass"}]}],["$","td",null,{"children":["$","code",null,{"children":"new () => Logger"}]}],["$","td",null,{"children":"可选，默认使用客户端的 logger。"}]]}],["$","tr",null,{"children":[["$","td",null,{"children":["$","code",null,{"children":"log.level"}]}],["$","td",null,{"children":["$","code",null,{"children":"ClickHouseLogLevel"}]}],["$","td",null,{"children":"可选，默认 WARN；可选值为 TRACE、DEBUG、INFO、WARN、ERROR、OFF。"}]]}],["$","tr",null,{"children":[["$","td",null,{"children":["$","code",null,{"children":"keep_alive.enabled"}]}],["$","td",null,{"children":["$","code",null,{"children":"boolean"}]}],["$","td",null,{"children":"可选，默认 true。"}]]}],["$","tr",null,{"children":[["$","td",null,{"children":["$","code",null,{"children":"keep_alive.idle_socket_ttl"}]}],["$","td",null,{"children":["$","code",null,{"children":"number"}]}],["$","td",null,{"children":"可选，默认 2500 毫秒；0 表示禁用闲置 socket 管理。"}]]}],["$","tr",null,{"children":[["$","td",null,{"children":["$","code",null,{"children":"keep_alive.eagerly_destroy_stale_sockets"}]}],["$","td",null,{"children":["$","code",null,{"children":"boolean"}]}],["$","td",null,{"children":"可选，默认 false。"}]]}],["$","tr",null,{"children":[["$","td",null,{"children":["$","code",null,{"children":"tls.ca_cert"}]}],["$","td",null,{"children":["$","code",null,{"children":"Buffer"}]}],["$","td",null,{"children":["提供 ",["$","code",null,{"children":"tls"}]," 时必填。"]}]]}],["$","tr",null,{"children":[["$","td",null,{"children":["$","code",null,{"children":"tls.cert"}]}],["$","td",null,{"children":["$","code",null,{"children":"Buffer"}]}],["$","td",null,{"children":"双向 TLS 时必填。"}]]}],["$","tr",null,{"children":[["$","td",null,{"children":["$","code",null,{"children":"tls.key"}]}],["$","td",null,{"children":["$","code",null,{"children":"Buffer"}]}],["$","td",null,{"children":"双向 TLS 时必填。"}]]}],["$","tr",null,{"children":[["$","td",null,{"children":["$","code",null,{"children":"json.parse"}]}],["$","td",null,{"children":["$","code",null,{"children":"<T>(input: string) => T"}]}],["$","td",null,{"children":"可选，用于解析 JSON 字符串。"}]]}],["$","tr",null,{"children":[["$","td",null,{"children":["$","code",null,{"children":"json.stringify"}]}],["$","td",null,{"children":["$","code",null,{"children":"<T>(input: T) => string"}]}],["$","td",null,{"children":"可选，用于序列化值。"}]]}]]}]]}]}]
+89:["$","p",null,{"children":"此客户端的 Zstd 压缩需要 Node.js 22.15 或更高版本。响应压缩可能与引擎强制的服务端只读设置冲突；除非服务端允许，否则请保持关闭。"}]
+8a:["$","h2",null,{"id":"ssh-options","children":["$","a",null,{"href":"#ssh-options","className":"docs-heading-link","children":"SSH 选项"}]}]
+8b:["$","p",null,{"children":["用于 MySQL 和 PostgreSQL，放在 ",["$","code",null,{"children":"options.ssh"}]," 中。"]}]
+8c:["$","div",null,{"className":"docs-table","children":["$","table",null,{"children":[["$","thead",null,{"children":["$","tr",null,{"children":[["$","th",null,{"children":"字段"}],["$","th",null,{"children":"类型"}],["$","th",null,{"children":"必填"}],["$","th",null,{"children":"含义与默认值"}]]}]}],["$","tbody",null,{"children":[["$","tr",null,{"children":[["$","td",null,{"children":["$","code",null,{"children":"host"}]}],["$","td",null,{"children":["$","code",null,{"children":"string"}]}],["$","td",null,{"children":"是"}],["$","td",null,{"children":"SSH 服务器主机名。"}]]}],["$","tr",null,{"children":[["$","td",null,{"children":["$","code",null,{"children":"port"}]}],["$","td",null,{"children":["$","code",null,{"children":"number"}]}],["$","td",null,{"children":"否"}],["$","td",null,{"children":["默认 ",["$","code",null,{"children":"22"}],"。"]}]]}],["$","tr",null,{"children":[["$","td",null,{"children":["$","code",null,{"children":"user"}]}],["$","td",null,{"children":["$","code",null,{"children":"string"}]}],["$","td",null,{"children":"是"}],["$","td",null,{"children":"SSH 登录用户。"}]]}],["$","tr",null,{"children":[["$","td",null,{"children":["$","code",null,{"children":"password"}]}],["$","td",null,{"children":["$","code",null,{"children":"string"}]}],["$","td",null,{"children":"否"}],["$","td",null,{"children":"SSH 登录密码，不提供则不传密码。"}]]}]]}]]}]}]
+8f:null
+9:C
+90:["$","td",null,{"children":["$","code",null,{"children":"boolean"}]}]
+91:["$","td",null,{"children":"否"}]
+92:["$","td",null,{"children":"允许将引号包裹的值转换成 NULL，默认 true。"}]
+93:["$","tr",null,{"children":[["$","td",null,{"children":["$","code",null,{"children":"sample_size"}]}],["$","td",null,{"children":["$","code",null,{"children":"number"}]}],["$","td",null,{"children":"否"}],["$","td",null,{"children":"自动检测时采样的行数，默认 20480。"}]]}]
+94:["$","tr",null,{"children":[["$","td",null,{"children":["$","code",null,{"children":"buffer_size"}]}],["$","td",null,{"children":["$","code",null,{"children":"number"}]}],["$","td",null,{"children":"否"}],["$","td",null,{"children":["读取缓冲区大小，单位字节，默认 ",["$","code",null,{"children":"16 * max_line_size"}],"。"]}]]}]
+95:["$","tr",null,{"children":[["$","td",null,{"children":["$","code",null,{"children":"files_to_sniff"}]}],["$","td",null,{"children":["$","code",null,{"children":"number"}]}],["$","td",null,{"children":"否"}],["$","td",null,{"children":"多文件结构检测时采样的文件数；-1 表示全部，默认 10。"}]]}]
+96:["$","tr",null,{"children":[["$","td",null,{"children":["$","code",null,{"children":"max_line_size"}]}],["$","td",null,{"children":["$","code",null,{"children":"number"}]}],["$","td",null,{"children":"否"}],["$","td",null,{"children":"单行大小上限，单位字节，默认 2000000。"}]]}]
+97:["$","tr",null,{"children":[["$","td",null,{"children":["$","code",null,{"children":"parallel"}]}],["$","td",null,{"children":["$","code",null,{"children":"boolean"}]}],["$","td",null,{"children":"否"}],["$","td",null,{"children":"使用并行 CSV 读取器，默认 true。"}]]}]
+98:["$","tr",null,{"children":[["$","td",null,{"children":["$","code",null,{"children":"skip"}]}],["$","td",null,{"children":["$","code",null,{"children":"number"}]}],["$","td",null,{"children":"否"}],["$","td",null,{"children":"跳过每个文件开头的行数，默认 0。"}]]}]
+99:["$","tr",null,{"children":[["$","td",null,{"children":["$","code",null,{"children":"ignore_errors"}]}],["$","td",null,{"children":["$","code",null,{"children":"boolean"}]}],["$","td",null,{"children":"否"}],["$","td",null,{"children":"忽略解析错误，默认 false。"}]]}]
+9a:["$","tr",null,{"children":[["$","td",null,{"children":["$","code",null,{"children":"null_padding"}]}],["$","td",null,{"children":["$","code",null,{"children":"boolean"}]}],["$","td",null,{"children":"否"}],["$","td",null,{"children":"对较短的行在右侧补 NULL，默认 false。"}]]}]
+9b:["$","tr",null,{"children":[["$","td",null,{"children":["$","code",null,{"children":"strict_mode"}]}],["$","td",null,{"children":["$","code",null,{"children":"boolean"}]}],["$","td",null,{"children":"否"}],["$","td",null,{"children":"遇到任何问题即抛错，默认 true。"}]]}]
+9c:["$","tr",null,{"children":[["$","td",null,{"children":["$","code",null,{"children":"store_rejects"}]}],["$","td",null,{"children":["$","code",null,{"children":"boolean"}]}],["$","td",null,{"children":"否"}],["$","td",null,{"children":"跳过出错行并保存到拒绝记录表，默认 false。"}]]}]
+9d:["$","tr",null,{"children":[["$","td",null,{"children":["$","code",null,{"children":"rejects_table"}]}],["$","td",null,{"children":["$","code",null,{"children":"string"}]}],["$","td",null,{"children":"否"}],["$","td",null,{"children":["保存出错行的临时表名，默认 ",["$","code",null,{"children":"'reject_errors'"}],"。"]}]]}]
+9e:["$","tr",null,{"children":[["$","td",null,{"children":["$","code",null,{"children":"rejects_scan"}]}],["$","td",null,{"children":["$","code",null,{"children":"string"}]}],["$","td",null,{"children":"否"}],["$","td",null,{"children":["保存出错扫描的临时表名，默认 ",["$","code",null,{"children":"'reject_scans'"}],"。"]}]]}]
+9f:["$","tr",null,{"children":[["$","td",null,{"children":["$","code",null,{"children":"rejects_limit"}]}],["$","td",null,{"children":["$","code",null,{"children":"number"}]}],["$","td",null,{"children":"否"}],["$","td",null,{"children":"每个文件记录的出错行数上限；0 表示不限制，默认 0。"}]]}]
+a0:["$","tr",null,{"children":[["$","td",null,{"children":["$","code",null,{"children":"encoding"}]}],["$","td",null,{"children":["$","code",null,{"children":"string"}]}],["$","td",null,{"children":"否"}],["$","td",null,{"children":["文件编码，可选 ",["$","code",null,{"children":"'utf-8'"}],"、",["$","code",null,{"children":"'utf-16'"}],"、",["$","code",null,{"children":"'latin-1'"}],"，默认 ",["$","code",null,{"children":"'utf-8'"}],"。"]}]]}]
+a1:["$","tr",null,{"children":[["$","td",null,{"children":["$","code",null,{"children":"compression"}]}],["$","td",null,{"children":["$","code",null,{"children":"string"}]}],["$","td",null,{"children":"否"}],["$","td",null,{"children":["压缩方式，可选 ",["$","code",null,{"children":"'none'"}],"、",["$","code",null,{"children":"'gzip'"}],"、",["$","code",null,{"children":"'zstd'"}],"，默认根据扩展名检测。"]}]]}]
+a2:["$","tr",null,{"children":[["$","td",null,{"children":["$","code",null,{"children":"union_by_name"}]}],["$","td",null,{"children":["$","code",null,{"children":"boolean"}]}],["$","td",null,{"children":"否"}],["$","td",null,{"children":"多个文件按列名而非列位置对齐，默认 false。"}]]}]
+a3:["$","tr",null,{"children":[["$","td",null,{"children":["$","code",null,{"children":"hive_partitioning"}]}],["$","td",null,{"children":["$","code",null,{"children":"boolean"}]}],["$","td",null,{"children":"否"}],["$","td",null,{"children":"将路径解释为 Hive 分区路径，默认自动检测。"}]]}]
+a4:["$","tr",null,{"children":[["$","td",null,{"children":["$","code",null,{"children":"filename"}]}],["$","td",null,{"children":["$","code",null,{"children":"boolean"}]}],["$","td",null,{"children":"否"}],["$","td",null,{"children":["为每行添加保存来源文件路径的 ",["$","code",null,{"children":"filename"}]," 列，默认 false。"]}]]}]
+a5:["$","tr",null,{"children":[["$","td",null,{"children":["$","code",null,{"children":"max_response_headers_size"}]}],["$","td",null,{"children":["$","code",null,{"children":"number"}]}],["$","td",null,{"children":"默认未设置，使用 Node.js 的响应头字节上限。"}]]}]
+a6:["$","tr",null,{"children":[["$","td",null,{"children":["$","code",null,{"children":"connection"}]}],["$","td",null,{"children":["$","code",null,{"children":"Connection<Stream.Readable>"}]}],["$","td",null,{"children":"默认未设置，实验性的客户端后端连接；会覆盖默认 HTTP 传输及其选项。"}]]}]
+2a:0
+15:"$undefined"
+13:"$undefined"
+7:"$undefined"
+29:"$undefined"
+22:"$undefined"

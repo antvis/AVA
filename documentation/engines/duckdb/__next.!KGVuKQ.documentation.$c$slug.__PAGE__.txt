@@ -1,0 +1,104 @@
+3:"$Sreact.fragment"
+4:"/_next/static/chunks/20no9c33yqyzq.js"
+5:"/_next/static/chunks/024mr0my09zgj.js"
+6:"/_next/static/chunks/2mfxd9osm4z6w.js"
+7:"/_next/static/chunks/1bmh2fw63vq04.js"
+8:"/_next/static/chunks/1lxucu_dj41ds.js"
+9:I[400503,["$4","$5","$6","$7","$8"],"default"]
+a:I[697790,["$4","$5","$6","$7"],"default"]
+b:I[474333,["$4","$5","$6","$7"],"default"]
+c:"/_next/static/chunks/0xpkuc787v-p9.js"
+d:I[936064,["$c"],"default"]
+e:I[481497,["$c"],"default"]
+15:I[5138,["$4","$5","$6","$7","$8"],"default"]
+21:"ViewportBoundary"
+22:I[675049,["$c"],"$21"]
+23:"MetadataBoundary"
+24:I[675049,["$c"],"$23"]
+25:"$Sreact.suspense"
+26:I[934035,["$c"],"IconMark"]
+:HL["/_next/static/chunks/0o-6jlwxqyz8v.css","style"]
+:HL["https://mdn.alipayobjects.com/huamei_qa8qxu/afts/img/A*A-lcQbVTpjwAAAAAAAAAAAAADmJ7AQ/original","image"]
+10:X
+13:X
+13:C
+16:T973,# DuckDB
+
+Run SQL analysis against inline data, files, and attached databases.
+
+## Configure
+
+```typescript
+const ava = new AVA({
+  llm: { model: 'YOUR_MODEL', apiKey: process.env.OPENAI_API_KEY },
+  engine: {
+    type: 'duckdb',
+    memoryLimit: '512MB',
+    threads: 1,
+    queryTimeoutMs: 30000,
+    maxTempDirectorySize: '1GB',
+  },
+});
+```
+
+DuckDB is the default Node.js engine. It creates an in-memory instance and registers the source as tables or views. SQL generation uses the schema and optional profile.
+
+## Engine options
+
+Set `engine.type` to `duckdb`. These are all additional fields accepted on `engine`.
+
+| Field                      | Type      | Required | Meaning / default                                                               |
+| -------------------------- | --------- | -------- | ------------------------------------------------------------------------------- |
+| `memoryLimit`              | `string`  | No       | Memory limit, e.g. '512MB'. Default '512MB'.                                    |
+| `threads`                  | `number`  | No       | Number of worker threads. Default 1.                                            |
+| `maxTempDirectorySize`     | `string`  | No       | Max size of the spill (temp) directory, e.g. '1GB'. Unset = unlimited.          |
+| `queryTimeoutMs`           | `number`  | No       | Per-query timeout in milliseconds. Default 30000.                               |
+| `allowCommunityExtensions` | `boolean` | No       | Allow DuckDB community extensions during source loading when explicitly needed. |
+
+## Resource limits
+
+Defaults are 512 MB of memory, one worker thread, and a 30-second query timeout. `maxTempDirectorySize` is optional; no spill-size limit is configured when omitted.
+
+These options are separate from `maxRows` and `maxResultBytes`, which bound returned query results.
+
+## Source support
+
+DuckDB supports inline CSV, JSON, and text; local or remote CSV, JSON, Parquet, and Excel; and MySQL, PostgreSQL, SQLite, and MongoDB sources. See [data sources](/documentation/data/sources/) for configuration.
+
+## Query access
+
+After source registration, the engine restricts external access and locks configuration. Its query dialect validates read-only statements. Community extensions are disabled by default, with handling for sources such as MongoDB that require them; `allowCommunityExtensions` explicitly enables them when needed.
+14:[["children",{"s":"__PAGE__","h":160,"d":{"r":["$","$3","c",{"children":[[["$","main",null,{"className":"docs-main","id":"docs-content","children":[["$","div",null,{"className":"docs-page-toolbar","children":[["$","div",null,{"className":"docs-eyebrow","children":"Execution engines"}],["$","$L15","engines/duckdb",{"label":"Copy Markdown","text":"$16"}]]}],"$L17","$L18","$L19","$L1a","$L1b","$L1c"]}],"$L1d"],["$L1e"],"$L1f"]}],"p":"$@20","v":null,"s":"$10"}}]]
+11:[["children",{"s":{"n":"slug","t":"c","k":"engines/duckdb","s":[]},"h":65632,"d":{"r":["$","$3","c",{"children":[null,["$","$Ld",null,{"parallelRouterKey":"children","template":["$","$Le",null,{}]}]]}],"p":"$@12","v":"$13","s":"$10"},"c":"$Q14"}]]
+2:[["children",{"s":"documentation","h":131136,"d":{"r":["$","$3","c",{"children":[[["$","link","0",{"rel":"stylesheet","href":"/_next/static/chunks/0o-6jlwxqyz8v.css","precedence":"next"}],["$","script","script-0",{"src":"/_next/static/chunks/2mfxd9osm4z6w.js","async":true}],["$","script","script-1",{"src":"/_next/static/chunks/1bmh2fw63vq04.js","async":true}]],["$","div",null,{"className":"docs-site","children":[["$","a",null,{"className":"docs-skip","href":"#docs-content","children":"Skip to content"}],["$","header",null,{"className":"docs-header","children":["$","div",null,{"className":"docs-header-inner","children":[["$","$L9",null,{"href":"/","className":"docs-brand","aria-label":"AVA home","children":[["$","img",null,{"src":"https://mdn.alipayobjects.com/huamei_qa8qxu/afts/img/A*A-lcQbVTpjwAAAAAAAAAAAAADmJ7AQ/original","alt":"","width":"80","height":"48"}],["$","strong",null,{"children":"AVA"}],["$","span",null,{"children":"Documentation"}]]}],["$","nav",null,{"aria-label":"Main navigation","className":"docs-header-links","children":[["$","$L9",null,{"href":"/","className":"docs-website","children":["Website"," ",["$","span",null,{"aria-hidden":"true","children":"↗"}]]}],["$","a",null,{"href":"https://github.com/antvis/AVA","className":"docs-github","children":["GitHub ",["$","span",null,{"aria-hidden":"true","children":"↗"}]]}],["$","$La",null,{}],["$","$L9",null,{"href":"/ai/","className":"docs-ai","children":["AI"," ",["$","span",null,{"aria-hidden":"true","children":"→"}]]}]]}]]}]}],["$","$Lb",null,{"mobile":true}],["$","div",null,{"className":"docs-layout","children":[["$","aside",null,{"className":"docs-sidebar","children":[["$","$L9",null,{"href":"/documentation/","className":"docs-sidebar-label","children":[["$","span",null,{"className":"docs-book-icon","aria-hidden":"true","children":"▤"}]," ","Documentation"]}],["$","$Lb",null,{}],["$","div",null,{"className":"docs-sidebar-footer","children":[["$","span",null,{"className":"docs-status-dot"}]," ","TypeScript · Open source"]}]]}],["$","$Ld",null,{"parallelRouterKey":"children","template":["$","$Le",null,{}]}]]}]]}]]}],"p":"$@f","v":null,"s":"$10"},"c":"$Q11"}]]
+1:[["children",{"s":"(en)","h":131120,"c":"$Q2"}]]
+0:{"t":{"t":{"s":"","h":131152,"c":"$Q1"},"h":{"r":["$","$3","h",{"children":[null,["$","$L22",null,{"children":[["$","meta","0",{"charSet":"utf-8"}],["$","meta","1",{"name":"viewport","content":"width=device-width, initial-scale=1"}]]}],["$","$L24",null,{"children":[["$","div",null,{"hidden":true,"children":["$","$25",null,{"name":"Next.Metadata","children":[["$","title","0",{"children":"DuckDB — AVA Docs"}],["$","meta","1",{"name":"description","content":"Run SQL analysis against inline data, files, and attached databases."}],["$","meta","2",{"name":"author","content":"AntV"}],["$","meta","3",{"name":"keywords","content":"AVA, visual analytics, AI-native, LLM, data visualization, natural language, data analysis, AntV, chart generation"}],["$","link","4",{"rel":"canonical","href":"https://ava.antv.vision/documentation/engines/duckdb/"}],["$","link","5",{"rel":"alternate","hrefLang":"en","href":"https://ava.antv.vision/documentation/engines/duckdb/"}],["$","link","6",{"rel":"alternate","hrefLang":"zh-CN","href":"https://ava.antv.vision/zh/documentation/engines/duckdb/"}],["$","link","7",{"rel":"alternate","hrefLang":"x-default","href":"https://ava.antv.vision/documentation/engines/duckdb/"}],["$","meta","8",{"property":"og:title","content":"DuckDB — AVA Docs"}],["$","meta","9",{"property":"og:description","content":"Run SQL analysis against inline data, files, and attached databases."}],["$","meta","10",{"property":"og:url","content":"https://ava.antv.vision/documentation/engines/duckdb/"}],["$","meta","11",{"property":"og:type","content":"article"}],["$","meta","12",{"name":"twitter:card","content":"summary"}],["$","meta","13",{"name":"twitter:title","content":"DuckDB — AVA Docs"}],["$","meta","14",{"name":"twitter:description","content":"Run SQL analysis against inline data, files, and attached databases."}],["$","link","15",{"rel":"icon","href":"https://mdn.alipayobjects.com/huamei_qa8qxu/afts/img/A*FBLnQIAzx6cAAAAAQDAAAAgAemJ7AQ/original"}],["$","$L26","16",{}]]}]}],null]}],null]}],"p":"$@27","v":null,"s":"$10"}},"a":"$@28","u":"$@29","b":"KHDYj3YqzeY5ppvGf10Fa"}
+33:I[754170,["$4","$5","$6","$7","$8"],"default"]
+34:I[675049,["$c"],"OutletBoundary"]
+17:["$","h1",null,{"children":"DuckDB"}]
+18:["$","p",null,{"className":"docs-description","children":"Run SQL analysis against inline data, files, and attached databases."}]
+19:["$","article",null,{"className":"docs-prose","children":[["$","h2",null,{"id":"configure","children":["$","a",null,{"href":"#configure","className":"docs-heading-link","children":"Configure"}]}],"\n",["$","figure",null,{"data-rehype-pretty-code-figure":"","children":["$","div",null,{"className":"docs-code-block","children":[["$","div",null,{"className":"docs-code-toolbar","children":[["$","span",null,{"children":"typescript"}],["$","$L15",null,{}]]}],["$","pre",null,{"tabIndex":"0","data-language":"typescript","data-theme":"github-light","children":["$","code",null,{"data-language":"typescript","data-theme":"github-light","style":{"display":"grid"},"children":[["$","span",null,{"data-line":"","children":[["$","span",null,{"style":{"color":"#D73A49"},"children":"const"}],["$","span",null,{"style":{"color":"#005CC5"},"children":" ava"}],["$","span",null,{"style":{"color":"#D73A49"},"children":" ="}],["$","span",null,{"style":{"color":"#D73A49"},"children":" new"}],["$","span",null,{"style":{"color":"#6F42C1"},"children":" AVA"}],["$","span",null,{"style":{"color":"#24292E"},"children":"({"}]]}],"\n",["$","span",null,{"data-line":"","children":[["$","span",null,{"style":{"color":"#24292E"},"children":"  llm: { model: "}],["$","span",null,{"style":{"color":"#032F62"},"children":"'YOUR_MODEL'"}],["$","span",null,{"style":{"color":"#24292E"},"children":", apiKey: process.env."}],["$","span",null,{"style":{"color":"#005CC5"},"children":"OPENAI_API_KEY"}],["$","span",null,{"style":{"color":"#24292E"},"children":" },"}]]}],"\n",["$","span",null,{"data-line":"","children":["$","span",null,{"style":{"color":"#24292E"},"children":"  engine: {"}]}],"\n",["$","span",null,{"data-line":"","children":[["$","span",null,{"style":{"color":"#24292E"},"children":"    type: "}],["$","span",null,{"style":{"color":"#032F62"},"children":"'duckdb'"}],["$","span",null,{"style":{"color":"#24292E"},"children":","}]]}],"\n",["$","span",null,{"data-line":"","children":[["$","span",null,{"style":{"color":"#24292E"},"children":"    memoryLimit: "}],["$","span",null,{"style":{"color":"#032F62"},"children":"'512MB'"}],["$","span",null,{"style":{"color":"#24292E"},"children":","}]]}],"\n",["$","span",null,{"data-line":"","children":[["$","span",null,{"style":{"color":"#24292E"},"children":"    threads: "}],["$","span",null,{"style":{"color":"#005CC5"},"children":"1"}],["$","span",null,{"style":{"color":"#24292E"},"children":","}]]}],"\n",["$","span",null,{"data-line":"","children":[["$","span",null,{"style":{"color":"#24292E"},"children":"    queryTimeoutMs: "}],["$","span",null,{"style":{"color":"#005CC5"},"children":"30000"}],["$","span",null,{"style":{"color":"#24292E"},"children":","}]]}],"\n",["$","span",null,{"data-line":"","children":[["$","span",null,{"style":{"color":"#24292E"},"children":"    maxTempDirectorySize: "}],["$","span",null,{"style":{"color":"#032F62"},"children":"'1GB'"}],["$","span",null,{"style":{"color":"#24292E"},"children":","}]]}],"\n",["$","span",null,{"data-line":"","children":["$","span",null,{"style":{"color":"#24292E"},"children":"  },"}]}],"\n",["$","span",null,{"data-line":"","children":["$","span",null,{"style":{"color":"#24292E"},"children":"});"}]}]]}]}]]}]}],"\n",["$","p",null,{"children":"DuckDB is the default Node.js engine. It creates an in-memory instance and registers the source as tables or views. SQL generation uses the schema and optional profile."}],"\n",["$","h2",null,{"id":"engine-options","children":["$","a",null,{"href":"#engine-options","className":"docs-heading-link","children":"Engine options"}]}],"\n",["$","p",null,{"children":["Set ",["$","code",null,{"children":"engine.type"}]," to ",["$","code",null,{"children":"duckdb"}],". These are all additional fields accepted on ",["$","code",null,{"children":"engine"}],"."]}],"\n",["$","div",null,{"className":"docs-table","children":["$","table",null,{"children":[["$","thead",null,{"children":["$","tr",null,{"children":[["$","th",null,{"children":"Field"}],["$","th",null,{"children":"Type"}],["$","th",null,{"children":"Required"}],["$","th",null,{"children":"Meaning / default"}]]}]}],["$","tbody",null,{"children":[["$","tr",null,{"children":[["$","td",null,{"children":["$","code",null,{"children":"memoryLimit"}]}],["$","td",null,{"children":["$","code",null,{"children":"string"}]}],["$","td",null,{"children":"No"}],["$","td",null,{"children":"Memory limit, e.g. '512MB'. Default '512MB'."}]]}],["$","tr",null,{"children":[["$","td",null,{"children":["$","code",null,{"children":"threads"}]}],["$","td",null,{"children":["$","code",null,{"children":"number"}]}],["$","td",null,{"children":"No"}],["$","td",null,{"children":"Number of worker threads. Default 1."}]]}],["$","tr",null,{"children":[["$","td",null,{"children":["$","code",null,{"children":"maxTempDirectorySize"}]}],["$","td",null,{"children":["$","code",null,{"children":"string"}]}],["$","td",null,{"children":"No"}],["$","td",null,{"children":"Max size of the spill (temp) directory, e.g. '1GB'. Unset = unlimited."}]]}],["$","tr",null,{"children":[["$","td",null,{"children":["$","code",null,{"children":"queryTimeoutMs"}]}],["$","td",null,{"children":["$","code",null,{"children":"number"}]}],["$","td",null,{"children":"No"}],"$L2a"]}],"$L2b"]}]]}]}],"\n","$L2c","\n","$L2d","\n","$L2e","\n","$L2f","\n","$L30","\n","$L31","\n","$L32"]}]
+1a:["$","div",null,{"className":"docs-page-meta","children":["$","a",null,{"href":"https://github.com/antvis/AVA/blob/ai/site/content/docs/en/engines/duckdb.mdx","children":["Edit this page on GitHub"," ",["$","span",null,{"aria-hidden":"true","children":"↗"}]]}]}]
+1b:["$","nav",null,{"className":"docs-pagination","aria-label":"Chapter navigation","children":[["$","$L9",null,{"href":"/documentation/engines/overview/","children":[["$","span",null,{"children":"← Previous"}],["$","strong",null,{"children":"Engine overview"}]]}],["$","$L9",null,{"href":"/documentation/engines/python/","className":"docs-next","children":[["$","span",null,{"children":"Next →"}],["$","strong",null,{"children":"Python"}]]}]]}]
+1c:["$","footer",null,{"className":"docs-footer","children":[["$","span",null,{"children":"AVA · An AntV project"}],["$","a",null,{"href":"https://github.com/antvis/AVA","children":"Open source on GitHub ↗"}]]}]
+1d:["$","$L33","engines/duckdb",{}]
+1e:["$","script","script-0",{"src":"/_next/static/chunks/1lxucu_dj41ds.js","async":true}]
+1f:["$","$L34",null,{"children":["$","$25",null,{"name":"Next.MetadataOutlet","children":"$@35"}]}]
+29:true
+10:300
+2a:["$","td",null,{"children":"Per-query timeout in milliseconds. Default 30000."}]
+2b:["$","tr",null,{"children":[["$","td",null,{"children":["$","code",null,{"children":"allowCommunityExtensions"}]}],["$","td",null,{"children":["$","code",null,{"children":"boolean"}]}],["$","td",null,{"children":"No"}],["$","td",null,{"children":"Allow DuckDB community extensions during source loading when explicitly needed."}]]}]
+2c:["$","h2",null,{"id":"resource-limits","children":["$","a",null,{"href":"#resource-limits","className":"docs-heading-link","children":"Resource limits"}]}]
+2d:["$","p",null,{"children":["Defaults are 512 MB of memory, one worker thread, and a 30-second query timeout. ",["$","code",null,{"children":"maxTempDirectorySize"}]," is optional; no spill-size limit is configured when omitted."]}]
+2e:["$","p",null,{"children":["These options are separate from ",["$","code",null,{"children":"maxRows"}]," and ",["$","code",null,{"children":"maxResultBytes"}],", which bound returned query results."]}]
+2f:["$","h2",null,{"id":"source-support","children":["$","a",null,{"href":"#source-support","className":"docs-heading-link","children":"Source support"}]}]
+30:["$","p",null,{"children":["DuckDB supports inline CSV, JSON, and text; local or remote CSV, JSON, Parquet, and Excel; and MySQL, PostgreSQL, SQLite, and MongoDB sources. See ",["$","$L9",null,{"href":"/documentation/data/sources/","children":"data sources"}]," for configuration."]}]
+31:["$","h2",null,{"id":"query-access","children":["$","a",null,{"href":"#query-access","className":"docs-heading-link","children":"Query access"}]}]
+32:["$","p",null,{"children":["After source registration, the engine restricts external access and locks configuration. Its query dialect validates read-only statements. Community extensions are disabled by default, with handling for sources such as MongoDB that require them; ",["$","code",null,{"children":"allowCommunityExtensions"}]," explicitly enables them when needed."]}]
+35:null
+10:C
+28:0
+12:"$undefined"
+f:"$undefined"
+27:"$undefined"
+20:"$undefined"

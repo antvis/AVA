@@ -1,0 +1,330 @@
+3:"$Sreact.fragment"
+4:"/_next/static/chunks/0xpkuc787v-p9.js"
+5:I[936064,["$4"],"default"]
+6:I[481497,["$4"],"default"]
+b:"/_next/static/chunks/20no9c33yqyzq.js"
+c:"/_next/static/chunks/024mr0my09zgj.js"
+d:"/_next/static/chunks/2mfxd9osm4z6w.js"
+e:"/_next/static/chunks/1bmh2fw63vq04.js"
+f:"/_next/static/chunks/1lxucu_dj41ds.js"
+10:I[400503,["$b","$c","$d","$e","$f"],"default"]
+11:I[697790,["$b","$c","$d","$e"],"default"]
+12:I[474333,["$b","$c","$d","$e"],"default"]
+17:I[5138,["$b","$c","$d","$e","$f"],"default"]
+23:"ViewportBoundary"
+24:I[675049,["$4"],"$23"]
+25:"MetadataBoundary"
+26:I[675049,["$4"],"$25"]
+27:"$Sreact.suspense"
+28:I[934035,["$4"],"IconMark"]
+:HL["/_next/static/chunks/0o-6jlwxqyz8v.css","style"]
+:HL["https://mdn.alipayobjects.com/huamei_qa8qxu/afts/img/A*A-lcQbVTpjwAAAAAAAAAAAAADmJ7AQ/original","image"]
+8:X
+8:C
+9:X
+18:T278a,# 分析数据
+
+用自然语言提问，获得可检查的查询结果与分析结论。
+
+import { Heading } from '../../../../mdx-components';
+
+已经有明确的问题，直接调用 `analyze()`；还没想好从哪里入手，可以先用 `suggest()` 找分析方向。想先检查生成的代码、再决定是否执行，就把 `translate()` 和 `query()` 分开调用。
+
+下面的示例假定已经配置好 `ava`，并通过 `source()` 加载了数据。安装与完整配置示例见[安装与快速开始](/documentation/quickstart/)。
+
+示例沿用快速开始中的小型销售数据集：
+
+| region | revenue |
+| ------ | ------- |
+| East | 120 |
+| West | 90 |
+| East | 80 |
+
+<Heading as="h2" id="analyze-a-question">提出分析问题</Heading>
+
+将自然语言问题传给 `analyze()`：
+
+```typescript
+const result = await ava.analyze('What is total revenue by region?');
+console.log(result.text);
+console.table(result.data);
+```
+
+`analyze()` 按需获取 schema，结合已有 profile 和你提供的[业务语义](/documentation/data/semantic/)，生成查询、执行并整理答案。业务语义可以说明哪些订单计入收入等规则。它返回数据与文字，不会直接生成图表。
+
+<Heading as="h2" id="read-the-result">读懂返回结果</Heading>
+
+上面的问题可能返回如下结果。结论的措辞、生成的查询和列别名会随模型而变化。
+
+```json
+{
+  "query": "What is total revenue by region?",
+  "text": "East has total revenue of 200, compared with 90 for West.",
+  "schema": [{ "name": "region" }, { "name": "total_revenue" }],
+  "data": [
+    { "region": "East", "total_revenue": 200 },
+    { "region": "West", "total_revenue": 90 }
+  ],
+  "rowCount": 2
+}
+```
+
+| 字段 | 类型 | 含义 |
+| ------------- | ------------------------------------------- | -------------------------------------------------------------------------------------------- |
+| `query` | `string` | 原始问题。 |
+| `text` | `string` | 模型生成的总结；`includeSummary` 为 false 时为空字符串。 |
+| `schema` | `QueryColumn[]` | 返回列的定义，每列包含 `name: string` 和可选的 `type: string`。 |
+| `data` | `Record<string, unknown>[]` | 可用于展示、导出或可视化的结果行。 |
+| `rowCount` | `number`，可选 | 结果完整时的行数，不是输入数据集的总行数。 |
+| `sql` | `string`，可选 | 实际执行的查询；使用 Python 或 JavaScript 引擎时，这个字段名仍保持不变。 |
+| `markdown` | `string`，可选 | 返回时提供的 Markdown 内容。 |
+| `truncated` | `true`，可选 | 实际数据超过结果限制，返回结果不完整。 |
+| `truncatedBy` | `'maxRows'` 或 `'maxResultBytes'`，可选 | 触发截断的限制项。 |
+
+请通过 `schema` 读取实际返回的列名，不要假定模型一定使用 `total_revenue` 这个别名。
+
+<Heading as="h2" id="configure-an-analysis">配置一次分析</Heading>
+
+`analyze(query: string, config?: AnalysisConfig)` 接受以下输入：
+
+| 参数 | 类型 | 必填 | 默认值与行为 |
+| ----------------------- | ------------------------ | -------- | ---------------------------------------------------------------------------------------------- |
+| `query` | `string` | 是 | 自然语言问题。 |
+| `config` | `AnalysisConfig` | 否 | `{}`。 |
+| `config.includeSummary` | `boolean` | 否 | `true`；设为 `false` 可跳过结果总结。 |
+| `config.maxRows` | `number` | 否 | `200`，限制返回行数。 |
+| `config.maxResultBytes` | `number` | 否 | `1048576`（1 MiB），限制序列化后的结果数据大小。 |
+| `config.strategy` | `AnalysisStrategyConfig` | 否 | 默认直接分析，详见[策略选项](/documentation/analysis/strategies/#strategy-options)。 |
+
+例如，最多返回 100 行，并跳过文字总结：
+
+```typescript
+const result = await ava.analyze('What is total revenue by region?', {
+  includeSummary: false,
+  maxRows: 100,
+  maxResultBytes: 1048576,
+});
+
+console.log(result.text); // ''
+console.table(result.data);
+```
+
+<Heading as="h3" id="handle-partial-results">处理不完整的结果</Heading>
+
+假设这份两地区的结果使用了 `maxRows: 1`，简化后的返回内容可能是：
+
+```json
+{
+  "schema": [{ "name": "region" }, { "name": "total_revenue" }],
+  "data": [{ "region": "East", "total_revenue": 200 }],
+  "truncated": true,
+  "truncatedBy": "maxRows"
+}
+```
+
+这只是部分答案。将它作为完整结果展示前，应先检查截断字段：
+
+```typescript
+if (result.truncated) {
+  console.log(`Showing a partial result: ${result.truncatedBy} was reached.`);
+}
+```
+
+`maxRows` 向下取整后限制在 `1`—`1000000` 之间；取整后超出安全整数范围则使用默认值。`maxResultBytes` 向下取整后最小为 `1`，非有限值使用默认值。这两项限制也适用于下面的 `query()`；它们约束返回数据，并不限制查询的总耗时或内存消耗。
+
+<Heading as="h2" id="suggest-questions">推荐分析问题</Heading>
+
+使用 `suggest()` 获取分析方向。也可以先计算 profile，为上下文补充统计信息；这一步可选，且不调用大模型。
+
+```typescript
+await ava.profile();
+const suggestions = await ava.suggest(2);
+console.log(suggestions);
+```
+
+| 参数 | 类型 | 必填 | 默认值与行为 |
+| --------- | -------- | -------- | ------------------------------------- |
+| `count` | `number` | 否 | `3`，期望获取的推荐问题数量。 |
+
+`suggest()` 需要先加载数据源，并会调用已配置的模型。有最新 profile 时使用 profile，否则使用 schema。
+
+<Heading as="h3" id="suggestion-results">推荐结果</Heading>
+
+对于销售数据集，返回数组可能如下：
+
+```json
+[
+  {
+    "query": "What is total revenue by region?",
+    "score": 0.95,
+    "reason": "Compare each region's contribution to overall revenue."
+  },
+  {
+    "query": "What is average revenue per record in each region?",
+    "score": 0.82,
+    "reason": "Compare typical record values across regions with different record counts."
+  }
+]
+```
+
+这些只是示例，并非固定输出。在界面中可以这样使用各字段：
+
+| 字段 | 类型 | 使用方式 |
+| -------- | -------- | ------------------------------------------------------------------------------------------------------------------------------------ |
+| `query` | `string` | 展示为可选择的问题，并传给 `analyze()`。 |
+| `score` | `number` | 用于排序。数值限制在 0—1 之间，并按降序排列；它表示问题的分析价值，不是答案的可信度。 |
+| `reason` | `string` | 解释这个问题为什么值得分析，例如展示在问题下方。 |
+
+最多返回 `count` 条推荐，也可能返回空数组。提示词会要求模型让问题和推荐理由沿用数据集的语言。
+
+<Heading as="h3" id="analyze-a-suggestion">分析推荐的问题</Heading>
+
+```typescript
+if (suggestions.length > 0) {
+  const selected = suggestions[0];
+  const answer = await ava.analyze(selected.query);
+  console.log(selected.reason);
+  console.table(answer.data);
+}
+```
+
+<Heading as="h2" id="analysis-strategies">分析策略</Heading>
+
+`analyze()` 默认直接分析。如果问题需要不同的处理方式，可以为每次调用指定策略：
+
+| 策略 | 适用情况 |
+| -------- | ------------------------------------------------------------------- |
+| `direct` | 问题明确，生成并执行一个查询即可回答。 |
+| `loop` | 需要先做中间探索，再形成答案。 |
+
+示例、重试控制与步数限制见[分析策略](/documentation/analysis/strategies/)。
+
+<Heading as="h2" id="translate-and-execute-separately">分开生成与执行查询</Heading>
+
+用 `translate()` 先查看生成的代码，再决定是否交给 `query()` 执行：
+
+```typescript
+const dsl = await ava.translate('What is total revenue by region?');
+console.log(dsl); // Display the generated query for review.
+
+// Run this step when your application is ready to execute the query.
+const rows = await ava.query(dsl, {
+  maxRows: 100,
+  maxResultBytes: 1048576,
+});
+console.table(rows.data);
+```
+
+| 方法 | 参数 | 类型 | 必填与默认值 |
+| ---------------------- | ------------------------ | ------------------ | --------------------------------------------------------------- |
+| `translate(query)` | `query` | `string` | 必填，自然语言问题。 |
+| `query(dsl, options?)` | `dsl` | `string` | 必填，使用当前引擎语言的可执行语句。 |
+| `query(dsl, options?)` | `options` | `ExecutionOptions` | 可选，默认值见下方。 |
+| `query(dsl, options?)` | `options.maxRows` | `number` | 可选，`200`；边界规则与 `analyze()` 相同。 |
+| `query(dsl, options?)` | `options.maxResultBytes` | `number` | 可选，`1048576`；边界规则与 `analyze()` 相同。 |
+
+两个方法都需要先加载数据源。`translate()` 结合模型、schema 和已有 profile，返回字符串；`query()` 直接执行传入语句，不会做模型翻译、总结或自动纠错。
+
+默认 Node.js 配置生成 SQL；其他引擎则使用各自的 SQL 方言、Python 或 JavaScript。SQL 引擎会验证查询是否只读；Python 和 JavaScript 的执行限制取决于各自的环境。
+
+`query()` 返回前文介绍的 `schema`、`data` 和可选截断信息，但不包含分析结果中的 `query`、`text`、`sql` 字段。
+
+<Heading as="h2" id="errors-and-cleanup">错误处理与资源清理</Heading>
+
+未加载数据源、模型请求失败、推荐结果无法解析，或重试后仍执行失败等情况，都会让调用抛出错误。不要把错误当成没有数据的答案。
+
+在分析调用外处理错误，并在使用结束后释放实例：
+
+```typescript
+try {
+  const result = await ava.analyze('What is total revenue by region?');
+  console.table(result.data);
+} catch (error) {
+  console.error('Analysis failed:', error);
+} finally {
+  await ava.dispose();
+}
+```
+
+请始终等待清理完成。再次调用 `source()` 会替换数据集，并清空 schema 和 profile 缓存；新数据源需要统计信息时，请重新调用 `profile()`。
+16:[["children",{"s":"__PAGE__","h":160,"d":{"r":["$","$3","c",{"children":[[["$","main",null,{"className":"docs-main","id":"docs-content","children":[["$","div",null,{"className":"docs-page-toolbar","children":[["$","div",null,{"className":"docs-eyebrow","children":"分析与可视化"}],["$","$L17","analysis/overview",{"label":"复制 Markdown","text":"$18"}]]}],"$L19","$L1a","$L1b","$L1c","$L1d","$L1e"]}],"$L1f"],["$L20"],"$L21"]}],"p":"$@22","v":null,"s":"$9"}}]]
+14:[["children",{"s":{"n":"slug","t":"c","k":"analysis/overview","s":[]},"h":65632,"d":{"r":["$","$3","c",{"children":[null,["$","$L5",null,{"parallelRouterKey":"children","template":["$","$L6",null,{}]}]]}],"p":"$@15","v":"$8","s":"$9"},"c":"$Q16"}]]
+a:[["children",{"s":"documentation","h":131168,"d":{"r":["$","$3","c",{"children":[[["$","link","0",{"rel":"stylesheet","href":"/_next/static/chunks/0o-6jlwxqyz8v.css","precedence":"next"}],["$","script","script-0",{"src":"/_next/static/chunks/2mfxd9osm4z6w.js","async":true}],["$","script","script-1",{"src":"/_next/static/chunks/1bmh2fw63vq04.js","async":true}]],["$","div",null,{"className":"docs-site","children":[["$","a",null,{"className":"docs-skip","href":"#docs-content","children":"跳至正文"}],["$","header",null,{"className":"docs-header","children":["$","div",null,{"className":"docs-header-inner","children":[["$","$L10",null,{"href":"/","className":"docs-brand","aria-label":"AVA 首页","children":[["$","img",null,{"src":"https://mdn.alipayobjects.com/huamei_qa8qxu/afts/img/A*A-lcQbVTpjwAAAAAAAAAAAAADmJ7AQ/original","alt":"","width":"80","height":"48"}],["$","strong",null,{"children":"AVA"}],["$","span",null,{"children":"使用文档"}]]}],["$","nav",null,{"aria-label":"主导航","className":"docs-header-links","children":[["$","$L10",null,{"href":"/","className":"docs-website","children":["官网首页"," ",["$","span",null,{"aria-hidden":"true","children":"↗"}]]}],["$","a",null,{"href":"https://github.com/antvis/AVA","className":"docs-github","children":["GitHub ",["$","span",null,{"aria-hidden":"true","children":"↗"}]]}],["$","$L11",null,{}],["$","$L10",null,{"href":"/ai/","className":"docs-ai","children":["AI 体验"," ",["$","span",null,{"aria-hidden":"true","children":"→"}]]}]]}]]}]}],["$","$L12",null,{"mobile":true}],["$","div",null,{"className":"docs-layout","children":[["$","aside",null,{"className":"docs-sidebar","children":[["$","$L10",null,{"href":"/documentation/","className":"docs-sidebar-label","children":[["$","span",null,{"className":"docs-book-icon","aria-hidden":"true","children":"▤"}]," ","使用文档"]}],["$","$L12",null,{}],["$","div",null,{"className":"docs-sidebar-footer","children":[["$","span",null,{"className":"docs-status-dot"}]," ","TypeScript · 开源"]}]]}],["$","$L5",null,{"parallelRouterKey":"children","template":["$","$L6",null,{}]}]]}]]}]]}],"p":"$@13","v":null,"s":"$9"},"c":"$Q14"}]]
+2:[["children",{"s":"zh","h":131136,"d":{"r":["$","$3","c",{"children":[null,["$","$L5",null,{"parallelRouterKey":"children","template":["$","$L6",null,{}]}]]}],"p":"$@7","v":"$8","s":"$9"},"c":"$Qa"}]]
+1:[["children",{"s":"(zh)","h":131120,"c":"$Q2"}]]
+0:{"t":{"t":{"s":"","h":131152,"c":"$Q1"},"h":{"r":["$","$3","h",{"children":[null,["$","$L24",null,{"children":[["$","meta","0",{"charSet":"utf-8"}],["$","meta","1",{"name":"viewport","content":"width=device-width, initial-scale=1"}]]}],["$","$L26",null,{"children":[["$","div",null,{"hidden":true,"children":["$","$27",null,{"name":"Next.Metadata","children":[["$","title","0",{"children":"分析数据 — AVA 文档"}],["$","meta","1",{"name":"description","content":"用自然语言提问，获得可检查的查询结果与分析结论。"}],["$","meta","2",{"name":"author","content":"AntV"}],["$","meta","3",{"name":"keywords","content":"AVA, visual analytics, AI-native, LLM, data visualization, natural language, data analysis, AntV, chart generation"}],["$","link","4",{"rel":"canonical","href":"https://ava.antv.vision/zh/documentation/analysis/overview/"}],["$","link","5",{"rel":"alternate","hrefLang":"en","href":"https://ava.antv.vision/documentation/analysis/overview/"}],["$","link","6",{"rel":"alternate","hrefLang":"zh-CN","href":"https://ava.antv.vision/zh/documentation/analysis/overview/"}],["$","link","7",{"rel":"alternate","hrefLang":"x-default","href":"https://ava.antv.vision/documentation/analysis/overview/"}],["$","meta","8",{"property":"og:title","content":"分析数据 — AVA 文档"}],["$","meta","9",{"property":"og:description","content":"用自然语言提问，获得可检查的查询结果与分析结论。"}],["$","meta","10",{"property":"og:url","content":"https://ava.antv.vision/zh/documentation/analysis/overview/"}],["$","meta","11",{"property":"og:type","content":"article"}],["$","meta","12",{"name":"twitter:card","content":"summary"}],["$","meta","13",{"name":"twitter:title","content":"分析数据 — AVA 文档"}],["$","meta","14",{"name":"twitter:description","content":"用自然语言提问，获得可检查的查询结果与分析结论。"}],["$","link","15",{"rel":"icon","href":"https://mdn.alipayobjects.com/huamei_qa8qxu/afts/img/A*FBLnQIAzx6cAAAAAQDAAAAgAemJ7AQ/original"}],["$","$L28","16",{}]]}]}],null]}],null]}],"p":"$@29","v":null,"s":"$9"}},"a":"$@2a","u":"$@2b","b":"KHDYj3YqzeY5ppvGf10Fa"}
+62:I[754170,["$b","$c","$d","$e","$f"],"default"]
+63:I[675049,["$4"],"OutletBoundary"]
+19:["$","h1",null,{"children":"分析数据"}]
+1a:["$","p",null,{"className":"docs-description","children":"用自然语言提问，获得可检查的查询结果与分析结论。"}]
+1b:["$","article",null,{"className":"docs-prose","children":[["$","p",null,{"children":["已经有明确的问题，直接调用 ",["$","code",null,{"children":"analyze()"}],"；还没想好从哪里入手，可以先用 ",["$","code",null,{"children":"suggest()"}]," 找分析方向。想先检查生成的代码、再决定是否执行，就把 ",["$","code",null,{"children":"translate()"}]," 和 ",["$","code",null,{"children":"query()"}]," 分开调用。"]}],"\n",["$","p",null,{"children":["下面的示例假定已经配置好 ",["$","code",null,{"children":"ava"}],"，并通过 ",["$","code",null,{"children":"source()"}]," 加载了数据。安装与完整配置示例见",["$","$L10",null,{"href":"/documentation/quickstart/","children":"安装与快速开始"}],"。"]}],"\n",["$","p",null,{"children":"示例沿用快速开始中的小型销售数据集："}],"\n",["$","div",null,{"className":"docs-table","children":["$","table",null,{"children":[["$","thead",null,{"children":["$","tr",null,{"children":[["$","th",null,{"children":"region"}],["$","th",null,{"children":"revenue"}]]}]}],["$","tbody",null,{"children":[["$","tr",null,{"children":[["$","td",null,{"children":"East"}],["$","td",null,{"children":"120"}]]}],["$","tr",null,{"children":[["$","td",null,{"children":"West"}],["$","td",null,{"children":"90"}]]}],["$","tr",null,{"children":[["$","td",null,{"children":"East"}],["$","td",null,{"children":"80"}]]}]]}]]}]}],"\n",["$","h2",null,{"id":"analyze-a-question","children":["$","a",null,{"href":"#analyze-a-question","className":"docs-heading-link","children":"提出分析问题"}]}],"\n",["$","p",null,{"children":["将自然语言问题传给 ",["$","code",null,{"children":"analyze()"}],"："]}],"\n",["$","figure",null,{"data-rehype-pretty-code-figure":"","children":["$","div",null,{"className":"docs-code-block","children":[["$","div",null,{"className":"docs-code-toolbar","children":[["$","span",null,{"children":"typescript"}],["$","$L17",null,{}]]}],["$","pre",null,{"tabIndex":"0","data-language":"typescript","data-theme":"github-light","children":["$","code",null,{"data-language":"typescript","data-theme":"github-light","style":{"display":"grid"},"children":[["$","span",null,{"data-line":"","children":[["$","span",null,{"style":{"color":"#D73A49"},"children":"const"}],["$","span",null,{"style":{"color":"#005CC5"},"children":" result"}],["$","span",null,{"style":{"color":"#D73A49"},"children":" ="}],["$","span",null,{"style":{"color":"#D73A49"},"children":" await"}],["$","span",null,{"style":{"color":"#24292E"},"children":" ava."}],["$","span",null,{"style":{"color":"#6F42C1"},"children":"analyze"}],["$","span",null,{"style":{"color":"#24292E"},"children":"("}],["$","span",null,{"style":{"color":"#032F62"},"children":"'What is total revenue by region?'"}],["$","span",null,{"style":{"color":"#24292E"},"children":");"}]]}],"\n",["$","span",null,{"data-line":"","children":[["$","span",null,{"style":{"color":"#24292E"},"children":"console."}],["$","span",null,{"style":{"color":"#6F42C1"},"children":"log"}],["$","span",null,{"style":{"color":"#24292E"},"children":"(result.text);"}]]}],"\n",["$","span",null,{"data-line":"","children":[["$","span",null,{"style":{"color":"#24292E"},"children":"console."}],["$","span",null,{"style":{"color":"#6F42C1"},"children":"table"}],["$","span",null,{"style":{"color":"#24292E"},"children":"(result.data);"}]]}]]}]}]]}]}],"\n",["$","p",null,{"children":[["$","code",null,{"children":"analyze()"}]," 按需获取 schema，结合已有 profile 和你提供的",["$","$L10",null,{"href":"/documentation/data/semantic/","children":"业务语义"}],"，生成查询、执行并整理答案。业务语义可以说明哪些订单计入收入等规则。它返回数据与文字，不会直接生成图表。"]}],"\n",["$","h2",null,{"id":"read-the-result","children":["$","a",null,{"href":"#read-the-result","className":"docs-heading-link","children":"读懂返回结果"}]}],"\n",["$","p",null,{"children":"上面的问题可能返回如下结果。结论的措辞、生成的查询和列别名会随模型而变化。"}],"\n",["$","figure",null,{"data-rehype-pretty-code-figure":"","children":["$","div",null,{"className":"docs-code-block","children":[["$","div",null,{"className":"docs-code-toolbar","children":[["$","span",null,{"children":"json"}],["$","$L17",null,{}]]}],["$","pre",null,{"tabIndex":"0","data-language":"json","data-theme":"github-light","children":["$","code",null,{"data-language":"json","data-theme":"github-light","style":{"display":"grid"},"children":[["$","span",null,{"data-line":"","children":["$","span",null,{"style":{"color":"#24292E"},"children":"{"}]}],"\n",["$","span",null,{"data-line":"","children":[["$","span",null,{"style":{"color":"#005CC5"},"children":"  \"query\""}],["$","span",null,{"style":{"color":"#24292E"},"children":": "}],["$","span",null,{"style":{"color":"#032F62"},"children":"\"What is total revenue by region?\""}],["$","span",null,{"style":{"color":"#24292E"},"children":","}]]}],"\n",["$","span",null,{"data-line":"","children":[["$","span",null,{"style":{"color":"#005CC5"},"children":"  \"text\""}],["$","span",null,{"style":{"color":"#24292E"},"children":": "}],["$","span",null,{"style":{"color":"#032F62"},"children":"\"East has total revenue of 200, compared with 90 for West.\""}],["$","span",null,{"style":{"color":"#24292E"},"children":","}]]}],"\n",["$","span",null,{"data-line":"","children":[["$","span",null,{"style":{"color":"#005CC5"},"children":"  \"schema\""}],["$","span",null,{"style":{"color":"#24292E"},"children":": [{ "}],["$","span",null,{"style":{"color":"#005CC5"},"children":"\"name\""}],["$","span",null,{"style":{"color":"#24292E"},"children":": "}],"$L2c","$L2d","$L2e","$L2f","$L30","$L31"]}],"\n","$L32","\n","$L33","\n","$L34","\n","$L35","\n","$L36","\n","$L37"]}]}]]}]}],"\n","$L38","\n","$L39","\n","$L3a","\n","$L3b","\n","$L3c","\n","$L3d","\n","$L3e","\n","$L3f","\n","$L40","\n","$L41","\n","$L42","\n","$L43","\n","$L44","\n","$L45","\n","$L46","\n","$L47","\n","$L48","\n","$L49","\n","$L4a","\n","$L4b","\n","$L4c","\n","$L4d","\n","$L4e","\n","$L4f","\n","$L50","\n","$L51","\n","$L52","\n","$L53","\n","$L54","\n","$L55","\n","$L56","\n","$L57","\n","$L58","\n","$L59","\n","$L5a","\n","$L5b","\n","$L5c","\n","$L5d","\n","$L5e","\n","$L5f","\n","$L60","\n","$L61"]}]
+1c:["$","div",null,{"className":"docs-page-meta","children":["$","a",null,{"href":"https://github.com/antvis/AVA/blob/ai/site/content/docs/zh/analysis/overview.mdx","children":["在 GitHub 编辑本页"," ",["$","span",null,{"aria-hidden":"true","children":"↗"}]]}]}]
+1d:["$","nav",null,{"className":"docs-pagination","aria-label":"章节导航","children":[["$","$L10",null,{"href":"/documentation/data/semantic/","children":[["$","span",null,{"children":"← 上一篇"}],["$","strong",null,{"children":"补充业务语义"}]]}],["$","$L10",null,{"href":"/documentation/analysis/strategies/","className":"docs-next","children":[["$","span",null,{"children":"下一篇 →"}],["$","strong",null,{"children":"选择分析策略"}]]}]]}]
+1e:["$","footer",null,{"className":"docs-footer","children":[["$","span",null,{"children":"AVA · AntV 开源项目"}],["$","a",null,{"href":"https://github.com/antvis/AVA","children":"在 GitHub 查看源码 ↗"}]]}]
+1f:["$","$L62","analysis/overview",{}]
+20:["$","script","script-0",{"src":"/_next/static/chunks/1lxucu_dj41ds.js","async":true}]
+21:["$","$L63",null,{"children":["$","$27",null,{"name":"Next.MetadataOutlet","children":"$@64"}]}]
+2b:true
+9:300
+2c:["$","span",null,{"style":{"color":"#032F62"},"children":"\"region\""}]
+2d:["$","span",null,{"style":{"color":"#24292E"},"children":" }, { "}]
+2e:["$","span",null,{"style":{"color":"#005CC5"},"children":"\"name\""}]
+2f:["$","span",null,{"style":{"color":"#24292E"},"children":": "}]
+30:["$","span",null,{"style":{"color":"#032F62"},"children":"\"total_revenue\""}]
+31:["$","span",null,{"style":{"color":"#24292E"},"children":" }],"}]
+32:["$","span",null,{"data-line":"","children":[["$","span",null,{"style":{"color":"#005CC5"},"children":"  \"data\""}],["$","span",null,{"style":{"color":"#24292E"},"children":": ["}]]}]
+33:["$","span",null,{"data-line":"","children":[["$","span",null,{"style":{"color":"#24292E"},"children":"    { "}],["$","span",null,{"style":{"color":"#005CC5"},"children":"\"region\""}],["$","span",null,{"style":{"color":"#24292E"},"children":": "}],["$","span",null,{"style":{"color":"#032F62"},"children":"\"East\""}],["$","span",null,{"style":{"color":"#24292E"},"children":", "}],["$","span",null,{"style":{"color":"#005CC5"},"children":"\"total_revenue\""}],["$","span",null,{"style":{"color":"#24292E"},"children":": "}],["$","span",null,{"style":{"color":"#005CC5"},"children":"200"}],["$","span",null,{"style":{"color":"#24292E"},"children":" },"}]]}]
+34:["$","span",null,{"data-line":"","children":[["$","span",null,{"style":{"color":"#24292E"},"children":"    { "}],["$","span",null,{"style":{"color":"#005CC5"},"children":"\"region\""}],["$","span",null,{"style":{"color":"#24292E"},"children":": "}],["$","span",null,{"style":{"color":"#032F62"},"children":"\"West\""}],["$","span",null,{"style":{"color":"#24292E"},"children":", "}],["$","span",null,{"style":{"color":"#005CC5"},"children":"\"total_revenue\""}],["$","span",null,{"style":{"color":"#24292E"},"children":": "}],["$","span",null,{"style":{"color":"#005CC5"},"children":"90"}],["$","span",null,{"style":{"color":"#24292E"},"children":" }"}]]}]
+35:["$","span",null,{"data-line":"","children":["$","span",null,{"style":{"color":"#24292E"},"children":"  ],"}]}]
+36:["$","span",null,{"data-line":"","children":[["$","span",null,{"style":{"color":"#005CC5"},"children":"  \"rowCount\""}],["$","span",null,{"style":{"color":"#24292E"},"children":": "}],["$","span",null,{"style":{"color":"#005CC5"},"children":"2"}]]}]
+37:["$","span",null,{"data-line":"","children":["$","span",null,{"style":{"color":"#24292E"},"children":"}"}]}]
+38:["$","div",null,{"className":"docs-table","children":["$","table",null,{"children":[["$","thead",null,{"children":["$","tr",null,{"children":[["$","th",null,{"children":"字段"}],["$","th",null,{"children":"类型"}],["$","th",null,{"children":"含义"}]]}]}],["$","tbody",null,{"children":[["$","tr",null,{"children":[["$","td",null,{"children":["$","code",null,{"children":"query"}]}],["$","td",null,{"children":["$","code",null,{"children":"string"}]}],["$","td",null,{"children":"原始问题。"}]]}],["$","tr",null,{"children":[["$","td",null,{"children":["$","code",null,{"children":"text"}]}],["$","td",null,{"children":["$","code",null,{"children":"string"}]}],["$","td",null,{"children":["模型生成的总结；",["$","code",null,{"children":"includeSummary"}]," 为 false 时为空字符串。"]}]]}],["$","tr",null,{"children":[["$","td",null,{"children":["$","code",null,{"children":"schema"}]}],["$","td",null,{"children":["$","code",null,{"children":"QueryColumn[]"}]}],["$","td",null,{"children":["返回列的定义，每列包含 ",["$","code",null,{"children":"name: string"}]," 和可选的 ",["$","code",null,{"children":"type: string"}],"。"]}]]}],["$","tr",null,{"children":[["$","td",null,{"children":["$","code",null,{"children":"data"}]}],["$","td",null,{"children":["$","code",null,{"children":"Record<string, unknown>[]"}]}],["$","td",null,{"children":"可用于展示、导出或可视化的结果行。"}]]}],["$","tr",null,{"children":[["$","td",null,{"children":["$","code",null,{"children":"rowCount"}]}],["$","td",null,{"children":[["$","code",null,{"children":"number"}],"，可选"]}],["$","td",null,{"children":"结果完整时的行数，不是输入数据集的总行数。"}]]}],["$","tr",null,{"children":[["$","td",null,{"children":["$","code",null,{"children":"sql"}]}],["$","td",null,{"children":[["$","code",null,{"children":"string"}],"，可选"]}],["$","td",null,{"children":"实际执行的查询；使用 Python 或 JavaScript 引擎时，这个字段名仍保持不变。"}]]}],["$","tr",null,{"children":[["$","td",null,{"children":["$","code",null,{"children":"markdown"}]}],["$","td",null,{"children":[["$","code",null,{"children":"string"}],"，可选"]}],["$","td",null,{"children":"返回时提供的 Markdown 内容。"}]]}],["$","tr",null,{"children":[["$","td",null,{"children":["$","code",null,{"children":"truncated"}]}],["$","td",null,{"children":[["$","code",null,{"children":"true"}],"，可选"]}],["$","td",null,{"children":"实际数据超过结果限制，返回结果不完整。"}]]}],["$","tr",null,{"children":[["$","td",null,{"children":["$","code",null,{"children":"truncatedBy"}]}],["$","td",null,{"children":[["$","code",null,{"children":"'maxRows'"}]," 或 ",["$","code",null,{"children":"'maxResultBytes'"}],"，可选"]}],["$","td",null,{"children":"触发截断的限制项。"}]]}]]}]]}]}]
+39:["$","p",null,{"children":["请通过 ",["$","code",null,{"children":"schema"}]," 读取实际返回的列名，不要假定模型一定使用 ",["$","code",null,{"children":"total_revenue"}]," 这个别名。"]}]
+3a:["$","h2",null,{"id":"configure-an-analysis","children":["$","a",null,{"href":"#configure-an-analysis","className":"docs-heading-link","children":"配置一次分析"}]}]
+3b:["$","p",null,{"children":[["$","code",null,{"children":"analyze(query: string, config?: AnalysisConfig)"}]," 接受以下输入："]}]
+3c:["$","div",null,{"className":"docs-table","children":["$","table",null,{"children":[["$","thead",null,{"children":["$","tr",null,{"children":[["$","th",null,{"children":"参数"}],["$","th",null,{"children":"类型"}],["$","th",null,{"children":"必填"}],["$","th",null,{"children":"默认值与行为"}]]}]}],["$","tbody",null,{"children":[["$","tr",null,{"children":[["$","td",null,{"children":["$","code",null,{"children":"query"}]}],["$","td",null,{"children":["$","code",null,{"children":"string"}]}],["$","td",null,{"children":"是"}],["$","td",null,{"children":"自然语言问题。"}]]}],["$","tr",null,{"children":[["$","td",null,{"children":["$","code",null,{"children":"config"}]}],["$","td",null,{"children":["$","code",null,{"children":"AnalysisConfig"}]}],["$","td",null,{"children":"否"}],["$","td",null,{"children":[["$","code",null,{"children":"{}"}],"。"]}]]}],["$","tr",null,{"children":[["$","td",null,{"children":["$","code",null,{"children":"config.includeSummary"}]}],["$","td",null,{"children":["$","code",null,{"children":"boolean"}]}],["$","td",null,{"children":"否"}],["$","td",null,{"children":[["$","code",null,{"children":"true"}],"；设为 ",["$","code",null,{"children":"false"}]," 可跳过结果总结。"]}]]}],["$","tr",null,{"children":[["$","td",null,{"children":["$","code",null,{"children":"config.maxRows"}]}],["$","td",null,{"children":["$","code",null,{"children":"number"}]}],["$","td",null,{"children":"否"}],["$","td",null,{"children":[["$","code",null,{"children":"200"}],"，限制返回行数。"]}]]}],["$","tr",null,{"children":[["$","td",null,{"children":["$","code",null,{"children":"config.maxResultBytes"}]}],["$","td",null,{"children":["$","code",null,{"children":"number"}]}],["$","td",null,{"children":"否"}],["$","td",null,{"children":[["$","code",null,{"children":"1048576"}],"（1 MiB），限制序列化后的结果数据大小。"]}]]}],["$","tr",null,{"children":[["$","td",null,{"children":["$","code",null,{"children":"config.strategy"}]}],["$","td",null,{"children":["$","code",null,{"children":"AnalysisStrategyConfig"}]}],["$","td",null,{"children":"否"}],["$","td",null,{"children":["默认直接分析，详见",["$","$L10",null,{"href":"/documentation/analysis/strategies/#strategy-options","children":"策略选项"}],"。"]}]]}]]}]]}]}]
+3d:["$","p",null,{"children":"例如，最多返回 100 行，并跳过文字总结："}]
+3e:["$","figure",null,{"data-rehype-pretty-code-figure":"","children":["$","div",null,{"className":"docs-code-block","children":[["$","div",null,{"className":"docs-code-toolbar","children":[["$","span",null,{"children":"typescript"}],["$","$L17",null,{}]]}],["$","pre",null,{"tabIndex":"0","data-language":"typescript","data-theme":"github-light","children":["$","code",null,{"data-language":"typescript","data-theme":"github-light","style":{"display":"grid"},"children":[["$","span",null,{"data-line":"","children":[["$","span",null,{"style":{"color":"#D73A49"},"children":"const"}],["$","span",null,{"style":{"color":"#005CC5"},"children":" result"}],["$","span",null,{"style":{"color":"#D73A49"},"children":" ="}],["$","span",null,{"style":{"color":"#D73A49"},"children":" await"}],["$","span",null,{"style":{"color":"#24292E"},"children":" ava."}],["$","span",null,{"style":{"color":"#6F42C1"},"children":"analyze"}],["$","span",null,{"style":{"color":"#24292E"},"children":"("}],["$","span",null,{"style":{"color":"#032F62"},"children":"'What is total revenue by region?'"}],["$","span",null,{"style":{"color":"#24292E"},"children":", {"}]]}],"\n",["$","span",null,{"data-line":"","children":[["$","span",null,{"style":{"color":"#24292E"},"children":"  includeSummary: "}],["$","span",null,{"style":{"color":"#005CC5"},"children":"false"}],["$","span",null,{"style":{"color":"#24292E"},"children":","}]]}],"\n",["$","span",null,{"data-line":"","children":[["$","span",null,{"style":{"color":"#24292E"},"children":"  maxRows: "}],["$","span",null,{"style":{"color":"#005CC5"},"children":"100"}],["$","span",null,{"style":{"color":"#24292E"},"children":","}]]}],"\n",["$","span",null,{"data-line":"","children":[["$","span",null,{"style":{"color":"#24292E"},"children":"  maxResultBytes: "}],["$","span",null,{"style":{"color":"#005CC5"},"children":"1048576"}],["$","span",null,{"style":{"color":"#24292E"},"children":","}]]}],"\n",["$","span",null,{"data-line":"","children":["$","span",null,{"style":{"color":"#24292E"},"children":"});"}]}],"\n",["$","span",null,{"data-line":"","children":" "}],"\n",["$","span",null,{"data-line":"","children":[["$","span",null,{"style":{"color":"#24292E"},"children":"console."}],["$","span",null,{"style":{"color":"#6F42C1"},"children":"log"}],["$","span",null,{"style":{"color":"#24292E"},"children":"(result.text); "}],["$","span",null,{"style":{"color":"#6A737D"},"children":"// ''"}]]}],"\n",["$","span",null,{"data-line":"","children":[["$","span",null,{"style":{"color":"#24292E"},"children":"console."}],["$","span",null,{"style":{"color":"#6F42C1"},"children":"table"}],["$","span",null,{"style":{"color":"#24292E"},"children":"(result.data);"}]]}]]}]}]]}]}]
+3f:["$","h3",null,{"id":"handle-partial-results","children":["$","a",null,{"href":"#handle-partial-results","className":"docs-heading-link","children":"处理不完整的结果"}]}]
+40:["$","p",null,{"children":["假设这份两地区的结果使用了 ",["$","code",null,{"children":"maxRows: 1"}],"，简化后的返回内容可能是："]}]
+41:["$","figure",null,{"data-rehype-pretty-code-figure":"","children":["$","div",null,{"className":"docs-code-block","children":[["$","div",null,{"className":"docs-code-toolbar","children":[["$","span",null,{"children":"json"}],["$","$L17",null,{}]]}],["$","pre",null,{"tabIndex":"0","data-language":"json","data-theme":"github-light","children":["$","code",null,{"data-language":"json","data-theme":"github-light","style":{"display":"grid"},"children":[["$","span",null,{"data-line":"","children":["$","span",null,{"style":{"color":"#24292E"},"children":"{"}]}],"\n",["$","span",null,{"data-line":"","children":[["$","span",null,{"style":{"color":"#005CC5"},"children":"  \"schema\""}],["$","span",null,{"style":{"color":"#24292E"},"children":": [{ "}],["$","span",null,{"style":{"color":"#005CC5"},"children":"\"name\""}],["$","span",null,{"style":{"color":"#24292E"},"children":": "}],["$","span",null,{"style":{"color":"#032F62"},"children":"\"region\""}],["$","span",null,{"style":{"color":"#24292E"},"children":" }, { "}],["$","span",null,{"style":{"color":"#005CC5"},"children":"\"name\""}],["$","span",null,{"style":{"color":"#24292E"},"children":": "}],["$","span",null,{"style":{"color":"#032F62"},"children":"\"total_revenue\""}],["$","span",null,{"style":{"color":"#24292E"},"children":" }],"}]]}],"\n",["$","span",null,{"data-line":"","children":[["$","span",null,{"style":{"color":"#005CC5"},"children":"  \"data\""}],["$","span",null,{"style":{"color":"#24292E"},"children":": [{ "}],["$","span",null,{"style":{"color":"#005CC5"},"children":"\"region\""}],["$","span",null,{"style":{"color":"#24292E"},"children":": "}],["$","span",null,{"style":{"color":"#032F62"},"children":"\"East\""}],["$","span",null,{"style":{"color":"#24292E"},"children":", "}],["$","span",null,{"style":{"color":"#005CC5"},"children":"\"total_revenue\""}],["$","span",null,{"style":{"color":"#24292E"},"children":": "}],["$","span",null,{"style":{"color":"#005CC5"},"children":"200"}],["$","span",null,{"style":{"color":"#24292E"},"children":" }],"}]]}],"\n",["$","span",null,{"data-line":"","children":[["$","span",null,{"style":{"color":"#005CC5"},"children":"  \"truncated\""}],["$","span",null,{"style":{"color":"#24292E"},"children":": "}],["$","span",null,{"style":{"color":"#005CC5"},"children":"true"}],["$","span",null,{"style":{"color":"#24292E"},"children":","}]]}],"\n",["$","span",null,{"data-line":"","children":[["$","span",null,{"style":{"color":"#005CC5"},"children":"  \"truncatedBy\""}],["$","span",null,{"style":{"color":"#24292E"},"children":": "}],["$","span",null,{"style":{"color":"#032F62"},"children":"\"maxRows\""}]]}],"\n",["$","span",null,{"data-line":"","children":["$","span",null,{"style":{"color":"#24292E"},"children":"}"}]}]]}]}]]}]}]
+42:["$","p",null,{"children":"这只是部分答案。将它作为完整结果展示前，应先检查截断字段："}]
+43:["$","figure",null,{"data-rehype-pretty-code-figure":"","children":["$","div",null,{"className":"docs-code-block","children":[["$","div",null,{"className":"docs-code-toolbar","children":[["$","span",null,{"children":"typescript"}],["$","$L17",null,{}]]}],["$","pre",null,{"tabIndex":"0","data-language":"typescript","data-theme":"github-light","children":["$","code",null,{"data-language":"typescript","data-theme":"github-light","style":{"display":"grid"},"children":[["$","span",null,{"data-line":"","children":[["$","span",null,{"style":{"color":"#D73A49"},"children":"if"}],["$","span",null,{"style":{"color":"#24292E"},"children":" (result.truncated) {"}]]}],"\n",["$","span",null,{"data-line":"","children":[["$","span",null,{"style":{"color":"#24292E"},"children":"  console."}],["$","span",null,{"style":{"color":"#6F42C1"},"children":"log"}],["$","span",null,{"style":{"color":"#24292E"},"children":"("}],["$","span",null,{"style":{"color":"#032F62"},"children":"`Showing a partial result: ${"}],["$","span",null,{"style":{"color":"#24292E"},"children":"result"}],["$","span",null,{"style":{"color":"#032F62"},"children":"."}],["$","span",null,{"style":{"color":"#24292E"},"children":"truncatedBy"}],["$","span",null,{"style":{"color":"#032F62"},"children":"} was reached.`"}],["$","span",null,{"style":{"color":"#24292E"},"children":");"}]]}],"\n",["$","span",null,{"data-line":"","children":["$","span",null,{"style":{"color":"#24292E"},"children":"}"}]}]]}]}]]}]}]
+44:["$","p",null,{"children":[["$","code",null,{"children":"maxRows"}]," 向下取整后限制在 ",["$","code",null,{"children":"1"}],"—",["$","code",null,{"children":"1000000"}]," 之间；取整后超出安全整数范围则使用默认值。",["$","code",null,{"children":"maxResultBytes"}]," 向下取整后最小为 ",["$","code",null,{"children":"1"}],"，非有限值使用默认值。这两项限制也适用于下面的 ",["$","code",null,{"children":"query()"}],"；它们约束返回数据，并不限制查询的总耗时或内存消耗。"]}]
+45:["$","h2",null,{"id":"suggest-questions","children":["$","a",null,{"href":"#suggest-questions","className":"docs-heading-link","children":"推荐分析问题"}]}]
+46:["$","p",null,{"children":["使用 ",["$","code",null,{"children":"suggest()"}]," 获取分析方向。也可以先计算 profile，为上下文补充统计信息；这一步可选，且不调用大模型。"]}]
+47:["$","figure",null,{"data-rehype-pretty-code-figure":"","children":["$","div",null,{"className":"docs-code-block","children":[["$","div",null,{"className":"docs-code-toolbar","children":[["$","span",null,{"children":"typescript"}],["$","$L17",null,{}]]}],["$","pre",null,{"tabIndex":"0","data-language":"typescript","data-theme":"github-light","children":["$","code",null,{"data-language":"typescript","data-theme":"github-light","style":{"display":"grid"},"children":[["$","span",null,{"data-line":"","children":[["$","span",null,{"style":{"color":"#D73A49"},"children":"await"}],["$","span",null,{"style":{"color":"#24292E"},"children":" ava."}],["$","span",null,{"style":{"color":"#6F42C1"},"children":"profile"}],["$","span",null,{"style":{"color":"#24292E"},"children":"();"}]]}],"\n",["$","span",null,{"data-line":"","children":[["$","span",null,{"style":{"color":"#D73A49"},"children":"const"}],["$","span",null,{"style":{"color":"#005CC5"},"children":" suggestions"}],["$","span",null,{"style":{"color":"#D73A49"},"children":" ="}],["$","span",null,{"style":{"color":"#D73A49"},"children":" await"}],["$","span",null,{"style":{"color":"#24292E"},"children":" ava."}],["$","span",null,{"style":{"color":"#6F42C1"},"children":"suggest"}],["$","span",null,{"style":{"color":"#24292E"},"children":"("}],["$","span",null,{"style":{"color":"#005CC5"},"children":"2"}],["$","span",null,{"style":{"color":"#24292E"},"children":");"}]]}],"\n",["$","span",null,{"data-line":"","children":[["$","span",null,{"style":{"color":"#24292E"},"children":"console."}],["$","span",null,{"style":{"color":"#6F42C1"},"children":"log"}],["$","span",null,{"style":{"color":"#24292E"},"children":"(suggestions);"}]]}]]}]}]]}]}]
+48:["$","div",null,{"className":"docs-table","children":["$","table",null,{"children":[["$","thead",null,{"children":["$","tr",null,{"children":[["$","th",null,{"children":"参数"}],["$","th",null,{"children":"类型"}],["$","th",null,{"children":"必填"}],["$","th",null,{"children":"默认值与行为"}]]}]}],["$","tbody",null,{"children":["$","tr",null,{"children":[["$","td",null,{"children":["$","code",null,{"children":"count"}]}],["$","td",null,{"children":["$","code",null,{"children":"number"}]}],["$","td",null,{"children":"否"}],["$","td",null,{"children":[["$","code",null,{"children":"3"}],"，期望获取的推荐问题数量。"]}]]}]}]]}]}]
+49:["$","p",null,{"children":[["$","code",null,{"children":"suggest()"}]," 需要先加载数据源，并会调用已配置的模型。有最新 profile 时使用 profile，否则使用 schema。"]}]
+4a:["$","h3",null,{"id":"suggestion-results","children":["$","a",null,{"href":"#suggestion-results","className":"docs-heading-link","children":"推荐结果"}]}]
+4b:["$","p",null,{"children":"对于销售数据集，返回数组可能如下："}]
+4c:["$","figure",null,{"data-rehype-pretty-code-figure":"","children":["$","div",null,{"className":"docs-code-block","children":[["$","div",null,{"className":"docs-code-toolbar","children":[["$","span",null,{"children":"json"}],["$","$L17",null,{}]]}],["$","pre",null,{"tabIndex":"0","data-language":"json","data-theme":"github-light","children":["$","code",null,{"data-language":"json","data-theme":"github-light","style":{"display":"grid"},"children":[["$","span",null,{"data-line":"","children":["$","span",null,{"style":{"color":"#24292E"},"children":"["}]}],"\n",["$","span",null,{"data-line":"","children":["$","span",null,{"style":{"color":"#24292E"},"children":"  {"}]}],"\n",["$","span",null,{"data-line":"","children":[["$","span",null,{"style":{"color":"#005CC5"},"children":"    \"query\""}],["$","span",null,{"style":{"color":"#24292E"},"children":": "}],["$","span",null,{"style":{"color":"#032F62"},"children":"\"What is total revenue by region?\""}],["$","span",null,{"style":{"color":"#24292E"},"children":","}]]}],"\n",["$","span",null,{"data-line":"","children":[["$","span",null,{"style":{"color":"#005CC5"},"children":"    \"score\""}],["$","span",null,{"style":{"color":"#24292E"},"children":": "}],["$","span",null,{"style":{"color":"#005CC5"},"children":"0.95"}],["$","span",null,{"style":{"color":"#24292E"},"children":","}]]}],"\n",["$","span",null,{"data-line":"","children":[["$","span",null,{"style":{"color":"#005CC5"},"children":"    \"reason\""}],["$","span",null,{"style":{"color":"#24292E"},"children":": "}],["$","span",null,{"style":{"color":"#032F62"},"children":"\"Compare each region's contribution to overall revenue.\""}]]}],"\n",["$","span",null,{"data-line":"","children":["$","span",null,{"style":{"color":"#24292E"},"children":"  },"}]}],"\n",["$","span",null,{"data-line":"","children":["$","span",null,{"style":{"color":"#24292E"},"children":"  {"}]}],"\n",["$","span",null,{"data-line":"","children":[["$","span",null,{"style":{"color":"#005CC5"},"children":"    \"query\""}],["$","span",null,{"style":{"color":"#24292E"},"children":": "}],["$","span",null,{"style":{"color":"#032F62"},"children":"\"What is average revenue per record in each region?\""}],["$","span",null,{"style":{"color":"#24292E"},"children":","}]]}],"\n",["$","span",null,{"data-line":"","children":[["$","span",null,{"style":{"color":"#005CC5"},"children":"    \"score\""}],["$","span",null,{"style":{"color":"#24292E"},"children":": "}],["$","span",null,{"style":{"color":"#005CC5"},"children":"0.82"}],["$","span",null,{"style":{"color":"#24292E"},"children":","}]]}],"\n",["$","span",null,{"data-line":"","children":[["$","span",null,{"style":{"color":"#005CC5"},"children":"    \"reason\""}],["$","span",null,{"style":{"color":"#24292E"},"children":": "}],["$","span",null,{"style":{"color":"#032F62"},"children":"\"Compare typical record values across regions with different record counts.\""}]]}],"\n",["$","span",null,{"data-line":"","children":["$","span",null,{"style":{"color":"#24292E"},"children":"  }"}]}],"\n",["$","span",null,{"data-line":"","children":["$","span",null,{"style":{"color":"#24292E"},"children":"]"}]}]]}]}]]}]}]
+4d:["$","p",null,{"children":"这些只是示例，并非固定输出。在界面中可以这样使用各字段："}]
+4e:["$","div",null,{"className":"docs-table","children":["$","table",null,{"children":[["$","thead",null,{"children":["$","tr",null,{"children":[["$","th",null,{"children":"字段"}],["$","th",null,{"children":"类型"}],["$","th",null,{"children":"使用方式"}]]}]}],["$","tbody",null,{"children":[["$","tr",null,{"children":[["$","td",null,{"children":["$","code",null,{"children":"query"}]}],["$","td",null,{"children":["$","code",null,{"children":"string"}]}],["$","td",null,{"children":["展示为可选择的问题，并传给 ",["$","code",null,{"children":"analyze()"}],"。"]}]]}],["$","tr",null,{"children":[["$","td",null,{"children":["$","code",null,{"children":"score"}]}],["$","td",null,{"children":["$","code",null,{"children":"number"}]}],["$","td",null,{"children":"用于排序。数值限制在 0—1 之间，并按降序排列；它表示问题的分析价值，不是答案的可信度。"}]]}],["$","tr",null,{"children":[["$","td",null,{"children":["$","code",null,{"children":"reason"}]}],["$","td",null,{"children":["$","code",null,{"children":"string"}]}],["$","td",null,{"children":"解释这个问题为什么值得分析，例如展示在问题下方。"}]]}]]}]]}]}]
+4f:["$","p",null,{"children":["最多返回 ",["$","code",null,{"children":"count"}]," 条推荐，也可能返回空数组。提示词会要求模型让问题和推荐理由沿用数据集的语言。"]}]
+50:["$","h3",null,{"id":"analyze-a-suggestion","children":["$","a",null,{"href":"#analyze-a-suggestion","className":"docs-heading-link","children":"分析推荐的问题"}]}]
+51:["$","figure",null,{"data-rehype-pretty-code-figure":"","children":["$","div",null,{"className":"docs-code-block","children":[["$","div",null,{"className":"docs-code-toolbar","children":[["$","span",null,{"children":"typescript"}],["$","$L17",null,{}]]}],["$","pre",null,{"tabIndex":"0","data-language":"typescript","data-theme":"github-light","children":["$","code",null,{"data-language":"typescript","data-theme":"github-light","style":{"display":"grid"},"children":[["$","span",null,{"data-line":"","children":[["$","span",null,{"style":{"color":"#D73A49"},"children":"if"}],["$","span",null,{"style":{"color":"#24292E"},"children":" (suggestions."}],["$","span",null,{"style":{"color":"#005CC5"},"children":"length"}],["$","span",null,{"style":{"color":"#D73A49"},"children":" >"}],["$","span",null,{"style":{"color":"#005CC5"},"children":" 0"}],["$","span",null,{"style":{"color":"#24292E"},"children":") {"}]]}],"\n",["$","span",null,{"data-line":"","children":[["$","span",null,{"style":{"color":"#D73A49"},"children":"  const"}],["$","span",null,{"style":{"color":"#005CC5"},"children":" selected"}],["$","span",null,{"style":{"color":"#D73A49"},"children":" ="}],["$","span",null,{"style":{"color":"#24292E"},"children":" suggestions["}],["$","span",null,{"style":{"color":"#005CC5"},"children":"0"}],["$","span",null,{"style":{"color":"#24292E"},"children":"];"}]]}],"\n",["$","span",null,{"data-line":"","children":[["$","span",null,{"style":{"color":"#D73A49"},"children":"  const"}],["$","span",null,{"style":{"color":"#005CC5"},"children":" answer"}],["$","span",null,{"style":{"color":"#D73A49"},"children":" ="}],["$","span",null,{"style":{"color":"#D73A49"},"children":" await"}],["$","span",null,{"style":{"color":"#24292E"},"children":" ava."}],["$","span",null,{"style":{"color":"#6F42C1"},"children":"analyze"}],["$","span",null,{"style":{"color":"#24292E"},"children":"(selected.query);"}]]}],"\n",["$","span",null,{"data-line":"","children":[["$","span",null,{"style":{"color":"#24292E"},"children":"  console."}],["$","span",null,{"style":{"color":"#6F42C1"},"children":"log"}],["$","span",null,{"style":{"color":"#24292E"},"children":"(selected.reason);"}]]}],"\n",["$","span",null,{"data-line":"","children":[["$","span",null,{"style":{"color":"#24292E"},"children":"  console."}],["$","span",null,{"style":{"color":"#6F42C1"},"children":"table"}],["$","span",null,{"style":{"color":"#24292E"},"children":"(answer.data);"}]]}],"\n",["$","span",null,{"data-line":"","children":["$","span",null,{"style":{"color":"#24292E"},"children":"}"}]}]]}]}]]}]}]
+52:["$","h2",null,{"id":"analysis-strategies","children":["$","a",null,{"href":"#analysis-strategies","className":"docs-heading-link","children":"分析策略"}]}]
+53:["$","p",null,{"children":[["$","code",null,{"children":"analyze()"}]," 默认直接分析。如果问题需要不同的处理方式，可以为每次调用指定策略："]}]
+54:["$","div",null,{"className":"docs-table","children":["$","table",null,{"children":[["$","thead",null,{"children":["$","tr",null,{"children":[["$","th",null,{"children":"策略"}],["$","th",null,{"children":"适用情况"}]]}]}],["$","tbody",null,{"children":[["$","tr",null,{"children":[["$","td",null,{"children":["$","code",null,{"children":"direct"}]}],["$","td",null,{"children":"问题明确，生成并执行一个查询即可回答。"}]]}],["$","tr",null,{"children":[["$","td",null,{"children":["$","code",null,{"children":"loop"}]}],["$","td",null,{"children":"需要先做中间探索，再形成答案。"}]]}]]}]]}]}]
+55:["$","p",null,{"children":["示例、重试控制与步数限制见",["$","$L10",null,{"href":"/documentation/analysis/strategies/","children":"分析策略"}],"。"]}]
+56:["$","h2",null,{"id":"translate-and-execute-separately","children":["$","a",null,{"href":"#translate-and-execute-separately","className":"docs-heading-link","children":"分开生成与执行查询"}]}]
+57:["$","p",null,{"children":["用 ",["$","code",null,{"children":"translate()"}]," 先查看生成的代码，再决定是否交给 ",["$","code",null,{"children":"query()"}]," 执行："]}]
+58:["$","figure",null,{"data-rehype-pretty-code-figure":"","children":["$","div",null,{"className":"docs-code-block","children":[["$","div",null,{"className":"docs-code-toolbar","children":[["$","span",null,{"children":"typescript"}],["$","$L17",null,{}]]}],["$","pre",null,{"tabIndex":"0","data-language":"typescript","data-theme":"github-light","children":["$","code",null,{"data-language":"typescript","data-theme":"github-light","style":{"display":"grid"},"children":[["$","span",null,{"data-line":"","children":[["$","span",null,{"style":{"color":"#D73A49"},"children":"const"}],["$","span",null,{"style":{"color":"#005CC5"},"children":" dsl"}],["$","span",null,{"style":{"color":"#D73A49"},"children":" ="}],["$","span",null,{"style":{"color":"#D73A49"},"children":" await"}],["$","span",null,{"style":{"color":"#24292E"},"children":" ava."}],["$","span",null,{"style":{"color":"#6F42C1"},"children":"translate"}],["$","span",null,{"style":{"color":"#24292E"},"children":"("}],["$","span",null,{"style":{"color":"#032F62"},"children":"'What is total revenue by region?'"}],["$","span",null,{"style":{"color":"#24292E"},"children":");"}]]}],"\n",["$","span",null,{"data-line":"","children":[["$","span",null,{"style":{"color":"#24292E"},"children":"console."}],["$","span",null,{"style":{"color":"#6F42C1"},"children":"log"}],["$","span",null,{"style":{"color":"#24292E"},"children":"(dsl); "}],["$","span",null,{"style":{"color":"#6A737D"},"children":"// Display the generated query for review."}]]}],"\n",["$","span",null,{"data-line":"","children":" "}],"\n",["$","span",null,{"data-line":"","children":["$","span",null,{"style":{"color":"#6A737D"},"children":"// Run this step when your application is ready to execute the query."}]}],"\n",["$","span",null,{"data-line":"","children":[["$","span",null,{"style":{"color":"#D73A49"},"children":"const"}],["$","span",null,{"style":{"color":"#005CC5"},"children":" rows"}],["$","span",null,{"style":{"color":"#D73A49"},"children":" ="}],["$","span",null,{"style":{"color":"#D73A49"},"children":" await"}],["$","span",null,{"style":{"color":"#24292E"},"children":" ava."}],["$","span",null,{"style":{"color":"#6F42C1"},"children":"query"}],["$","span",null,{"style":{"color":"#24292E"},"children":"(dsl, {"}]]}],"\n",["$","span",null,{"data-line":"","children":[["$","span",null,{"style":{"color":"#24292E"},"children":"  maxRows: "}],["$","span",null,{"style":{"color":"#005CC5"},"children":"100"}],["$","span",null,{"style":{"color":"#24292E"},"children":","}]]}],"\n",["$","span",null,{"data-line":"","children":[["$","span",null,{"style":{"color":"#24292E"},"children":"  maxResultBytes: "}],["$","span",null,{"style":{"color":"#005CC5"},"children":"1048576"}],["$","span",null,{"style":{"color":"#24292E"},"children":","}]]}],"\n",["$","span",null,{"data-line":"","children":["$","span",null,{"style":{"color":"#24292E"},"children":"});"}]}],"\n",["$","span",null,{"data-line":"","children":[["$","span",null,{"style":{"color":"#24292E"},"children":"console."}],["$","span",null,{"style":{"color":"#6F42C1"},"children":"table"}],["$","span",null,{"style":{"color":"#24292E"},"children":"(rows.data);"}]]}]]}]}]]}]}]
+59:["$","div",null,{"className":"docs-table","children":["$","table",null,{"children":[["$","thead",null,{"children":["$","tr",null,{"children":[["$","th",null,{"children":"方法"}],["$","th",null,{"children":"参数"}],["$","th",null,{"children":"类型"}],["$","th",null,{"children":"必填与默认值"}]]}]}],["$","tbody",null,{"children":[["$","tr",null,{"children":[["$","td",null,{"children":["$","code",null,{"children":"translate(query)"}]}],["$","td",null,{"children":["$","code",null,{"children":"query"}]}],["$","td",null,{"children":["$","code",null,{"children":"string"}]}],["$","td",null,{"children":"必填，自然语言问题。"}]]}],["$","tr",null,{"children":[["$","td",null,{"children":["$","code",null,{"children":"query(dsl, options?)"}]}],["$","td",null,{"children":["$","code",null,{"children":"dsl"}]}],["$","td",null,{"children":["$","code",null,{"children":"string"}]}],["$","td",null,{"children":"必填，使用当前引擎语言的可执行语句。"}]]}],["$","tr",null,{"children":[["$","td",null,{"children":["$","code",null,{"children":"query(dsl, options?)"}]}],["$","td",null,{"children":["$","code",null,{"children":"options"}]}],["$","td",null,{"children":["$","code",null,{"children":"ExecutionOptions"}]}],["$","td",null,{"children":"可选，默认值见下方。"}]]}],["$","tr",null,{"children":[["$","td",null,{"children":["$","code",null,{"children":"query(dsl, options?)"}]}],["$","td",null,{"children":["$","code",null,{"children":"options.maxRows"}]}],["$","td",null,{"children":["$","code",null,{"children":"number"}]}],["$","td",null,{"children":["可选，",["$","code",null,{"children":"200"}],"；边界规则与 ",["$","code",null,{"children":"analyze()"}]," 相同。"]}]]}],["$","tr",null,{"children":[["$","td",null,{"children":["$","code",null,{"children":"query(dsl, options?)"}]}],["$","td",null,{"children":["$","code",null,{"children":"options.maxResultBytes"}]}],["$","td",null,{"children":["$","code",null,{"children":"number"}]}],["$","td",null,{"children":["可选，",["$","code",null,{"children":"1048576"}],"；边界规则与 ",["$","code",null,{"children":"analyze()"}]," 相同。"]}]]}]]}]]}]}]
+5a:["$","p",null,{"children":["两个方法都需要先加载数据源。",["$","code",null,{"children":"translate()"}]," 结合模型、schema 和已有 profile，返回字符串；",["$","code",null,{"children":"query()"}]," 直接执行传入语句，不会做模型翻译、总结或自动纠错。"]}]
+5b:["$","p",null,{"children":"默认 Node.js 配置生成 SQL；其他引擎则使用各自的 SQL 方言、Python 或 JavaScript。SQL 引擎会验证查询是否只读；Python 和 JavaScript 的执行限制取决于各自的环境。"}]
+5c:["$","p",null,{"children":[["$","code",null,{"children":"query()"}]," 返回前文介绍的 ",["$","code",null,{"children":"schema"}],"、",["$","code",null,{"children":"data"}]," 和可选截断信息，但不包含分析结果中的 ",["$","code",null,{"children":"query"}],"、",["$","code",null,{"children":"text"}],"、",["$","code",null,{"children":"sql"}]," 字段。"]}]
+5d:["$","h2",null,{"id":"errors-and-cleanup","children":["$","a",null,{"href":"#errors-and-cleanup","className":"docs-heading-link","children":"错误处理与资源清理"}]}]
+5e:["$","p",null,{"children":"未加载数据源、模型请求失败、推荐结果无法解析，或重试后仍执行失败等情况，都会让调用抛出错误。不要把错误当成没有数据的答案。"}]
+5f:["$","p",null,{"children":"在分析调用外处理错误，并在使用结束后释放实例："}]
+60:["$","figure",null,{"data-rehype-pretty-code-figure":"","children":["$","div",null,{"className":"docs-code-block","children":[["$","div",null,{"className":"docs-code-toolbar","children":[["$","span",null,{"children":"typescript"}],["$","$L17",null,{}]]}],["$","pre",null,{"tabIndex":"0","data-language":"typescript","data-theme":"github-light","children":["$","code",null,{"data-language":"typescript","data-theme":"github-light","style":{"display":"grid"},"children":[["$","span",null,{"data-line":"","children":[["$","span",null,{"style":{"color":"#D73A49"},"children":"try"}],["$","span",null,{"style":{"color":"#24292E"},"children":" {"}]]}],"\n",["$","span",null,{"data-line":"","children":[["$","span",null,{"style":{"color":"#D73A49"},"children":"  const"}],["$","span",null,{"style":{"color":"#005CC5"},"children":" result"}],["$","span",null,{"style":{"color":"#D73A49"},"children":" ="}],["$","span",null,{"style":{"color":"#D73A49"},"children":" await"}],["$","span",null,{"style":{"color":"#24292E"},"children":" ava."}],["$","span",null,{"style":{"color":"#6F42C1"},"children":"analyze"}],["$","span",null,{"style":{"color":"#24292E"},"children":"("}],["$","span",null,{"style":{"color":"#032F62"},"children":"'What is total revenue by region?'"}],["$","span",null,{"style":{"color":"#24292E"},"children":");"}]]}],"\n",["$","span",null,{"data-line":"","children":[["$","span",null,{"style":{"color":"#24292E"},"children":"  console."}],["$","span",null,{"style":{"color":"#6F42C1"},"children":"table"}],["$","span",null,{"style":{"color":"#24292E"},"children":"(result.data);"}]]}],"\n",["$","span",null,{"data-line":"","children":[["$","span",null,{"style":{"color":"#24292E"},"children":"} "}],["$","span",null,{"style":{"color":"#D73A49"},"children":"catch"}],["$","span",null,{"style":{"color":"#24292E"},"children":" (error) {"}]]}],"\n",["$","span",null,{"data-line":"","children":[["$","span",null,{"style":{"color":"#24292E"},"children":"  console."}],["$","span",null,{"style":{"color":"#6F42C1"},"children":"error"}],["$","span",null,{"style":{"color":"#24292E"},"children":"("}],["$","span",null,{"style":{"color":"#032F62"},"children":"'Analysis failed:'"}],["$","span",null,{"style":{"color":"#24292E"},"children":", error);"}]]}],"\n",["$","span",null,{"data-line":"","children":[["$","span",null,{"style":{"color":"#24292E"},"children":"} "}],["$","span",null,{"style":{"color":"#D73A49"},"children":"finally"}],["$","span",null,{"style":{"color":"#24292E"},"children":" {"}]]}],"\n",["$","span",null,{"data-line":"","children":[["$","span",null,{"style":{"color":"#D73A49"},"children":"  await"}],["$","span",null,{"style":{"color":"#24292E"},"children":" ava."}],["$","span",null,{"style":{"color":"#6F42C1"},"children":"dispose"}],["$","span",null,{"style":{"color":"#24292E"},"children":"();"}]]}],"\n",["$","span",null,{"data-line":"","children":["$","span",null,{"style":{"color":"#24292E"},"children":"}"}]}]]}]}]]}]}]
+61:["$","p",null,{"children":["请始终等待清理完成。再次调用 ",["$","code",null,{"children":"source()"}]," 会替换数据集，并清空 schema 和 profile 缓存；新数据源需要统计信息时，请重新调用 ",["$","code",null,{"children":"profile()"}],"。"]}]
+64:null
+9:C
+2a:0
+15:"$undefined"
+13:"$undefined"
+7:"$undefined"
+29:"$undefined"
+22:"$undefined"

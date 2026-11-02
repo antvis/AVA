@@ -1,0 +1,171 @@
+3:"$Sreact.fragment"
+4:"/_next/static/chunks/0xpkuc787v-p9.js"
+5:I[936064,["$4"],"default"]
+6:I[481497,["$4"],"default"]
+b:"/_next/static/chunks/20no9c33yqyzq.js"
+c:"/_next/static/chunks/024mr0my09zgj.js"
+d:"/_next/static/chunks/2mfxd9osm4z6w.js"
+e:"/_next/static/chunks/1bmh2fw63vq04.js"
+f:"/_next/static/chunks/1lxucu_dj41ds.js"
+10:I[400503,["$b","$c","$d","$e","$f"],"default"]
+11:I[697790,["$b","$c","$d","$e"],"default"]
+12:I[474333,["$b","$c","$d","$e"],"default"]
+17:I[5138,["$b","$c","$d","$e","$f"],"default"]
+23:"ViewportBoundary"
+24:I[675049,["$4"],"$23"]
+25:"MetadataBoundary"
+26:I[675049,["$4"],"$25"]
+27:"$Sreact.suspense"
+28:I[934035,["$4"],"IconMark"]
+:HL["/_next/static/chunks/0o-6jlwxqyz8v.css","style"]
+:HL["https://mdn.alipayobjects.com/huamei_qa8qxu/afts/img/A*A-lcQbVTpjwAAAAAAAAAAAAADmJ7AQ/original","image"]
+8:X
+8:C
+9:X
+18:T17fe,# 事件与生命周期
+
+观察数据加载、模型调用、查询执行与资源清理。
+
+import { Heading } from '../../../../mdx-components';
+
+事件描述 AVA 在一次操作中的执行过程，可以用于显示进度、查看生成的查询或排查失败。最终结果仍通过操作的返回值获取。
+
+<Heading as="h2" id="subscribe-to-events">订阅事件</Heading>
+
+在操作开始前注册监听器。可以按名称订阅特定事件，也可以用 `'*'` 监听全部事件：
+
+```typescript
+import { AVA } from '@antv/ava';
+
+const ava = new AVA({ llm: { model: 'your-model' } });
+const listener = (event) => console.log(event.type, event.data);
+
+ava.on('*', listener);
+try {
+  await ava.source({ type: 'json', options: { data: [{ sales: 120 }] } });
+} finally {
+  ava.off('*', listener);
+  await ava.dispose();
+}
+```
+
+取消订阅时请传入同一个监听器引用。事件类和常量没有通过公开包导出，请直接使用本页列出的事件名称字符串。
+
+<Heading as="h2" id="read-an-event">读取事件</Heading>
+
+每个 AVA 事件都包含小写的 `type` 和 `data` 对象。例如，上面的 `sourcestart` 在 `data` 中包含 `{ type: 'json' }`。`analyze()` 内部的分析事件还带有 `context`，用于标识所属步骤，并将关联的开始、结束事件配对。
+
+操作通常先发出开始事件，再发出结束事件。失败的结束事件在 `data.error` 中包含 `message`；原始错误为 `Error` 时还包含 `name`。部分失败可以恢复：查询失败后可能重试，因此即使 `analyze()` 最终成功，`queryend` 也可能报告过错误。不可恢复的失败会让操作抛错。未加载数据就调用 `analyze()` 等前置条件错误，可能发生在开始事件之前。
+
+<Heading as="h2" id="event-reference">事件参考</Heading>
+
+<Heading as="h3" id="lifecycle-events">生命周期事件</Heading>
+
+以下事件描述 AVA 的操作。成功时，结束事件的 `data` 为 `{}`，方法单独返回结果。
+
+| 操作 | 开始事件与数据 | 结束事件 |
+| --- | --- | --- |
+| 创建引擎 | `createstart`：`{}` | `createend` |
+| 释放引擎 | `disposestart`：`{}` | `disposeend` |
+| 加载数据源 | `sourcestart`：`{ type }` | `sourceend` |
+| 发现或设置 schema | `schemastart`：`{}` | `schemaend` |
+| 计算或设置 profile | `profilestart`：`{}` | `profileend` |
+| 设置业务语义 | `semanticstart`：`{}` | `semanticend` |
+| 分析问题 | `analyzestart`：`{ query }` | `analyzeend` |
+| 将结果可视化 | `visualizestart`：`{ query }` | `visualizeend` |
+| 推荐问题 | `suggeststart`：`{}` | `suggestend` |
+
+加载数据源还可能触发引擎释放和创建事件。读取 schema 缓存、读取业务语义不会发出事件；其他方法内部按需发现 schema，也不会发出 `schema` 事件。`recommend()`、`viz()` 没有独立事件。
+
+<Heading as="h3" id="analysis-events">分析事件</Heading>
+
+以下事件描述分析步骤，以及生成或执行的语句。表中给出成功时的结束事件数据；失败时改为包含 `error`。失败步骤还包含 `step`，适用时包含 `finalAttempt`。Question 是自然语言问题，`dsl` 则是 SQL、Python 等可执行语句。
+
+| 操作 | 开始事件与数据 | 成功结束事件与数据 |
+| --- | --- | --- |
+| 分析步骤 | `stepstart`：`{ step, finalAttempt? }` | `stepend`：`{ step, action, text, usage?, finalAttempt? }` |
+| 翻译问题 | `translatestart`：`{ query, attempt? }` | `translateend`：`{ dsl, usage? }` |
+| 执行语句 | `querystart`：`{ dsl }` | `queryend`：`{ data, schema, rowCount?, truncated?, truncatedBy? }` |
+| 总结结果 | `summarizestart`：`{ queryId }` | `summarizeend`：`{ queryExplanation, conclusion, limitations?, nextStep?, usage? }` |
+
+`?` 表示可选字段。`queryend` 中，`data` 包含返回行，`schema` 描述列；截断字段用于标识是否触发结果限制。完整结构见[查询结果](/documentation/reference/api/#executionresult)。
+
+`step`、`attempt` 从零开始。分析内部的翻译开始事件包含 `attempt`，`finalAttempt` 标记常规步数上限之后的额外步骤。步骤动作包括 `EXPLORE`（检查数据）、`REFINE`（调整计划）、`SQL`（执行答案查询）、`CONFIRM`（验证答案）。`text` 不包含开头的动作标签。
+
+存在 `usage` 时，它描述本次模型调用的 token 用量。模型返回后，即使解析或执行失败，步骤也可能保留用量。Token 字段取决于服务商；调用失败且未返回用量时，无法从事件中统计。AVA 不发出汇总用量事件。`queryend` 描述执行过程，不携带模型用量。
+
+<Heading as="h3" id="event-context">事件上下文</Heading>
+
+`analyze()` 内部发出的分析事件包含 `context` 对象：
+
+| 字段 | 含义 |
+| --- | --- |
+| `eventId` | 唯一事件 ID。配对的开始、结束事件共享前缀，分别使用 `:start`、`:end` 后缀。 |
+| `stepId` | 事件所属步骤的 ID。 |
+| `parentStepIds` | 当前步骤依赖的其他步骤 ID。 |
+
+步骤事件以 `stepId` 为前缀；步骤内的操作有独立的配对 ID，每次重试都会新建一对。`summarizestart.data.queryId` 引用成功的 `queryend.context.eventId`，包含 `:end` 后缀。独立调用 `translate()`、`query()` 时会发出各自事件，但不包含分析 `context` 或步骤事件。
+
+<Heading as="h2" id="listener-parameters">监听器参数</Heading>
+
+| 方法 | 行为 |
+| --- | --- |
+| `on(name, listener, once?)` | 订阅事件；可选的 `once` 默认为 `false`。 |
+| `once(name, listener)` | 订阅一次调用。 |
+| `off(name?, listener?)` | 删除一个监听器、指定名称的全部监听器，或省略参数时删除全部监听器。删除单个监听器时需传入订阅时的同一引用。 |
+| `emit(name, ...args)` | 手动发出事件。 |
+| `getEvents()` | 返回监听器注册表。 |
+
+事件同步分发：`on`、`once`、`off` 返回 emitter；同步监听器抛出的错误会向外传播，异步监听器不会被等待。事件数据不会复制，需要快照时请自行使用 `structuredClone(event)`。
+16:[["children",{"s":"__PAGE__","h":160,"d":{"r":["$","$3","c",{"children":[[["$","main",null,{"className":"docs-main","id":"docs-content","children":[["$","div",null,{"className":"docs-page-toolbar","children":[["$","div",null,{"className":"docs-eyebrow","children":"API 参考"}],["$","$L17","reference/events",{"label":"复制 Markdown","text":"$18"}]]}],"$L19","$L1a","$L1b","$L1c","$L1d","$L1e"]}],"$L1f"],["$L20"],"$L21"]}],"p":"$@22","v":null,"s":"$9"}}]]
+14:[["children",{"s":{"n":"slug","t":"c","k":"reference/events","s":[]},"h":65632,"d":{"r":["$","$3","c",{"children":[null,["$","$L5",null,{"parallelRouterKey":"children","template":["$","$L6",null,{}]}]]}],"p":"$@15","v":"$8","s":"$9"},"c":"$Q16"}]]
+a:[["children",{"s":"documentation","h":131168,"d":{"r":["$","$3","c",{"children":[[["$","link","0",{"rel":"stylesheet","href":"/_next/static/chunks/0o-6jlwxqyz8v.css","precedence":"next"}],["$","script","script-0",{"src":"/_next/static/chunks/2mfxd9osm4z6w.js","async":true}],["$","script","script-1",{"src":"/_next/static/chunks/1bmh2fw63vq04.js","async":true}]],["$","div",null,{"className":"docs-site","children":[["$","a",null,{"className":"docs-skip","href":"#docs-content","children":"跳至正文"}],["$","header",null,{"className":"docs-header","children":["$","div",null,{"className":"docs-header-inner","children":[["$","$L10",null,{"href":"/","className":"docs-brand","aria-label":"AVA 首页","children":[["$","img",null,{"src":"https://mdn.alipayobjects.com/huamei_qa8qxu/afts/img/A*A-lcQbVTpjwAAAAAAAAAAAAADmJ7AQ/original","alt":"","width":"80","height":"48"}],["$","strong",null,{"children":"AVA"}],["$","span",null,{"children":"使用文档"}]]}],["$","nav",null,{"aria-label":"主导航","className":"docs-header-links","children":[["$","$L10",null,{"href":"/","className":"docs-website","children":["官网首页"," ",["$","span",null,{"aria-hidden":"true","children":"↗"}]]}],["$","a",null,{"href":"https://github.com/antvis/AVA","className":"docs-github","children":["GitHub ",["$","span",null,{"aria-hidden":"true","children":"↗"}]]}],["$","$L11",null,{}],["$","$L10",null,{"href":"/ai/","className":"docs-ai","children":["AI 体验"," ",["$","span",null,{"aria-hidden":"true","children":"→"}]]}]]}]]}]}],["$","$L12",null,{"mobile":true}],["$","div",null,{"className":"docs-layout","children":[["$","aside",null,{"className":"docs-sidebar","children":[["$","$L10",null,{"href":"/documentation/","className":"docs-sidebar-label","children":[["$","span",null,{"className":"docs-book-icon","aria-hidden":"true","children":"▤"}]," ","使用文档"]}],["$","$L12",null,{}],["$","div",null,{"className":"docs-sidebar-footer","children":[["$","span",null,{"className":"docs-status-dot"}]," ","TypeScript · 开源"]}]]}],["$","$L5",null,{"parallelRouterKey":"children","template":["$","$L6",null,{}]}]]}]]}]]}],"p":"$@13","v":null,"s":"$9"},"c":"$Q14"}]]
+2:[["children",{"s":"zh","h":131136,"d":{"r":["$","$3","c",{"children":[null,["$","$L5",null,{"parallelRouterKey":"children","template":["$","$L6",null,{}]}]]}],"p":"$@7","v":"$8","s":"$9"},"c":"$Qa"}]]
+1:[["children",{"s":"(zh)","h":131120,"c":"$Q2"}]]
+0:{"t":{"t":{"s":"","h":131152,"c":"$Q1"},"h":{"r":["$","$3","h",{"children":[null,["$","$L24",null,{"children":[["$","meta","0",{"charSet":"utf-8"}],["$","meta","1",{"name":"viewport","content":"width=device-width, initial-scale=1"}]]}],["$","$L26",null,{"children":[["$","div",null,{"hidden":true,"children":["$","$27",null,{"name":"Next.Metadata","children":[["$","title","0",{"children":"事件与生命周期 — AVA 文档"}],["$","meta","1",{"name":"description","content":"观察数据加载、模型调用、查询执行与资源清理。"}],["$","meta","2",{"name":"author","content":"AntV"}],["$","meta","3",{"name":"keywords","content":"AVA, visual analytics, AI-native, LLM, data visualization, natural language, data analysis, AntV, chart generation"}],["$","link","4",{"rel":"canonical","href":"https://ava.antv.vision/zh/documentation/reference/events/"}],["$","link","5",{"rel":"alternate","hrefLang":"en","href":"https://ava.antv.vision/documentation/reference/events/"}],["$","link","6",{"rel":"alternate","hrefLang":"zh-CN","href":"https://ava.antv.vision/zh/documentation/reference/events/"}],["$","link","7",{"rel":"alternate","hrefLang":"x-default","href":"https://ava.antv.vision/documentation/reference/events/"}],["$","meta","8",{"property":"og:title","content":"事件与生命周期 — AVA 文档"}],["$","meta","9",{"property":"og:description","content":"观察数据加载、模型调用、查询执行与资源清理。"}],["$","meta","10",{"property":"og:url","content":"https://ava.antv.vision/zh/documentation/reference/events/"}],["$","meta","11",{"property":"og:type","content":"article"}],["$","meta","12",{"name":"twitter:card","content":"summary"}],["$","meta","13",{"name":"twitter:title","content":"事件与生命周期 — AVA 文档"}],["$","meta","14",{"name":"twitter:description","content":"观察数据加载、模型调用、查询执行与资源清理。"}],["$","link","15",{"rel":"icon","href":"https://mdn.alipayobjects.com/huamei_qa8qxu/afts/img/A*FBLnQIAzx6cAAAAAQDAAAAgAemJ7AQ/original"}],["$","$L28","16",{}]]}]}],null]}],null]}],"p":"$@29","v":null,"s":"$9"}},"a":"$@2a","u":"$@2b","b":"KHDYj3YqzeY5ppvGf10Fa"}
+45:I[754170,["$b","$c","$d","$e","$f"],"default"]
+46:I[675049,["$4"],"OutletBoundary"]
+19:["$","h1",null,{"children":"事件与生命周期"}]
+1a:["$","p",null,{"className":"docs-description","children":"观察数据加载、模型调用、查询执行与资源清理。"}]
+1b:["$","article",null,{"className":"docs-prose","children":[["$","p",null,{"children":"事件描述 AVA 在一次操作中的执行过程，可以用于显示进度、查看生成的查询或排查失败。最终结果仍通过操作的返回值获取。"}],"\n",["$","h2",null,{"id":"subscribe-to-events","children":["$","a",null,{"href":"#subscribe-to-events","className":"docs-heading-link","children":"订阅事件"}]}],"\n",["$","p",null,{"children":["在操作开始前注册监听器。可以按名称订阅特定事件，也可以用 ",["$","code",null,{"children":"'*'"}]," 监听全部事件："]}],"\n",["$","figure",null,{"data-rehype-pretty-code-figure":"","children":["$","div",null,{"className":"docs-code-block","children":[["$","div",null,{"className":"docs-code-toolbar","children":[["$","span",null,{"children":"typescript"}],["$","$L17",null,{}]]}],["$","pre",null,{"tabIndex":"0","data-language":"typescript","data-theme":"github-light","children":["$","code",null,{"data-language":"typescript","data-theme":"github-light","style":{"display":"grid"},"children":[["$","span",null,{"data-line":"","children":[["$","span",null,{"style":{"color":"#D73A49"},"children":"import"}],["$","span",null,{"style":{"color":"#24292E"},"children":" { AVA } "}],["$","span",null,{"style":{"color":"#D73A49"},"children":"from"}],["$","span",null,{"style":{"color":"#032F62"},"children":" '@antv/ava'"}],["$","span",null,{"style":{"color":"#24292E"},"children":";"}]]}],"\n",["$","span",null,{"data-line":"","children":" "}],"\n",["$","span",null,{"data-line":"","children":[["$","span",null,{"style":{"color":"#D73A49"},"children":"const"}],["$","span",null,{"style":{"color":"#005CC5"},"children":" ava"}],["$","span",null,{"style":{"color":"#D73A49"},"children":" ="}],["$","span",null,{"style":{"color":"#D73A49"},"children":" new"}],["$","span",null,{"style":{"color":"#6F42C1"},"children":" AVA"}],["$","span",null,{"style":{"color":"#24292E"},"children":"({ llm: { model: "}],["$","span",null,{"style":{"color":"#032F62"},"children":"'your-model'"}],["$","span",null,{"style":{"color":"#24292E"},"children":" } });"}]]}],"\n",["$","span",null,{"data-line":"","children":[["$","span",null,{"style":{"color":"#D73A49"},"children":"const"}],["$","span",null,{"style":{"color":"#6F42C1"},"children":" listener"}],["$","span",null,{"style":{"color":"#D73A49"},"children":" ="}],["$","span",null,{"style":{"color":"#24292E"},"children":" ("}],["$","span",null,{"style":{"color":"#E36209"},"children":"event"}],["$","span",null,{"style":{"color":"#24292E"},"children":") "}],["$","span",null,{"style":{"color":"#D73A49"},"children":"=>"}],["$","span",null,{"style":{"color":"#24292E"},"children":" console."}],["$","span",null,{"style":{"color":"#6F42C1"},"children":"log"}],["$","span",null,{"style":{"color":"#24292E"},"children":"(event.type, event.data);"}]]}],"\n",["$","span",null,{"data-line":"","children":" "}],"\n",["$","span",null,{"data-line":"","children":[["$","span",null,{"style":{"color":"#24292E"},"children":"ava."}],["$","span",null,{"style":{"color":"#6F42C1"},"children":"on"}],["$","span",null,{"style":{"color":"#24292E"},"children":"("}],["$","span",null,{"style":{"color":"#032F62"},"children":"'*'"}],["$","span",null,{"style":{"color":"#24292E"},"children":", listener);"}]]}],"\n",["$","span",null,{"data-line":"","children":[["$","span",null,{"style":{"color":"#D73A49"},"children":"try"}],["$","span",null,{"style":{"color":"#24292E"},"children":" {"}]]}],"\n",["$","span",null,{"data-line":"","children":[["$","span",null,{"style":{"color":"#D73A49"},"children":"  await"}],["$","span",null,{"style":{"color":"#24292E"},"children":" ava."}],["$","span",null,{"style":{"color":"#6F42C1"},"children":"source"}],["$","span",null,{"style":{"color":"#24292E"},"children":"({ type: "}],["$","span",null,{"style":{"color":"#032F62"},"children":"'json'"}],["$","span",null,{"style":{"color":"#24292E"},"children":", options: { data: [{ sales: "}],["$","span",null,{"style":{"color":"#005CC5"},"children":"120"}],["$","span",null,{"style":{"color":"#24292E"},"children":" }] } });"}]]}],"\n",["$","span",null,{"data-line":"","children":[["$","span",null,{"style":{"color":"#24292E"},"children":"} "}],["$","span",null,{"style":{"color":"#D73A49"},"children":"finally"}],["$","span",null,{"style":{"color":"#24292E"},"children":" {"}]]}],"\n",["$","span",null,{"data-line":"","children":[["$","span",null,{"style":{"color":"#24292E"},"children":"  ava."}],["$","span",null,{"style":{"color":"#6F42C1"},"children":"off"}],["$","span",null,{"style":{"color":"#24292E"},"children":"("}],["$","span",null,{"style":{"color":"#032F62"},"children":"'*'"}],["$","span",null,{"style":{"color":"#24292E"},"children":", listener);"}]]}],"\n",["$","span",null,{"data-line":"","children":[["$","span",null,{"style":{"color":"#D73A49"},"children":"  await"}],["$","span",null,{"style":{"color":"#24292E"},"children":" ava."}],["$","span",null,{"style":{"color":"#6F42C1"},"children":"dispose"}],["$","span",null,{"style":{"color":"#24292E"},"children":"();"}]]}],"\n",["$","span",null,{"data-line":"","children":["$","span",null,{"style":{"color":"#24292E"},"children":"}"}]}]]}]}]]}]}],"\n",["$","p",null,{"children":"取消订阅时请传入同一个监听器引用。事件类和常量没有通过公开包导出，请直接使用本页列出的事件名称字符串。"}],"\n",["$","h2",null,{"id":"read-an-event","children":["$","a",null,{"href":"#read-an-event","className":"docs-heading-link","children":"读取事件"}]}],"\n",["$","p",null,{"children":["每个 AVA 事件都包含小写的 ",["$","code",null,{"children":"type"}]," 和 ","$L2c"," 对象。例如，上面的 ","$L2d"," 在 ","$L2e"," 中包含 ","$L2f","。","$L30"," 内部的分析事件还带有 ","$L31","，用于标识所属步骤，并将关联的开始、结束事件配对。"]}],"\n","$L32","\n","$L33","\n","$L34","\n","$L35","\n","$L36","\n","$L37","\n","$L38","\n","$L39","\n","$L3a","\n","$L3b","\n","$L3c","\n","$L3d","\n","$L3e","\n","$L3f","\n","$L40","\n","$L41","\n","$L42","\n","$L43","\n","$L44"]}]
+1c:["$","div",null,{"className":"docs-page-meta","children":["$","a",null,{"href":"https://github.com/antvis/AVA/blob/ai/site/content/docs/zh/reference/events.mdx","children":["在 GitHub 编辑本页"," ",["$","span",null,{"aria-hidden":"true","children":"↗"}]]}]}]
+1d:["$","nav",null,{"className":"docs-pagination","aria-label":"章节导航","children":[["$","$L10",null,{"href":"/documentation/reference/api/","children":[["$","span",null,{"children":"← 上一篇"}],["$","strong",null,{"children":"API 参考"}]]}],["$","$L10",null,{"href":"/documentation/reference/cli/","className":"docs-next","children":[["$","span",null,{"children":"下一篇 →"}],["$","strong",null,{"children":"命令行工具"}]]}]]}]
+1e:["$","footer",null,{"className":"docs-footer","children":[["$","span",null,{"children":"AVA · AntV 开源项目"}],["$","a",null,{"href":"https://github.com/antvis/AVA","children":"在 GitHub 查看源码 ↗"}]]}]
+1f:["$","$L45","reference/events",{}]
+20:["$","script","script-0",{"src":"/_next/static/chunks/1lxucu_dj41ds.js","async":true}]
+21:["$","$L46",null,{"children":["$","$27",null,{"name":"Next.MetadataOutlet","children":"$@47"}]}]
+2b:true
+9:300
+2c:["$","code",null,{"children":"data"}]
+2d:["$","code",null,{"children":"sourcestart"}]
+2e:["$","code",null,{"children":"data"}]
+2f:["$","code",null,{"children":"{ type: 'json' }"}]
+30:["$","code",null,{"children":"analyze()"}]
+31:["$","code",null,{"children":"context"}]
+32:["$","p",null,{"children":["操作通常先发出开始事件，再发出结束事件。失败的结束事件在 ",["$","code",null,{"children":"data.error"}]," 中包含 ",["$","code",null,{"children":"message"}],"；原始错误为 ",["$","code",null,{"children":"Error"}]," 时还包含 ",["$","code",null,{"children":"name"}],"。部分失败可以恢复：查询失败后可能重试，因此即使 ",["$","code",null,{"children":"analyze()"}]," 最终成功，",["$","code",null,{"children":"queryend"}]," 也可能报告过错误。不可恢复的失败会让操作抛错。未加载数据就调用 ",["$","code",null,{"children":"analyze()"}]," 等前置条件错误，可能发生在开始事件之前。"]}]
+33:["$","h2",null,{"id":"event-reference","children":["$","a",null,{"href":"#event-reference","className":"docs-heading-link","children":"事件参考"}]}]
+34:["$","h3",null,{"id":"lifecycle-events","children":["$","a",null,{"href":"#lifecycle-events","className":"docs-heading-link","children":"生命周期事件"}]}]
+35:["$","p",null,{"children":["以下事件描述 AVA 的操作。成功时，结束事件的 ",["$","code",null,{"children":"data"}]," 为 ",["$","code",null,{"children":"{}"}],"，方法单独返回结果。"]}]
+36:["$","div",null,{"className":"docs-table","children":["$","table",null,{"children":[["$","thead",null,{"children":["$","tr",null,{"children":[["$","th",null,{"children":"操作"}],["$","th",null,{"children":"开始事件与数据"}],["$","th",null,{"children":"结束事件"}]]}]}],["$","tbody",null,{"children":[["$","tr",null,{"children":[["$","td",null,{"children":"创建引擎"}],["$","td",null,{"children":[["$","code",null,{"children":"createstart"}],"：",["$","code",null,{"children":"{}"}]]}],["$","td",null,{"children":["$","code",null,{"children":"createend"}]}]]}],["$","tr",null,{"children":[["$","td",null,{"children":"释放引擎"}],["$","td",null,{"children":[["$","code",null,{"children":"disposestart"}],"：",["$","code",null,{"children":"{}"}]]}],["$","td",null,{"children":["$","code",null,{"children":"disposeend"}]}]]}],["$","tr",null,{"children":[["$","td",null,{"children":"加载数据源"}],["$","td",null,{"children":[["$","code",null,{"children":"sourcestart"}],"：",["$","code",null,{"children":"{ type }"}]]}],["$","td",null,{"children":["$","code",null,{"children":"sourceend"}]}]]}],["$","tr",null,{"children":[["$","td",null,{"children":"发现或设置 schema"}],["$","td",null,{"children":[["$","code",null,{"children":"schemastart"}],"：",["$","code",null,{"children":"{}"}]]}],["$","td",null,{"children":["$","code",null,{"children":"schemaend"}]}]]}],["$","tr",null,{"children":[["$","td",null,{"children":"计算或设置 profile"}],["$","td",null,{"children":[["$","code",null,{"children":"profilestart"}],"：",["$","code",null,{"children":"{}"}]]}],["$","td",null,{"children":["$","code",null,{"children":"profileend"}]}]]}],["$","tr",null,{"children":[["$","td",null,{"children":"设置业务语义"}],["$","td",null,{"children":[["$","code",null,{"children":"semanticstart"}],"：",["$","code",null,{"children":"{}"}]]}],["$","td",null,{"children":["$","code",null,{"children":"semanticend"}]}]]}],["$","tr",null,{"children":[["$","td",null,{"children":"分析问题"}],["$","td",null,{"children":[["$","code",null,{"children":"analyzestart"}],"：",["$","code",null,{"children":"{ query }"}]]}],["$","td",null,{"children":["$","code",null,{"children":"analyzeend"}]}]]}],["$","tr",null,{"children":[["$","td",null,{"children":"将结果可视化"}],["$","td",null,{"children":[["$","code",null,{"children":"visualizestart"}],"：",["$","code",null,{"children":"{ query }"}]]}],["$","td",null,{"children":["$","code",null,{"children":"visualizeend"}]}]]}],["$","tr",null,{"children":[["$","td",null,{"children":"推荐问题"}],["$","td",null,{"children":[["$","code",null,{"children":"suggeststart"}],"：",["$","code",null,{"children":"{}"}]]}],["$","td",null,{"children":["$","code",null,{"children":"suggestend"}]}]]}]]}]]}]}]
+37:["$","p",null,{"children":["加载数据源还可能触发引擎释放和创建事件。读取 schema 缓存、读取业务语义不会发出事件；其他方法内部按需发现 schema，也不会发出 ",["$","code",null,{"children":"schema"}]," 事件。",["$","code",null,{"children":"recommend()"}],"、",["$","code",null,{"children":"viz()"}]," 没有独立事件。"]}]
+38:["$","h3",null,{"id":"analysis-events","children":["$","a",null,{"href":"#analysis-events","className":"docs-heading-link","children":"分析事件"}]}]
+39:["$","p",null,{"children":["以下事件描述分析步骤，以及生成或执行的语句。表中给出成功时的结束事件数据；失败时改为包含 ",["$","code",null,{"children":"error"}],"。失败步骤还包含 ",["$","code",null,{"children":"step"}],"，适用时包含 ",["$","code",null,{"children":"finalAttempt"}],"。Question 是自然语言问题，",["$","code",null,{"children":"dsl"}]," 则是 SQL、Python 等可执行语句。"]}]
+3a:["$","div",null,{"className":"docs-table","children":["$","table",null,{"children":[["$","thead",null,{"children":["$","tr",null,{"children":[["$","th",null,{"children":"操作"}],["$","th",null,{"children":"开始事件与数据"}],["$","th",null,{"children":"成功结束事件与数据"}]]}]}],["$","tbody",null,{"children":[["$","tr",null,{"children":[["$","td",null,{"children":"分析步骤"}],["$","td",null,{"children":[["$","code",null,{"children":"stepstart"}],"：",["$","code",null,{"children":"{ step, finalAttempt? }"}]]}],["$","td",null,{"children":[["$","code",null,{"children":"stepend"}],"：",["$","code",null,{"children":"{ step, action, text, usage?, finalAttempt? }"}]]}]]}],["$","tr",null,{"children":[["$","td",null,{"children":"翻译问题"}],["$","td",null,{"children":[["$","code",null,{"children":"translatestart"}],"：",["$","code",null,{"children":"{ query, attempt? }"}]]}],["$","td",null,{"children":[["$","code",null,{"children":"translateend"}],"：",["$","code",null,{"children":"{ dsl, usage? }"}]]}]]}],["$","tr",null,{"children":[["$","td",null,{"children":"执行语句"}],["$","td",null,{"children":[["$","code",null,{"children":"querystart"}],"：",["$","code",null,{"children":"{ dsl }"}]]}],["$","td",null,{"children":[["$","code",null,{"children":"queryend"}],"：",["$","code",null,{"children":"{ data, schema, rowCount?, truncated?, truncatedBy? }"}]]}]]}],["$","tr",null,{"children":[["$","td",null,{"children":"总结结果"}],["$","td",null,{"children":[["$","code",null,{"children":"summarizestart"}],"：",["$","code",null,{"children":"{ queryId }"}]]}],["$","td",null,{"children":[["$","code",null,{"children":"summarizeend"}],"：",["$","code",null,{"children":"{ queryExplanation, conclusion, limitations?, nextStep?, usage? }"}]]}]]}]]}]]}]}]
+3b:["$","p",null,{"children":[["$","code",null,{"children":"?"}]," 表示可选字段。",["$","code",null,{"children":"queryend"}]," 中，",["$","code",null,{"children":"data"}]," 包含返回行，",["$","code",null,{"children":"schema"}]," 描述列；截断字段用于标识是否触发结果限制。完整结构见",["$","$L10",null,{"href":"/documentation/reference/api/#executionresult","children":"查询结果"}],"。"]}]
+3c:["$","p",null,{"children":[["$","code",null,{"children":"step"}],"、",["$","code",null,{"children":"attempt"}]," 从零开始。分析内部的翻译开始事件包含 ",["$","code",null,{"children":"attempt"}],"，",["$","code",null,{"children":"finalAttempt"}]," 标记常规步数上限之后的额外步骤。步骤动作包括 ",["$","code",null,{"children":"EXPLORE"}],"（检查数据）、",["$","code",null,{"children":"REFINE"}],"（调整计划）、",["$","code",null,{"children":"SQL"}],"（执行答案查询）、",["$","code",null,{"children":"CONFIRM"}],"（验证答案）。",["$","code",null,{"children":"text"}]," 不包含开头的动作标签。"]}]
+3d:["$","p",null,{"children":["存在 ",["$","code",null,{"children":"usage"}]," 时，它描述本次模型调用的 token 用量。模型返回后，即使解析或执行失败，步骤也可能保留用量。Token 字段取决于服务商；调用失败且未返回用量时，无法从事件中统计。AVA 不发出汇总用量事件。",["$","code",null,{"children":"queryend"}]," 描述执行过程，不携带模型用量。"]}]
+3e:["$","h3",null,{"id":"event-context","children":["$","a",null,{"href":"#event-context","className":"docs-heading-link","children":"事件上下文"}]}]
+3f:["$","p",null,{"children":[["$","code",null,{"children":"analyze()"}]," 内部发出的分析事件包含 ",["$","code",null,{"children":"context"}]," 对象："]}]
+40:["$","div",null,{"className":"docs-table","children":["$","table",null,{"children":[["$","thead",null,{"children":["$","tr",null,{"children":[["$","th",null,{"children":"字段"}],["$","th",null,{"children":"含义"}]]}]}],["$","tbody",null,{"children":[["$","tr",null,{"children":[["$","td",null,{"children":["$","code",null,{"children":"eventId"}]}],["$","td",null,{"children":["唯一事件 ID。配对的开始、结束事件共享前缀，分别使用 ",["$","code",null,{"children":":start"}],"、",["$","code",null,{"children":":end"}]," 后缀。"]}]]}],["$","tr",null,{"children":[["$","td",null,{"children":["$","code",null,{"children":"stepId"}]}],["$","td",null,{"children":"事件所属步骤的 ID。"}]]}],["$","tr",null,{"children":[["$","td",null,{"children":["$","code",null,{"children":"parentStepIds"}]}],["$","td",null,{"children":"当前步骤依赖的其他步骤 ID。"}]]}]]}]]}]}]
+41:["$","p",null,{"children":["步骤事件以 ",["$","code",null,{"children":"stepId"}]," 为前缀；步骤内的操作有独立的配对 ID，每次重试都会新建一对。",["$","code",null,{"children":"summarizestart.data.queryId"}]," 引用成功的 ",["$","code",null,{"children":"queryend.context.eventId"}],"，包含 ",["$","code",null,{"children":":end"}]," 后缀。独立调用 ",["$","code",null,{"children":"translate()"}],"、",["$","code",null,{"children":"query()"}]," 时会发出各自事件，但不包含分析 ",["$","code",null,{"children":"context"}]," 或步骤事件。"]}]
+42:["$","h2",null,{"id":"listener-parameters","children":["$","a",null,{"href":"#listener-parameters","className":"docs-heading-link","children":"监听器参数"}]}]
+43:["$","div",null,{"className":"docs-table","children":["$","table",null,{"children":[["$","thead",null,{"children":["$","tr",null,{"children":[["$","th",null,{"children":"方法"}],["$","th",null,{"children":"行为"}]]}]}],["$","tbody",null,{"children":[["$","tr",null,{"children":[["$","td",null,{"children":["$","code",null,{"children":"on(name, listener, once?)"}]}],["$","td",null,{"children":["订阅事件；可选的 ",["$","code",null,{"children":"once"}]," 默认为 ",["$","code",null,{"children":"false"}],"。"]}]]}],["$","tr",null,{"children":[["$","td",null,{"children":["$","code",null,{"children":"once(name, listener)"}]}],["$","td",null,{"children":"订阅一次调用。"}]]}],["$","tr",null,{"children":[["$","td",null,{"children":["$","code",null,{"children":"off(name?, listener?)"}]}],["$","td",null,{"children":"删除一个监听器、指定名称的全部监听器，或省略参数时删除全部监听器。删除单个监听器时需传入订阅时的同一引用。"}]]}],["$","tr",null,{"children":[["$","td",null,{"children":["$","code",null,{"children":"emit(name, ...args)"}]}],["$","td",null,{"children":"手动发出事件。"}]]}],["$","tr",null,{"children":[["$","td",null,{"children":["$","code",null,{"children":"getEvents()"}]}],["$","td",null,{"children":"返回监听器注册表。"}]]}]]}]]}]}]
+44:["$","p",null,{"children":["事件同步分发：",["$","code",null,{"children":"on"}],"、",["$","code",null,{"children":"once"}],"、",["$","code",null,{"children":"off"}]," 返回 emitter；同步监听器抛出的错误会向外传播，异步监听器不会被等待。事件数据不会复制，需要快照时请自行使用 ",["$","code",null,{"children":"structuredClone(event)"}],"。"]}]
+47:null
+9:C
+2a:0
+15:"$undefined"
+13:"$undefined"
+7:"$undefined"
+29:"$undefined"
+22:"$undefined"

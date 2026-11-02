@@ -1,0 +1,90 @@
+3:"$Sreact.fragment"
+4:"/_next/static/chunks/0xpkuc787v-p9.js"
+5:I[936064,["$4"],"default"]
+6:I[481497,["$4"],"default"]
+b:"/_next/static/chunks/20no9c33yqyzq.js"
+c:"/_next/static/chunks/024mr0my09zgj.js"
+d:"/_next/static/chunks/2mfxd9osm4z6w.js"
+e:"/_next/static/chunks/1bmh2fw63vq04.js"
+f:"/_next/static/chunks/1lxucu_dj41ds.js"
+10:I[400503,["$b","$c","$d","$e","$f"],"default"]
+11:I[697790,["$b","$c","$d","$e"],"default"]
+12:I[474333,["$b","$c","$d","$e"],"default"]
+17:I[5138,["$b","$c","$d","$e","$f"],"default"]
+23:"ViewportBoundary"
+24:I[675049,["$4"],"$23"]
+25:"MetadataBoundary"
+26:I[675049,["$4"],"$25"]
+27:"$Sreact.suspense"
+28:I[934035,["$4"],"IconMark"]
+:HL["/_next/static/chunks/0o-6jlwxqyz8v.css","style"]
+:HL["https://mdn.alipayobjects.com/huamei_qa8qxu/afts/img/A*A-lcQbVTpjwAAAAAAAAAAAAADmJ7AQ/original","image"]
+8:X
+8:C
+9:X
+18:Tbf2,# 选择执行引擎
+
+决定数据在哪里加载、查询用什么语言、代码在哪里执行。
+
+import { Heading } from '../../../../mdx-components';
+
+<Heading as="h2" id="engine-selection">选择引擎</Heading>
+
+在 `AVA` 构造函数中设置引擎。JavaScript API 省略该配置时始终选择 DuckDB，不会根据数据源类型自动切换。
+
+| 引擎 | 支持的数据源 | 运行环境 |
+| ------------------------------------------------------- | ------------------------------------------------------ | -------------------------- |
+| [DuckDB](/documentation/engines/duckdb/) | 内存数据、文件、MySQL、PostgreSQL、SQLite、MongoDB | Node.js |
+| [JavaScript](/documentation/engines/javascript/) | 内存 CSV、JSON、文本 | Node.js 和浏览器 |
+| [Python](/documentation/engines/python/) | 内存 CSV / JSON；CSV / JSON / Parquet / Excel 文件 | Node.js + Python 执行器 |
+| [Supabase](/documentation/engines/remote/#supabase) | Supabase 项目 | Node.js，远程 PostgreSQL |
+| [ClickHouse](/documentation/engines/remote/#clickhouse) | ClickHouse 数据库 | Node.js，远程 ClickHouse |
+
+<Heading as="h2" id="engine-configuration">引擎配置</Heading>
+
+| 字段 | 类型 | 必填 | 默认值与行为 |
+| ------------- | -------------------------------------------------------------------------------------------- | ------------------------- | --------------------------------- |
+| `engine.type` | `'duckdb'` / `'javascript'` / `'python'` / `'supabase'` / `'clickhouse'` / 已注册的名称 | 提供 `engine` 时必填 | 省略 `engine` 时选择 DuckDB。 |
+
+其他字段取决于 `type`，详见 [DuckDB 选项](/documentation/engines/duckdb/#engine-options)和 [Python 选项](/documentation/engines/python/#engine-options)。JavaScript、Supabase、ClickHouse 没有额外的构造函数引擎字段；数据库凭证放在[数据源参数](/documentation/data/sources/#connect-a-source)中。
+
+希望在自己的服务中执行 Python，参见[提供 Python 执行器](/documentation/engines/python/#supply-a-python-executor)。希望在应用中提供自己的引擎，参见[自定义引擎](/documentation/engines/custom/)。
+
+<Heading as="h2" id="shared-contract">共同约定</Heading>
+
+引擎负责加载数据、发现结构、计算统计、根据传入上下文生成查询、执行查询和释放资源。AVA 管理 schema 与 profile 缓存，并决定何时需要发现结构或计算统计信息。
+
+应用通常直接使用 `AVA` API。引擎实现者应遵循[引擎接口约定](/documentation/engines/custom/#engine-contract)，分别实现 `load()` 和 `schema()`。
+
+<Heading as="h2" id="registration">注册</Heading>
+
+Node.js 入口注册全部五种引擎，浏览器入口只注册 JavaScript。注册表让核心 `AVA` 类无需直接依赖各平台专用模块。
+
+扩展 SDK 时，先调用 `registerEngine('sales', SalesEngine)`，再设置 `engine: { type: 'sales' }`。接口约定和完整示例见[自定义引擎](/documentation/engines/custom/)。CLI 仅接受内置引擎名。
+16:[["children",{"s":"__PAGE__","h":160,"d":{"r":["$","$3","c",{"children":[[["$","main",null,{"className":"docs-main","id":"docs-content","children":[["$","div",null,{"className":"docs-page-toolbar","children":[["$","div",null,{"className":"docs-eyebrow","children":"执行引擎"}],["$","$L17","engines/overview",{"label":"复制 Markdown","text":"$18"}]]}],"$L19","$L1a","$L1b","$L1c","$L1d","$L1e"]}],"$L1f"],["$L20"],"$L21"]}],"p":"$@22","v":null,"s":"$9"}}]]
+14:[["children",{"s":{"n":"slug","t":"c","k":"engines/overview","s":[]},"h":65632,"d":{"r":["$","$3","c",{"children":[null,["$","$L5",null,{"parallelRouterKey":"children","template":["$","$L6",null,{}]}]]}],"p":"$@15","v":"$8","s":"$9"},"c":"$Q16"}]]
+a:[["children",{"s":"documentation","h":131168,"d":{"r":["$","$3","c",{"children":[[["$","link","0",{"rel":"stylesheet","href":"/_next/static/chunks/0o-6jlwxqyz8v.css","precedence":"next"}],["$","script","script-0",{"src":"/_next/static/chunks/2mfxd9osm4z6w.js","async":true}],["$","script","script-1",{"src":"/_next/static/chunks/1bmh2fw63vq04.js","async":true}]],["$","div",null,{"className":"docs-site","children":[["$","a",null,{"className":"docs-skip","href":"#docs-content","children":"跳至正文"}],["$","header",null,{"className":"docs-header","children":["$","div",null,{"className":"docs-header-inner","children":[["$","$L10",null,{"href":"/","className":"docs-brand","aria-label":"AVA 首页","children":[["$","img",null,{"src":"https://mdn.alipayobjects.com/huamei_qa8qxu/afts/img/A*A-lcQbVTpjwAAAAAAAAAAAAADmJ7AQ/original","alt":"","width":"80","height":"48"}],["$","strong",null,{"children":"AVA"}],["$","span",null,{"children":"使用文档"}]]}],["$","nav",null,{"aria-label":"主导航","className":"docs-header-links","children":[["$","$L10",null,{"href":"/","className":"docs-website","children":["官网首页"," ",["$","span",null,{"aria-hidden":"true","children":"↗"}]]}],["$","a",null,{"href":"https://github.com/antvis/AVA","className":"docs-github","children":["GitHub ",["$","span",null,{"aria-hidden":"true","children":"↗"}]]}],["$","$L11",null,{}],["$","$L10",null,{"href":"/ai/","className":"docs-ai","children":["AI 体验"," ",["$","span",null,{"aria-hidden":"true","children":"→"}]]}]]}]]}]}],["$","$L12",null,{"mobile":true}],["$","div",null,{"className":"docs-layout","children":[["$","aside",null,{"className":"docs-sidebar","children":[["$","$L10",null,{"href":"/documentation/","className":"docs-sidebar-label","children":[["$","span",null,{"className":"docs-book-icon","aria-hidden":"true","children":"▤"}]," ","使用文档"]}],["$","$L12",null,{}],["$","div",null,{"className":"docs-sidebar-footer","children":[["$","span",null,{"className":"docs-status-dot"}]," ","TypeScript · 开源"]}]]}],["$","$L5",null,{"parallelRouterKey":"children","template":["$","$L6",null,{}]}]]}]]}]]}],"p":"$@13","v":null,"s":"$9"},"c":"$Q14"}]]
+2:[["children",{"s":"zh","h":131136,"d":{"r":["$","$3","c",{"children":[null,["$","$L5",null,{"parallelRouterKey":"children","template":["$","$L6",null,{}]}]]}],"p":"$@7","v":"$8","s":"$9"},"c":"$Qa"}]]
+1:[["children",{"s":"(zh)","h":131120,"c":"$Q2"}]]
+0:{"t":{"t":{"s":"","h":131152,"c":"$Q1"},"h":{"r":["$","$3","h",{"children":[null,["$","$L24",null,{"children":[["$","meta","0",{"charSet":"utf-8"}],["$","meta","1",{"name":"viewport","content":"width=device-width, initial-scale=1"}]]}],["$","$L26",null,{"children":[["$","div",null,{"hidden":true,"children":["$","$27",null,{"name":"Next.Metadata","children":[["$","title","0",{"children":"选择执行引擎 — AVA 文档"}],["$","meta","1",{"name":"description","content":"决定数据在哪里加载、查询用什么语言、代码在哪里执行。"}],["$","meta","2",{"name":"author","content":"AntV"}],["$","meta","3",{"name":"keywords","content":"AVA, visual analytics, AI-native, LLM, data visualization, natural language, data analysis, AntV, chart generation"}],["$","link","4",{"rel":"canonical","href":"https://ava.antv.vision/zh/documentation/engines/overview/"}],["$","link","5",{"rel":"alternate","hrefLang":"en","href":"https://ava.antv.vision/documentation/engines/overview/"}],["$","link","6",{"rel":"alternate","hrefLang":"zh-CN","href":"https://ava.antv.vision/zh/documentation/engines/overview/"}],["$","link","7",{"rel":"alternate","hrefLang":"x-default","href":"https://ava.antv.vision/documentation/engines/overview/"}],["$","meta","8",{"property":"og:title","content":"选择执行引擎 — AVA 文档"}],["$","meta","9",{"property":"og:description","content":"决定数据在哪里加载、查询用什么语言、代码在哪里执行。"}],["$","meta","10",{"property":"og:url","content":"https://ava.antv.vision/zh/documentation/engines/overview/"}],["$","meta","11",{"property":"og:type","content":"article"}],["$","meta","12",{"name":"twitter:card","content":"summary"}],["$","meta","13",{"name":"twitter:title","content":"选择执行引擎 — AVA 文档"}],["$","meta","14",{"name":"twitter:description","content":"决定数据在哪里加载、查询用什么语言、代码在哪里执行。"}],["$","link","15",{"rel":"icon","href":"https://mdn.alipayobjects.com/huamei_qa8qxu/afts/img/A*FBLnQIAzx6cAAAAAQDAAAAgAemJ7AQ/original"}],["$","$L28","16",{}]]}]}],null]}],null]}],"p":"$@29","v":null,"s":"$9"}},"a":"$@2a","u":"$@2b","b":"KHDYj3YqzeY5ppvGf10Fa"}
+2c:I[754170,["$b","$c","$d","$e","$f"],"default"]
+2d:I[675049,["$4"],"OutletBoundary"]
+19:["$","h1",null,{"children":"选择执行引擎"}]
+1a:["$","p",null,{"className":"docs-description","children":"决定数据在哪里加载、查询用什么语言、代码在哪里执行。"}]
+1b:["$","article",null,{"className":"docs-prose","children":[["$","h2",null,{"id":"engine-selection","children":["$","a",null,{"href":"#engine-selection","className":"docs-heading-link","children":"选择引擎"}]}],"\n",["$","p",null,{"children":["在 ",["$","code",null,{"children":"AVA"}]," 构造函数中设置引擎。JavaScript API 省略该配置时始终选择 DuckDB，不会根据数据源类型自动切换。"]}],"\n",["$","div",null,{"className":"docs-table","children":["$","table",null,{"children":[["$","thead",null,{"children":["$","tr",null,{"children":[["$","th",null,{"children":"引擎"}],["$","th",null,{"children":"支持的数据源"}],["$","th",null,{"children":"运行环境"}]]}]}],["$","tbody",null,{"children":[["$","tr",null,{"children":[["$","td",null,{"children":["$","$L10",null,{"href":"/documentation/engines/duckdb/","children":"DuckDB"}]}],["$","td",null,{"children":"内存数据、文件、MySQL、PostgreSQL、SQLite、MongoDB"}],["$","td",null,{"children":"Node.js"}]]}],["$","tr",null,{"children":[["$","td",null,{"children":["$","$L10",null,{"href":"/documentation/engines/javascript/","children":"JavaScript"}]}],["$","td",null,{"children":"内存 CSV、JSON、文本"}],["$","td",null,{"children":"Node.js 和浏览器"}]]}],["$","tr",null,{"children":[["$","td",null,{"children":["$","$L10",null,{"href":"/documentation/engines/python/","children":"Python"}]}],["$","td",null,{"children":"内存 CSV / JSON；CSV / JSON / Parquet / Excel 文件"}],["$","td",null,{"children":"Node.js + Python 执行器"}]]}],["$","tr",null,{"children":[["$","td",null,{"children":["$","$L10",null,{"href":"/documentation/engines/remote/#supabase","children":"Supabase"}]}],["$","td",null,{"children":"Supabase 项目"}],["$","td",null,{"children":"Node.js，远程 PostgreSQL"}]]}],["$","tr",null,{"children":[["$","td",null,{"children":["$","$L10",null,{"href":"/documentation/engines/remote/#clickhouse","children":"ClickHouse"}]}],["$","td",null,{"children":"ClickHouse 数据库"}],["$","td",null,{"children":"Node.js，远程 ClickHouse"}]]}]]}]]}]}],"\n",["$","h2",null,{"id":"engine-configuration","children":["$","a",null,{"href":"#engine-configuration","className":"docs-heading-link","children":"引擎配置"}]}],"\n",["$","div",null,{"className":"docs-table","children":["$","table",null,{"children":[["$","thead",null,{"children":["$","tr",null,{"children":[["$","th",null,{"children":"字段"}],["$","th",null,{"children":"类型"}],["$","th",null,{"children":"必填"}],["$","th",null,{"children":"默认值与行为"}]]}]}],["$","tbody",null,{"children":["$","tr",null,{"children":[["$","td",null,{"children":["$","code",null,{"children":"engine.type"}]}],["$","td",null,{"children":[["$","code",null,{"children":"'duckdb'"}]," / ",["$","code",null,{"children":"'javascript'"}]," / ",["$","code",null,{"children":"'python'"}]," / ",["$","code",null,{"children":"'supabase'"}]," / ",["$","code",null,{"children":"'clickhouse'"}]," / 已注册的名称"]}],["$","td",null,{"children":["提供 ",["$","code",null,{"children":"engine"}]," 时必填"]}],["$","td",null,{"children":["省略 ",["$","code",null,{"children":"engine"}]," 时选择 DuckDB。"]}]]}]}]]}]}],"\n",["$","p",null,{"children":["其他字段取决于 ",["$","code",null,{"children":"type"}],"，详见 ",["$","$L10",null,{"href":"/documentation/engines/duckdb/#engine-options","children":"DuckDB 选项"}],"和 ",["$","$L10",null,{"href":"/documentation/engines/python/#engine-options","children":"Python 选项"}],"。JavaScript、Supabase、ClickHouse 没有额外的构造函数引擎字段；数据库凭证放在",["$","$L10",null,{"href":"/documentation/data/sources/#connect-a-source","children":"数据源参数"}],"中。"]}],"\n",["$","p",null,{"children":["希望在自己的服务中执行 Python，参见",["$","$L10",null,{"href":"/documentation/engines/python/#supply-a-python-executor","children":"提供 Python 执行器"}],"。希望在应用中提供自己的引擎，参见",["$","$L10",null,{"href":"/documentation/engines/custom/","children":"自定义引擎"}],"。"]}],"\n",["$","h2",null,{"id":"shared-contract","children":["$","a",null,{"href":"#shared-contract","className":"docs-heading-link","children":"共同约定"}]}],"\n",["$","p",null,{"children":"引擎负责加载数据、发现结构、计算统计、根据传入上下文生成查询、执行查询和释放资源。AVA 管理 schema 与 profile 缓存，并决定何时需要发现结构或计算统计信息。"}],"\n",["$","p",null,{"children":["应用通常直接使用 ",["$","code",null,{"children":"AVA"}]," API。引擎实现者应遵循",["$","$L10",null,{"href":"/documentation/engines/custom/#engine-contract","children":"引擎接口约定"}],"，分别实现 ",["$","code",null,{"children":"load()"}]," 和 ",["$","code",null,{"children":"schema()"}],"。"]}],"\n",["$","h2",null,{"id":"registration","children":["$","a",null,{"href":"#registration","className":"docs-heading-link","children":"注册"}]}],"\n",["$","p",null,{"children":["Node.js 入口注册全部五种引擎，浏览器入口只注册 JavaScript。注册表让核心 ",["$","code",null,{"children":"AVA"}]," 类无需直接依赖各平台专用模块。"]}],"\n",["$","p",null,{"children":["扩展 SDK 时，先调用 ",["$","code",null,{"children":"registerEngine('sales', SalesEngine)"}],"，再设置 ",["$","code",null,{"children":"engine: { type: 'sales' }"}],"。接口约定和完整示例见",["$","$L10",null,{"href":"/documentation/engines/custom/","children":"自定义引擎"}],"。CLI 仅接受内置引擎名。"]}]]}]
+1c:["$","div",null,{"className":"docs-page-meta","children":["$","a",null,{"href":"https://github.com/antvis/AVA/blob/ai/site/content/docs/zh/engines/overview.mdx","children":["在 GitHub 编辑本页"," ",["$","span",null,{"aria-hidden":"true","children":"↗"}]]}]}]
+1d:["$","nav",null,{"className":"docs-pagination","aria-label":"章节导航","children":[["$","$L10",null,{"href":"/documentation/browser/","children":[["$","span",null,{"children":"← 上一篇"}],["$","strong",null,{"children":"在浏览器中使用"}]]}],["$","$L10",null,{"href":"/documentation/engines/duckdb/","className":"docs-next","children":[["$","span",null,{"children":"下一篇 →"}],["$","strong",null,{"children":"DuckDB"}]]}]]}]
+1e:["$","footer",null,{"className":"docs-footer","children":[["$","span",null,{"children":"AVA · AntV 开源项目"}],["$","a",null,{"href":"https://github.com/antvis/AVA","children":"在 GitHub 查看源码 ↗"}]]}]
+1f:["$","$L2c","engines/overview",{}]
+20:["$","script","script-0",{"src":"/_next/static/chunks/1lxucu_dj41ds.js","async":true}]
+21:["$","$L2d",null,{"children":["$","$27",null,{"name":"Next.MetadataOutlet","children":"$@2e"}]}]
+2b:true
+9:300
+2e:null
+9:C
+2a:0
+15:"$undefined"
+13:"$undefined"
+7:"$undefined"
+29:"$undefined"
+22:"$undefined"
