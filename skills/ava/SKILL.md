@@ -39,7 +39,9 @@ Check the request, documentation, `ava semantic`, and local definitions in the u
 | A factual detail is missing, such as status values | Use targeted queries or optional `profile`. |
 | An unresolved business choice would materially change the answer, such as whether revenue includes refunds | Ask the user before computing the affected metric. |
 | The user delegates a choice | Disclose the assumption; keep it task-specific unless confirmed for reuse. |
-| Reusable meaning becomes established | Incrementally update project Semantic JSON with source and scope; preserve unrelated rules. |
+| Reusable meaning becomes established | Merge it into Semantic JSON with source and scope; load the complete definition into the session before computing the affected metric. |
+
+`semantic --file` replaces the entire session definition. Read the local file and current session first, merge changes, and preserve unrelated rules before loading.
 
 Start with the definitions the task establishes. Respect requests not to save.
 

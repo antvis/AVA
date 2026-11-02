@@ -36,7 +36,7 @@ Adapt the example to the actual evidence. Attribute documented rules to their so
 | Load | Write a complete temporary candidate; run `ava semantic "$DATASET_ID" --file semantic-candidate.json`. Pass a plain path without `@`. |
 | Save | Check the returned definition before replacing the local file. On load/save failure, retain the previous durable file and report what succeeded. |
 
-Knowledge is maintained incrementally, but `--file` **replaces the entire session definition**. Combine applicable rules before loading; partial files do not merge automatically. Keep each durable file within its source/scope.
+When several files apply, combine their rules into one candidate; keep each durable file within its source/scope.
 
 ## Runtime Behavior
 
