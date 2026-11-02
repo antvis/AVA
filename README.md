@@ -83,7 +83,6 @@ npm install @antv/ava@4
 Download [sales.csv](__tests__/datasets/sales.csv) and configure your model:
 
 ```typescript
-import { writeFile } from 'node:fs/promises';
 import { AVA } from '@antv/ava';
 
 const ava = new AVA({
@@ -174,11 +173,6 @@ const chart = await ava.visualize({
   query: 'Plot the sales change by product from January to February 2025 as a bar chart.',
   data: result.data,
 });
-if (chart) {
-  await writeFile('sales-change.html', chart.html);
-}
-
-await ava.dispose();
 ```
 
 > [!NOTE]
