@@ -1,12 +1,12 @@
-import { feishuError,feishuOrigin,getTenantAccessToken } from "./token";
-import { convertRecord,isSupportedFieldType } from "./convert";
-import {resolveBitableTable} from "./resolve";
+import { feishuError,feishuOrigin,getTenantAccessToken } from './token';
+import { convertRecord,isSupportedFieldType } from './convert';
+import {resolveBitableTable} from './resolve';
 
-import type { FeishuCell,FeishuField } from "./convert";
-import type { FeishuBitableSourceOptions } from "../../../types";
+import type { FeishuCell,FeishuField } from './convert';
+import type { FeishuBitableSourceOptions } from '../../../types';
 
 function tableUrl(origin:string,table:{appToken:string;tableId:string},suffix:string):string{
-    return  `${origin}/open-apis/bitable/v1/apps/${encodeURIComponent(table.appToken)}/tables/${encodeURIComponent(table.tableId)}${suffix}`
+    return  `${origin}/open-apis/bitable/v1/apps/${encodeURIComponent(table.appToken)}/tables/${encodeURIComponent(table.tableId)}${suffix}`;
 }
 
 // async function getItem(token:string,url:string):Promise<any[]>{
@@ -26,13 +26,13 @@ const RECORDS_PAGE_SIZE = 500;
 const FIELDS_PAGE_SIZE = 100;
 
 function apiError(code:unknown,msg:unknown):Error{
-    return feishuError(code,msg)
+    return feishuError(code,msg);
 }
 
 async function readFeishuBody(response:Response):Promise<{data?:{items?:any[];has_more?:unknown;page_token?:unknown}}>{
     let body: unknown;
     try{
-        body = await response.json()
+        body = await response.json();
     }catch{
         throw apiError(undefined,'response is not JSON');
     }

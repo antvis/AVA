@@ -57,7 +57,7 @@ const feishuBitable = z
   .strict()
   .refine((value)=>Boolean(value.url || (value.appToken && value.tableId)),{
     message:"Feishu Bitable sources require either 'url' or both 'appToken' and 'tableId'",
-  })
+  });
 
 const sourceSchema = z.discriminatedUnion('type', [
   z

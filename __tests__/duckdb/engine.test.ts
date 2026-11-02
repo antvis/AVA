@@ -5,7 +5,7 @@
 import * as path from 'path';
 
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
-import { DuckDBInstance } from '@duckdb/node-api';
+import { DuckDBConnection, DuckDBInstance } from '@duckdb/node-api';
 
 import { DuckDBEngine } from '../../src/duckdb';
 import { buildDataModel } from '../../src/util/data-model';
@@ -181,7 +181,35 @@ describe('DuckDBEngine', () => {
       // A large cross join is far slower than the 100ms timeout.
       const slowQuery = 'SELECT COUNT(*) FROM range(100000) a, range(100000) b';
       await expect(fast.execute(slowQuery)).rejects.toThrow(QueryTimeoutError);
+      // The interrupted native operation must have settled before execute()
+      // rejects, so the connection is safe to reuse or dispose immediately.
+      expect((await fast.execute('SELECT 42 AS value')).data).toEqual([{ value: 42 }]);
     } finally {
+      await fast.dispose();
+    }
+  });
+
+  it('waits for native cancellation to settle before returning a timeout', async () => {
+    const fast = new DuckDBEngine(getLLMConfig(), { queryTimeoutMs: 10 });
+    let nativeSettled = false;
+    try {
+      await fast.load({ type: 'json', options: { data: [{ a: 1 }] } });
+      let rejectNative: (reason: Error) => void;
+      const operation = new Promise<never>((_resolve, reject) => {
+        rejectNative = reject;
+      });
+      vi.spyOn(DuckDBConnection.prototype, 'runAndReadAll').mockReturnValueOnce(operation);
+      const interrupt = vi.spyOn(DuckDBConnection.prototype, 'interrupt').mockImplementation(() => {
+        setTimeout(() => {
+          nativeSettled = true;
+          rejectNative(new Error('native query interrupted'));
+        }, 20);
+      });
+      await expect(fast.execute('SELECT * FROM data')).rejects.toThrow(QueryTimeoutError);
+      expect(interrupt).toHaveBeenCalledOnce();
+      expect(nativeSettled).toBe(true);
+    } finally {
+      vi.restoreAllMocks();
       await fast.dispose();
     }
   });
