@@ -25,7 +25,54 @@ Keep the file outside disposable outputs and the installed skill. Start with pla
 }
 ```
 
-Adapt the example to the actual evidence. Attribute documented rules to their source instead of labeling them user-confirmed. Add `models`, `relationships`, `views`, or `cubes` only when useful. Model names must match the schema; each model needs exactly one of `tableReference`, `refSql`, or `baseObject`, and columns need `name` and `type`. Put measure eligibility rules in its expression or base.
+Adapt the example to the actual evidence. Attribute documented rules to their source instead of labeling them user-confirmed. The `properties` keys above are conventions for the agent, not fields with special CLI behavior.
+
+## Structured Format
+
+All six top-level keys are optional: `description` (string), `properties` (JSON object), and the arrays `models`, `relationships`, `views`, `cubes`. Add structured definitions only when useful. Names, types, `refSql`, `baseObject`, `condition`, `statement`, and measure expressions must be nonempty strings. Column `expression` may also be empty or null.
+
+| Object | Required fields | Optional fields |
+| --- | --- | --- |
+| Model | `name`; exactly one of `tableReference`, `refSql`, `baseObject` | `columns`, `primaryKey`, `uniqueKeys`, `dialect`, `properties` |
+| Table reference | `table` | `catalog`, `schema` |
+| Column | `name`, `type` | `relationship`, `isCalculated`, `isPrimaryKey`, `notNull`, `expression`, `properties` |
+| Relationship | `name`, `models` (exactly two model names), `joinType`, `condition` (SQL) | `properties` |
+| View | `name`, `statement` (SQL) | `dialect`, `properties` |
+| Cube | `name`, `baseObject`, nonempty `measures` | `dimensions`, `timeDimensions`, `hierarchies`, `properties` |
+| Measure, dimension, time dimension | `name`, `expression`, `type` | `description`, `properties` |
+
+`primaryKey` is a string or nonempty string array; `uniqueKeys` is an array of the same key shape. Column flags are booleans; `relationship` names a relationship. Relationship `joinType` is cardinality: `ONE_TO_ONE`, `ONE_TO_MANY`, `MANY_TO_ONE`, or `MANY_TO_MANY`. Cube `hierarchies` maps names to nonempty string arrays ordered from coarse to fine.
+
+Use an existing schema model name to enrich that model; additional names can define logical models. `tableReference` maps a physical table, `refSql` defines a SQL source, and `baseObject` refers to another object. Keep names unique and references consistent. Put measure eligibility rules in the measure expression or its base.
+
+For example, for a DuckDB session whose table `data` has `paid_amount`, `refund_amount`, `status`, and `region`:
+
+```json
+{
+  "models": [{
+    "name": "paid_orders",
+    "refSql": "SELECT *, paid_amount - COALESCE(refund_amount, 0) AS net_revenue FROM data WHERE status = 'paid'",
+    "columns": [{
+      "name": "net_revenue",
+      "type": "DOUBLE",
+      "properties": {"description": "Paid amount minus cumulative refunds"}
+    }]
+  }],
+  "views": [{
+    "name": "regional_revenue",
+    "statement": "SELECT region, SUM(net_revenue) AS revenue FROM paid_orders GROUP BY region",
+    "dialect": "duckdb"
+  }],
+  "cubes": [{
+    "name": "sales",
+    "baseObject": "paid_orders",
+    "measures": [{"name": "revenue", "expression": "SUM(net_revenue)", "type": "DOUBLE"}],
+    "dimensions": [{"name": "region", "expression": "region", "type": "VARCHAR"}]
+  }]
+}
+```
+
+Loading metadata does not create physical tables, views, or calculated columns. A query using the example must supply the `paid_orders` CTE explicitly. Store custom annotations in `properties`; unknown keys are rejected except JSON extensions on table references, relationships, and views. Profiling `metrics` are not accepted on semantic models or columns.
 
 ## Incremental Maintenance
 

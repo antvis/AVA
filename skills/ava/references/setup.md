@@ -17,6 +17,10 @@ Prefer an existing installation or project build of this version. Otherwise, ins
 npm install -g @antv/ava@4
 ```
 
+## Model-Backed Commands
+
+`source` with type `text`, `analyze`, `translate`, `suggest`, `recommend`, and `visualize` use AVA's model integration. Set `OPENAI_API_KEY`; optionally set `OPENAI_MODEL` (default `gpt-4o-mini`) and `OPENAI_BASE_URL`. For session commands, set these before creating the session; later environment changes do not update its model configuration. Loading structured data, running `query`, managing semantic, and rendering a supplied Spec with `viz` do not require a model API key.
+
 ## Python
 
 When using `--engine python`, select an existing virtual environment or a Python environment for the current task, and put its `python3` on `PATH`.
