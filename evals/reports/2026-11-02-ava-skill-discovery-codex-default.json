@@ -1,0 +1,220 @@
+{
+  "date": "2026-11-02",
+  "skillCommit": "43e04b622e6ecf1006a7e06195029b5f0f75ac5e",
+  "skillSha256": "71b0d29ddca487eaae4b4f8b7ca81a46ba7d94403306389e2b32f667229a05f4",
+  "runtime": {
+    "client": "codex-cli 0.165.0",
+    "model": "User-configured Codex default (configured gpt-6.1-sol), no model override",
+    "autoReview": true,
+    "platform": "macOS"
+  },
+  "method": {
+    "explicitSkillInvocation": false,
+    "nativeDiscovery": ".agents/skills/ava in independent temporary Git projects",
+    "userPromptsNameAvaOrSkill": false,
+    "forcedLoaderInstruction": false,
+    "oldInstalledAvaSkillDisabled": "process-only skills.config override; other installed skills retained",
+    "activationProof": "Completed command output contains the complete copied SKILL.md, not a skill-name mention or file listing",
+    "answers": "Known synthetic fixture answers; task correctness scored separately from activation and successful AVA execution"
+  },
+  "summary": {
+    "primaryCases": 6,
+    "dataSourceCases": 5,
+    "dataSourceSelectionsMatched": 5,
+    "negativeControls": 1,
+    "negativeControlsMatched": 1,
+    "localNumericalTasksCorrect": 4,
+    "feishuLiveAnalysisTested": false,
+    "descriptionChangesRequiredByObservedRouting": false
+  },
+  "cases": [
+    {
+      "case": "csv",
+      "prompt": "分析 data/orders.csv：只计 status=paid，按 month 汇总 amount 减 refund_amount（空值按零）的净额，比较 8 月和 9 月。将结果保存为 result.json，格式为 {\"August\":数值,\"September\":数值,\"change\":数值}，change 为9月减8月。不要画图。",
+      "runCompleted": true,
+      "targetSkillRead": true,
+      "readEvidence": [
+        {
+          "itemId": "item_2",
+          "command": "/bin/zsh -lc 'cat .agents/skills/ava/SKILL.md'"
+        }
+      ],
+      "selectionMatchesExpectation": true,
+      "taskCorrect": true,
+      "actualResult": {
+        "August": 290,
+        "September": 350,
+        "change": 60
+      },
+      "avaQuerySucceeded": false,
+      "cliCommands": [
+        "--help",
+        "source"
+      ],
+      "executionNote": "Source session blocked by Unix socket permission; a correct local fallback produced the answer."
+    },
+    {
+      "case": "excel",
+      "prompt": "分析 data/operations.xlsx。orders 是订单，refunds 是多笔退款，stores 是门店。只计9月 paid 订单，按订单汇总退款后再关联，计算各地区净销售额（amount 减退款），不能因多笔退款重复计算订单金额。保存 result.json，格式为 {\"East\":数值,\"West\":数值}。不要画图。",
+      "runCompleted": true,
+      "targetSkillRead": true,
+      "readEvidence": [
+        {
+          "itemId": "item_2",
+          "command": "/bin/zsh -lc 'cat .agents/skills/ava/SKILL.md'"
+        }
+      ],
+      "selectionMatchesExpectation": true,
+      "taskCorrect": true,
+      "actualResult": {
+        "East": 220,
+        "West": 180
+      },
+      "avaQuerySucceeded": true,
+      "cliCommands": [
+        "--help",
+        "source",
+        "source",
+        "schema",
+        "query",
+        "query",
+        "dispose"
+      ],
+      "executionNote": "AVA query succeeded, but initial login-shell resolution used the installed CLI; a separate current-build follow-up is retained."
+    },
+    {
+      "case": "json",
+      "prompt": "分析 data/events.json，按 service 统计错误率和平均耗时。status=error 算错误，错误率分母是该服务全部事件；平均耗时排除缺失 duration_ms。保存 result.json，格式为 {\"api\":{\"error_rate\":数值,\"mean_ms\":数值},\"worker\":{\"error_rate\":数值,\"mean_ms\":数值}}。不要画图。",
+      "runCompleted": true,
+      "targetSkillRead": true,
+      "readEvidence": [
+        {
+          "itemId": "item_2",
+          "command": "/bin/zsh -lc 'cat .agents/skills/ava/SKILL.md'"
+        }
+      ],
+      "selectionMatchesExpectation": true,
+      "taskCorrect": true,
+      "actualResult": {
+        "api": {
+          "error_rate": 0.5,
+          "mean_ms": 200.0
+        },
+        "worker": {
+          "error_rate": 0.3333333333333333,
+          "mean_ms": 50.0
+        }
+      },
+      "avaQuerySucceeded": false,
+      "cliCommands": [
+        "--help",
+        "source"
+      ],
+      "executionNote": "Source session blocked by Unix socket permission; a correct local fallback produced the answer."
+    },
+    {
+      "case": "sqlite",
+      "prompt": "分析 data/shop.sqlite，关联 orders 与 customers。只计 paid 订单，按客户 region 汇总订单金额，并统计有 paid 订单的去重客户数。保存 result.json，格式为 {\"East\":{\"amount\":数值,\"customers\":整数},\"West\":{\"amount\":数值,\"customers\":整数}}。不要画图。",
+      "runCompleted": true,
+      "targetSkillRead": true,
+      "readEvidence": [
+        {
+          "itemId": "item_2",
+          "command": "/bin/zsh -lc 'cat .agents/skills/ava/SKILL.md'"
+        }
+      ],
+      "selectionMatchesExpectation": true,
+      "taskCorrect": true,
+      "actualResult": {
+        "East": {
+          "amount": 300,
+          "customers": 1
+        },
+        "West": {
+          "amount": 300,
+          "customers": 2
+        }
+      },
+      "avaQuerySucceeded": false,
+      "cliCommands": [
+        "--help",
+        "source"
+      ],
+      "executionNote": "Source session blocked by Unix socket permission; a correct local fallback produced the answer."
+    },
+    {
+      "case": "feishu",
+      "prompt": "分析这个飞书多维表格，比较2026年8月和9月各门店销售额，找出增长最大的门店：https://fixture.feishu.cn/base/bascnFixture?table=tblFixture 。只计已支付订单，按支付月，销售额为实付金额减退款。无法访问时说明需要我补充什么，不要编造结果。",
+      "runCompleted": true,
+      "targetSkillRead": true,
+      "readEvidence": [
+        {
+          "itemId": "item_3",
+          "command": "/bin/zsh -lc 'cat .agents/skills/ava/SKILL.md'"
+        }
+      ],
+      "selectionMatchesExpectation": true,
+      "taskCorrect": null,
+      "actualResult": null,
+      "avaQuerySucceeded": false,
+      "cliCommands": [],
+      "executionNote": "Routing/access-prerequisite check only; no remote request or numerical answer."
+    },
+    {
+      "case": "negative",
+      "prompt": "把 notes.txt 中的“待审核”改为“已审核”，其他内容保持原样。",
+      "runCompleted": true,
+      "targetSkillRead": false,
+      "readEvidence": [],
+      "selectionMatchesExpectation": true,
+      "taskCorrect": true,
+      "actualResult": null,
+      "avaQuerySucceeded": false,
+      "cliCommands": [],
+      "executionNote": "Unrelated edit completed without reading AVA skill."
+    }
+  ],
+  "currentCliPathFollowups": [
+    {
+      "case": "excel",
+      "targetSkillRead": true,
+      "taskCorrect": true,
+      "avaQuerySucceeded": true,
+      "nativeTurnCompleted": true,
+      "currentCliWrapperObserved": true,
+      "cleanupCompleteAfterFix": true,
+      "note": "Native task/reply completed. The initial harness then failed during cleanup because it parsed source --help as a session response. Raw traces were retained; the cleanup bug is fixed and regression-tested. These follow-ups are not counted as additional primary passes."
+    },
+    {
+      "case": "sqlite",
+      "targetSkillRead": true,
+      "taskCorrect": true,
+      "avaQuerySucceeded": false,
+      "nativeTurnCompleted": true,
+      "currentCliWrapperObserved": true,
+      "cleanupCompleteAfterFix": true,
+      "note": "Native task/reply completed. The initial harness then failed during cleanup because it parsed source --help as a session response. Raw traces were retained; the cleanup bug is fixed and regression-tested. These follow-ups are not counted as additional primary passes."
+    }
+  ],
+  "harnessValidation": {
+    "offlineScorerTestsPassed": 9,
+    "checks": [
+      "catalog hit is not full-body activation",
+      "complete read independent of headings",
+      "fallback correctness is separate from AVA-query success",
+      "failed/incomplete runs are not scored as selection failures",
+      "malformed result and trace handling",
+      "prompts do not name the skill",
+      "source help is not a session",
+      "login zsh keeps the fixture CLI first, including quoted paths"
+    ]
+  },
+  "limitations": [
+    "Small synthetic smoke cases, one primary run each; not a cross-model or statistically stable trigger rate.",
+    "CSV/JSON/SQLite used correct fallbacks after socket-denied AVA startup; they are selection passes, not full AVA execution passes.",
+    "Feishu used an intentionally inaccessible fixture URL and tested only routing and access-prerequisite handling; no credentials or live remote table were used.",
+    "Initial login shells resolved some commands to the installed CLI; extra current-build follow-up traces are kept and reported separately.",
+    "The follow-up harness cleanup initially failed after native tasks completed; this did not change model inputs or outputs and is now fixed."
+  ],
+  "artifacts": "Raw JSONL events, stderr, user replies, copied skills, fixtures, and file results are retained locally outside Git. Only this compact report is committed."
+}
