@@ -232,6 +232,7 @@
     "open": "打开 ↗"
   },
   "ArtifactPanel": {
+    "summary": "分析摘要",
     "artifactPanel": "分析产物",
     "closePanel": "关闭面板",
     "artifactViews": "产物视图",

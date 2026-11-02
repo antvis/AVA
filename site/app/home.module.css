@@ -254,16 +254,19 @@
   margin: 0;
   padding-bottom: 0;
 }
+.demo [data-artifact-panel] {
+  border-color: #dce9ee;
+  border-radius: 16px;
+  background: linear-gradient(180deg, #f5fafc, #fff 140px);
+  box-shadow: 0 3px 12px -6px #335e701a;
+}
 .demo [data-artifact-panel] [role='img'] {
-  height: clamp(240px, 26vw, 280px);
-  padding: 8px 4px;
-  border: 1px solid #dceef5;
-  border-radius: 20px;
+  height: clamp(220px, 24vw, 260px);
+  padding: 6px 2px;
+  border: 1px solid #e1edf1;
+  border-radius: 14px;
   isolation: isolate;
-  background: radial-gradient(ellipse at 90% 0%, #bceef566, transparent 65%),
-    radial-gradient(ellipse at 0% 100%, #ffdfce33, transparent 60%),
-    linear-gradient(145deg, #eaf9ff, #f7fcff 58%, #fff6ef);
-  box-shadow: inset 0 1px 0 #fff, 0 9px 24px -18px #4a8fa84d;
+  background: linear-gradient(180deg, #f6fbfd, #fff);
 }
 /* Blend the canvas's white surface into the chart card. */
 .demo [data-artifact-panel] [role='img'] canvas {

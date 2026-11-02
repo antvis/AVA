@@ -232,6 +232,7 @@
     "open": "Open ↗"
   },
   "ArtifactPanel": {
+    "summary": "Analysis summary",
     "artifactPanel": "Artifact panel",
     "closePanel": "Close panel",
     "artifactViews": "Artifact views",

@@ -62,21 +62,21 @@ export default function ArtifactPanel({
       )}
       <div className="soft-scroll flex-1 min-h-0 overflow-y-auto p-5">
         {report && (
-          <dl className="space-y-3 border-b border-zinc-100 pb-4">
-            <div className="flex items-baseline gap-2.5">
-              <dt className="shrink-0 font-mono text-[13px] font-semibold text-zinc-400">Q:</dt>
-              <dd className="text-[13px] leading-relaxed text-zinc-600">{report.question}</dd>
-            </div>
-            <div className="flex items-baseline gap-2.5">
-              <dt className="shrink-0 font-mono text-[13px] font-semibold text-[#3d8ba3]">A:</dt>
-              <dd className="text-[14px] font-medium leading-relaxed text-zinc-800">{report.answer}</dd>
-            </div>
-          </dl>
+          <header className="mb-4">
+            <span className="text-[10px] font-semibold uppercase tracking-[0.12em] text-[#648594]">
+              {t('summary')}
+            </span>
+            <p className="mt-2 text-[15px]! font-medium leading-[1.6]! tracking-[-0.02em] text-[#213c48]">
+              {report.answer}
+            </p>
+          </header>
         )}
         <div
           role="tablist"
           aria-label={t('artifactViews')}
-          className="sticky -top-5 z-10 mb-4 flex items-center gap-1 border-b border-zinc-100 bg-white py-2"
+          className={`sticky -top-5 z-10 mb-4 flex items-center gap-1 ${
+            report ? 'rounded-[10px] bg-[#edf3f6] p-1' : 'border-b border-zinc-100 bg-white py-2'
+          }`}
         >
           {tabs.map((tabId) => (
             <button
@@ -102,8 +102,12 @@ export default function ArtifactPanel({
                   ?.querySelectorAll<HTMLButtonElement>('[role="tab"]')
                   [nextIndex]?.focus();
               }}
-              className={`rounded-md px-3 py-1.5 text-[12px] font-medium transition-colors ${
-                activeTab === tabId ? 'bg-[#edf6fa] text-[#347c94]' : 'text-zinc-400 hover:text-zinc-600'
+              className={`rounded-md px-3 py-1.5 text-[12px] font-medium transition-colors ${report ? 'flex-1' : ''} ${
+                activeTab === tabId
+                  ? report
+                    ? 'bg-white text-[#326b80] shadow-[0_1px_4px_#24475614]'
+                    : 'bg-[#edf6fa] text-[#347c94]'
+                  : 'text-zinc-500 hover:text-zinc-700'
               }`}
             >
               {tabId === 'sql' ? (live ? 'JavaScript' : 'SQL') : t(tabId)}
@@ -145,16 +149,11 @@ export default function ArtifactPanel({
           )}
         </div>
         {report && (
-          <div className="mt-5 space-y-4 border-t border-zinc-100 pt-4">
-            <section>
-              <h3 className="text-[12px] font-semibold text-[#347c94]">{t('insight')}</h3>
-              <p className="mt-1.5 text-[13px] leading-relaxed text-zinc-600">{report.insight}</p>
-            </section>
-            <section>
-              <h3 className="text-[12px] font-semibold text-zinc-500">{t('limitations')}</h3>
-              <p className="mt-1.5 text-[12px] leading-relaxed text-zinc-500">{report.limitations}</p>
-            </section>
-          </div>
+          <p className="mt-4 border-t border-zinc-100 pt-3 text-[11px]! leading-[1.6]! text-zinc-500">
+            <span aria-hidden="true">* </span>
+            <span className="font-medium">{t('limitations')}: </span>
+            {report.limitations}
+          </p>
         )}
       </div>
     </section>
