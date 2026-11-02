@@ -460,9 +460,6 @@
   letter-spacing: -0.04em;
   color: var(--home-ink);
 }
-.home .benchmarks h2 {
-  font-size: clamp(30px, 3.1vw, 44px);
-}
 .benchmarks :global(.max-w-2xl) > p {
   font-size: 14px;
   line-height: 1.65;
