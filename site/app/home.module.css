@@ -805,8 +805,11 @@
 :global(html[lang='zh-CN']) .home > header nav a {
   font-weight: 500;
 }
+:global(html[lang='zh-CN']) .heroIntro h1 {
+  font-family: var(--font-body);
+  font-weight: 500;
+}
 :global(html[lang='zh-CN']) .heroIntro h1 > span[lang='en'] {
-  font-weight: 400;
   letter-spacing: -0.04em;
 }
 :global(html[lang='zh-CN']) .heroIntro h1 > span:last-child {
