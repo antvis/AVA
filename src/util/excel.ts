@@ -48,7 +48,7 @@ export const excelSheetSchema = z
 export const excelOptionsSchema = z
   .object({
     path: z.string().min(1),
-    headers: z.record(z.string()).optional(),
+    headers: z.record(z.string(), z.string()).optional(),
     sheets: z
       .array(excelSheetSchema)
       .nonempty()
