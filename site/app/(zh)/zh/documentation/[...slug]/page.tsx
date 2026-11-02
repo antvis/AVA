@@ -1,6 +1,6 @@
 import { notFound } from 'next/navigation';
-import DocPage, { docMetadata } from '../../../components/docs/DocPage';
-import { docs } from '../../../lib/docs';
+import DocPage, { docMetadata } from '../../../../../components/docs/DocPage';
+import { docs } from '../../../../../lib/docs';
 
 type Props = { params: Promise<{ slug: string[] }> };
 export const dynamicParams = false;
@@ -12,12 +12,12 @@ export async function generateMetadata({ params }: Props) {
   const { slug } = await params;
   const doc = docs.find((entry) => entry.slug === slug.join('/'));
   if (!doc) notFound();
-  return docMetadata(doc);
+  return docMetadata(doc, 'zh');
 }
 
 export default async function ChapterPage({ params }: Props) {
   const { slug } = await params;
   const doc = docs.find((entry) => entry.slug === slug.join('/'));
   if (!doc) notFound();
-  return <DocPage doc={doc} />;
+  return <DocPage locale="zh" doc={doc} />;
 }

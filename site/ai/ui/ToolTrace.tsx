@@ -1,10 +1,12 @@
 'use client';
+import { useTranslations } from 'use-intl';
 
 import React, { useState } from 'react';
 import type { Message } from './types';
 import ToolRow from './ToolRow';
 
 const ToolTrace: React.FC<{ msg: Message; live: Message['live'] }> = ({ msg, live }) => {
+  const t = useTranslations('ToolTrace');
   const steps = msg.steps ?? [];
   const shown = live?.rowsShown ?? steps.length;
   const running = typeof live?.runningRow === 'number' ? live.runningRow : null;
@@ -12,8 +14,7 @@ const ToolTrace: React.FC<{ msg: Message; live: Message['live'] }> = ({ msg, liv
 
   if (!steps.length) return null;
 
-  const headerText =
-    running !== null ? `${steps.length} tool calls — running…` : `${steps.length} tool calls, 1 message`;
+  const headerText = running !== null ? t('running', { count: steps.length }) : t('completed', { count: steps.length });
 
   return (
     <div className="min-h-[220px] w-full pb-1">

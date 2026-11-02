@@ -1,4 +1,8 @@
-import Link from 'next/link';
+'use client';
+
+import { useTranslations } from 'use-intl';
+
+import Link from '../LocaleLink';
 import styles from './FeatureCards.module.css';
 import AgentBlocks from './AgentBlocks';
 import DataBoundary from './DataBoundary';
@@ -23,19 +27,20 @@ function CardLink({ href, children }: { href: string; children: string }) {
 }
 
 export default function FeatureCards() {
+  const t = useTranslations('FeatureCards');
   return (
     <div className={styles.grid}>
       <article className={styles.card}>
         <h3>
-          Files and databases.
+          {t('filesAndDatabases')}
           <br />
-          One interface.
+          {t('oneInterface')}
         </h3>
-        <p>A consistent data context lets your agent reason across different sources.</p>
+        <p>{t('aConsistentDataContextLetsYourAgent')}</p>
         <div
           className={`${styles.art} ${styles.sources}`}
           role="img"
-          aria-label="CSV, Excel, PostgreSQL, MongoDB, and ClickHouse connected through AVA"
+          aria-label={t('cSVExcelPostgreSQLMongoDBAndClickHouseConnected')}
         >
           <div className={styles.sourceConstellation} aria-hidden="true">
             <svg className={styles.connectors} viewBox="0 0 320 160" preserveAspectRatio="none">
@@ -48,29 +53,30 @@ export default function FeatureCards() {
             ))}
             <div className={styles.avaHub}>
               <i />
-              AVA<span>One source interface</span>
+              AVA<span>{t('oneSourceInterface')}</span>
             </div>
           </div>
         </div>
-        <CardLink href="/documentation/data/sources/">Explore data sources</CardLink>
+        <CardLink href="/documentation/data/sources/">{t('exploreDataSources')}</CardLink>
       </article>
 
       <article className={styles.card}>
         <h3>
-          An answer with
+          {t('anAnswerWith')}
           <br />
-          an evidence trail.
+          {t('anEvidenceTrail')}
         </h3>
-        <p>Executed queries and their results give each answer a checkable basis.</p>
+        <p>{t('executedQueriesAndTheirResultsGiveEach')}</p>
         <div
           className={`${styles.art} ${styles.evidence}`}
           role="img"
-          aria-label="Illustrative analysis chain linking a SQL query to its result"
+          aria-label={t('illustrativeAnalysisChainLinkingASQLQuery')}
         >
           <div className={styles.queryCard} aria-hidden="true">
             <div>
               <span className={styles.smallDot} />
-              Source-linked query<span>SQL</span>
+              {t('sourceLinkedQuery')}
+              <span>SQL</span>
             </div>
             <code>
               <b>SELECT</b> region, SUM(revenue)
@@ -81,39 +87,40 @@ export default function FeatureCards() {
           <span className={styles.evidenceWire} aria-hidden="true" />
           <div className={styles.resultCard} aria-hidden="true">
             <i>✓</i>
-            <strong>4 rows</strong>
-            <span>Traceable result</span>
+            <strong>{t('4Rows')}</strong>
+            <span>{t('traceableResult')}</span>
           </div>
         </div>
-        <CardLink href="/documentation/analysis/overview/">Explore trusted analysis</CardLink>
+        <CardLink href="/documentation/analysis/overview/">{t('exploreTrustedAnalysis')}</CardLink>
       </article>
 
       <article className={styles.card}>
         <h3>
-          The right chart.
+          {t('theRightChart')}
           <br />
-          For your question.
+          {t('forYourQuestion')}
         </h3>
-        <p>The question and the shape of the data guide the chart choice.</p>
+        <p>{t('theQuestionAndTheShapeOfThe')}</p>
         <div
           className={`${styles.art} ${styles.charts}`}
           role="img"
-          aria-label="Illustrative chart recommendations for comparison, trends, and distributions"
+          aria-label={t('illustrativeChartRecommendationsForComparisonTrendsAnd')}
         >
           <div className={styles.chartTag} aria-hidden="true">
-            ↗<span>Trend</span>
+            ↗<span>{t('trend')}</span>
           </div>
           <div className={styles.chartPlate} aria-hidden="true">
             <div className={styles.chartPlateHeading}>
               <span className={styles.smallDot} />
-              Revenue by region<span>Comparison</span>
+              {t('revenueByRegion')}
+              <span>{t('comparison')}</span>
             </div>
             <div className={styles.columns}>
               {[
-                ['East', '82%'],
-                ['South', '59%'],
-                ['North', '53%'],
-                ['West', '34%'],
+                [t('east'), '82%'],
+                [t('south'), '59%'],
+                [t('north'), '53%'],
+                [t('west'), '34%'],
               ].map(([name, height]) => (
                 <div key={name}>
                   <i style={{ height }} />
@@ -123,43 +130,40 @@ export default function FeatureCards() {
             </div>
           </div>
         </div>
-        <CardLink href="/documentation/visualization/overview/">Explore intelligent visualization</CardLink>
+        <CardLink href="/documentation/visualization/overview/">{t('exploreIntelligentVisualization')}</CardLink>
       </article>
 
       <article className={styles.card}>
         <h3>
-          Data Security.
+          {t('dataSecurity')}
           <br />
-          Run AVA Locally.
+          {t('runAVALocally')}
         </h3>
-        <p>You control where analysis runs and which model endpoint it uses.</p>
-        <div
-          className={styles.art}
-          role="img"
-          aria-label="Local data processing inside a controlled environment, with a separate connection to your chosen model endpoint"
-        >
+        <p>{t('youControlWhereAnalysisRunsAndWhich')}</p>
+        <div className={styles.art} role="img" aria-label={t('localDataProcessingInsideAControlledEnvironment')}>
           <DataBoundary />
         </div>
-        <CardLink href="/documentation/engines/overview/">Explore local engines</CardLink>
+        <CardLink href="/documentation/engines/overview/">{t('exploreLocalEngines')}</CardLink>
       </article>
 
       <article className={styles.card}>
         <h3>
-          Accuracy you
+          {t('accuracyYou')}
           <br />
-          can inspect.
+          {t('canInspect')}
         </h3>
-        <p>Accuracy is measured against reference answers under published test conditions.</p>
+        <p>{t('accuracyIsMeasuredAgainstReferenceAnswersUnder')}</p>
         <div
           className={`${styles.art} ${styles.evaluations}`}
           role="img"
-          aria-label="Published evaluation coverage: DataBench 1789 questions, BIRD New Dev 1534, Spider2-Lite SQLite 135"
+          aria-label={t('publishedEvaluationCoverageDataBench1789QuestionsBIRD')}
         >
           <div className={styles.paperBack} aria-hidden="true" />
           <div className={styles.benchmarkSheet} aria-hidden="true">
             <div className={styles.sheetHeading}>
               <span className={styles.smallDot} />
-              Published evaluations<span>↗</span>
+              {t('publishedEvaluations')}
+              <span>↗</span>
             </div>
             {[
               ['DataBench', '1,789', '100%'],
@@ -174,24 +178,24 @@ export default function FeatureCards() {
             ))}
           </div>
         </div>
-        <CardLink href="/documentation/reference/benchmarks/">Explore published evaluations</CardLink>
+        <CardLink href="/documentation/reference/benchmarks/">{t('explorePublishedEvaluations')}</CardLink>
       </article>
 
       <article className={styles.card}>
         <h3>
-          Ready for your agent.
+          {t('readyForYourAgent')}
           <br />
-          Built to reuse.
+          {t('builtToReuse')}
         </h3>
-        <p>Your agent provides the reasoning; AVA executes the data workflow.</p>
+        <p>{t('yourAgentProvidesTheReasoningAVAExecutes')}</p>
         <div
           className={`${styles.art} ${styles.toolkit}`}
           role="img"
-          aria-label="Claude and Codex building blocks connect to a central AVA Skill block"
+          aria-label={t('claudeAndCodexBuildingBlocksConnectTo')}
         >
           <AgentBlocks />
         </div>
-        <CardLink href="#integrate">Get started with AVA</CardLink>
+        <CardLink href="#integrate">{t('getStartedWithAVA')}</CardLink>
       </article>
     </div>
   );

@@ -1,5 +1,7 @@
 'use client';
 
+import { useTranslations } from 'use-intl';
+
 import GPTVisRenderer from '../../components/GPTVisRenderer';
 import CodePreview from './CodePreview';
 import { resultTables } from './utils';
@@ -21,6 +23,7 @@ export default function ArtifactPanel({
   onClose: () => void;
   display?: ArtifactDisplay;
 }) {
+  const t = useTranslations('ArtifactPanel');
   const hasChart = !!artifact.config;
   const activeTab = (tab === 'chart' && !hasChart) || (tab === 'sql' && !artifact.code) ? 'data' : tab;
   const tables = resultTables(artifact.data ?? []);
@@ -38,7 +41,7 @@ export default function ArtifactPanel({
           : 'h-[510px] max-md:h-[460px]'
       } border border-[rgb(242,242,237)] rounded-xl shadow-xs`}
       style={{ animation: 'slide-in .4s ease-out' }}
-      aria-label="Artifact panel"
+      aria-label={t('artifactPanel')}
     >
       {!report && (
         <header className="flex items-center gap-2 px-4 py-2 border-b border-zinc-100">
@@ -46,7 +49,7 @@ export default function ArtifactPanel({
           <button
             onClick={onClose}
             className="shrink-0 flex size-6 items-center justify-center rounded-lg text-zinc-400 hover:bg-zinc-100 hover:text-zinc-600 transition-colors"
-            aria-label="Close panel"
+            aria-label={t('closePanel')}
           >
             <svg className="w-3.5 h-3.5" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.6">
               <path d="M4 4l8 8M12 4l-8 8" strokeLinecap="round" />
@@ -69,22 +72,22 @@ export default function ArtifactPanel({
         )}
         <div
           role="tablist"
-          aria-label="Artifact views"
+          aria-label={t('artifactViews')}
           className="sticky -top-5 z-10 mb-4 flex items-center gap-1 border-b border-zinc-100 bg-white py-2"
         >
-          {tabs.map((t) => (
+          {tabs.map((tabId) => (
             <button
-              key={t}
-              id={`${artifact.id}-${t}-tab`}
+              key={tabId}
+              id={`${artifact.id}-${tabId}-tab`}
               role="tab"
-              aria-selected={activeTab === t}
+              aria-selected={activeTab === tabId}
               aria-controls={panelId}
-              tabIndex={activeTab === t ? 0 : -1}
-              onClick={() => onTabChange(t)}
+              tabIndex={activeTab === tabId ? 0 : -1}
+              onClick={() => onTabChange(tabId)}
               onKeyDown={(event) => {
                 if (!['ArrowLeft', 'ArrowRight', 'Home', 'End'].includes(event.key)) return;
                 event.preventDefault();
-                const index = tabs.indexOf(t);
+                const index = tabs.indexOf(tabId);
                 const nextIndex =
                   event.key === 'Home'
                     ? 0
@@ -97,10 +100,10 @@ export default function ArtifactPanel({
                   [nextIndex]?.focus();
               }}
               className={`rounded-md px-3 py-1.5 text-[12px] font-medium transition-colors ${
-                activeTab === t ? 'bg-[#edf6fa] text-[#347c94]' : 'text-zinc-400 hover:text-zinc-600'
+                activeTab === tabId ? 'bg-[#edf6fa] text-[#347c94]' : 'text-zinc-400 hover:text-zinc-600'
               }`}
             >
-              {t === 'sql' ? (live ? 'JavaScript' : 'SQL') : t[0].toUpperCase() + t.slice(1)}
+              {tabId === 'sql' ? (live ? 'JavaScript' : 'SQL') : t(tabId)}
             </button>
           ))}
         </div>
@@ -117,7 +120,7 @@ export default function ArtifactPanel({
                   {name && <h3 className="mb-2 text-xs font-semibold text-zinc-700">{name}</h3>}
                   <MetadataTable
                     variant="result"
-                    caption={name ?? 'Query results'}
+                    caption={name ?? t('queryResults')}
                     rows={rows}
                     columns={display?.columns}
                   />
@@ -127,17 +130,17 @@ export default function ArtifactPanel({
               <CodePreview code={JSON.stringify(artifact.data ?? [], null, 2)} language="json" />
             ))}
           {activeTab === 'sql' && (
-            <CodePreview code={artifact.code ?? 'No query generated yet.'} language={live ? 'javascript' : 'sql'} />
+            <CodePreview code={artifact.code ?? t('noQueryGeneratedYet')} language={live ? 'javascript' : 'sql'} />
           )}
         </div>
         {report && (
           <div className="mt-5 space-y-4 border-t border-zinc-100 pt-4">
             <section>
-              <h3 className="text-[12px] font-semibold text-[#347c94]">Insight</h3>
+              <h3 className="text-[12px] font-semibold text-[#347c94]">{t('insight')}</h3>
               <p className="mt-1.5 text-[13px] leading-relaxed text-zinc-600">{report.insight}</p>
             </section>
             <section>
-              <h3 className="text-[12px] font-semibold text-zinc-500">Limitations</h3>
+              <h3 className="text-[12px] font-semibold text-zinc-500">{t('limitations')}</h3>
               <p className="mt-1.5 text-[12px] leading-relaxed text-zinc-500">{report.limitations}</p>
             </section>
           </div>

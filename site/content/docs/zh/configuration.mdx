@@ -1,0 +1,51 @@
+<h2 id="constructor">创建实例</h2>
+
+模型配置放在 `llm` 中；省略 `engine` 时，SDK 默认选择 DuckDB。前端应用需要显式选择 `javascript`。
+
+```typescript
+import { AVA } from '@antv/ava';
+
+const ava = new AVA({
+  llm: {
+    model: 'YOUR_MODEL',
+    apiKey: process.env.OPENAI_API_KEY,
+    baseURL: process.env.OPENAI_BASE_URL,
+    maxRetries: 3,
+  },
+  engine: { type: 'duckdb' },
+});
+```
+
+<h2 id="model-options">模型参数</h2>
+
+| 字段 | 类型 | 必填 | 用法 |
+| --- | --- | --- | --- |
+| `provider` | `'openai' \| 'gateway'` | 否 | 默认按兼容 OpenAI 的 Chat Completions 协议调用；Gateway 可读取 `AI_GATEWAY_API_KEY`。 |
+| `model` | `string \| LanguageModel` | 是 | 模型名称，或已经配置好的 AI SDK 模型实例。 |
+| `apiKey` | `string` | 否 | 模型服务提供方的 API Key。 |
+| `baseURL` | `string` | 否 | 自定义模型服务地址。 |
+| `maxRetries` | `number` | 否 | 可重试的模型调用错误最多重试几次，默认 `3`。 |
+
+传入字符串模型名时，默认走 Chat Completions；传入模型对象时直接使用该对象。模型使用量回调不是覆盖全部请求的完整计费流水。
+
+<h2 id="ai-gateway">通过 AI Gateway 连接</h2>
+
+```typescript
+const ava = new AVA({
+  llm: {
+    provider: 'gateway',
+    model: 'openai/gpt-4o-mini',
+    apiKey: process.env.AI_GATEWAY_API_KEY,
+  },
+});
+```
+
+没有显式传入 Key 时，Gateway 也可以读取环境变量 `AI_GATEWAY_API_KEY`。
+
+<h2 id="separate-retry-controls">分清两种重试</h2>
+
+`llm.maxRetries` 控制模型 API 调用重试；`direct` 策略中的 `maxRetries` 控制查询执行失败后的纠正重试。两者分别计数，配置示例见[分析策略](/documentation/analysis/strategies/)。
+
+<h2 id="credentials-in-frontend-apps">前端如何提供凭证</h2>
+
+共享的模型密钥应保留在服务端。浏览器内的个人体验可以让用户在运行时填写，避免把 Key 写进源码或前端产物。

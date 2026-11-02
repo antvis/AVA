@@ -1,0 +1,38 @@
+AVA 是 AntV 开源的可视分析框架，给 AI Agent 一套从数据接入到图表交付的工具。你提出问题，Agent 负责规划，AVA 负责执行；查询、结果和图表都可以检查，方便你判断结论是否站得住脚。
+
+<h2 id="choose-your-starting-point">选择适合你的开始方式</h2>
+
+| 你想做什么 | 从哪里开始 |
+| --- | --- |
+| 先看一次完整体验 | [打开 AI 体验](/ai/) |
+| 让已有 Agent 分析文件或数据库 | [安装 Agent Skill](/documentation/agent-skill/) |
+| 在产品中集成数据分析能力 | [SDK 快速开始](/documentation/quickstart/) |
+| 在终端加载数据、执行查询、生成图表 | [命令行工具](/documentation/reference/cli/) |
+| 在前端直接处理内存数据 | [浏览器用法](/documentation/browser/) |
+
+<h2 id="the-analysis-workflow">从问题到发现</h2>
+
+1. **接入数据。**通过 `source()` 加载文件、内存数据或数据库。
+2. **了解数据。**`schema()` 发现结构，`profile()` 按需计算统计信息。知道字段长什么样，再决定怎么问。
+3. **说明业务口径。**有特殊指标、状态过滤或时间含义时，用 `semantic()` 补充背景。
+4. **执行分析。**`analyze()` 根据问题生成并执行查询，返回数据和结论。
+5. **呈现结果。**`visualize()` 选择图表并生成独立 HTML；也可以分开推荐和渲染。
+
+这些步骤可以按需组合。已经有查询语句时，直接用 `query()`；已有结果数据时，可以直接生成图表。
+
+<h2 id="what-ava-provides">AVA 负责哪些工作</h2>
+
+AVA 连接模型与执行环境，提供统一的数据上下文、查询执行、分析策略和图表生成接口。Agent Skill 使用 Agent 本身的推理能力；SDK 的自然语言分析则调用你配置的模型。
+
+分析并不会自动证明业务判断正确。你可以查看实际查询、检查结果是否截断，再结合指标口径验证结论。
+
+<h2 id="next-steps">继续了解</h2>
+
+- [接入数据](/documentation/data/sources/)：找到你的数据源与参数。
+- [了解数据结构](/documentation/data/schema/)：从结构、统计到业务含义。
+- [补充业务语义](/documentation/data/semantic/)：用一个销售示例理解口径与映射。
+- [分析数据](/documentation/analysis/overview/)：提问、推荐问题，或分开生成与执行查询。
+- [生成图表](/documentation/visualization/overview/)：让数据有合适的表达。
+- [连接模型](/documentation/configuration/)与[选择引擎](/documentation/engines/overview/)：配置自己的运行方式。
+
+源码与讨论：[GitHub](https://github.com/antvis/AVA)、[问题反馈](https://github.com/antvis/AVA/issues)、[AntV 社区](https://antv.vision/)。

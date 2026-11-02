@@ -1,19 +1,22 @@
 'use client';
 
+import { useTranslations } from 'use-intl';
+
 import { useEffect, useState } from 'react';
-import Link from 'next/link';
+import Link from '../../components/LocaleLink';
 import type { LLMConfig } from '@antv/ava/browser';
-import ModelConfig from '../../ai/ui/ModelConfig';
-import ChatWorkspace from '../../ai/ui/ChatWorkspace';
-import SkillSetup from '../../ai/ui/SkillSetup';
-import { MAX_UPLOAD_SIZE_MB } from '../../ai/ui/constants';
-import useChat from '../../ai/ui/useChat';
+import ModelConfig from './ModelConfig';
+import ChatWorkspace from './ChatWorkspace';
+import SkillSetup from './SkillSetup';
+import { MAX_UPLOAD_SIZE_MB } from './constants';
+import useChat from './useChat';
 import Header from '../../components/Header';
 import Footer from '../../components/Footer';
 import PageShell from '../../components/PageShell';
-import { DEFAULT_LLM_CONFIG, loadLLMConfig, saveLLMConfig } from '../../ai/ui/model-settings';
+import { DEFAULT_LLM_CONFIG, loadLLMConfig, saveLLMConfig } from './model-settings';
 
 export default function AIPage() {
+  const t = useTranslations('AIPage');
   const [config, setConfig] = useState<LLMConfig>(DEFAULT_LLM_CONFIG);
   const [localConfigOpen, setLocalConfigOpen] = useState(false);
   const chat = useChat({ config, onConfigure: () => setLocalConfigOpen(true) });
@@ -34,16 +37,13 @@ export default function AIPage() {
           }}
         />
         <div className="mx-[max(12px,calc((100%-1120px)/2))] mb-5">
-          <h1 className="text-2xl font-semibold tracking-tight text-ink">Explore your data with AVA</h1>
+          <h1 className="text-2xl font-semibold tracking-tight text-ink">{t('exploreYourDataWithAVA')}</h1>
           <div className="mt-3 grid gap-3 border-t border-line/70 pt-3 text-xs leading-5 text-ink-2 sm:grid-cols-2 sm:gap-8">
-            <p>
-              Analyze the sample data or upload your own CSV, Excel (.xlsx), or JSON file (up to {MAX_UPLOAD_SIZE_MB}{' '}
-              MB). Follow each step to inspect the code, charts, and results.
-            </p>
+            <p>{t('intro', { size: MAX_UPLOAD_SIZE_MB })}</p>
             <div>
-              <p className="font-medium text-ink">Need SQL, Python, Parquet, or database connections?</p>
-              <nav aria-label="Full AVA capabilities" className="flex flex-wrap items-baseline gap-x-2">
-                <span>Use AVA through the</span>
+              <p className="font-medium text-ink">{t('needSQLPythonParquetOrDatabaseConnections')}</p>
+              <nav aria-label={t('fullAVACapabilities')} className="flex flex-wrap items-baseline gap-x-2">
+                <span>{t('useAVAThroughThe')}</span>
                 <a
                   href="#ai-skill-title"
                   className="text-ink underline decoration-[color:var(--color-primary-dark)] underline-offset-4 hover:decoration-ink"
@@ -57,7 +57,7 @@ export default function AIPage() {
                 >
                   CLI
                 </Link>
-                <span>or</span>
+                <span>{t('or')}</span>
                 <Link
                   href="/documentation/quickstart/"
                   className="text-ink underline decoration-[color:var(--color-primary-dark)] underline-offset-4 hover:decoration-ink"

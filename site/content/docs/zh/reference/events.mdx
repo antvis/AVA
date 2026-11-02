@@ -1,0 +1,81 @@
+事件适合展示进度、查看实际查询、排查执行失败；最终结果仍以方法的返回值为准。请在操作开始前订阅。
+
+<h2 id="subscribe-to-events">订阅与取消</h2>
+
+```typescript
+import { AVA } from '@antv/ava';
+
+const ava = new AVA({ llm: { model: 'your-model' } });
+const listener = (event) => console.log(event.type, event.data);
+
+ava.on('*', listener);
+try {
+  await ava.source({ type: 'json', options: { data: [{ sales: 120 }] } });
+} finally {
+  ava.off('*', listener);
+  await ava.dispose();
+}
+```
+
+按事件名监听，或用 `'*'` 接收全部事件。取消时传入订阅时的同一个监听函数引用。公开包未导出事件类和常量，直接使用下表的字符串名称。
+
+<h2 id="read-an-event">怎样理解事件</h2>
+
+每个事件有小写 `type` 和 `data`。开始与结束事件通常成对出现；失败的结束事件带 `data.error`，包含 message，Error 对象还包含 name。
+
+一次 queryend 失败不一定代表整个分析失败，因为策略可能纠正查询后重试。无法恢复的失败会让方法拒绝；数据未加载等前置条件错误，也可能发生在开始事件之前。
+
+<h2 id="event-reference">事件清单</h2>
+
+<h3 id="lifecycle-events">生命周期事件</h3>
+
+| 操作 | 开始事件与 data | 结束事件 |
+| --- | --- | --- |
+| 创建引擎 | `createstart`：空对象 | `createend` |
+| 释放引擎 | `disposestart`：空对象 | `disposeend` |
+| 加载数据 | `sourcestart`：type | `sourceend` |
+| 发现或设置结构 | `schemastart`：空对象 | `schemaend` |
+| 计算或设置统计 | `profilestart`：空对象 | `profileend` |
+| 设置业务语义 | `semanticstart`：空对象 | `semanticend` |
+| 分析问题 | `analyzestart`：query | `analyzeend` |
+| 生成图表 | `visualizestart`：query | `visualizeend` |
+| 推荐问题 | `suggeststart`：空对象 | `suggestend` |
+
+成功的生命周期结束事件 data 为空，结果通过方法返回。读取缓存 Schema 或 Semantic 不发事件；方法内部按需发现结构不发 schema 事件。recommend()、viz() 没有自己的事件。
+
+<h3 id="analysis-events">分析步骤事件</h3>
+
+| 操作 | 开始事件 | 成功结束事件与数据 |
+| --- | --- | --- |
+| 策略步骤 | `stepstart`：step、可选 finalAttempt | `stepend`：step、action、text，可选 usage、finalAttempt |
+| 生成查询 | `translatestart`：query，可选 attempt | `translateend`：dsl，可选 usage |
+| 执行查询 | `querystart`：dsl | `queryend`：data、schema，可选 rowCount、truncated、truncatedBy |
+| 总结 | `summarizestart`：queryId | `summarizeend`：queryExplanation、conclusion，可选 limitations、nextStep、usage |
+
+失败时结束数据带 error，并保留适用的 step、finalAttempt。step 与 attempt 从零开始；finalAttempt 表示常规步骤用尽后的额外尝试。EXPLORE、REFINE、SQL、CONFIRM 的含义见[策略指南](/documentation/analysis/strategies/)。
+
+usage 仅反映对应模型调用返回的用量。未返回用量的失败不能据此统计，AVA 也不发总用量事件；queryend 描述执行，不带模型用量。
+
+<h3 id="event-context">关联同一次分析里的步骤</h3>
+
+analyze() 内的步骤事件还带 context：
+
+| 字段 | 含义 |
+| --- | --- |
+| `eventId` | 事件 ID，开始与结束共享前缀，后缀分别为 :start、:end。 |
+| `stepId` | 所属步骤。 |
+| `parentStepIds` | 依赖的前置步骤。 |
+
+每次重试有新的事件对。summarizestart 的 queryId 指向成功 queryend 的完整 eventId。单独调用 translate()、query() 会发对应事件，但没有分析步骤 context。
+
+<h2 id="listener-parameters">监听方法</h2>
+
+| 方法 | 用法 |
+| --- | --- |
+| `on(name, listener, once?)` | 订阅，once 默认 false。 |
+| `once(name, listener)` | 只接收一次。 |
+| `off(name?, listener?)` | 移除指定监听、某事件全部监听，或不传参数时移除全部。 |
+| `emit(name, ...args)` | 手动发出事件。 |
+| `getEvents()` | 返回监听注册表。 |
+
+分发同步执行。on、once、off 返回 emitter；同步监听错误会传播，异步监听不会被等待。事件数据不会自动复制，需要快照时用 structuredClone(event)。

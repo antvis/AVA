@@ -1,0 +1,58 @@
+AVA Skill 让你日常使用的 AI Agent 直接分析文件或数据库。Agent 负责理解问题、规划与解读，AVA CLI 负责数据接入、查询执行和图表输出，沿用 Agent 自己的模型。
+
+<h2 id="install-the-skill">把安装交给 Agent</h2>
+
+将下面的提示词交给终端中的 AI Agent：
+
+```text
+请在当前项目安装 AVA Agent Skill。
+先检查 macOS 或 Linux、Node.js 22.13 及以上版本和 npm。
+运行 npm install -g @antv/ava@4，再运行 npx --yes skills add antvis/AVA --skill ava --yes。
+阅读安装后的 ava/SKILL.md 和环境配置说明，核对 ava --help、ava source --help 和 skills list。
+在临时目录用一份小 CSV 验证加载、结构发现与聚合查询，完成后释放会话。
+使用你自己的推理能力，不要让我额外配置 AVA 模型 API Key。
+请报告安装位置、版本、实际验证结果，以及是否需要开启新的 Agent 会话。
+```
+
+需要手动安装时：
+
+```bash
+npm install -g @antv/ava@4
+npx --yes skills add antvis/AVA --skill ava --yes
+```
+
+```bash
+ava --help
+ava source --help
+npx --yes skills list
+```
+
+安装完成后开启新的 Agent 会话，让它加载 Skill。安装工具检测到的 Agent、项目范围和实际 Skill 路径，以输出为准。
+
+<h2 id="try-a-complete-analysis">从一个具体问题开始</h2>
+
+```text
+用 AVA Skill 分析 ./sales.csv，比较各地区销售情况并保存图表。
+请附上实际执行的查询、结果表和分析限制，方便我核对。
+先确认数据字段和统计情况，有不明确的指标口径请说明。
+```
+
+Agent 可以先用 source、schema、profile 了解数据，再执行自己编写的查询，最后生成图表。结构化加载、直接查询和渲染已有配置不需要额外模型 Key；如果使用 analyze、suggest、recommend 这些由 CLI 自己调用模型的命令，仍需要相应配置。
+
+<h2 id="demo-revenue-and-gross-margin">示例：收入涨了，盈利质量呢</h2>
+
+示例数据覆盖 2026 年 1—9 月，收入从 12 万美元涨到 26 万美元，但毛利率从 30% 降至 27%。7 月收入环比增长 13.3%，毛利反而下降 2.1%，毛利率只有 19%。
+
+这个例子强调的是检查依据：先核对收入与毛利的单位，再计算毛利率，保留时间顺序，同时说明月度汇总不足以判断折扣、成本或产品组合中的哪一项造成变化。
+
+你可以下载[示例 CSV](/examples/agent-skill/sales.csv)、[图表配置](/examples/agent-skill/chart.json)、[分析说明](/examples/agent-skill/revenue-change.txt)，或[打开生成的图表](/examples/agent-skill/revenue-change.html)。这些文件保留原始数据和英文示例内容，方便与源码核对。
+
+<h2 id="render-a-chart">保存可分享的图表</h2>
+
+已有配置时用 viz 渲染为新 HTML 文件：
+
+```bash
+ava viz --spec @chart.json --output revenue-change.html
+```
+
+更完整的终端流程与参数见 [CLI 指南](/documentation/reference/cli/)；想把同样能力集成进应用，见 [SDK 快速开始](/documentation/quickstart/)。

@@ -1,5 +1,7 @@
 'use client';
 
+import { useTranslations } from 'use-intl';
+
 import React, { useState } from 'react';
 import ChatPanel from './ChatPanel';
 import ArtifactPanel from './ArtifactPanel';
@@ -13,6 +15,7 @@ const ChatWorkspace: React.FC<{
   heading?: React.ReactNode;
   artifactDisplay?: ArtifactDisplay;
 }> = ({ playback, activeArtifact, live, onReplay, heading, artifactDisplay }) => {
+  const t = useTranslations('ChatWorkspace');
   const needsModel = !!live && !live.ready;
   const latestId = activeArtifact?.id;
   const [selection, setSelection] = useState<{ latestId?: string; selectedId: string | null }>({ selectedId: null });
@@ -92,19 +95,17 @@ const ChatWorkspace: React.FC<{
                 id="model-setup-title"
                 className="text-[27px] font-semibold leading-tight tracking-[-0.035em] text-ink"
               >
-                Connect your model.
+                {t('connectYourModel')}
                 <br />
-                Start exploring.
+                {t('startExploring')}
               </h2>
-              <p className="mx-auto mt-3 text-ink-2">
-                Configure a model and API key to analyze the sample data or your own files.
-              </p>
+              <p className="mx-auto mt-3 text-ink-2">{t('configureAModelAndAPIKeyTo')}</p>
               <button
                 type="button"
                 onClick={live?.onConfigure}
                 className="mt-6 inline-flex min-h-11 items-center justify-center gap-3 rounded-xl bg-[color:var(--color-primary)] px-5 text-sm font-medium text-ink transition-colors hover:bg-[color:var(--color-primary-dark)] focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[color:var(--color-primary-dark)]"
               >
-                Configure model
+                {t('configureModel')}
                 <svg
                   width="16"
                   height="16"

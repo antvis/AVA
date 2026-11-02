@@ -1,7 +1,9 @@
 import type { Metadata } from 'next';
-import './globals.css';
+import '../app/globals.css';
+import I18nProvider from './I18nProvider';
+import { messages, type Locale } from '../lib/i18n';
 
-export const metadata: Metadata = {
+const metadata: Metadata = {
   title: 'AVA - AI-Native Visual Analytics | AntV',
   description:
     'AVA is a technology framework designed for more convenient visual analytics. AI-native, automated visual analytics with natural language queries, LLM-powered analysis, and smart data handling.',
@@ -32,9 +34,26 @@ export const metadata: Metadata = {
   },
 };
 
-export default function RootLayout({ children }: { children: React.ReactNode }) {
+export function siteMetadata(locale: Locale): Metadata {
+  const t = messages[locale].metadata;
+  return {
+    ...metadata,
+    title: t.title,
+    description: t.description,
+    openGraph: {
+      ...metadata.openGraph,
+      title: t.title,
+      description: t.description,
+      locale: locale === 'zh' ? 'zh_CN' : 'en_US',
+      url: `https://ava.antv.vision${locale === 'zh' ? '/zh/' : '/'}`,
+    },
+    twitter: { ...metadata.twitter, title: t.title, description: t.description },
+  };
+}
+
+export default function RootDocument({ children, locale }: { children: React.ReactNode; locale: Locale }) {
   return (
-    <html lang="en">
+    <html lang={locale === 'zh' ? 'zh-CN' : 'en'}>
       <head>
         <script
           dangerouslySetInnerHTML={{
@@ -49,7 +68,11 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           }}
         />
       </head>
-      <body className="min-h-screen bg-[#f8fbfc]">{children}</body>
+      <body className="min-h-screen bg-[#f8fbfc]">
+        <I18nProvider locale={locale} messages={messages[locale]}>
+          {children}
+        </I18nProvider>
+      </body>
     </html>
   );
 }

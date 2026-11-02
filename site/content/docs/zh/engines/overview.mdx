@@ -1,0 +1,25 @@
+<h2 id="engine-selection">选择在哪里执行分析</h2>
+
+SDK 在创建实例时选择引擎。省略 `engine` 始终默认 DuckDB，不会根据数据源类型自动切换。
+
+| 引擎 | 常见数据源 | 运行环境 |
+| --- | --- | --- |
+| [DuckDB](/documentation/engines/duckdb/) | 内存数据、文件、MySQL、PostgreSQL、SQLite、MongoDB | Node.js |
+| [JavaScript](/documentation/engines/javascript/) | 内存 CSV、JSON、文本 | Node.js 或浏览器 |
+| [Python](/documentation/engines/python/) | 内存 CSV、JSON，以及 CSV、JSON、Parquet、Excel 文件 | Node.js 加 Python 执行器 |
+| [Supabase](/documentation/engines/remote/#supabase) | Supabase 项目 | Node.js，查询在远程 PostgreSQL 中执行 |
+| [ClickHouse](/documentation/engines/remote/#clickhouse) | ClickHouse 数据库 | Node.js，查询在远程 ClickHouse 中执行 |
+
+<h2 id="engine-configuration">引擎参数放哪里</h2>
+
+`engine.type` 接受内置引擎名或已经注册的自定义名称。额外构造参数见 [DuckDB](/documentation/engines/duckdb/#engine-options) 和 [Python](/documentation/engines/python/#engine-options)。JavaScript、Supabase、ClickHouse 没有其他引擎构造字段；连接凭证放在[数据源参数](/documentation/data/sources/)中。
+
+<h2 id="shared-contract">统一接口，分工明确</h2>
+
+引擎负责加载、发现结构、计算统计、根据上下文生成查询、执行与清理。AVA 负责缓存结构和统计，并决定什么时候需要发现或计算。应用通常只需调用公开 `AVA` API。
+
+<h2 id="registration">注册与扩展</h2>
+
+Node.js 入口注册五种内置引擎；浏览器入口仅注册 JavaScript。注册表让核心类不必直接依赖平台实现。
+
+SDK 可以通过 `registerEngine('sales', SalesEngine)` 注册，再用 `engine: { type: 'sales' }` 选择。CLI 只接受内置名称。完整扩展示例见[自定义引擎](/documentation/engines/custom/)。

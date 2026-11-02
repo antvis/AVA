@@ -1,0 +1,214 @@
+把引擎实现在自己的应用或包里，通过 SDK 注册，就能让 AVA 使用你的执行环境。无需修改 AVA 源码；CLI 仍只接受内置引擎名称。
+
+<h2 id="register-an-engine">注册与使用</h2>
+
+```typescript
+import { AVA, registerEngine } from '@antv/ava';
+import { SalesEngine } from './sales-engine';
+
+registerEngine('sales', SalesEngine);
+
+const ava = new AVA({
+  llm: { model },
+  engine: { type: 'sales' },
+});
+```
+
+先注册，再调用 `source()`。注册只影响当前进程加载的 SDK 模块，不会注册到另一个 CLI 进程。未注册名称在 `source()` 创建引擎时失败。
+
+每次加载数据会创建新引擎，释放旧引擎。`load()` 失败时也会调用清理，因此连接应在 `load()` 中打开，`dispose()` 要能处理只完成部分初始化的情况。浏览器 SDK 提供同名注册 API，但实现与依赖必须兼容浏览器。
+
+<h2 id="engine-contract">实现引擎接口</h2>
+
+| 成员 | 输入与返回约定 |
+| --- | --- |
+| 构造器 | 接收 `LLMConfig` 和除 type 外的引擎 options。 |
+| `language` | 只读 `QueryLanguage`，说明语言、代码围栏类型和变量约定。 |
+| `load(config)` | 准备数据与连接，返回 `Promise<void>`，不返回结构。 |
+| `schema()` | 按需发现数据结构，返回 `Promise<Schema>`。 |
+| `profile(schema, options?)` | 可选，根据传入结构计算统计，返回 `Promise<Profile>`。 |
+| `getDSL(query, dataModel)` | 接收问题和组合后的上下文，返回包含 `dsl` 和可选 `usage` 的结果。 |
+| `execute(dsl, options?)` | 验证并执行代码，落实结果限制，返回 `ExecutionResult`。 |
+| `dispose()` | 释放连接、文件和其他资源，返回 `Promise<void>`。 |
+
+AVA 管理结构和统计缓存。`execute()` 不应依赖之前调用过 `schema()`；发现结构失败后，引擎仍可用于重试或执行已知查询。
+
+`QueryLanguage` 需要 `name` 和 `fence`，可用 `instructions` 说明变量和输出约定。`DataModel` 可包含 `models`、`relationships`、`views`、`properties`，由 AVA 组合结构、统计与业务语义后直接传入。
+
+<h2 id="example-a-sales-metrics-engine">示例：只开放明确的销售报表</h2>
+
+这个例子把自然语言转换成有限的 JSON 指令，再在内存中计算总收入或按地区汇总。它不执行模型生成的任意 JavaScript 或 SQL。
+
+<h3 id="implement-the-engine">在应用中实现</h3>
+
+把下面代码保存为应用自己的 `sales-engine.ts`。只使用公开导出和 AI SDK：
+
+```typescript
+import { generateText, type LanguageModel } from 'ai';
+import { executionResult } from '@antv/ava';
+import type {
+  AnalysisEngine,
+  TranslationResult,
+  DataModel,
+  DataSourceConfig,
+  ExecutionOptions,
+  ExecutionResult,
+  LLMConfig,
+  Schema,
+} from '@antv/ava';
+
+type Sale = { region: string; revenue: number };
+
+export class SalesEngine implements AnalysisEngine {
+  readonly language = {
+    name: 'Sales metrics JSON',
+    fence: 'json',
+    instructions:
+      'Return exactly {"metric":"total_revenue"} or {"metric":"revenue_by_region"}. No other keys or operations are supported.',
+  };
+  private sales: Sale[] | null = null;
+
+  private readonly model: LanguageModel;
+
+  constructor(private readonly llm: LLMConfig) {
+    if (typeof llm.model === 'string') {
+      throw new Error('SalesEngine expects a configured AI SDK model object.');
+    }
+    this.model = llm.model;
+  }
+
+  async load(config: DataSourceConfig): Promise<void> {
+    await this.dispose();
+    if (config.type !== 'json' || !Array.isArray(config.options.data)) {
+      throw new Error('SalesEngine requires an inline JSON array.');
+    }
+    this.sales = config.options.data.map((row) => {
+      if (
+        !row ||
+        typeof row !== 'object' ||
+        typeof row.region !== 'string' ||
+        typeof row.revenue !== 'number' ||
+        !Number.isFinite(row.revenue)
+      ) {
+        throw new Error('Each sale requires a region string and finite revenue number.');
+      }
+      return { region: row.region, revenue: row.revenue };
+    });
+  }
+
+  async schema(): Promise<Schema> {
+    if (!this.sales) throw new Error('Load a source first.');
+    return {
+      models: [
+        {
+          name: 'sales',
+          tableReference: { table: 'sales' },
+          columns: [
+            { name: 'region', type: 'string' },
+            { name: 'revenue', type: 'number' },
+          ],
+        },
+      ],
+    };
+  }
+
+  async getDSL(query: string, _dataModel: DataModel): Promise<TranslationResult> {
+    if (!this.sales) throw new Error('Load a source first.');
+    const { text, usage } = await generateText({
+      model: this.model,
+      maxRetries: this.llm.maxRetries ?? 3,
+      system: `Convert a question into a sales metric. ${this.language.instructions}
+Return raw JSON without Markdown. If neither metric answers the question, return {"metric":"unsupported"}.`,
+      prompt: query,
+    });
+    return { dsl: text.trim(), usage };
+  }
+
+  async execute<T = Record<string, unknown>>(dsl: string, options?: ExecutionOptions): Promise<ExecutionResult<T>> {
+    if (!this.sales) throw new Error('Load a source first.');
+    const command = JSON.parse(dsl);
+    if (
+      !command ||
+      Array.isArray(command) ||
+      Object.keys(command).length !== 1 ||
+      !['total_revenue', 'revenue_by_region'].includes(command.metric)
+    ) {
+      throw new Error('Expected one supported metric and no additional keys.');
+    }
+
+    let rows: Record<string, unknown>[];
+    if (command.metric === 'total_revenue') {
+      rows = [{ total_revenue: this.sales.reduce((sum, row) => sum + row.revenue, 0) }];
+    } else {
+      const totals = new Map<string, number>();
+      for (const row of this.sales) {
+        totals.set(row.region, (totals.get(row.region) ?? 0) + row.revenue);
+      }
+      rows = Array.from(totals, ([region, total_revenue]) => ({ region, total_revenue }));
+    }
+    if (rows.some((row) => !Number.isFinite(row.total_revenue))) {
+      throw new Error('Revenue total exceeds the numeric range.');
+    }
+    const schema =
+      command.metric === 'total_revenue'
+        ? [{ name: 'total_revenue', type: 'number' }]
+        : [
+            { name: 'region', type: 'string' },
+            { name: 'total_revenue', type: 'number' },
+          ];
+    return executionResult(rows as T[], schema, options);
+  }
+
+  async dispose(): Promise<void> {
+    this.sales = null;
+  }
+}
+```
+
+<h3 id="register-and-run">配置模型并运行</h3>
+
+```typescript
+import { createOpenAI } from '@ai-sdk/openai';
+import { AVA, registerEngine } from '@antv/ava';
+import { SalesEngine } from './sales-engine';
+
+registerEngine('sales', SalesEngine);
+
+const model = createOpenAI({
+  apiKey: process.env.OPENAI_API_KEY,
+  baseURL: process.env.OPENAI_BASE_URL,
+}).chat(process.env.OPENAI_MODEL || 'gpt-4o-mini');
+
+const ava = new AVA({
+  llm: { model },
+  engine: { type: 'sales' },
+});
+
+try {
+  await ava.source({
+    type: 'json',
+    options: {
+      data: [
+        { region: 'East', revenue: 120 },
+        { region: 'West', revenue: 90 },
+        { region: 'East', revenue: 80 },
+      ],
+    },
+  });
+
+  const answer = await ava.analyze('各地区的总收入分别是多少？', {
+    strategy: { type: 'direct', maxRetries: 0 },
+    includeSummary: false,
+  });
+  console.log(answer.sql); // Expected command: {"metric":"revenue_by_region"}
+  console.table(answer.data);
+
+  // Execute a known command directly, without calling the model.
+  const total = await ava.query('{"metric":"total_revenue"}');
+  console.table(total.data); // [{ total_revenue: 290 }]
+} finally {
+  await ava.dispose();
+}
+```
+
+引擎自行验证指令、处理执行失败与返回上限。扩展原有引擎时，也应保留这些边界以及部分加载失败后的资源清理。

@@ -47,3 +47,30 @@ DuckDB is the default Node.js engine. JavaScript supports browsers and Node.js; 
 - [AI](https://ava.antv.vision/ai/): Try browser-based visual analytics.
 - [GitHub repository](https://github.com/antvis/AVA): Source code and contribution information.
 - [Issues](https://github.com/antvis/AVA/issues): Bug reports and feature requests.
+
+## 中文文档
+
+中文首页：https://ava.antv.vision/zh/ 。英文 URL 保持不变，中文文档使用 /zh/documentation/。
+
+- [认识 AVA](https://ava.antv.vision/zh/documentation/): 从一个问题开始，了解 AVA 如何连接数据、执行分析并呈现结果。
+- [Agent Skill](https://ava.antv.vision/zh/documentation/agent-skill/): 让现有 AI Agent 用上 AVA，完成从数据探索到图表交付的完整流程。
+- [安装与快速开始](https://ava.antv.vision/zh/documentation/quickstart/): 安装 AVA，接入第一份数据，跑通分析与图表生成。
+- [接入数据](https://ava.antv.vision/zh/documentation/data/sources/): 连接内存数据、文件、数据库和飞书多维表格。
+- [了解你的数据](https://ava.antv.vision/zh/documentation/data/schema/): 自动发现表结构，按需查看统计信息，再补充业务背景。
+- [补充业务语义](https://ava.antv.vision/zh/documentation/data/semantic/): 说明业务口径、字段映射与可复用指标，让分析更贴近实际业务。
+- [分析数据](https://ava.antv.vision/zh/documentation/analysis/overview/): 用自然语言提问，获得可检查的查询结果与分析结论。
+- [选择分析策略](https://ava.antv.vision/zh/documentation/analysis/strategies/): 根据问题复杂度，选择直接分析或多步迭代。
+- [生成图表](https://ava.antv.vision/zh/documentation/visualization/overview/): 把分析结果或已有数据转换成合适的图表。
+- [连接模型](https://ava.antv.vision/zh/documentation/configuration/): 配置兼容 OpenAI 的服务、AI Gateway 或 AI SDK 模型。
+- [在浏览器中使用](https://ava.antv.vision/zh/documentation/browser/): 通过浏览器入口使用 JavaScript 引擎，避免引入 Node.js 依赖。
+- [选择执行引擎](https://ava.antv.vision/zh/documentation/engines/overview/): 决定数据在哪里加载、查询用什么语言、代码在哪里执行。
+- [DuckDB](https://ava.antv.vision/zh/documentation/engines/duckdb/): 用 SQL 分析内存数据、文件及可连接的数据库。
+- [Python](https://ava.antv.vision/zh/documentation/engines/python/): 通过本地 Python 或自定义执行器，使用 pandas 分析数据。
+- [Supabase 与 ClickHouse](https://ava.antv.vision/zh/documentation/engines/remote/): 在远程数据库中发现表结构、执行查询。
+- [JavaScript](https://ava.antv.vision/zh/documentation/engines/javascript/): 在 Node.js 或浏览器中，对内存数据执行 JavaScript 分析。
+- [扩展执行引擎](https://ava.antv.vision/zh/documentation/engines/custom/): 实现引擎接口，把自己的数据与执行环境接入 AVA。
+- [API 参考](https://ava.antv.vision/zh/documentation/reference/api/): 查询构造参数、方法签名、默认值与返回结构。
+- [事件与生命周期](https://ava.antv.vision/zh/documentation/reference/events/): 观察数据加载、模型调用、查询执行与资源清理。
+- [命令行工具](https://ava.antv.vision/zh/documentation/reference/cli/): 在终端中加载数据、查询分析、生成图表，并复用本地会话。
+- [评测结果](https://ava.antv.vision/zh/documentation/reference/benchmarks/): 了解数据上下文与分析策略的评测方法、结果及复现方式。
+- [架构与源码导航](https://ava.antv.vision/zh/documentation/reference/architecture/): 从公开 API 出发，找到对应的实现与扩展位置。

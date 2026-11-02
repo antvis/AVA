@@ -1,16 +1,19 @@
-import Link from 'next/link';
-import DocsNavigation from '../../components/docs/DocsNavigation';
-import './docs.css';
+import Link from '../LocaleLink';
+import { getTranslator, type Locale } from '../../lib/i18n';
+import LanguageSwitch from '../LanguageSwitch';
+import DocsNavigation from './DocsNavigation';
+import '../../app/documentation/docs.css';
 
-export default function DocumentationLayout({ children }: { children: React.ReactNode }) {
+export default function DocumentationLayout({ children, locale }: { children: React.ReactNode; locale: Locale }) {
+  const t = getTranslator(locale, 'docs');
   return (
     <div className="docs-site">
       <a className="docs-skip" href="#docs-content">
-        Skip to content
+        {t('skip')}
       </a>
       <header className="docs-header">
         <div className="docs-header-inner">
-          <Link href="/" className="docs-brand" aria-label="AVA home">
+          <Link href="/" className="docs-brand" aria-label={t('home')}>
             <img
               src="https://mdn.alipayobjects.com/huamei_qa8qxu/afts/img/A*A-lcQbVTpjwAAAAAAAAAAAAADmJ7AQ/original"
               alt=""
@@ -18,17 +21,18 @@ export default function DocumentationLayout({ children }: { children: React.Reac
               height="48"
             />
             <strong>AVA</strong>
-            <span>Documentation</span>
+            <span>{t('docs')}</span>
           </Link>
-          <nav aria-label="Main navigation" className="docs-header-links">
+          <nav aria-label={t('navigation')} className="docs-header-links">
             <Link href="/" className="docs-website">
-              Website <span aria-hidden="true">↗</span>
+              {t('website')} <span aria-hidden="true">↗</span>
             </Link>
             <a href="https://github.com/antvis/AVA" className="docs-github">
               GitHub <span aria-hidden="true">↗</span>
             </a>
+            <LanguageSwitch />
             <Link href="/ai/" className="docs-ai">
-              AI <span aria-hidden="true">→</span>
+              {t('ai')} <span aria-hidden="true">→</span>
             </Link>
           </nav>
         </div>
@@ -40,11 +44,11 @@ export default function DocumentationLayout({ children }: { children: React.Reac
             <span className="docs-book-icon" aria-hidden="true">
               ▤
             </span>{' '}
-            Documentation
+            {t('docs')}
           </Link>
           <DocsNavigation />
           <div className="docs-sidebar-footer">
-            <span className="docs-status-dot" /> TypeScript · Open source
+            <span className="docs-status-dot" /> {t('status')}
           </div>
         </aside>
         {children}

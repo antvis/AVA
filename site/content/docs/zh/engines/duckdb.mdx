@@ -1,0 +1,38 @@
+<h2 id="configure">使用 DuckDB</h2>
+
+DuckDB 是 Node.js SDK 的默认引擎，适合用 SQL 统一分析内存数据、文件与可连接的数据源。
+
+```typescript
+const ava = new AVA({
+  llm: { model: 'YOUR_MODEL', apiKey: process.env.OPENAI_API_KEY },
+  engine: {
+    type: 'duckdb',
+    memoryLimit: '512MB',
+    threads: 1,
+    queryTimeoutMs: 30000,
+    maxTempDirectorySize: '1GB',
+  },
+});
+```
+
+<h2 id="engine-options">引擎参数</h2>
+
+| 字段 | 类型 | 用法 |
+| --- | --- | --- |
+| `memoryLimit` | `string` | 默认 `'512MB'`，控制 DuckDB 内存上限。 |
+| `threads` | `number` | 默认 `1` 个工作线程。 |
+| `maxTempDirectorySize` | `string` | 临时目录大小上限，例如 `'1GB'`；未设置时不限制。 |
+| `allowCommunityExtensions` | `boolean` | 在需要时显式允许加载社区扩展。 |
+| `queryTimeoutMs` | `number` | 查询超时，默认 `30000` 毫秒。 |
+
+<h2 id="supported-sources">数据源与查询</h2>
+
+支持内存 CSV、JSON、文本提取，CSV、JSON、Parquet、Excel 文件，以及 SQLite、MySQL、PostgreSQL、MongoDB。连接字段与读取选项见[接入数据](/documentation/data/sources/)。
+
+文件和内存数据通常暴露为 `data` 视图；Excel 可以按工作表暴露多张表。请先查看 `schema()` 的实际名称与类型，不要把示例表名当成所有数据源的固定约定。
+
+<h2 id="execution">执行与资源清理</h2>
+
+执行前会检查 SQL 是否只读。结果行数与大小限制由 `query()`、`analyze()` 的选项控制，和执行超时分别生效。结束后等待 `dispose()` 完成，以释放连接和引擎资源。
+
+数据源注册后，引擎会限制外部访问并锁定配置。社区扩展默认关闭，MongoDB 等需要扩展的数据源有对应处理；必要时可显式设置 `allowCommunityExtensions`。

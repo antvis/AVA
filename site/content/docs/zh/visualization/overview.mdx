@@ -1,0 +1,63 @@
+分析结果不一定需要同一种图表。AVA 根据问题与数据选择表达方式，返回可检查的图表配置，也可以生成独立 HTML，方便保存和分享。
+
+<h2 id="visualize">一步生成图表</h2>
+
+```typescript
+const result = await ava.analyze('用条形图比较各地区收入');
+const chart = await ava.visualize(result);
+if (chart) {
+  console.log(chart.chartType, chart.config, chart.html);
+}
+```
+
+`visualize()` 接收包含 `query` 和 `data` 的对象，返回 `chartType`、`config`、`html`。不必先加载数据源，因此也可以直接画你已有的数据：
+
+```typescript
+const chart = await ava.visualize({
+  query: 'Show revenue by region as a column chart',
+  data: [
+    { region: 'East', revenue: 120 },
+    { region: 'West', revenue: 90 },
+  ],
+});
+```
+
+空数据或没有合适的推荐时返回 `null`；生成失败会抛出错误，请在使用前检查返回值。
+
+<h2 id="chart-specifications">理解图表配置</h2>
+
+```json
+{
+  "type": "column",
+  "data": [
+    { "category": "East", "value": 120 },
+    { "category": "West", "value": 90 }
+  ]
+}
+```
+
+`chartType` 标明图表类型；`config` 是 GPT-Vis JSON，`config.type` 应与 `chartType` 一致。支持 `line`、`column`、`bar`、`pie`、`area`、`scatter`、`dual-axes`、`histogram`、`boxplot`、`radar`、`funnel`、`waterfall`、`liquid`、`word-cloud`、`violin`、`venn`、`treemap`、`sankey`、`table`、`summary`。
+
+<h2 id="recommend">先推荐，后决定怎么呈现</h2>
+
+```typescript
+const spec = await ava.recommend({
+  query: 'Plot sales by month',
+  data: [{ month: 'January', sales: 120 }],
+});
+```
+
+`recommend()` 调用模型生成 `ChartSpec`，不生成 HTML。可以先检查或调整配置，再交给你的应用渲染。
+
+<h2 id="viz">已有配置时直接渲染</h2>
+
+```typescript
+if (spec) {
+  const html = await ava.viz(spec);
+  console.log(html);
+}
+```
+
+`viz(spec)` 不调用模型，不要求已加载数据源，返回独立 HTML 字符串。保存为文件后即可在浏览器打开。
+
+图表是否表达清楚，仍需要结合指标单位、坐标轴、时间范围与数据完整性检查。结果被截断时，请在展示中注明。

@@ -1,0 +1,94 @@
+拿到一份数据，先分清三件事：**结构是什么、数据实际怎样、业务上怎么算。**它们分别由 Schema、Profile 和 Semantic 描述。
+
+下面这六条订单也会用于[业务语义示例](/documentation/data/semantic/)：
+
+| order_id | region | status | amount | refund_amount | ordered_at |
+| --- | --- | --- | --- | --- | --- |
+| 1 | East | paid | 120 | 20 | 2026-01-03 |
+| 2 | East | refunded | 80 | 80 | 2026-01-04 |
+| 3 | East | pending | 200 | 0 | 2026-01-05 |
+| 4 | West | paid | 90 | 30 | 2026-01-06 |
+| 5 | East | paid | 50 | `null` | 2026-01-07 |
+| 6 | West | cancelled | 500 | 0 | 2026-01-08 |
+
+<details>
+<summary>加载这份示例数据</summary>
+
+```typescript
+const orders = [
+  { order_id: 1, region: 'East', status: 'paid', amount: 120, refund_amount: 20, ordered_at: '2026-01-03' },
+  { order_id: 2, region: 'East', status: 'refunded', amount: 80, refund_amount: 80, ordered_at: '2026-01-04' },
+  { order_id: 3, region: 'East', status: 'pending', amount: 200, refund_amount: 0, ordered_at: '2026-01-05' },
+  { order_id: 4, region: 'West', status: 'paid', amount: 90, refund_amount: 30, ordered_at: '2026-01-06' },
+  { order_id: 5, region: 'East', status: 'paid', amount: 50, refund_amount: null, ordered_at: '2026-01-07' },
+  { order_id: 6, region: 'West', status: 'cancelled', amount: 500, refund_amount: 0, ordered_at: '2026-01-08' },
+];
+
+await ava.source({ type: 'json', options: { data: orders } });
+```
+
+</details>
+
+<h2 id="schema-the-structure-ava-discovers">Schema：先知道有哪些表和字段</h2>
+
+```typescript
+const schema = await ava.schema();
+console.log(schema.models[0]);
+```
+
+```json
+{
+  "name": "data",
+  "tableReference": { "catalog": "memory", "schema": "main", "table": "data" },
+  "columns": [
+    { "name": "order_id", "type": "BIGINT", "notNull": false },
+    { "name": "region", "type": "VARCHAR", "notNull": false },
+    { "name": "status", "type": "VARCHAR", "notNull": false },
+    { "name": "amount", "type": "BIGINT", "notNull": false },
+    { "name": "refund_amount", "type": "BIGINT", "notNull": false },
+    { "name": "ordered_at", "type": "DATE", "notNull": false }
+  ]
+}
+```
+
+通常不需要手写 Schema。字段类型、catalog、schema 等来源信息取决于引擎；数据库还可能提供声明的键和表间关系。`notNull: false` 表示没有声明非空约束，并不等于已经发现了空值。
+
+分析需要结构时会自动发现，因此单独调用 `schema()` 是为了查看或提供结构，不是每次分析的必经步骤。
+
+<h2 id="profile-statistics-ava-computes">Profile：再看看数据的实际情况</h2>
+
+```typescript
+const profile = await ava.profile({
+  metrics: ['row_count', 'null_count', 'min', 'max'],
+});
+```
+
+统计会告诉你这张表有 6 行、退款字段存在缺失，以及各字段的范围或分布。统计缺失表示没有计算，不能当成零。
+
+`profile()` 默认计算 `row_count`、`null_count`、`distinct_count`、`top_values`、`min`、`max`、`mean`。显式传入 `metrics` 会替换默认列表；每次计算结果也会替换旧统计。它不调用大模型，但扫描大数据仍可能产生计算成本。
+
+<h2 id="semantic-the-business-meaning-you-supply">Semantic：把业务口径说清楚</h2>
+
+```typescript
+await ava.semantic(undefined, () => ({
+  description: 'Amounts are USD. Revenue counts paid and refunded orders, subtracts refunds, and excludes pending and cancelled orders. A missing refund is zero.',
+  cubes: [{
+    name: 'sales',
+    baseObject: 'data',
+    measures: [{
+      name: 'net_revenue',
+      expression: "SUM(CASE WHEN status IN ('paid', 'refunded') THEN amount - COALESCE(refund_amount, 0) ELSE 0 END)",
+      type: 'DOUBLE',
+    }],
+    dimensions: [{ name: 'region', expression: 'region', type: 'VARCHAR' }],
+  }],
+}));
+```
+
+数据结构知道 `amount` 是数字，却不知道待支付订单是否应计入收入。把有效状态、退款处理、单位和时间含义写进业务语义，模型才有依据生成符合口径的查询。
+
+<h2 id="use-the-three-inputs-together">三种上下文如何配合</h2>
+
+Schema 是结构起点，Profile 增加观察结果，Semantic 补充业务含义。分析、翻译与推荐问题会按需组合这些信息。读取三个方法时，返回的仍是各自输入，不是合并后的整体数据模型。
+
+替换 Schema 会清空 Profile，保留 Semantic；重算 Profile 保留 Semantic。重新加载数据或 `dispose()` 会清空三者。业务口径的完整示例见[补充业务语义](/documentation/data/semantic/)。

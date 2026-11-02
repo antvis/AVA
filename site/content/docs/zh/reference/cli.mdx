@@ -1,0 +1,89 @@
+<h2 id="start-a-session">在终端开始分析</h2>
+
+安装 `@antv/ava` 后使用 `ava`，项目本地安装也可使用 `npx ava`。持久会话需要 macOS 或 Linux。
+
+```bash
+ava source sales.csv > session.json
+DATASET_ID=$(node -p 'JSON.parse(require("fs").readFileSync("session.json", "utf8")).datasetId')
+ava schema "$DATASET_ID" > schema.json
+```
+
+source 准备好数据后返回会话 ID。结构按需发现，schema 还返回编写查询所需的 language 信息。已知查询可以直接执行，不必先单独请求结构。
+
+普通结构化数据加载、schema、profile、query、viz 不需要模型 Key。自然语言命令或文本源需要在创建会话前配置 `OPENAI_API_KEY`，可选 `OPENAI_MODEL`、`OPENAI_BASE_URL`；创建后不能修改会话模型设置。
+
+<h2 id="source-inputs-and-engines">输入与引擎选择</h2>
+
+source 接受路径、URL、包含配置的 `@file` 或表示标准输入的 `-`。扩展名可识别 CSV、JSON、Parquet、Excel、SQLite；路径输入可以用 `--type` 覆盖，配置文件和标准输入自己带 type。
+
+`--engine` 选择引擎。CLI 对 Supabase、ClickHouse 配置推断对应引擎，其他情况默认 DuckDB；这与 SDK 构造器的行为不同。引擎在会话内固定。
+
+<h2 id="reuse-saved-metadata">复用已有元数据</h2>
+
+```bash
+ava schema "$DATASET_ID" --file schema.json
+ava profile "$DATASET_ID" --file profile.json
+```
+
+`--file` 后是普通文件路径，不加 @。先设置 schema，再设置 profile；前者会清空旧统计。无 --file 时，schema 使用缓存或按需发现，profile 每次重新计算。--file 不与 --metrics 同时使用。
+
+<h2 id="explore-and-analyze">探索与分析</h2>
+
+```bash
+ava profile "$DATASET_ID" --metrics row_count,null_count,mean > profile.json
+ava query "$DATASET_ID" --dsl @query.sql --max-rows 100 > result.json
+```
+
+显式 --metrics 替换默认列表；大数据库上只需要几个数字时，可以直接写定向查询。创建会话时已经配置模型，就可以使用：
+
+```bash
+ava suggest "$DATASET_ID"
+ava translate "$DATASET_ID" "Total revenue by region"
+ava analyze "$DATASET_ID" "Total revenue by region" --strategy direct
+```
+
+CLI 支持 direct 与 loop；--max-rows 默认 200，可填 1—10,000，与 JavaScript API 的更高上限不同。
+
+<h2 id="charts-without-a-dataset-session">不创建数据会话也能画图</h2>
+
+```bash
+ava recommend --query "比较各地区收入" --data @rows.json > chart.json
+ava viz --spec @chart.json --output chart.html
+ava visualize --query "比较各地区收入" --data @rows.json
+```
+
+recommend、visualize 需要模型。viz 直接渲染配置，不需要 Key；输出文件必须是新文件，不覆盖已有文件。请先检查推荐结果是否为 null。
+
+<h2 id="command-parameters">常用参数</h2>
+
+所有命令都支持 -h / --help，下列位置参数均必填。
+
+| 命令 | 位置参数 | 其他参数 |
+| --- | --- | --- |
+| `source` | dataset | --type、--engine，规则见上文。 |
+| `schema` | dataset-id | --file：已有 Schema JSON。 |
+| `profile` | dataset-id | --file 或 --metrics；后者为逗号分隔指标名，空字符串表示不算统计。 |
+| `suggest` | dataset-id | --count：1—100，默认 3。 |
+| `analyze` | dataset-id、query | --strategy：direct 或 loop；支持返回结果限制。 |
+| `translate` | dataset-id、query | 不带额外参数。 |
+| `query` | dataset-id | --dsl 必填，代码、@file 或 -，非空且不超过 512 KiB。 |
+| `visualize` | 无 | --query、--data 必填，可选 --output 新 HTML 路径。 |
+| `recommend` | 无 | --query、--data 必填。 |
+| `viz` | 无 | --spec 和 --output 必填；spec 包含 chartType、config。 |
+| `dispose` | dataset-id | 释放会话。 |
+
+--data 接收 JSON 对象数组、@file 或标准输入。共享限制为 --max-rows（默认 200）和 --max-result-bytes（默认 1048576，正安全整数）。OPENAI_MODEL 默认 gpt-4o-mini，OPENAI_BASE_URL 默认采用服务方地址。
+
+<h2 id="session-lifecycle">会话何时结束</h2>
+
+空闲 30 分钟后会话过期，需要重新加载获得新 ID。结束时主动释放：
+
+```bash
+ava dispose "$DATASET_ID"
+```
+
+多数命令输出 JSON。source 在终端中显示引导，重定向或管道中输出 JSON；错误写入标准错误并返回退出码 1。发现结构失败后，会话仍可用于执行已知查询或重试发现。
+
+<h2 id="use-with-an-agent">交给 Agent 操作</h2>
+
+[Agent Skill 指南](/documentation/agent-skill/)提供安装提示词与完整示例。Agent 使用自己的推理能力组织 CLI 工作流；但 analyze、suggest、recommend 等 AI 命令仍需要前面说明的模型配置。

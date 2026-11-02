@@ -14,10 +14,10 @@ Use Node.js 22.13 or newer. From a fresh checkout, build the root `@antv/ava` pa
 
 ## Documentation
 
-Every topic is an independent MDX file in `content/docs/`:
+Every topic is an independent MDX file in `content/docs/en/`:
 
 ```text
-content/docs/
+content/docs/en/
 ├── introduction.mdx
 ├── quickstart.mdx
 ├── configuration.mdx
@@ -44,3 +44,13 @@ To add a chapter:
 Use `<Callout>...</Callout>` for contextual notes. Link to other chapters with their full `/documentation/.../` path. Keep examples aligned with `src/`, and keep secrets out of snippets.
 
 The reading order is introduction → quickstart → data → analysis → visualization → advanced usage → execution engines → API Reference. Keep each workflow self-contained: source parameter tables live with the source guide; analysis includes suggestions and direct queries, with advanced strategies in their own chapter; visualization includes recommendation and rendering. The API reference lists constructor fields directly. Use in-page anchors for related sections rather than splitting each option into its own chapter.
+
+## Languages
+
+English keeps `/`, `/ai/`, and `/documentation/`. Chinese uses the corresponding `/zh/` paths. Both are exported as real HTML; there is no middleware or language redirect.
+
+- Shared presentation lives in `components/Home.tsx`, `ai/ui/AIPage.tsx`, and `components/docs/`; route files only choose the language.
+- `messages/en.json` and `messages/zh.json` hold UI copy. Use `useTranslations` in client components and `getTranslator` for server-rendered text. Keep matching keys; write Chinese copy for Chinese readers.
+- `content/docs/en/` and `content/docs/zh/` use matching slugs. Keep API names, units, and behavior aligned. Preserve stable heading IDs even when wording differs.
+- Use `LocaleLink` for internal navigation. Assets and external URLs keep their original paths. Language switching opens the matching page, reloads the document, and starts a new AI conversation.
+- When adding a chapter, update both locales, explicit MDX imports, sitemap, and both `llms.txt` copies. Run `pnpm build` and `pnpm check:docs` to verify both languages.

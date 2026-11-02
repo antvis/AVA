@@ -1,0 +1,40 @@
+<h2 id="import-the-browser-build">使用浏览器入口</h2>
+
+前端从 `@antv/ava/browser` 导入。这个入口只注册 JavaScript 引擎，需要显式设置 `engine.type`；构造器不会自动把默认 DuckDB 换成浏览器引擎。
+
+```typescript
+import { AVA } from '@antv/ava/browser';
+
+const ava = new AVA({
+  llm: { model: 'YOUR_MODEL' },
+  engine: { type: 'javascript' },
+});
+
+try {
+  await ava.source({
+    type: 'json',
+    options: { data: [{ region: 'East', revenue: 120 }] },
+  });
+
+  // Profiling and direct execution do not require a model request.
+  const profile = await ava.profile();
+  const result = await ava.query('const result = data;');
+  console.log(profile, result.data);
+} finally {
+  await ava.dispose();
+}
+```
+
+<h2 id="supported-sources">可以接入哪些数据</h2>
+
+支持直接传入 `json`、`csv` 和 `text`。其中，文本提取会调用模型。本地文件路径和直接数据库连接需要 Node.js 引擎；网页上传文件后，可以先在前端读取，再把内容作为内存数据传入。
+
+<h2 id="natural-language-analysis">用自然语言分析</h2>
+
+`analyze()`、`translate()`、`suggest()` 和图表推荐需要可用的模型配置。只填模型名称，不代表已经提供调用凭证。数据统计和已知代码的直接执行可以不调用模型。
+
+共享 API Key 放在服务端；个人体验场景可在运行时由用户提供凭证。
+
+<h2 id="execution-behavior">代码如何执行</h2>
+
+生成的 JavaScript 从 `data`、`stat` 读取上下文，并把最终结果赋给 `result`。浏览器中通过带 `sandbox="allow-scripts"` 的 iframe 和限制性 CSP 执行。输入输出约定见 [JavaScript 引擎](/documentation/engines/javascript/)。

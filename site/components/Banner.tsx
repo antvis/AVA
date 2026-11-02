@@ -1,7 +1,9 @@
 'use client';
 
+import { useTranslations } from 'use-intl';
+
 import React, { useEffect, useRef, useState } from 'react';
-import Link from 'next/link';
+import Link from './LocaleLink';
 
 /* ------------------------------------------------------------------ */
 /* GitHub star badge                                                   */
@@ -144,108 +146,114 @@ const RotatingVerse: React.FC = () => {
 /* Banner — hero of the AI page                                 */
 /* ------------------------------------------------------------------ */
 
-const Banner: React.FC = () => (
-  <section className="relative">
-    <div className="relative">
-      {/* ── hero content ── */}
-      <div data-hero-content className="flex flex-col items-center gap-6 pb-11 text-center max-md:gap-5 max-md:pb-8">
-        {/* kicker — quiet monogram plus live GitHub stars */}
-        <span data-hero-badge className="inline-flex items-center gap-2.5 font-mono text-[12px] text-zinc-400">
-          <span data-hero-new>NEW</span>
-          <span data-hero-release>Introducing AVA 4.0</span>
-          <GitHubStars />
-        </span>
-
-        <h1 className="text-[length:clamp(30px,4.5vw,58px)] font-semibold leading-[1.22] max-md:leading-[1.25] tracking-[-0.045em] text-zinc-900 max-md:text-[length:clamp(27px,5vw,38px)]">
-          <span className="whitespace-nowrap max-md:whitespace-normal">
-            <RotatingVerse /> Visual Analytics.
+const Banner: React.FC = () => {
+  const t = useTranslations('Banner');
+  return (
+    <section className="relative">
+      <div className="relative">
+        {/* ── hero content ── */}
+        <div data-hero-content className="flex flex-col items-center gap-6 pb-11 text-center max-md:gap-5 max-md:pb-8">
+          {/* kicker — quiet monogram plus live GitHub stars */}
+          <span data-hero-badge className="inline-flex items-center gap-2.5 font-mono text-[12px] text-zinc-400">
+            <span data-hero-new>{t('nEW')}</span>
+            <span data-hero-release>{t('introducingAVA40')}</span>
+            <GitHubStars />
           </span>
-          <br />
-          Open Source, Built for <span className="whitespace-nowrap">Agents.</span>
-        </h1>
 
-        <p className="max-w-[520px] text-[14px] leading-[1.85] text-zinc-500 max-md:text-[13px]">
-          An open-source framework for AI agents to explore, analyze, and visualize data.
-        </p>
-
-        {/* actions */}
-        <div data-hero-actions className="mt-3 flex flex-wrap items-center justify-center gap-3 max-md:gap-2">
-          <Link
-            href="/ai/"
-            className="group inline-flex h-10 items-center gap-2 rounded-[9px] bg-[color:var(--color-primary-dark)] px-7 text-[13.5px] max-md:px-4 max-md:text-xs font-medium text-white shadow-[0_6px_16px_color-mix(in_srgb,var(--color-primary-dark)_28%,transparent)] transition-all duration-200 hover:shadow-[0_8px_20px_color-mix(in_srgb,var(--color-primary-dark)_38%,transparent)] hover:brightness-95 active:scale-[0.97]"
+          <h1
+            lang="en"
+            className="text-[length:clamp(30px,4.5vw,58px)] font-semibold leading-[1.22] max-md:leading-[1.25] tracking-[-0.045em] text-zinc-900 max-md:text-[length:clamp(27px,5vw,38px)]"
           >
-            Try AVA
-            <svg
-              width="14"
-              height="14"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2.2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              className="transition-transform duration-200 group-hover:translate-x-[1px]"
-            >
-              <path d="M5 12h14M13 6l6 6-6 6" />
-            </svg>
-          </Link>
-          <a
-            href="https://sive.antv.antgroup.com/"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="group inline-flex h-10 items-center gap-2.5 whitespace-nowrap rounded-[9px] border border-zinc-300 bg-white/80 px-5 text-zinc-700 transition-colors hover:border-cyan-400 hover:bg-white focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-cyan-600"
-          >
-            <img
-              src="https://mdn.alipayobjects.com/huamei_qa8qxu/afts/img/A*nRBgR5pM57cAAAAAQCAAAAgAemJ7AQ/original"
-              alt=""
-              width={24}
-              height={24}
-              className="size-6 shrink-0 object-contain"
-            />
-            <span className="flex flex-col items-start gap-1">
-              <span className="text-[13.5px] font-medium leading-none max-md:text-xs">Try Sive</span>
-              <span className="text-[9.5px] font-normal leading-none text-[#607482]">Built With AVA</span>
+            <span className="whitespace-nowrap max-md:whitespace-normal">
+              <RotatingVerse /> Visual Analytics.
             </span>
-            <svg
-              width="12"
-              height="12"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              aria-hidden="true"
-              className="ml-1 text-zinc-400 transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5"
+            <br />
+            Open Source, Built for <span className="whitespace-nowrap">Agents.</span>
+          </h1>
+
+          <p className="max-w-[520px] text-[14px] leading-[1.85] text-zinc-500 max-md:text-[13px]">
+            {t('anOpenSourceFrameworkForAIAgents')}
+          </p>
+
+          {/* actions */}
+          <div data-hero-actions className="mt-3 flex flex-wrap items-center justify-center gap-3 max-md:gap-2">
+            <Link
+              href="/ai/"
+              className="group inline-flex h-10 items-center gap-2 rounded-[9px] bg-[color:var(--color-primary-dark)] px-7 text-[13.5px] max-md:px-4 max-md:text-xs font-medium text-white shadow-[0_6px_16px_color-mix(in_srgb,var(--color-primary-dark)_28%,transparent)] transition-all duration-200 hover:shadow-[0_8px_20px_color-mix(in_srgb,var(--color-primary-dark)_38%,transparent)] hover:brightness-95 active:scale-[0.97]"
             >
-              <path d="M7 17L17 7M7 7h10v10" />
-            </svg>
-            <span className="sr-only">(opens in a new tab)</span>
-          </a>
-          <Link
-            href="/documentation/quickstart/"
-            className="group inline-flex h-10 items-center gap-1.5 rounded-[9px] px-4 text-[13.5px] max-md:text-xs font-medium text-zinc-500 transition-colors duration-200 hover:text-[color:var(--color-primary-dark)] active:scale-[0.97]"
-          >
-            Get Started
-            <svg
-              width="13"
-              height="13"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2.2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              aria-hidden
-              className="transition-transform duration-200 group-hover:translate-x-[2px]"
+              {t('tryAVA')}
+              <svg
+                width="14"
+                height="14"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2.2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                className="transition-transform duration-200 group-hover:translate-x-[1px]"
+              >
+                <path d="M5 12h14M13 6l6 6-6 6" />
+              </svg>
+            </Link>
+            <a
+              href="https://sive.antv.antgroup.com/"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="group inline-flex h-10 items-center gap-2.5 whitespace-nowrap rounded-[9px] border border-zinc-300 bg-white/80 px-5 text-zinc-700 transition-colors hover:border-cyan-400 hover:bg-white focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-cyan-600"
             >
-              <path d="M5 12h14M13 6l6 6-6 6" />
-            </svg>
-          </Link>
+              <img
+                src="https://mdn.alipayobjects.com/huamei_qa8qxu/afts/img/A*nRBgR5pM57cAAAAAQCAAAAgAemJ7AQ/original"
+                alt=""
+                width={24}
+                height={24}
+                className="size-6 shrink-0 object-contain"
+              />
+              <span className="flex flex-col items-start gap-1">
+                <span className="text-[13.5px] font-medium leading-none max-md:text-xs">{t('trySive')}</span>
+                <span className="text-[9.5px] font-normal leading-none text-[#607482]">{t('builtWithAVA')}</span>
+              </span>
+              <svg
+                width="12"
+                height="12"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                aria-hidden="true"
+                className="ml-1 text-zinc-400 transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5"
+              >
+                <path d="M7 17L17 7M7 7h10v10" />
+              </svg>
+              <span className="sr-only">{t('opensInANewTab')}</span>
+            </a>
+            <Link
+              href="/documentation/quickstart/"
+              className="group inline-flex h-10 items-center gap-1.5 rounded-[9px] px-4 text-[13.5px] max-md:text-xs font-medium text-zinc-500 transition-colors duration-200 hover:text-[color:var(--color-primary-dark)] active:scale-[0.97]"
+            >
+              {t('getStarted')}
+              <svg
+                width="13"
+                height="13"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2.2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                aria-hidden
+                className="transition-transform duration-200 group-hover:translate-x-[2px]"
+              >
+                <path d="M5 12h14M13 6l6 6-6 6" />
+              </svg>
+            </Link>
+          </div>
         </div>
       </div>
-    </div>
-  </section>
-);
+    </section>
+  );
+};
 
 export default Banner;

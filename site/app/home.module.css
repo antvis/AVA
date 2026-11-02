@@ -802,3 +802,11 @@
     transition: none;
   }
 }
+
+/* Chinese copy uses a readable measure instead of Latin character widths. */
+:global(html[lang='zh-CN']) .heroIntro p {
+  width: min(100%, 32em);
+  max-width: 32em;
+  text-wrap: pretty;
+  letter-spacing: 0;
+}

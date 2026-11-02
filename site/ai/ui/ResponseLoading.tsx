@@ -1,5 +1,7 @@
 'use client';
 
+import { useTranslations } from 'use-intl';
+
 import { useEffect, useState } from 'react';
 
 const delays = Array.from({ length: 9 }, (_, index) => {
@@ -8,6 +10,7 @@ const delays = Array.from({ length: 9 }, (_, index) => {
 });
 
 export default function ResponseLoading() {
+  const t = useTranslations('ResponseLoading');
   const [elapsed, setElapsed] = useState(0);
   useEffect(() => {
     const started = performance.now();
@@ -20,7 +23,7 @@ export default function ResponseLoading() {
 
   return (
     <div role="status" className="flex w-fit items-center gap-2 py-0.5">
-      <span className="sr-only">Generating response</span>
+      <span className="sr-only">{t('generatingResponse')}</span>
       <span aria-hidden="true" className="grid shrink-0 grid-cols-[repeat(3,3px)] gap-px">
         {delays.map((delay, index) => (
           <span
@@ -31,7 +34,7 @@ export default function ResponseLoading() {
         ))}
       </span>
       <span aria-hidden="true" className="response-loading-label text-xs">
-        Responding…
+        {t('responding')}
       </span>
       <span aria-hidden="true" className="font-mono text-[11px] tabular-nums text-ink-3">
         {duration}

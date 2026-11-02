@@ -1,0 +1,73 @@
+这一页带你用 TypeScript / JavaScript SDK 跑通一次分析。希望直接交给 AI Agent 操作，可以从 [Agent Skill](/documentation/agent-skill/) 开始。
+
+<h2 id="install">安装</h2>
+
+运行环境需要 **Node.js 22.13.0 或更高版本**。安装 AVA 4.x：
+
+```bash
+npm install @antv/ava@4
+# or
+pnpm add @antv/ava@4
+# or
+yarn add @antv/ava@4
+```
+
+<h2 id="configure-your-model">连接模型</h2>
+
+下面的示例从环境变量读取 `OPENAI_API_KEY`，并可选读取 `OPENAI_MODEL` 和 `OPENAI_BASE_URL`。运行前请配置好这些变量。也可以直接传入 AI SDK 模型实例，详见[模型设置](/documentation/configuration/)。
+
+<h2 id="run-your-first-analysis">跑通第一份数据</h2>
+
+把下面的代码保存为 ES Module，在已经安装 AVA 的 Node.js 项目中执行。默认使用 DuckDB 引擎。
+
+```javascript
+import { AVA } from '@antv/ava';
+
+const ava = new AVA({
+  llm: {
+    model: process.env.OPENAI_MODEL || 'gpt-4o-mini',
+    apiKey: process.env.OPENAI_API_KEY,
+    baseURL: process.env.OPENAI_BASE_URL,
+  },
+});
+
+try {
+  await ava.source({
+    type: 'json',
+    options: {
+      data: [
+        { region: 'East', revenue: 120 },
+        { region: 'West', revenue: 90 },
+        { region: 'East', revenue: 80 },
+      ],
+    },
+  });
+
+  const schema = await ava.schema();
+  const profile = await ava.profile();
+  console.log(schema.models, profile.models[0].metrics);
+
+  const result = await ava.analyze('按地区汇总收入');
+  console.log(result.text, result.data);
+
+  const chart = await ava.visualize(result);
+  if (chart) console.log(chart.config);
+} finally {
+  await ava.dispose();
+}
+```
+
+`schema()` 在首次需要时发现结构；`profile()` 额外计算统计信息并保留结果。自然语言分析会按需取得结构，因此不必为了调用 `analyze()` 而机械地执行所有步骤。
+
+<h2 id="cleanup-and-errors">释放资源与处理错误</h2>
+
+`source()` 会替换当前数据源，并释放原引擎。`dispose()` 释放连接和引擎资源，清空结构、统计与业务语义。分析失败时也要等待清理完成，推荐放在 `finally` 中。
+
+<h2 id="next-steps">下一步做什么</h2>
+
+- 数据来自文件或数据库？看[接入数据](/documentation/data/sources/)。
+- 想知道字段与统计怎么用？看[了解你的数据](/documentation/data/schema/)。
+- 有专门的指标口径？看[业务语义示例](/documentation/data/semantic/)。
+- 需要前端集成或命令行？看[浏览器用法](/documentation/browser/)与 [CLI](/documentation/reference/cli/)。
+
+完整方法签名与输入字段见 [API 参考](/documentation/reference/api/)。

@@ -1,14 +1,15 @@
-import Link from 'next/link';
-import Header from '../components/Header';
-import Banner from '../components/Banner';
-import Footer from '../components/Footer';
-import PageShell from '../components/PageShell';
+import { getTranslator, type Locale } from '../lib/i18n';
+import Link from './LocaleLink';
+import Header from './Header';
+import Banner from './Banner';
+import Footer from './Footer';
+import PageShell from './PageShell';
 import DemoChat from '../ai/ui/demo/DemoChat';
-import Integrate from '../components/landing/Integrate';
-import FeatureCards from '../components/landing/FeatureCards';
-import Ecosystem from '../components/landing/Ecosystem';
-import TrustedAnalytics from '../components/landing/TrustedAnalytics';
-import styles from './home.module.css';
+import Integrate from './landing/Integrate';
+import FeatureCards from './landing/FeatureCards';
+import Ecosystem from './landing/Ecosystem';
+import TrustedAnalytics from './landing/TrustedAnalytics';
+import styles from '../app/home.module.css';
 
 const SOURCES = [
   ['CSV', 'csv', 'Inline & file'],
@@ -23,40 +24,6 @@ const SOURCES = [
   ['Supabase', 'supabase', 'Cloud database'],
   ['ClickHouse', 'clickhouse', 'Analytics database'],
   ['Feishu Bitable', 'feishu-bitable', 'Multidimensional table'],
-];
-
-const FAQS = [
-  {
-    question: 'What is AVA?',
-    answer:
-      'AVA is an open-source visual analytics framework from AntV. It gives AI agents the tools to connect to data, understand its structure, run analysis, and turn results into charts.',
-  },
-  {
-    question: 'How can I get started?',
-    answer: (
-      <>
-        Try the <Link href="/ai/">AI playground</Link>, add the{' '}
-        <Link href="/documentation/agent-skill/">Agent Skill</Link> to your agent, or follow the{' '}
-        <Link href="/documentation/quickstart/">TypeScript SDK quickstart</Link>. You can also use AVA from the command
-        line.
-      </>
-    ),
-  },
-  {
-    question: 'Which data sources can I use?',
-    answer:
-      'AVA supports CSV, JSON, Excel, Parquet, and text, plus SQLite, MySQL, PostgreSQL, MongoDB, Supabase, ClickHouse, and Feishu Bitable. Available sources and engines depend on your runtime.',
-  },
-  {
-    question: 'Do I need a separate model API key?',
-    answer:
-      'The Agent Skill uses your agent’s own reasoning, so it does not need a separate model key. AI-powered analysis through the SDK or CLI requires your model configuration. Direct queries and data profiling can run without an LLM.',
-  },
-  {
-    question: 'Is AVA free and open source?',
-    answer:
-      'Yes. AVA is released under the MIT License. You can inspect the source, build with it, and contribute on GitHub. Model providers and hosted infrastructure may have their own costs.',
-  },
 ];
 
 function Arrow() {
@@ -75,19 +42,21 @@ function Arrow() {
   );
 }
 
-export default function Home() {
+export default function Home({ locale }: { locale: Locale }) {
+  const t = getTranslator(locale, 'Home');
+
   return (
     <PageShell>
       <div className={styles.home}>
         <a className={styles.skipLink} href="#analytics">
-          Skip to features
+          {t('skipToFeatures')}
         </a>
         <Header />
         <div className={styles.hero}>
           <div className={styles.heroIntro}>
             <Banner />
           </div>
-          <div className={styles.demo} aria-label="Interactive demo using sample data">
+          <div className={styles.demo} aria-label={t('interactiveDemoUsingSampleData')}>
             <DemoChat />
           </div>
         </div>
@@ -95,9 +64,9 @@ export default function Home() {
         <section id="analytics" className={styles.features} aria-labelledby="features-title">
           <div className={styles.sectionHeading}>
             <h2 id="features-title">
-              From Raw Data to
+              {t('fromRawDataTo')}
               <br />
-              Answers You Can Inspect.
+              {t('answersYouCanInspect')}
             </h2>
           </div>
           <FeatureCards />
@@ -106,17 +75,18 @@ export default function Home() {
         <section id="data" className={styles.dataSection} aria-labelledby="data-title">
           <div className={styles.dataCopy}>
             <h2 id="data-title">
-              Connect Your Data.
+              {t('connectYourData')}
               <br />
-              Run Anywhere.
+              {t('runAnywhere')}
             </h2>
             <div className={styles.sourceCategories}>
-              <span>Files</span>
-              <span>Databases</span>
+              <span>{t('files')}</span>
+              <span>{t('databases')}</span>
               <span>SaaS</span>
             </div>
             <Link href="/documentation/data/sources/" className={styles.textLink}>
-              All data sources <Arrow />
+              {t('allDataSources')}
+              <Arrow />
             </Link>
           </div>
           <div className={styles.sourcePanel}>
@@ -127,8 +97,8 @@ export default function Home() {
                     <span className={styles.sourceIcon}>
                       <img src={`/logos/${logo}.svg`} alt="" width="32" height="32" loading="lazy" />
                     </span>
-                    <span>{label}</span>
-                    {['csv', 'json'].includes(logo) && <small>{detail}</small>}
+                    <span>{logo === 'feishu-bitable' ? t('feishu') : label}</span>
+                    {['csv', 'json'].includes(logo) && <small>{t('sourceDetail')}</small>}
                   </Link>
                 ))}
               </div>
@@ -172,33 +142,40 @@ export default function Home() {
         <section className={styles.faq} aria-labelledby="faq-title">
           <div className={styles.sectionHeading}>
             <h2 id="faq-title">
-              How AVA Works.
+              {t('howAVAWorks')}
               <br />
-              What You Need to Start.
+              {t('whatYouNeedToStart')}
             </h2>
           </div>
           <div className={styles.faqList}>
-            {FAQS.map(({ question, answer }) => (
-              <details key={question}>
+            {['what', 'start', 'sources', 'key', 'open'].map((key) => (
+              <details key={key}>
                 <summary>
-                  {question}
+                  {t(`${key}Question`)}
                   <span aria-hidden="true">+</span>
                 </summary>
-                <div>{answer}</div>
+                <div>
+                  {t.rich(`${key}Answer`, {
+                    playground: (chunks) => <Link href="/ai/">{chunks}</Link>,
+                    skill: (chunks) => <Link href="/documentation/agent-skill/">{chunks}</Link>,
+                    sdk: (chunks) => <Link href="/documentation/quickstart/">{chunks}</Link>,
+                  })}
+                </div>
               </details>
             ))}
           </div>
         </section>
         <section className={styles.closing} aria-labelledby="closing-title">
           <h2 id="closing-title">
-            Your agent’s next skill?
+            {t('yourAgentSNextSkill')}
             <br />
-            <span>Understanding your data.</span>
+            <span>{t('understandingYourData')}</span>
           </h2>
-          <p>Connect, analyze, and visualize — with the tools your agent needs.</p>
+          <p>{t('connectAnalyzeAndVisualizeWithTheTools')}</p>
           <div className={styles.actions}>
             <Link href="/documentation/quickstart/" className={styles.primaryButton}>
-              Get Started <Arrow />
+              {t('getStarted')}
+              <Arrow />
             </Link>
             <a
               href="https://github.com/antvis/AVA"
@@ -206,7 +183,8 @@ export default function Home() {
               rel="noopener noreferrer"
               className={styles.secondaryButton}
             >
-              Explore GitHub <Arrow />
+              {t('exploreGitHub')}
+              <Arrow />
             </a>
           </div>
           <div className={styles.closingSignature} aria-hidden="true">

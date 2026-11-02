@@ -1,5 +1,7 @@
 'use client';
 
+import { useTranslations } from 'use-intl';
+
 import { useEffect, useMemo, useState } from 'react';
 import type { LLMConfig } from '@antv/ava/browser';
 import { useChat as useAIChat } from '@ai-sdk/react';
@@ -18,6 +20,7 @@ import type { AIDataset } from '../core/types';
 import { parseCSV, parseExcel } from '../core/files';
 
 export default function useChat({ config, onConfigure }: { config: LLMConfig; onConfigure: () => void }): LiveChat {
+  const t = useTranslations('useChat');
   const ready = !!config.apiKey?.trim() && (typeof config.model !== 'string' || !!config.model.trim());
   const [workingSessionId, setWorkingSessionId] = useState<string | null>(null);
   const [error, setError] = useState('');
@@ -63,7 +66,7 @@ export default function useChat({ config, onConfigure }: { config: LLMConfig; on
     } catch (err) {
       patchUpload((message) => ({
         ...message,
-        suggestionsError: `Could not generate questions. ${err instanceof Error ? err.message : String(err)}`,
+        suggestionsError: t('suggestError', { error: err instanceof Error ? err.message : String(err) }),
       }));
     } finally {
       patchUpload((message) => ({ ...message, suggestionsLoading: false }));
@@ -98,7 +101,7 @@ export default function useChat({ config, onConfigure }: { config: LLMConfig; on
     setError('');
 
     try {
-      if (file.size > MAX_UPLOAD_SIZE_BYTES) throw new Error(`Maximum file size is ${MAX_UPLOAD_SIZE_MB} MB`);
+      if (file.size > MAX_UPLOAD_SIZE_BYTES) throw new Error(t('maxFile', { size: MAX_UPLOAD_SIZE_MB }));
       const extension = file.name.split('.').pop()?.toLowerCase();
       const rows: unknown =
         extension === 'xlsx'
@@ -113,14 +116,14 @@ export default function useChat({ config, onConfigure }: { config: LLMConfig; on
         !rows.length ||
         rows.some((row) => !row || typeof row !== 'object' || Array.isArray(row))
       )
-        throw new Error('Upload a CSV, Excel or JSON array containing data records.');
+        throw new Error(t('uploadACSVExcelOrJSONArray'));
       if (!lifecycle.active) return;
       setDataset({ name: file.name, rows });
       const columns = new Set<string>();
       for (const row of rows) for (const key of Object.keys(row)) columns.add(key);
       const message: Message = {
         role: 'assistant',
-        text: 'Your dataset is ready. Ask a question or add optional semantics to refine the analysis.',
+        text: t('yourDatasetIsReadyAskAQuestion'),
         dataset: {
           name: file.name,
           rowCount: rows.length,
@@ -139,15 +142,15 @@ export default function useChat({ config, onConfigure }: { config: LLMConfig; on
     }
   }
   async function updateSemantic(json: string) {
-    if (lifecycle.locked || busy) throw new Error('Wait for the current operation to finish.');
+    if (lifecycle.locked || busy) throw new Error(t('waitForTheCurrentOperationToFinish'));
     if (new TextEncoder().encode(json).length > MAX_UPLOAD_SIZE_BYTES)
-      throw new Error(`Maximum semantic JSON size is ${MAX_UPLOAD_SIZE_MB} MB.`);
+      throw new Error(t('maxSemantic', { size: MAX_UPLOAD_SIZE_MB }));
     const value: unknown = json.trim() ? JSON.parse(json) : undefined;
     lifecycle.locked = true;
     setWorkingSessionId(session.id);
     try {
       const semantic = value === undefined ? undefined : await session.validateSemantic(value);
-      if (!lifecycle.active) throw new Error('The dataset changed. Reopen semantics and try again.');
+      if (!lifecycle.active) throw new Error(t('theDatasetChangedReopenSemanticsAndTry'));
       if (JSON.stringify(semantic) === JSON.stringify(dataset.semantic)) return;
       setDataset({ ...dataset, semantic });
       patchUpload((message) => ({

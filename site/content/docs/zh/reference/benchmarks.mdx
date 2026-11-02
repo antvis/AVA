@@ -1,0 +1,277 @@
+这些评测从答案正确率、每题用量与执行耗时三个角度，观察 AVA 在不同数据任务上的表现。[查看原始报告](https://github.com/antvis/AVA/tree/ai/evals/reports)。
+
+<h2 id="context">上下文是否足够，影响有多大</h2>
+
+<Callout icon="🤔">模型拿到的信息越完整，分析会更准吗？这里固定使用 GLM-5.1、AVA Workflow、DuckDB 和 Direct，对比原始数据、结构统计与业务语义。</Callout>
+
+<div className="docs-table docs-benchmark-overview">
+<table>
+  <thead>
+    <tr>
+      <th scope="col">评测任务</th>
+      <th scope="col">上下文</th>
+      <th scope="col">答对题数</th>
+      <th scope="col">准确率</th>
+      <th scope="col">每题 Token</th>
+      <th scope="col">每题耗时</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th scope="rowgroup" rowSpan={3}>表格问答<br />DataBench<sup><a href="#dataset-databench" aria-label="数据集说明 1：DataBench">[1]</a></sup></th>
+      <td>原始数据<br />（表头与前 3 行）</td>
+      <td>1,494</td>
+      <td>83.51% （基线）</td>
+      <td>991</td>
+      <td>1.35 s</td>
+    </tr>
+    <tr>
+      <td>结构与统计<br />（Schema + Profile）</td>
+      <td>1,506</td>
+      <td>84.18% <span style={{ color: '#b91c1c' }}>(+0.67 pp)</span></td>
+      <td>1,990</td>
+      <td>2.08 s</td>
+    </tr>
+    <tr>
+      <td>业务语义</td>
+      <td>1,664</td>
+      <td><span role="img" aria-label="准确率最高" style={{ color: '#a16207' }}>★</span> <strong>93.01%</strong> <span style={{ color: '#b91c1c' }}>(+9.50 pp)</span></td>
+      <td>3,288</td>
+      <td>1.66 s</td>
+    </tr>
+  </tbody>
+  <tbody>
+    <tr>
+      <th scope="rowgroup" rowSpan={3}>复杂 SQL · SQLite<br />Spider2-Lite<sup><a href="#dataset-spider2lite" aria-label="数据集说明 3：Spider2-Lite">[3]</a></sup></th>
+      <td>原始数据<br />（表头与前 3 行）</td>
+      <td>35</td>
+      <td>25.93% （基线）</td>
+      <td>4,057</td>
+      <td>12.93 s</td>
+    </tr>
+    <tr>
+      <td>结构与统计<br />（Schema + Profile）</td>
+      <td>45</td>
+      <td>33.33% <span style={{ color: '#b91c1c' }}>(+7.41 pp)</span></td>
+      <td>20,945</td>
+      <td>11.89 s</td>
+    </tr>
+    <tr>
+      <td>业务语义</td>
+      <td>109</td>
+      <td><span role="img" aria-label="准确率最高" style={{ color: '#a16207' }}>★</span> <strong>80.74%</strong> <span style={{ color: '#b91c1c' }}>(+54.81 pp)</span></td>
+      <td>23,705</td>
+      <td>13.33 s</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+
+<p style={{ color: 'var(--docs-muted)', fontSize: '12px' }}>DataBench 包含 1,789 道单表问答，涉及筛选、聚合和排序。Spider2-Lite 使用 135 道多表复杂 SQL 问题及外部知识。原始数据只向模型展示表头与每表前 3 行，结构与统计增加 Schema 和 Profile，业务语义再增加业务定义。查询始终使用完整数据。</p>
+
+<h2 id="strategy">怎样选择分析策略</h2>
+
+<Callout icon="🤔">直接生成查询和多步探索，各有什么代价？结合表格问答与数据库任务，对比两种[分析策略](/documentation/analysis/strategies/)。</Callout>
+
+<div className="docs-table docs-benchmark-overview docs-benchmark-comparison">
+<table>
+  <thead>
+    <tr>
+      <th scope="col">评测任务</th>
+      <th scope="col">模型</th>
+      <th scope="col">策略</th>
+      <th scope="col">答对题数</th>
+      <th scope="col">准确率</th>
+      <th scope="col">每题 Token</th>
+      <th scope="col">每题耗时</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th scope="rowgroup" rowSpan={2}>表格问答<br />DataBench<sup><a href="#dataset-databench" aria-label="数据集说明 1：DataBench">[1]</a></sup></th>
+      <td rowSpan={2}>GLM-5.1</td>
+      <td>Direct</td>
+      <td>1,550</td>
+      <td><span role="img" aria-label="准确率最高" style={{ color: '#a16207' }}>★</span> <strong>86.64%</strong></td>
+      <td>2,315</td>
+      <td>20.48 s</td>
+    </tr>
+    <tr>
+      <td>Loop</td>
+      <td>1,504</td>
+      <td>84.07%</td>
+      <td>5,089</td>
+      <td>82.52 s</td>
+    </tr>
+  </tbody>
+  <tbody>
+    <tr>
+      <th scope="rowgroup" rowSpan={10}>数据库查询<br />BIRD New Dev<sup><a href="#dataset-bird" aria-label="数据集说明 2：BIRD New Dev">[2]</a></sup></th>
+      <td rowSpan={2}>GLM-5.1</td>
+      <td>Direct</td>
+      <td>968</td>
+      <td>63.10%</td>
+      <td>6,780</td>
+      <td>—</td>
+    </tr>
+    <tr>
+      <td>Loop</td>
+      <td>1,010</td>
+      <td>65.84%</td>
+      <td>35,272</td>
+      <td>—</td>
+    </tr>
+    <tr>
+      <td rowSpan={2}>GLM-5.2</td>
+      <td>Direct</td>
+      <td>1,003</td>
+      <td>65.38%</td>
+      <td>6,575</td>
+      <td>—</td>
+    </tr>
+    <tr>
+      <td>Loop</td>
+      <td>1,030</td>
+      <td>67.14%</td>
+      <td>33,545</td>
+      <td>—</td>
+    </tr>
+    <tr>
+      <td rowSpan={2}>GLM-5.3</td>
+      <td>Direct</td>
+      <td>1,045</td>
+      <td><span role="img" aria-label="准确率最高" style={{ color: '#a16207' }}>★</span> <strong>68.12%</strong></td>
+      <td>≥ 9,529</td>
+      <td>—</td>
+    </tr>
+    <tr>
+      <td>Loop</td>
+      <td>1,016</td>
+      <td>66.23%</td>
+      <td>≥ 32,976</td>
+      <td>—</td>
+    </tr>
+    <tr>
+      <td rowSpan={2}>Kimi-K2.5</td>
+      <td>Direct</td>
+      <td>941</td>
+      <td>61.34%</td>
+      <td>7,220</td>
+      <td>—</td>
+    </tr>
+    <tr>
+      <td>Loop</td>
+      <td>905</td>
+      <td>59.00%</td>
+      <td>51,631</td>
+      <td>—</td>
+    </tr>
+    <tr>
+      <td rowSpan={2}>Kimi-K3</td>
+      <td>Direct</td>
+      <td>1,014</td>
+      <td>66.10%</td>
+      <td>6,696</td>
+      <td>—</td>
+    </tr>
+    <tr>
+      <td>Loop</td>
+      <td>993</td>
+      <td>64.73%</td>
+      <td>43,512</td>
+      <td>—</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+
+<p style={{ color: 'var(--docs-muted)', fontSize: '12px' }}>AVA Workflow。DataBench 共 1,789 题，此处是上下文配置不同的历史运行；BIRD New Dev 共 1,534 题，包含 Schema、题目证据与数据库说明。</p>
+
+<h2 id="execution">执行方式的差异</h2>
+
+<Callout icon="🤔">同样的问题，交给 SQL 还是 Python 执行？比较不同[执行引擎](/documentation/engines/overview/)的答案表现与成本。</Callout>
+
+<div className="docs-table docs-benchmark-overview docs-benchmark-comparison">
+<table>
+  <thead>
+    <tr>
+      <th scope="col">评测任务</th>
+      <th scope="col">模型</th>
+      <th scope="col">执行方式</th>
+      <th scope="col">答对题数</th>
+      <th scope="col">准确率</th>
+      <th scope="col">每题 Token</th>
+      <th scope="col">每题耗时</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th scope="rowgroup" rowSpan={2}>表格问答<br />DataBench<sup><a href="#dataset-databench" aria-label="数据集说明 1：DataBench">[1]</a></sup></th>
+      <td rowSpan={2}>GLM-5.1</td>
+      <td>SQL (DuckDB)</td>
+      <td>1,550</td>
+      <td><span role="img" aria-label="准确率最高" style={{ color: '#a16207' }}>★</span> <strong>86.64%</strong></td>
+      <td>2,315</td>
+      <td>20.48 s</td>
+    </tr>
+    <tr>
+      <td>Python</td>
+      <td>1,528</td>
+      <td>85.41%</td>
+      <td>2,002</td>
+      <td>22.03 s</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+
+<p style={{ color: 'var(--docs-muted)', fontSize: '12px' }}>DataBench 共 1,789 题，使用 AVA Workflow 和 Direct。历史 SQL 与 Python 运行的执行配置不同。</p>
+
+<h2 id="integration">接入方式的差异</h2>
+
+<Callout icon="🤔">由 SDK 组织工作流，还是交给 Agent 自主使用工具？比较 SDK 与 [Agent Skill](/documentation/agent-skill/) 的历史运行结果。</Callout>
+
+<div className="docs-table docs-benchmark-overview docs-benchmark-comparison">
+<table>
+  <thead>
+    <tr>
+      <th scope="col">评测任务</th>
+      <th scope="col">模型</th>
+      <th scope="col">接入方式</th>
+      <th scope="col">答对题数</th>
+      <th scope="col">准确率</th>
+      <th scope="col">每题 Token</th>
+      <th scope="col">每题耗时</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th scope="rowgroup" rowSpan={2}>表格问答<br />DataBench<sup><a href="#dataset-databench" aria-label="数据集说明 1：DataBench">[1]</a></sup></th>
+      <td rowSpan={2}>GLM-5.1</td>
+      <td>SDK</td>
+      <td>1,550</td>
+      <td><span role="img" aria-label="准确率最高" style={{ color: '#a16207' }}>★</span> <strong>86.64%</strong></td>
+      <td>2,315</td>
+      <td>20.48 s</td>
+    </tr>
+    <tr>
+      <td>Agent Skill</td>
+      <td>1,511</td>
+      <td>84.46%</td>
+      <td>23,384</td>
+      <td>40.93 s</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+
+<p style={{ color: 'var(--docs-muted)', fontSize: '12px' }}>DataBench 共 1,789 题。SDK 使用 AVA Workflow 和 Direct；Agent Skill 由 Agent 自主选择工具与步骤。这些历史运行的执行配置不同。</p>
+
+
+<h2 id="dataset-notes">先了解数据集和计分方式</h2>
+
+1. <strong id="dataset-databench">DataBench：</strong>1,789 道问题，覆盖 79 张完整表，排除 `080_Books`。平均每表 46,911 行、22.8 列。根据参考答案与不同结果类型的匹配规则衡量答案正确性。[复现说明](https://github.com/antvis/AVA/blob/ai/evals/databench/README.md)。
+2. <strong id="dataset-bird">BIRD New Dev：</strong>版本 `dev_20251106`，1,534 道问题，覆盖 11 个数据库。平均每库 6.8 张表，每表 52,436 行、10.6 列。对照参考 SQL 的执行结果评估 Text-to-SQL。[复现说明](https://github.com/antvis/AVA/blob/ai/evals/BIRD/README.md)。
+3. <strong id="dataset-spider2lite">Spider2-Lite SQLite 子集：</strong>135 道复杂 SQL 问题，覆盖 30 个数据库。平均每库 13.7 张表，每表 43,009 行、7.0 列。使用官方执行结果评分器，未回答计为错误，结果只代表 SQLite 子集。[复现说明](https://github.com/antvis/AVA/blob/ai/evals/spider2lite/README.md)。
+
+规模均值只统计唯一基础表，不含视图和内部表。不同数据集的评分协议不同，分数不能直接横向比较。这些评测衡量的是答案正确性，不是图表质量。表中的 pp 表示百分点，耗时单位 s 表示秒。

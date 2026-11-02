@@ -1,0 +1,109 @@
+同样问“各地区收入是多少”，有人直接把 `amount` 相加，有人只计算已支付订单，还有人会扣掉退款。AVA 不能只从字段类型知道你采用哪种口径，需要你把业务含义补充进去。
+
+沿用[数据结构指南](/documentation/data/schema/)中的订单：
+
+| order_id | region | status | amount | refund_amount | ordered_at |
+| --- | --- | --- | --- | --- | --- |
+| 1 | East | paid | 120 | 20 | 2026-01-03 |
+| 2 | East | refunded | 80 | 80 | 2026-01-04 |
+| 3 | East | pending | 200 | 0 | 2026-01-05 |
+| 4 | West | paid | 90 | 30 | 2026-01-06 |
+| 5 | East | paid | 50 | `null` | 2026-01-07 |
+| 6 | West | cancelled | 500 | 0 | 2026-01-08 |
+
+<h2 id="decide-what-revenue-means">先约定“收入”怎么算</h2>
+
+本例采用以下口径：
+
+- 只计算 `paid`、`refunded`，不计算 `pending`、`cancelled`。
+- 原始金额减去累计退款，缺失的退款按零处理，单位为美元。
+- 按订单地区归属汇总，使用原始下单日期。
+
+所以 East 的收入是 `(120 - 20) + (80 - 80) + 50 = 150`，West 是 `90 - 30 = 60`。待支付和已取消的两笔订单不计入。
+
+<h2 id="write-the-semantic-definition">把口径写成可复用定义</h2>
+
+```javascript
+/** @satisfies {import('@antv/ava').Semantic} */
+const semantic = {
+  description: 'Sales reporting in USD. Revenue means net revenue from paid and refunded orders. Pending and cancelled orders do not count. A missing refund is zero. Dates are order dates, not refund dates.',
+  properties: { owner: 'Sales operations' },
+  models: [{
+    name: 'data',
+    tableReference: { table: 'data' },
+    primaryKey: 'order_id',
+    properties: { description: 'One row per order; refunds are cumulative amounts on the original order.' },
+    columns: [
+      { name: 'amount', type: 'BIGINT', properties: { description: 'Order amount before refunds.', unit: 'USD' } },
+      { name: 'refund_amount', type: 'BIGINT', properties: { description: 'Cumulative refund, not a separate refund transaction. Null means zero.', unit: 'USD' } },
+      { name: 'status', type: 'VARCHAR', properties: { description: 'Only paid and refunded orders contribute to revenue.' } },
+      {
+        name: 'net_amount',
+        type: 'DOUBLE',
+        isCalculated: true,
+        expression: 'amount - COALESCE(refund_amount, 0)',
+        properties: { description: 'Per-order amount after refunds, before filtering by status.', unit: 'USD' },
+      },
+    ],
+  }],
+  cubes: [{
+    name: 'sales',
+    baseObject: 'data',
+    measures: [{
+      name: 'net_revenue',
+      expression: "SUM(CASE WHEN status IN ('paid', 'refunded') THEN amount - COALESCE(refund_amount, 0) ELSE 0 END)",
+      type: 'DOUBLE',
+      description: 'Revenue after refunds, counting only paid and refunded orders.',
+      properties: { unit: 'USD', synonyms: ['revenue', 'net sales'] },
+    }],
+    dimensions: [{ name: 'region', expression: 'region', type: 'VARCHAR' }],
+    timeDimensions: [{ name: 'order_date', expression: 'CAST(ordered_at AS DATE)', type: 'DATE' }],
+  }],
+};
+```
+
+先用 `schema()` 检查实际模型名、字段名、类型和来源限定信息。每个语义模型必须在 `tableReference`、`refSql`、`baseObject` 中选且只选一个；字段至少需要 `name` 和 `type`。
+
+不必一开始就定义完整模型。一段 `description` 也合法：先说明业务口径，有字段解释、跨表关系或复用指标需求时，再逐步增加 models、relationships 和 cubes。
+
+<h2 id="save-the-definition-and-see-the-result">保存后，检查实际查询</h2>
+
+```typescript
+await ava.semantic(undefined, () => semantic);
+const saved = await ava.semantic();
+```
+
+Setter 保存验证后的副本。后续 `analyze()`、`translate()`、`suggest()` 会把它与结构和已有统计组合使用。按上述口径生成的 SQL 可以是：
+
+```sql
+SELECT
+  region,
+  CAST(SUM(
+    CASE WHEN status IN ('paid', 'refunded')
+      THEN amount - COALESCE(refund_amount, 0)
+      ELSE 0
+    END
+  ) AS DOUBLE) AS net_revenue
+FROM data
+GROUP BY region
+ORDER BY region;
+```
+
+| region | net_revenue（美元） |
+| --- | --- |
+| East | 150 |
+| West | 60 |
+
+模型生成的别名和 SQL 形式可能不同，但业务口径和结果应能核对一致。
+
+逻辑模型、计算字段、view 和 cube 都是给查询生成器的上下文，不会自动成为数据库对象。例如 `net_amount` 必须展开为表达式，或在子查询、CTE 中定义后才能执行。
+
+<h2 id="check-and-maintain-your-definition">口径也需要验证与维护</h2>
+
+先和数据负责人确认粒度、单位、有效记录、空值处理与时间含义；有连接时检查是否重复计数。再用已知答案的小数据集验证表达式，并核对 `translate()` 的输出和实际结果。
+
+Setter 的结构校验不会证明 SQL 能执行，也不会证明业务规则正确。完整定义建议保存在应用代码或 JSON 中，与数据契约一起做版本管理。
+
+<Callout>每次 Setter 都替换完整定义，不是增量补丁。切换数据源或释放实例后需要重新提供；更新结构、统计则会保留它。</Callout>
+
+字段形状、合并规则和错误排查见 [API 语义模型参考](/documentation/reference/api/#semantic-fields)。
