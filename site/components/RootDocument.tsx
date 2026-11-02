@@ -56,7 +56,12 @@ export default function RootDocument({ children, locale }: { children: React.Rea
   return (
     <html lang={locale === 'zh' ? 'zh-CN' : 'en'}>
       <head>
-        {locale === 'zh' && <link rel="stylesheet" href="/fonts/misans/misans.css" />}
+        {locale === 'zh' && (
+          <link
+            rel="stylesheet"
+            href="https://cdn-font.hyperos.mi.com/font/css?family=MiSans_VF:VF:Chinese_Simplify,Latin&display=swap"
+          />
+        )}
         <script dangerouslySetInnerHTML={{ __html: languageRedirectScript }} />
         <script
           dangerouslySetInnerHTML={{
