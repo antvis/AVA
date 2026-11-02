@@ -214,12 +214,9 @@ const chart = await ava.visualize({
 
 We evaluate AVA on established benchmarks to measure the accuracy and efficiency of its data analysis.
 
-> [!NOTE]
-> **Context and accuracy**
->
-> <img src="https://mdn.alipayobjects.com/huamei_aphk1k/afts/img/A*XjhtSbWcb70AAAAAUlAAAAgAegfkAQ/original" width="100%" alt="DataBench and Spider2-Lite evaluation results comparing raw data, schema and profile, and semantic context.">
->
-> [Evaluation setup and reports →](https://ava.antv.vision/documentation/reference/benchmarks/)
+<img src="https://mdn.alipayobjects.com/huamei_aphk1k/afts/img/A*XjhtSbWcb70AAAAAUlAAAAgAegfkAQ/original" width="100%" alt="DataBench and Spider2-Lite evaluation results comparing raw data, schema and profile, and semantic context.">
+
+[Evaluation setup and reports →](https://ava.antv.vision/documentation/reference/benchmarks/)
 
 ## 🧩 More ways to use AVA
 
