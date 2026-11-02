@@ -20,6 +20,7 @@ const commands = [
   'source',
   'schema',
   'profile',
+  'semantic',
   'suggest',
   'analyze',
   'translate',
@@ -90,16 +91,16 @@ describe('help and validation', () => {
 });
 
 describe('metadata files', () => {
-  it.each(['schema', 'profile'])('sets %s from a plain file path', async (kind) => {
+  it.each(['schema', 'profile', 'semantic'])('sets %s from a plain file path', async (kind) => {
     const directory = await mkdtemp(join(tmpdir(), 'ava-cli-test-'));
     try {
-      const value = kind === 'schema' ? { models: [] } : { models: [] };
+      const value = kind === 'semantic' ? { description: 'Revenue excludes refunds.' } : { models: [] };
       const file = join(directory, 'metadata.json');
       await writeFile(file, JSON.stringify(value));
       await execute([kind, datasetId, '--file', file]);
       expect(request).toHaveBeenCalledExactlyOnceWith(
         datasetId,
-        kind === 'schema' ? { command: kind, schema: value } : { command: kind, metrics: undefined, profile: value }
+        kind === 'profile' ? { command: kind, metrics: undefined, profile: value } : { command: kind, [kind]: value }
       );
       await writeFile(file, '{"tables":null}');
       vi.mocked(request).mockClear();
@@ -186,7 +187,7 @@ describe('source', () => {
   it.each(['invalid', '', '{"type":"python","execute":"custom"}'])(
     'rejects invalid engine %s before creating a session',
     async (engine) => {
-      await expect(run(['source', 'sales.csv', '--engine', engine])).rejects.toThrow('Invalid enum value');
+      await expect(run(['source', 'sales.csv', '--engine', engine])).rejects.toThrow('Invalid option');
       expect(createSession).not.toHaveBeenCalled();
     }
   );
@@ -266,6 +267,7 @@ describe('source', () => {
 describe('dataset commands', () => {
   it.each([
     { args: ['schema'], message: { command: 'schema', schema: undefined } },
+    { args: ['semantic'], message: { command: 'semantic', semantic: undefined } },
     { args: ['dispose'], message: { command: 'dispose' } },
     { args: ['profile'], message: { command: 'profile', profile: undefined, metrics: undefined } },
     {
@@ -305,8 +307,8 @@ describe('dataset commands', () => {
     { args: ['query', '--dsl', 'result = 1', '--engine', 'python'], error: 'Unknown option' },
     { args: ['suggest', '--count', '0'], error: '--count must be an integer' },
     { args: ['profile', '--metrics', 'mean,'], error: '--metrics contains an empty item.' },
-    { args: ['analyze', 'Total sales?', '--strategy', 'invalid'], error: 'Invalid enum value' },
-    { args: ['analyze', 'Total sales?', '--strategy', 'subset'], error: 'Invalid enum value' },
+    { args: ['analyze', 'Total sales?', '--strategy', 'invalid'], error: 'Invalid option' },
+    { args: ['analyze', 'Total sales?', '--strategy', 'subset'], error: 'Invalid option' },
   ])('rejects invalid $args before sending a request', async ({ args: [command, ...args], error }) => {
     await expect(run([command, datasetId, ...args])).rejects.toThrow(error);
     expect(request).not.toHaveBeenCalled();

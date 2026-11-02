@@ -102,6 +102,23 @@ const saved = await ava.semantic();
 
 `undefined` uses the default options; semantic currently has no configurable options. The setter saves a validated copy. Subsequent `analyze()`, `translate()`, and `suggest()` calls combine it with the schema and available profile.
 
+### Use the CLI
+
+Save the definition as a JSON file, for example with `JSON.stringify(semantic, null, 2)` in your application. After loading the source with `ava source`, use its dataset ID:
+
+```sh
+ava semantic "$DATASET_ID" --file semantic.json
+ava semantic "$DATASET_ID" > semantic-readback.json
+```
+
+`--file` takes a plain path without `@` and replaces the complete session definition. Reading without `--file` returns the current definition, initially `{}`. Both operations work without a model key. To clear the definition, load a file containing `{}`. Invalid files leave the previous value intact.
+
+Keep the JSON file for later sessions; the CLI does not load it automatically. Schema/profile updates retain semantic, while a new source session starts without it. The [AVA skill](/documentation/agent-skill/) guides agents to resolve material definition gaps with the user and save reusable confirmations with their source and scope. File discovery and scope checks are agent responsibilities.
+
+`analyze`, `translate`, and `suggest` use these definitions as model context. Agent-written `query` DSL must apply them explicitly; semantic does not rewrite executed queries.
+
+### Query using the definition
+
 For “Show revenue by region,” a query applying these definitions can look like this:
 
 ```sql

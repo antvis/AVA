@@ -6,7 +6,7 @@ import { jsonValue, schemaStructure } from './schema';
 import type { DataModel, Model, Profile, Properties, Schema, Semantic } from '../types';
 
 const name = z.string().min(1);
-const properties = z.record(jsonValue);
+const properties = z.record(z.string(), jsonValue);
 const key = z.union([name, z.array(name).nonempty()]);
 
 const column = z
@@ -72,7 +72,7 @@ const cube = z
     measures: z.array(measure).nonempty(),
     dimensions: z.array(measure).optional(),
     timeDimensions: z.array(measure).optional(),
-    hierarchies: z.record(z.array(name).nonempty()).optional(),
+    hierarchies: z.record(z.string(), z.array(name).nonempty()).optional(),
     properties: properties.optional(),
   })
   .strict();

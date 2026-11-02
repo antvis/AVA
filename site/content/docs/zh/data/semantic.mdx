@@ -104,6 +104,23 @@ const saved = await ava.semantic();
 
 `undefined` 表示使用默认选项；目前 semantic 没有可配置选项。Setter 会验证并保存一份副本，之后的 `analyze()`、`translate()` 和 `suggest()` 会将它与 schema、已有 profile 一起使用。
 
+<Heading as="h3" id="use-the-cli">通过 CLI 使用</Heading>
+
+先将定义保存为 JSON 文件，例如在应用中调用 `JSON.stringify(semantic, null, 2)`。用 `ava source` 加载数据源后，通过返回的数据集 ID 设置或读取定义：
+
+```sh
+ava semantic "$DATASET_ID" --file semantic.json
+ava semantic "$DATASET_ID" > semantic-readback.json
+```
+
+`--file` 接受不带 `@` 的普通文件路径，并替换会话中的完整定义。不传 `--file` 时读取当前定义，初始值为 `{}`。这两种操作都不需要模型密钥。加载内容为 `{}` 的文件即可清空定义；文件无效时，原有定义保持不变。
+
+保留这份 JSON 文件，方便后续会话复用；CLI 不会自动加载它。更新 schema 或 profile 会保留语义定义，新建数据源会话则需要重新设置。[AVA Skill](/documentation/agent-skill/) 会引导 Agent 与用户确认影响分析结果的业务口径，并记录已确认口径的来源和适用范围，供后续复用。查找定义文件、判断其是否适用于当前数据源，由 Agent 负责。
+
+`analyze`、`translate` 和 `suggest` 会将这些定义作为模型上下文。Agent 自行编写的 `query` DSL 需要显式体现业务规则；语义定义不会改写实际执行的查询。
+
+<Heading as="h3" id="query-using-the-definition">按业务口径查询</Heading>
+
 对于“按地区统计收入”，应用这些定义的查询可以写成：
 
 ```sql

@@ -12,7 +12,7 @@ ava schema "$DATASET_ID" > schema.json
 
 `source` 准备好数据源后返回会话 ID。结构发现按需进行；`schema` 返回数据源结构，以及用于编写查询的 `language`（包含 `name`、`fence` 和可选的 `instructions`）。重复调用 schema 会复用会话缓存。已知的查询不必提前单独调用 schema，也可以直接执行。
 
-加载结构化数据、查看 schema、计算 profile、执行 query，以及 `viz` 都不需要模型密钥。如果要使用 AI 命令或文本数据源，请在创建会话前设置 `OPENAI_API_KEY`，以及可选的 `OPENAI_MODEL`、`OPENAI_BASE_URL`。会话创建后不能修改其模型配置。
+加载结构化数据、查看 schema、计算 profile、读写 semantic、执行 query，以及 `viz` 都不需要模型密钥。如果要使用 AI 命令或文本数据源，请在创建会话前设置 `OPENAI_API_KEY`，以及可选的 `OPENAI_MODEL`、`OPENAI_BASE_URL`。会话创建后不能修改其模型配置。
 
 <Heading as="h2" id="source-inputs-and-engines">数据源输入与引擎</Heading>
 
@@ -22,16 +22,19 @@ ava schema "$DATASET_ID" > schema.json
 
 <Heading as="h2" id="reuse-saved-metadata">复用已有元数据</Heading>
 
-加载数据源后，可以为 `schema` 或 `profile` 提供 `--file`，读取已有 JSON 文件：
+加载数据源后，可以为 `schema`、`profile` 或 `semantic` 提供 `--file`，读取已有 JSON 文件：
 
 ```bash
 ava schema "$DATASET_ID" --file schema.json
 ava profile "$DATASET_ID" --file profile.json
+ava semantic "$DATASET_ID" --file semantic.json
 ```
 
-传入普通文件路径，不加 `@`。AVA 验证后将内容保存到会话中。设置 schema 会清空 profile，因此需要同时提供时，请先设置 schema。设置 profile 只替换统计信息，不替换 schema。元数据应与当前数据源匹配。
+传入普通文件路径，不加 `@`。AVA 验证后将内容保存到会话中。设置 schema 会清空 profile，因此需要同时提供时，请先设置 schema。设置 profile 只替换统计信息，不替换 schema。设置 semantic 会替换完整业务定义，并保留 schema 和 profile；更新 schema 或 profile 也会保留 semantic。元数据应与当前数据源匹配。
 
-不提供 `--file` 时，schema 使用缓存结构，或通过引擎发现；profile 则重新计算统计信息。`--file` 不可与 `--metrics` 同时使用。详见 [schema 行为](/documentation/reference/api/#schema)和 [profile 行为](/documentation/reference/api/#profile)。
+不提供 `--file` 时，schema 使用缓存结构，或通过引擎发现；profile 重新计算统计信息；semantic 返回已保存的定义，初始值为 `{}`。profile 的 `--file` 不可与 `--metrics` 同时使用。详见 [schema 行为](/documentation/reference/api/#schema)、[profile 行为](/documentation/reference/api/#profile)和[业务口径](/documentation/data/semantic/)。
+
+保留 semantic JSON 文件，可在不同会话中复用已确认的指标口径。加载内容为 `{}` 的文件即可清空当前定义；文件无效时，原有定义保持不变。验证只检查 JSON 结构，不能证明 SQL 正确或业务规则适用于当前数据源。CLI 不会自动查找、合并定义文件，也不会将定义持久化到会话之外。
 
 <Heading as="h2" id="explore-and-analyze">探索与分析</Heading>
 
@@ -52,7 +55,7 @@ ava translate "$DATASET_ID" "Total revenue by region"
 ava analyze "$DATASET_ID" "Total revenue by region" --strategy direct
 ```
 
-这些操作会按需发现 schema，并使用已有 profile。CLI 支持 `direct` 和 `loop`。`--max-rows` 接受 1—10,000，默认 200；JavaScript API 的硬性行数上限更高。
+这些操作会按需发现 schema，并使用已有 profile 和已加载的语义定义。`query` 按原样执行 DSL；语义定义不会改写查询，也不会创建数据库对象。CLI 支持 `direct` 和 `loop`。`--max-rows` 接受 1—10,000，默认 200；JavaScript API 的硬性行数上限更高。
 
 <Heading as="h2" id="charts-without-a-dataset-session">不依赖数据集会话的图表命令</Heading>
 
@@ -73,6 +76,7 @@ ava visualize --query "Plot revenue by region" --data @rows.json
 | `source` | `dataset`：路径、URL、`@file` 或 `-` | `-t` / `--type`：`csv-file`、`json-file`、`parquet`、`excel`、`sqlite`，默认按扩展名推断。`--engine`：`duckdb`、`python`、`javascript`、`supabase`、`clickhouse`，推断规则见上文。 |
 | `schema` | `dataset-id` | 可选 `--file`：已有 schema JSON 文件的路径。 |
 | `profile` | `dataset-id` | 可选 `--file`：已有 profile JSON 文件的路径；否则可用 `--metrics` 指定逗号分隔的指标名，默认[标准指标集](/documentation/reference/api/#profile)。传入空字符串则不计算统计项。 |
+| `semantic` | `dataset-id` | 可选 `--file`：Semantic JSON 文件的路径，用于替换会话中的完整定义；不提供时读取当前定义。 |
 | `suggest` | `dataset-id` | `--count`：整数 `1`—`100`，默认 `3`。 |
 | `analyze` | `dataset-id`、自然语言 `query` | `--strategy`：`direct`（默认）或 `loop`；结果限制见下方。 |
 | `translate` | `dataset-id`、自然语言 `query` | 无额外标志。 |
@@ -95,7 +99,7 @@ ava visualize --query "Plot revenue by region" --data @rows.json
 
 <Heading as="h2" id="session-lifecycle">会话生命周期</Heading>
 
-会话闲置 30 分钟后过期，重新加载数据源可获取新 ID。
+会话闲置 30 分钟后过期，重新加载数据源可获取新 ID。复用已保存的语义定义前，先确认它仍适用于当前数据源，再加载到新会话。
 
 使用结束后释放会话：
 

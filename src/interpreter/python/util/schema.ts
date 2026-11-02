@@ -6,7 +6,7 @@ import { excelOptionsSchema, excelSheetSchema } from '../../../util/excel';
 /** Validate the JSON output of the generated Python script. */
 export const resultSchema = z
   .object({
-    data: z.array(z.record(jsonValue)),
+    data: z.array(z.record(z.string(), jsonValue)),
     schema: z.array(z.object({ name: z.string(), type: z.string().optional() })),
     truncated: z.literal(true).optional(),
     truncatedBy: z.enum(['maxRows', 'maxResultBytes']).optional(),
@@ -49,7 +49,7 @@ const excelOptions = excelOptionsSchema.extend({
     .optional(),
 });
 
-const fileOptions = z.object({ path: z.string().min(1), headers: z.record(z.string()).optional() }).strict();
+const fileOptions = z.object({ path: z.string().min(1), headers: z.record(z.string(), z.string()).optional() }).strict();
 
 /** Validate and snapshot configuration; data loading runs in the generated script. */
 export const sourceSchema = z
@@ -58,7 +58,7 @@ export const sourceSchema = z
       type: z.literal('csv'),
       options: z.object({ csv: z.string(), options: csvOptions.optional() }).strict(),
     }),
-    z.object({ type: z.literal('json'), options: z.object({ data: z.array(z.record(jsonValue)) }).strict() }),
+    z.object({ type: z.literal('json'), options: z.object({ data: z.array(z.record(z.string(), jsonValue)) }).strict() }),
     z.object({ type: z.literal('csv-file'), options: fileOptions.extend({ options: csvOptions.optional() }) }),
     z.object({ type: z.literal('json-file'), options: fileOptions }),
     z.object({ type: z.literal('excel'), options: excelOptions }),
