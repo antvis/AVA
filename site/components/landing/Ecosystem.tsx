@@ -25,7 +25,7 @@ const PROJECTS = [
     status: 'Community integration',
     href: 'https://github.com/HellowVirgil/dsh-antv-ava',
     repository: 'HellowVirgil/dsh-antv-ava',
-    image: '/ecosystem/deepseek-harness.png',
+    image: '/ecosystem/deepseek-harness.jpg',
     kind: 'dsh',
   },
   {
@@ -35,6 +35,7 @@ const PROJECTS = [
     status: 'Community extension',
     href: 'https://github.com/yvonneyx/ava-engine-duckdb-wasm',
     repository: 'yvonneyx/ava-engine-duckdb-wasm',
+    image: '/ecosystem/duckdb-wasm.png',
     kind: 'sql',
   },
   {
@@ -87,24 +88,6 @@ const PROJECTS = [
 ];
 
 function ProjectVisual({ kind }: { kind: string }) {
-  if (kind === 'sql') {
-    return (
-      <div className={styles.sqlVisual} aria-hidden="true">
-        <div>
-          <span>● ● ●</span>
-          <strong>Browser worker</strong>
-        </div>
-        <code>
-          <span>SELECT</span> region, SUM(sales)
-          <br />
-          <span>FROM</span> data <span>GROUP BY</span> region;
-        </code>
-        <p>
-          CSV <i>→</i> DuckDB-Wasm <i>→</i> Chart
-        </p>
-      </div>
-    );
-  }
   if (kind === 'tracing') {
     return (
       <div className={styles.traceVisual} aria-hidden="true">
