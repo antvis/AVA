@@ -3,10 +3,10 @@ import { describe, expect, it } from 'vitest';
 import { convertRecord } from '../../../src/duckdb/loaders/tencent/convert';
 import { createSnapshotBuilder } from '../../../src/duckdb/loaders/tencent/snapshot';
 
-const fields = [{ field_id: 'f1', field_title: '文本"\n', field_type: 'text' }];
-const record = (record_id: string) => ({
-  record_id,
-  field_values: [{ field: '文本"\n', text_value: { items: [{ text: '中文🙂"\n', type: 'text' }] } }],
+const fields = [{ fieldID: 'f1', fieldTitle: '文本"\n', fieldType: 1 }];
+const record = (recordID: string) => ({
+  recordID,
+  values: { '文本"\n': [{ text: '中文🙂"\n' }] },
 });
 
 describe('Tencent Docs expanded snapshot budgets', () => {
@@ -32,7 +32,7 @@ describe('Tencent Docs expanded snapshot budgets', () => {
   it('budgets omitted/null cells and record IDs before allocating the next dense row', () => {
     const snapshot = createSnapshotBuilder(fields, { maxBytes: 1024, maxCells: 2 });
     expect(snapshot.maxRecords).toBe(1);
-    snapshot.append({ record_id: 'empty', field_values: [] });
+    snapshot.append({ recordID: 'empty', values: {} });
     expect(snapshot.rows).toEqual([{ _record_id: 'empty', '文本"\n': null }]);
     // Even malformed input hits the cell limit before convertRecord is invoked.
     expect(() => snapshot.append(null)).toThrow('cell read limit');
@@ -41,9 +41,9 @@ describe('Tencent Docs expanded snapshot budgets', () => {
 
   it('caps a thousand-column sparse source before it can expand to 100 million properties', () => {
     const metadata = Array.from({ length: 1000 }, (_, i) => ({
-      field_id: `f${i}`,
-      field_title: `c${i}`,
-      field_type: 'number',
+      fieldID: `f${i}`,
+      fieldTitle: `c${i}`,
+      fieldType: 2,
     }));
     const snapshot = createSnapshotBuilder(metadata);
     expect(snapshot.maxRecords).toBe(999);

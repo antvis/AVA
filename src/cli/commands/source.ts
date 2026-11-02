@@ -114,7 +114,9 @@ Feishu Bitable:
   Docx and Sheets links are not supported.
 
 Environment:
-  TENCENT_DOCS_TOKEN Tencent Docs MCP Authorization value for tencent-smartsheet.
+  TENCENT_DOCS_CLIENT_ID Tencent Docs OpenAPI application Client ID.
+  TENCENT_DOCS_OPEN_ID Tencent Docs OAuth Open ID.
+  TENCENT_DOCS_ACCESS_TOKEN Tencent Docs OAuth access token.
   OPENAI_API_KEY     Required for text sources and subsequent AI commands.
   OPENAI_MODEL       Model name (default: gpt-4o-mini).
   OPENAI_BASE_URL    Optional API base URL.
@@ -155,7 +157,7 @@ feishu.json:
 Tencent Docs SmartSheet (Node.js / DuckDB):
   tencent-docs.json:
     { "type": "tencent-smartsheet", "options": { "fileId": "<file-id>", "sheetId": "<sheet-id>" } }
-  Set TENCENT_DOCS_TOKEN before loading. Only supported scalar fields are exposed.
+  Set the three TENCENT_DOCS OpenAPI credentials before loading. fileId must be a native API ID.
   Reads a complete, bounded snapshot into data; _record_id preserves source identity.
   Explicit IDs are required; document sharing URLs are not auto-detected.
   Dataset sessions require macOS/Linux; on Windows use the SDK or WSL.

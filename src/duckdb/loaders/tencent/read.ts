@@ -3,7 +3,7 @@ import { tencentDocsOptionsSchema } from './config';
 import { supportedFields } from './convert';
 import { createSnapshotBuilder } from './snapshot';
 
-import type { TencentReadTool } from './client';
+import type { TencentReadOperation } from './client';
 import type { TencentCell, TencentField } from './convert';
 import type { TencentDocsSourceOptions } from '../../../types';
 
@@ -18,7 +18,7 @@ export interface TencentSnapshot {
 /** Fail closed on changing totals, skipped offsets or malformed pagination. */
 export async function readPages(
   client: Pick<TencentDocsClient, 'call'>,
-  tool: TencentReadTool,
+  operation: TencentReadOperation,
   args: Record<string, unknown>,
   key: 'fields' | 'records',
   limit: number,
@@ -32,14 +32,14 @@ export async function readPages(
   let total: number | undefined;
   let bytes = 0;
   for (;;) {
-    const page = await client.call(tool, { ...args, offset, limit });
+    const page = await client.call(operation, { ...args, offset, limit });
     bytes += Buffer.byteLength(JSON.stringify(page), 'utf8');
     if (bytes > MAX_READ_BYTES) throw new TencentDocsError('Paginated response exceeds the 16 MiB read limit.');
     const batch = page[key];
     if (
       !Array.isArray(batch) ||
       batch.length > limit ||
-      typeof page.has_more !== 'boolean' ||
+      typeof page.hasMore !== 'boolean' ||
       !Number.isSafeInteger(page.total) ||
       (page.total as number) < 0
     )
@@ -51,7 +51,7 @@ export async function readPages(
       throw new TencentDocsError(`${key} exceed the configured read limit; no partial snapshot was loaded.`);
     }
     for (const item of batch) {
-      const id = isObject(item) ? item[key === 'fields' ? 'field_id' : 'record_id'] : undefined;
+      const id = isObject(item) ? item[key === 'fields' ? 'fieldID' : 'recordID'] : undefined;
       if (typeof id !== 'string' || !id || ids.has(id)) {
         throw new TencentDocsError('Missing or repeated item ID during pagination.');
       }
@@ -59,7 +59,7 @@ export async function readPages(
     }
     count += batch.length;
     if (count > total) throw new TencentDocsError('Pagination returned more items than its total.');
-    if (!page.has_more) {
+    if (!page.hasMore) {
       if (count !== total) throw new TencentDocsError('Incomplete snapshot; returned item count differs from total.');
     } else if (!batch.length || page.next !== offset + batch.length || count >= total) {
       throw new TencentDocsError('Pagination did not advance consistently.');
@@ -68,42 +68,46 @@ export async function readPages(
     // copy of the entire sparse response alongside the expanded snapshot.
     if (consume) batch.forEach((item) => consume(item));
     else items.push(...batch);
-    if (!page.has_more) return items;
+    if (!page.hasMore) return items;
     offset = page.next as number;
   }
 }
 
 export async function readTencentTable(input: TencentDocsSourceOptions): Promise<TencentSnapshot> {
   const options = tencentDocsOptionsSchema.parse(input);
-  const token = (options.token ?? process.env.TENCENT_DOCS_TOKEN)?.trim();
-  if (!token || /[\r\n]/.test(token)) throw new TencentDocsError('Set a valid token or TENCENT_DOCS_TOKEN.');
+  const credentials = {
+    clientId: (options.clientId ?? process.env.TENCENT_DOCS_CLIENT_ID ?? '').trim(),
+    openId: (options.openId ?? process.env.TENCENT_DOCS_OPEN_ID ?? '').trim(),
+    accessToken: (options.accessToken ?? process.env.TENCENT_DOCS_ACCESS_TOKEN ?? '').trim(),
+  };
   const controller = new AbortController();
   const timer = setTimeout(() => controller.abort(), options.timeoutMs ?? 60000);
   const client = new TencentDocsClient(controller.signal, options.maxRetries ?? 2);
   try {
-    await client.connect(token);
-    const args = { file_id: options.fileId, sheet_id: options.sheetId };
-    const metadata = await readPages(client, 'smartsheet.list_fields', args, 'fields', 100, MAX_FIELDS);
+    await client.connect(credentials);
+    const args = { fileId: options.fileId, sheetId: options.sheetId };
+    const metadata = await readPages(client, 'getFields', args, 'fields', options.pageSize ?? 100, MAX_FIELDS);
     const fields = supportedFields(metadata);
     const snapshot = createSnapshotBuilder(fields);
     await readPages(
       client,
-      'smartsheet.list_records',
-      { ...args, field_titles: fields.map((field) => field.field_title) },
+      'getRecords',
+      { ...args, fieldTitles: fields.map((field) => field.fieldTitle) },
       'records',
       options.pageSize ?? 100,
       Math.min(options.maxRecords ?? 10000, snapshot.maxRecords),
       snapshot.append
     );
-    const latest = supportedFields(await readPages(client, 'smartsheet.list_fields', args, 'fields', 100, MAX_FIELDS));
+    const latest = supportedFields(
+      await readPages(client, 'getFields', args, 'fields', options.pageSize ?? 100, MAX_FIELDS)
+    );
     if (JSON.stringify(fields) !== JSON.stringify(latest)) {
       throw new TencentDocsError('Field metadata changed during loading; retry the snapshot.');
     }
     return { fields, rows: snapshot.rows };
   } finally {
     clearTimeout(timer);
-    // Closing the transport aborts its background SSE reader. A cleanup failure
-    // must not replace a more useful loading error or leak upstream error text.
+    // Cleanup must not replace a more useful loading error.
     await client.close().catch(() => undefined);
   }
 }

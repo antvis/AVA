@@ -494,12 +494,16 @@ export interface FeishuBitableSourceOptions {
 
 /** Read-only snapshot of one Tencent Docs SmartSheet table (Node.js / DuckDB). */
 export interface TencentDocsSourceOptions {
-  /** file_id accepted by Tencent Docs MCP (including a document's encoded ID). */
+  /** Native OpenAPI fileID, not an encoded sharing-link ID. */
   fileId: string;
   sheetId: string;
-  /** Exact Authorization value from Tencent Docs; falls back to TENCENT_DOCS_TOKEN. */
-  token?: string;
-  /** Records per request, 1–100. Default 100. */
+  /** OpenAPI Client ID; falls back to TENCENT_DOCS_CLIENT_ID. */
+  clientId?: string;
+  /** OAuth Open ID; falls back to TENCENT_DOCS_OPEN_ID. */
+  openId?: string;
+  /** OAuth access token; falls back to TENCENT_DOCS_ACCESS_TOKEN. */
+  accessToken?: string;
+  /** Field/record items per request, 1–100. Default 100. */
   pageSize?: number;
   /** Fail instead of truncating. Default 10,000; max 100,000, also bounded by expanded snapshot budgets. */
   maxRecords?: number;

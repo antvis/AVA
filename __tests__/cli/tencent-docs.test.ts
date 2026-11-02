@@ -29,6 +29,14 @@ describe('Tencent Docs CLI source config', () => {
     }
   });
 
+  it('accepts the explicit OpenAPI credential contract', () => {
+    const explicit = {
+      ...config,
+      options: { ...config.options, clientId: 'client', openId: 'open', accessToken: 'access' },
+    };
+    expect(sourceConfig.parse(explicit)).toEqual(explicit);
+  });
+
   it('rejects unsupported engines before starting a session', async () => {
     const directory = await mkdtemp(join(tmpdir(), 'ava-tencent-cli-'));
     try {
@@ -43,6 +51,7 @@ describe('Tencent Docs CLI source config', () => {
 
   it.each([
     { fileId: 'file' },
+    { fileId: 'file', sheetId: 'sheet', token: 'obsolete-mcp-token' },
     { fileId: 'file', sheetId: 'sheet', pageSize: 101 },
     { fileId: 'file', sheetId: 'sheet', endpoint: 'https://other-host.invalid' },
   ])('rejects invalid or unknown options', (options) => {

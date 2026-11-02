@@ -6,7 +6,7 @@ import type { TencentCell, TencentField } from './convert';
 const MAX_EXPANDED_BYTES = 16 * 1024 * 1024;
 const MAX_EXPANDED_CELLS = 1000000;
 
-/** Bound both serialized data and dense-object overhead, not just sparse MCP bytes. */
+/** Bound both serialized data and dense-object overhead, not just sparse API bytes. */
 export function createSnapshotBuilder(
   fields: TencentField[],
   limits = { maxBytes: MAX_EXPANDED_BYTES, maxCells: MAX_EXPANDED_CELLS }

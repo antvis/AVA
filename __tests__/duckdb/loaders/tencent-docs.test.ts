@@ -9,20 +9,20 @@ import sales from '../../../examples/tencent-docs/sales.json';
 vi.mock('../../../src/duckdb/loaders/tencent/read', () => ({ readTencentTable: vi.fn() }));
 
 const fields = supportedFields([
-  { field_id: 'f1', field_title: '文本', field_type: 'text' },
-  { field_id: 'f2', field_title: '数字', field_type: 'number' },
-  { field_id: 'f3', field_title: '单选', field_type: 'singleSelect' },
-  { field_id: 'f4', field_title: '日期', field_type: 'dateTime' },
+  { fieldID: 'f1', fieldTitle: '文本', fieldType: 1 },
+  { fieldID: 'f2', fieldTitle: '数字', fieldType: 2 },
+  { fieldID: 'f3', fieldTitle: '单选', fieldType: 17 },
+  { fieldID: 'f4', fieldTitle: '日期', fieldType: 4 },
 ]);
 const rows = sales.map((sale, i) =>
   convertRecord(fields, {
-    record_id: `r${i}`,
-    field_values: [
-      { field: '文本', text_value: { items: [{ text: sale.文本, type: 'text' }] } },
-      { field: '数字', number_value: sale.数字 },
-      { field: '单选', option_value: { items: [{ text: sale.单选 }] } },
-      { field: '日期', string_value: String(Date.parse(sale.日期)) },
-    ],
+    recordID: `r${i}`,
+    values: {
+      文本: [{ text: sale.文本 }],
+      数字: sale.数字,
+      单选: [{ text: sale.单选 }],
+      日期: String(Date.parse(sale.日期)),
+    },
   })
 );
 
@@ -36,7 +36,7 @@ afterEach(async () => {
   vi.clearAllMocks();
 });
 
-const options = { fileId: 'file', sheetId: 'sheet', token: 'test-token' };
+const options = { fileId: 'file', sheetId: 'sheet', clientId: 'client', openId: 'open', accessToken: 'test-token' };
 
 describe('Tencent Docs AVA / DuckDB integration (offline)', () => {
   it('loads a typed snapshot and verifies the two business examples independently of an LLM', async () => {
@@ -69,7 +69,7 @@ describe('Tencent Docs AVA / DuckDB integration (offline)', () => {
   it('retains empty records and explicitly typed all-null columns', async () => {
     vi.mocked(readTencentTable).mockResolvedValue({
       fields,
-      rows: [convertRecord(fields, { record_id: 'empty', field_values: [] })],
+      rows: [convertRecord(fields, { recordID: 'empty', values: {} })],
     });
     await ava.source({ type: 'tencent-smartsheet', options });
     const result = await ava.query('SELECT *, typeof("数字") AS number_type FROM data');

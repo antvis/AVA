@@ -1,3 +1,4 @@
+// TENCENT_DOCS_FILE_ID must be a native OpenAPI fileID, not a sharing-link encoded ID.
 // Run the real Unix CLI in separate processes: source -> schema -> query ->
 // optional model analysis -> dispose. No global `ava` installation is required.
 import assert from 'node:assert/strict';
@@ -39,11 +40,9 @@ const expectedRegions = [
 ];
 try {
   const path = join(directory, 'source.json');
-  await writeFile(
-    path,
-    JSON.stringify({ type: 'tencent-smartsheet', options: { fileId, sheetId, pageSize: 2 } }),
-    { mode: 0o600 }
-  );
+  await writeFile(path, JSON.stringify({ type: 'tencent-smartsheet', options: { fileId, sheetId, pageSize: 2 } }), {
+    mode: 0o600,
+  });
   ({ datasetId } = await command('source', `@${path}`));
   assert.match(datasetId, /^ds_/);
   phase = 'schema';

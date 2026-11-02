@@ -1,3 +1,4 @@
+// TENCENT_DOCS_FILE_ID must be a native OpenAPI fileID, not a sharing-link encoded ID.
 import assert from 'node:assert/strict';
 
 import { AVA } from '../../lib/index.js';

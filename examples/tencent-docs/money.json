@@ -1,0 +1,11 @@
+{
+  "columns": {
+    "currency": { "title": "校验_货币", "fieldType": 26, "sqlType": "DOUBLE" },
+    "percentage": { "title": "校验_百分比", "fieldType": 28, "sqlType": "DOUBLE" }
+  },
+  "records": [
+    { "marker": "AVA-MONEY-ZERO", "currency": 0, "percentage": 0 },
+    { "marker": "AVA-MONEY-POSITIVE", "currency": 1234.56, "percentage": 0.125 },
+    { "marker": "AVA-MONEY-NEGATIVE", "currency": -12.34, "percentage": -0.25 }
+  ]
+}

@@ -1,17 +1,5 @@
 import { setTimeout as delay } from 'node:timers/promises';
 
-import { Client, StreamableHTTPClientTransport } from '@modelcontextprotocol/client';
-
-const ENDPOINT = 'https://docs.qq.com/openapi/mcp';
-const ERROR_MESSAGES: Record<number, string> = {
-  400001: 'Invalid API parameters; verify fileId and sheetId.',
-  400005: 'Permission denied; grant the token owner access to this SmartSheet.',
-  400006: 'Authentication failed; check TENCENT_DOCS_TOKEN.',
-  400007: 'API quota exceeded; wait or check your Tencent Docs membership quota.',
-  400010: 'Tencent Docs service is temporarily unavailable.',
-  400012: 'Authorization expired; obtain a new Tencent Docs MCP token.',
-};
-
 export class TencentDocsError extends Error {
   constructor(message: string, readonly code?: number, readonly cause?: unknown, readonly status?: number) {
     super(`Tencent Docs: ${message}`);
@@ -23,25 +11,15 @@ export function isObject(value: unknown): value is Record<string, unknown> {
   return value !== null && typeof value === 'object' && !Array.isArray(value);
 }
 
-function apiError(code: number, message?: string, cause?: unknown, status?: number): TencentDocsError {
-  const hint = ERROR_MESSAGES[code];
-  return new TencentDocsError(
-    [`API request failed (code ${code}).`, message, hint].filter(Boolean).join(' '),
-    code,
-    cause,
-    status
-  );
+export interface TencentCredentials {
+  clientId: string;
+  openId: string;
+  accessToken: string;
 }
 
-function upstreamMessage(value: Record<string, unknown>): string | undefined {
-  const error = isObject(value.error) ? value.error : value;
-  const message = error.message ?? error.msg ?? (typeof value.error === 'string' ? value.error : undefined);
-  return typeof message === 'string' ? message : undefined;
-}
-
-/** Preserve upstream error properties/cause chains, redacting only the configured credential. */
-function redactToken(value: unknown, token: string, seen = new Map<object, unknown>()): unknown {
-  if (typeof value === 'string') return token ? value.split(token).join('[REDACTED]') : value;
+function redactCredentials(value: unknown, secrets: string[], seen = new Map<object, unknown>()): unknown {
+  if (typeof value === 'string')
+    return secrets.reduce((text, secret) => (secret ? text.split(secret).join('[REDACTED]') : text), value);
   if (value === null || typeof value !== 'object') return value;
   if (seen.has(value)) return seen.get(value);
   const copy = Array.isArray(value) ? [] : Object.create(Object.getPrototypeOf(value));
@@ -57,201 +35,199 @@ function redactToken(value: unknown, token: string, seen = new Map<object, unkno
     }
   }
   for (const descriptor of Object.values(descriptors)) {
-    if ('value' in descriptor) descriptor.value = redactToken(descriptor.value, token, seen);
+    if ('value' in descriptor) descriptor.value = redactCredentials(descriptor.value, secrets, seen);
   }
   Object.defineProperties(copy, descriptors);
   return copy;
 }
 
-/** Keep HTTP diagnostics bounded independently of successful MCP response limits. */
-async function httpErrorBody(response: Response): Promise<string> {
-  const reader = response.body?.getReader();
-  if (!reader) return '';
-  const decoder = new TextDecoder();
-  let text = '';
-  let remaining = 8192;
-  try {
-    while (remaining > 0) {
-      const { done, value } = await reader.read();
-      if (done) break;
-      const chunk = value.subarray(0, remaining);
-      text += decoder.decode(chunk, { stream: true });
-      remaining -= chunk.byteLength;
-    }
-    return text + decoder.decode() + (remaining === 0 ? ' [diagnostic body truncated at 8 KiB]' : '');
-  } finally {
-    await reader.cancel().catch(() => undefined);
-  }
-}
-
-function upstreamCode(value: Record<string, unknown>): unknown {
-  return value.code ?? value.ret ?? (isObject(value.error) ? value.error.code : undefined);
-}
-
-function checkError(value: Record<string, unknown>): void {
-  const code = upstreamCode(value);
-  if (typeof code === 'number' && code !== 0) throw apiError(code, upstreamMessage(value), value);
-  if (value.error) throw new TencentDocsError(upstreamMessage(value) ?? 'Tool returned an error.', undefined, value);
-}
-
-/** Prefer structuredContent; require exactly one JSON text block otherwise. */
-export function decodeToolResult(result: unknown): Record<string, unknown> {
-  if (!isObject(result)) throw new TencentDocsError('Invalid MCP tool response.');
-  let body: unknown = result.structuredContent;
-  if (body === undefined) {
-    const text = Array.isArray(result.content)
-      ? result.content.filter((item) => isObject(item) && item.type === 'text')
-      : [];
-    if (text.length === 1 && isObject(text[0]) && typeof text[0].text === 'string') {
-      try {
-        body = JSON.parse(text[0].text);
-      } catch {
-        // Deliberately do not include the untrusted body in the error.
+/** Drop a cut-off credential prefix, even if its remaining bytes never arrive.
+ * KMP bounds the work to the diagnostic tail and credential prefixes, rather
+ * than reading ahead or retaining an unbounded secret-sized response buffer.
+ * Repeat after removal so overlapping credentials cannot expose a new prefix.
+ * An ambiguous benign suffix may also be omitted: diagnostics fail closed.
+ */
+function withoutCredentialSuffix(text: string, secrets: string[]): string {
+  for (;;) {
+    let longest = 0;
+    for (const secret of secrets) {
+      const pattern = secret.slice(0, text.length);
+      if (!pattern) continue;
+      const prefix = new Uint32Array(pattern.length);
+      for (let i = 1, matched = 0; i < pattern.length; i++) {
+        while (matched && pattern[i] !== pattern[matched]) matched = prefix[matched - 1];
+        if (pattern[i] === pattern[matched]) matched++;
+        prefix[i] = matched;
       }
+      let matched = 0;
+      for (let i = Math.max(0, text.length - pattern.length); i < text.length; i++) {
+        while (matched && (matched === pattern.length || text[i] !== pattern[matched])) matched = prefix[matched - 1];
+        if (text[i] === pattern[matched]) matched++;
+      }
+      longest = Math.max(longest, matched);
     }
+    if (!longest) return text;
+    text = text.slice(0, text.length - longest);
   }
-  if (isObject(body)) {
-    checkError(body);
-    if (isObject(body.data)) checkError(body.data);
-  }
-  if (result.isError) {
-    const text = Array.isArray(result.content)
-      ? result.content
-          .filter((item) => isObject(item) && item.type === 'text' && typeof item.text === 'string')
-          .map((item) => item.text)
-          .join('\n')
-      : '';
-    throw new TencentDocsError(
-      (isObject(body) ? upstreamMessage(body) : undefined) || text || 'MCP tool reported failure.',
-      undefined,
-      result
-    );
-  }
-  if (!isObject(body)) throw new TencentDocsError('Expected a JSON object from the MCP tool.');
-  if (isObject(body.data)) {
-    return body.data;
-  }
-  return body;
 }
 
-/** Only the two read tools are exposed; no model can select a write operation. */
-export type TencentReadTool = 'smartsheet.list_fields' | 'smartsheet.list_records';
+/** Sanitize before output truncation; also protect an already-bounded HTTP read. */
+function diagnosticBody(text: string, secrets: string[], readTruncated: boolean): string {
+  const input = readTruncated ? withoutCredentialSuffix(text, secrets) : text;
+  const safe = redactCredentials(input, secrets) as string;
+  const bytes = Buffer.from(safe, 'utf8');
+  const outputTruncated = bytes.byteLength > 8192;
+  // A streaming decode intentionally omits an incomplete final UTF-8 character.
+  const output = outputTruncated ? new TextDecoder().decode(bytes.subarray(0, 8192), { stream: true }) : safe;
+  const bounded = outputTruncated ? withoutCredentialSuffix(output, secrets) : output;
+  return bounded + (readTruncated || outputTruncated ? ' [diagnostic body truncated at 8 KiB]' : '');
+}
+
+/** Only these two read operations are available; no discovery or remote writes. */
+export type TencentReadOperation = 'getFields' | 'getRecords';
 
 export class TencentDocsClient {
-  private readonly client = new Client({ name: 'ava-tencent-docs', version: '1.0.0' });
-  private token = '';
+  private credentials?: TencentCredentials;
 
   constructor(private readonly signal: AbortSignal, private readonly maxRetries: number) {}
 
-  async connect(token: string): Promise<void> {
-    this.token = token;
-    const transport = new StreamableHTTPClientTransport(new URL(ENDPOINT), {
-      requestInit: { headers: { Authorization: token } },
-      fetch: async (input, init) => {
-        const url = new URL(String(input));
-        if (url.origin !== 'https://docs.qq.com' || url.pathname !== '/openapi/mcp') {
-          throw new TencentDocsError('Refusing an unexpected MCP request destination.');
-        }
-        // Do not forward the Authorization value to a redirect target.
-        const signal = init?.signal ? AbortSignal.any([this.signal, init.signal]) : this.signal;
-        for (let attempt = 0; ; attempt++) {
-          let response: Response;
-          try {
-            response = await fetch(input, { ...init, signal, redirect: 'error' });
-          } catch (error) {
-            if (signal.aborted)
-              throw new TencentDocsError('Load deadline exceeded.', undefined, redactToken(error, token));
-            if (attempt >= this.maxRetries) throw redactToken(error, token);
-            await delay(500 * 2 ** attempt, undefined, { signal });
-            continue;
-          }
-          if (response.ok) {
-            if (!response.body) return response;
-            let bytes = 0;
-            const body = response.body.pipeThrough(
-              new TransformStream<Uint8Array, Uint8Array>({
-                transform(chunk, controller) {
-                  bytes += chunk.byteLength;
-                  if (bytes > 16 * 1024 * 1024)
-                    throw new TencentDocsError('MCP response exceeds the 16 MiB read limit.');
-                  controller.enqueue(chunk);
-                },
-              })
-            );
-            return new Response(body, {
-              status: response.status,
-              statusText: response.statusText,
-              headers: response.headers,
-            });
-          }
-          const status = response.status;
-          const retryAfter = response.headers.get('Retry-After');
-          const waitMs = retryAfter
-            ? Math.max(0, /^\d+$/.test(retryAfter) ? Number(retryAfter) * 1000 : Date.parse(retryAfter) - Date.now())
-            : 500 * 2 ** attempt;
-          if ([429, 502, 503, 504].includes(status) && attempt < this.maxRetries && waitMs <= 30000) {
-            await response.body?.cancel();
-            await delay(waitMs, undefined, { signal });
-            continue;
-          }
-          const body = await httpErrorBody(response);
-          let payload: unknown = body;
-          try {
-            payload = JSON.parse(body);
-          } catch {
-            // Non-JSON HTTP diagnostics are useful too (for example gateway errors).
-          }
-          const requestId = response.headers.get('x-request-id') ?? response.headers.get('x-log-id');
-          const diagnostic = `HTTP request failed (status ${status} ${response.statusText}).${
-            requestId ? ` Request ID: ${requestId}.` : ''
-          }${body ? ` ${body}` : ''}`;
-          const upstream = isObject(payload) ? upstreamCode(payload) : undefined;
-          const code =
-            typeof upstream === 'number' && upstream !== 0
-              ? upstream
-              : status === 401
-              ? 400006
-              : status === 403
-              ? 400005
-              : status === 429
-              ? 400007
-              : status;
-          throw redactToken(apiError(code, diagnostic, { body: payload, requestId }, status), token);
-        }
-      },
-    });
-    try {
-      await this.client.connect(transport, { signal: this.signal });
-    } catch (error) {
-      const upstream = redactToken(error, token);
-      if (this.signal.aborted) throw new TencentDocsError('Load deadline exceeded.', undefined, upstream);
-      throw upstream;
+  async connect(credentials: TencentCredentials): Promise<void> {
+    for (const key of ['clientId', 'openId', 'accessToken'] as const) {
+      const value = credentials[key];
+      if (typeof value !== 'string' || !value.trim() || /[^\x21-\x7e]/.test(value)) {
+        throw new TencentDocsError(`Set a valid ${key} or its TENCENT_DOCS environment variable.`);
+      }
     }
+    this.credentials = credentials;
   }
 
-  async call(name: TencentReadTool, args: Record<string, unknown>): Promise<Record<string, unknown>> {
-    if (name !== 'smartsheet.list_fields' && name !== 'smartsheet.list_records') {
-      throw new TencentDocsError('Only SmartSheet field and record read tools are allowed.');
+  async call(operation: TencentReadOperation, args: Record<string, unknown>): Promise<Record<string, unknown>> {
+    if (operation !== 'getFields' && operation !== 'getRecords') {
+      throw new TencentDocsError('Only SmartSheet field and record read operations are allowed.');
     }
-    for (let attempt = 0; ; attempt++) {
-      try {
-        const result = await this.client.callTool({ name, arguments: args }, { signal: this.signal });
-        return decodeToolResult(result);
-      } catch (error) {
-        const upstream = redactToken(error, this.token);
-        if (this.signal.aborted) throw new TencentDocsError('Load deadline exceeded.', undefined, upstream);
-        const code = error instanceof TencentDocsError ? error.code : isObject(error) ? error.code : undefined;
-        // Daily quota exhaustion is not retried. Only the documented transient service error is.
-        if (code === 400010 && attempt < this.maxRetries) {
+    if (!this.credentials) throw new TencentDocsError('OpenAPI credentials are not configured.');
+    const { fileId, sheetId, ...params } = args;
+    if (typeof fileId !== 'string' || !fileId || typeof sheetId !== 'string' || !sheetId) {
+      throw new TencentDocsError('Explicit native fileId and sheetId are required.');
+    }
+    const url = `https://docs.qq.com/openapi/smartbook/v2/files/${encodeURIComponent(
+      fileId
+    )}/sheets/${encodeURIComponent(sheetId)}`;
+    const credentials = this.credentials;
+    const secrets = [
+      ...new Set(Object.values(credentials).flatMap((value) => [value, JSON.stringify(value).slice(1, -1)])),
+    ].sort((a, b) => b.length - a.length);
+    try {
+      for (let attempt = 0; ; attempt++) {
+        this.signal.throwIfAborted();
+        let response: Response;
+        try {
+          response = await fetch(url, {
+            method: 'POST',
+            headers: {
+              'Access-Token': credentials.accessToken,
+              'Client-Id': credentials.clientId,
+              'Open-Id': credentials.openId,
+              'Content-Type': 'application/json',
+              Accept: 'application/json',
+            },
+            body: JSON.stringify({ [operation]: params }),
+            redirect: 'error',
+            signal: this.signal,
+          });
+        } catch (error) {
+          if (this.signal.aborted || attempt >= this.maxRetries) throw error;
           await delay(500 * 2 ** attempt, undefined, { signal: this.signal });
           continue;
         }
-        throw upstream;
+        const retryAfter = response.headers.get('Retry-After');
+        const waitMs =
+          retryAfter === null
+            ? 500 * 2 ** attempt
+            : Math.max(0, /^\d+$/.test(retryAfter) ? Number(retryAfter) * 1000 : Date.parse(retryAfter) - Date.now());
+        if (
+          [429, 500, 502, 503, 504].includes(response.status) &&
+          attempt < this.maxRetries &&
+          Number.isFinite(waitMs) &&
+          waitMs <= 30000
+        ) {
+          await response.body?.cancel();
+          await delay(waitMs, undefined, { signal: this.signal });
+          continue;
+        }
+        // Bound even stalled body reads by the same whole-load deadline.
+        const { text, truncated } = await this.readBody(response, response.ok ? 16 * 1024 * 1024 : 8192);
+        let body: unknown;
+        try {
+          body = JSON.parse(text);
+        } catch {
+          /* Keep non-JSON HTTP diagnostics only on failure. */
+        }
+        const requestId = response.headers.get('x-request-id') ?? response.headers.get('x-log-id');
+        if (!response.ok || (isObject(body) && typeof body.ret === 'number' && body.ret !== 0)) {
+          const code = isObject(body) && typeof body.ret === 'number' ? body.ret : undefined;
+          const diagnostic = diagnosticBody(text, secrets, truncated);
+          throw new TencentDocsError(
+            `OpenAPI request failed (HTTP ${response.status}${code === undefined ? '' : `, ret ${code}`}).${
+              requestId ? ` Request ID: ${requestId}.` : ''
+            } ${diagnostic}`,
+            code,
+            {
+              body:
+                !truncated &&
+                isObject(body) &&
+                Buffer.byteLength(JSON.stringify(redactCredentials(body, secrets)), 'utf8') <= 8192
+                  ? body
+                  : diagnostic,
+              requestId,
+            },
+            response.status
+          );
+        }
+        if (!isObject(body) || body.ret !== 0 || !isObject(body.data) || !isObject(body.data[operation])) {
+          throw new TencentDocsError('Invalid OpenAPI response envelope.');
+        }
+        return body.data[operation] as Record<string, unknown>;
       }
+    } catch (error) {
+      const cause = redactCredentials(error, secrets);
+      if (this.signal.aborted) throw new TencentDocsError('Load deadline exceeded.', undefined, cause);
+      throw cause;
+    }
+  }
+
+  private async readBody(response: Response, maximum: number): Promise<{ text: string; truncated: boolean }> {
+    const reader = response.body?.getReader();
+    if (!reader) return { text: '', truncated: false };
+    const abort = () => {
+      void reader.cancel().catch(() => undefined);
+    };
+    this.signal.addEventListener('abort', abort, { once: true });
+    const decoder = new TextDecoder();
+    let text = '';
+    let bytes = 0;
+    try {
+      this.signal.throwIfAborted();
+      for (;;) {
+        const { done, value } = await reader.read();
+        this.signal.throwIfAborted();
+        if (done) return { text: text + decoder.decode(), truncated: false };
+        const remaining = maximum - bytes;
+        if (value.byteLength > remaining && response.ok)
+          throw new TencentDocsError('OpenAPI response exceeds the 16 MiB read limit.');
+        text += decoder.decode(value.subarray(0, remaining), { stream: true });
+        bytes += value.byteLength;
+        // Do not flush a partial UTF-8 character or append a marker here: the
+        // raw boundary must remain visible to credential-prefix protection.
+        if (!response.ok && bytes >= maximum) return { text, truncated: true };
+      }
+    } finally {
+      this.signal.removeEventListener('abort', abort);
+      await reader.cancel().catch(() => undefined);
     }
   }
 
   async close(): Promise<void> {
-    await this.client.close();
+    this.credentials = undefined;
   }
 }

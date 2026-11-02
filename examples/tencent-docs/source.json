@@ -1,7 +1,7 @@
 {
   "type": "tencent-smartsheet",
   "options": {
-    "fileId": "<file-id>",
+    "fileId": "<native-openapi-file-id>",
     "sheetId": "<sheet-id>",
     "pageSize": 100,
     "maxRecords": 10000,
