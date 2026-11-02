@@ -46,7 +46,9 @@ const NAV: { title: string; links: { label: string; href: string; external?: boo
       { label: 'AntV', href: 'https://antv.antgroup.com/', external: true },
       { label: 'G2', href: 'https://g2.antv.vision/', external: true },
       { label: 'G6', href: 'https://g6.antv.vision/', external: true },
-      { label: 'S2', href: 'https://s2.antv.vision/', external: true },
+      { label: 'L7', href: 'https://l7.antv.antgroup.com/', external: true },
+      { label: 'GPT-Vis', href: 'https://gpt-vis.antv.vision/', external: true },
+      { label: 'Infographic', href: 'https://infographic.antv.vision/', external: true },
     ],
   },
 ];
@@ -66,7 +68,7 @@ const Footer: React.FC = () => (
             <span className="text-[17px] font-semibold text-zinc-900">AVA</span>
           </Link>
           <p className="mt-3 text-[12.5px] leading-relaxed text-zinc-500">
-            Open-source analytics for AI agents, by AntV.
+            AI-Native Visual Analytics. Open Source, Built for Agents.
           </p>
         </div>
 
