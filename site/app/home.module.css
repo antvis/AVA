@@ -807,7 +807,7 @@
 }
 :global(html[lang='zh-CN']) .heroIntro h1 {
   font-family: var(--font-body);
-  font-weight: 450;
+  font-weight: 400;
 }
 :global(html[lang='zh-CN']) .heroIntro h1 > span[lang='en'] {
   letter-spacing: -0.04em;
