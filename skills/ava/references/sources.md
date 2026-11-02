@@ -9,6 +9,7 @@
 | ClickHouse | ClickHouse is selected automatically | ClickHouse SQL |
 | Supabase | Supabase is selected automatically | PostgreSQL SQL |
 | Feishu Bitable | DuckDB only | DuckDB SQL |
+| Tencent Docs SmartSheet | DuckDB only | DuckDB SQL |
 | Inline CSV/JSON/text | JavaScript is optional when explicitly selected | JavaScript |
 
 To use Python or JavaScript, add `--engine python` or `--engine javascript` to the `source` command. Python does not connect directly to databases. To post-process database results with pandas, query the database first, then export the complete result as described in [Results and Post-Processing](queries.md#results-and-post-processing).
@@ -136,3 +137,24 @@ Supported field types become columns. Other types are omitted. Complex cells are
 
 Stage (24) and button (3001) fields are read-only and skipped. A formula or
 lookup whose result type is unsupported becomes null.
+
+## Tencent Docs SmartSheet
+
+Use `type: 'tencent-smartsheet'` through an `@file` or stdin source config:
+
+```json
+{
+  "type": "tencent-smartsheet",
+  "options": { "fileId": "<file-id>", "sheetId": "<sheet-id>" }
+}
+```
+
+Set `TENCENT_DOCS_TOKEN` to the exact MCP Authorization value before `ava source @tencent-docs.json`. Explicit `options.token` takes precedence. IDs are required; sharing URLs and file discovery are not supported. A Node.js SDK example also works on Windows; the existing CLI dataset sessions require macOS/Linux or WSL.
+
+This is a read-only, complete snapshot of one table. It uses the official Tencent Docs MCP service and exposes a DuckDB `data` table with source titles and `_record_id`. Supported types are text, number, currency, percentage, progress, checkbox, dates/timestamps, phone, email and single select. Complex/computed fields are omitted. Nulls, zero and false remain distinct; empty rows are retained. Currency uses floating-point values, not exact decimals.
+
+Options: `pageSize` (1–100, default 100), `maxRecords` (1–100,000, default 10,000), `timeoutMs` (whole load, default 60,000, maximum 110,000), and `maxRetries` (0–5, default 2). Expanded snapshots are additionally bounded to 16 MiB of UTF-8 JSON and 1,000,000 cells, including missing/null values and `_record_id`; wide tables therefore have a lower effective row limit. Conversion is incremental, and temporary files use exclusive creation with mode `0600`. Incomplete paging, repeated IDs, changing metadata/totals, invalid supported cells and limit overflow fail the load instead of returning partial data. Stop source edits during an import; this is not a transactional or continuously synchronized snapshot.
+
+Upstream codes/messages and SDK/network error details are retained. HTTP diagnostics include status, request IDs and a bounded 8 KiB body. The configured Token is redacted; review other provider-returned context before sharing errors.
+
+Model calls are not needed for loading/schema/direct SQL. For natural-language analysis, configure the model as usual. See the repository's `examples/tencent-docs/README.md` for authorization, two synthetic sales-analysis examples, exact expected results and opt-in live validation. Only the optional fixture setup script writes records, and it requires an explicit `--seed` flag.

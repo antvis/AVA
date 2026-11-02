@@ -1,9 +1,10 @@
 import assert from 'node:assert/strict';
 import { readFile, readdir } from 'node:fs/promises';
 import { join, relative } from 'node:path';
+import { fileURLToPath } from 'node:url';
 import ts from 'typescript';
 
-const site = new URL('../', import.meta.url).pathname;
+const site = fileURLToPath(new URL('../', import.meta.url));
 async function files(directory) {
   const entries = await readdir(directory, { withFileTypes: true });
   return (
@@ -18,8 +19,8 @@ async function files(directory) {
 
 const sources = (await files(join(site, 'content/docs'))).filter((path) => path.endsWith('.mdx'));
 const sourceText = (await Promise.all(sources.map((path) => readFile(path, 'utf8')))).join('\n');
-const semantic = await readFile(join(site, 'content/docs/data/semantic.mdx'), 'utf8');
-const schemaGuide = await readFile(join(site, 'content/docs/data/schema.mdx'), 'utf8');
+const semantic = (await readFile(join(site, 'content/docs/data/semantic.mdx'), 'utf8')).replaceAll('\r\n', '\n');
+const schemaGuide = (await readFile(join(site, 'content/docs/data/schema.mdx'), 'utf8')).replaceAll('\r\n', '\n');
 const orderTable = semantic.match(/\| order_id \|[\s\S]*?(?=\n\n)/)?.[0];
 assert.ok(orderTable, 'Semantic guide starts with a concrete order table');
 assert.ok(schemaGuide.includes(orderTable), 'Schema and semantic guides use the same order table');
@@ -58,6 +59,7 @@ const inputTypes = new Set([
   'SQLiteSourceOptions',
   'MongoDBSourceOptions',
   'SupabaseSourceOptions',
+  'TencentDocsSourceOptions',
 ]);
 const tableFields = new Set(
   [...sourceText.matchAll(/^\| `([^`]+)`\s*\|/gm)].map((match) => match[1].split('.').at(-1))
@@ -75,7 +77,7 @@ for (const declaration of types.statements) {
 }
 const pages = new Map();
 for (const source of sources) {
-  const slug = relative(join(site, 'content/docs'), source).replace(/\.mdx$/, '');
+  const slug = relative(join(site, 'content/docs'), source).replaceAll('\\', '/').replace(/\.mdx$/, '');
   const route = slug === 'introduction' ? '/documentation/' : `/documentation/${slug}/`;
   const html = await readFile(join(site, 'out', route, 'index.html'), 'utf8');
   assert.equal([...html.matchAll(/<h1(?:\s|>)/g)].length, 1, `${route}: one page title`);

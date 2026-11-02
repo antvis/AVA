@@ -1,3 +1,5 @@
+import { fileURLToPath } from 'node:url';
+
 import createMDX from '@next/mdx';
 
 /** @type {import('next').NextConfig} */
@@ -12,7 +14,7 @@ const nextConfig = {
   turbopack: {
     // Allow Turbopack to resolve modules above site/ (the file:.. symlink
     // for @antv/ava points to the repo root).
-    root: new URL('..', import.meta.url).pathname,
+    root: fileURLToPath(new URL('..', import.meta.url)),
   },
 };
 

@@ -6,6 +6,7 @@ import { z } from 'zod';
 import { excelOptionsSchema } from '../../util/excel';
 import { profileMetadataSchema } from '../../util/profile';
 import { schemaMetadataSchema } from '../../util/schema';
+import { tencentDocsOptionsSchema } from '../../duckdb/loaders/tencent/config';
 
 import type { DataSourceConfig } from '../../types';
 
@@ -112,6 +113,7 @@ const sourceSchema = z.discriminatedUnion('type', [
     .strict(),
   z.object({ type: z.literal('clickhouse'), options: clickhouse }).strict(),
   z.object({ type: z.literal('feishu-bitable'), options: feishuBitable }).strict(),
+  z.object({ type: z.literal('tencent-smartsheet'), options: tencentDocsOptionsSchema }).strict(),
 ]);
 
 export const sourceConfig = sourceSchema.transform((value) => value as DataSourceConfig);

@@ -15,6 +15,7 @@ import { loadPostgreSQL } from './postgresql';
 import { loadSQLite } from './sqlite';
 import { loadText } from './text';
 import { loadFeishuBitable } from './feishu-bitable';
+import { loadTencentDocs } from './tencent-smartsheet';
 
 import type { DataSourceConfig, LLMConfig, LoadedSource } from '../../types';
 
@@ -57,5 +58,7 @@ export async function loadSource(config: DataSourceConfig, llmConfig: LLMConfig)
       throw new Error('ClickHouse sources are handled by ClickHouseEngine, not the DuckDB engine');
     case 'feishu-bitable':
       return loadFeishuBitable(config.options);
+    case 'tencent-smartsheet':
+      return loadTencentDocs(config.options);
   }
 }
