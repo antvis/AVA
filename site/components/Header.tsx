@@ -7,6 +7,7 @@ import { usePathname } from 'next/navigation';
 const Header: React.FC = () => {
   const pathname = usePathname();
   const isAIPage = pathname === '/ai' || pathname === '/ai/';
+  const isHomePage = pathname === '/';
   const [scrolled, setScrolled] = useState(false);
 
   useEffect(() => {
@@ -59,13 +60,23 @@ const Header: React.FC = () => {
               {item.label}
             </a>
           ))}
+          {isHomePage && (
+            <Link
+              href="/documentation/"
+              className="rounded-lg px-3 py-2 text-sm text-gray-600 transition-colors hover:text-[color:var(--color-primary)] hover:bg-[color:var(--color-primary)]/10"
+            >
+              Docs
+            </Link>
+          )}
         </nav>
 
         {/* 右侧操作区 */}
         <div className="col-start-3 flex items-center gap-2 justify-self-end">
           <Link
             href="/documentation/"
-            className={`hidden md:flex items-center gap-2 px-2 py-2 text-sm rounded-lg transition-colors ${
+            className={`${
+              isHomePage ? 'hidden' : 'hidden md:flex'
+            } items-center gap-2 px-2 py-2 text-sm rounded-lg transition-colors ${
               pathname === '/documentation' || pathname.startsWith('/documentation/')
                 ? 'text-[color:var(--color-primary)] bg-[color:var(--color-primary)]/10'
                 : 'text-gray-600 hover:text-[color:var(--color-primary)] hover:bg-[color:var(--color-primary)]/10'
@@ -82,23 +93,30 @@ const Header: React.FC = () => {
             Documentation
           </Link>
           <Link
-            href="/ai"
-            className={`flex items-center gap-2 px-2 py-2 text-sm rounded-lg transition-colors ${
-              isAIPage
-                ? 'text-[color:var(--color-primary)] bg-[color:var(--color-primary)]/10'
-                : 'text-gray-600 hover:text-[color:var(--color-primary)] hover:bg-[color:var(--color-primary)]/10'
-            }`}
+            href="/ai/"
+            aria-current={isAIPage ? 'page' : undefined}
+            className="inline-flex min-h-10 min-w-[88px] items-center justify-center gap-3 rounded-[9px] border border-white/20 bg-[#202226] px-[18px] text-[13px] font-medium text-white! shadow-[inset_0_1px_0_#ffffff1a,0_2px_6px_#1a283514] transition-colors hover:bg-[#30363b]"
           >
-            <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
-            </svg>
             AI
+            <svg
+              width="14"
+              height="14"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="1.7"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              aria-hidden="true"
+            >
+              <path d="M5 12h14m-6-6 6 6-6 6" />
+            </svg>
           </Link>
           <a
             href="https://github.com/antvis/AVA"
             target="_blank"
             rel="noopener noreferrer"
-            className="hidden md:block text-gray-400 hover:text-gray-600 transition-colors"
+            className={isHomePage ? 'hidden' : 'hidden md:block text-gray-400 hover:text-gray-600 transition-colors'}
           >
             <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
               <path

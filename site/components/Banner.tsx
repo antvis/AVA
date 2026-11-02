@@ -37,12 +37,17 @@ const GitHubStars: React.FC = () => {
       aria-label={`AVA on GitHub · ${label} stars (opens in a new tab)`}
       className="ml-1 inline-flex h-6 items-center gap-1.5 rounded-full border border-zinc-200 bg-white/80 px-2.5 font-mono text-[11.5px] tracking-[0.02em] text-zinc-500 backdrop-blur-sm transition-colors duration-150 hover:border-zinc-300 hover:text-zinc-700"
     >
-      <svg width="15" height="15" fill="currentColor" viewBox="0 0 24 24" aria-hidden>
-        <path
-          fillRule="evenodd"
-          clipRule="evenodd"
-          d="M12 2C6.477 2 2 6.477 2 12c0 4.42 2.865 8.17 6.839 9.49.5.092.682-.217.682-.482 0-.237-.008-.866-.013-1.7-2.782.604-3.369-1.34-3.369-1.34-.454-1.156-1.11-1.463-1.11-1.463-.908-.62.069-.608.069-.608 1.003.07 1.531 1.03 1.531 1.03.892 1.529 2.341 1.087 2.91.831.092-.646.35-1.086.636-1.336-2.22-.253-4.555-1.11-4.555-4.943 0-1.091.39-1.984 1.029-2.683-.103-.253-.446-1.27.098-2.647 0 0 .84-.269 2.75 1.025A9.578 9.578 0 0112 6.836c.85.004 1.705.114 2.504.336 1.909-1.294 2.747-1.025 2.747-1.025.546 1.377.203 2.394.1 2.647.64.699 1.028 1.592 1.028 2.683 0 3.842-2.339 4.687-4.566 4.935.359.309.678.919.678 1.852 0 1.336-.012 2.415-.012 2.743 0 .267.18.578.688.48C19.138 20.167 22 16.418 22 12c0-5.523-4.477-10-10-10z"
-        />
+      <svg
+        width="15"
+        height="15"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="1.5"
+        strokeLinejoin="round"
+        viewBox="0 0 24 24"
+        aria-hidden="true"
+      >
+        <path d="m12 3 2.78 5.63 6.22.9-4.5 4.39 1.06 6.2L12 17.2l-5.56 2.92 1.06-6.2L3 9.53l6.22-.9L12 3Z" />
       </svg>
       <span className="tabular-nums">{label}</span>
     </a>
@@ -155,13 +160,11 @@ const Banner: React.FC = () => (
 
     <div className="relative">
       {/* ── hero content ── */}
-      <div className="flex flex-col items-center gap-6 pb-11 text-center max-md:gap-5 max-md:pb-8">
+      <div data-hero-content className="flex flex-col items-center gap-6 pb-11 text-center max-md:gap-5 max-md:pb-8">
         {/* kicker — quiet monogram plus live GitHub stars */}
-        <span
-          className="inline-flex items-center gap-2.5 font-mono text-[12px] uppercase tracking-[0.18em] text-zinc-400"
-          style={{ animation: 'hero-rise 700ms cubic-bezier(0.22,1,0.36,1) 0.1s both' }}
-        >
-          <span>AVA 4.0</span>
+        <span data-hero-badge className="inline-flex items-center gap-2.5 font-mono text-[12px] text-zinc-400">
+          <span data-hero-new>NEW</span>
+          <span data-hero-release>Introducing AVA 4.0</span>
           <GitHubStars />
         </span>
 
@@ -173,18 +176,12 @@ const Banner: React.FC = () => (
           Open Source, Built for <span className="whitespace-nowrap">Agents.</span>
         </h1>
 
-        <p
-          className="hero-rise max-w-[520px] text-[14px] leading-[1.85] text-zinc-500 max-md:text-[13px]"
-          style={{ animation: 'hero-rise 800ms cubic-bezier(0.22,1,0.36,1) 0.55s both' }}
-        >
+        <p className="hero-rise max-w-[520px] text-[14px] leading-[1.85] text-zinc-500 max-md:text-[13px]">
           An open-source framework for AI agents to explore, analyze, and visualize data.
         </p>
 
         {/* actions */}
-        <div
-          className="hero-rise mt-3 flex flex-wrap items-center justify-center gap-3 max-md:gap-2"
-          style={{ animation: 'hero-rise 800ms cubic-bezier(0.22,1,0.36,1) 0.8s both' }}
-        >
+        <div data-hero-actions className="hero-rise mt-3 flex flex-wrap items-center justify-center gap-3 max-md:gap-2">
           <Link
             href="/ai/"
             className="group inline-flex h-10 items-center gap-2 rounded-[9px] bg-[color:var(--color-primary-dark)] px-7 text-[13.5px] max-md:px-4 max-md:text-xs font-medium text-white shadow-[0_6px_16px_color-mix(in_srgb,var(--color-primary-dark)_28%,transparent)] transition-all duration-200 hover:shadow-[0_8px_20px_color-mix(in_srgb,var(--color-primary-dark)_38%,transparent)] hover:brightness-95 active:scale-[0.97]"
@@ -206,6 +203,7 @@ const Banner: React.FC = () => (
           </Link>
           <a
             href="https://sive.antv.antgroup.com/"
+            title="Built with AVA"
             target="_blank"
             rel="noopener noreferrer"
             className="group inline-flex h-10 items-center gap-2.5 whitespace-nowrap rounded-[9px] border border-zinc-300 bg-white/80 px-5 text-zinc-700 transition-colors hover:border-cyan-400 hover:bg-white focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-cyan-600"
@@ -217,10 +215,7 @@ const Banner: React.FC = () => (
               height={24}
               className="size-6 shrink-0 object-contain"
             />
-            <span className="flex flex-col items-start gap-0.5">
-              <span className="text-[13.5px] font-medium leading-none max-md:text-xs">Try Sive</span>
-              <span className="text-[9px] leading-none text-zinc-400">Built with AVA</span>
-            </span>
+            <span className="text-[13.5px] font-medium leading-none max-md:text-xs">Try Sive</span>
             <svg
               width="12"
               height="12"
