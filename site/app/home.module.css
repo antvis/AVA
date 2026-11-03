@@ -331,7 +331,6 @@
 .dataCopy h2 {
   margin-top: 0;
   margin-bottom: 24px;
-  font-size: clamp(36px, 3.7vw, 52px);
 }
 .sourcePanel {
   position: relative;
@@ -451,7 +450,6 @@
 }
 .integration h2,
 .ecosystem h2 {
-  font-size: clamp(36px, 4.2vw, 56px);
   font-weight: 600;
   letter-spacing: -0.04em;
   color: var(--home-ink);
@@ -598,7 +596,6 @@
     gap: 48px;
   }
   .home .benchmarks h2 {
-    font-size: clamp(28px, 2.5vw, 36px);
     line-height: 1.2;
   }
   .benchmarks :global(.mt-7) {
@@ -636,11 +633,8 @@
   .integration :global(.max-w-4xl) > div:last-child > div:last-child {
     border-left: 0;
   }
-  .home h2,
-  .benchmarks h2,
-  .integration h2,
-  .ecosystem h2 {
-    font-size: clamp(36px, 3.6vw, 48px);
+  .home h2 {
+    font-size: clamp(28px, 2.5vw, 36px);
   }
   .heroIntro {
     padding-top: clamp(40px, 4vw, 64px);
@@ -778,9 +772,6 @@
     padding: 40px var(--home-gutter) 64px;
     gap: 44px;
   }
-  .dataCopy h2 {
-    font-size: 34px;
-  }
   .sourcePanel {
     padding: 8px 0 0;
   }
@@ -836,9 +827,6 @@
   }
   .closing {
     padding-top: 72px;
-  }
-  .closing h2 {
-    font-size: 36px;
   }
   .closing > p {
     font-size: 15px;
