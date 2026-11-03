@@ -29,7 +29,7 @@ body {
 }
 
 html[lang='zh-CN'] {
-  --font-body: 'MiSans VF', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+  --font-body: ui-sans-serif, system-ui, sans-serif;
   --font-sans: var(--font-body);
   --font-heading: var(--font-body);
 }
