@@ -49,6 +49,9 @@
     "aI": "AI"
   },
   "Home": {
+    "campaignTitle": "AVA ecosystem showcase — join us at SEE Conf 2026!",
+    "campaignDescription": "Share your tool integrations, apps, or data analysis projects. Outstanding contributors can receive conference tickets or a Xiaomi Smart Band!",
+    "campaignAction": "Share your work",
     "skipToFeatures": "Skip to features",
     "interactiveDemoUsingSampleData": "Interactive demo using sample data",
     "fromRawDataTo": "From Raw Data to",

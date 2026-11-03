@@ -49,6 +49,9 @@
     "aI": "AI 体验"
   },
   "Home": {
+    "campaignTitle": "AVA 生态作品征集，邀你一起去 SEE Conf 2026！",
+    "campaignDescription": "分享你的工具集成、应用或数据分析实践，优秀贡献者可获赠大会门票或小米手环！",
+    "campaignAction": "参与征集",
     "skipToFeatures": "跳至核心能力",
     "interactiveDemoUsingSampleData": "使用示例数据演示完整分析过程",
     "fromRawDataTo": "让 Agent 的分析，",

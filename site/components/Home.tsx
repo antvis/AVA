@@ -52,6 +52,24 @@ export default function Home({ locale }: { locale: Locale }) {
           {t('skipToFeatures')}
         </a>
         <Header />
+        <aside className={styles.campaign} aria-labelledby="campaign-title">
+          <span className={styles.campaignIcon} aria-hidden="true">
+            🎟️
+          </span>
+          <div className={styles.campaignCopy}>
+            <strong id="campaign-title">{t('campaignTitle')}</strong>
+            <p>{t('campaignDescription')}</p>
+          </div>
+          <a
+            href="https://github.com/antvis/AVA/issues/1035"
+            target="_blank"
+            rel="noopener noreferrer"
+            className={styles.campaignLink}
+          >
+            {t('campaignAction')}
+            <Arrow />
+          </a>
+        </aside>
         <div className={styles.hero}>
           <div className={styles.heroIntro}>
             <Banner />
