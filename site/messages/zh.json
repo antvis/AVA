@@ -51,8 +51,8 @@
   "Home": {
     "skipToFeatures": "跳至核心能力",
     "interactiveDemoUsingSampleData": "使用示例数据演示完整分析过程",
-    "fromRawDataTo": "从原始数据出发，",
-    "answersYouCanInspect": "每个结论都有据可查",
+    "fromRawDataTo": "让 Agent 的分析，",
+    "answersYouCanInspect": "可信、可控、可复用",
     "connectYourData": "接入你的数据，",
     "runAnywhere": "在合适的环境中运行",
     "files": "文件",
