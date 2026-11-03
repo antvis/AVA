@@ -9,7 +9,7 @@
   },
   "dependencies": {
     "@ai-sdk/openai": "^4.0.73",
-    "@ai-sdk/react": "^4.0.163",
+    "@ai-sdk/react": "^4.0.154",
     "@antv/ava": "file:..",
     "@antv/gpt-vis": "^1.0.0",
     "@mdx-js/loader": "^3.1.1",
@@ -26,7 +26,8 @@
     "remark-gfm": "^4.0.1",
     "shiki": "^4.5.0",
     "streamdown": "^2.7.0",
-    "zod": "^4.6.6"
+    "zod": "^4.6.6",
+    "use-intl": "^4.14.9"
   },
   "devDependencies": {
     "@types/mdx": "^2.0.14",

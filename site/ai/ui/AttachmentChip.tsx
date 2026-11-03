@@ -1,4 +1,5 @@
 'use client';
+import { useTranslations } from 'use-intl';
 
 import type React from 'react';
 
@@ -7,6 +8,7 @@ const AttachmentChip: React.FC<{ file: string; rowCount?: number; animationDelay
   rowCount,
   animationDelay,
 }) => {
+  const t = useTranslations('AttachmentChip');
   const ext = file.slice(file.lastIndexOf('.') + 1).toUpperCase();
   const tone = /XLS|CSV/.test(ext) ? 'bg-green' : /PDF/.test(ext) ? 'bg-red' : 'bg-ink-3';
   return (
@@ -27,9 +29,7 @@ const AttachmentChip: React.FC<{ file: string; rowCount?: number; animationDelay
       </span>
       <span className="min-w-0 truncate">{file}</span>
       {rowCount !== undefined && (
-        <span className="shrink-0 text-[11px] font-normal tabular-nums">
-          · {rowCount.toLocaleString()} {rowCount === 1 ? 'row' : 'rows'}
-        </span>
+        <span className="shrink-0 text-[11px] font-normal tabular-nums">· {t('rows', { count: rowCount })}</span>
       )}
       <svg
         aria-hidden="true"

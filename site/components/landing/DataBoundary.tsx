@@ -1,7 +1,12 @@
+'use client';
+
+import { useTranslations } from 'use-intl';
+
 import styles from './FeatureCards.module.css';
 
 /** Local processing and a model connection with a visible boundary. */
 export default function DataBoundary() {
+  const t = useTranslations('DataBoundary');
   return (
     <svg className={styles.securityGraphic} viewBox="0 0 360 210" fill="none" aria-hidden="true">
       <defs>
@@ -27,7 +32,7 @@ export default function DataBoundary() {
       <ellipse cx="143" cy="186" rx="109" ry="12" fill="#7cabb2" opacity=".1" />
       <path d="m37 166 111 37 111-37M77 179l111-37M108 190l111-37" stroke="#fff" strokeOpacity=".55" />
       <text x="138" y="15" textAnchor="middle" fill="#75979f" fontSize="10.5">
-        Your environment
+        {t('yourEnvironment')}
       </text>
 
       <g filter="url(#security-shadow)">
@@ -72,14 +77,14 @@ export default function DataBoundary() {
           <ellipse cx="140" cy="81" rx="31" ry="11.5" fill="#f8fffe" stroke="#d0e7e7" />
           <ellipse cx="140" cy="79" rx="20" ry="6.5" fill="#e7f4f2" />
           <text x="140" y="102" textAnchor="middle" fill="#81a8ae" fontSize="8" letterSpacing="1.4">
-            DATA
+            {t('dATA')}
           </text>
         </g>
 
         <rect x="81" y="146" width="90" height="18" rx="6" fill="#f5fdfb" fillOpacity=".9" stroke="#fff" />
         <circle cx="92" cy="155" r="2.5" fill="#89b5ae" />
         <text x="103" y="158" fill="#7ba0a4" fontSize="8.5">
-          Local processing
+          {t('localProcessing')}
         </text>
         <path
           d="M58 166c1 7 8 12 17 12h122c9 0 16-5 19-12v8c-3 7-10 11-19 11H75c-9 0-16-4-17-11Z"
@@ -92,7 +97,7 @@ export default function DataBoundary() {
       <circle cx="224" cy="113" r="4" fill="#90b9ba" stroke="#eefbf8" strokeWidth="2" />
       <path d="m261 109 5 4-5 4" stroke="#fff" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round" />
       <text x="246" y="100" textAnchor="middle" fill="#83a4ab" fontSize="8.5">
-        AI context
+        {t('aIContext')}
       </text>
 
       <g filter="url(#security-shadow)" transform="rotate(6 293 113)">
@@ -104,7 +109,7 @@ export default function DataBoundary() {
         <circle cx="301" cy="117" r="2.3" fill="#a2c1c6" />
       </g>
       <text x="293" y="157" textAnchor="middle" fill="#75979f" fontSize="10.5">
-        Your model
+        {t('yourModel')}
       </text>
       <path d="m288 166 5 4 5-4" stroke="#9ab8bd" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round" />
 

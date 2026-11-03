@@ -3,10 +3,11 @@ import { join } from 'path';
 
 import { z } from 'zod';
 
+import { tencentDocsOptionsSchema } from '../../duckdb/loaders/tencent/config';
 import { excelOptionsSchema } from '../../util/excel';
 import { profileMetadataSchema } from '../../util/profile';
 import { schemaMetadataSchema } from '../../util/schema';
-import { tencentDocsOptionsSchema } from '../../duckdb/loaders/tencent/config';
+import { semanticMetadataSchema } from '../../util/data-model';
 
 import type { DataSourceConfig } from '../../types';
 
@@ -62,10 +63,16 @@ const feishuBitable = z
 
 const sourceSchema = z.discriminatedUnion('type', [
   z
-    .object({ type: z.literal('csv-file'), options: file.extend({ options: z.record(z.string(), z.unknown()).optional() }) })
+    .object({
+      type: z.literal('csv-file'),
+      options: file.extend({ options: z.record(z.string(), z.unknown()).optional() }),
+    })
     .strict(),
   z
-    .object({ type: z.literal('json-file'), options: file.extend({ options: z.record(z.string(), z.unknown()).optional() }) })
+    .object({
+      type: z.literal('json-file'),
+      options: file.extend({ options: z.record(z.string(), z.unknown()).optional() }),
+    })
     .strict(),
   z.object({ type: z.literal('parquet'), options: file }).strict(),
   z.object({ type: z.literal('excel'), options: excelOptionsSchema }).strict(),
@@ -80,7 +87,10 @@ const sourceSchema = z.discriminatedUnion('type', [
     .object({
       type: z.literal('json'),
       options: z
-        .object({ data: z.array(z.record(z.string(), z.unknown())), options: z.record(z.string(), z.unknown()).optional() })
+        .object({
+          data: z.array(z.record(z.string(), z.unknown())),
+          options: z.record(z.string(), z.unknown()).optional(),
+        })
         .strict(),
     })
     .strict(),
@@ -127,6 +137,7 @@ const execution = {
 
 export const requestSchema = z.discriminatedUnion('command', [
   z.object({ command: z.literal('schema'), schema: schemaMetadataSchema.optional() }).strict(),
+  z.object({ command: z.literal('semantic'), semantic: semanticMetadataSchema.optional() }).strict(),
   z
     .object({
       command: z.literal('profile'),

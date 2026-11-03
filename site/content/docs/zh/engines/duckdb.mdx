@@ -1,0 +1,44 @@
+import { Heading } from '../../../../mdx-components';
+
+<Heading as="h2" id="configure">配置</Heading>
+
+```typescript
+const ava = new AVA({
+  llm: { model: 'YOUR_MODEL', apiKey: process.env.OPENAI_API_KEY },
+  engine: {
+    type: 'duckdb',
+    memoryLimit: '512MB',
+    threads: 1,
+    queryTimeoutMs: 30000,
+    maxTempDirectorySize: '1GB',
+  },
+});
+```
+
+DuckDB 是 Node.js 的默认引擎。它创建内存实例，将数据源注册为表或视图；生成 SQL 时使用 schema 和可选的 profile。
+
+<Heading as="h2" id="engine-options">引擎选项</Heading>
+
+将 `engine.type` 设为 `duckdb`。`engine` 接受的全部额外字段如下。
+
+| 字段 | 类型 | 必填 | 含义与默认值 |
+| -------------------------- | --------- | -------- | ------------------------------------------------------------------------------- |
+| `memoryLimit` | `string` | 否 | 内存限制，例如 `'512MB'`，默认 `'512MB'`。 |
+| `threads` | `number` | 否 | 工作线程数，默认 1。 |
+| `maxTempDirectorySize` | `string` | 否 | 临时溢写目录的大小上限，例如 `'1GB'`；不设置则不限制。 |
+| `queryTimeoutMs` | `number` | 否 | 单次查询超时，单位毫秒，默认 30000。 |
+| `allowCommunityExtensions` | `boolean` | 否 | 数据源加载明确需要社区扩展时，允许启用 DuckDB 社区扩展。 |
+
+<Heading as="h2" id="resource-limits">资源限制</Heading>
+
+默认内存上限为 512 MB，使用一个工作线程，查询超时为 30 秒。`maxTempDirectorySize` 可选，省略时不会设置溢写目录大小上限。
+
+这些选项与限制返回结果的 `maxRows`、`maxResultBytes` 相互独立。
+
+<Heading as="h2" id="source-support">数据源支持</Heading>
+
+支持内存 CSV、JSON、文本，本地或远程 CSV、JSON、Parquet、Excel，以及 MySQL、PostgreSQL、SQLite、MongoDB 数据源。配置方式见[接入数据](/documentation/data/sources/)。
+
+<Heading as="h2" id="query-access">查询访问限制</Heading>
+
+注册数据源后，引擎会限制外部访问并锁定配置，查询方言会验证语句是否只读。社区扩展默认关闭；加载器会处理 MongoDB 等依赖社区扩展的数据源，需要时也可用 `allowCommunityExtensions` 显式允许。

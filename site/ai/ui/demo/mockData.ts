@@ -1,3 +1,6 @@
+import en from '../../../messages/en.json';
+import zh from '../../../messages/zh.json';
+import type { Locale } from '../../../lib/i18n';
 import type { DualAxesConfig } from '@antv/gpt-vis';
 import type { Message, ToolStep } from '../types';
 
@@ -105,32 +108,113 @@ const RUN_STEPS: ToolStep[] = [
   },
 ];
 
-const ASSISTANT_TEXT = `Revenue more than doubled, but profitability did not improve at the same pace.\n\n- **Growth:** $120k → $260k revenue from Jan to Sep (**+116.7%**).\n- **Watch July:** revenue rose **13.3%** from June, yet gross profit fell **2.1%**. Gross margin hit **19%**, the period low.\n- **Recovery:** September reached **27% margin** and **$70.2k gross profit**; margin was still 3 percentage points below January.\n\n**Next step:** inspect July’s discounts, product mix and unit costs before scaling the same sales tactics. These totals flag the issue, but do not establish its cause.`;
-
-const QUESTION =
-  'Is our revenue growth profitable? Compare monthly revenue and gross margin for Jan–Sep 2026, flag the weakest month, and show the trend in a dual-axis chart.';
-
 export const PRESET_MESSAGES: Message[] = [
-  { role: 'user', text: QUESTION, attachments: ['monthly-sales-2026.csv'] },
+  { role: 'user', text: en.Demo.question, attachments: ['monthly-sales-2026.csv'] },
   {
     role: 'assistant',
     steps: RUN_STEPS,
-    text: ASSISTANT_TEXT,
+    text: en.Demo.summary,
     artifact: {
       id: 'demo-growth-quality',
       title: 'growth-quality.html',
-      description: 'Revenue & gross margin · Jan–Sep 2026 · Dual Axes',
+      description: en.Demo.description,
       report: {
-        question: QUESTION,
-        answer: 'Revenue more than doubled, while gross margin slipped from 30% to 27%. July was weakest at 19%.',
-        insight:
-          'July’s revenue rose 13.3% from June, while gross profit fell 2.1%. Review discounts, product mix and unit costs.',
-        limitations:
-          'Gross margin excludes operating expenses. Monthly totals cannot explain whether discounts, product mix or costs caused the change.',
+        question: en.Demo.question,
+        answer: en.Demo.answer,
+        insight: en.Demo.insight,
+        limitations: en.Demo.limitations,
       },
       config: CHART_CONFIG,
       code: ARTIFACT_SQL,
       data: ARTIFACT_DATA,
     },
+  },
+];
+
+export function getDemoMessages(locale: Locale): Message[] {
+  if (locale === 'en') return PRESET_MESSAGES;
+  const text = zh.Demo;
+  const steps = CHINESE_STEPS;
+  const data = ARTIFACT_DATA.map((row, i) => ({ ...row, month: `${String(i + 1).padStart(2, '0')}月` }));
+  const config = {
+    ...CHART_CONFIG,
+    categories: data.map((row) => row.month),
+    series: CHART_CONFIG.series.map((series, i) => ({ ...series, axisYTitle: i === 0 ? text.revenue : text.margin })),
+  };
+  return [
+    { ...PRESET_MESSAGES[0], text: text.question },
+    {
+      ...PRESET_MESSAGES[1],
+      text: text.summary,
+      steps: RUN_STEPS.map((step, i) => ({
+        ...step,
+        label: steps[i].label,
+        chip: steps[i].chip ?? step.chip,
+        detail: steps[i].detail.map((line) => ({ text: line })),
+      })),
+      artifact: {
+        ...PRESET_MESSAGES[1].artifact!,
+        description: text.description,
+        report: { question: text.question, answer: text.answer, insight: text.insight, limitations: text.limitations },
+        config,
+        data,
+        code: ARTIFACT_SQL.replace(
+          "strftime(CAST(month AS DATE), '%b')",
+          "strftime(CAST(month AS DATE), '%m') || '月'"
+        ),
+      },
+    },
+  ];
+}
+
+const CHINESE_STEPS: { label: string; chip?: string; detail: string[] }[] = [
+  {
+    label: '读取月度销售数据',
+    detail: [
+      'monthly-sales-2026.csv → DuckDB 视图 data',
+      '共 9 条月度记录，覆盖 2026 年 1—9 月；收入和毛利单位为美元。',
+    ],
+  },
+  {
+    label: '检查结构与数据质量',
+    detail: [
+      'month: DATE · revenue: BIGINT · gross_profit: BIGINT',
+      '9 个月份互不重复，无缺失值，各月收入均为正。',
+      '将统计结果加入上下文，供后续分析使用。',
+    ],
+  },
+  {
+    label: '把业务问题转成 SQL',
+    detail: [
+      '使用直接分析策略，结合表结构与统计信息生成查询。',
+      '按月份比较收入、毛利与毛利率，并保留时间顺序。',
+      '毛利率按总毛利 ÷ 总收入计算，不直接平均百分比。',
+    ],
+  },
+  {
+    label: '执行只读查询',
+    chip: 'DuckDB · 返回 9 行',
+    detail: [
+      '收入从 1 月的 12 万美元增长到 9 月的 26 万美元。',
+      '7 月收入 23.8 万美元，毛利 4.522 万美元，毛利率 19%。',
+      '同时返回 SQL 和查询结果，方便核对。',
+    ],
+  },
+  {
+    label: '关注增长背后的盈利变化',
+    chip: '收入增长，未必带来同等的利润增长',
+    detail: [
+      '6 月到 7 月：收入增长 13.3%，毛利下降 2.1%，毛利率下降 3 个百分点。',
+      '9 月毛利率恢复至 27%，仍比 1 月低 3 个百分点。',
+      '这些数字提示了排查方向，但不能直接归因于折扣或成本。',
+    ],
+  },
+  {
+    label: '生成双轴图',
+    detail: [
+      'recommend() 选择 dual-axes，并生成 GPT-Vis JSON 配置。',
+      'viz() 将配置渲染为 HTML；visualize() 返回 chartType、config 和 html。',
+      '柱形展示收入（千美元），折线展示毛利率（%），两侧坐标轴均从零开始。',
+    ],
   },
 ];

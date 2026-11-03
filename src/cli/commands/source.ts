@@ -52,7 +52,6 @@ export async function run([dataset]: string[], options: Options): Promise<{ data
   }
 
   const config = sourceConfig.parse(input);
-
   if (config.type === 'tencent-smartsheet' && engine !== undefined && engine !== 'duckdb') {
     throw new Error('Tencent Docs SmartSheet sources require the duckdb engine.');
   }
@@ -133,7 +132,6 @@ Python requires python3 and pandas; local Python execution is not sandboxed.
 JavaScript accepts inline csv/json/text configs. Use ava schema to inspect the query language.
 
 Examples:
-  ava source @tencent-docs.json
   ava source sales.csv
   ava source sales.csv --engine python
   ava source @source.json

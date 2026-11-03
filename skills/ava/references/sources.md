@@ -4,13 +4,13 @@
 
 | Data source | Engine | Query language |
 | --- | --- | --- |
-| CSV/JSON/Parquet/Excel files, inline CSV/JSON | DuckDB by default; Python is optional | DuckDB SQL / Python (pandas) |
-| MySQL, PostgreSQL, SQLite, MongoDB | DuckDB by default | DuckDB SQL |
-| ClickHouse | ClickHouse is selected automatically | ClickHouse SQL |
-| Supabase | Supabase is selected automatically | PostgreSQL SQL |
+| CSV/JSON/Parquet/Excel files | DuckDB by default; Python is optional | DuckDB SQL / Python (pandas) |
+| Inline CSV/JSON | DuckDB by default; Python or JavaScript is optional | SQL / Python / JavaScript |
+| Unstructured text | DuckDB by default; JavaScript is optional; requires a model | SQL / JavaScript |
+| MySQL, PostgreSQL, SQLite, MongoDB | DuckDB only | DuckDB SQL |
+| ClickHouse | ClickHouse only, selected automatically | ClickHouse SQL |
+| Supabase | Supabase only, selected automatically | PostgreSQL SQL |
 | Feishu Bitable | DuckDB only | DuckDB SQL |
-| Tencent Docs SmartSheet | DuckDB only | DuckDB SQL |
-| Inline CSV/JSON/text | JavaScript is optional when explicitly selected | JavaScript |
 
 To use Python or JavaScript, add `--engine python` or `--engine javascript` to the `source` command. Python does not connect directly to databases. To post-process database results with pandas, query the database first, then export the complete result as described in [Results and Post-Processing](queries.md#results-and-post-processing).
 
@@ -42,7 +42,7 @@ Configuration includes `type` and `options`. `type` specifies the data format or
 ava source @source.json > session.json
 ```
 
-A regular `.json` file is read as data rows. Only `@file` or stdin `-` reads JSON as configuration; configuration input cannot be combined with `--type`. Relative paths are resolved from the command's working directory. Read options may vary by engine.
+A regular `.json` file is read as data rows. Only `@file` or stdin `-` reads JSON as configuration; configuration input cannot be combined with `--type`. Relative paths are resolved from the command's working directory.
 
 For other common configurations, set `type` and `options` as shown:
 
@@ -50,9 +50,18 @@ For other common configurations, set `type` and `options` as shown:
 | --- | --- | --- |
 | JSON rows | `json` | `{"data":[{"region":"East","sales":10}]}` |
 | Inline CSV | `csv` | `{"csv":"region,sales\nEast,10"}` |
+| Unstructured text | `text` | `{"text":"East region sales were 10."}` |
+| Parquet file | `parquet` | `{"path":"/data/sales.parquet"}` |
+| Excel workbook | `excel` | `{"path":"/data/sales.xlsx","sheets":[{"sheet":"Orders","range":"B3:F100","header":true}]}` |
 | Authenticated URL | `json-file` | `{"path":"https://example.com/data.json","headers":{"Authorization":"******"}}` |
 
-For unstructured text, you can first extract JSON rows containing only information supported by the source text. The native `text` source calls an internal AVA model and requires additional model configuration.
+File sources except SQLite accept `headers` for HTTP(S) authentication. `csv-file` and `json-file` accept nested `options` for reader settings; `parquet` does not.
+
+For Excel, omitting `sheets` loads every sheet. Otherwise use a nonempty array of unique sheet names, each with `sheet`, optional inclusive A1 `range`, and `header` (default `true`). DuckDB expects `.xlsx` and also accepts per-sheet booleans `all_varchar`, `ignore_errors`, `stop_at_empty`, and `empty_as_varchar`. Python supports `sheet`, `range`, and `header` only.
+
+Python CSV reader options are limited to `header`, `names`, `delim`, `quote`, `escape`, `comment`, `skip`, `nullstr`, `all_varchar`, `decimal_separator`, `thousands`, `encoding`, and `compression`. Python JSON sources do not accept reader `options`. Do not assume DuckDB reader settings work in Python.
+
+The native `text` source extracts rows using an AVA model and requires model credentials (see [Setup](setup.md)). Alternatively, extract JSON rows yourself, keeping only information supported by the source text, then load `json`.
 
 ## Databases
 
@@ -62,6 +71,7 @@ Use the configuration format and load command shown above:
 | --- | --- |
 | `mysql` | `{"host":"localhost","database":"sales","user":"reader","password":"REPLACE"}` |
 | `postgresql` | `{"host":"localhost","database":"sales","user":"reader","password":"REPLACE","schema":"public"}` |
+| `sqlite` | `{"path":"/data/sales.sqlite"}` |
 | `mongodb` | `{"connection":"mongodb://localhost:27017","database":"sales"}` |
 | `clickhouse` | `{"url":"http://localhost:8123","database":"sales","username":"reader","password":"REPLACE"}` |
 | `supabase` | `{"accessToken":"REPLACE","projectRef":"REPLACE"}` |
@@ -69,14 +79,17 @@ Use the configuration format and load command shown above:
 Use authorized read-only credentials. Restrict temporary credential files to the current user and delete them after loading. Do not put credentials in deliverables or logs.
 
 - MySQL, PostgreSQL, SQLite, and MongoDB require the corresponding DuckDB extensions. MongoDB uses the `mongo` community extension. Each collection becomes a table, and its schema is inferred from samples, so rare fields may be missed.
+- MySQL/PostgreSQL accept `port` and `ssh: {"host":"bastion","user":"reader","port":22,"password":"REPLACE"}`. PostgreSQL defaults to schema `public`.
+- MongoDB accepts `connection` or structured `host`, `port`, `user`, `password`, `authSource`, `srv`, `tls`, `ssl`, `tlsCAFile`, and `tlsAllowInvalidCertificates`; `database` is required in either form. `connection` takes precedence; keep its database consistent with `database`.
 - ClickHouse connects over HTTP(S) and requires version 23.10 or later.
+- ClickHouse requires `database` and either `host` or `url`. It accepts `port`, `user`/`username`, `password`, `access_token`, `pathname`, `application`, `session_id`, `role` (string or string array), `http_headers`, `request_timeout`, and other ClickHouse client options.
 - Supabase uses the Management API; `accessToken` must be a token authorized for that API.
 
 ## Feishu Bitable
 
 `feishu-bitable` is read-only and uses DuckDB; the Python and JavaScript engines cannot load it. Rows are exposed as one view named `data`. The `view` parameter in the URL is ignored and the whole table is loaded, not one view.
 
-The CLI detects Bitable links automatically (Node.js 22.13+), including tables that live inside a wiki:
+The CLI detects Bitable links on `feishu.cn` and `larksuite.com` automatically (Node.js 22.13+), including tables that live inside a wiki:
 
 ```sh
 ava source "https://<tenant>.feishu.cn/base/<app_token>?table=<table_id>" > session.json

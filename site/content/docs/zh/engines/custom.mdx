@@ -1,0 +1,275 @@
+import { Heading } from '../../../../mdx-components';
+
+在自己的应用或包中实现引擎，通过 SDK 注册，再按名称选择即可。自定义引擎注册仅适用于 SDK；CLI 只接受内置引擎名。
+
+<Heading as="h2" id="register-an-engine">注册引擎</Heading>
+
+```typescript
+import { AVA, registerEngine } from '@antv/ava';
+import { SalesEngine } from './sales-engine';
+
+registerEngine('sales', SalesEngine);
+
+const ava = new AVA({
+  llm: { model },
+  engine: { type: 'sales' },
+});
+```
+
+这里的 `model` 是已配置的 AI SDK 模型，完整配置见下方示例。引擎实现保留在你的应用中，只需在 `source()` 前注册，无需修改 AVA 源码。
+
+注册没有返回值，只作用于当前进程已加载的 SDK 模块，不会注册到独立的 CLI 进程。未注册的名称会在 `source()` 尝试创建引擎时失败。
+
+每次调用 `source()`，AVA 都会创建新的引擎实例：替换前释放旧引擎，`load()` 失败时释放失败实例，`ava.dispose()` 则释放当前实例。请在 `load()` 中建立连接，以便加载失败后也能清理。
+
+浏览器 SDK 也从 `@antv/ava/browser` 导出同样的 `registerEngine` API，但提供的引擎及其依赖必须支持浏览器运行环境。请使用已导出该 API 的版本；注册表尚未对外开放的旧版需要先升级。
+
+<Heading as="h2" id="engine-contract">引擎接口约定</Heading>
+
+实现公开导出的 [AnalysisEngine 接口](https://github.com/antvis/AVA/blob/ai/src/types.ts)。AVA 的[生命周期协调器](https://github.com/antvis/AVA/blob/ai/src/ava.ts)会调用以下成员：
+
+| 成员 | 输入参数 | 返回值与行为 |
+| --------------------------- | ------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------- |
+| 构造函数 | `llmConfig: LLMConfig`，`options?: Record<string, unknown>` | 接收模型配置，以及 `type` 之外的引擎字段。 |
+| `language` | 只读属性 | `QueryLanguage`，供分析提示词使用。 |
+| `load(config)` | `DataSourceConfig` | `Promise<void>`；准备执行所需的数据与连接。 |
+| `schema()` | 无 | `Promise<Schema>`；发现已加载数据源的结构。 |
+| `profile(schema, options?)` | 必填 `Schema`，可选 `ProfileOptions` | 可选方法，返回 `Promise<Profile>`，基于传入结构计算统计信息。 |
+| `getDSL(query, dataModel)` | 必填问题字符串与 `DataModel` | 返回 `Promise<TranslationResult>`，包含 `dsl` 和可选的 `usage`。 |
+| `execute(dsl, options?)` | 必填 DSL 字符串；可选 [ExecutionOptions](/documentation/reference/api/#executionoptions) | `Promise<ExecutionResult<T>>`；负责验证输入并执行结果限制。 |
+| `dispose()` | 无 | `Promise<void>`；释放连接、文件及其他资源。 |
+
+AVA 管理 schema 与 profile 缓存。`load()` 准备资源，`schema()` 按需发现结构；`execute()` 必须在未提前发现结构时也能使用。Profile 根据传入 schema 计算，查询生成使用传入的数据模型。结构发现失败后，引擎仍应允许重试或执行查询。
+
+迁移旧引擎时，将结构发现从 `load()` 移到 `schema()`，让 `load()` 返回 `Promise<void>`，补齐必填的 schema 与 data-model 参数，并让 `getDSL()` 返回 `{ dsl, usage? }`。即使只完成部分加载，`dispose()` 也应能安全调用。
+
+| `QueryLanguage` 字段 | 类型 | 必填 | 含义 |
+| --------------------- | -------- | -------- | -------------------------------------------------------- |
+| `name` | `string` | 是 | 提示词中使用的语言或方言名称。 |
+| `fence` | `string` | 是 | Markdown 代码块语言，例如 `sql` 或 `python`。 |
+| `instructions` | `string` | 否 | 可用变量及结果约定。 |
+
+`DataModel` 组合结构元数据、可选统计信息和语义注释。分析、翻译或推荐问题需要它时，AVA 会从缓存的 `Schema`、`Profile`、`Semantic` 组装。引擎直接接收模型，不需要额外的上下文包装对象。
+
+| `DataModel` 字段 | 类型 | 必填 | 含义 |
+| ----------------- | ---------------- | -------- | -------------------------------------------------------------- |
+| `models` | `Model[]` | 否 | 模型与列，可包含指标和属性。 |
+| `relationships` | `Relationship[]` | 否 | 模型间的连接关系。 |
+| `views` | `View[]` | 否 | 命名查询。 |
+| `properties` | `Properties` | 否 | 数据集注释。 |
+
+<Heading as="h2" id="example-a-sales-metrics-engine">示例：销售指标引擎</Heading>
+
+假设应用提供两份销售报表：收入合计和分地区收入。这个引擎将问题转换为简短的 JSON 命令，再在内存中计算报表，不执行模型生成的 JavaScript 或 SQL。
+
+示例复用已有的内存 JSON 数据源结构。远程引擎可以将连接设置放在引擎选项中，由 `load()` 解释受支持的 `DataSourceConfig` 结构。
+
+<Heading as="h3" id="implement-the-engine">实现引擎</Heading>
+
+在 **你的应用** 中创建 `sales-engine.ts`。示例使用 `ai` 调用模型，只依赖 `@antv/ava` 的公开导出。
+
+```typescript
+import { generateText, type LanguageModel } from 'ai';
+import { executionResult } from '@antv/ava';
+import type {
+  AnalysisEngine,
+  TranslationResult,
+  DataModel,
+  DataSourceConfig,
+  ExecutionOptions,
+  ExecutionResult,
+  LLMConfig,
+  Schema,
+} from '@antv/ava';
+
+type Sale = { region: string; revenue: number };
+
+export class SalesEngine implements AnalysisEngine {
+  readonly language = {
+    name: 'Sales metrics JSON',
+    fence: 'json',
+    instructions:
+      'Return exactly {"metric":"total_revenue"} or {"metric":"revenue_by_region"}. No other keys or operations are supported.',
+  };
+  private sales: Sale[] | null = null;
+
+  private readonly model: LanguageModel;
+
+  constructor(private readonly llm: LLMConfig) {
+    if (typeof llm.model === 'string') {
+      throw new Error('SalesEngine expects a configured AI SDK model object.');
+    }
+    this.model = llm.model;
+  }
+
+  async load(config: DataSourceConfig): Promise<void> {
+    await this.dispose();
+    if (config.type !== 'json' || !Array.isArray(config.options.data)) {
+      throw new Error('SalesEngine requires an inline JSON array.');
+    }
+    this.sales = config.options.data.map((row) => {
+      if (
+        !row ||
+        typeof row !== 'object' ||
+        typeof row.region !== 'string' ||
+        typeof row.revenue !== 'number' ||
+        !Number.isFinite(row.revenue)
+      ) {
+        throw new Error('Each sale requires a region string and finite revenue number.');
+      }
+      return { region: row.region, revenue: row.revenue };
+    });
+  }
+
+  async schema(): Promise<Schema> {
+    if (!this.sales) throw new Error('Load a source first.');
+    return {
+      models: [
+        {
+          name: 'sales',
+          tableReference: { table: 'sales' },
+          columns: [
+            { name: 'region', type: 'string' },
+            { name: 'revenue', type: 'number' },
+          ],
+        },
+      ],
+    };
+  }
+
+  async getDSL(query: string, _dataModel: DataModel): Promise<TranslationResult> {
+    if (!this.sales) throw new Error('Load a source first.');
+    const { text, usage } = await generateText({
+      model: this.model,
+      maxRetries: this.llm.maxRetries ?? 3,
+      system: `Convert a question into a sales metric. ${this.language.instructions}
+Return raw JSON without Markdown. If neither metric answers the question, return {"metric":"unsupported"}.`,
+      prompt: query,
+    });
+    return { dsl: text.trim(), usage };
+  }
+
+  async execute<T = Record<string, unknown>>(dsl: string, options?: ExecutionOptions): Promise<ExecutionResult<T>> {
+    if (!this.sales) throw new Error('Load a source first.');
+    const command = JSON.parse(dsl);
+    if (
+      !command ||
+      Array.isArray(command) ||
+      Object.keys(command).length !== 1 ||
+      !['total_revenue', 'revenue_by_region'].includes(command.metric)
+    ) {
+      throw new Error('Expected one supported metric and no additional keys.');
+    }
+
+    let rows: Record<string, unknown>[];
+    if (command.metric === 'total_revenue') {
+      rows = [{ total_revenue: this.sales.reduce((sum, row) => sum + row.revenue, 0) }];
+    } else {
+      const totals = new Map<string, number>();
+      for (const row of this.sales) {
+        totals.set(row.region, (totals.get(row.region) ?? 0) + row.revenue);
+      }
+      rows = Array.from(totals, ([region, total_revenue]) => ({ region, total_revenue }));
+    }
+    if (rows.some((row) => !Number.isFinite(row.total_revenue))) {
+      throw new Error('Revenue total exceeds the numeric range.');
+    }
+    const schema =
+      command.metric === 'total_revenue'
+        ? [{ name: 'total_revenue', type: 'number' }]
+        : [
+            { name: 'region', type: 'string' },
+            { name: 'total_revenue', type: 'number' },
+          ];
+    return executionResult(rows as T[], schema, options);
+  }
+
+  async dispose(): Promise<void> {
+    this.sales = null;
+  }
+}
+```
+
+即使通过 `query()` 直接调用，`execute()` 也会验证命令。公开导出的 `executionResult(rows, schema, options?)` 辅助函数负责应用 AVA 的行数与字节限制，详见[下方参数](#executionresult-helper)。
+
+这个引擎的命令集合固定，因此 `getDSL()` 接收但不使用数据模型。它未实现 `profile()`，`analyze()`、`suggest()`、`query()` 仍可使用，但 `ava.profile()` 会报告不支持统计。示例将所有输入行保留在内存中；结果限制约束的是返回数据，并不限制输入规模或聚合计算量。
+
+<Heading as="h3" id="register-and-use-it">注册并使用</Heading>
+
+应用需要安装 `@antv/ava`、`ai` 和 `@ai-sdk/openai`。配置 `OPENAI_API_KEY`、`OPENAI_MODEL` 后，使用项目的 TypeScript 执行器运行。应用启动时注册一次类，再按名称选择；AVA 会将配置好的模型传给每个新实例：
+
+```typescript
+import { createOpenAI } from '@ai-sdk/openai';
+import { AVA, registerEngine } from '@antv/ava';
+import { SalesEngine } from './sales-engine';
+
+registerEngine('sales', SalesEngine);
+
+const model = createOpenAI({
+  apiKey: process.env.OPENAI_API_KEY,
+  baseURL: process.env.OPENAI_BASE_URL,
+}).chat(process.env.OPENAI_MODEL || 'gpt-4o-mini');
+
+const ava = new AVA({
+  llm: { model },
+  engine: { type: 'sales' },
+});
+
+try {
+  await ava.source({
+    type: 'json',
+    options: {
+      data: [
+        { region: 'East', revenue: 120 },
+        { region: 'West', revenue: 90 },
+        { region: 'East', revenue: 80 },
+      ],
+    },
+  });
+
+  const answer = await ava.analyze('What is total revenue by region?', {
+    strategy: { type: 'direct', maxRetries: 0 },
+    includeSummary: false,
+  });
+  console.log(answer.sql); // Expected command: {"metric":"revenue_by_region"}
+  console.table(answer.data);
+
+  // Execute a known command directly, without calling the model.
+  const total = await ava.query('{"metric":"total_revenue"}');
+  console.table(total.data); // [{ total_revenue: 290 }]
+} finally {
+  await ava.dispose();
+}
+```
+
+示例未做统计计算，并关闭分析重试与总结。`answer.sql` 保存 JSON 命令，`answer.data` 包含计算结果，`answer.text` 为空。已经知道要执行的命令时，直接使用 `query()` 即可。
+
+<Heading as="h2" id="extension-reference">扩展 API 参考</Heading>
+
+<Heading as="h3" id="registerengine">registerEngine</Heading>
+
+`registerEngine(type: string, engineClass: EngineClass): void`
+
+两个 SDK 入口均导出此方法。请在加载数据源之前，注册应用中实现的引擎。
+
+| 参数 | 类型 | 必填 | 含义 |
+| ------------- | --------------------------------------------------------------------------------- | -------- | --------------------------------------------------------------------------------------------------- |
+| `type` | `string` | 是 | 引擎名称。重复注册会替换后续加载所用的构造函数。 |
+| `engineClass` | `new (llmConfig: LLMConfig, options?: Record<string, unknown>) => AnalysisEngine` | 是 | 引擎类。AVA 将模型配置与其余引擎选项传给每个新实例。 |
+
+注册仅影响当前加载的 SDK 模块。
+
+<Heading as="h3" id="executionresult-helper">executionResult 辅助函数</Heading>
+
+`executionResult<T>(rows: T[], schema: QueryColumn[], options?: ExecutionOptions, upstreamTruncatedBy?: 'maxRows' | 'maxResultBytes'): ExecutionResult<T>`
+
+Node.js SDK 为自定义引擎提供的同步辅助函数，从 `@antv/ava` 导入。
+
+| 参数 | 类型 | 必填 | 含义与默认值 |
+| --------------------- | --------------------------------- | -------- | ---------------------------------------------------------------------------------------------------- |
+| `rows` | `T[]` | 是 | 引擎生成的结果行。 |
+| `schema` | `QueryColumn[]` | 是 | 输出列，每列包含 `name: string` 和可选的 `type: string`。 |
+| `options` | `ExecutionOptions` | 否 | `{}`，使用[执行限制](/documentation/reference/api/#executionoptions)。 |
+| `upstreamTruncatedBy` | `'maxRows'` 或 `'maxResultBytes'` | 否 | 保留上游执行器已报告的截断原因；本地限制进一步截断时则以本地原因为准。 |
+
+返回受限后的 `data`、`schema`，以及完整结果的 `rowCount` 或部分结果的截断信息。单个结果字段超过 1 MiB 时抛错。它只约束已经生成的结果行，不限制查询执行过程或输入的内存使用。

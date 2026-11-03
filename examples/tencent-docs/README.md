@@ -110,6 +110,6 @@ CLI 将 source.json 中的占位 ID 替换为原生值，凭证保留在继承�
 
     node --env-file=.env.local node_modules/vitest/vitest.mjs run __tests__/duckdb/loaders/tencent-live.test.ts
 
-核心转换、HTTP、分页、loader/DuckDB、CLI、安全与预算回归保留于标准测试套件；一次性工具和过程报告不交付。2026-11-03 清理后重新执行：Windows 全量 764 通过/56 跳过，Linux 766/54；腾讯文档与文件系统定向分别 261/3、263/1。两端 lint、CJS/ESM 构建及文档站检查通过（22 页、1,379 链接）。真实专用表已验证 13 源字段、18 记录和 12 类标量，夹具前后原列指纹一致。本地结果不代表托管 CI 已通过。
+核心转换、HTTP、分页、loader/DuckDB、CLI、安全与预算回归保留于标准测试套件；一次性工具和过程报告不交付。2026-11-03 清理后重新执行：Windows 全量 767 通过/56 跳过，Linux 769/54；腾讯文档与文件系统定向分别 261/3、263/1。两端 lint、CJS/ESM 构建及文档站检查通过（44 页、2,826 链接）。真实专用表已验证 13 源字段、18 记录和 12 类标量，夹具前后原列指纹一致。本地结果不代表托管 CI 已通过。
 
 AI 使用范围见 [AI_USAGE.md](./AI_USAGE.md)。多表、发现、写回和同步不属于本次迁移。

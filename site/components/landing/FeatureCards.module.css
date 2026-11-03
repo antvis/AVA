@@ -1,9 +1,8 @@
 .grid {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 28px;
-  max-width: 1080px;
-  margin: 64px auto 0;
+  gap: 20px;
+  margin: 40px 0 0;
 }
 .card {
   --wash: #b1def7;
@@ -12,14 +11,13 @@
   display: flex;
   flex-direction: column;
   min-width: 0;
-  min-height: 390px;
+  min-height: 364px;
   overflow: hidden;
   isolation: isolate;
   border: 1px solid #e2e8ec;
-  border-radius: 20px;
+  border-radius: 16px;
   background: linear-gradient(180deg, #fff 20%, #fff 40%, var(--wash) 100%);
-  box-shadow: inset 0 1px 0 #fff, 0 2px 5px #284b6010;
-  transition: transform 0.25s, box-shadow 0.25s, border-color 0.25s;
+  transition: transform 0.25s, box-shadow 0.25s;
 }
 .card:nth-child(2) {
   --wash: #c9c9f3;
@@ -43,22 +41,21 @@
 }
 .card:hover {
   transform: translateY(-3px);
-  border-color: color-mix(in srgb, var(--accent) 32%, #e2e8ec);
-  box-shadow: inset 0 1px 0 #fff, 0 10px 24px -14px color-mix(in srgb, var(--accent) 60%, transparent);
+  box-shadow: 0 10px 24px -14px color-mix(in srgb, var(--accent) 60%, transparent);
 }
 .card h3 {
-  margin: 30px 24px 0;
-  text-align: center;
+  margin: 28px 28px 0;
+  text-align: left;
   color: #20333c;
-  font-size: clamp(24px, 2vw, 28px);
-  line-height: 1.2;
+  font-size: clamp(20px, 1.65vw, 24px);
+  line-height: 1.3;
   font-weight: 600;
   letter-spacing: -0.035em;
 }
 .card > p {
   min-height: 48px;
-  margin: 16px 28px 28px;
-  text-align: center;
+  margin: 14px 28px 20px;
+  text-align: left;
   color: #6a7880;
   font-size: 14px;
   line-height: 1.6;
@@ -77,8 +74,8 @@
   z-index: 3;
   display: grid;
   place-items: center;
-  width: 34px;
-  height: 34px;
+  width: 40px;
+  height: 40px;
   border: 1px solid #ffffffa3;
   border-radius: 50%;
   background: #ffffffa6;
@@ -411,6 +408,21 @@
   overflow: visible;
   font-family: var(--font-sans);
 }
+@media (min-width: 1024px) {
+  .grid {
+    grid-template-columns: repeat(24, minmax(0, 1fr));
+  }
+  .card {
+    grid-column: span 8;
+  }
+  .card:first-child,
+  .card:nth-child(3) {
+    grid-column: span 7;
+  }
+  .card:nth-child(2) {
+    grid-column: span 10;
+  }
+}
 @media (min-width: 768px) and (max-width: 1023px) {
   .grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -423,14 +435,14 @@
   .grid {
     grid-template-columns: 1fr;
     gap: 20px;
-    margin-top: 44px;
+    margin-top: 32px;
   }
   .card {
     min-height: 0;
   }
   .card h3 {
     margin-top: 30px;
-    font-size: 28px;
+    font-size: 24px;
   }
   .card > p {
     min-height: 0;
@@ -510,8 +522,8 @@
   .cardLink {
     right: 14px;
     bottom: 14px;
-    width: 34px;
-    height: 34px;
+    width: 40px;
+    height: 40px;
   }
 }
 @media (prefers-reduced-motion: reduce) {

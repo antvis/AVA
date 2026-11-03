@@ -1,11 +1,17 @@
 'use client';
 
+import { useLocale, useTranslations } from 'use-intl';
+import { localeHref, type Locale } from '../lib/i18n';
+import LanguageSwitch from './LanguageSwitch';
+
 import React, { useEffect, useState } from 'react';
-import Link from 'next/link';
+import Link from './LocaleLink';
 import { usePathname } from 'next/navigation';
 
 const Header: React.FC = () => {
-  const pathname = usePathname();
+  const t = useTranslations('Header');
+  const locale = useLocale() as Locale;
+  const pathname = usePathname().replace(/^\/zh(?=\/|$)/, '') || '/';
   const isAIPage = pathname === '/ai' || pathname === '/ai/';
   const isHomePage = pathname === '/';
   const [scrolled, setScrolled] = useState(false);
@@ -38,7 +44,7 @@ const Header: React.FC = () => {
         >
           <img
             src="https://mdn.alipayobjects.com/huamei_qa8qxu/afts/img/A*A-lcQbVTpjwAAAAAAAAAAAAADmJ7AQ/original"
-            alt="AVA ChartGenie Logo"
+            alt={t('aVAChartGenieLogo')}
             className={`w-20 flex-shrink-0 ${scrolled ? 'h-8' : 'h-12'} transition-all duration-500`}
           />
           <span className="text-lg text-gray-800 truncate">AVA</span>
@@ -47,14 +53,14 @@ const Header: React.FC = () => {
         {/* homepage section navigation */}
         <nav className="col-start-2 hidden items-center gap-1 justify-self-center md:flex">
           {[
-            { href: '/#analytics', label: 'Features', pathnamePrefix: null },
-            { href: '/#integrate', label: 'Integrations', pathnamePrefix: null },
-            { href: '/#benchmarks', label: 'Benchmarks', pathnamePrefix: null },
-            { href: '/#ecosystem', label: 'Ecosystem', pathnamePrefix: null },
+            { href: '/#analytics', label: t('features'), pathnamePrefix: null },
+            { href: '/#integrate', label: t('integrations'), pathnamePrefix: null },
+            { href: '/#benchmarks', label: t('benchmarks'), pathnamePrefix: null },
+            { href: '/#ecosystem', label: t('ecosystem'), pathnamePrefix: null },
           ].map((item) => (
             <a
               key={item.label}
-              href={item.href}
+              href={localeHref(item.href, locale)}
               className="rounded-lg px-3 py-2 text-sm text-gray-600 transition-colors hover:text-[color:var(--color-primary)] hover:bg-[color:var(--color-primary)]/10"
             >
               {item.label}
@@ -65,13 +71,14 @@ const Header: React.FC = () => {
               href="/documentation/"
               className="rounded-lg px-3 py-2 text-sm text-gray-600 transition-colors hover:text-[color:var(--color-primary)] hover:bg-[color:var(--color-primary)]/10"
             >
-              Docs
+              {t('docs')}
             </Link>
           )}
         </nav>
 
         {/* 右侧操作区 */}
         <div className="col-start-3 flex items-center gap-2 justify-self-end">
+          <LanguageSwitch />
           <Link
             href="/documentation/"
             className={`${
@@ -90,14 +97,14 @@ const Header: React.FC = () => {
                 d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"
               />
             </svg>
-            Documentation
+            {t('documentation')}
           </Link>
           <Link
             href="/ai/"
             aria-current={isAIPage ? 'page' : undefined}
             className="inline-flex min-h-10 min-w-[88px] items-center justify-center gap-3 rounded-[9px] border border-white/20 bg-[#202226] px-[18px] text-[13px] font-medium text-white! shadow-[inset_0_1px_0_#ffffff1a,0_2px_6px_#1a283514] transition-colors hover:bg-[#30363b]"
           >
-            AI
+            {t('aI')}
             <svg
               width="14"
               height="14"

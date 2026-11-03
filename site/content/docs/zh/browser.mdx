@@ -1,0 +1,45 @@
+import { Heading } from '../../../mdx-components';
+
+<Heading as="h2" id="import-the-browser-build">引入浏览器版本</Heading>
+
+浏览器入口只注册 JavaScript 引擎，使用时需要显式选择；否则 `AVA` 构造函数默认使用 DuckDB。
+
+```typescript
+import { AVA } from '@antv/ava/browser';
+
+const ava = new AVA({
+  llm: { model: 'YOUR_MODEL' },
+  engine: { type: 'javascript' },
+});
+
+try {
+  await ava.source({
+    type: 'json',
+    options: { data: [{ region: 'East', revenue: 120 }] },
+  });
+
+  // Profiling and direct execution do not require a model request.
+  const profile = await ava.profile();
+  const result = await ava.query('const result = data;');
+  console.log(profile, result.data);
+} finally {
+  await ava.dispose();
+}
+```
+
+<Heading as="h2" id="supported-sources">支持的数据源</Heading>
+
+支持内存中的 `json`、`csv` 和 `text`。文本提取会调用已配置的模型。文件路径与数据库直连需要在 Node.js 引擎中使用。
+
+<Heading as="h2" id="natural-language-analysis">自然语言分析</Heading>
+
+调用 `analyze()`、`translate()`、`suggest()` 或图表推荐前，请先完成模型服务商配置。仅填写模型名称，并不代表已经提供这些操作需要的凭证。
+
+<Callout>
+  公用 API 密钥应保留在服务端。如果浏览器流程需要用户自行提供凭证，请在
+  运行时获取。
+</Callout>
+
+<Heading as="h2" id="execution-behavior">执行方式</Heading>
+
+生成的 JavaScript 可以读取 `data` 和 `stat`，并将最终输出赋给 `result`。浏览器在带有 `sandbox="allow-scripts"` 和严格内容安全策略的 iframe 中执行代码。具体约定见 [JavaScript 引擎](/documentation/engines/javascript/)。
