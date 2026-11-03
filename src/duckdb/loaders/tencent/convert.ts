@@ -11,7 +11,7 @@ export type TencentCell = string | number | boolean | null;
 // Official numeric FieldType / Value contracts, not the MCP string enums.
 // The legacy v2 enum page is incomplete: currency 26 / percentage 28 have been
 // confirmed through official service metadata and native OpenAPI round trips.
-// See examples/tencent-docs/OPENAPI_FIELDS.md for contracts and live evidence.
+// See examples/tencent-docs/README.md for contracts and live evidence.
 const SQL_TYPES: Record<number, string> = {
   1: 'VARCHAR',
   2: 'DOUBLE',
