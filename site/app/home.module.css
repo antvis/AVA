@@ -103,6 +103,55 @@
   padding: 56px 24px 0;
   text-align: center;
 }
+.campaign {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 16px;
+  width: min(1120px, calc(100% - 48px));
+  margin: 16px auto 0;
+  padding: 18px 24px;
+  border: 1px solid #ffffffd9;
+  border-radius: 16px;
+  background: #f4fbffb3;
+  color: #243d4b;
+}
+.campaignIcon {
+  font-size: 28px;
+  line-height: 1;
+}
+.campaignCopy strong {
+  display: block;
+  font-size: 15px;
+  font-weight: 600;
+  line-height: 1.5;
+}
+.campaignCopy p {
+  margin: 4px 0 0;
+  font-size: 13px;
+  line-height: 1.6;
+  color: #4c626f;
+}
+.campaignLink {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 40px;
+  padding: 0 16px;
+  border: 1px solid #96bfdb;
+  border-radius: 999px;
+  background: #ffffffd9;
+  color: #173f55;
+  font-size: 13px;
+  font-weight: 500;
+  white-space: nowrap;
+  transition: background 160ms, border-color 160ms;
+}
+.campaignLink:hover {
+  border-color: #22799b;
+  background: #fff;
+}
 .heroIntro > section {
   max-width: 1000px;
   margin-inline: auto;
@@ -698,6 +747,21 @@
   }
 }
 @media (max-width: 767px) {
+  .campaign {
+    grid-template-columns: auto minmax(0, 1fr);
+    align-items: flex-start;
+    gap: 12px;
+    width: calc(100% - 32px);
+    padding: 16px;
+  }
+  .campaignIcon {
+    font-size: 22px;
+    line-height: 1.5;
+  }
+  .campaignLink {
+    grid-column: 2;
+    justify-self: start;
+  }
   .home {
     --home-gutter: 22px;
     --home-header-height: 68px;
