@@ -7,9 +7,9 @@
   align-items: flex-end;
   justify-content: space-between;
   gap: 28px;
-  max-width: 1180px;
+  max-width: var(--home-width, 1200px);
   margin: 0 auto 40px;
-  padding-inline: 30px;
+  padding-inline: var(--home-gutter, 40px);
 }
 .heading h2 {
   white-space: nowrap;
@@ -23,6 +23,7 @@
   overscroll-behavior-x: contain;
   scrollbar-width: none;
   padding-block: 4px 16px;
+  padding-inline: max(var(--home-gutter, 40px), calc((100vw - 1120px) / 2));
 }
 .track::-webkit-scrollbar {
   display: none;
@@ -154,7 +155,7 @@
   align-items: center;
   justify-content: center;
   gap: 14px;
-  margin-top: 18px;
+  margin-top: 28px;
 }
 .footer > span {
   font-size: 14px;

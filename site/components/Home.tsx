@@ -79,11 +79,6 @@ export default function Home({ locale }: { locale: Locale }) {
               <br />
               {t('runAnywhere')}
             </h2>
-            <div className={styles.sourceCategories}>
-              <span>{t('files')}</span>
-              <span>{t('databases')}</span>
-              <span>SaaS</span>
-            </div>
             <Link href="/documentation/data/sources/" className={styles.textLink}>
               {t('allDataSources')}
               <Arrow />
