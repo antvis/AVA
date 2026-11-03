@@ -1,3 +1,7 @@
+'use client';
+
+import { useTranslations } from 'use-intl';
+
 import { formatResultValue, resultColumns } from './utils';
 import type { ArtifactDisplay } from './types';
 
@@ -13,6 +17,7 @@ export default function MetadataTable({
   columns?: ArtifactDisplay['columns'];
   variant?: 'metadata' | 'result';
 }) {
+  const t = useTranslations('MetadataTable');
   const isResult = variant === 'result';
   const columns =
     providedColumns ??
@@ -22,7 +27,7 @@ export default function MetadataTable({
       suffix: '',
     }));
 
-  if (isResult && rows.length === 0) return <p className="text-xs text-zinc-400">No rows.</p>;
+  if (isResult && rows.length === 0) return <p className="text-xs text-zinc-400">{t('noRows')}</p>;
 
   return (
     <div className={isResult ? 'overflow-x-auto' : 'soft-scroll max-h-80 overflow-auto'}>
@@ -64,7 +69,7 @@ export default function MetadataTable({
           ))}
         </tbody>
       </table>
-      {rows.length === 0 && <p className="py-2 text-xs text-ink-2">No fields.</p>}
+      {rows.length === 0 && <p className="py-2 text-xs text-ink-2">{t('noFields')}</p>}
     </div>
   );
 }

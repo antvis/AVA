@@ -1,0 +1,111 @@
+import { Heading } from '../../../../mdx-components';
+
+先从下面六笔订单看起：看看它们有哪些字段，数据分布如何，再想清楚收入该按什么口径计算。下一篇[补充业务语义](/documentation/data/semantic/)会继续使用这份数据。
+
+| order_id | region | status | amount | refund_amount | ordered_at |
+| --- | --- | --- | --- | --- | --- |
+| 1 | East | paid | 120 | 20 | 2026-01-03 |
+| 2 | East | refunded | 80 | 80 | 2026-01-04 |
+| 3 | East | pending | 200 | 0 | 2026-01-05 |
+| 4 | West | paid | 90 | 30 | 2026-01-06 |
+| 5 | East | paid | 50 | `null` | 2026-01-07 |
+| 6 | West | cancelled | 500 | 0 | 2026-01-08 |
+
+<Callout>
+  **AVA 负责发现结构、计算统计信息；业务含义由你补充：** 哪些订单计入收入，退款又该怎样处理。
+</Callout>
+
+<details>
+<summary>将这张表作为内存 JSON 加载</summary>
+
+配置好 `ava` 后，加载下面的数据。默认 DuckDB 引擎会将它暴露为名为 `data` 的模型。
+
+```typescript
+const orders = [
+  { order_id: 1, region: 'East', status: 'paid', amount: 120, refund_amount: 20, ordered_at: '2026-01-03' },
+  { order_id: 2, region: 'East', status: 'refunded', amount: 80, refund_amount: 80, ordered_at: '2026-01-04' },
+  { order_id: 3, region: 'East', status: 'pending', amount: 200, refund_amount: 0, ordered_at: '2026-01-05' },
+  { order_id: 4, region: 'West', status: 'paid', amount: 90, refund_amount: 30, ordered_at: '2026-01-06' },
+  { order_id: 5, region: 'East', status: 'paid', amount: 50, refund_amount: null, ordered_at: '2026-01-07' },
+  { order_id: 6, region: 'West', status: 'cancelled', amount: 500, refund_amount: 0, ordered_at: '2026-01-08' },
+];
+
+await ava.source({ type: 'json', options: { data: orders } });
+```
+
+</details>
+
+<Heading as="h2" id="schema-the-structure-ava-discovers">Schema：自动发现的数据结构</Heading>
+
+```typescript
+const schema = await ava.schema();
+console.log(schema.models[0]);
+```
+
+这张表发现的模型如下：
+
+```json
+{
+  "name": "data",
+  "tableReference": { "catalog": "memory", "schema": "main", "table": "data" },
+  "columns": [
+    { "name": "order_id", "type": "BIGINT", "notNull": false },
+    { "name": "region", "type": "VARCHAR", "notNull": false },
+    { "name": "status", "type": "VARCHAR", "notNull": false },
+    { "name": "amount", "type": "BIGINT", "notNull": false },
+    { "name": "refund_amount", "type": "BIGINT", "notNull": false },
+    { "name": "ordered_at", "type": "DATE", "notNull": false }
+  ]
+}
+```
+
+这是自动发现的结构起点，无需手写。类型和数据源限定信息取决于引擎；数据库源也可能提供已声明的键和关系。`notNull: false` 表示未声明非空约束，并不表示实际发现了空值。
+
+分析需要时，AVA 也会自动发现结构，因此不一定要主动调用 `schema()`。
+
+<Heading as="h2" id="profile-statistics-ava-computes">Profile：按需计算的统计信息</Heading>
+
+```typescript
+const profile = await ava.profile({
+  metrics: ['row_count', 'null_count', 'min', 'max'],
+});
+```
+
+同一张表的统计结果包括：
+
+| 观察项 | Profile 中的位置 | 值 |
+| --- | --- | --- |
+| 总行数 | 模型的 `metrics.row_count` | 6 |
+| 退款缺失数 | `refund_amount` 列的 `metrics.null_count` | 1 |
+| 最小订单金额 | `amount` 列的 `metrics.min` | 50 |
+| 最大订单金额 | `amount` 列的 `metrics.max` | 500 |
+
+<Callout>
+  **最大值 500 来自一笔已取消的订单。** 统计描述的是实际存储的数据；哪些记录算收入，应在业务语义中定义。
+</Callout>
+
+统计计算可选，需要引擎支持，并可能扫描数据，但不会调用大模型。其他统计项见[指标选项](/documentation/reference/api/#metrics)。
+
+<Heading as="h2" id="semantic-the-meaning-you-add">Semantic：由你补充的业务含义</Heading>
+
+表里有已支付、已退款、待支付和已取消的订单。哪些应计入收入？这需要你提供业务规则：
+
+```typescript
+await ava.semantic(undefined, () => ({
+  description: 'Amounts are USD. Revenue counts paid and refunded orders, subtracts refunds, and excludes pending and cancelled orders. A missing refund is zero.',
+  cubes: [{
+    name: 'sales',
+    baseObject: 'data',
+    measures: [{
+      name: 'net_revenue',
+      expression: "SUM(CASE WHEN status IN ('paid', 'refunded') THEN amount - COALESCE(refund_amount, 0) ELSE 0 END)",
+      type: 'DOUBLE',
+    }],
+    dimensions: [{ name: 'region', expression: 'region', type: 'VARCHAR' }],
+  }],
+}));
+```
+
+`description` 说明业务口径；`sales` cube 指定来源（`data`）、收入计算（`measures`）和地区分组（`dimensions`）。自动发现的列无需重复声明，仍可使用。Cube 用于指导查询生成，不会创建数据库对象。
+
+继续阅读[补充业务语义](/documentation/data/semantic/)，查看完整示例与 SQL 结果： **East 150 美元，West 60 美元** 。字段格式、手动覆盖与更新规则见 [API 参考](/documentation/reference/api/#schema)。

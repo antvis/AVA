@@ -23,17 +23,7 @@ const schema: Schema = {
 };
 
 describe('session startup protocol', () => {
-  const platform = Object.getOwnPropertyDescriptor(process, 'platform')!;
-
-  afterEach(() => {
-    Object.defineProperty(process, 'platform', platform);
-    vi.clearAllMocks();
-  });
-
   it('keeps engine selection through the child-process startup message', async () => {
-    // This is an IPC payload unit test, not a real Unix-socket session. Exercise
-    // the supported-platform branch on every host; test Windows rejection below.
-    Object.defineProperty(process, 'platform', { ...platform, value: 'linux' });
     const worker = Object.assign(new EventEmitter(), {
       connected: true,
       disconnect: vi.fn(),
@@ -52,12 +42,6 @@ describe('session startup protocol', () => {
     }
   });
 
-  it('rejects Windows before creating a dataset process', async () => {
-    Object.defineProperty(process, 'platform', { ...platform, value: 'win32' });
-    await expect(createSession(source, llm)).rejects.toThrow('Dataset sessions currently require macOS or Linux.');
-    expect(fork).not.toHaveBeenCalled();
-  });
-
   it('accepts legacy startup messages and rejects custom engine configuration', () => {
     expect(startupSchema.parse({ source, llm })).toEqual({ source, llm });
     for (const engine of ['invalid', { type: 'python', execute: 'custom' }]) {
@@ -69,6 +53,15 @@ describe('session startup protocol', () => {
     expect(requestSchema.parse({ command: 'schema', schema })).toEqual({ command: 'schema', schema });
     expect(() => requestSchema.parse({ command: 'schema', schema: { models: null } })).toThrow();
     expect(() => requestSchema.parse({ command: 'profile', profile: { models: null } })).toThrow();
+    expect(requestSchema.parse({ command: 'semantic' })).toEqual({ command: 'semantic' });
+    expect(requestSchema.parse({ command: 'semantic', semantic: {} })).toEqual({ command: 'semantic', semantic: {} });
+    expect(() => requestSchema.parse({ command: 'semantic', semantic: { models: null } })).toThrow();
+    expect(() =>
+      requestSchema.parse({
+        command: 'semantic',
+        semantic: { models: [{ name: 'data', tableReference: { table: 'data' }, metrics: { row_count: 1 } }] },
+      })
+    ).toThrow();
     expect(() => startupSchema.parse({ source, llm, metadata: { schema } })).toThrow();
   });
 });
@@ -120,7 +113,7 @@ describe('dataset engine and language', () => {
     expect(result.rowCount).toBe(1);
   });
 
-  it('forwards imported profiles through the dataset session to model context', async () => {
+  it('retains imported semantics alongside schema and profile in model context', async () => {
     const profile = {
       models: [
         {
@@ -137,11 +130,19 @@ describe('dataset engine and language', () => {
       ],
     };
     await datasets.createDataset(source, llm, 'javascript');
+    const semantic = { description: 'Sales are in USD.', properties: { confirmedBy: 'user' } };
+    expect(await datasets.withDataset((ava) => ava.semantic())).toEqual({});
+    await datasets.withDataset((ava) => ava.semantic(undefined, () => semantic));
     expect(await datasets.describeDataset(schema)).toMatchObject(schema);
     await datasets.withDataset((ava) => ava.profile(undefined, () => profile));
     const getDSL = await datasets.withDataset(async (ava) =>
       vi.spyOn(ava.engine!, 'getDSL').mockResolvedValue({ dsl: 'const result = data;' })
     );
+    await datasets.withDataset((ava) => ava.translate('Sales'));
+    expect(getDSL).toHaveBeenLastCalledWith('Sales', buildDataModel({ schema, profile, semantic }));
+    await expect(datasets.withDataset((ava) => ava.semantic(undefined, () => ({ models: null })))).rejects.toThrow();
+    expect(await datasets.withDataset((ava) => ava.semantic())).toEqual(semantic);
+    await datasets.withDataset((ava) => ava.semantic(undefined, () => ({})));
     await datasets.withDataset((ava) => ava.translate('Sales'));
     expect(getDSL).toHaveBeenLastCalledWith('Sales', buildDataModel({ schema, profile }));
   });

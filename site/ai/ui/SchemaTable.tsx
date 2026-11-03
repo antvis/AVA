@@ -1,9 +1,14 @@
+'use client';
+
+import { useTranslations } from 'use-intl';
+
 import type { Profile, Schema } from '@antv/ava/browser';
 import MetadataTable from './MetadataTable';
 
 /** Show catalog columns or profile observations grouped by model. */
 export default function SchemaTable({ result }: { result: Schema | Profile }) {
-  if (!result.models.length) return <p className="py-2 text-xs text-ink-2">No models.</p>;
+  const t = useTranslations('SchemaTable');
+  if (!result.models.length) return <p className="py-2 text-xs text-ink-2">{t('noModels')}</p>;
 
   return (
     <div className="min-w-0 space-y-3">
@@ -20,25 +25,25 @@ export default function SchemaTable({ result }: { result: Schema | Profile }) {
           <section key={model.name}>
             {'tableReference' in model && (
               <MetadataTable
-                caption={`${model.name} · Source and keys`}
+                caption={t('sourceKeys', { name: model.name })}
                 rows={[{ ...model.tableReference, primaryKey: model.primaryKey, uniqueKeys: model.uniqueKeys }]}
               />
             )}
             {'metrics' in model && Object.keys(model.metrics).length > 0 && (
-              <MetadataTable caption={`${model.name} · Statistics`} rows={[model.metrics]} />
+              <MetadataTable caption={t('statistics', { name: model.name })} rows={[model.metrics]} />
             )}
-            <MetadataTable caption={`${model.name} · ${model.columns.length} columns`} rows={rows} />
+            <MetadataTable caption={t('columns', { name: model.name, count: model.columns.length })} rows={rows} />
           </section>
         );
       })}
       {'relationships' in result && !!result.relationships?.length && (
         <MetadataTable
-          caption="Relationships"
+          caption={t('relationships')}
           rows={result.relationships.map((relationship) => ({ ...relationship }))}
         />
       )}
       {'views' in result && !!result.views?.length && (
-        <MetadataTable caption="Views" rows={result.views.map((view) => ({ ...view }))} />
+        <MetadataTable caption={t('views')} rows={result.views.map((view) => ({ ...view }))} />
       )}
     </div>
   );

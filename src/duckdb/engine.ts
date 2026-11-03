@@ -165,21 +165,12 @@ export class DuckDBEngine implements AnalysisEngine {
     const conn = this.connection;
     const query = await this.queryDialect.validateDSL(sql, conn);
     const timeoutMs = this.engineOptions.queryTimeoutMs ?? DEFAULT_QUERY_TIMEOUT_MS;
-    const operation = conn.runAndReadAll(limitedQuery(query, maxRows(options)));
-    const reader = await runWithTimeout(operation, timeoutMs, {
+    const reader = await runWithTimeout(conn.runAndReadAll(limitedQuery(query, maxRows(options))), timeoutMs, {
       onTimeout: () => {
         conn.interrupt();
         return new QueryTimeoutError(timeoutMs);
       },
       unref: true,
-    }).catch(async (error: unknown) => {
-      if (error instanceof QueryTimeoutError) {
-        // interrupt() requests cancellation; the native query is still in flight.
-        // Drain it before exposing the timeout, otherwise a caller's dispose()
-        // can close/free the connection while native execution is using it.
-        await operation.catch(() => undefined);
-      }
-      throw error;
     });
     const schema = Array.from({ length: reader.columnCount }, (_, index) => ({
       name: reader.columnName(index),

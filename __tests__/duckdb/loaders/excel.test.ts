@@ -84,7 +84,7 @@ describe('loaders/excel', () => {
     expect(costs.data).toHaveLength(240);
     expect(costs.data[0]).toEqual({ order_id: 'ORD-0001', cost: 165 });
     expect(costs.data[239]).toEqual({ order_id: 'ORD-0240', cost: 520 });
-  }, 30000);
+  });
 
   it('supports joining across sheets', async () => {
     engine = new DuckDBEngine(getLLMConfig());

@@ -1,0 +1,34 @@
+import { Heading } from '../../../../mdx-components';
+
+<Heading as="h2" id="configure">配置</Heading>
+
+```typescript
+import { AVA } from '@antv/ava/browser';
+
+const ava = new AVA({
+  llm: { model: 'YOUR_MODEL' },
+  engine: { type: 'javascript' },
+});
+```
+
+JavaScript 引擎支持内存 CSV、JSON 和文本，数据保存在一个内存数组中。加载文本需要调用模型。
+
+<Heading as="h2" id="query-bindings">查询中的变量</Heading>
+
+查询可以使用 `data` 和辅助对象 `stat`，并且必须将输出赋给 `result`。
+
+```typescript
+await ava.source({
+  type: 'json',
+  options: { data: [{ revenue: 120 }, { revenue: 90 }] },
+});
+const result = await ava.query('const result = [{ revenue: data.reduce((sum, row) => sum + row.revenue, 0) }];');
+```
+
+执行前会克隆输入数据。非数组结果会被规范化为包含 `value` 字段的一行，再应用结果限制。
+
+<Heading as="h2" id="execution-environments">执行环境</Heading>
+
+Node.js 中的代码在 `node:vm` 上下文中运行，超时为 10 秒；浏览器中则在带有严格 CSP 的沙箱 iframe 中运行，响应超时同为 10 秒。
+
+两种机制的隔离能力不同。Node.js VM 不能作为抵御恶意代码的安全边界；如果应用接受不可信的可执行代码，需要部署合适的隔离环境。

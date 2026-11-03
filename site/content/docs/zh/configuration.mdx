@@ -1,0 +1,53 @@
+import { Heading } from '../../../mdx-components';
+
+<Heading as="h2" id="constructor">构造函数</Heading>
+
+```typescript
+import { AVA } from '@antv/ava';
+
+const ava = new AVA({
+  llm: {
+    model: 'YOUR_MODEL',
+    apiKey: process.env.OPENAI_API_KEY,
+    baseURL: process.env.OPENAI_BASE_URL,
+    maxRetries: 3,
+  },
+  engine: { type: 'duckdb' },
+});
+```
+
+`llm` 为必填项。不传 `engine` 时使用 DuckDB；前端应用必须显式选择 `javascript`。
+
+<Heading as="h2" id="model-options">模型选项</Heading>
+
+| 字段 | 类型 | 必填 | 含义与默认值 |
+| -------------- | ------------------------------------- | -------- | --------------------------------------------------------------------------------- |
+| `provider` | `'openai' \| 'gateway'` | 否 | 默认使用兼容 OpenAI 的 Chat Completions。Gateway 可读取 AI_GATEWAY_API_KEY。 |
+| `model` | `string \| LanguageModel` | 是 | 模型名称，或预先配置好的 AI SDK 模型实例。 |
+| `apiKey` | `string` | 否 | 模型服务商的 API 密钥。 |
+| `baseURL` | `string` | 否 | 可选的 API 基础地址。 |
+| `maxRetries` | `number` | 否 | 模型 API 可重试错误的最大重试次数，默认 3。 |
+
+以字符串传入模型名称时，默认调用兼容 OpenAI 的 **Chat Completions** ；传入模型对象时则直接使用该对象。用量回调并不完整覆盖每一次模型请求，不能据此汇总全部模型用量。
+
+<Heading as="h2" id="ai-gateway">AI Gateway</Heading>
+
+```typescript
+const ava = new AVA({
+  llm: {
+    provider: 'gateway',
+    model: 'openai/gpt-4o-mini',
+    apiKey: process.env.AI_GATEWAY_API_KEY,
+  },
+});
+```
+
+未显式传入密钥时，Gateway 也可以从环境变量 `AI_GATEWAY_API_KEY` 读取。
+
+<Heading as="h2" id="separate-retry-controls">两类重试分别配置</Heading>
+
+`llm.maxRetries` 控制模型 API 的重试次数；`direct` 分析策略中的 `maxRetries` 则用于修正执行失败的查询。两者独立，详见[分析策略](/documentation/analysis/strategies/)。
+
+<Heading as="h2" id="credentials-in-frontend-apps">前端应用中的凭证</Heading>
+
+共享的模型服务密钥应放在服务端。纯浏览器实验可以在运行时获取用户凭证，不要将密钥写入源码或打包进前端产物。

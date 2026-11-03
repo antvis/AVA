@@ -1,3 +1,6 @@
+import { localeHref, type Locale } from './i18n';
+import zh from '../messages/zh.json';
+
 export const docs = [
   {
     slug: 'introduction',
@@ -133,8 +136,23 @@ export const docs = [
   },
 ] as const;
 
-export type Doc = (typeof docs)[number];
+export type Doc = { slug: (typeof docs)[number]['slug']; title: string; group: string; description: string };
 
-export function docHref(slug: string) {
-  return slug === 'introduction' ? '/documentation/' : `/documentation/${slug}/`;
+export function localizedDoc(doc: Doc, locale: Locale): Doc {
+  if (locale === 'en') return doc;
+  const groups: Record<string, string> = {
+    'Get started': '开始使用',
+    'Working with data': '理解与接入数据',
+    'Analysis & visualization': '分析与可视化',
+    'Advanced usage': '进阶使用',
+    'Execution engines': '执行引擎',
+    'API Reference': 'API 参考',
+    'More resources': '更多资源',
+  };
+  const translated = zh.chapters[doc.slug.replaceAll('/', '_') as keyof typeof zh.chapters];
+  return { ...doc, ...translated, group: groups[doc.group] };
+}
+
+export function docHref(slug: string, locale: Locale = 'en') {
+  return localeHref(slug === 'introduction' ? '/documentation/' : `/documentation/${slug}/`, locale);
 }

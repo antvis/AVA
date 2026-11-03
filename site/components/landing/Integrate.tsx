@@ -1,5 +1,7 @@
 'use client';
 
+import { useTranslations } from 'use-intl';
+
 import React, { useState } from 'react';
 import Reveal from './Reveal';
 import { SectionHeading, SectionLink } from './Section';
@@ -23,29 +25,29 @@ const TABS: {
   {
     id: 'skill',
     label: 'Agent Skill',
-    heading: 'Add the AVA Skill.',
-    description: 'Uses your agent’s own model.',
+    heading: 'addTheAvaSkill',
+    description: 'usesYourAgentSOwnModel',
     language: 'bash',
     docHref: '/documentation/agent-skill/',
-    docLabel: 'Agent Skill guide & demo',
+    docLabel: 'agentSkillGuideDemo',
   },
   {
     id: 'cli',
     label: 'CLI',
-    heading: 'Use the command line.',
-    description: 'Explore and query data from your terminal.',
+    heading: 'useTheCommandLine',
+    description: 'exploreAndQueryDataFromYourTerminal',
     language: 'bash',
     docHref: '/documentation/reference/cli/',
-    docLabel: 'CLI documentation',
+    docLabel: 'cliDocumentation',
   },
   {
     id: 'sdk',
     label: 'SDK',
-    heading: 'Build with the SDK.',
-    description: 'Compose analysis APIs in your TypeScript app.',
+    heading: 'buildWithTheSdk',
+    description: 'composeAnalysisApisInYourTypescriptApp',
     language: 'typescript',
     docHref: '/documentation/quickstart/',
-    docLabel: 'SDK quickstart',
+    docLabel: 'sdkQuickstart',
   },
 ];
 
@@ -127,55 +129,22 @@ const SdkCode: React.FC = () => (
 
 const CODE: Record<TabId, React.FC> = { skill: SkillCode, cli: CliCode, sdk: SdkCode };
 
-const CODE_TEXT: Record<TabId, string> = {
-  skill: `# install the skills for your agents
-npx skills add antvis/AVA
-
-# or add the marketplace in Claude Code
-/plugin marketplace add antvis/AVA
-
-# then, in a new agent session:
-"Use the AVA skill to analyze /absolute/path/sales.csv, compare sales by region, and generate a chart."`,
-  cli: `# install (Node.js 22.13+, macOS / Linux)
-npm install -g @antv/ava@4
-
-ava source sales.csv
-ava suggest "$DATASET_ID" --count 5
-ava analyze "$DATASET_ID" \\
-  "What is the average sales value by region?"
-ava visualize --query "Compare average sales by region" \\
-  --data @rows.json --output chart.html
-
-# output is JSON · sessions expire after 30 min idle`,
-  sdk: `import { AVA } from '@antv/ava';
-
-const ava = new AVA({
-  llm: { model: 'ling-1t', apiKey, baseURL },
-  // engine: { type: 'duckdb' } is the default
-});
-
-await ava.source({ type: 'csv-file', options: { path: 'data/companies.csv' } });
-const result = await ava.analyze('What is the average revenue by region?');
-const viz = await ava.visualize(result);
-console.log(viz?.chartType); // e.g. 'column'
-
-await ava.dispose();`,
-};
-
 /* ------------------------------------------------------------------ */
 /* Section                                                             */
 /* ------------------------------------------------------------------ */
 
 const Integrate: React.FC<{ id?: string }> = ({ id = 'integrate' }) => {
+  const t = useTranslations('Integrate');
   const [tab, setTab] = useState<TabId>('skill');
   const [copied, setCopied] = useState(false);
   const [copiedTab, setCopiedTab] = useState<TabId>('skill');
   const active = TABS.find((t) => t.id === tab)!;
   const Code = CODE[tab];
+  const codeText: string = t.raw(`code_${tab}`);
 
   const copy = async () => {
     try {
-      await navigator.clipboard.writeText(CODE_TEXT[tab]);
+      await navigator.clipboard.writeText(codeText);
       setCopied(true);
       setCopiedTab(tab);
       setTimeout(() => setCopied(false), 1600);
@@ -188,7 +157,7 @@ const Integrate: React.FC<{ id?: string }> = ({ id = 'integrate' }) => {
     <section
       id={id}
       className="relative mx-6 overflow-hidden rounded-[24px] px-6 py-[88px] max-md:mx-2.5 max-md:px-1 max-md:py-14"
-      aria-label="Integrate your way"
+      aria-label={t('integrateYourWay')}
     >
       <div aria-hidden className="absolute inset-x-0 top-0 h-full bg-[#f6fbfe]" />
       <div className="relative mx-auto max-w-6xl px-6">
@@ -196,12 +165,12 @@ const Integrate: React.FC<{ id?: string }> = ({ id = 'integrate' }) => {
           <SectionHeading
             title={
               <>
-                Bring Analytics
+                {t('bringAnalytics')}
                 <br />
-                to Your Agent.
+                {t('toYourAgent')}
               </>
             }
-            description="Choose an Agent Skill, CLI, or TypeScript SDK."
+            description={t('chooseAnAgentSkillCLIOrTypeScript')}
           />
         </Reveal>
 
@@ -209,7 +178,7 @@ const Integrate: React.FC<{ id?: string }> = ({ id = 'integrate' }) => {
           <div className="mx-auto mt-12 max-w-4xl rounded-2xl border border-zinc-200/90 bg-white shadow-[0_1px_3px_rgba(0,0,0,0.04)]">
             {/* tab bar */}
             <div className="flex items-center justify-between gap-2 border-b border-zinc-100 px-3 pt-3">
-              <div role="tablist" aria-label="Integration methods" className="flex gap-1 overflow-x-auto">
+              <div role="tablist" aria-label={t('integrationMethods')} className="flex gap-1 overflow-x-auto">
                 {TABS.map((t) => (
                   <button
                     key={t.id}
@@ -241,7 +210,7 @@ const Integrate: React.FC<{ id?: string }> = ({ id = 'integrate' }) => {
                 }`}
               >
                 {copied && copiedTab === tab ? (
-                  <>copied ✓</>
+                  <>{t('copied')}</>
                 ) : (
                   <>
                     <svg
@@ -256,7 +225,7 @@ const Integrate: React.FC<{ id?: string }> = ({ id = 'integrate' }) => {
                       <rect x="9" y="9" width="12" height="12" rx="2" />
                       <path d="M5 15V5a2 2 0 0 1 2-2h10" />
                     </svg>
-                    copy
+                    {t('copy')}
                   </>
                 )}
               </button>
@@ -266,10 +235,10 @@ const Integrate: React.FC<{ id?: string }> = ({ id = 'integrate' }) => {
             <div className="grid gap-0 md:grid-cols-[2fr_3fr]">
               <div className="min-w-0 p-6">
                 <div key={`${tab}-text`} style={{ animation: 'fade-swap 280ms ease-out both' }}>
-                  <h3 className="text-[24px] font-semibold leading-snug text-zinc-900">{active.heading}</h3>
-                  <p className="mt-4 text-[16px] leading-relaxed text-zinc-500">{active.description}</p>
+                  <h3 className="text-[24px] font-semibold leading-snug text-zinc-900">{t(active.heading)}</h3>
+                  <p className="mt-4 text-[16px] leading-relaxed text-zinc-500">{t(active.description)}</p>
                   <div className="mt-6">
-                    <SectionLink href={active.docHref}>{active.docLabel}</SectionLink>
+                    <SectionLink href={active.docHref}>{t(active.docLabel)}</SectionLink>
                   </div>
                 </div>
               </div>

@@ -1,0 +1,109 @@
+Start with this small order table. The [Define data semantics](/documentation/data/semantic/) guide uses these same six rows.
+
+| order_id | region | status | amount | refund_amount | ordered_at |
+| --- | --- | --- | --- | --- | --- |
+| 1 | East | paid | 120 | 20 | 2026-01-03 |
+| 2 | East | refunded | 80 | 80 | 2026-01-04 |
+| 3 | East | pending | 200 | 0 | 2026-01-05 |
+| 4 | West | paid | 90 | 30 | 2026-01-06 |
+| 5 | East | paid | 50 | `null` | 2026-01-07 |
+| 6 | West | cancelled | 500 | 0 | 2026-01-08 |
+
+<Callout>
+  **AVA discovers structure and computes statistics. You add business meaning:** what counts as revenue and how refunds should be handled.
+</Callout>
+
+<details>
+<summary>Load this table as inline JSON</summary>
+
+With `ava` configured, load the rows below. The default DuckDB engine exposes them as a model named `data`.
+
+```typescript
+const orders = [
+  { order_id: 1, region: 'East', status: 'paid', amount: 120, refund_amount: 20, ordered_at: '2026-01-03' },
+  { order_id: 2, region: 'East', status: 'refunded', amount: 80, refund_amount: 80, ordered_at: '2026-01-04' },
+  { order_id: 3, region: 'East', status: 'pending', amount: 200, refund_amount: 0, ordered_at: '2026-01-05' },
+  { order_id: 4, region: 'West', status: 'paid', amount: 90, refund_amount: 30, ordered_at: '2026-01-06' },
+  { order_id: 5, region: 'East', status: 'paid', amount: 50, refund_amount: null, ordered_at: '2026-01-07' },
+  { order_id: 6, region: 'West', status: 'cancelled', amount: 500, refund_amount: 0, ordered_at: '2026-01-08' },
+];
+
+await ava.source({ type: 'json', options: { data: orders } });
+```
+
+</details>
+
+## Schema: the structure AVA discovers
+
+```typescript
+const schema = await ava.schema();
+console.log(schema.models[0]);
+```
+
+For this table, the discovered model is:
+
+```json
+{
+  "name": "data",
+  "tableReference": { "catalog": "memory", "schema": "main", "table": "data" },
+  "columns": [
+    { "name": "order_id", "type": "BIGINT", "notNull": false },
+    { "name": "region", "type": "VARCHAR", "notNull": false },
+    { "name": "status", "type": "VARCHAR", "notNull": false },
+    { "name": "amount", "type": "BIGINT", "notNull": false },
+    { "name": "refund_amount", "type": "BIGINT", "notNull": false },
+    { "name": "ordered_at", "type": "DATE", "notNull": false }
+  ]
+}
+```
+
+This is your automatically discovered structural starting point. You do not write it by hand. Types and source qualifiers depend on the engine; database sources may also expose declared keys and relationships. `notNull: false` means there is no declared non-null constraint, not that a null was found.
+
+AVA also discovers schema when analysis needs it, so calling `schema()` yourself is optional.
+
+## Profile: statistics AVA computes
+
+```typescript
+const profile = await ava.profile({
+  metrics: ['row_count', 'null_count', 'min', 'max'],
+});
+```
+
+Among the results for the same table:
+
+| Observation | Where it appears in Profile | Value |
+| --- | --- | --- |
+| Number of rows | Model `metrics.row_count` | 6 |
+| Missing refunds | `refund_amount` column's `metrics.null_count` | 1 |
+| Smallest order amount | `amount` column's `metrics.min` | 50 |
+| Largest order amount | `amount` column's `metrics.max` | 500 |
+
+<Callout>
+  **The maximum of 500 includes a cancelled order.** Profiling describes stored values; the rules for what counts as revenue belong in semantic definitions.
+</Callout>
+
+Profiling is optional, requires engine support, and can scan the data. It does not call an LLM. See [metric options](/documentation/reference/api/#metrics) for other statistics.
+
+## Semantic: the meaning you add
+
+The table contains paid, refunded, pending, and cancelled orders. Which should count as revenue? That is a rule you supply:
+
+```typescript
+await ava.semantic(undefined, () => ({
+  description: 'Amounts are USD. Revenue counts paid and refunded orders, subtracts refunds, and excludes pending and cancelled orders. A missing refund is zero.',
+  cubes: [{
+    name: 'sales',
+    baseObject: 'data',
+    measures: [{
+      name: 'net_revenue',
+      expression: "SUM(CASE WHEN status IN ('paid', 'refunded') THEN amount - COALESCE(refund_amount, 0) ELSE 0 END)",
+      type: 'DOUBLE',
+    }],
+    dimensions: [{ name: 'region', expression: 'region', type: 'VARCHAR' }],
+  }],
+}));
+```
+
+`description` explains the business rule. The `sales` cube names its source (`data`), revenue calculation (`measures`), and region grouping (`dimensions`). The discovered columns remain available without repeating them; the cube guides query generation and does not create a database object.
+
+Continue to [Define data semantics](/documentation/data/semantic/) for the full example and corresponding SQL result: **East 150 USD, West 60 USD** . Field formats, manual overrides, and update rules are in the [API reference](/documentation/reference/api/#schema).

@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import Link from 'next/link';
+import Link from '../LocaleLink';
 
 /**
  * Shared section header with an optional label and description,

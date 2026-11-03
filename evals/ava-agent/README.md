@@ -42,6 +42,21 @@ DataBench, BIRD dev, and the Spider2-Lite SQLite subset are supported. Each Data
 
 The HTTP channel accepts uploads up to 1 GiB per file. Restart `npm run dev` after changing `agent/channels/eve.ts` so the new run snapshot picks up the policy.
 
+## Native skill-discovery smoke test
+
+The Eve runner above explicitly requires the skill. To test implicit selection, use fresh native Codex projects instead. Requires Python 3, an authenticated Codex CLI, Node.js 22.13+, and the repository's built CJS CLI; Docker and separate model API configuration are not used. This invokes the user's configured Codex model and consumes normal model usage.
+
+```bash
+python3 -B scripts/skill-discovery.py --node /path/to/compatible/node --jobs 2
+python3 -B -m unittest discover -s scripts -p 'test_skill_discovery.py'
+```
+
+Each synthetic fixture registers the current skill under `.agents/skills/ava`. Prompts mention only the data task. Cases cover CSV, a multi-sheet XLSX join, JSON event metrics, SQLite joins, a Feishu missing-access request, and an unrelated text edit as a negative control. `--case` is repeatable; `--output` must name a new directory. If another AVA skill is installed, pass its `SKILL.md` path with `--disable-skill`; this changes only the test subprocess's configuration.
+
+The report separates observed skill-body reads, successful AVA queries, task correctness, and infrastructure failures. Merely mentioning a skill name or listing its path is not activation evidence. Local results are compared with known fixture answers. Feishu is routing-only: its fixture URL is not fetched and no credentials are read. Raw events and replies stay in the output directory; review them before publishing a compact report.
+
+Unix sockets are required for AVA sessions. A sandbox-denied session followed by a correct Python fallback counts as successful selection and a blocked AVA execution, not a full AVA task pass. For login zsh, the runner uses a task-local shell profile to keep the current CLI ahead of an installed older binary; verify command resolution when using another shell. It closes logged fixture sessions afterward.
+
 ## DataBench adapter
 
 The shared DataBench plugin provides question selection and answer scoring. `evals/databench.eval.ts` handles command options, host snapshots, Eve configuration, and cases. Eve requires an `evals.config.ts` entry point; it is generated only inside each run snapshot and re-exports the configuration from `databench.eval.ts`. The shared `scripts/run.mjs` handles Eve and sandbox lifecycle without DataBench-specific logic. Download the dataset once and run from the repository root:
