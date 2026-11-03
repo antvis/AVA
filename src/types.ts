@@ -491,6 +491,24 @@ export interface FeishuBitableSourceOptions {
   appSecret?: string;
 }
 
+/** Read-only snapshot of one Notion database (Node.js / DuckDB). */
+export interface NotionSourceOptions {
+  /** Notion database id (UUID) whose pages are read as one snapshot table. */
+  databaseId: string;
+  /** Notion integration token; falls back to NOTION_TOKEN. */
+  token?: string;
+  /** Pages per query request, 1–100. Default 100. */
+  pageSize?: number;
+  /** Fail instead of truncating. Default 10,000; max 100,000, also bounded by expanded snapshot budgets. */
+  maxRecords?: number;
+  /** Whole-load deadline, including pagination and retries. Default 60,000 ms. */
+  timeoutMs?: number;
+  /** Retries for transient failures only, 0–5. Default 2. */
+  maxRetries?: number;
+  /** Notion-Version request header value. Default '2022-06-28'. */
+  version?: string;
+}
+
 /**
  * External data source configuration for loadSource.
  * - inline types (csv/json/text): data is materialized into JS memory
@@ -513,7 +531,8 @@ export type DataSourceConfig =
   | { type: 'mongodb'; options: MongoDBSourceOptions }
   | { type: 'supabase'; options: SupabaseSourceOptions }
   | { type: 'clickhouse'; options: ClickHouseSourceOptions }
-  | { type: 'feishu-bitable'; options: FeishuBitableSourceOptions };
+    | { type: 'feishu-bitable'; options: FeishuBitableSourceOptions }
+    | { type: 'notion'; options: NotionSourceOptions };
 
 /**
  * File formats readable by DuckDB's readers (csv-file maps to csv, json-file to json).

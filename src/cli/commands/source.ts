@@ -53,6 +53,10 @@ export async function run([dataset]: string[], options: Options): Promise<{ data
 
   const config = sourceConfig.parse(input);
 
+  if (config.type === 'notion' && engine !== undefined && engine !== 'duckdb') {
+    throw new Error('Notion sources require the duckdb engine.');
+  }
+
   if ('path' in config.options && !/^https?:\/\//i.test(config.options.path)) {
     config.options.path = resolve(config.options.path);
   }
@@ -110,6 +114,7 @@ Feishu Bitable:
   Docx and Sheets links are not supported.
 
 Environment:
+  NOTION_TOKEN       Notion integration token for notion sources.
   OPENAI_API_KEY     Required for text sources and subsequent AI commands.
   OPENAI_MODEL       Model name (default: gpt-4o-mini).
   OPENAI_BASE_URL    Optional API base URL.
@@ -126,6 +131,7 @@ Python requires python3 and pandas; local Python execution is not sandboxed.
 JavaScript accepts inline csv/json/text configs. Use ava schema to inspect the query language.
 
 Examples:
+  ava source @notion.json
   ava source sales.csv
   ava source sales.csv --engine python
   ava source @source.json
@@ -145,4 +151,12 @@ feishu.json:
 }
     Provide url or both appToken and tableId; they must name the same table.
     Keep appSecret out of version control and logs.
-`;
+
+    Notion (Node.js / DuckDB):
+      notion.json:
+        { "type": "notion", "options": { "databaseId": "<database-id>" } }
+      Set NOTION_TOKEN before loading. Only supported scalar properties are exposed.
+      Reads a complete, bounded snapshot into data; _id preserves source identity.
+      Explicit database ids are required; sharing links are not auto-detected.
+      Dataset sessions require macOS/Linux; on Windows use the SDK or WSL.
+    `;

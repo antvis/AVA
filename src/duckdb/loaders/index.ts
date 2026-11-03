@@ -15,6 +15,7 @@ import { loadPostgreSQL } from './postgresql';
 import { loadSQLite } from './sqlite';
 import { loadText } from './text';
 import { loadFeishuBitable } from './feishu-bitable';
+import { loadNotion } from './notion';
 
 import type { DataSourceConfig, LLMConfig, LoadedSource } from '../../types';
 
@@ -56,6 +57,8 @@ export async function loadSource(config: DataSourceConfig, llmConfig: LLMConfig)
       // DuckDB ATTACH loaders.
       throw new Error('ClickHouse sources are handled by ClickHouseEngine, not the DuckDB engine');
     case 'feishu-bitable':
-      return loadFeishuBitable(config.options);
-  }
-}
+          return loadFeishuBitable(config.options);
+        case 'notion':
+          return loadNotion(config.options);
+      }
+    }
