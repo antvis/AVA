@@ -58,6 +58,10 @@ export async function loadSource(config: DataSourceConfig, llmConfig: LLMConfig)
       throw new Error('ClickHouse sources are handled by ClickHouseEngine, not the DuckDB engine');
     case 'sqlserver':
       throw new Error("SQL Server sources require engine: { type: 'sqlserver' }");
+    case 'bigquery':
+      // BigQuery is queried directly through BigQueryEngine, not through
+      // DuckDB ATTACH loaders.
+      throw new Error('BigQuery sources are handled by BigQueryEngine, not the DuckDB engine');
     case 'feishu-bitable':
       return loadFeishuBitable(config.options);
     case 'tencent-smartsheet':

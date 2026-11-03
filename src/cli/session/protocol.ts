@@ -62,6 +62,34 @@ const clickhouse = z
   .passthrough()
   .refine((value) => value.host || value.url, { message: "ClickHouse sources require either 'host' or 'url'" });
 
+const bigquery = z
+  .object({
+    projectId: text,
+    dataset: text.optional(),
+    credentials: z.union([z.string(), z.record(z.string(), z.unknown())]).optional(),
+    clientEmail: text.optional(),
+    privateKey: text.optional(),
+    location: text.optional(),
+    maxBytesBilled: z.number().int().positive().optional(),
+    timeoutMs: z.number().int().positive().optional(),
+    defaultRowLimit: z.number().int().positive().optional(),
+    adapter: z.enum(['@google-cloud/bigquery', 'mock']).optional(),
+    tables: z
+      .array(
+        z
+          .object({
+            name: text,
+            schema: text.optional(),
+            columns: z.array(z.object({ name: text, type: text, notNull: z.boolean().optional() })),
+            primaryKey: z.union([text, z.array(text)]).optional(),
+            rows: z.array(z.record(z.string(), z.unknown())).optional(),
+          })
+          .strict()
+      )
+      .optional(),
+  })
+  .strict();
+
 const feishuBitable = z
   .object({
     url: text.optional(),
@@ -137,13 +165,22 @@ const sourceSchema = z.discriminatedUnion('type', [
     .strict(),
   z.object({ type: z.literal('clickhouse'), options: clickhouse }).strict(),
   z.object({ type: z.literal('sqlserver'), options: sqlserver }).strict(),
+  z.object({ type: z.literal('bigquery'), options: bigquery }).strict(),
   z.object({ type: z.literal('feishu-bitable'), options: feishuBitable }).strict(),
   z.object({ type: z.literal('tencent-smartsheet'), options: tencentDocsOptionsSchema }).strict(),
 ]);
 
 export const sourceConfig = sourceSchema.transform((value) => value as DataSourceConfig);
 export const modelSchema = z.object({ model: text, apiKey: text.optional(), baseURL: text.optional() }).strict();
-export const engineTypeSchema = z.enum(['duckdb', 'python', 'javascript', 'supabase', 'clickhouse', 'sqlserver']);
+export const engineTypeSchema = z.enum([
+  'duckdb',
+  'python',
+  'javascript',
+  'supabase',
+  'clickhouse',
+  'sqlserver',
+  'bigquery',
+]);
 
 const execution = {
   maxRows: z.number().int().positive().max(10000).optional(),
