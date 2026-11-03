@@ -17,95 +17,47 @@ export interface TencentCredentials {
   accessToken: string;
 }
 
-function redactCredentials(value: unknown, secrets: string[], seen = new Map<object, unknown>()): unknown {
-  if (typeof value === 'string')
-    return secrets.reduce((text, secret) => (secret ? text.split(secret).join('[REDACTED]') : text), value);
-  if (value === null || typeof value !== 'object') return value;
-  if (seen.has(value)) return seen.get(value);
-  const copy = Array.isArray(value) ? [] : Object.create(Object.getPrototypeOf(value));
-  seen.set(value, copy);
-  const descriptors = Object.getOwnPropertyDescriptors(value);
-  // V8 exposes stack through a lazy accessor with native Error state. Materialize
-  // it on the original, then copy/redact the string rather than copying the getter.
-  if (value instanceof Error) {
-    for (const key of ['name', 'message', 'stack'] as const) {
-      if (typeof value[key] === 'string') {
-        descriptors[key] = { value: value[key], writable: true, configurable: true, enumerable: false };
-      }
-    }
-  }
-  for (const descriptor of Object.values(descriptors)) {
-    if ('value' in descriptor) descriptor.value = redactCredentials(descriptor.value, secrets, seen);
-  }
-  Object.defineProperties(copy, descriptors);
-  return copy;
-}
-
-/** Drop a cut-off credential prefix, even if its remaining bytes never arrive.
- * KMP bounds the work to the diagnostic tail and credential prefixes, rather
- * than reading ahead or retaining an unbounded secret-sized response buffer.
- * Repeat after removal so overlapping credentials cannot expose a new prefix.
- * An ambiguous benign suffix may also be omitted: diagnostics fail closed.
+/** Keep only documented string diagnostics, never an arbitrary response/error object.
+ * Omit oversized fields whole instead of cutting through a credential or UTF-8 character.
  */
-function withoutCredentialSuffix(text: string, secrets: string[]): string {
-  for (;;) {
-    let longest = 0;
-    for (const secret of secrets) {
-      const pattern = secret.slice(0, text.length);
-      if (!pattern) continue;
-      const prefix = new Uint32Array(pattern.length);
-      for (let i = 1, matched = 0; i < pattern.length; i++) {
-        while (matched && pattern[i] !== pattern[matched]) matched = prefix[matched - 1];
-        if (pattern[i] === pattern[matched]) matched++;
-        prefix[i] = matched;
-      }
-      let matched = 0;
-      for (let i = Math.max(0, text.length - pattern.length); i < text.length; i++) {
-        while (matched && (matched === pattern.length || text[i] !== pattern[matched])) matched = prefix[matched - 1];
-        if (text[i] === pattern[matched]) matched++;
-      }
-      longest = Math.max(longest, matched);
-    }
-    if (!longest) return text;
-    text = text.slice(0, text.length - longest);
-  }
+function diagnosticText(value: unknown, credentials: TencentCredentials): string | undefined {
+  if (typeof value !== 'string') return undefined;
+  if (Buffer.byteLength(value, 'utf8') > 8192) return '[diagnostic omitted: exceeds 8 KiB]';
+  let text = value;
+  for (const secret of Object.values(credentials)) text = text.split(secret).join('[REDACTED]');
+  return Buffer.byteLength(text, 'utf8') <= 8192 ? text : '[diagnostic omitted: exceeds 8 KiB]';
 }
 
-/** Sanitize before output truncation; also protect an already-bounded HTTP read. */
-function diagnosticBody(text: string, secrets: string[], readTruncated: boolean): string {
-  const input = readTruncated ? withoutCredentialSuffix(text, secrets) : text;
-  const safe = redactCredentials(input, secrets) as string;
-  const bytes = Buffer.from(safe, 'utf8');
-  const outputTruncated = bytes.byteLength > 8192;
-  // A streaming decode intentionally omits an incomplete final UTF-8 character.
-  const output = outputTruncated ? new TextDecoder().decode(bytes.subarray(0, 8192), { stream: true }) : safe;
-  const bounded = outputTruncated ? withoutCredentialSuffix(output, secrets) : output;
-  return bounded + (readTruncated || outputTruncated ? ' [diagnostic body truncated at 8 KiB]' : '');
+function errorDetails(error: unknown, credentials: TencentCredentials) {
+  if (!isObject(error)) return { message: diagnosticText(String(error), credentials) };
+  return {
+    name: diagnosticText(error.name, credentials),
+    message: diagnosticText(error.message, credentials),
+    code: diagnosticText(error.code, credentials),
+  };
 }
 
 /** Only these two read operations are available; no discovery or remote writes. */
 export type TencentReadOperation = 'getFields' | 'getRecords';
 
 export class TencentDocsClient {
-  private credentials?: TencentCredentials;
-
-  constructor(private readonly signal: AbortSignal, private readonly maxRetries: number) {}
-
-  async connect(credentials: TencentCredentials): Promise<void> {
+  constructor(
+    private readonly credentials: TencentCredentials,
+    private readonly signal: AbortSignal,
+    private readonly maxRetries: number
+  ) {
     for (const key of ['clientId', 'openId', 'accessToken'] as const) {
       const value = credentials[key];
       if (typeof value !== 'string' || !value.trim() || /[^\x21-\x7e]/.test(value)) {
-        throw new TencentDocsError(`Set a valid ${key} or its TENCENT_DOCS environment variable.`);
+        throw new TencentDocsError(`Set a valid ${key} in options.`);
       }
     }
-    this.credentials = credentials;
   }
 
   async call(operation: TencentReadOperation, args: Record<string, unknown>): Promise<Record<string, unknown>> {
     if (operation !== 'getFields' && operation !== 'getRecords') {
       throw new TencentDocsError('Only SmartSheet field and record read operations are allowed.');
     }
-    if (!this.credentials) throw new TencentDocsError('OpenAPI credentials are not configured.');
     const { fileId, sheetId, ...params } = args;
     if (typeof fileId !== 'string' || !fileId || typeof sheetId !== 'string' || !sheetId) {
       throw new TencentDocsError('Explicit native fileId and sheetId are required.');
@@ -114,9 +66,6 @@ export class TencentDocsClient {
       fileId
     )}/sheets/${encodeURIComponent(sheetId)}`;
     const credentials = this.credentials;
-    const secrets = [
-      ...new Set(Object.values(credentials).flatMap((value) => [value, JSON.stringify(value).slice(1, -1)])),
-    ].sort((a, b) => b.length - a.length);
     try {
       for (let attempt = 0; ; attempt++) {
         this.signal.throwIfAborted();
@@ -161,26 +110,21 @@ export class TencentDocsClient {
         try {
           body = JSON.parse(text);
         } catch {
-          /* Keep non-JSON HTTP diagnostics only on failure. */
+          /* Non-JSON bodies are not exposed; retain HTTP status and request ID below. */
         }
-        const requestId = response.headers.get('x-request-id') ?? response.headers.get('x-log-id');
+        const requestId = diagnosticText(
+          response.headers.get('x-request-id') ?? response.headers.get('x-log-id'),
+          credentials
+        );
         if (!response.ok || (isObject(body) && typeof body.ret === 'number' && body.ret !== 0)) {
           const code = isObject(body) && typeof body.ret === 'number' ? body.ret : undefined;
-          const diagnostic = diagnosticBody(text, secrets, truncated);
+          const message = truncated ? undefined : diagnosticText(isObject(body) ? body.msg : undefined, credentials);
           throw new TencentDocsError(
             `OpenAPI request failed (HTTP ${response.status}${code === undefined ? '' : `, ret ${code}`}).${
               requestId ? ` Request ID: ${requestId}.` : ''
-            } ${diagnostic}`,
+            }${message ? ` ${message}` : ''}`,
             code,
-            {
-              body:
-                !truncated &&
-                isObject(body) &&
-                Buffer.byteLength(JSON.stringify(redactCredentials(body, secrets)), 'utf8') <= 8192
-                  ? body
-                  : diagnostic,
-              requestId,
-            },
+            { ret: code, msg: message, requestId },
             response.status
           );
         }
@@ -190,9 +134,17 @@ export class TencentDocsClient {
         return body.data[operation] as Record<string, unknown>;
       }
     } catch (error) {
-      const cause = redactCredentials(error, secrets);
+      if (error instanceof TencentDocsError) throw error;
+      const cause = {
+        ...errorDetails(error, credentials),
+        cause: isObject(error) && error.cause !== undefined ? errorDetails(error.cause, credentials) : undefined,
+      };
       if (this.signal.aborted) throw new TencentDocsError('Load deadline exceeded.', undefined, cause);
-      throw cause;
+      throw new TencentDocsError(
+        `OpenAPI transport failed.${cause.message ? ` ${cause.message}` : ''}`,
+        undefined,
+        cause
+      );
     }
   }
 
@@ -217,17 +169,12 @@ export class TencentDocsClient {
           throw new TencentDocsError('OpenAPI response exceeds the 16 MiB read limit.');
         text += decoder.decode(value.subarray(0, remaining), { stream: true });
         bytes += value.byteLength;
-        // Do not flush a partial UTF-8 character or append a marker here: the
-        // raw boundary must remain visible to credential-prefix protection.
+        // A partial/non-JSON error body is never included in diagnostics.
         if (!response.ok && bytes >= maximum) return { text, truncated: true };
       }
     } finally {
       this.signal.removeEventListener('abort', abort);
       await reader.cancel().catch(() => undefined);
     }
-  }
-
-  async close(): Promise<void> {
-    this.credentials = undefined;
   }
 }

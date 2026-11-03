@@ -3,6 +3,9 @@
   "options": {
     "fileId": "<native-openapi-file-id>",
     "sheetId": "<sheet-id>",
+    "clientId": "<client-id>",
+    "openId": "<open-id>",
+    "accessToken": "<access-token>",
     "pageSize": 100,
     "maxRecords": 10000,
     "timeoutMs": 60000,

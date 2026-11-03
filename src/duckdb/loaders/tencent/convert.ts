@@ -100,25 +100,28 @@ function convertCell(field: TencentField, value: unknown): TencentCell {
   }
 }
 
-export function convertRecord(fields: TencentField[], raw: unknown): Record<string, TencentCell> {
-  if (!isObject(raw) || typeof raw.recordID !== 'string' || !raw.recordID || !isObject(raw.values)) {
-    throw new TencentDocsError('Invalid record response.');
-  }
-  const values = raw.values;
+export function createRecordConverter(fields: TencentField[]): (raw: unknown) => Record<string, TencentCell> {
   const names = new Set(fields.map((field) => field.fieldTitle));
-  if (Object.keys(values).some((name) => !names.has(name)))
-    throw new TencentDocsError('Invalid or unknown projected record field.');
-  return Object.fromEntries([
-    ['_record_id', raw.recordID],
-    ...fields.map((field) => {
-      if (Object.prototype.hasOwnProperty.call(values, field.fieldTitle)) {
-        return [field.fieldTitle, convertCell(field, values[field.fieldTitle])];
-      }
-      // v2 omits system-time cells from values. These exact native types map
-      // to documented record-level millisecond metadata, verified on real rows.
-      // Never override an explicit null/value or infer from a column title.
-      const systemTime = field.fieldType === 12 ? raw.createTime : field.fieldType === 13 ? raw.updateTime : undefined;
-      return [field.fieldTitle, systemTime === undefined ? null : convertCell(field, systemTime)];
-    }),
-  ]);
+  return (raw) => {
+    if (!isObject(raw) || typeof raw.recordID !== 'string' || !raw.recordID || !isObject(raw.values)) {
+      throw new TencentDocsError('Invalid record response.');
+    }
+    const values = raw.values;
+    if (Object.keys(values).some((name) => !names.has(name)))
+      throw new TencentDocsError('Invalid or unknown projected record field.');
+    return Object.fromEntries([
+      ['_record_id', raw.recordID],
+      ...fields.map((field) => {
+        if (Object.prototype.hasOwnProperty.call(values, field.fieldTitle)) {
+          return [field.fieldTitle, convertCell(field, values[field.fieldTitle])];
+        }
+        // v2 omits system-time cells from values. These exact native types map
+        // to documented record-level millisecond metadata, verified on real rows.
+        // Never override an explicit null/value or infer from a column title.
+        const systemTime =
+          field.fieldType === 12 ? raw.createTime : field.fieldType === 13 ? raw.updateTime : undefined;
+        return [field.fieldTitle, systemTime === undefined ? null : convertCell(field, systemTime)];
+      }),
+    ]);
+  };
 }

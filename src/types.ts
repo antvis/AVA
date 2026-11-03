@@ -12,7 +12,7 @@ import type { AnalysisEvent } from './event';
  * declared here so the shared types never import the Node-only package.
  */
 export interface DuckDBConnection {
-  run(sql: string): Promise<unknown>;
+  run(sql: string, values?: string[]): Promise<unknown>;
   runAndReadAll(sql: string): Promise<{ getRowObjectsJson(): Record<string, unknown>[] }>;
 }
 
@@ -497,12 +497,12 @@ export interface TencentDocsSourceOptions {
   /** Native OpenAPI fileID, not an encoded sharing-link ID. */
   fileId: string;
   sheetId: string;
-  /** OpenAPI Client ID; falls back to TENCENT_DOCS_CLIENT_ID. */
-  clientId?: string;
-  /** OAuth Open ID; falls back to TENCENT_DOCS_OPEN_ID. */
-  openId?: string;
-  /** OAuth access token; falls back to TENCENT_DOCS_ACCESS_TOKEN. */
-  accessToken?: string;
+  /** OpenAPI application Client ID, explicitly supplied by the caller. */
+  clientId: string;
+  /** OAuth Open ID, explicitly supplied by the caller. */
+  openId: string;
+  /** OAuth access token, explicitly supplied by the caller. */
+  accessToken: string;
   /** Field/record items per request, 1–100. Default 100. */
   pageSize?: number;
   /** Fail instead of truncating. Default 10,000; max 100,000, also bounded by expanded snapshot budgets. */

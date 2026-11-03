@@ -6,7 +6,7 @@
 
 依照腾讯文档[应用接入](https://docs.qq.com/open/document/app/get_started.html)、[OAuth](https://docs.qq.com/open/document/app/oauth2/)和[请求头说明](https://docs.qq.com/open/document/app/openapi/v2/file/common/req_headers.html)取得授权。应用须具备所需权限，用户须能访问目标文档。
 
-旧 token / TENCENT_DOCS_TOKEN 不再接受，使用 clientId / openId / accessToken 或对应环境变量。loader 不接收 Client Secret，不实现 OAuth 回调、令牌交换或自动续期。
+旧 token / TENCENT_DOCS_TOKEN 不再接受，必须通过 options 显式传入 clientId / openId / accessToken。loader 不接收 Client Secret，不实现 OAuth 回调、令牌交换或自动续期。
 
 fileId 必须是原生 OpenAPI ID，不是分享链接 encoded ID。使用官方[ID 转换](https://docs.qq.com/open/document/app/openapi/v2/file/util/converter.html)和[子表查询](https://docs.qq.com/open/document/app/openapi/v2/smartsheet/sheet/get_sheet.html)取得显式 ID；连接器不自动转换、搜索或选择子表。
 
@@ -26,7 +26,7 @@ Node.js 要求 22.13+，安装后构建：
     OPENAI_MODEL=<模型名称>
     OPENAI_BASE_URL=<可选兼容服务地址>
 
-三个显式凭证选项分别优先于对应环境变量。SDK 要求显式 fileId / sheetId；示例从环境读取 ID，AVA 不隐式加载环境文件。
+三个凭证和 fileId / sheetId 必须通过 options 显式传入。调用方可自行从环境变量等配置源读取；示例负责读取，loader 不读取环境变量，AVA 不隐式加载环境文件。
 
 ## SDK 与 CLI
 
@@ -40,14 +40,17 @@ Node.js 要求 22.13+，安装后构建：
       await ava.source({ type: 'tencent-smartsheet', options: {
         fileId: process.env.TENCENT_DOCS_FILE_ID,
         sheetId: process.env.TENCENT_DOCS_SHEET_ID,
+        clientId: process.env.TENCENT_DOCS_CLIENT_ID,
+        openId: process.env.TENCENT_DOCS_OPEN_ID,
+        accessToken: process.env.TENCENT_DOCS_ACCESS_TOKEN,
       } });
       console.log(await ava.schema());
       console.log(await ava.analyze('按地区统计销售额，按销售额降序排列。'));
     } finally { await ava.dispose(); }
 
-CLI 将 source.json 中的占位 ID 替换为原生值，凭证保留在继承环境中：
+CLI 将模板复制到被 Git 忽略的 .debug/tencent-source.json，在本地文件中填入原生 ID 和三个凭证。不要修改或提交模板中的占位符；CLI 不自动展开环境变量：
 
-    node --env-file=.env.local lib/cli/index.js source @examples/tencent-docs/source.json
+    node --env-file=.env.local lib/cli/index.js source @.debug/tencent-source.json
     node lib/cli/index.js schema <datasetId>
     node lib/cli/index.js analyze <datasetId> "按地区统计销售额"
     node lib/cli/index.js dispose <datasetId>
@@ -79,11 +82,11 @@ CLI 将 source.json 中的占位 ID 替换为原生值，凭证保留在继承�
 | timeoutMs | 60,000 | 1–110,000 毫秒，覆盖整次加载与等待。 |
 | maxRetries | 2 | 0–5，仅重试网络错误与 HTTP 429/500/502/503/504。 |
 
-分别检查 HTTP 与业务 ret；401/403 及业务错误不自动重试，仅遵循有效且不超过 30 秒的 Retry-After。保留消息、状态、请求 ID 和异常原因，对三项凭证、异常链、堆栈脱敏。诊断正文有 8 KiB 上限；截断尾部疑似凭证前缀时保守省略，不无限前瞻。其他诊断可能含文档上下文，分享前检查。
+分别检查 HTTP 与业务 ret；401/403 及业务错误不自动重试，仅遵循有效且不超过 30 秒的 Retry-After。保留 HTTP 状态、业务 ret/msg、请求 ID，以及网络异常的名称、消息、错误码和一层原因；不复制任意响应对象、堆栈或请求头。仅对选定字符串做三项凭证的精确替换；超过 8 KiB 的诊断字段整体省略，不截断字段。非 JSON 或不完整的 HTTP 错误正文不输出，仍保留状态和请求 ID。此防御不代表已观察到腾讯真实错误响应回显凭证。
 
 完整分页读取[字段](https://docs.qq.com/open/document/app/openapi/v2/smartsheet/field/get_fields.html)与[记录](https://docs.qq.com/open/document/app/openapi/v2/smartsheet/record/get_records.html)，检查总量、唯一 ID、递进偏移与终页，并在读完后复核字段元数据。字段上限 1,000；单响应及每次分页读取限 16 MiB，展开后另限 16 MiB UTF-8 JSON 和 1,000,000 单元格（含 null、_record_id）。逐页逐行转换，失败不返回部分结果。
 
-端点固定且拒绝重定向；临时文件 wx/0600 独占创建、失败清理、物化后删除，不为模型 SQL 放开临时目录。加载时停止编辑源表；同总量的并发修改并非全部可检测，不提供远端事务快照。
+端点固定且拒绝重定向；通过参数化 JSON 和显式 schema 直接创建内存表，不写临时文件，不为模型 SQL 放开临时目录。加载时停止编辑源表；同总量的并发修改并非全部可检测，不提供远端事务快照。
 
 ## 两个业务示例与验证
 
@@ -101,15 +104,13 @@ CLI 将 source.json 中的占位 ID 替换为原生值，凭证保留在继承�
 
 通过实际数值断言，不依赖模型自评。OpenAPI 版本已通过 SDK/Linux CLI 的真实模型分析；追加 26/28 后另行核对原生数值、SQL 和生命周期，没有重复调用模型。
 
+2026-11-04 精简重构后，重新通过上述正式示例的真实只读 SQL 核对（pageSize=2），地区及月度销售结果一致；本轮未调用模型，也未写入源表。
+
     npm run lint
     npm run build
     npm test
     npx vitest run tencent __tests__/duckdb/util/file.test.ts
 
-默认腾讯文档测试不需凭证或真实平台网络请求。真实只读测试需显式设置 AVA_TENCENT_INTEGRATION=1，再运行：
-
-    node --env-file=.env.local node_modules/vitest/vitest.mjs run __tests__/duckdb/loaders/tencent-live.test.ts
-
-核心转换、HTTP、分页、loader/DuckDB、CLI、安全与预算回归保留于标准测试套件；一次性工具和过程报告不交付。2026-11-03 清理后重新执行：Windows 全量 767 通过/56 跳过，Linux 769/54；腾讯文档与文件系统定向分别 261/3、263/1。两端 lint、CJS/ESM 构建及文档站检查通过（44 页、2,826 链接）。真实专用表已验证 13 源字段、18 记录和 12 类标量，夹具前后原列指纹一致。本地结果不代表托管 CI 已通过。
+默认腾讯文档测试集中在 __tests__/duckdb/loaders/tencent-docs.test.ts，模拟 HTTP 但经过正式读取、转换、loader 和真实 DuckDB，不需凭证或真实平台网络请求。需要真实只读复验时，按上文运行 analyze.mjs --verify-only；需要两个真实自然语言问题时，运行不带该参数的示例。历史真实源与模型验证范围见上文；上述默认测试用于离线回归。
 
 AI 使用范围见 [AI_USAGE.md](./AI_USAGE.md)。多表、发现、写回和同步不属于本次迁移。
