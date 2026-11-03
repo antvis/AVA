@@ -26,7 +26,7 @@ export async function createDataset(
 ): Promise<void> {
   if (ava || disposal) throw new Error('Dataset process has already been initialized.');
 
-  const remote = ['supabase', 'clickhouse', 'sqlserver', 'snowflake'].includes(source.type);
+  const remote = ['supabase', 'clickhouse', 'sqlserver', 'snowflake', 'bigquery'].includes(source.type);
   ava = new AVA({ llm, engine: { type: engine ?? (remote ? source.type : 'duckdb') } });
   const loading = ava.source(source);
   queue = loading.catch(() => undefined);
