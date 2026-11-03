@@ -1,1 +1,0 @@
-(globalThis.TURBOPACK||(globalThis.TURBOPACK=[])).push(["object"==typeof document?document.currentScript:void 0,721793,e=>{"use strict";var t=e.i(387420),i=e.i(61387);e.s(["default",0,function({children:e,locale:o,messages:s}){return(0,t.jsx)(i.R,{locale:o,messages:s,timeZone:"UTC",children:e})}])}]);
