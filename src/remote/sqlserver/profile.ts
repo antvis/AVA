@@ -136,24 +136,28 @@ export async function profileTables(
       add(metrics, field);
       return { name: field.name, properties: { logicalType: field.logicalType }, metrics };
     });
-    if (!pending.length) continue;
-    // An aggregate also guarantees one result row for empty tables and median-only selections.
-    const [row] = await runQuery(
-      `SELECT COUNT_BIG(*) AS [__ava_count], ${pending
-        .map(({ expression }, i) => `${expression} AS ${identifier(`m${i}`)}`)
-        .join(', ')} FROM ${table}`
-    );
-    if (!row) throw new Error(`Missing profile result for table: ${source.name}`);
-    pending.forEach(({ id, output }, i) => {
-      const raw = row[`m${i}`];
-      delete output[id];
-      if (id === 'top_values') {
-        if (raw != null) output[id] = JSON.parse(raw as string);
-      } else {
-        const value = raw == null ? null : Number(raw);
-        output[id] = value === null || Number.isFinite(value) ? value : null;
-      }
-    });
+    // Reserve one of SQL Server's 4096 SELECT columns for the aggregate below,
+    // which guarantees a result row for empty tables and median-only selections.
+    const batchSize = 4095;
+    for (let start = 0; start < pending.length; start += batchSize) {
+      const batch = pending.slice(start, start + batchSize);
+      const [row] = await runQuery(
+        `SELECT COUNT_BIG(*) AS [__ava_count], ${batch
+          .map(({ expression }, i) => `${expression} AS ${identifier(`m${i}`)}`)
+          .join(', ')} FROM ${table}`
+      );
+      if (!row) throw new Error(`Missing profile result for table: ${source.name}`);
+      batch.forEach(({ id, output }, i) => {
+        const raw = row[`m${i}`];
+        delete output[id];
+        if (id === 'top_values') {
+          if (raw != null) output[id] = JSON.parse(raw as string);
+        } else {
+          const value = raw == null ? null : Number(raw);
+          output[id] = value === null || Number.isFinite(value) ? value : null;
+        }
+      });
+    }
   }
   return { models };
 }

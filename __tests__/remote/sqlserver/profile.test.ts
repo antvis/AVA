@@ -1,6 +1,7 @@
 import { describe, expect, it, vi } from 'vitest';
 
 import { profileTables } from '../../../src/remote/sqlserver/profile';
+import { DEFAULT_METRICS } from '../../../src/util/profile';
 
 import type { Schema } from '../../../src/types';
 
@@ -85,6 +86,31 @@ describe('SQL Server profile', () => {
     expect(query).toContain('TOP (2)');
     expect(query).toContain('COUNT_BIG(*) * 0.75');
     expect(query).toContain('FOR JSON PATH');
+  });
+
+  it('splits wide-table metrics within the SELECT limit and preserves output mappings', async () => {
+    const run = vi
+      .fn()
+      .mockResolvedValueOnce([{ m0: 3, m4091: 1, m4092: 2, m4093: 10, m4094: 20 }])
+      .mockResolvedValueOnce([{ m0: 15 }]);
+    const schema: Schema = {
+      models: [
+        {
+          name: 'wide',
+          tableReference: { table: 'wide' },
+          columns: Array.from({ length: 819 }, (_, i) => ({ name: `n${i}`, type: 'int' })),
+        },
+      ],
+    };
+    const result = await profileTables(run, schema, { metrics: DEFAULT_METRICS.map((id) => ({ id })) });
+
+    expect(run).toHaveBeenCalledTimes(2);
+    expect(run.mock.calls.map(([query]) => [...query.matchAll(/ AS \[m\d+\]/g)].length)).toEqual([4095, 1]);
+    expect(result.models[0].metrics).toEqual({ row_count: 3 });
+    expect(result.models[0].columns[818]).toMatchObject({
+      name: 'n818',
+      metrics: { null_count: 1, distinct_count: 2, min: 10, max: 20, mean: 15 },
+    });
   });
 
   it('keeps the profile structure without querying for an empty metric selection', async () => {

@@ -16,6 +16,7 @@ describe('SQL Server read-only validation', () => {
     ['UNION and subqueries', 'SELECT n FROM (SELECT 1 AS n) q UNION ALL SELECT 2 AS n UNION SELECT 3 AS n'],
     ['pagination', 'SELECT order_id FROM dbo.orders ORDER BY order_id OFFSET 2 ROWS FETCH NEXT 2 ROWS ONLY'],
     ['literal escapes and backslashes', "SELECT N'张三; it''s -- /* text */' AS value, 'C:\\' AS path; -- trailing comment"],
+    ['remote-query keywords in literals and quoted names', "SELECT N'OPENQUERY OPENROWSET' AS [OPENROWSET]"],
   ])('accepts and preserves %s', async (_, sql) => {
     await expect(dialect.validateDSL(sql)).resolves.toBe(sql);
   });
@@ -27,6 +28,9 @@ describe('SQL Server read-only validation', () => {
     ['multiple statements', 'SELECT 1; SELECT 2'],
     ['GO batches', 'SELECT 1\nGO\nSELECT 2'],
     ['SELECT INTO in a UNION arm', 'WITH q AS (SELECT 1 AS n) SELECT n FROM q UNION ALL SELECT 2 INTO dbo.copy'],
+    ['OPENQUERY', "SELECT * FROM OPENQUERY([linked_server], 'EXEC db.dbo.mutate_and_return_rows')"],
+    ['OPENROWSET', "SELECT * FROM OPENROWSET('MSOLEDBSQL', 'Server=example;Trusted_Connection=yes;', 'EXEC db.dbo.mutate_and_return_rows')"],
+    ['nested OPENROWSET', "WITH remote_rows AS (SELECT * FROM OPENROWSET('MSOLEDBSQL', 'Server=example;Trusted_Connection=yes;', 'EXEC db.dbo.mutate_and_return_rows')) SELECT * FROM remote_rows"],
     ['unterminated strings', "SELECT 'unterminated"],
   ])('rejects %s', async (_, sql) => {
     await expect(dialect.validateDSL(sql)).rejects.toThrow('read-only SELECT');

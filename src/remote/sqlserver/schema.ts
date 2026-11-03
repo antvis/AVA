@@ -1,17 +1,7 @@
-import {
-  antlr4tsSQL,
-  CommonToken,
-  CommonTokenStream,
-  ListTokenSource,
-  SQLDialect,
-  Token,
-  TSQLGrammar,
-} from 'antlr4ts-sql';
-
 import { rowObjects2Schema } from '../../util/schema';
 import { sqlIdentifier, sqlStringLiteral, sqlUnionAll } from '../../util/sql';
 
-import type { ParserRuleContext } from 'antlr4ts-sql';
+import type { CommonTokenStream, ParserRuleContext } from 'antlr4ts';
 import type { Schema } from '../../types';
 
 function exposedSQL(schema?: string): string {
@@ -80,21 +70,18 @@ JOIN sys.columns AS rc ON rc.object_id = fkc.referenced_object_id AND rc.column_
 WHERE fk.is_disabled = 0 AND fk.is_not_trusted = 0`;
 
 /** Extract a query from SQL Server DDL without treating CREATE/ALTER as executable analysis SQL. */
-function viewStatement(sql: string): string | undefined {
+async function viewStatement(sql: string): Promise<string | undefined> {
   try {
-    const dialect = new antlr4tsSQL(SQLDialect.TSQL);
-    const listeners = [
-      {
-        syntaxError: () => {
-          throw new Error('Unsupported SQL Server view definition');
-        },
-      },
-    ];
-    const stream = dialect.getTokens(sql, listeners);
+    const { createTSQLParser, CommonToken, CommonTokenStream, ListTokenSource, Token, TSqlParser } =
+      await import('../../query/tsql-parser');
+    const parser = createTSQLParser(sql, () => {
+      throw new Error('Unsupported SQL Server view definition');
+    });
+    const stream = parser.inputStream as CommonTokenStream;
     stream.fill();
     let tokens = stream.getTokens();
     const header = tokens.filter((token) => token.channel === Token.DEFAULT_CHANNEL);
-    const grammar = TSQLGrammar.TSqlParser;
+    const grammar = TSqlParser;
     // The bundled grammar predates ALTER VIEW and CREATE OR ALTER VIEW. Normalize only DDL tokens.
     if (header[0]?.type === grammar.ALTER) {
       const create = CommonToken.fromToken(header[0]);
@@ -107,10 +94,7 @@ function viewStatement(sql: string): string | undefined {
     ) {
       tokens = tokens.filter((token) => token !== header[1] && token !== header[2]);
     }
-    const parser = dialect.getParser(
-      new CommonTokenStream(new ListTokenSource(tokens)),
-      listeners
-    ) as TSQLGrammar.TSqlParser;
+    parser.inputStream = new CommonTokenStream(new ListTokenSource(tokens));
     const view = parser.create_view();
     if (parser.currentToken.type !== Token.EOF) return undefined;
     // CaseChangingStream does not expose token text reliably; preserve the original source slices.
@@ -150,7 +134,7 @@ export async function getSQLServerSchema(
   for (const row of rows) {
     if (row.kind !== 'view') continue;
     const { sql, ...metadata } = typeof row.metadata === 'string' ? JSON.parse(row.metadata) : row.metadata;
-    row.metadata = { ...metadata, statement: typeof sql === 'string' ? viewStatement(sql) : undefined };
+    row.metadata = { ...metadata, statement: typeof sql === 'string' ? await viewStatement(sql) : undefined };
   }
   const schema = rowObjects2Schema(rows);
   for (const model of schema.models) {

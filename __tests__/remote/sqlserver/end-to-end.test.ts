@@ -44,6 +44,30 @@ describe.skipIf(!sqlserverEnabled)('SQL Server actual CLI sessions', () => {
     return datasetId as string;
   }
 
+  it.each(['query', 'schema'])('loads only T-SQL parsers on demand for %s', async (operation) => {
+    const { stdout } = await execute(process.execPath, ['-e', `
+      require('./lib');
+      const { SQLServerQueryDialect } = require('./lib/query/sqlserver');
+      const { getSQLServerSchema } = require('./lib/remote/sqlserver/schema');
+      const grammars = () => Object.keys(require.cache).filter(file => file.includes('grammar-output'));
+      const before = grammars().length;
+      (async () => {
+        if (process.argv[1] === 'query') {
+          await new SQLServerQueryDialect({ model: 'unused' }).validateDSL('SELECT 1');
+        } else {
+          await getSQLServerSchema(async () => [{
+            kind: 'view', table_name: '[dbo].[example]', source_table: 'example',
+            metadata: { sql: 'CREATE VIEW dbo.example AS SELECT 1 AS value;' },
+          }]);
+        }
+        process.stdout.write(JSON.stringify({
+          before, loaded: grammars().length > 0, onlyTSQL: grammars().every(file => file.includes('tsql')),
+        }));
+      })();
+    `, operation], { cwd: process.cwd(), env: process.env });
+    expect(JSON.parse(stdout)).toEqual({ before: 0, loaded: true, onlyTSQL: true });
+  });
+
   it('automatically routes source, schema, native queries and disposal through the remote engine', async () => {
     const id = await source();
     const schema = await cli(['schema', id]);

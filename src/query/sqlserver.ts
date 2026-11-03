@@ -1,5 +1,4 @@
 import { generateText } from 'ai';
-import { antlr4tsSQL, SQLDialect, TSQLGrammar, Token, Trees } from 'antlr4ts-sql';
 
 import { languageModel } from '../util/model';
 import { stringifyDataModel } from '../util/data-model';
@@ -12,8 +11,6 @@ Use TOP (n), or ORDER BY ... OFFSET ... ROWS FETCH NEXT ... ROWS ONLY, instead o
 Use SQL Server functions such as CONVERT, DATEPART, DATEADD and ISNULL for dates and missing values.`;
 
 export class SQLServerQueryDialect implements QueryDialect {
-  private readonly parser = new antlr4tsSQL(SQLDialect.TSQL);
-
   constructor(private readonly llmConfig: LLMConfig) {}
 
   async getDSL(query: string, dataModel: DataModel): Promise<string> {
@@ -36,14 +33,18 @@ Reference exact names from the data model, joining tables when needed. Return on
   }
 
   async validateDSL(sql: string): Promise<string> {
+    const { createTSQLParser, TSqlParser, Token, Trees } = await import('./tsql-parser');
     const invalid = () => {
       throw new Error('SQL Server query must contain exactly one read-only SELECT statement');
     };
-    const listeners = [{ syntaxError: invalid }];
-    const tokens = this.parser.getTokens(sql, listeners);
-    const parser = this.parser.getParser(tokens, listeners) as TSQLGrammar.TSqlParser;
+    const parser = createTSQLParser(sql, invalid);
     const statement = parser.select_statement_standalone();
-    if (parser.currentToken.type !== Token.EOF || Trees.findAllTokenNodes(statement, TSQLGrammar.TSqlParser.INTO).length > 0) {
+    if (
+      parser.currentToken.type !== Token.EOF ||
+      [TSqlParser.INTO, TSqlParser.OPENQUERY, TSqlParser.OPENROWSET].some(
+        (type) => Trees.findAllTokenNodes(statement, type).length > 0
+      )
+    ) {
       invalid();
     }
     return sql;

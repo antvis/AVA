@@ -82,6 +82,7 @@
     "@supabase/pg-parser": "^0.1.7",
     "adm-zip": "^0.6.1",
     "ai": "^7.0.112",
+    "antlr4ts": "^0.5.0-alpha.4",
     "antlr4ts-sql": "^1.1.0",
     "csv-parse": "^7.0.3",
     "mssql": "12.7.13",

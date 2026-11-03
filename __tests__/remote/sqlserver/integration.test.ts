@@ -3,6 +3,7 @@ import { afterEach, describe, expect, it } from 'vitest';
 import { SQLServerEngine } from '../../../src/remote/sqlserver';
 import { BUILTIN_METRICS, profileTables } from '../../../src/remote/sqlserver/profile';
 import { getSQLServerSchema } from '../../../src/remote/sqlserver/schema';
+import { DEFAULT_METRICS } from '../../../src/util/profile';
 
 import { sqlserverEnabled, sqlserverOptions } from './test-utils';
 
@@ -122,6 +123,20 @@ describe.skipIf(!sqlserverEnabled)('SQL Server integration', () => {
     const customers = profile.models.find((model) => model.name === '[dbo].[customers]')!;
     expect(customers.columns.find((column) => column.name === 'customer_name')!.metrics).not.toHaveProperty('top_values');
   });
+
+  it('profiles 819 integer columns without exceeding the SELECT limit', async () => {
+    const engine = await load();
+    const columns = Array.from({ length: 819 }, (_, i) => ({ name: `n${i}`, type: 'int' }));
+    const schema: Schema = { models: [{ name: 'wide', tableReference: { table: 'wide' }, columns }] };
+    const values = columns.map(({ name }, i) => `${i} AS [${name}]`).join(', ');
+    const run = async (sql: string) => (await engine.execute(`WITH wide AS (SELECT ${values}) ${sql}`)).data;
+    const profile = (await profileTables(run, schema, {
+      metrics: DEFAULT_METRICS.map((id) => ({ id })),
+    })).models[0];
+
+    expect(profile.metrics).toEqual({ row_count: 1 });
+    expect(profile.columns[818].metrics).toEqual({ null_count: 0, distinct_count: 1, min: 818, max: 818, mean: 818 });
+  }, 30000);
 
   it('profiles empty, null, Unicode, boolean and date-offset values', async () => {
     const engine = await load();
