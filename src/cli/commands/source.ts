@@ -89,10 +89,10 @@ Options:
   -t, --type <type>  Override the type inferred from the file extension.
                     Types: csv-file, json-file, parquet, excel, sqlite.
                     Cannot be used with @file, stdin configs, or Feishu URLs.
-  --engine <type>    duckdb, python, javascript, supabase, or clickhouse.
-                    Default: supabase/clickhouse for those sources, otherwise duckdb.
-                    Fixed for the session; source support depends on the engine.
-                    feishu-bitable uses duckdb. The loaded view is named data.
+  --engine <type>    duckdb, python, javascript, supabase, clickhouse, or sqlserver.
+                      Default: supabase/clickhouse/sqlserver for those sources, otherwise duckdb.
+                      Fixed for the session; source support depends on the engine.
+                      feishu-bitable uses duckdb. The loaded view is named data.
   -h, --help         Show help.
 
 Feishu Bitable:

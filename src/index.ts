@@ -5,12 +5,13 @@
 
 import { DuckDBEngine } from './duckdb';
 import { JavaScriptEngine, PythonEngine } from './interpreter';
-import { ClickHouseEngine, SupabaseEngine } from './remote';
+import { ClickHouseEngine, SqlServerEngine, SupabaseEngine } from './remote';
 import { registerEngine } from './engines';
 
 registerEngine('duckdb', DuckDBEngine);
 registerEngine('clickhouse', ClickHouseEngine);
 registerEngine('supabase', SupabaseEngine);
+registerEngine('sqlserver', SqlServerEngine);
 registerEngine('javascript', JavaScriptEngine);
 registerEngine('python', PythonEngine);
 
@@ -49,6 +50,8 @@ export type {
   SemanticOptions,
   JSONReadOptions,
   ClickHouseSourceOptions,
+  SqlServerSourceOptions,
+  MockTableSeed,
   AnalysisEngine,
   TranslationResult,
   ExecutionOptions,

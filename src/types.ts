@@ -76,6 +76,7 @@ export type EngineConfig =
   | { type: 'javascript' }
   | { type: 'supabase' }
   | { type: 'clickhouse' }
+  | { type: 'sqlserver' }
   | { type: string; [option: string]: unknown };
 
 /**
@@ -102,6 +103,7 @@ export interface AnalysisConfig extends ExecutionOptions {
  * - file types: `csv-file`, `json-file`, `parquet` (read through DuckDB's readers)
  * - database types: `mysql`, `postgresql`, `sqlite`, `mongodb` (ATTACH through DuckDB's extension)
  * - direct query types: `clickhouse` (schema discovered and SQL executed through ClickHouse's HTTP API)
+ * - direct query types: `sqlserver` (schema discovered and read-only T-SQL executed through a SQL Server connector)
  * - cloud types: `supabase` (schema discovered and SQL executed through the Supabase Management API — data never leaves the SaaS; handled by SaasDBEngine)
  */
 export type SourceType =
@@ -118,6 +120,7 @@ export type SourceType =
   | 'mongodb'
   | 'supabase'
   | 'clickhouse'
+  | 'sqlserver'
   | 'feishu-bitable';
 
 /**
@@ -483,6 +486,65 @@ export type ClickHouseSourceOptions = Omit<ClickHouseClientConfigOptions, 'host'
   password?: string;
 };
 
+/**
+ * A column descriptor used to seed the built-in in-memory mock adapter.
+ * Mirrors the catalog rows the engine expects so mock-driven tests and demos
+ * exercise the same contracts as a live server.
+ */
+export interface MockTableColumn {
+  name: string;
+  type: string;
+  notNull?: boolean;
+}
+
+/** A table seeded into the built-in in-memory mock adapter. */
+export interface MockTableSeed {
+  name: string;
+  /** Optional schema; defaults to `dbo`. */
+  schema?: string;
+  columns: MockTableColumn[];
+  /** Overrides the primary key discovered from `keyColumns`. */
+  primaryKey?: string[] | string;
+  /** Rows matching `columns`. */
+  rows?: Record<string, unknown>[];
+}
+
+/**
+ * Options for SQL Server data sources (handled a SqlServerEngine that executes
+ * read-only T-SQL remotely through a connector, analogous to ClickHouseEngine).
+ * Queries are served by an adapter; `tedious` is the production driver and the
+ * built-in `mock` adapter reproduces the same contract without a live server.
+ */
+export interface SqlServerSourceOptions {
+  /** Server hostname or IP. */
+  server: string;
+  /** TCP port (default 1433). */
+  port?: number;
+  /** Database name to discover and query (required). */
+  database: string;
+  /** SQL Server login name. */
+  user?: string;
+  /** Password for the login. */
+  password?: string;
+  /** Named instance (overrides the default port); mutually exclusive with `port`. */
+  instanceName?: string;
+  /** Enable TLS for the connection (tedious default: true). */
+  encrypt?: boolean;
+  /** Skip server certificate validation when `encrypt` is enabled. */
+  trustServerCertificate?: boolean;
+  /** Per-request time limit in milliseconds (default 30000). */
+  requestTimeout?: number;
+  /** Connection establishment time limit in milliseconds (default 15000). */
+  connectTimeout?: number;
+  /**
+   * Adapter selection. Defaults to `tedious` when available. Set `mock` to use
+   * the built-in in-memory runner seeded from `tables` (no network required).
+   */
+  adapter?: 'tedious' | 'mock';
+  /** Seed data for the `mock` adapter. */
+  tables?: MockTableSeed[];
+}
+
 export interface FeishuBitableSourceOptions {
   url?: string;
   appToken?: string;
@@ -513,6 +575,7 @@ export type DataSourceConfig =
   | { type: 'mongodb'; options: MongoDBSourceOptions }
   | { type: 'supabase'; options: SupabaseSourceOptions }
   | { type: 'clickhouse'; options: ClickHouseSourceOptions }
+  | { type: 'sqlserver'; options: SqlServerSourceOptions }
   | { type: 'feishu-bitable'; options: FeishuBitableSourceOptions };
 
 /**

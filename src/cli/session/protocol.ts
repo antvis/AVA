@@ -27,6 +27,37 @@ const database = z
     ssh: z.object({ host: text, user: text, port, password: z.string().optional() }).strict().optional(),
   })
   .strict();
+const sqlServer = z
+  .object({
+    server: text,
+    database: text,
+    port,
+    user: z.string().optional(),
+    password: z.string().optional(),
+    instanceName: z.string().optional(),
+    encrypt: z.boolean().optional(),
+    trustServerCertificate: z.boolean().optional(),
+    requestTimeout: z.number().int().positive().optional(),
+    connectTimeout: z.number().int().positive().optional(),
+    adapter: z.enum(['tedious', 'mock']).optional(),
+    tables: z
+      .array(
+        z
+          .object({
+            name: text,
+            schema: text.optional(),
+            columns: z.array(z.object({ name: text, type: text, notNull: z.boolean().optional() })),
+            primaryKey: z.union([text, z.array(text)]).optional(),
+            rows: z.array(z.record(z.string(), z.unknown())).optional(),
+          })
+          .strict()
+      )
+      .optional(),
+  })
+  .strict()
+  .refine((value) => !(value.instanceName && value.port), {
+    message: 'instanceName and port are mutually exclusive for SQL Server sources',
+  });
 const clickhouse = z
   .object({
     host: text.optional(),
@@ -112,12 +143,13 @@ const sourceSchema = z.discriminatedUnion('type', [
     .object({ type: z.literal('supabase'), options: z.object({ accessToken: text, projectRef: text }).strict() })
     .strict(),
   z.object({ type: z.literal('clickhouse'), options: clickhouse }).strict(),
+  z.object({ type: z.literal('sqlserver'), options: sqlServer }).strict(),
   z.object({ type: z.literal('feishu-bitable'), options: feishuBitable }).strict(),
 ]);
 
 export const sourceConfig = sourceSchema.transform((value) => value as DataSourceConfig);
 export const modelSchema = z.object({ model: text, apiKey: text.optional(), baseURL: text.optional() }).strict();
-export const engineTypeSchema = z.enum(['duckdb', 'python', 'javascript', 'supabase', 'clickhouse']);
+export const engineTypeSchema = z.enum(['duckdb', 'python', 'javascript', 'supabase', 'clickhouse', 'sqlserver']);
 
 const execution = {
   maxRows: z.number().int().positive().max(10000).optional(),
