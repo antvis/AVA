@@ -33,16 +33,13 @@ function connectSshClient(ssh: SSHOptions): Promise<Client> {
 }
 
 /** Forward a local port to the target host:port through SSH */
-export async function createSshTunnel(
-  ssh: SSHOptions,
-  targetHost: string,
-  targetPort: number
-): Promise<SSHTunnel> {
+export async function createSshTunnel(ssh: SSHOptions, targetHost: string, targetPort: number): Promise<SSHTunnel> {
   const client = await connectSshClient(ssh);
   const sockets = new Set<Socket>();
   const server: Server = createServer((socket) => {
     sockets.add(socket);
     socket.once('close', () => sockets.delete(socket));
+    socket.on('error', () => socket.destroy());
     client.forwardOut(
       socket.localAddress ?? '127.0.0.1',
       socket.localPort ?? 0,
@@ -50,9 +47,16 @@ export async function createSshTunnel(
       targetPort,
       (error, stream) => {
         if (error) {
-          socket.destroy(error);
+          socket.destroy();
           return;
         }
+        if (socket.destroyed) {
+          stream.destroy();
+          return;
+        }
+        stream.on('error', () => socket.destroy());
+        socket.once('close', () => stream.destroy());
+        stream.once('close', () => socket.destroy());
         socket.pipe(stream);
         stream.pipe(socket);
       }

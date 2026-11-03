@@ -1,10 +1,13 @@
 'use client';
 
+import { useTranslations } from 'use-intl';
+
 import { useEffect, useState } from 'react';
 
 type Heading = { id: string; text: string; level: number };
 
 export default function DocsToc() {
+  const t = useTranslations('DocsToc');
   const [headings, setHeadings] = useState<Heading[]>([]);
   const [active, setActive] = useState('');
 
@@ -40,9 +43,9 @@ export default function DocsToc() {
 
   return (
     <aside className="docs-toc">
-      <nav aria-label="On this page">
+      <nav aria-label={t('onThisPage')}>
         <p>
-          <span aria-hidden="true">≡</span> On this page
+          <span aria-hidden="true">≡</span> {t('onThisPage')}
         </p>
         {headings.map((heading) => (
           <a
@@ -56,7 +59,8 @@ export default function DocsToc() {
         ))}
       </nav>
       <a className="docs-help-link" href="https://github.com/antvis/AVA/issues">
-        Have a question? <span aria-hidden="true">↗</span>
+        {t('haveAQuestion')}
+        <span aria-hidden="true">↗</span>
       </a>
     </aside>
   );

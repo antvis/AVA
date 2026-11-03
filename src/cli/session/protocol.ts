@@ -6,6 +6,7 @@ import { z } from 'zod';
 import { excelOptionsSchema } from '../../util/excel';
 import { profileMetadataSchema } from '../../util/profile';
 import { schemaMetadataSchema } from '../../util/schema';
+import { semanticMetadataSchema } from '../../util/data-model';
 
 import type { DataSourceConfig } from '../../types';
 
@@ -15,7 +16,7 @@ export const IPC_MAX_RESPONSE_BYTES = 16 * 1024 * 1024;
 
 const text = z.string().min(1);
 const port = z.number().int().min(1).max(65535).optional();
-const file = z.object({ path: text, headers: z.record(z.string()).optional() }).strict();
+const file = z.object({ path: text, headers: z.record(z.string(), z.string()).optional() }).strict();
 const database = z
   .object({
     host: text,
@@ -54,7 +55,7 @@ const clickhouse = z
     application: z.string().optional(),
     session_id: z.string().optional(),
     role: z.union([text, z.array(text)]).optional(),
-    http_headers: z.record(z.string()).optional(),
+    http_headers: z.record(z.string(), z.string()).optional(),
     request_timeout: z.number().int().positive().optional(),
   })
   .passthrough()
@@ -62,23 +63,23 @@ const clickhouse = z
 
 const feishuBitable = z
   .object({
-    url:text.optional(),
-    appToken:text.optional(),
-    tableId:text.optional(),
-    appSecret:text.optional(),
+    url: text.optional(),
+    appToken: text.optional(),
+    tableId: text.optional(),
+    appSecret: text.optional(),
     appId: text.optional(),
   })
   .strict()
-  .refine((value)=>Boolean(value.url || (value.appToken && value.tableId)),{
-    message:"Feishu Bitable sources require either 'url' or both 'appToken' and 'tableId'",
-  })
+  .refine((value) => Boolean(value.url || (value.appToken && value.tableId)), {
+    message: "Feishu Bitable sources require either 'url' or both 'appToken' and 'tableId'",
+  });
 
 const sourceSchema = z.discriminatedUnion('type', [
   z
-    .object({ type: z.literal('csv-file'), options: file.extend({ options: z.record(z.unknown()).optional() }) })
+    .object({ type: z.literal('csv-file'), options: file.extend({ options: z.record(z.string(), z.unknown()).optional() }) })
     .strict(),
   z
-    .object({ type: z.literal('json-file'), options: file.extend({ options: z.record(z.unknown()).optional() }) })
+    .object({ type: z.literal('json-file'), options: file.extend({ options: z.record(z.string(), z.unknown()).optional() }) })
     .strict(),
   z.object({ type: z.literal('parquet'), options: file }).strict(),
   z.object({ type: z.literal('excel'), options: excelOptionsSchema }).strict(),
@@ -86,13 +87,15 @@ const sourceSchema = z.discriminatedUnion('type', [
   z
     .object({
       type: z.literal('csv'),
-      options: z.object({ csv: text, options: z.record(z.unknown()).optional() }).strict(),
+      options: z.object({ csv: text, options: z.record(z.string(), z.unknown()).optional() }).strict(),
     })
     .strict(),
   z
     .object({
       type: z.literal('json'),
-      options: z.object({ data: z.array(z.record(z.unknown())), options: z.record(z.unknown()).optional() }).strict(),
+      options: z
+        .object({ data: z.array(z.record(z.string(), z.unknown())), options: z.record(z.string(), z.unknown()).optional() })
+        .strict(),
     })
     .strict(),
   z.object({ type: z.literal('text'), options: z.object({ text }).strict() }).strict(),
@@ -138,6 +141,7 @@ const execution = {
 
 export const requestSchema = z.discriminatedUnion('command', [
   z.object({ command: z.literal('schema'), schema: schemaMetadataSchema.optional() }).strict(),
+  z.object({ command: z.literal('semantic'), semantic: semanticMetadataSchema.optional() }).strict(),
   z
     .object({
       command: z.literal('profile'),
@@ -150,7 +154,7 @@ export const requestSchema = z.discriminatedUnion('command', [
     .object({
       command: z.literal('analyze'),
       query: text,
-      strategy: z.enum(['direct', 'loop', 'subset']).optional(),
+      strategy: z.enum(['direct', 'loop']).optional(),
       ...execution,
     })
     .strict(),

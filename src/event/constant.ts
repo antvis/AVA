@@ -1,33 +1,11 @@
 /**
- * Engine lifecycle events.
+ * AVA lifecycle events.
  */
 export enum LifecycleEventType {
   CREATE_START = 'createstart',
   CREATE_END = 'createend',
   DISPOSE_START = 'disposestart',
   DISPOSE_END = 'disposeend',
-}
-
-/**
- * Analysis events.
- */
-export enum AnalysisEventType {
-  TRANSLATE_START = 'translatestart',
-  TRANSLATE_END = 'translateend',
-  QUERY_START = 'querystart',
-  QUERY_END = 'queryend',
-  SUMMARIZE_START = 'summarizestart',
-  SUMMARIZE_END = 'summarizeend',
-  SELECT_CONTEXT_START = 'selectcontextstart',
-  SELECT_CONTEXT_END = 'selectcontextend',
-  REASON_START = 'reasonstart',
-  REASON_END = 'reasonend',
-}
-
-/**
- * Data processing events.
- */
-export enum ExecutionEventType {
   SOURCE_START = 'sourcestart',
   SOURCE_END = 'sourceend',
   SCHEMA_START = 'schemastart',
@@ -42,4 +20,18 @@ export enum ExecutionEventType {
   VISUALIZE_END = 'visualizeend',
   SUGGEST_START = 'suggeststart',
   SUGGEST_END = 'suggestend',
+}
+
+/**
+ * Analysis events.
+ */
+export enum AnalysisEventType {
+  TRANSLATE_START = 'translatestart',
+  TRANSLATE_END = 'translateend',
+  QUERY_START = 'querystart',
+  QUERY_END = 'queryend',
+  SUMMARIZE_START = 'summarizestart',
+  SUMMARIZE_END = 'summarizeend',
+  STEP_START = 'stepstart',
+  STEP_END = 'stepend',
 }

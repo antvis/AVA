@@ -36,7 +36,7 @@ describe('DuckDBEngine', () => {
   });
 
   it('uses caller-supplied context without retaining schema or profile', async () => {
-    const generate = vi.spyOn(DuckDBQueryDialect.prototype, 'getDSL').mockResolvedValue('SELECT 1');
+    const generate = vi.spyOn(DuckDBQueryDialect.prototype, 'getDSL').mockResolvedValue({ dsl: 'SELECT 1' });
     const compute = vi.spyOn(engine, 'profile');
     await engine.load({ type: 'json', options: { data: [{ value: 1 }] } });
     const schema = await engine.schema();
@@ -202,7 +202,7 @@ describe('DuckDBEngine', () => {
     it('should generate SQL from a natural language query', async () => {
       await engine.load({ type: 'json', options: { data: [{ company: 'A', region: 'East', revenue: 100 }] } });
 
-      const sql = await engine.getDSL('Show all companies', await engine.schema());
+      const { dsl: sql } = await engine.getDSL('Show all companies', await engine.schema());
 
       expect(typeof sql).toBe('string');
       expect(sql.toLowerCase()).toContain('select');

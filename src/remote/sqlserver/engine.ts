@@ -20,6 +20,7 @@ import type {
   QueryColumn,
   Schema,
   SQLServerSourceOptions,
+  TranslationResult,
 } from '../../types';
 
 function connectionConfig(options: SQLServerSourceOptions): SQLConfig {
@@ -95,7 +96,7 @@ export class SQLServerEngine implements AnalysisEngine {
     );
   }
 
-  async getDSL(query: string, dataModel: DataModel): Promise<string> {
+  async getDSL(query: string, dataModel: DataModel): Promise<TranslationResult> {
     if (!this.pool) throw new Error('No data loaded. Please call source() first.');
     return this.queryDialect.getDSL(query, dataModel);
   }

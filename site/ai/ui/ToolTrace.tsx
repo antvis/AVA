@@ -1,21 +1,20 @@
 'use client';
+import { useTranslations } from 'use-intl';
 
 import React, { useState } from 'react';
 import type { Message } from './types';
 import ToolRow from './ToolRow';
-import FileDiffs from './FileDiffs';
 
 const ToolTrace: React.FC<{ msg: Message; live: Message['live'] }> = ({ msg, live }) => {
+  const t = useTranslations('ToolTrace');
   const steps = msg.steps ?? [];
   const shown = live?.rowsShown ?? steps.length;
   const running = typeof live?.runningRow === 'number' ? live.runningRow : null;
-  const allRowsDone = shown >= steps.length && running === null;
   const [open, setOpen] = useState(true);
 
   if (!steps.length) return null;
 
-  const headerText =
-    running !== null ? `${steps.length} tool calls — running…` : `${steps.length} tool calls, 1 message`;
+  const headerText = running !== null ? t('running', { count: steps.length }) : t('completed', { count: steps.length });
 
   return (
     <div className="min-h-[220px] w-full pb-1">
@@ -41,7 +40,6 @@ const ToolTrace: React.FC<{ msg: Message; live: Message['live'] }> = ({ msg, liv
           <path d="M6 9l6 6 6-6" />
         </svg>
         <span className="tabular-nums">{headerText}</span>
-        {running !== null && <span className="inline-block pixel-dot scale-50" />}
       </button>
 
       {/* tool call rows */}
@@ -71,8 +69,6 @@ const ToolTrace: React.FC<{ msg: Message; live: Message['live'] }> = ({ msg, liv
               </ToolRow>
             ))}
           </div>
-
-          {allRowsDone && <FileDiffs diffs={msg.diffs} diffLines={msg.diffLines} showMore />}
         </div>
       </div>
     </div>

@@ -52,6 +52,7 @@ export type {
   ClickHouseSourceOptions,
   SQLServerSourceOptions,
   AnalysisEngine,
+  TranslationResult,
   ExecutionOptions,
   ExecutionResult,
   QueryColumn,

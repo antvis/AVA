@@ -6,7 +6,7 @@ import type { Message } from '../types';
 const CHUNK_MS = 24;
 
 export default function useSimulatedStream(messages: Message[], onArtifact: (m: Message) => void, replayKey: number) {
-  const [visible, setVisible] = useState<Message[]>([]);
+  const [visible, setVisible] = useState<Message[]>(() => messages.slice(0, messages[0]?.role === 'user' ? 1 : 0));
   const [finished, setFinished] = useState(false);
   const runRef = useRef<{ key: number; completed: boolean } | null>(null);
   const [streamingIdx, setStreamingIdx] = useState<number | null>(null);
@@ -47,7 +47,8 @@ export default function useSimulatedStream(messages: Message[], onArtifact: (m: 
       if (artifact) onArtifactRef.current(artifact);
       return cancelAll;
     }
-    setVisible([]);
+    let msgIdx = messages[0]?.role === 'user' ? 1 : 0;
+    setVisible(messages.slice(0, msgIdx));
 
     const finish = () => {
       if (runRef.current) runRef.current.completed = true;
@@ -67,10 +68,12 @@ export default function useSimulatedStream(messages: Message[], onArtifact: (m: 
     const beginTextStream = (msg: Message) => {
       patchLive({ runningRow: null });
       const full = msg.text;
-      let pos = 0;
+      const startedAt = performance.now();
+      if (msg.artifact) onArtifactRef.current(msg);
       if (timerRef.current) clearInterval(timerRef.current);
       timerRef.current = setInterval(() => {
-        pos += 2 + Math.floor(Math.random() * 4);
+        // Catch up after background throttling or a busy main thread.
+        const pos = Math.floor((performance.now() - startedAt) / CHUNK_MS) * 4;
         const slice = full.slice(0, pos);
         setVisible((v) => {
           const copy = [...v];
@@ -81,9 +84,6 @@ export default function useSimulatedStream(messages: Message[], onArtifact: (m: 
         if (pos >= full.length) {
           if (timerRef.current) clearInterval(timerRef.current);
           setStreamingIdx(null);
-          if (msg.artifact) {
-            track(setTimeout(() => onArtifactRef.current(msg), 350));
-          }
           msgIdx += 1;
           track(setTimeout(playNextMessage, 500));
         }
@@ -99,7 +99,7 @@ export default function useSimulatedStream(messages: Message[], onArtifact: (m: 
         if (cancelled) return;
         if (idx.i >= total) {
           patchLive({ runningRow: null });
-          track(setTimeout(() => beginTextStream(msg), 350));
+          beginTextStream(msg);
           return;
         }
         patchLive({ rowsShown: idx.i + 1, runningRow: idx.i });
@@ -114,8 +114,6 @@ export default function useSimulatedStream(messages: Message[], onArtifact: (m: 
       };
       playRow();
     };
-
-    let msgIdx = 0;
 
     const playNextMessage = () => {
       if (cancelled) return;
@@ -136,13 +134,13 @@ export default function useSimulatedStream(messages: Message[], onArtifact: (m: 
       setStreamingIdx(msgIdx);
 
       if (msg.steps && msg.steps.length > 0) {
-        track(setTimeout(() => playRowsThenText(msg), 300));
+        playRowsThenText(msg);
       } else {
-        track(setTimeout(() => beginTextStream(msg), 200));
+        beginTextStream(msg);
       }
     };
 
-    track(setTimeout(playNextMessage, 500));
+    playNextMessage();
 
     return cancelAll;
   }, [messages, replayKey]);

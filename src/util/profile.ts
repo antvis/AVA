@@ -19,11 +19,11 @@ export const profileMetadataSchema = z
     models: z.array(
       z.object({
         name: z.string(),
-        metrics: z.record(jsonValue),
+        metrics: z.record(z.string(), jsonValue),
         columns: z.array(
           z.object({
             name: z.string(),
-            metrics: z.record(jsonValue),
+            metrics: z.record(z.string(), jsonValue),
             properties: z.object({ logicalType: z.enum(['numeric', 'string', 'boolean', 'date', 'unknown']) }),
           })
         ),

@@ -1,4 +1,3 @@
-import type { ReactNode } from 'react';
 import type { Semantic } from '@antv/ava/browser';
 import type { AIUIMessage } from '../core/session';
 export type ToolDetailLine = { text: string; tone?: 'add' | 'del' | 'ctx' };
@@ -12,13 +11,17 @@ export type ToolStep = {
   detailMono?: boolean;
   detail: ToolDetailLine[];
 };
-export type ToolDiff = { file: string; add: number; del?: number };
-export type ToolDiffLine = { text: string; tone: 'add' | 'del' | 'ctx' };
 
 export interface AnalysisArtifact {
   id: string;
   title: string;
   description: string;
+  report?: {
+    question: string;
+    answer: string;
+    insight: string;
+    limitations: string;
+  };
   config?: Record<string, unknown>;
   code?: string;
   data?: Record<string, unknown>[];
@@ -26,8 +29,6 @@ export interface AnalysisArtifact {
 
 export interface Message {
   artifact?: AnalysisArtifact;
-  diffs?: ToolDiff[];
-  diffLines?: Record<string, ToolDiffLine[]>;
   role: 'user' | 'assistant';
   text: string;
   parts?: AIUIMessage['parts'];
@@ -69,6 +70,4 @@ export interface ChatPlayback {
 export type ArtifactTab = 'chart' | 'data' | 'sql';
 export interface ArtifactDisplay {
   columns?: { key: string; label: string; suffix?: string }[];
-  chartHeader?: ReactNode;
-  chartFooter?: ReactNode;
 }

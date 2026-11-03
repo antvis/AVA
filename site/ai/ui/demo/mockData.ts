@@ -1,31 +1,30 @@
+import en from '../../../messages/en.json';
+import zh from '../../../messages/zh.json';
+import type { Locale } from '../../../lib/i18n';
 import type { DualAxesConfig } from '@antv/gpt-vis';
-import type { Message, ToolStep, ToolDiff, ToolDiffLine } from '../types';
+import type { Message, ToolStep } from '../types';
 
 import { MONTHLY_SALES } from '../constants';
 
 /** One result set for the chart and its inspectable data table. */
 export const ARTIFACT_DATA = MONTHLY_SALES.map(({ month, revenue, gross_profit }) => ({
   month: new Date(month).toLocaleString('en-US', { month: 'short', timeZone: 'UTC' }),
-  revenueK: revenue / 1000,
-  grossProfitK: gross_profit / 1000,
-  marginPct: Number(((100 * gross_profit) / revenue).toFixed(1)),
+  revenue_k: revenue / 1000,
+  gross_profit_k: gross_profit / 1000,
+  margin_pct: Number(((100 * gross_profit) / revenue).toFixed(1)),
 }));
 
 export const CHART_CONFIG = {
   type: 'dual-axes',
   categories: ARTIFACT_DATA.map((row) => row.month),
   series: [
-    { type: 'column', axisYTitle: 'Revenue ($k)', data: ARTIFACT_DATA.map((row) => row.revenueK) },
-    { type: 'line', axisYTitle: 'Gross margin (%)', data: ARTIFACT_DATA.map((row) => row.marginPct) },
+    { type: 'column', axisYTitle: 'Revenue ($k)', data: ARTIFACT_DATA.map((row) => row.revenue_k) },
+    { type: 'line', axisYTitle: 'Gross margin (%)', data: ARTIFACT_DATA.map((row) => row.margin_pct) },
   ],
-  title: 'Revenue & gross margin',
   axisXTitle: '2026',
   theme: 'default',
-  style: { palette: ['#0891b2', '#e88245'], backgroundColor: '#ffffff', startAtZero: true },
+  style: { palette: ['#7ce2ff', '#f28e82'], backgroundColor: 'transparent', startAtZero: true },
 } satisfies DualAxesConfig;
-
-/** Pretty-printed GPT-Vis JSON config, shown in the run diff. */
-export const CHART_JSON = JSON.stringify(CHART_CONFIG, null, 2);
 
 /** DuckDB file sources are registered as the `data` view. */
 export const ARTIFACT_SQL = [
@@ -109,35 +108,22 @@ const RUN_STEPS: ToolStep[] = [
   },
 ];
 
-const ASSISTANT_TEXT = `Revenue more than doubled, but profitability did not improve at the same pace.\n\n- **Growth:** $120k → $260k revenue from Jan to Sep (**+116.7%**).\n- **Watch July:** revenue rose **13.3%** from June, yet gross profit fell **2.1%**. Gross margin hit **19%**, the period low.\n- **Recovery:** September reached **27% margin** and **$70.2k gross profit**; margin was still 3 percentage points below January.\n\n**Next step:** inspect July’s discounts, product mix and unit costs before scaling the same sales tactics. These totals flag the issue, but do not establish its cause.`;
-
-const RUN_DIFF_LINES: Record<string, ToolDiffLine[]> = {
-  'analysis.sql': ARTIFACT_SQL.split('\n').map((text) => ({ text, tone: 'add' })),
-  'growth-quality.json': CHART_JSON.split('\n')
-    .slice(0, 6)
-    .map((text) => ({ text, tone: 'add' })),
-};
-
-const RUN_DIFFS: ToolDiff[] = [
-  { file: 'analysis.sql', add: ARTIFACT_SQL.split('\n').length },
-  { file: 'growth-quality.json', add: CHART_JSON.split('\n').length },
-];
-
-const QUESTION =
-  'Is our revenue growth profitable? Compare monthly revenue and gross margin for Jan–Sep 2026, flag the weakest month, and show the trend in a dual-axis chart.';
-
 export const PRESET_MESSAGES: Message[] = [
-  { role: 'user', text: QUESTION, attachments: ['monthly-sales-2026.csv'] },
+  { role: 'user', text: en.Demo.question, attachments: ['monthly-sales-2026.csv'] },
   {
     role: 'assistant',
     steps: RUN_STEPS,
-    diffs: RUN_DIFFS,
-    diffLines: RUN_DIFF_LINES,
-    text: ASSISTANT_TEXT,
+    text: en.Demo.summary,
     artifact: {
       id: 'demo-growth-quality',
       title: 'growth-quality.html',
-      description: 'Revenue & gross margin · Jan–Sep 2026 · Dual Axes',
+      description: en.Demo.description,
+      report: {
+        question: en.Demo.question,
+        answer: en.Demo.answer,
+        insight: en.Demo.insight,
+        limitations: en.Demo.limitations,
+      },
       config: CHART_CONFIG,
       code: ARTIFACT_SQL,
       data: ARTIFACT_DATA,
@@ -145,8 +131,90 @@ export const PRESET_MESSAGES: Message[] = [
   },
 ];
 
-export const ARTIFACT_METRICS = [
-  { label: 'Revenue growth', value: '+116.7%', detail: 'Jan → Sep' },
-  { label: 'Lowest margin', value: '19%', detail: 'July · period low' },
-  { label: 'Margin recovery', value: '+8 pp', detail: 'Jul → Sep' },
+export function getDemoMessages(locale: Locale): Message[] {
+  if (locale === 'en') return PRESET_MESSAGES;
+  const text = zh.Demo;
+  const steps = CHINESE_STEPS;
+  const data = ARTIFACT_DATA.map((row, i) => ({ ...row, month: `${String(i + 1).padStart(2, '0')}月` }));
+  const config = {
+    ...CHART_CONFIG,
+    categories: data.map((row) => row.month),
+    series: CHART_CONFIG.series.map((series, i) => ({ ...series, axisYTitle: i === 0 ? text.revenue : text.margin })),
+  };
+  return [
+    { ...PRESET_MESSAGES[0], text: text.question },
+    {
+      ...PRESET_MESSAGES[1],
+      text: text.summary,
+      steps: RUN_STEPS.map((step, i) => ({
+        ...step,
+        label: steps[i].label,
+        chip: steps[i].chip ?? step.chip,
+        detail: steps[i].detail.map((line) => ({ text: line })),
+      })),
+      artifact: {
+        ...PRESET_MESSAGES[1].artifact!,
+        description: text.description,
+        report: { question: text.question, answer: text.answer, insight: text.insight, limitations: text.limitations },
+        config,
+        data,
+        code: ARTIFACT_SQL.replace(
+          "strftime(CAST(month AS DATE), '%b')",
+          "strftime(CAST(month AS DATE), '%m') || '月'"
+        ),
+      },
+    },
+  ];
+}
+
+const CHINESE_STEPS: { label: string; chip?: string; detail: string[] }[] = [
+  {
+    label: '读取月度销售数据',
+    detail: [
+      'monthly-sales-2026.csv → DuckDB 视图 data',
+      '共 9 条月度记录，覆盖 2026 年 1—9 月；收入和毛利单位为美元。',
+    ],
+  },
+  {
+    label: '检查结构与数据质量',
+    detail: [
+      'month: DATE · revenue: BIGINT · gross_profit: BIGINT',
+      '9 个月份互不重复，无缺失值，各月收入均为正。',
+      '将统计结果加入上下文，供后续分析使用。',
+    ],
+  },
+  {
+    label: '把业务问题转成 SQL',
+    detail: [
+      '使用直接分析策略，结合表结构与统计信息生成查询。',
+      '按月份比较收入、毛利与毛利率，并保留时间顺序。',
+      '毛利率按总毛利 ÷ 总收入计算，不直接平均百分比。',
+    ],
+  },
+  {
+    label: '执行只读查询',
+    chip: 'DuckDB · 返回 9 行',
+    detail: [
+      '收入从 1 月的 12 万美元增长到 9 月的 26 万美元。',
+      '7 月收入 23.8 万美元，毛利 4.522 万美元，毛利率 19%。',
+      '同时返回 SQL 和查询结果，方便核对。',
+    ],
+  },
+  {
+    label: '关注增长背后的盈利变化',
+    chip: '收入增长，未必带来同等的利润增长',
+    detail: [
+      '6 月到 7 月：收入增长 13.3%，毛利下降 2.1%，毛利率下降 3 个百分点。',
+      '9 月毛利率恢复至 27%，仍比 1 月低 3 个百分点。',
+      '这些数字提示了排查方向，但不能直接归因于折扣或成本。',
+    ],
+  },
+  {
+    label: '生成双轴图',
+    detail: [
+      'recommend() 选择 dual-axes，并生成 GPT-Vis JSON 配置。',
+      'viz() 将配置渲染为 HTML；visualize() 返回 chartType、config 和 html。',
+      '柱形展示收入（千美元），折线展示毛利率（%），两侧坐标轴均从零开始。',
+    ],
+  },
 ];

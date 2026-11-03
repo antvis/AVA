@@ -18,8 +18,8 @@ async function files(directory) {
 
 const sources = (await files(join(site, 'content/docs'))).filter((path) => path.endsWith('.mdx'));
 const sourceText = (await Promise.all(sources.map((path) => readFile(path, 'utf8')))).join('\n');
-const semantic = await readFile(join(site, 'content/docs/data/semantic.mdx'), 'utf8');
-const schemaGuide = await readFile(join(site, 'content/docs/data/schema.mdx'), 'utf8');
+const semantic = await readFile(join(site, 'content/docs/en/data/semantic.mdx'), 'utf8');
+const schemaGuide = await readFile(join(site, 'content/docs/en/data/schema.mdx'), 'utf8');
 const orderTable = semantic.match(/\| order_id \|[\s\S]*?(?=\n\n)/)?.[0];
 assert.ok(orderTable, 'Semantic guide starts with a concrete order table');
 assert.ok(schemaGuide.includes(orderTable), 'Schema and semantic guides use the same order table');
@@ -75,8 +75,12 @@ for (const declaration of types.statements) {
 }
 const pages = new Map();
 for (const source of sources) {
-  const slug = relative(join(site, 'content/docs'), source).replace(/\.mdx$/, '');
-  const route = slug === 'introduction' ? '/documentation/' : `/documentation/${slug}/`;
+  const [locale, ...segments] = relative(join(site, 'content/docs'), source)
+    .replace(/\.mdx$/, '')
+    .split('/');
+  const slug = segments.join('/');
+  const prefix = locale === 'zh' ? '/zh' : '';
+  const route = slug === 'introduction' ? `${prefix}/documentation/` : `${prefix}/documentation/${slug}/`;
   const html = await readFile(join(site, 'out', route, 'index.html'), 'utf8');
   assert.equal([...html.matchAll(/<h1(?:\s|>)/g)].length, 1, `${route}: one page title`);
   assert.ok(
@@ -85,7 +89,7 @@ for (const source of sources) {
   );
   assert.ok(!/<span(?:\s[^>]*)?>\s*<p(?:\s|>)/.test(html), `${route}: no paragraphs inside inline labels`);
   assert.equal(
-    [...html.matchAll(/aria-label="Copy Markdown"/g)].length,
+    [...html.matchAll(locale === 'zh' ? /aria-label="复制 Markdown"/g : /aria-label="Copy Markdown"/g)].length,
     1,
     `${route}: one page-level Markdown copy control`
   );
@@ -93,16 +97,20 @@ for (const source of sources) {
   const ids = [...html.matchAll(/\sid="([^"]+)"/g)].map((match) => match[1]);
   assert.equal(new Set(ids).size, ids.length, `${route}: unique anchors`);
   assert.ok(!/ava\.load\(/.test(html), `${route}: no obsolete public load API`);
+  assert.ok(html.includes(`<html lang="${locale === 'zh' ? 'zh-CN' : 'en'}"`), `${route}: document language`);
+  assert.ok(html.includes('hrefLang="zh-CN"') || html.includes('hreflang="zh-CN"'), `${route}: language alternates`);
   pages.set(route, { html, ids: new Set(ids) });
 }
 
 let links = 0;
 const linkedPages = new Map(pages);
-linkedPages.set('/', { html: await readFile(join(site, 'out/index.html'), 'utf8') });
+for (const route of ['/', '/ai/', '/zh/', '/zh/ai/']) {
+  linkedPages.set(route, { html: await readFile(join(site, 'out', route, 'index.html'), 'utf8') });
+}
 for (const [route, { html }] of linkedPages) {
   for (const [, href] of html.matchAll(/<a\s[^>]*href="([^"]+)"/g)) {
     const url = new URL(href.replaceAll('&amp;', '&'), `https://ava.antv.vision${route}`);
-    if (url.origin !== 'https://ava.antv.vision' || !url.pathname.startsWith('/documentation')) continue;
+    if (url.origin !== 'https://ava.antv.vision' || !/^\/(?:zh\/)?documentation(?:\/|$)/.test(url.pathname)) continue;
     const target = pages.get(`${url.pathname.replace(/\/$/, '')}/`);
     assert.ok(target, `${route}: missing chapter ${url.pathname}`);
     if (url.hash) assert.ok(target.ids.has(decodeURIComponent(url.hash.slice(1))), `${route}: missing anchor ${href}`);
@@ -112,7 +120,38 @@ for (const [route, { html }] of linkedPages) {
 const quickstart = pages.get('/documentation/quickstart/').html;
 assert.ok(quickstart.includes('data-rehype-pretty-code-figure'), 'Code has build-time highlighting');
 assert.ok(quickstart.includes('aria-label="Copy code"'), 'Code has a copy control');
-assert.ok(quickstart.replace(/<[^>]+>/g, '').includes('npm install @antv/ava@beta'), 'Install targets the v4 beta');
+assert.ok(quickstart.replace(/<[^>]+>/g, '').includes('npm install @antv/ava@4'), 'Install targets AVA 4.x');
 console.log(
   `Verified ${pages.size} static MDX pages, ${links} documentation links, anchors, metadata, and code blocks.`
 );
+
+const englishSlugs = sources
+  .filter((path) => path.includes('/en/'))
+  .map((path) => relative(join(site, 'content/docs/en'), path))
+  .sort();
+const chineseSlugs = sources
+  .filter((path) => path.includes('/zh/'))
+  .map((path) => relative(join(site, 'content/docs/zh'), path))
+  .sort();
+assert.deepEqual(chineseSlugs, englishSlugs, 'Both languages cover the same chapters');
+for (const [route, { html }] of linkedPages) {
+  if (!route.startsWith('/zh/')) continue;
+  assert.ok(html.includes('<html lang="zh-CN"'), `${route}: Chinese HTML at build time`);
+  assert.ok(html.includes('rel="canonical" href="https://ava.antv.vision' + route + '"'), `${route}: canonical URL`);
+  for (const [link, href] of html.matchAll(/<a\s[^>]*href="([^"]+)"[^>]*>([\s\S]*?)<\/a>/g)) {
+    const url = new URL(href, `https://ava.antv.vision${route}`);
+    if (url.origin !== 'https://ava.antv.vision') continue;
+    const path = url.pathname;
+    if (path === '/' || /^\/(ai|documentation)(\/|$)/.test(path))
+      assert.ok(link.includes('aria-label="Switch to English"'), `${route}: link lost Chinese locale: ${href}`);
+  }
+}
+const enMessages = JSON.parse(await readFile(join(site, 'messages/en.json'), 'utf8'));
+const zhMessages = JSON.parse(await readFile(join(site, 'messages/zh.json'), 'utf8'));
+function messageKeys(value, prefix = '') {
+  return Object.entries(value).flatMap(([key, entry]) =>
+    typeof entry === 'string' ? [`${prefix}${key}`] : messageKeys(entry, `${prefix}${key}.`)
+  );
+}
+assert.deepEqual(messageKeys(zhMessages).sort(), messageKeys(enMessages).sort(), 'Translation keys stay synchronized');
+console.log('Verified bilingual HTML, route coverage, navigation, and message keys.');

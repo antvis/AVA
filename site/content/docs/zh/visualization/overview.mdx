@@ -1,0 +1,101 @@
+import { Heading } from '../../../../mdx-components';
+
+分析结果出来后，可以接着把它画成图表。AVA 使用 AntV 的 AI 原生可视化库 [GPT-Vis](https://gpt-vis.antv.vision/)：用一份 JSON 配置写清图表类型、数据和展示方式，再交给 GPT-Vis 渲染。
+
+**AVA 负责推荐图表并生成配置，GPT-Vis 负责将配置渲染为可视化结果。**
+
+<Heading as="h2" id="visualize-an-answer">将分析结果可视化</Heading>
+
+```typescript
+const result = await ava.analyze('Show revenue by region as a bar chart');
+const chart = await ava.visualize(result);
+if (chart) {
+  console.log(chart.chartType, chart.config, chart.html);
+}
+```
+
+`visualize()` 先推荐图表配置，再生成 HTML。输入对象包含 `query` 和 `data`；也可以直接传入自己的数据行，无需先加载数据源。
+
+<Heading as="h2" id="bring-your-own-data">使用自己的数据</Heading>
+
+```typescript
+const chart = await ava.visualize({
+  query: 'Show revenue by region as a column chart',
+  data: [
+    { region: 'East', revenue: 120 },
+    { region: 'West', revenue: 90 },
+  ],
+});
+```
+
+<Heading as="h2" id="return-values">返回结果</Heading>
+
+成功时返回以下内容：
+
+| 字段 | 含义 | 使用方式 |
+| ----------- | -------------------------------------------------------------------- | ------------------------------------------------------------------------------- |
+| `chartType` | 推荐的图表类型。 | 查看选择了哪种可视化表达。 |
+| `config` | JSON 形式的 GPT-Vis 图表配置。 | 保存、修改配置，或在应用中交给 GPT-Vis 渲染。 |
+| `html` | 包含配置与渲染器初始化代码的独立 HTML 文档。 | 保存为 HTML 文件，再用浏览器打开。 |
+
+生成的 HTML 从 CDN 加载 GPT-Vis 并调用其渲染器，查看时需要能够访问该 CDN。
+
+数据为空或没有推荐出图表时，返回 `null`；图表生成出错则抛出错误，不会将错误转换成 `null`。
+
+<Heading as="h2" id="understanding-the-gpt-vis-config">理解 GPT-Vis 配置</Heading>
+
+例如，柱形图的配置可以写成：
+
+```json
+{
+  "type": "column",
+  "data": [
+    { "category": "East", "value": 120 },
+    { "category": "West", "value": 90 }
+  ]
+}
+```
+
+`type` 指定图表类型，`data` 提供数据。AVA 在 `config` 中返回这个对象；如需嵌入自己的界面，将它传给 GPT-Vis 实例的 `gptVis.render(chart.config)`。
+
+- [GPT-Vis 文档](https://gpt-vis.antv.vision/docs)：配置、渲染 API、主题与应用集成。
+- [GPT-Vis 仓库](https://github.com/antvis/GPT-Vis)：源码、版本发布与问题反馈。
+
+<Heading as="h2" id="separate-recommendation-and-rendering">分开推荐与渲染</Heading>
+
+如果需要保存图表配置，或自行控制何时生成 HTML，可以分别调用这两个步骤。
+
+<Heading as="h2" id="recommend">推荐图表</Heading>
+
+```typescript
+const spec = await ava.recommend({
+  query: 'Plot sales by month',
+  data: [{ month: 'January', sales: 120 }],
+});
+```
+
+`recommend({ query, data })` 返回 `{ chartType, config }` 或 `null`。它先检查数据是否可用，再调用模型推荐图表类型并生成 GPT-Vis 配置，不要求预先加载数据源。
+
+<Heading as="h2" id="render">渲染图表</Heading>
+
+```typescript
+if (spec) {
+  const html = await ava.viz(spec);
+  console.log(html);
+}
+```
+
+`viz(spec: ChartSpec): Promise<string>` 将配置包装为 HTML，不调用大模型。生成的文档从 CDN 加载 GPT-Vis 运行时。
+
+<Heading as="h2" id="supported-chart-types">支持的图表类型</Heading>
+
+| 类别 | 类型 |
+| ---------------------------- | ----------------------------------------------------------- |
+| 趋势与比较 | `line`, `column`, `bar`, `area`, `dual-axes` |
+| 分布与关系 | `scatter`, `histogram`, `boxplot`, `violin` |
+| 构成与流向 | `pie`, `treemap`, `sankey`, `waterfall`, `funnel` |
+| 其他 | `radar`, `liquid`, `word-cloud`, `venn`, `table`, `summary` |
+
+图表是否合适，取决于数据要求和用户问题。推荐模块会将这些类型的定义提供给模型。
+
+完整字段与图表类型见 [recommend 参数](/documentation/reference/api/#visualize-and-recommend)和 [viz 参数](/documentation/reference/api/#viz)。

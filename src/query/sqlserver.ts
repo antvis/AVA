@@ -3,7 +3,7 @@ import { generateText } from 'ai';
 import { languageModel } from '../util/model';
 import { stringifyDataModel } from '../util/data-model';
 
-import type { DataModel, LLMConfig, QueryDialect } from '../types';
+import type { DataModel, LLMConfig, QueryDialect, TranslationResult } from '../types';
 
 export const SQLSERVER_LANGUAGE_INSTRUCTIONS = `Use Microsoft SQL Server T-SQL and schema-qualified table names, for example [dbo].[orders].
 Generate exactly one read-only SELECT query (WITH is allowed), without SELECT INTO or GO batches.
@@ -13,7 +13,7 @@ Use SQL Server functions such as CONVERT, DATEPART, DATEADD and ISNULL for dates
 export class SQLServerQueryDialect implements QueryDialect {
   constructor(private readonly llmConfig: LLMConfig) {}
 
-  async getDSL(query: string, dataModel: DataModel): Promise<string> {
+  async getDSL(query: string, dataModel: DataModel): Promise<TranslationResult> {
     const { text, usage } = await generateText({
       model: languageModel(this.llmConfig),
       maxRetries: this.llmConfig.maxRetries ?? 3,
@@ -27,9 +27,9 @@ User Query: ${query}
 ${SQLSERVER_LANGUAGE_INSTRUCTIONS}
 Reference exact names from the data model, joining tables when needed. Return only the SQL, without explanation or Markdown.`,
     });
-    this.llmConfig.onQueryUsage?.(usage);
     const trimmed = text.trim();
-    return (trimmed.match(/^```(?:sql|tsql)?[ \t]*\r?\n([\s\S]*?)\r?\n```$/i)?.[1] ?? trimmed).trim();
+    const dsl = (trimmed.match(/^```(?:sql|tsql)?[ \t]*\r?\n([\s\S]*?)\r?\n```$/i)?.[1] ?? trimmed).trim();
+    return { dsl, usage };
   }
 
   async validateDSL(sql: string): Promise<string> {

@@ -52,7 +52,7 @@ export function createTools({ ava, dataset }: { ava: AVA; dataset: AIDataset }) 
         'Create or update a chart. Pass data directly when the user has supplied chart-ready records; otherwise omit data to reuse the latest analysis. Explicit data takes precedence. Never invent data; call analyze first when calculations or transformations are needed.',
       inputSchema: z.object({
         instructions: z.string().max(4_000),
-        data: z.array(z.record(z.unknown())).optional(),
+        data: z.array(z.record(z.string(), z.unknown())).optional(),
       }),
       contextSchema: z.object({ latest: z.custom<AnalysisResponse>().optional() }),
       execute: async ({ instructions, data }, { context }) => {

@@ -116,17 +116,11 @@ describe('Feishu credentials', () => {
 });
 
 describe('Feishu bind errors', () => {
-  it('explains 21001 as a platform policy denial of the app account', () => {
-    const message = feishuBindError(21001, 'Access denied due to platform policy.').message;
-    expect(message).toContain('21001');
-    expect(message).toContain('tenant_access_token');
-    expect(message).toContain('豆包');
-    expect(message).toContain('绑定手机号');
-  });
-
-  it('suggests checking the credentials for other failures', () => {
-    const message = feishuBindError(10003, 'invalid param').message;
-    expect(message).toContain('10003');
-    expect(message).toContain('App ID / App Secret');
+  it.each([
+    [21001, 'Access denied due to platform policy.'],
+    [10003, 'invalid param'],
+    [99999, 'weird'],
+  ])('passes through code %s and its original message', (code, msg) => {
+    expect(feishuBindError(code, msg).message).toBe(`飞书应用绑定失败: ${code} ${msg}`);
   });
 });

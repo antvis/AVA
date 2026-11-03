@@ -1,3 +1,6 @@
+import { localeHref, type Locale } from './i18n';
+import zh from '../messages/zh.json';
+
 export const docs = [
   {
     slug: 'introduction',
@@ -45,7 +48,7 @@ export const docs = [
     slug: 'analysis/strategies',
     title: 'Analysis strategies',
     group: 'Analysis & visualization',
-    description: 'Choose direct queries, iterative reasoning, or selected profile context.',
+    description: 'Choose direct queries or iterative reasoning.',
   },
   {
     slug: 'visualization/overview',
@@ -109,7 +112,7 @@ export const docs = [
   },
   {
     slug: 'reference/events',
-    title: 'Events & lifecycle',
+    title: 'Events',
     group: 'API Reference',
     description: 'Observe data loading, model work, query execution, and cleanup.',
   },
@@ -133,8 +136,23 @@ export const docs = [
   },
 ] as const;
 
-export type Doc = (typeof docs)[number];
+export type Doc = { slug: (typeof docs)[number]['slug']; title: string; group: string; description: string };
 
-export function docHref(slug: string) {
-  return slug === 'introduction' ? '/documentation/' : `/documentation/${slug}/`;
+export function localizedDoc(doc: Doc, locale: Locale): Doc {
+  if (locale === 'en') return doc;
+  const groups: Record<string, string> = {
+    'Get started': '开始使用',
+    'Working with data': '理解与接入数据',
+    'Analysis & visualization': '分析与可视化',
+    'Advanced usage': '进阶使用',
+    'Execution engines': '执行引擎',
+    'API Reference': 'API 参考',
+    'More resources': '更多资源',
+  };
+  const translated = zh.chapters[doc.slug.replaceAll('/', '_') as keyof typeof zh.chapters];
+  return { ...doc, ...translated, group: groups[doc.group] };
+}
+
+export function docHref(slug: string, locale: Locale = 'en') {
+  return localeHref(slug === 'introduction' ? '/documentation/' : `/documentation/${slug}/`, locale);
 }

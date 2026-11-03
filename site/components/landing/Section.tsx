@@ -1,28 +1,32 @@
 'use client';
 
 import React from 'react';
-import Link from 'next/link';
+import Link from '../LocaleLink';
 
 /**
- * Shared section header: eyebrow + heading + description,
+ * Shared section header with an optional label and description,
  * matching the editorial voice of the hero.
  */
 export const SectionHeading: React.FC<{
-  eyebrow: string;
+  eyebrow?: string;
   title: React.ReactNode;
   description?: React.ReactNode;
   align?: 'center' | 'left';
 }> = ({ eyebrow, title, description, align = 'center' }) => (
   <div className={`max-w-2xl ${align === 'center' ? 'mx-auto text-center' : ''}`}>
-    <span className="inline-block font-mono text-[11.5px] uppercase tracking-[0.18em] text-[color:var(--color-primary-dark)]">
-      {eyebrow}
-    </span>
-    <h2 className="mt-3 text-[clamp(26px,4vw,40px)] font-semibold leading-[1.15] tracking-[-0.02em] text-zinc-900">
+    {eyebrow ? (
+      <span className="inline-block font-mono text-[11.5px] uppercase tracking-[0.18em] text-[color:var(--color-primary-dark)]">
+        {eyebrow}
+      </span>
+    ) : null}
+    <h2
+      className={`${
+        eyebrow ? 'mt-3 ' : ''
+      }text-[clamp(26px,4vw,40px)] font-semibold leading-[1.15] tracking-[-0.02em] text-zinc-900`}
+    >
       {title}
     </h2>
-    {description ? (
-      <p className="mt-4 text-[15px] leading-relaxed text-zinc-500">{description}</p>
-    ) : null}
+    {description ? <p className="mt-4 text-[15px] leading-relaxed text-zinc-500">{description}</p> : null}
   </div>
 );
 
@@ -33,7 +37,7 @@ export const SectionLink: React.FC<{ href: string; children: React.ReactNode; ex
   external,
 }) => {
   const cls =
-    'group inline-flex items-center gap-1.5 text-[13.5px] font-medium text-[color:var(--color-primary-dark)] transition-colors hover:text-zinc-900';
+    'group inline-flex items-center gap-1.5 text-[14px] font-medium text-[color:var(--color-primary-dark)] transition-colors hover:text-zinc-900';
   if (external) {
     return (
       <a href={href} target="_blank" rel="noopener noreferrer" className={cls}>

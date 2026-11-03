@@ -1,9 +1,12 @@
 'use client';
 
+import { useTranslations } from 'use-intl';
+
 import React, { useEffect, useRef, useState } from 'react';
+import Link from '../../components/LocaleLink';
 import type { LiveChat } from './types';
 import { parseToken } from './utils';
-import { PROMPT_SOURCES, PROMPT_COMMANDS, PROMPT_MODELS, ATTACH_FILES, DICTATION_TEXT } from './constants';
+import { PROMPT_SOURCES, PROMPT_COMMANDS, PROMPT_MODELS, ATTACH_FILES } from './constants';
 
 const PIcon: React.FC<{ children: React.ReactNode; size?: number; strokeWidth?: number }> = ({
   children,
@@ -52,14 +55,18 @@ const PromptBar: React.FC<{
   replayReady?: boolean;
   live?: LiveChat;
 }> = ({ placeholder, onSend, busy, onRerun, replayReady, live }) => {
+  const t = useTranslations('PromptBar');
   const fileRef = useRef<HTMLInputElement>(null);
+  const sourceOptions = PROMPT_SOURCES(t);
+  const commands = PROMPT_COMMANDS(t);
+  const models = PROMPT_MODELS(t);
   const sources = live
-    ? [{ key: 'attach', name: 'Add data files', desc: 'CSV, Excel or JSON', glyph: 'clip', attach: true }]
-    : PROMPT_SOURCES;
+    ? [{ key: 'attach', name: t('addDataFiles'), desc: t('cSVExcelOrJSON'), glyph: 'clip', attach: true }]
+    : sourceOptions;
   const [draft, setDraft] = useState('');
   const [dismissed, setDismissed] = useState(false);
   const [openMenu, setOpenMenu] = useState<'sources' | 'model' | null>(null);
-  const [model, setModel] = useState(PROMPT_MODELS[1]);
+  const [model, setModel] = useState(models[1]);
   const [attachments, setAttachments] = useState<string[]>([]);
   const [active, setActive] = useState(0);
   const [listening, setListening] = useState(false);
@@ -87,7 +94,7 @@ const PromptBar: React.FC<{
     menu === 'at'
       ? sources.filter((s) => s.name.toLowerCase().includes(query))
       : menu === 'slash'
-      ? PROMPT_COMMANDS.filter((c) => c.name.slice(1).startsWith(query))
+      ? commands.filter((c) => c.name.slice(1).startsWith(query))
       : [];
 
   useEffect(() => {
@@ -102,7 +109,7 @@ const PromptBar: React.FC<{
   }, [menu, query, active, rows.length]);
 
   /* gliding highlight in the model menu */
-  const modelIndex = PROMPT_MODELS.findIndex((m) => m.key === model.key);
+  const modelIndex = models.findIndex((m) => m.key === model.key);
   useEffect(() => {
     if (!modelOpen) return;
     const target = modelRowRefs.current[modelHovered ?? modelIndex];
@@ -125,12 +132,12 @@ const PromptBar: React.FC<{
   /* dictation resolves after a beat, like a real transcript landing */
   useEffect(() => {
     if (!listening) return;
-    const t = setTimeout(() => {
-      setDraft((current) => (current ? `${current.trimEnd()} ${DICTATION_TEXT}` : DICTATION_TEXT));
+    const timer = setTimeout(() => {
+      setDraft((current) => (current ? `${current.trimEnd()} ${t('demoQuestion')}` : t('demoQuestion')));
       setListening(false);
       inputRef.current?.focus();
     }, 2200);
-    return () => clearTimeout(t);
+    return () => clearTimeout(timer);
   }, [listening]);
 
   /* grow the textarea with content, wrap to a second row when needed */
@@ -215,7 +222,7 @@ const PromptBar: React.FC<{
           type="file"
           accept=".csv,.xlsx,.json"
           className="hidden"
-          aria-label="Upload dataset"
+          aria-label={t('uploadDataset')}
           disabled={busy}
           onChange={(event) => {
             const file = event.target.files?.[0];
@@ -271,11 +278,11 @@ const PromptBar: React.FC<{
               );
             })}
             {rows.length === 0 && (
-              <div className="flex h-9 items-center px-2 text-[12px] text-zinc-400">No matches for “{query}”</div>
+              <div className="flex h-9 items-center px-2 text-[12px] text-zinc-400">{t('noMatches', { query })}</div>
             )}
             {!(live && menu === 'at') && (
               <div className="mt-1 border-t border-zinc-100 px-2 pt-1.5 pb-1 text-[11px] text-zinc-400">
-                {menu === 'at' ? 'Type to search sources & files' : 'Type to search commands'}
+                {menu === 'at' ? t('typeToSearchSourcesFiles') : t('typeToSearchCommands')}
               </div>
             )}
           </div>
@@ -304,7 +311,7 @@ const PromptBar: React.FC<{
                   'top 220ms cubic-bezier(0.23,1,0.32,1), height 220ms cubic-bezier(0.23,1,0.32,1), opacity 150ms ease',
               }}
             />
-            {PROMPT_MODELS.map((m, i) => (
+            {models.map((m, i) => (
               <button
                 key={m.key}
                 type="button"
@@ -361,7 +368,7 @@ const PromptBar: React.FC<{
                   <span className="max-w-[9rem] truncate">{file}</span>
                   <button
                     type="button"
-                    aria-label={`Remove ${file}`}
+                    aria-label={t('remove', { name: file })}
                     onClick={() => setAttachments((current) => current.filter((_, j) => j !== i))}
                     className="-my-1 flex size-6 items-center justify-center text-zinc-400 transition-colors duration-100 hover:bg-zinc-200/70 hover:text-zinc-700 rounded-[5px]"
                   >
@@ -383,7 +390,7 @@ const PromptBar: React.FC<{
           >
             <button
               type="button"
-              aria-label="Add attachments and sources"
+              aria-label={t('addAttachmentsAndSources')}
               disabled={!!live && busy}
               aria-expanded={plusOpen}
               onClick={() => {
@@ -399,46 +406,58 @@ const PromptBar: React.FC<{
               </PIcon>
             </button>
 
-            <textarea
-              ref={inputRef}
-              disabled={!!live && busy}
-              rows={1}
-              value={draft}
-              onChange={(event) => {
-                setDraft(event.target.value);
-                setDismissed(false);
-                setOpenMenu(null);
-              }}
-              onKeyDown={(event) => {
-                if (menu && rows.length > 0) {
-                  if (event.key === 'ArrowDown' || event.key === 'ArrowUp') {
-                    event.preventDefault();
-                    setEngaged(true);
-                    setActive((current) => (current + (event.key === 'ArrowDown' ? 1 : rows.length - 1)) % rows.length);
-                    return;
-                  }
-                  if ((event.key === 'Enter' && !event.shiftKey) || event.key === 'Tab') {
-                    event.preventDefault();
-                    pick(rows[active]);
-                    return;
-                  }
-                }
-                if (event.key === 'Escape') {
-                  setDismissed(true);
+            {!live ? (
+              <Link
+                href="/ai/"
+                aria-label={t('askAboutYourDataInTheAI')}
+                className="col-start-2 row-start-1 min-h-7 min-w-0 w-full truncate px-1 py-[5px] text-[13px] leading-[18px] text-zinc-400 transition-colors hover:text-zinc-600"
+              >
+                {t('askAboutYourData')}
+              </Link>
+            ) : (
+              <textarea
+                ref={inputRef}
+                disabled={!!live && busy}
+                rows={1}
+                value={draft}
+                onChange={(event) => {
+                  setDraft(event.target.value);
+                  setDismissed(false);
                   setOpenMenu(null);
-                  return;
-                }
-                if (event.key === 'Enter' && !event.shiftKey && !event.nativeEvent.isComposing) {
-                  event.preventDefault();
-                  send();
-                }
-              }}
-              placeholder={listening ? 'Listening…' : placeholder ?? 'Write a message…'}
-              aria-label="Prompt"
-              className={`min-h-7 px-1 py-[5px] text-[13px] leading-[18px] min-w-0 w-full resize-none bg-transparent text-zinc-800 outline-none [overflow-wrap:anywhere] placeholder:text-zinc-400 ${
-                expanded ? 'col-span-full col-start-1 row-start-1' : 'col-start-2 row-start-1'
-              }`}
-            />
+                }}
+                onKeyDown={(event) => {
+                  if (menu && rows.length > 0) {
+                    if (event.key === 'ArrowDown' || event.key === 'ArrowUp') {
+                      event.preventDefault();
+                      setEngaged(true);
+                      setActive(
+                        (current) => (current + (event.key === 'ArrowDown' ? 1 : rows.length - 1)) % rows.length
+                      );
+                      return;
+                    }
+                    if ((event.key === 'Enter' && !event.shiftKey) || event.key === 'Tab') {
+                      event.preventDefault();
+                      pick(rows[active]);
+                      return;
+                    }
+                  }
+                  if (event.key === 'Escape') {
+                    setDismissed(true);
+                    setOpenMenu(null);
+                    return;
+                  }
+                  if (event.key === 'Enter' && !event.shiftKey && !event.nativeEvent.isComposing) {
+                    event.preventDefault();
+                    send();
+                  }
+                }}
+                placeholder={listening ? t('listening') : placeholder ?? t('writeAMessage')}
+                aria-label={t('prompt')}
+                className={`min-h-7 px-1 py-[5px] text-[13px] leading-[18px] min-w-0 w-full resize-none bg-transparent text-zinc-800 outline-none [overflow-wrap:anywhere] placeholder:text-zinc-400 ${
+                  expanded ? 'col-span-full col-start-1 row-start-1' : 'col-start-2 row-start-1'
+                }`}
+              />
+            )}
 
             {/* model picker */}
             <button
@@ -446,8 +465,8 @@ const PromptBar: React.FC<{
               type="button"
               aria-expanded={live ? undefined : modelOpen}
               aria-haspopup={live ? 'dialog' : undefined}
-              aria-label={live ? 'Model settings' : 'Choose model'}
-              title={live ? 'Configure your model' : undefined}
+              aria-label={live ? t('modelSettings') : t('chooseModel')}
+              title={live ? t('configureYourModel') : undefined}
               disabled={!!live && busy}
               onClick={() => {
                 if (live) {
@@ -461,7 +480,7 @@ const PromptBar: React.FC<{
                 expanded ? 'col-start-2 row-start-2 justify-self-start' : 'col-start-3 row-start-1'
               }`}
             >
-              <span className="truncate">{live ? (live.ready ? live.model : 'Set up model') : model.name}</span>
+              <span className="truncate">{live ? (live.ready ? live.model : t('setUpModel')) : model.name}</span>
               <span className="text-zinc-400">
                 <PIcon size={11} strokeWidth={2.4}>
                   <path d="M6 9l6 6 6-6" />
@@ -472,8 +491,8 @@ const PromptBar: React.FC<{
             {/* new chat / demo dictation */}
             <button
               type="button"
-              aria-label={live ? 'New chat' : listening ? 'Stop dictation' : 'Start dictation'}
-              title={live ? 'New chat' : 'Dictation'}
+              aria-label={live ? t('newChat') : listening ? t('stopDictation') : t('startDictation')}
+              title={live ? t('newChat') : t('dictation')}
               disabled={!!live && busy}
               aria-pressed={live ? undefined : listening}
               onClick={() => (live ? live.onReset() : setListening((current) => !current))}
@@ -511,7 +530,7 @@ const PromptBar: React.FC<{
             {/* send — doubles as re-run once the run is finished */}
             <button
               type="button"
-              aria-label={onRerun && replayReady ? 'Re-run' : 'Send'}
+              aria-label={onRerun && replayReady ? t('replay') : t('send')}
               disabled={busy || (!onRerun && !replayReady && !canSend)}
               onClick={onRerun && replayReady ? onRerun : send}
               className={`flex size-7 shrink-0 items-center justify-center transition-[background-color,color,transform] duration-200 enabled:active:scale-[0.94] rounded-[8px] ${

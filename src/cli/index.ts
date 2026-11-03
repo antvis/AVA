@@ -3,6 +3,7 @@
 import * as source from './commands/source';
 import * as schema from './commands/schema';
 import * as profile from './commands/profile';
+import * as semantic from './commands/semantic';
 import * as suggest from './commands/suggest';
 import * as analyze from './commands/analyze';
 import * as translate from './commands/translate';
@@ -18,6 +19,7 @@ const commands = {
   source,
   schema,
   profile,
+  semantic,
   suggest,
   analyze,
   translate,

@@ -40,14 +40,16 @@ describe('SQL Server read-only validation', () => {
 describe('SQL Server query generation', () => {
   it('removes surrounding SQL fences while preserving embedded literals', async () => {
     vi.mocked(generateText).mockResolvedValue({ text: "```tsql\r\nSELECT '```' AS value\r\n```", usage: {} } as never);
-    await expect(dialect.getDSL('question', { models: [] })).resolves.toBe("SELECT '```' AS value");
+    await expect(dialect.getDSL('question', { models: [] })).resolves.toEqual({
+      dsl: "SELECT '```' AS value",
+      usage: {},
+    });
   });
 
   it('shares SQL Server instructions and forwards model context and usage', async () => {
-    const onQueryUsage = vi.fn();
     const usage = { totalTokens: 12 };
     vi.mocked(generateText).mockResolvedValue({ text: 'SELECT 1', usage } as never);
-    await new SQLServerQueryDialect({ model: 'test', maxRetries: 0, onQueryUsage }).getDSL('sales by month', {
+    const result = await new SQLServerQueryDialect({ model: 'test', maxRetries: 0 }).getDSL('sales by month', {
       models: [{ name: 'orders', columns: [{ name: 'amount', type: 'decimal(12,2)' }] }],
     });
     expect(generateText).toHaveBeenCalledWith(
@@ -57,7 +59,7 @@ describe('SQL Server query generation', () => {
     expect(prompt).toContain('orders');
     expect(prompt).toContain('sales by month');
     expect(prompt).toContain('instead of LIMIT');
-    expect(onQueryUsage).toHaveBeenCalledWith(usage);
+    expect(result).toEqual({ dsl: 'SELECT 1', usage });
   });
 
   it('uses the default retry count and propagates model failures', async () => {

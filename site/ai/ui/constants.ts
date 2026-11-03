@@ -23,33 +23,29 @@ export const TOOL_STEPS: Record<string, Omit<ToolStep, 'detail'>> = {
 
 // ── Prompt options ────────────────────────────────────────
 
-const QUESTION =
-  'Is our revenue growth profitable? Compare monthly revenue and gross margin for Jan–Sep 2026, flag the weakest month, and show the trend in a dual-axis chart.';
-
-export const PROMPT_SOURCES = [
-  { key: 'attach', name: 'Add data files', desc: 'CSV, Excel, JSON or Parquet', glyph: 'clip', attach: true },
-  { key: 'data', name: 'Monthly sales', desc: 'monthly-sales-2026.csv · 9 rows', glyph: 'chart' },
-  { key: 'schema', name: 'Data schema', desc: 'Fields and types · ava.schema()', glyph: 'layers' },
-  { key: 'profile', name: 'Data profile', desc: 'Statistics and missing values · ava.profile()', glyph: 'chart' },
+export const PROMPT_SOURCES = (t: (key: string) => string) => [
+  { key: 'attach', name: t('sourceAttach'), desc: t('sourceFormats'), glyph: 'clip', attach: true },
+  { key: 'data', name: t('sourceMonthlySales'), desc: t('sourceMonthlySalesDetail'), glyph: 'chart' },
+  { key: 'schema', name: t('sourceSchema'), desc: t('sourceSchemaDetail'), glyph: 'layers' },
+  { key: 'profile', name: t('sourceProfile'), desc: t('sourceProfileDetail'), glyph: 'chart' },
 ];
 
-export const PROMPT_COMMANDS = [
-  { key: 'analyze', name: '/analyze', desc: 'Analyze data with a natural-language query' },
-  { key: 'source', name: '/source', desc: 'Reload the selected dataset' },
-  { key: 'schema', name: '/schema', desc: 'Inspect field names and types' },
-  { key: 'profile', name: '/profile', desc: 'Inspect statistics and data quality' },
-  { key: 'semantic', name: '/semantic', desc: 'Read metric definitions and drill-down hierarchies' },
-  { key: 'visualize', name: '/visualize', desc: 'Chart supplied data or the latest analysis' },
-  { key: 'suggest', name: '/suggest', desc: 'Suggest questions about the loaded data' },
+export const PROMPT_COMMANDS = (t: (key: string) => string) => [
+  { key: 'analyze', name: '/analyze', desc: t('commandAnalyze') },
+  { key: 'source', name: '/source', desc: t('commandSource') },
+  { key: 'schema', name: '/schema', desc: t('commandSchema') },
+  { key: 'profile', name: '/profile', desc: t('commandProfile') },
+  { key: 'semantic', name: '/semantic', desc: t('commandSemantic') },
+  { key: 'visualize', name: '/visualize', desc: t('commandVisualize') },
+  { key: 'suggest', name: '/suggest', desc: t('commandSuggest') },
 ];
 
-export const PROMPT_MODELS = [
-  { key: 'configured', name: 'Configured LLM', tag: 'Custom' },
-  { key: 'demo', name: 'Demo playback', tag: 'Preview' },
+export const PROMPT_MODELS = (t: (key: string) => string) => [
+  { key: 'configured', name: t('modelConfigured'), tag: t('modelCustom') },
+  { key: 'demo', name: t('modelDemo'), tag: t('modelPreview') },
 ];
 
 export const ATTACH_FILES = ['monthly-sales-2026.csv', 'product-margins.xlsx', 'order-lines.parquet'];
-export const DICTATION_TEXT = QUESTION;
 
 // ── Sample dataset ────────────────────────────────────────
 
@@ -68,6 +64,4 @@ export const MONTHLY_SALES = [
 
 // ── Skill installation ────────────────────────────────────────
 
-export const INSTALL_COMMANDS = 'npm install -g @antv/ava@beta\nnpx --yes skills add antvis/AVA --skill ava --yes';
-export const INSTALL_PROMPT =
-  "Install AVA's Agent Skill in the current project so you can analyze data and create charts for me.\n\n1. Check that this environment runs macOS or Linux, with Node.js 22.13 or later and npm available. Use an existing Node version manager if an upgrade is needed. If you cannot meet these requirements, explain what is missing.\n2. Install the CLI with `npm install -g @antv/ava@beta`. Verify that `ava --help` and `ava source --help` work.\n3. Install the skill for the detected agents in this project with `npx --yes skills add antvis/AVA --skill ava --yes`.\n4. Read the installed ava/SKILL.md and its environment setup reference. Verify the installed skill with `npx --yes skills list`.\n5. Smoke-test the CLI using a tiny CSV in a new temporary directory: load it with `ava source`, inspect it with `ava schema`, and execute a simple aggregate with `ava query`. Use the returned dataset ID and the actual table name from the schema. Dispose of this test session afterward.\n\nUse your own reasoning for analysis; do not ask me for an additional AVA model API key. Report the installed CLI version, skill location, and verification results. If anything fails, explain the error instead of claiming success. Tell me whether I need to start a new agent session to load the skill.";
+export const INSTALL_COMMANDS = 'npm install -g @antv/ava@4\nnpx --yes skills add antvis/AVA --skill ava --yes';

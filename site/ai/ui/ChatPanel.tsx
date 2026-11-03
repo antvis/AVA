@@ -1,5 +1,7 @@
 'use client';
 
+import { useTranslations } from 'use-intl';
+
 import { DATASET_PREVIEW_COLUMNS } from './constants';
 
 import React, { useEffect, useRef, useCallback } from 'react';
@@ -21,6 +23,7 @@ const ChatPanel: React.FC<{
   heading?: React.ReactNode;
   live?: LiveChat;
 }> = ({ onArtifact, onRerun, playback, heading, live }) => {
+  const t = useTranslations('ChatPanel');
   /* Follow new content until the user scrolls away from the bottom;
      scrolling back to the bottom resumes following. */
   const scrollRef = useRef<HTMLDivElement>(null);
@@ -55,7 +58,7 @@ const ChatPanel: React.FC<{
         className={`overflow-hidden flex min-h-0 flex-col ${
           live
             ? 'h-[clamp(520px,calc(100dvh-290px),780px)] max-md:h-[clamp(460px,calc(100dvh-250px),680px)]'
-            : 'h-[510px] max-md:h-[460px]'
+            : 'h-[560px] max-md:h-[500px]'
         }`}
       >
         {heading}
@@ -68,21 +71,18 @@ const ChatPanel: React.FC<{
           {live && visible.length === 0 && (
             <div className="py-12">
               <span className="text-xs font-semibold uppercase tracking-[0.2em] text-ink-2">
-                From data to understanding
+                {t('fromDataToUnderstanding')}
               </span>
               <h3 className="mt-4 max-w-sm text-3xl font-semibold leading-tight tracking-tight text-ink">
-                What would you like
+                {t('whatWouldYouLike')}
                 <br />
-                to discover?
+                {t('toDiscover')}
               </h3>
-              <p className="mt-4 max-w-sm text-sm leading-6 text-ink-2">
-                Start with the sample dataset or upload a CSV, Excel, or JSON file. Choose a question below, or ask your
-                own.
-              </p>
+              <p className="mt-4 max-w-sm text-sm leading-6 text-ink-2">{t('startWithTheSampleDatasetOrUpload')}</p>
               <div className="mt-8 flex flex-wrap gap-2">
                 {[
-                  { emoji: '🔎', label: 'Summarize key patterns', prompt: 'Summarize the key patterns in this data' },
-                  { emoji: '📈', label: 'Visualize a trend', prompt: 'Visualize the most interesting trend' },
+                  { emoji: '🔎', label: t('summarizeKeyPatterns'), prompt: t('summarizeTheKeyPatternsInThisData') },
+                  { emoji: '📈', label: t('visualizeATrend'), prompt: t('visualizeTheMostInterestingTrend') },
                 ].map(({ emoji, label, prompt }) => (
                   <button
                     type="button"
@@ -101,8 +101,6 @@ const ChatPanel: React.FC<{
             </div>
           )}
           {visible.map((msg, i) => {
-            const lastTool = msg.parts?.findLast(isToolUIPart);
-
             if (msg.role === 'user')
               return (
                 <div key={i} className="flex flex-col items-end gap-1.5">
@@ -122,7 +120,7 @@ const ChatPanel: React.FC<{
               <div key={i} className={live ? 'space-y-2' : 'space-y-3'}>
                 {msg.dataset && (
                   <section
-                    aria-label="Uploaded dataset"
+                    aria-label={t('uploadedDataset')}
                     className="overflow-hidden rounded-xl border border-line bg-surface"
                   >
                     <div className="border-b border-line bg-[color:var(--color-primary)]/10 px-4 py-3">
@@ -133,13 +131,12 @@ const ChatPanel: React.FC<{
                         </span>
                       </div>
                       <div className="mt-1 text-xs text-ink-2" role="status">
-                        {msg.dataset.rowCount.toLocaleString()} rows · {msg.dataset.columns.length} columns · Ready for
-                        analysis
+                        {t('datasetStats', { rows: msg.dataset.rowCount, columns: msg.dataset.columns.length })}
                       </div>
                     </div>
                     <div className="soft-scroll max-h-56 overflow-auto">
                       <table className="w-full text-left text-xs">
-                        <caption className="sr-only">Preview of {msg.dataset.name}</caption>
+                        <caption className="sr-only">{t('preview', { name: msg.dataset.name })}</caption>
                         <thead className="bg-field text-ink-2">
                           <tr>
                             {msg.dataset.columns.slice(0, DATASET_PREVIEW_COLUMNS).map((column) => (
@@ -177,11 +174,13 @@ const ChatPanel: React.FC<{
                       </table>
                     </div>
                     <div className="border-t border-line px-4 py-2 text-[11px] text-ink-2">
-                      Preview: first {msg.dataset.preview.length} rows
-                      {msg.dataset.columns.length > DATASET_PREVIEW_COLUMNS
-                        ? ` · first ${DATASET_PREVIEW_COLUMNS} columns`
-                        : ''}
-                      . Analysis uses the full dataset.
+                      {t('previewNote', {
+                        rows: msg.dataset.preview.length,
+                        columns:
+                          msg.dataset.columns.length > DATASET_PREVIEW_COLUMNS
+                            ? t('previewColumns', { count: DATASET_PREVIEW_COLUMNS })
+                            : '',
+                      })}
                     </div>
                   </section>
                 )}
@@ -197,15 +196,7 @@ const ChatPanel: React.FC<{
                         </div>
                       ) : null;
                     if (isToolUIPart(part)) {
-                      return (
-                        <ToolPart
-                          key={part.toolCallId}
-                          part={part}
-                          active={streamingIdx === i}
-                          diffs={part === lastTool ? msg.diffs : undefined}
-                          diffLines={msg.diffLines}
-                        />
-                      );
+                      return <ToolPart key={part.toolCallId} part={part} active={streamingIdx === i} />;
                     }
 
                     return null;
@@ -219,7 +210,7 @@ const ChatPanel: React.FC<{
                   </>
                 )}
                 {msg.dataset && live && (
-                  <div className="space-y-2" aria-label="Suggested questions">
+                  <div className="space-y-2" aria-label={t('suggestedQuestions')}>
                     {msg.suggestionsLoading ? (
                       <div role="status" className="flex items-center gap-2 text-xs text-ink-2">
                         <span
@@ -227,7 +218,8 @@ const ChatPanel: React.FC<{
                           className="h-3 w-3 animate-spin rounded-full border border-line border-t-ink-2"
                         />
                         <span>
-                          <span aria-hidden="true">🔎 </span>Finding questions in your data…
+                          <span aria-hidden="true">🔎 </span>
+                          {t('findingQuestionsInYourData')}
                         </span>
                       </div>
                     ) : (
@@ -262,10 +254,10 @@ const ChatPanel: React.FC<{
                             className="text-xs text-ink underline decoration-[color:var(--color-primary-dark)] underline-offset-4 disabled:opacity-40"
                           >
                             {msg.suggestionsError
-                              ? 'Retry suggestions'
+                              ? t('retrySuggestions')
                               : live.ready
-                              ? 'Suggest questions'
-                              : 'Configure a model for suggestions'}
+                              ? t('suggestQuestions')
+                              : t('configureAModelForSuggestions')}
                           </button>
                         )}
                       </>
@@ -273,7 +265,7 @@ const ChatPanel: React.FC<{
                   </div>
                 )}
                 {streamingIdx === i && !msg.dataset && <ResponseLoading />}
-                {msg.artifact && streamingIdx !== i && (
+                {live && msg.artifact && streamingIdx !== i && (
                   <ArtifactChip
                     title={msg.artifact.title}
                     description={msg.artifact.description}
@@ -294,13 +286,9 @@ const ChatPanel: React.FC<{
           )}
           <PromptBar
             placeholder={
-              live
-                ? 'Ask about your data, or type / for shortcuts…'
-                : finished
-                ? 'Demo complete — hit ↻ to replay'
-                : 'Agent is working…'
+              live ? t('askAboutYourDataOrTypeFor') : finished ? t('demoCompleteHitToReplay') : t('agentIsWorking')
             }
-            busy={live ? live.busy : true}
+            busy={live ? live.busy : !finished}
             onSend={live?.onSend}
             live={live}
             onRerun={live ? undefined : onRerun}

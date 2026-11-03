@@ -1,13 +1,11 @@
 'use client';
 
+import { useTranslations } from 'use-intl';
+
 import { useEffect, useState } from 'react';
 
-const delays = Array.from({ length: 9 }, (_, index) => {
-  const row = Math.floor(index / 3);
-  return ((index % 3) + Math.abs(row - 1)) * 90;
-});
-
 export default function ResponseLoading() {
+  const t = useTranslations('ResponseLoading');
   const [elapsed, setElapsed] = useState(0);
   useEffect(() => {
     const started = performance.now();
@@ -20,18 +18,9 @@ export default function ResponseLoading() {
 
   return (
     <div role="status" className="flex w-fit items-center gap-2 py-0.5">
-      <span className="sr-only">Generating response</span>
-      <span aria-hidden="true" className="grid shrink-0 grid-cols-[repeat(3,3px)] gap-px">
-        {delays.map((delay, index) => (
-          <span
-            key={index}
-            className="response-loading-pixel size-[3px] rounded-[0.5px] bg-ink"
-            style={{ animationDelay: `${delay}ms` }}
-          />
-        ))}
-      </span>
+      <span className="sr-only">{t('generatingResponse')}</span>
       <span aria-hidden="true" className="response-loading-label text-xs">
-        Responding…
+        {t('responding')}
       </span>
       <span aria-hidden="true" className="font-mono text-[11px] tabular-nums text-ink-3">
         {duration}

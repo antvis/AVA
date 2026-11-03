@@ -1,0 +1,593 @@
+import { Heading } from '../../../../mdx-components';
+
+完成[快速开始](/documentation/quickstart/)后，可以在这里查阅方法签名、输入与返回值。AVA 的数据和可视化方法均为异步方法。生命周期订阅见[事件](/documentation/reference/events/)，引擎扩展点见[自定义引擎](/documentation/engines/custom/)。
+
+<Heading as="h2" id="api-at-a-glance">API 速览</Heading>
+
+<div className="docs-table docs-api-overview">
+<table>
+<thead><tr><th>分类</th><th>API</th><th>功能</th></tr></thead>
+<tbody>
+<tr><th scope="rowgroup" rowSpan={1}><a href="#initialization">初始化</a></th><td><a href="#constructor"><code>new AVA(config)</code></a></td><td>配置模型与执行引擎。</td></tr>
+</tbody>
+<tbody>
+<tr><th scope="rowgroup" rowSpan={4}><a href="#data">数据</a></th><td><a href="#source"><code>source(config)</code></a></td><td>加载或替换数据源。</td></tr>
+<tr><td><a href="#schema"><code>schema(options?, setter?)</code></a></td><td>查看或设置数据结构。</td></tr>
+<tr><td><a href="#profile"><code>profile(options?, setter?)</code></a></td><td>计算或设置统计信息。</td></tr>
+<tr><td><a href="#semantic"><code>semantic(options?, setter?)</code></a></td><td>读取或设置业务定义。</td></tr>
+</tbody>
+<tbody>
+<tr><th scope="rowgroup" rowSpan={4}><a href="#analysis-and-queries">分析与查询</a></th><td><a href="#analyze"><code>analyze(query, config?)</code></a></td><td>回答分析问题。</td></tr>
+<tr><td><span className="docs-api-tag">分步控制</span> <a href="#translate"><code>translate(query)</code></a></td><td>生成查询。</td></tr>
+<tr><td><span className="docs-api-tag">分步控制</span> <a href="#query"><code>query(dsl, options?)</code></a></td><td>执行查询。</td></tr>
+<tr><td><a href="#suggest"><code>suggest(count?)</code></a></td><td>推荐问题。</td></tr>
+</tbody>
+<tbody>
+<tr><th scope="rowgroup" rowSpan={3}><a href="#visualization">可视化</a></th><td><a href="#visualize-and-recommend"><code>visualize(analysisResult)</code></a></td><td>推荐并渲染图表。</td></tr>
+<tr><td><span className="docs-api-tag">分步控制</span> <a href="#visualize-and-recommend"><code>recommend(analysisResult)</code></a></td><td>推荐图表配置。</td></tr>
+<tr><td><span className="docs-api-tag">分步控制</span> <a href="#viz"><code>viz(spec)</code></a></td><td>渲染图表配置。</td></tr>
+</tbody>
+<tbody>
+<tr><th scope="rowgroup" rowSpan={1}><a href="#cleanup">资源清理</a></th><td><a href="#dispose"><code>dispose()</code></a></td><td>释放资源。</td></tr>
+</tbody>
+</table>
+</div>
+
+<p><span className="docs-api-tag">分步控制</span> 这些 API 提供可独立调用的单步操作。</p>
+
+<Heading as="h2" id="initialization">初始化</Heading>
+
+<Heading as="h3" id="constructor">构造函数</Heading>
+
+`new AVA(config: AVAConfig)`
+
+| 参数 | 类型 | 必填 | 默认值与行为 |
+| --------------- | -------------- | -------- | ------------------------------------------------------------- |
+| `config` | `AVAConfig` | 是 | 配置对象。 |
+| `config.llm` | `LLMConfig` | 是 | 见[下方模型字段](#model-options)。 |
+| `config.engine` | `EngineConfig` | 否 | `{ type: 'duckdb' }`，见[下方引擎字段](#engine-options)。 |
+
+构造函数不加载数据，引擎会在 `source()` 时创建。
+
+<h4 id="model-options">模型选项</h4>
+
+以下字段位于 `config.llm` 中。
+
+| 字段 | 类型 | 必填 | 含义与默认值 |
+| -------------- | ------------------------------------- | -------- | --------------------------------------------------------------------------------- |
+| `provider` | `'openai' \| 'gateway'` | 否 | 默认使用兼容 OpenAI 的 Chat Completions；Gateway 可读取 AI_GATEWAY_API_KEY。 |
+| `model` | `string \| LanguageModel` | 是 | 模型名称，或预先配置好的 AI SDK 模型实例。 |
+| `apiKey` | `string` | 否 | 模型服务商的 API 密钥。 |
+| `baseURL` | `string` | 否 | 可选的 API 基础地址。 |
+| `maxRetries` | `number` | 否 | 模型 API 可重试错误的最大重试次数，默认 3。 |
+
+以字符串传入模型名称时，默认使用兼容 OpenAI 的 **Chat Completions** ；传入模型对象时则直接使用该对象。用量回调并不完整覆盖每次模型请求，不能用来汇总全部用量。
+
+<h4 id="engine-options">引擎选项</h4>
+
+提供 `engine` 时，`config.engine.type` 必填。支持 `duckdb`、`python`、`javascript`、`supabase`、`clickhouse`，以及通过 `registerEngine()` 注册的名称。省略 `engine` 时选择 DuckDB。JavaScript、Supabase、ClickHouse 没有其他引擎字段，连接凭证放在 `source()` 中。
+
+<h5 id="duckdb">DuckDB</h5>
+
+将 `engine.type` 设为 `duckdb`。`engine` 接受的全部额外字段如下。
+
+| 字段 | 类型 | 必填 | 含义与默认值 |
+| -------------------------- | --------- | -------- | ------------------------------------------------------------------------------- |
+| `memoryLimit` | `string` | 否 | 内存限制，例如 `'512MB'`，默认 `'512MB'`。 |
+| `threads` | `number` | 否 | 工作线程数，默认 1。 |
+| `maxTempDirectorySize` | `string` | 否 | 临时溢写目录的大小上限，例如 `'1GB'`；不设置则不限制。 |
+| `queryTimeoutMs` | `number` | 否 | 单次查询超时，单位毫秒，默认 30000。 |
+| `allowCommunityExtensions` | `boolean` | 否 | 数据源加载明确需要社区扩展时，允许启用 DuckDB 社区扩展。 |
+
+<h5 id="python">Python</h5>
+
+将 `engine.type` 设为 `python`。`engine` 接受的全部额外字段如下。
+
+| 字段 | 类型 | 必填 | 含义与默认值 |
+| ---------------- | -------------------------------------------- | -------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `execute` | `(code: string) => Promise<ExecutionResult>` | 否 | 用自定义环境替换本地 python3 执行。本地执行没有沙箱；请运行完整 Python 脚本，将其 JSON 输出作为 ExecutionResult 返回。脚本包含数据加载和结果限制，远程执行时限需另行配置。 |
+| `queryTimeoutMs` | `number` | 否 | 客户端等待上限及本地进程执行时限，默认 30000 毫秒。 |
+
+<h5 id="registered-engines">已注册的引擎</h5>
+
+将 `engine.type` 设为传给 `registerEngine()` 的名称。其余字段以 `options` 传给引擎构造函数。这是 SDK 能力，CLI 仅支持内置引擎名。
+
+| 字段 | 类型 | 必填 | 含义与默认值 |
+| ------------ | --------------- | ----------------- | ------------------------------------------ |
+| `type` | `string` | 是 | 已注册的引擎名称，例如 `'sales'`。 |
+| 其他字段 | Engine-specific | 取决于引擎 | 由注册的引擎负责验证。 |
+
+<Heading as="h2" id="data">数据</Heading>
+
+<Heading as="h3" id="source">source</Heading>
+
+```typescript
+source(config: DataSourceConfig): Promise<void>
+```
+
+通过引擎加载数据源，没有返回值，也不会发现 schema。
+
+```typescript
+await ava.source({ type: 'json', options: { data: [{ revenue: 120 }] } });
+```
+
+| 参数 | 类型 | 必填 | 含义 |
+| --- | --- | --- | --- |
+| `config` | `DataSourceConfig` | 是 | 待加载的数据源。 |
+| `config.type` | `SourceType` | 是 | [数据源类型](/documentation/data/sources/#connect-a-source)，例如 `json` 或 `csv-file`。 |
+| `config.options` | 数据源对应的对象 | 是 | 该类型的[读取或连接设置](/documentation/data/sources/#connect-a-source)。 |
+
+加载数据源会释放旧引擎，清除保存的 schema、profile 和业务语义。加载失败后没有活动数据源。替换数据源前，请等待正在进行的操作完成。
+
+<Heading as="h3" id="schema">schema</Heading>
+
+```typescript
+schema(options?: SchemaOptions, setter?: (options: SchemaOptions) => Schema): Promise<Schema>
+```
+
+返回已加载数据源的结构。不提供 setter 时，AVA 优先返回已保存的 schema；没有缓存则通过引擎发现并保存。
+
+```typescript
+const schema = await ava.schema();
+```
+
+如需提供已有 schema，传入返回该对象的函数：
+
+```typescript
+await ava.schema(undefined, () => savedSchema);
+```
+
+| 参数 | 类型 | 必填 | 含义与默认值 |
+| --- | --- | --- | --- |
+| `options` | `SchemaOptions` | 否 | `{}`，目前没有可配置字段。 |
+| `setter` | `(options: SchemaOptions) => Schema` | 否 | 返回要保存的 schema，替代引擎发现过程。 |
+
+Setter 接收选项对象（默认 `{}`），同步返回 `Schema`。结果会替换已保存的 schema，并清空 profile。AVA 会验证并复制结果；结果无效或 setter 抛错时，调用失败，原有元数据保持不变。
+
+需要先加载数据源。分析和统计会按需获取 schema，直接 `query()` 不要求提前发现结构。使用流程见[了解数据结构](/documentation/data/schema/)。
+
+<h4 id="schema-structure">Schema 结构</h4>
+
+| 字段 | 含义 |
+| --- | --- |
+| `models` | 可用于查询的表或视图，必填。 |
+| `models[].name` | 模型名称。 |
+| `models[].tableReference` | 物理数据源标识，包含 `table`，以及可选的 `catalog`、`schema`。 |
+| `models[].columns` | 列定义，每列包含 `name`、`type` 和可选的 `notNull`。 |
+| `models[].primaryKey` | 单列名称，或代表复合主键的有序非空数组。 |
+| `models[].uniqueKeys` | 候选唯一键数组，每项为单列名称或复合键数组。 |
+| `relationships` | 可发现时返回的外键关系。 |
+| `views` | 可发现时返回的命名视图查询，包含 `name` 和 `statement`。 |
+
+具体内容取决于数据源和引擎。查询结果中的 `schema` 描述输出列，并不是数据源的 `Schema`。
+
+<Heading as="h3" id="profile">profile</Heading>
+
+```typescript
+profile(options?: ProfileOptions, setter?: (options: ProfileOptions) => Profile): Promise<Profile>
+```
+
+通过引擎计算并保存已加载数据源的统计信息。不传 setter 时，每次调用都会重新计算，需要引擎支持统计。
+
+```typescript
+const profile = await ava.profile({ metrics: ['row_count', 'mean'] });
+```
+
+如需提供已有 profile，传入返回该对象的函数：
+
+```typescript
+await ava.profile(undefined, () => savedProfile);
+```
+
+| 参数 | 类型 | 必填 | 含义与默认值 |
+| --- | --- | --- | --- |
+| `options` | `ProfileOptions` | 否 | `{}`，使用下方默认指标。 |
+| `options.metrics` | `MetricConfig[]` | 否 | 交给引擎计算的指标列表；提供后替换默认列表。 |
+| `setter` | `(options: ProfileOptions) => Profile` | 否 | 返回要保存的 profile，替代引擎计算。 |
+
+Setter 接收选项对象（默认 `{}`），同步返回 `Profile`，不要求引擎支持统计。AVA 会验证并复制结果；无效结果或 setter 抛错会让调用失败，并保留原有元数据。选项直接传给 setter，AVA 不会代替它计算或过滤指标。
+
+需要先加载数据源。两条路径都会替换已保存的 profile，供分析、翻译和推荐问题复用。设置 profile 不会替换 schema。
+
+<h4 id="profile-format">Profile 格式</h4>
+
+Profile 通过名称，将统计信息附加到已有的 schema 模型和列上：
+
+| 字段 | 含义 |
+| --- | --- |
+| `models[].name` | 要补充统计信息的模型。 |
+| `models[].metrics` | 表级统计，例如 `row_count`。 |
+| `models[].columns[].name` | 该模型中要补充统计信息的列。 |
+| `models[].columns[].metrics` | 列级统计，例如 `mean`。 |
+| `models[].columns[].properties.logicalType` | 规范化分类：`numeric`、`string`、`boolean`、`date` 或 `unknown`。 |
+
+指标缺失表示未计算，不代表零。设置 schema 会清空 profile，因此手动提供两者时应先设置 schema。加载新数据源或调用 `dispose()` 会清空 schema、profile、semantic；更新 schema 或 profile 会保留 semantic。
+
+<h4 id="metrics">统计指标</h4>
+
+默认指标为 `row_count`、`null_count`、`distinct_count`、`top_values`、`min`、`max`、`mean`。其他内置指标包括 `duplicate_count`、`min_length`、`max_length`、`sum`、`stddev`、`median`。
+
+每项可以是指标名称，也可以是包含 `id` 和该指标专用选项的对象：
+
+```typescript
+await ava.profile({
+  metrics: ['row_count', { id: 'top_values', limit: 5 }],
+});
+```
+
+| 字段 | 类型 | 默认值与行为 |
+| --- | --- | --- |
+| `id` | `string` | 对象形式必填，指标名称。 |
+| `limit` | `number` | 仅用于 `top_values`，默认 `3`，必须是非负安全整数。 |
+| `maxDistinctRatio` | `number` | 仅用于 `top_values`，默认 `0.5`，必须是 `0`—`1` 之间的有限数值。 |
+
+其他内置指标没有额外选项。引擎计算 profile 时会拒绝未知指标与未知选项名。指标是否可用取决于引擎及字段类型。
+
+`metrics: []` 会生成空的指标对象。新 profile 替换旧统计信息，不会累加之前的指标。
+
+<Heading as="h3" id="semantic">semantic</Heading>
+
+```typescript
+semantic(options?: SemanticOptions, setter?: (options: SemanticOptions) => Semantic): Promise<Semantic>
+```
+
+读取或替换已加载数据源的语义定义。不传 setter 时返回已保存的定义，初始为 `{}`。这个调用不会发现 schema、计算 profile 或请求大模型。
+
+```typescript
+await ava.semantic(undefined, () => ({
+  description: 'Sales reporting; amounts are in USD.',
+  cubes: [{
+    name: 'revenue',
+    baseObject: 'data',
+    measures: [{ name: 'total', expression: 'SUM(revenue)', type: 'DOUBLE' }],
+  }],
+}));
+
+const definitions = await ava.semantic();
+await ava.semantic(undefined, () => ({})); // Clear the saved definitions.
+```
+
+| 参数 | 类型 | 必填 | 含义与默认值 |
+| --- | --- | --- | --- |
+| `options` | `SemanticOptions` | 否 | `{}`，目前没有可配置字段。 |
+| `setter` | `(options: SemanticOptions) => Semantic` | 否 | 返回要保存的业务语义，替换之前的完整定义。 |
+
+Setter 接收选项对象，同步返回 `Semantic`。AVA 验证并复制结果；结果无效或 setter 抛错时保留之前的定义。需要先加载数据源。替换数据源或释放实例会清空语义；更新 schema、profile 会保留它。
+
+`Semantic` 描述业务定义，不包含模型或列的 `metrics`；统计信息应通过 `profile()` 提供。引擎接收的组合上下文仍是 `DataModel`。
+
+编写流程和销售示例见[补充业务语义](/documentation/data/semantic/)，详细字段见[语义字段](#semantic-fields)。
+
+在 `analyze()`、`translate()`、`suggest()` 中，AVA 按名称将语义中的模型和列与 schema、profile 合并。未指定的模型、列及统计信息仍可使用；模型和列的属性按键合并，同名键以语义值为准。显式提供的关系或视图列表会整体替换发现的列表，包括空列表。每个语义模型都必须且只能声明一种来源：`tableReference`、`refSql` 或 `baseObject`。
+
+这些定义为查询生成提供上下文。声明 cube、view 或计算列不会创建数据库对象，生成的查询仍须能在配置的引擎中执行。
+
+<Heading as="h2" id="analysis-and-queries">分析与查询</Heading>
+
+<Heading as="h3" id="analyze">analyze</Heading>
+
+`analyze(query: string, config?: AnalysisConfig): Promise<AnalysisResponse>`
+
+| 参数 | 类型 | 必填 | 默认值与行为 |
+| ---------------------------- | ---------------------------------- | ------------------------- | ------------------------------------------------------------------------------------------------------------------------------- |
+| `query` | `string` | 是 | 自然语言问题。 |
+| `config` | `AnalysisConfig` | 否 | `{}`. |
+| `config.includeSummary` | `boolean` | 否 | 默认 `true`，设为 `false` 时返回空的 `text`。 |
+| `config.maxRows` | `number` | 否 | 默认 `200`，见[执行限制](#executionoptions)。 |
+| `config.maxResultBytes` | `number` | 否 | 默认 `1048576`，见[执行限制](#executionoptions)。 |
+| `config.strategy` | `AnalysisStrategyConfig` | 否 | 默认直接分析。 |
+| `config.strategy.type` | `'direct'` / `'loop'` | 提供 strategy 时 | 选择分析策略。 |
+| `config.strategy.maxRetries` | `number` | 否，仅 `direct` | 显式 `type: 'direct'` 时默认 `2`，省略策略时当前为 `10`；表示首次执行后的修正次数。 |
+| `config.strategy.maxSteps` | `number` | 否，仅 `loop` | 默认 `12`，常规推理步数上限。 |
+
+这些重试控制与 `llm.maxRetries` 不同，详见[策略行为及使用要求](/documentation/analysis/strategies/)。
+
+需要先加载数据源。返回 [ExecutionResult](#executionresult)，并附加：
+
+| 结果字段 | 类型 | Presence | 含义 |
+| ------------ | -------- | -------- | ------------------------------------------------------------------------- |
+| `query` | `string` | Always | 原始问题。 |
+| `text` | `string` | Always | 文字总结；关闭总结时为空。 |
+| `markdown` | `string` | 可选 | Markdown 内容。 |
+| `sql` | `string` | 可选 | 实际执行的查询或 DSL，非 SQL 引擎也沿用此字段名。 |
+
+<Heading as="h3" id="translate">translate</Heading>
+
+`translate(query: string): Promise<string>`
+
+| 参数 | 类型 | 必填 | 含义 |
+| --------- | -------- | -------- | -------------------------- |
+| `query` | `string` | 是 | 自然语言问题。 |
+
+需要先加载数据源。只返回生成的 DSL，不执行；可用 `query()` 执行返回的字符串。
+
+<Heading as="h3" id="query">query</Heading>
+
+`query(dsl: string, options?: ExecutionOptions): Promise<ExecutionResult>`
+
+| 参数 | 类型 | 必填 | 默认值与行为 |
+| ------------------------ | ------------------ | -------- | ------------------------------------------------------- |
+| `dsl` | `string` | 是 | 使用所选引擎语言的可执行语句。 |
+| `options` | `ExecutionOptions` | 否 | 使用下方默认执行限制。 |
+| `options.maxRows` | `number` | 否 | `200`. |
+| `options.maxResultBytes` | `number` | 否 | 默认 `1048576` 字节。 |
+
+需要先加载数据源，不会调用模型生成查询或总结结果。
+
+<h4 id="executionoptions">ExecutionOptions</h4>
+
+| 字段 | 类型 | 默认值 | 可用值与行为 |
+| ---------------- | -------- | ----------------- | ---------------------------------------------------------------------------------------------------------------- |
+| `maxRows` | `number` | `200` | 向下取整后限制在 `1`—`1000000` 之间；取整后超出安全整数范围时使用默认值。 |
+| `maxResultBytes` | `number` | `1048576` (1 MiB) | 有限值向下取整后最小为 `1`，非有限值使用默认值。 |
+
+这些选项限制返回数据，与引擎执行超时相互独立。
+
+<h4 id="executionresult">ExecutionResult</h4>
+
+| 字段 | 类型 | Presence | 含义 |
+| --------------- | -------------------------------- | -------------- | ------------------------------------------------------- |
+| `schema` | `QueryColumn[]` | Always | 返回列的元数据。 |
+| `schema[].name` | `string` | Always | 列名。 |
+| `schema[].type` | `string` | 可选 | 引擎提供的原生类型名，可选。 |
+| `data` | `T[]` | Always | 返回的数据行。 |
+| `truncated` | `true` | 截断时 | 结果已被限制截断。 |
+| `truncatedBy` | `'maxRows'` / `'maxResultBytes'` | 截断时 | 触发截断的限制项。 |
+| `rowCount` | `number` | 已知时 | 执行读到结果末尾时返回的行数。 |
+
+<Heading as="h3" id="suggest">suggest</Heading>
+
+`suggest(count?: number): Promise<SuggestResult[]>`
+
+| 参数 | 类型 | 必填 | 默认值与行为 |
+| --------- | -------- | -------- | ----------------------------------- |
+| `count` | `number` | 否 | 默认 `3`，期望推荐的问题数量。 |
+
+需要先加载数据源。按评分降序返回推荐问题，每项包含 `query: string`、`score: number`（0—1）、`reason: string`。
+
+<Heading as="h2" id="visualization">可视化</Heading>
+
+<Heading as="h3" id="visualize-and-recommend">visualize 与 recommend</Heading>
+
+`visualize(analysisResult): Promise<VisualizeResponse | null>`
+
+`recommend(analysisResult): Promise<ChartSpec | null>`
+
+两种方法接受相同的输入：
+
+| 参数 | 类型 | 必填 | 含义 |
+| ---------------------- | ------------------------------------------- | -------- | ---------------------------------------------------------------- |
+| `analysisResult` | `Pick<AnalysisResponse, 'query' \| 'data'>` | 是 | 分析结果，或包含下面两个字段的对象。 |
+| `analysisResult.query` | `string` | 是 | 问题或可视化意图。 |
+| `analysisResult.data` | `Record<string, unknown>[]` | 是 | 待可视化的数据行。 |
+
+两种方法都不要求加载数据源，均调用模型；数据为空或没有推荐出图表时返回 `null`，生成错误则直接抛出。`recommend()` 返回 `ChartSpec`；`visualize()` 还返回 `html: string`，包含独立的图表页面。
+
+<Heading as="h3" id="viz">viz</Heading>
+
+`viz(spec: ChartSpec): Promise<string>`
+
+| 参数 | 类型 | 必填 | 含义 |
+| ---------------- | ----------- | -------- | --------------------------------------------------------------------------------------------------- |
+| `spec` | `ChartSpec` | 是 | 图表描述对象。 |
+| `spec.chartType` | `ChartType` | 是 | 下方图表类型之一，属于共享描述对象；当前渲染器直接使用 `config`。 |
+| `spec.config` | `ChartConfig` | 是 | 嵌入 HTML 的 GPT-Vis JSON 配置，`config.type` 与 `chartType` 一致。 |
+
+`ChartType` 可选值：`line`、`column`、`bar`、`pie`、`area`、`scatter`、`dual-axes`、`histogram`、`boxplot`、`radar`、`funnel`、`waterfall`、`liquid`、`word-cloud`、`violin`、`venn`、`treemap`、`sankey`、`table`、`summary`。
+
+返回独立 HTML 字符串，无需加载数据源，也不会调用模型。参见[图表配置](/documentation/visualization/overview/#recommend)。
+
+<Heading as="h2" id="cleanup">资源清理</Heading>
+
+<Heading as="h3" id="dispose">dispose</Heading>
+
+`dispose(): Promise<void>` 没有参数，释放当前引擎并清空 schema、profile 与业务语义。应在 `finally` 中等待它执行完成。
+
+<Heading as="h2" id="semantic-model-reference">语义模型参考</Heading>
+
+<Heading as="h3" id="semantic-fields">语义字段</Heading>
+
+六个顶层字段均可选，按应用需要提供即可。名称和必填表达式必须是非空字符串。`properties` 包含 JSON 值，其中的数值必须有限；`description`、`unit`、`synonyms`、`owner` 等键是应用约定，不代表 SDK 内置行为。
+
+| 字段 | Shape | 用途 |
+| --- | --- | --- |
+| `description` | `string` | 共享业务背景、术语、记录范围与时间口径。 |
+| `properties` | `Record<string, JsonValue>` | 共享注释。 |
+| `models` | 下方的模型定义 | 物理及逻辑数据集、列含义与来源映射。 |
+| `relationships` | 下方的关系定义 | 命名模型之间的连接关系。 |
+| `views` | 下方的视图定义 | 可复用的命名 SQL 查询。 |
+| `cubes` | 下方的 Cube 定义 | 指标、分组表达式与下钻路径。 |
+
+<Heading as="h3" id="semantic-models">语义模型</Heading>
+
+| 字段 | 必填 | 含义 |
+| --- | --- | --- |
+| `name` | 是 | 逻辑模型名；按名称匹配已有 schema 模型，或添加新模型。 |
+| `tableReference` | 三种来源选择器之一 | `{ table, schema?, catalog? }`，独立于逻辑名称的物理标识；额外的来源属性必须是 JSON 值。 |
+| `refSql` | 三种来源选择器之一 | 列映射与计算之前，用于定义源数据行的 SQL。 |
+| `baseObject` | 三种来源选择器之一 | 提供数据行的另一个模型或视图名称。 |
+| `columns` | 否 | 列定义见下方；未列出的已有列仍保留。 |
+| `primaryKey` | 否 | 单列名称，或代表复合主键的有序非空数组。 |
+| `uniqueKeys` | 否 | 唯一键数组，每项是单列名称或非空复合键数组。 |
+| `dialect` | 否 | `refSql` 的 SQL 方言；省略时使用执行上下文。 |
+| `properties` | 否 | 模型注释，尤其是行粒度和业务用途。 |
+
+主键、唯一键是声明，不是统计结论，需要对照数据源验证。`primaryKey: ['tenant_id', 'order_id']` 表示一个复合键；`uniqueKeys: ['email', ['tenant_id', 'external_id']]` 则声明两个候选唯一键。
+
+<Heading as="h3" id="semantic-columns">语义列</Heading>
+
+| 字段 | 必填 | 含义 |
+| --- | --- | --- |
+| `name` | 是 | 所属模型内的名称，用于匹配已有列。 |
+| `type` | 是 | 声明的类型；关系导航列则填写目标模型名称。 |
+| `properties` | 否 | 列的上下文，例如描述、单位、枚举含义或空值约定。 |
+| `expression` | 否 | 针对来源的 SQL 映射或计算；`null` 或省略表示不提供表达式。 |
+| `isCalculated` | 否 | 标记派生列的布尔值，本身不会执行计算。 |
+| `isPrimaryKey` | 否 | 标记是否属于已声明主键的布尔值。 |
+| `notNull` | 否 | 声明的非空约束，省略表示未指定。 |
+| `relationship` | 否 | 用于导航的关系标识，不是外键列名。 |
+
+<Heading as="h3" id="semantic-relationships-and-views">语义关系与视图</Heading>
+
+| 字段 | 必填 | 含义 |
+| --- | --- | --- |
+| `relationships[].name` | 是 | 关系标识，也用于列导航。 |
+| `relationships[].models` | 是 | 恰好两个模型名，顺序为第一模型、第二模型。 |
+| `relationships[].joinType` | 是 | `ONE_TO_ONE`、`ONE_TO_MANY`、`MANY_TO_ONE` 或 `MANY_TO_MANY`。 |
+| `relationships[].condition` | 是 | 使用限定列名的 SQL 连接条件。 |
+| `relationships[].properties` | 否 | 关系的业务背景。 |
+| `views[].name` | 是 | 查询的逻辑名称。 |
+| `views[].statement` | 是 | 定义结果的 SQL；保存不会执行它。 |
+| `views[].dialect` | 否 | SQL 方言，省略时使用执行上下文。 |
+| `views[].properties` | 否 | 用途与业务口径。 |
+
+关系和视图允许额外的 JSON 属性，由应用及其使用方约定含义。
+
+<Heading as="h3" id="semantic-cubes-and-expressions">语义 Cube 与表达式</Heading>
+
+| 字段 | 必填 | 含义 |
+| --- | --- | --- |
+| `name` | 是 | Cube 标识。 |
+| `baseObject` | 是 | 提供聚合数据行的模型或视图。 |
+| `measures` | 是 | 非空的聚合定义数组。 |
+| `dimensions` | 否 | 分组定义。 |
+| `timeDimensions` | 否 | 日期、时间分组定义，粒度在查询时选择。 |
+| `hierarchies` | 否 | 名称到非空维度名数组的映射，从粗粒度到细粒度排列。 |
+| `properties` | 否 | Cube 注释。 |
+
+`measures`、`dimensions` 和 `timeDimensions` 的每一项都使用以下字段：
+
+| 字段 | 必填 | 含义 |
+| --- | --- | --- |
+| `name` | 是 | Cube 内的表达式标识。 |
+| `expression` | 是 | 指标使用 SQL 聚合表达式，维度使用分组表达式。 |
+| `type` | 是 | 声明的结果类型。 |
+| `description` | 否 | 表达式的业务含义。 |
+| `properties` | 否 | 单位、同义词等注释。 |
+
+例如，按日历下钻时，先定义 `year`、`month`、`order_date` 的维度表达式，再声明 `hierarchies: { calendar: ['year', 'month', 'order_date'] }`。层级只描述路径，不会自动生成这些字段。
+
+模型、列、Cube 和表达式对象会拒绝未知字段；需要应用注释时，放在支持的 `properties` 中。
+
+<Heading as="h3" id="semantic-model-sources">语义模型来源</Heading>
+
+编写映射前，先调用 `schema()` 检查模型名称、来源引用与列类型。名称必须在所属模型内准确匹配。销售示例的内存 JSON 暴露为 `data`；其他数据源可能使用不同名称，并带有 catalog 或 schema 限定信息。
+
+`models` 中的每一项都需要 `name`，并且 **只能选择一种** 来源，即使只是想给已有模型补充描述：
+
+| 来源选择器 | 适用情况 | 示例 |
+| --- | --- | --- |
+| `tableReference` | 模型映射到物理表或数据库视图，保留发现的来源限定信息。 | `{ tableReference: { schema: 'public', table: 'orders' } }` |
+| `refSql` | 用 SQL 定义逻辑模型的源数据行。 | `{ refSql: "SELECT * FROM orders WHERE status = 'paid'" }` |
+| `baseObject` | 由另一个模型或已声明视图提供源数据行。 | `{ baseObject: 'paid_orders' }` |
+
+使用已有 schema 模型的 `name` 可以补充该模型。换用其他名称会新增逻辑模型，不会重命名底层表。列即使只补充描述，也必须提供 `name` 和 `type`；物理列沿用发现的类型，计算列声明结果类型。
+
+`baseObject`、`refSql` 和列的 `expression` 为查询生成器描述映射。逻辑名称不代表能直接交给 `query()` 执行。例如，查询计算列 `net_amount` 时，需要展开其表达式，或通过子查询、CTE 定义。
+
+<Heading as="h3" id="semantic-join-and-view-examples">语义关系与视图示例</Heading>
+
+跨模型分析时添加关系；可复用 SQL 有助于表达业务逻辑时添加视图。以下片段假定已有数据源提供 `orders`、`customers`，与前面的单表销售示例相互独立。
+
+<h4 id="relationship-example">关系示例</h4>
+
+```typescript
+import type { Semantic } from '@antv/ava';
+
+const semantic = {
+  relationships: [{
+    name: 'order_customer',
+    models: ['orders', 'customers'],
+    joinType: 'MANY_TO_ONE',
+    condition: 'orders.customer_id = customers.id',
+    properties: { description: 'Each order belongs to one customer.' },
+  }],
+} satisfies Semantic;
+```
+
+`models` 是有序模型对。`MANY_TO_ONE` 表示第一模型的多行可以匹配第二模型的一行。`joinType` 描述基数，不决定使用 `LEFT JOIN` 还是 `INNER JOIN`。复合键的连接条件需要包含所有键字段。
+
+如果暴露关系导航列，应将 `relationship` 设为关系的 **名称** ，将 `type` 设为目标模型名，例如 `{ name: 'customer', type: 'customers', relationship: 'order_customer' }`。物理外键列仍是 `customer_id`。
+
+跨表聚合前先检查行粒度。一笔订单连接多条明细时，订单金额可能被重复计算。基数声明只提供上下文，AVA 不会验证唯一性，也不会自动避免重复计数。
+
+<h4 id="view-and-derived-model-example">视图与派生模型示例</h4>
+
+```typescript
+import type { Semantic } from '@antv/ava';
+
+const semantic = {
+  views: [{
+    name: 'paid_orders',
+    statement: "SELECT * FROM orders WHERE status = 'paid'",
+    dialect: 'duckdb',
+    properties: { description: 'Paid orders only; this excludes fully refunded orders.' },
+  }],
+  models: [{
+    name: 'paid_sales',
+    baseObject: 'paid_orders',
+    properties: { description: 'One row per paid order.' },
+  }],
+} satisfies Semantic;
+```
+
+这里的逻辑模型引用一个命名查询，生成器可以将其展开为 CTE 或子查询。只有执行引擎中已存在 `paid_orders` 时，`await ava.query('SELECT * FROM paid_orders')` 才能执行；保存定义不会创建它。不需要单独命名视图时，也可以直接用模型的 `refSql` 描述来源查询。
+
+<Heading as="h3" id="save-and-combine-semantic-definitions">保存并合并语义定义</Heading>
+
+在应用中保留一份完整定义，与对应数据源一起管理版本，并在 `source()` 之后传给 AVA。每次 setter 都替换已保存的整个语义对象，不会追加或局部修改旧定义。
+
+```typescript
+await ava.semantic(undefined, () => completeDefinitions);
+const saved = await ava.semantic();
+await ava.semantic(undefined, () => ({})); // Clear all saved semantics.
+```
+
+定义可保存在代码或应用自己的 JSON 文件中。例如，Node.js 加载数据源后：
+
+```javascript
+const { readFile } = require('node:fs/promises');
+const definitions = JSON.parse(await readFile('./sales-semantic.json', 'utf8'));
+await ava.semantic(undefined, () => definitions);
+```
+
+JSON 文件只包含定义对象，不带 JavaScript 变量声明或 setter。AVA 接受对象而非文件路径；如果保存为 YAML，请先在应用中解析，再调用 setter。读取和解析文件可以异步完成，setter 本身同步返回对象。
+
+操作需要数据模型时，AVA 按以下顺序组合输入：
+
+| 组合方式 | 行为 |
+| --- | --- |
+| 先 schema，再 profile | 按名称将统计信息附加到已有模型和列。 |
+| 语义模型 | 同名模型补充已有内容，新名称添加逻辑模型；显式来源选择器优先。 |
+| 语义列 | 同名列补充已有列，新名称添加新列。未列出的模型、列及 profile 指标仍可使用；空列数组不会删除已发现的列。 |
+| 模型与列的 `properties` | 按键合并，同名键以语义值为准；嵌套 JSON 值整体替换，不递归合并。 |
+| 显式提供的其他模型与列字段 | 语义值替换对应字段，包括类型与键声明。 |
+| 顶层字段 | 显式值替换对应内容。关系与视图数组整体替换；`[]` 会清空组合上下文中的相应列表。 |
+
+省略某部分会保留对应的 schema 上下文。需要在已发现的外键之外新增关系时，应在传入列表中包含仍要保留的关系。读取 `schema()`、`profile()`、`semantic()` 返回的仍是各自输入，不是组合模型；目前没有公开方法读取合并后的 `DataModel`。
+
+更新 schema 会清空 profile、保留语义；计算 profile 会替换统计信息、保留语义；加载新数据源或调用 `dispose()` 会清空三者。加载新数据源后应重新应用保存的定义，并在结构变化时复核映射。这些调用都需要活动数据源，替换数据源失败后则没有活动数据源。
+
+Setter 验证并复制返回对象。验证失败或 setter 抛错时，之前的语义定义保持不变。
+
+<Heading as="h3" id="semantic-validation">语义验证</Heading>
+
+结构验证检查字段形状、必填项、来源选择器的互斥性及非空指标列表，但 **不能证明** SQL 有效、引用对象存在、键声明成立、单位一致或业务规则正确。重复的语义模型名、同一模型内的重复列名，会在分析、翻译或推荐问题组装组合模型时被拒绝，而非仅由 setter 拒绝。
+
+为自己的数据定义口径时，可以沿用销售示例的验证流程：
+
+1. 查看 `schema()`，准确匹配名称与物理类型。远程数据源需保留 catalog 和 schema 限定信息。
+2. 请业务负责人复核行粒度、纳入统计的状态、空值处理、单位与时间口径。
+3. 用答案已知的小数据集逐一运行表达式，按需覆盖被排除记录、空值、退款及连接重复计数等情况。
+4. 针对同样的问题检查 `translate()` 输出，再将执行结果与已知答案对照。Setter 成功不等于端到端验证成功。
+5. 数据源结构或业务定义变化后，重新执行这些检查。
+
+| 现象 | 检查方向 |
+| --- | --- |
+| Setter 拒绝模型 | 必须且只能提供 `tableReference`、`refSql`、`baseObject` 之一；列需要 `name` 和 `type`。 |
+| Setter 拒绝 Cube | 需要 `baseObject`，以及至少一个包含 `name`、`expression`、`type` 的指标。 |
+| Setter 拒绝统计信息 | 模型与列的 `metrics` 应传给 `profile()`，不要放进 `semantic()`。 |
+| 查询提示逻辑名称不存在 | 检查 SQL 是否将声明的表达式、视图或模型展开为可执行 SQL。 |
+| 已发现的连接关系消失 | 你提供的关系列表替换了发现的列表，请包含所有仍需要的关系。 |
+| 数值偏大 | 检查行粒度、连接基数、重复键、记录过滤和退款处理。 |
+| 规则未生效 | 检查生成的查询。必须遵守的访问规则应在数据层或执行层强制实施。 |

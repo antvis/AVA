@@ -4,7 +4,6 @@ import { parseArgs } from 'node:util';
 import { fileURLToPath } from 'node:url';
 
 import { llmConfig, modelMetadata } from '../model.ts';
-import { createUsage } from '../../_shared/usage.js';
 import { integer } from '../../_shared/args.js';
 import { atomicJson, readJson, sha256 } from '../../_shared/files.js';
 
@@ -27,7 +26,7 @@ Options:
   --offset <number>      Start offset after filtering (default: 0)
   --suite <name>         Run one dataset, e.g. 002_Titanic
   --concurrency <number> Parallel model calls (default: 3)
-  --strategy <name>      direct, loop or subset (default: direct)
+  --strategy <name>      direct or loop (default: direct)
   --engine <name>        duckdb or python (default: duckdb)
   --context <name>       metadata or raw (CSV header + first 3 rows; default: metadata)
   --output <path>        Prediction CSV (default: evals/ava-workflow/results/<dataset>.csv)
@@ -104,8 +103,8 @@ export async function main(
     throw new Error('--engine must be duckdb or python.');
   }
   const strategy = values.strategy;
-  if (strategy !== 'direct' && strategy !== 'loop' && strategy !== 'subset') {
-    throw new Error('--strategy must be direct, loop or subset.');
+  if (strategy !== 'direct' && strategy !== 'loop') {
+    throw new Error('--strategy must be direct or loop.');
   }
   const context = values.context;
   if (context !== 'metadata' && context !== 'raw') throw new Error('--context must be metadata or raw.');
@@ -140,8 +139,7 @@ export async function main(
 
   await Promise.all(
     Array.from({ length: Math.min(concurrency, pending.length) }, async () => {
-      let usage = createUsage();
-      const ava = new AVA({ engine: { type: engine }, llm: { ...config, onQueryUsage: (value) => usage.add(value) } });
+      const ava = new AVA({ engine: { type: engine }, llm: config });
       try {
         while (cursor < pending.length) {
           const sample = pending[cursor++];
@@ -149,7 +147,6 @@ export async function main(
           let sql = '';
           let answer = '';
           let error = '';
-          usage = createUsage();
           try {
             const source = { type: 'parquet' as const, options: { path: dataPaths?.[sample.suite] ?? sample.dataPath } };
             const question = `${sample.question}\nReturn the ${sample.answerType} answer in one column named answer.`;
@@ -171,9 +168,9 @@ export async function main(
               error,
               typeof config.model === 'string' ? config.model : config.model.modelId,
               Date.now() - startedAt,
-              usage.value.inputTokens ?? '',
-              usage.value.outputTokens ?? '',
-              usage.value.totalTokens ?? '',
+              '',
+              '',
+              '',
             ].map(csvCell).join(',')}\n`,
           );
           process.stdout.write(`${answer ? 'done' : 'failed'} ${sample.id}\n`);

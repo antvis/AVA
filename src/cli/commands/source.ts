@@ -2,7 +2,7 @@ import { extname, resolve } from 'path';
 
 import { createSession } from '../session/client';
 import { engineTypeSchema, sourceConfig } from '../session/protocol';
-import { isFeishuBitableUrl,isFeishuHostUrl,feishuCredentials } from '../feishu';
+import { isFeishuBitableUrl, isFeishuHostUrl, feishuCredentials } from '../feishu';
 import { llmConfig } from '../config';
 import { readJSON } from '../io';
 import { option } from '../options';
@@ -37,12 +37,14 @@ export async function run([dataset]: string[], options: Options): Promise<{ data
   if (dataset.startsWith('@') || dataset === '-') {
     if (options.type !== undefined) throw new Error('--type cannot be combined with a source config.');
     input = await readJSON(dataset);
-  }else if (isFeishuBitableUrl(dataset)){
-    if(options.type!== undefined) throw new Error('--type cannot be combined with a feishu-bitable source.');
-    input = { type: 'feishu-bitable', options: { url: dataset }} ;
-  }else if(isFeishuHostUrl(dataset)){
-    throw new Error('Only Feishu Bitable links are supported: /base/<appToken>?table=<tableId> or /wiki/<nodeToken>?table=<tableId>. Docx, Sheets, and other Feishu links cannot be loaded.');}
-  else {
+  } else if (isFeishuBitableUrl(dataset)) {
+    if (options.type !== undefined) throw new Error('--type cannot be combined with a feishu-bitable source.');
+    input = { type: 'feishu-bitable', options: { url: dataset } };
+  } else if (isFeishuHostUrl(dataset)) {
+    throw new Error(
+      'Only Feishu Bitable links are supported: /base/<appToken>?table=<tableId> or /wiki/<nodeToken>?table=<tableId>. Docx, Sheets, and other Feishu links cannot be loaded.'
+    );
+  } else {
     const pathname = /^https?:\/\//i.test(dataset) ? new URL(dataset).pathname : dataset;
     const type = option(options, 'type') ?? sourceTypes[extname(pathname).toLowerCase()];
     if (!type) throw new Error('Cannot infer the source type. Pass --type.');
@@ -55,7 +57,7 @@ export async function run([dataset]: string[], options: Options): Promise<{ data
     config.options.path = resolve(config.options.path);
   }
 
-  if(config.type === 'feishu-bitable'){
+  if (config.type === 'feishu-bitable') {
     const creds = await feishuCredentials(config.options);
     config.options.appId = creds.appId;
     config.options.appSecret = creds.appSecret;

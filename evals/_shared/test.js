@@ -4,7 +4,6 @@ import { mkdtempSync, writeFileSync, appendFileSync, readFileSync, readdirSync, 
 import { join } from 'node:path';
 import { tmpdir } from 'node:os';
 import { execFileSync } from 'node:child_process';
-import { createUsage } from './usage.js';
 import { OUTPUT_COLUMNS, csvCell, csvRows, previewCsv, readCsv } from './results.js';
 import { atomicJson, atomicWrite } from './files.js';
 import { forEachConcurrent } from './concurrency.js';
@@ -98,7 +97,7 @@ test('workflow strategy parsing preserves retry defaults and validates only the 
   assert.deepEqual(readStrategy(values), { type: 'direct', maxRetries: 2 });
   assert.deepEqual(readStrategy({ ...values, 'max-retries': '0', 'max-steps': 'unused' }), { type: 'direct', maxRetries: 0 });
   assert.deepEqual(readStrategy({ ...values, strategy: 'loop', 'max-retries': 'unused' }), { type: 'loop', maxSteps: 12 });
-  assert.deepEqual(readStrategy({ strategy: 'subset', 'max-retries': 'unused', 'max-steps': 'unused' }), { type: 'subset' });
+  assert.throws(() => readStrategy({ ...values, strategy: 'subset' }), /--strategy must be direct or loop/);
   for (const retry of ['-1', '1.5', 'invalid']) {
     assert.throws(() => readStrategy({ ...values, 'max-retries': retry }), /--max-retries/);
   }
@@ -113,17 +112,6 @@ test('model metadata omits endpoint credentials and supports both model represen
   assert.deepEqual(modelMetadata({ ...config, model: { modelId: 'provider-model' } }),
     { model: 'provider-model', endpoint: 'https://example.com/v1' });
   assert.equal(config.baseURL, 'https://user:secret@example.com/v1?api_key=secret');
-});
-
-test('usage accumulates multiple calls and preserves incomplete statistics', () => {
-  const usage = createUsage();
-  assert.equal(usage.value.totalTokens, null);
-  usage.add({ inputTokens: 2, outputTokens: 3, totalTokens: 5 });
-  usage.add({ inputTokens: 7, outputTokens: 11, totalTokens: 18 });
-  assert.deepEqual(usage.value, { inputTokens: 9, outputTokens: 14, totalTokens: 23, calls: 2 });
-  usage.add({ inputTokens: 0 });
-  usage.add({ inputTokens: 1, outputTokens: 1, totalTokens: 2 });
-  assert.deepEqual(usage.value, { inputTokens: 10, outputTokens: null, totalTokens: null, calls: 4 });
 });
 
 test('CLI report stores aggregate scores once and preserves all selected metrics', (t) => {
@@ -240,7 +228,7 @@ test('DataBench raw context exposes only the first three data rows and executes 
     ava.engine.getDSL = async (query, model) => {
       prompt = query;
       assert.deepEqual(model, { models: [] });
-      return 'SELECT COUNT(*) AS answer FROM data';
+      return { dsl: 'SELECT COUNT(*) AS answer FROM data' };
     };
   };
   ava.semantic = async () => { throw new Error('Raw context must not load semantics'); };
@@ -275,7 +263,7 @@ test('Spider2-Lite raw context isolates multi-table previews from metadata and q
         assert(prompt.includes(`Table "${table}":`));
       assert.match(prompt, /ORD-0003/);
       assert.doesNotMatch(prompt, /ORD-0004|sqlite_sequence/);
-      return 'SELECT COUNT(*) AS answer FROM sales';
+      return { dsl: 'SELECT COUNT(*) AS answer FROM sales' };
     };
   };
   ava.semantic = async () => { throw new Error('Raw context must not load semantics'); };

@@ -1,0 +1,45 @@
+import { Heading } from '../../../../mdx-components';
+
+<Heading as="h2" id="supabase">Supabase</Heading>
+
+```typescript
+const ava = new AVA({
+  llm: { model: 'YOUR_MODEL', apiKey: process.env.OPENAI_API_KEY },
+  engine: { type: 'supabase' },
+});
+await ava.source({
+  type: 'supabase',
+  options: {
+    projectRef: 'YOUR_PROJECT_REF',
+    accessToken: process.env.SUPABASE_ACCESS_TOKEN!,
+  },
+});
+```
+
+引擎按需发现 schema，通过 Supabase Management API 以只读请求执行 PostgreSQL 查询。应用负责获取和刷新访问令牌。查询结果会返回给 AVA，也可能被发给模型，用于生成分析总结。
+
+<Heading as="h2" id="clickhouse">ClickHouse</Heading>
+
+```typescript
+const ava = new AVA({
+  llm: { model: 'YOUR_MODEL', apiKey: process.env.OPENAI_API_KEY },
+  engine: { type: 'clickhouse' },
+});
+await ava.source({
+  type: 'clickhouse',
+  options: {
+    url: 'http://localhost:8123',
+    database: 'analytics',
+    username: 'reader',
+    password: process.env.CLICKHOUSE_PASSWORD,
+  },
+});
+```
+
+使用 `url` 或 `host`，并提供必填的 `database`。`username` 的优先级高于别名 `user`。查询通过官方 ClickHouse 客户端执行，并启用只读设置。
+
+<Heading as="h2" id="shared-workflow">共同工作流</Heading>
+
+两种引擎都支持 `schema()`、`profile()`、`translate()`、`query()` 和 `analyze()`。在 JavaScript API 中，数据源类型与引擎类型需要匹配。使用结束后调用 `await ava.dispose()` 释放资源。
+
+完整配置表见 [Supabase 参数](/documentation/data/sources/#supabase)和 [ClickHouse 选项](/documentation/data/sources/#clickhouse)。

@@ -8,7 +8,7 @@ import React from 'react';
  * (home, documentation, ...) renders the Header the same way.
  */
 const PageShell: React.FC<{ children: React.ReactNode }> = ({ children }) => (
-  <div className="min-h-screen font-sans text-[#24212d] [--font-heading:'DM Sans',sans-serif]">
+  <div className="min-h-screen font-sans text-[#24212d] [--font-heading:var(--font-body)]">
     <div
       className="w-full bg-white
         [&_[id]]:scroll-mt-[110px]

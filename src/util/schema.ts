@@ -6,7 +6,7 @@ import { sqlIdentifier } from './sql';
 import type { JsonValue, Schema } from '../types';
 
 export const jsonValue: z.ZodType<JsonValue> = z.lazy(() =>
-  z.union([z.string(), z.number().finite(), z.boolean(), z.null(), z.array(jsonValue), z.record(jsonValue)])
+  z.union([z.string(), z.number().finite(), z.boolean(), z.null(), z.array(jsonValue), z.record(z.string(), jsonValue)])
 );
 const name = z.string();
 const key = z.union([name, z.array(name).nonempty()]);
