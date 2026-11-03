@@ -410,72 +410,17 @@
 }
 @media (min-width: 1024px) {
   .grid {
-    grid-template-columns: repeat(12, minmax(0, 1fr));
+    grid-template-columns: repeat(24, minmax(0, 1fr));
   }
   .card {
-    grid-column: span 4;
+    grid-column: span 8;
   }
-  .card:first-child {
-    grid-column: span 7;
-    grid-row: span 2;
-  }
-  .card:first-child h3 {
-    margin: 40px 40px 0;
-    font-size: 32px;
-  }
-  .card:first-child > p {
-    max-width: 400px;
-    margin-inline: 40px;
-    font-size: 16px;
-  }
-  .card:first-child .art {
-    height: 260px;
-    margin-top: 20px;
-  }
-  .card:nth-child(2),
+  .card:first-child,
   .card:nth-child(3) {
-    display: grid;
-    grid-template-columns: 1.1fr 1fr;
-    grid-template-rows: auto 1fr;
-    grid-column: span 5;
-    min-height: 220px;
-    background: linear-gradient(110deg, #fff 30%, var(--wash));
+    grid-column: span 7;
   }
-  .card:nth-child(2) h3,
-  .card:nth-child(3) h3 {
-    grid-column: 1;
-    margin: 26px 0 0 24px;
-    font-size: 20px;
-  }
-  .card:nth-child(2) > p,
-  .card:nth-child(3) > p {
-    grid-column: 1;
-    min-height: 0;
-    margin: 12px 0 24px 24px;
-    font-size: 13px;
-  }
-  .card:nth-child(2) .art,
-  .card:nth-child(3) .art {
-    grid-column: 2;
-    grid-row: 1 / span 2;
-    align-self: center;
-    height: 180px;
-    margin: 0;
-  }
-  .card:nth-child(2) .queryCard {
-    width: 94%;
-    left: 3%;
-    padding: 10px 8px;
-  }
-  .card:nth-child(2) .queryCard code {
-    font-size: 8px;
-  }
-  .card:nth-child(2) .resultCard {
-    left: 5%;
-    width: 90%;
-    padding-inline: 8px;
-    gap: 5px;
-    white-space: nowrap;
+  .card:nth-child(2) {
+    grid-column: span 10;
   }
 }
 @media (min-width: 768px) and (max-width: 1023px) {
