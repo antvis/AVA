@@ -210,7 +210,7 @@ describe('BigQueryEngine profile', () => {
     expect(result.models[0].metrics.row_count).toBe(6);
     expect(result.models[0].columns[0].metrics.mean).toBe(12.5);
     const query = run.mock.calls[0][0];
-    expect(query).toContain('AVG(CAST("units" AS FLOAT64))');
+    expect(query).toContain('AVG(CAST(`units` AS FLOAT64))');
     expect(query).not.toContain('CREATE');
   });
 

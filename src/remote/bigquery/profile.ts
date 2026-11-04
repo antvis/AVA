@@ -5,7 +5,6 @@
  * (mirroring the SQL Server engine) that this module parses back.
  */
 import { column, logicalTypes, table, TOP_VALUES_OPTIONS, resolveMetric } from '../../util/profile';
-import { sqlIdentifier } from '../../util/sql';
 
 import type { MetricField } from '../../util/profile';
 import type { LogicalType, Metric, ParsedProfileOptions, Profile, Schema } from '../../types';
@@ -19,6 +18,11 @@ interface Context {
 
 type BigQueryMetric = Metric<(context: Context) => string>;
 
+/** Escape a GoogleSQL identifier; double quotes denote strings, not identifiers. */
+function sqlIdentifier(value: string): string {
+  return `\`${value.replace(/`/g, '``')}\``;
+}
+
 /** BigQuery legacy/standard data type to AVA logical type. */
 export function logicalType(type: string): LogicalType {
   const base = type.trim().toLowerCase();
@@ -28,7 +32,9 @@ export function logicalType(type: string): LogicalType {
     )
   )
     return 'numeric';
-  if (/^(string|bytes|json|array|struct)$/.test(base)) return 'string';
+  // JSON/ARRAY/STRUCT are not groupable in BigQuery; leave them unknown so
+  // default DISTINCT metrics are not generated for them.
+  if (/^(string|bytes)$/.test(base)) return 'string';
   if (/^bool(?:ean)?$/.test(base)) return 'boolean';
   if (/^(?:date|datetime|timestamp|time)$/.test(base)) return 'date';
   return 'unknown';
@@ -37,8 +43,12 @@ export function logicalType(type: string): LogicalType {
 /** Epoch-milliseconds expression for a temporal column. */
 function epochMs(column: string, type?: string): string {
   const base = (type ?? '').toLowerCase();
-  if (/^date$/.test(base)) return `UNIX_MILLIS(CAST(${column} AS TIMESTAMP))`;
-  if (/^time$/.test(base)) return `EXTRACT(microsecond FROM ${column}) / 1000`;
+  if (/^(?:date|datetime)$/.test(base)) return `UNIX_MILLIS(CAST(${column} AS TIMESTAMP))`;
+  if (/^time$/.test(base)) {
+    // EXTRACT(MICROSECOND) is only the fractional-second component, so include
+    // every larger TIME part to measure the full offset from midnight.
+    return `(EXTRACT(HOUR FROM ${column}) * 3600000 + EXTRACT(MINUTE FROM ${column}) * 60000 + EXTRACT(SECOND FROM ${column}) * 1000 + EXTRACT(MICROSECOND FROM ${column}) / 1000)`;
+  }
   return `UNIX_MILLIS(${column})`;
 }
 
@@ -68,7 +78,7 @@ export const BUILTIN_METRICS: BigQueryMetric[] = [
       const value = `CAST(${column!} AS STRING)`;
       return `CASE WHEN COUNT(DISTINCT ${value}) > COUNT(*) * ${maxDistinctRatio}
         THEN NULL ELSE (
-          SELECT TO_JSON_STRING(ARRAY_AGG(STRUCT(value, count)) )
+          SELECT TO_JSON_STRING(COALESCE(ARRAY_AGG(STRUCT(value, count)), []))
           FROM (
             SELECT ${value} AS value, COUNT(*) AS count
             FROM ${table}
