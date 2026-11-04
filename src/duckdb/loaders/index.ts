@@ -55,7 +55,17 @@ export async function loadSource(config: DataSourceConfig, llmConfig: LLMConfig)
       // ClickHouse is queried directly through ClickHouseEngine, not through
       // DuckDB ATTACH loaders.
       throw new Error('ClickHouse sources are handled by ClickHouseEngine, not the DuckDB engine');
+    case 'sqlserver':
+      // SQL Server is queried directly through SqlServerEngine, not through
+      // DuckDB ATTACH loaders.
+      throw new Error('SQL Server sources are handled by SqlServerEngine, not the DuckDB engine');
     case 'feishu-bitable':
       return loadFeishuBitable(config.options);
+    default: {
+      // exhaustiveness guard: unknown data source types must fail loudly, and a
+      // future DataSourceConfig member without a case becomes a compile error.
+      const exhaustive: never = config;
+      throw new Error(`Unsupported data source type: ${String((exhaustive as { type?: string }).type)}`);
+    }
   }
 }
