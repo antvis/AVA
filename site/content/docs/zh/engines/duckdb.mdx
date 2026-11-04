@@ -39,6 +39,12 @@ DuckDB 是 Node.js 的默认引擎。它创建内存实例，将数据源注册�
 
 支持内存 CSV、JSON、文本，本地或远程 CSV、JSON、Parquet、Excel，以及 MySQL、PostgreSQL、SQLite、MongoDB 数据源。配置方式见[接入数据](/documentation/data/sources/)。
 
-<Heading as="h2" id="query-access">查询访问限制</Heading>
+<Heading as="h2" id="execution-security">执行安全策略</Heading>
 
-注册数据源后，引擎会限制外部访问并锁定配置，查询方言会验证语句是否只读。社区扩展默认关闭；加载器会处理 MongoDB 等依赖社区扩展的数据源，需要时也可用 `allowCommunityExtensions` 显式允许。
+AVA 为 DuckDB 内置了以下安全策略，降低模型生成 SQL 带来的风险：
+
+- **只读执行**：只允许执行一条只读 `SELECT` 语句，拒绝写入操作和多语句查询。
+- **限制外部访问**：数据源注册后关闭外部访问，限制本地文件访问，并锁定连接配置，防止查询修改安全设置。
+- **禁用自动安装扩展**：默认禁用扩展的自动安装、自动加载和未签名扩展；社区扩展默认关闭，仅在数据源明确需要时启用。
+- **限制资源消耗**：默认限制内存、工作线程和查询时间，也可配置临时溢写空间上限。
+- **限制返回结果**：通过 `maxRows` 和 `maxResultBytes` 控制返回结果的行数和大小，避免返回过大的数据集。

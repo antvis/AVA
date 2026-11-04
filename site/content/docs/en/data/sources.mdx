@@ -76,7 +76,13 @@ const ava = new AVA({
 
 await ava.source({
   type: 'json',
-  options: { data: [{ city: 'Hangzhou', revenue: 120 }] },
+  options: {
+    data: [
+      { city: 'Hangzhou', revenue: 120 },
+      { city: 'Shanghai', revenue: 200 },
+      { city: 'Beijing', revenue: 160 },
+    ],
+  },
 });
 
 const schema = await ava.schema();
@@ -100,7 +106,7 @@ Pass the CSV content as a string with `type: 'csv'`.
 ```typescript
 await ava.source({
   type: 'csv',
-  options: { csv: 'city,revenue\nHangzhou,120\nShanghai,200' },
+  options: { csv: 'city,revenue\nHangzhou,120\nShanghai,200\nBeijing,160' },
 });
 ```
 
