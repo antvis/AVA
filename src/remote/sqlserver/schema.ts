@@ -19,8 +19,14 @@ interface ColumnRow {
 
 interface KeyRow {
   table_name: string;
+  constraint_name: string;
   name: string;
   position: number;
+}
+
+interface ConstraintRow {
+  table_name: string;
+  constraint_name: string;
 }
 
 function bool(value: unknown): boolean {
@@ -47,34 +53,47 @@ export async function getSqlServerSchema(
 
   if (tables.length === 0) return { models: [], relationships: [] };
 
-  const [columns, keys] = await Promise.all([
-    runQuery(`
-      SELECT
-        c.TABLE_NAME AS table_name,
-        c.COLUMN_NAME AS name,
-        c.DATA_TYPE AS type,
-        c.IS_NULLABLE AS nullable
-      FROM INFORMATION_SCHEMA.COLUMNS c
-      WHERE c.TABLE_CATALOG = ${db}
-      ORDER BY c.TABLE_NAME, c.ORDINAL_POSITION
-    `),
-    runQuery(`
-      SELECT
-        k.TABLE_NAME AS table_name,
-        k.COLUMN_NAME AS name,
-        k.ORDINAL_POSITION AS position
-      FROM INFORMATION_SCHEMA.KEY_COLUMN_USAGE k
-      WHERE k.TABLE_CATALOG = ${db}
-      ORDER BY k.TABLE_NAME, k.ORDINAL_POSITION
-    `),
-  ]);
+  const columns = (await runQuery(`
+    SELECT
+      c.TABLE_NAME AS table_name,
+      c.COLUMN_NAME AS name,
+      c.DATA_TYPE AS type,
+      c.IS_NULLABLE AS nullable
+    FROM INFORMATION_SCHEMA.COLUMNS c
+    WHERE c.TABLE_CATALOG = ${db}
+    ORDER BY c.TABLE_NAME, c.ORDINAL_POSITION
+  `)) as unknown as ColumnRow[];
 
-  const columnRows = columns as unknown as ColumnRow[];
-  const keyRows = keys as unknown as KeyRow[];
+  // A Tedious connection serves one request at a time, so catalog queries are
+  // awaited sequentially instead of being issued concurrently.
+  const keys = (await runQuery(`
+    SELECT
+      k.TABLE_NAME AS table_name,
+      k.CONSTRAINT_NAME AS constraint_name,
+      k.COLUMN_NAME AS name,
+      k.ORDINAL_POSITION AS position
+    FROM INFORMATION_SCHEMA.KEY_COLUMN_USAGE k
+    WHERE k.TABLE_CATALOG = ${db}
+    ORDER BY k.TABLE_NAME, k.ORDINAL_POSITION
+  `)) as unknown as KeyRow[];
+
+  const primaryConstraints = (await runQuery(`
+    SELECT
+      tc.TABLE_NAME AS table_name,
+      tc.CONSTRAINT_NAME AS constraint_name
+    FROM INFORMATION_SCHEMA.TABLE_CONSTRAINTS tc
+    WHERE tc.TABLE_CATALOG = ${db} AND tc.CONSTRAINT_TYPE = 'PRIMARY KEY'
+  `)) as unknown as ConstraintRow[];
+
+  const primaryKeyNames = new Set(
+    primaryConstraints.map((constraint) => `${constraint.table_name}\u0000${constraint.constraint_name}`)
+  );
+
+  const keyRows = keys.filter((key) => primaryKeyNames.has(`${key.table_name}\u0000${key.constraint_name}`));
 
   return {
     models: tables.map(({ table_name }) => {
-      const fields = columnRows
+      const fields = columns
         .filter((column) => column.table_name === table_name)
         .map((column) => ({ name: column.name, type: column.type, notNull: !bool(column.nullable) }));
 

@@ -14,10 +14,81 @@ import type { TranslationResult, LLMConfig, QueryDialect, DataModel } from '../t
 const MULTI_STATEMENT = /;[^;\s]|;(?=\s*(?:select|with|begin|set|exec|declare|insert|update|delete|create|drop|alter|truncate|merge|grant|revoke|backup|shutdown))/i;
 
 const WRITE_KEYWORDS =
-  /\b(?:insert|update|delete|merge|truncate|create|drop|alter|grant|revoke|backup|restore|attach|detach|shutdown|exec|execute|sp_[a-z0-9_]*)\b/i;
+  /\b(?:into|insert|update|delete|merge|truncate|create|drop|alter|grant|revoke|backup|restore|attach|detach|shutdown|exec|execute|sp_[a-z0-9_]*)\b/i;
 
 const FORBIDDEN_CLAUSES =
   /\b(?:bulk\s+insert|into\s+outfile|for\s+(?:xml|json)\s+(?:path|auto)|option\s*\(|readpast|readuncommitted|noexpand|holdlock|updlock|tablock)\b/i;
+
+const UNION_PRECEDERS = new Set(['UNION', 'ALL', 'INTERSECT', 'EXCEPT']);
+
+const STATEMENT_KEYWORDS = new Set([
+  'INSERT',
+  'UPDATE',
+  'DELETE',
+  'MERGE',
+  'TRUNCATE',
+  'CREATE',
+  'DROP',
+  'ALTER',
+  'GRANT',
+  'REVOKE',
+  'BACKUP',
+  'RESTORE',
+  'EXEC',
+  'EXECUTE',
+  'DECLARE',
+  'SET',
+  'BEGIN',
+  'USE',
+  'SHUTDOWN',
+  'IF',
+  'WHILE',
+]);
+
+/**
+ * Reject unbalanced parentheses and concatenated statements. T-SQL does not
+ * require semicolons, so a stray `)` can otherwise close the engine's
+ * row-limit wrapper early and append a second statement (e.g. SELECT INTO).
+ */
+function assertSingleBalancedStatement(stripped: string): void {
+  const tokens = stripped.match(/\[[^\]]*\]|[()]|[A-Za-z_@#][A-Za-z0-9_@$#]*/g) ?? [];
+  let depth = 0;
+  let sawTopLevelSelect = false;
+  let lastTopLevelWord = '';
+
+  for (const token of tokens) {
+    if (token === '(') {
+      depth += 1;
+      continue;
+    }
+    if (token === ')') {
+      depth -= 1;
+      if (depth < 0) {
+        throw new Error('SQL Server query must contain exactly one balanced read-only SELECT statement');
+      }
+      continue;
+    }
+    // Bracketed identifiers are skipped so keywords inside them are ignored.
+    if (token.startsWith('[')) continue;
+
+    const word = token.toUpperCase();
+    if (depth !== 0) continue;
+
+    if (word === 'SELECT') {
+      if (sawTopLevelSelect && !UNION_PRECEDERS.has(lastTopLevelWord)) {
+        throw new Error('SQL Server query must contain exactly one read-only SELECT statement');
+      }
+      sawTopLevelSelect = true;
+    } else if (STATEMENT_KEYWORDS.has(word)) {
+      throw new Error('SQL Server query must be a read-only SELECT statement');
+    }
+    lastTopLevelWord = word;
+  }
+
+  if (depth !== 0) {
+    throw new Error('SQL Server query must contain exactly one balanced read-only SELECT statement');
+  }
+}
 
 /** Strip comments and replace string literals with a placeholder, so keyword checks are reliable. */
 export function stripSqlComments(sql: string): string {
@@ -62,6 +133,8 @@ export function validateReadOnlySqlServer(sql: string): string {
   if (MULTI_STATEMENT.test(` ${stripped}`)) {
     throw new Error('SQL Server query must contain exactly one read-only SELECT statement');
   }
+
+  assertSingleBalancedStatement(stripped);
 
   if (FORBIDDEN_CLAUSES.test(stripped)) {
     throw new Error('SQL Server query contains unsupported statements or clauses');

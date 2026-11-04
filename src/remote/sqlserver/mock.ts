@@ -27,7 +27,8 @@ interface Table {
   name: string;
   columns: Column[];
   rows: Record<string, unknown>[];
-  primaryKey?: string;
+  /** Ordered primary-key column names. */
+  primaryKey?: string[];
 }
 
 /** Normalize an identifier path: strip brackets/quoting, take the last segment, upper-case. */
@@ -45,6 +46,12 @@ function comparable(a: unknown, b: unknown): number {
   const av = String(a);
   const bv = String(b);
   return av === bv ? 0 : av < bv ? -1 : 1;
+}
+
+/** Resolve the ordered primary-key columns for a seeded table. */
+function primaryKeyColumns(t: Table): string[] {
+  if (t.primaryKey?.length) return t.primaryKey;
+  return t.columns.some((c) => c.notNull && c.name === 'ID') ? ['ID'] : [];
 }
 
 /** Build INFORMATION_SCHEMA catalog tables seeded from a concrete table list. */
@@ -66,21 +73,25 @@ function makeCatalog(db: string, tables: Table[]): Table[] {
       ORDINAL_POSITION: i + 1,
     }))
   );
-  const keyUsage: Record<string, unknown>[] = tables.flatMap((t) => {
-      const pkCols = t.primaryKey
-        ? t.columns.filter((c) => c.name === t.primaryKey)
-        : t.columns.filter((c) => c.notNull && c.name === 'ID');
-      return pkCols
-        .slice(0, 1)
-        .map((c, i) => ({
-          TABLE_CATALOG: db,
-          TABLE_SCHEMA: DEFAULT_SCHEMA,
-          TABLE_NAME: t.name,
-          COLUMN_NAME: c.name,
-          CONSTRAINT_NAME: `PK_${t.name}`,
-          ORDINAL_POSITION: i + 1,
-        }));
-    });
+  const keyUsage: Record<string, unknown>[] = tables.flatMap((t) =>
+    primaryKeyColumns(t).map((name, i) => ({
+      TABLE_CATALOG: db,
+      TABLE_SCHEMA: DEFAULT_SCHEMA,
+      TABLE_NAME: t.name,
+      COLUMN_NAME: name,
+      CONSTRAINT_NAME: `PK_${t.name}`,
+      ORDINAL_POSITION: i + 1,
+    }))
+  );
+  const tableConstraints: Record<string, unknown>[] = tables
+    .filter((t) => primaryKeyColumns(t).length > 0)
+    .map((t) => ({
+      TABLE_CATALOG: db,
+      TABLE_SCHEMA: DEFAULT_SCHEMA,
+      TABLE_NAME: t.name,
+      CONSTRAINT_NAME: `PK_${t.name}`,
+      CONSTRAINT_TYPE: 'PRIMARY KEY',
+    }));
 
   return [
     {
@@ -117,6 +128,17 @@ function makeCatalog(db: string, tables: Table[]): Table[] {
         { name: 'ORDINAL_POSITION', type: 'int', notNull: true },
       ],
       rows: keyUsage,
+    },
+    {
+      name: 'INFORMATION_SCHEMA.TABLE_CONSTRAINTS',
+      columns: [
+        { name: 'TABLE_CATALOG', type: 'nvarchar', notNull: true },
+        { name: 'TABLE_SCHEMA', type: 'nvarchar', notNull: true },
+        { name: 'TABLE_NAME', type: 'nvarchar', notNull: true },
+        { name: 'CONSTRAINT_NAME', type: 'nvarchar', notNull: true },
+        { name: 'CONSTRAINT_TYPE', type: 'nvarchar', notNull: true },
+      ],
+      rows: tableConstraints,
     },
   ];
 }
@@ -160,7 +182,7 @@ function tokenize(sql: string): Token[] {
       i = j;
       continue;
     }
-    if (/[a-zA-Z_@\[\]"]/.test(ch)) {
+    if (/[a-zA-Z_@\["]/.test(ch)) {
       let value = '';
       if (ch === '[') {
         i += 1;
@@ -266,12 +288,22 @@ interface Predicate {
   and: boolean | null;
 }
 
+interface HavingPredicate {
+  /** Aggregate function name (SUM, COUNT, MIN, MAX, AVG). */
+  name: string;
+  args: Expr[];
+  op: string;
+  value: unknown;
+  and: boolean | null;
+}
+
 interface ParsedSelect {
   items: SelectItem[];
   top?: number;
   from?: string;
   predicates: Predicate[];
   groupBy: string[];
+  having: HavingPredicate[];
   orderBy: { name: string; dir: 'ASC' | 'DESC' }[];
 }
 
@@ -368,9 +400,37 @@ class Parser {
       }
     }
 
-    // skip HAVING token(s) if present (ignored)
+    // HAVING filters groups by aggregate values. Only aggregate comparisons
+    // are supported; anything else is rejected instead of being silently ignored.
+    const having: HavingPredicate[] = [];
     if (this.is('HAVING')) {
-      while (this.peek() && !this.is('ORDER')) this.next();
+      this.next();
+      for (;;) {
+        const expr = this.parseExpr();
+        if (expr.kind !== 'call') {
+          throw new Error('HAVING supports aggregate expressions only, e.g. HAVING SUM(Units) > 10');
+        }
+        const op = this.next();
+        let opStr = op.v;
+        if (this.peek()?.t === 'sym' && (this.peek()!.v === '=' || this.peek()!.v === '>')) {
+          opStr = `${op.v}${this.next().v}`;
+        }
+        const valueToken = this.next();
+        let value: unknown;
+        if (valueToken.t === 'string') value = valueToken.v;
+        else if (valueToken.t === 'number') value = Number(valueToken.v);
+        else if (valueToken.t === 'word' && valueToken.v.toUpperCase() === 'NULL') value = null;
+        else throw new Error('Unsupported value in HAVING clause');
+        having.push({ name: expr.name!, args: expr.args ?? [], op: opStr, value, and: null });
+
+        if (this.is('AND') || this.is('OR')) {
+          const and = this.is('AND');
+          this.next();
+          having.push({ name: '', args: [], op: '', value: null, and });
+          continue;
+        }
+        break;
+      }
     }
 
     const orderBy: { name: string; dir: 'ASC' | 'DESC' }[] = [];
@@ -396,7 +456,7 @@ class Parser {
 
     if (this.peek()) throw new Error(`Unsupported SQL Server syntax near "${this.peek()?.v}"`);
 
-    return { items, top, from, predicates, groupBy, orderBy };
+    return { items, top, from, predicates, groupBy, having, orderBy };
   }
 
   private isKeyword(word: string): boolean {
@@ -558,46 +618,51 @@ class Parser {
   }
 }
 
+/** Apply a comparison operator to two comparable values. */
+function compareOp(actual: unknown, op: string, expected: unknown): boolean {
+  const c = comparable(actual, expected);
+  switch (op) {
+    case '=':
+      return c === 0;
+    case '<>':
+    case '!=':
+      return c !== 0;
+    case '<':
+      return c < 0;
+    case '>':
+      return c > 0;
+    case '<=':
+      return c <= 0;
+    case '>=':
+      return c >= 0;
+    default:
+      throw new Error(`Unsupported comparison operator: ${op}`);
+  }
+}
+
+/**
+ * Split a flat predicate list into OR groups of AND-connected predicates, so
+ * SQL precedence (AND before OR) is honoured instead of left-to-right order.
+ */
+function orGroups<T extends { and: boolean | null }>(predicates: T[]): T[][] {
+  const groups: T[][] = [[]];
+  for (const predicate of predicates) {
+    if (predicate.and === null) groups[groups.length - 1].push(predicate);
+    else if (predicate.and === false) groups.push([]);
+  }
+  return groups;
+}
+
 function matches(predicates: Predicate[], row: Record<string, unknown>): boolean {
   if (predicates.length === 0) return true;
-  let result = true;
-  let pendingAnd: boolean | null = null;
-  for (const p of predicates) {
-    if (p.and !== null) {
-      pendingAnd = p.and;
-      continue;
-    }
-    const c = comparable(row[p.col], p.value);
-    let current: boolean;
-    switch (p.op) {
-      case '=':
-        current = c === 0;
-        break;
-      case '<>':
-      case '!=':
-        current = c !== 0;
-        break;
-      case '<':
-        current = c < 0;
-        break;
-      case '>':
-        current = c > 0;
-        break;
-      case '<=':
-        current = c <= 0;
-        break;
-      case '>=':
-        current = c >= 0;
-        break;
-      default:
-        throw new Error(`Unsupported comparison operator: ${p.op}`);
-    }
-    if (pendingAnd === null) result = current;
-    else if (pendingAnd) result = result && current;
-    else result = result || current;
-    pendingAnd = null;
-  }
-  return result;
+  return orGroups(predicates).some((group) => group.every((p) => compareOp(row[p.col], p.op, p.value)));
+}
+
+function matchesHaving(predicates: HavingPredicate[], group: Record<string, unknown>[]): boolean {
+  if (predicates.length === 0) return true;
+  return orGroups(predicates).some((clause) =>
+    clause.every((p) => compareOp(applyAggregate(p.name, p.args, group), p.op, p.value))
+  );
 }
 
 function applyAggregate(name: string, args: Expr[], group: Record<string, unknown>[]): unknown {
@@ -640,8 +705,8 @@ export class MockQueryConnector implements QueryConnector {
               ),
               primaryKey: t.primaryKey
               ? (Array.isArray(t.primaryKey)
-                  ? t.primaryKey[0]?.toUpperCase()
-                  : t.primaryKey.toUpperCase())
+                  ? t.primaryKey.map((key) => key.toUpperCase())
+                  : [t.primaryKey.toUpperCase()])
               : undefined,
             }));
     this.tables = [...seeded, ...makeCatalog(db, seeded)];
@@ -701,7 +766,11 @@ export class MockQueryConnector implements QueryConnector {
         arr.push(row);
         groups.set(key, arr);
       }
-      resultRows = [...groups.entries()].map(([, group]) => {
+      const groupEntries = [...groups.entries()];
+      const filteredGroups = parsed.having.length
+        ? groupEntries.filter(([, group]) => matchesHaving(parsed.having, group))
+        : groupEntries;
+      resultRows = filteredGroups.map(([, group]) => {
               const out: Record<string, unknown> = {};
               for (const item of parsed.items) {
           if (item.isStar) continue;
@@ -735,6 +804,9 @@ export class MockQueryConnector implements QueryConnector {
             return out;
           })(),
         ];
+        if (parsed.having.length && !matchesHaving(parsed.having, rows)) {
+          resultRows = [];
+        }
         resultRows = resultRows.filter((r) => Object.keys(r).length > 0);
       } else {
         resultRows = rows.map((row) => {

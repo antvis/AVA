@@ -5,66 +5,25 @@
  * privileges, SqlServerEngine additionally validates each statement as a
  * single read-only SELECT before it reaches this connector.
  *
- * The tedious package is loaded lazily via `require()` so this module
- * type-checks and is exercised by tests even where the bindings are optional;
- * tests stub the module with `vi.mock`.
+ * The tedious package is loaded lazily through `./tedious-loader`; tests
+ * substitute a structural fake module because the driver is optional.
  */
+import { loadTedious } from './tedious-loader';
 import { resolveTdsConfig } from './tds-config';
 
 import type { SqlServerSourceOptions } from '../../types';
 import type { QueryColumnMeta, QueryConnector, QueryResult, QueryResultRow } from './connector';
+import type { TediousCell, TediousColumnMetadata, TediousConnection } from './tedious-loader';
 
-/** Structural subset of the tedious connection and request objects. */
-interface TediousCell {
-  value: unknown;
-  type?: { name?: string };
-  typeName?: string;
-}
-
-interface TediousConnection {
-  connect(cb: (error?: Error) => void): void;
-  execSql(request: TediousRequest): void;
-  close(): void;
-  closed: boolean;
-  on(event: 'end', cb: () => void): unknown;
-}
-
-type TediousRequestCtor = new (sql: string, cb: (error?: Error, rowCount?: number) => void) => TediousRequest;
-
-interface TediousRequest {
-  on(event: 'columnMetadata', cb: (columns: TediousCell[]) => void): unknown;
-  on(event: 'row', cb: (row: Record<string, TediousCell>) => void): unknown;
-}
-
-interface TediousModule {
-  Connection: new (config: unknown) => TediousConnection;
-  Request: TediousRequestCtor;
-}
-
-let cachedModule: TediousModule | null | undefined;
-
-/** Load (and cache) the tedious bindings, throwing a clear error when absent. */
-function loadTedious(): TediousModule {
-  if (cachedModule !== undefined) return cachedModule;
-  try {
-    // eslint-disable-next-line @typescript-eslint/no-var-requires
-    cachedModule = require('tedious') as TediousModule;
-  } catch {
-    throw new Error(
-      'SQL Server adapter requires the optional "tedious" dependency. ' +
-        'Install it (npm i tedious) or set adapter: "mock" to use the in-memory connector.'
-    );
-  }
-  return cachedModule;
-}
-
-function typeName(cell: TediousCell): string {
-  return cell.type?.name ?? cell.typeName ?? 'sql_variant';
+function typeName(value: TediousColumnMetadata | TediousCell): string {
+  const metadata = 'metadata' in value ? value.metadata : undefined;
+  return metadata?.type?.name ?? value.type?.name ?? value.typeName ?? 'sql_variant';
 }
 
 export class TediousQueryConnector implements QueryConnector {
   private readonly options: SqlServerSourceOptions;
   private connection: TediousConnection | null = null;
+  private pendingReject: ((error: Error) => void) | null = null;
 
   constructor(options: SqlServerSourceOptions) {
     this.options = options;
@@ -74,14 +33,24 @@ export class TediousQueryConnector implements QueryConnector {
     if (this.connection && !this.connection.closed) return;
 
     const config = resolveTdsConfig(this.options);
-    const { Connection } = loadTedious();
+    const { Connection } = await loadTedious();
     const connection = new Connection(config);
+
+    // Tedious emits connection-level `error` events for socket drops and
+    // transient outages. Without a listener, Node treats them as unhandled and
+    // terminates the process, so install one before connecting.
+    connection.on('error', (error) => this.handleConnectionError(connection, error));
 
     const ok = await new Promise<boolean>((resolve) => {
       connection.connect((error) => resolve(!error));
     });
 
     if (!ok) {
+      try {
+        connection.close();
+      } catch {
+        // Ignore cleanup failures for a connection that never came up.
+      }
       throw new Error(`Failed to connect to SQL Server: ${config.server}`);
     }
     this.connection = connection;
@@ -89,14 +58,20 @@ export class TediousQueryConnector implements QueryConnector {
 
   async query<T extends QueryResultRow = QueryResultRow>(sql: string): Promise<QueryResult & { rows: T[] }> {
     await this.connect();
-    const { Request } = loadTedious();
+    const { Request } = await loadTedious();
     const connection = this.connection!;
 
     return new Promise<QueryResult & { rows: T[] }>((resolve, reject) => {
       const columns: QueryColumnMeta[] = [];
       const rows: T[] = [];
 
+      this.pendingReject = (error) => {
+        this.pendingReject = null;
+        reject(error);
+      };
+
       const request = new Request(sql, (error) => {
+        this.pendingReject = null;
         if (error) {
           reject(error instanceof Error ? error : new Error(String(error)));
           return;
@@ -105,12 +80,17 @@ export class TediousQueryConnector implements QueryConnector {
       });
 
       request.on('columnMetadata', (metadata) => {
-        for (const cell of metadata) columns.push({ name: cell.typeName ?? '', type: typeName(cell) });
+        for (const cell of metadata) columns.push({ name: cell.colName ?? '', type: typeName(cell) });
       });
 
       request.on('row', (row) => {
         const record: Record<string, unknown> = {};
-        for (const key of Object.keys(row)) record[key] = row[key].value;
+        // Tedious emits an array of cells; the column name lives in each
+        // cell's metadata (not in the array index).
+        row.forEach((cell, index) => {
+          const name = cell.metadata?.colName ?? columns[index]?.name ?? String(index);
+          record[name] = cell.value;
+        });
         rows.push(record as T);
       });
 
@@ -119,6 +99,7 @@ export class TediousQueryConnector implements QueryConnector {
   }
 
   async close(): Promise<void> {
+    this.pendingReject = null;
     if (!this.connection) return;
     const connection = this.connection;
     this.connection = null;
@@ -132,5 +113,13 @@ export class TediousQueryConnector implements QueryConnector {
         resolve();
       }
     });
+  }
+
+  /** Invalidate the failed connection and surface the error to the active call. */
+  private handleConnectionError(connection: TediousConnection, error: Error): void {
+    if (this.connection === connection) this.connection = null;
+    const pending = this.pendingReject;
+    this.pendingReject = null;
+    if (pending) pending(error);
   }
 }

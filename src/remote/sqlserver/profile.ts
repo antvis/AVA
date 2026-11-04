@@ -22,7 +22,7 @@ type SqlServerMetric = Metric<(context: Context) => string>;
 export function logicalType(type: string): LogicalType {
   const base = type.trim().toLowerCase();
   if (
-    /^(tinyint|smallint|int|bigint|bit|decimal(\(.*\))?|numeric(\(.*\))?|money|smallmoney|float(\(.*\))?|real)$/.test(
+    /^(tinyint|smallint|int|bigint|decimal(\(.*\))?|numeric(\(.*\))?|money|smallmoney|float(\(.*\))?|real)$/.test(
       base
     )
   )
@@ -37,13 +37,26 @@ export function logicalType(type: string): LogicalType {
   return 'unknown';
 }
 
-/** Epoch-milliseconds expression for a date column (86400000 ms per day from SQL Server's epoch). */
+/** Epoch-milliseconds expression for a date column, preserving the time component. */
 function epochMs(column: string): string {
-  return `(DATEDIFF_BIG(day, '1970-01-01', ${column}) * 86400000.0)`;
+  return `(DATEDIFF_BIG(millisecond, '1970-01-01', ${column}))`;
 }
 
 function numericValue(column: string): string {
   return `CAST(${column} AS float)`;
+}
+
+/**
+ * Legacy `text`/`ntext`/`xml` columns cannot be used directly with
+ * COUNT(DISTINCT ...) or LEN(); converting to nvarchar(max) keeps a single bad
+ * column from breaking the shared metric query for the whole table.
+ */
+function columnExpression(field: MetricField): string {
+  const base = field.type.trim().toLowerCase().replace(/\(.*\)$/, '');
+  if (base === 'text' || base === 'ntext' || base === 'xml') {
+    return `CAST(${sqlIdentifier(field.name)} AS nvarchar(max))`;
+  }
+  return sqlIdentifier(field.name);
 }
 
 export const BUILTIN_METRICS: SqlServerMetric[] = [
@@ -68,7 +81,7 @@ export const BUILTIN_METRICS: SqlServerMetric[] = [
       const value = `CAST(${column!} AS nvarchar(4000))`;
       return `CASE WHEN COUNT(DISTINCT ${value}) > COUNT(*) * ${maxDistinctRatio}
         THEN NULL ELSE (
-          SELECT '[' + STRING_AGG(CONCAT('{"value":"', REPLACE(CAST(v AS nvarchar(max)), '"', '\\"'), '","count":', CAST(n AS nvarchar(20)), '}'), ',') + ']'
+          SELECT '[' + STRING_AGG(CONCAT('{"value":"', STRING_ESCAPE(CAST(v AS nvarchar(max)), 'json'), '","count":', CAST(n AS nvarchar(20)), '}'), ',') + ']'
           FROM (
             SELECT TOP (${limit}) ${value} AS v, COUNT(*) AS n
             FROM ${table}
@@ -159,7 +172,7 @@ export async function profileTables(
           output,
           expression: definition.expression({
             table,
-            column: field ? sqlIdentifier(field.name) : undefined,
+            column: field ? columnExpression(field) : undefined,
             field,
             metric,
           }),

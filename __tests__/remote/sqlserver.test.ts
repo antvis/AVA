@@ -9,7 +9,7 @@ import { afterEach, describe, expect, it, vi } from 'vitest';
 import { AVA } from '../../src';
 import { MockQueryConnector, SqlServerEngine, validateReadOnlySqlServer } from '../../src/remote/sqlserver';
 import { SQLSERVER_TABLE_SEED } from '../../src/remote/sqlserver/examples';
-import { BUILTIN_METRICS as SQL_SERVER_METRICS, profileTables as sqlServerProfile } from '../../src/remote/sqlserver/profile';
+import { BUILTIN_METRICS as SQL_SERVER_METRICS, logicalType, profileTables as sqlServerProfile } from '../../src/remote/sqlserver/profile';
 import { getLLMConfig } from '../test-utils';
 
 import type { Schema } from '../../src/types';
@@ -55,8 +55,19 @@ describe('validateReadOnlySqlServer', () => {
     'EXEC sp_help',
     'SELECT 1; DROP TABLE orders',
     'SELECT * FROM (SELECT 1) x; DELETE FROM t',
+    // A stray closing paren escapes the row-limit wrapper and appends a
+    // semicolon-free SELECT INTO statement.
+    'SELECT 1 AS a) AS t SELECT 1 AS b INTO dbo.ava_write_probe FROM (SELECT 1 AS c',
+    'SELECT 1 AS a) AS t SELECT 1 AS b FROM (SELECT 1 AS c',
+    'SELECT 1 AS a FROM (SELECT 1 AS b) AS t SELECT 1 AS c',
+    'SELECT * INTO dbo.ava_write_probe FROM orders',
   ])('rejects %s', (sql) => {
     expect(() => validateReadOnlySqlServer(sql)).toThrow();
+  });
+
+  it('accepts UNION and CTE queries', () => {
+    expect(() => validateReadOnlySqlServer('SELECT 1 UNION ALL SELECT 2')).not.toThrow();
+    expect(() => validateReadOnlySqlServer('WITH x AS (SELECT 1 AS a) SELECT * FROM x')).not.toThrow();
   });
 });
 
@@ -233,6 +244,64 @@ describe('SqlServerEngine profile', () => {
     const ids = SQL_SERVER_METRICS.map((m) => m.id).sort();
     expect(ids).toEqual(['distinct_count', 'duplicate_count', 'max', 'max_length', 'mean', 'min', 'min_length', 'null_count', 'row_count', 'stddev', 'sum', 'top_values']);
   });
+
+  it('classifies bit as boolean instead of numeric', async () => {
+    expect(logicalType('bit')).toBe('boolean');
+
+    const flags: Schema = {
+      models: [
+        {
+          name: 'flags',
+          tableReference: { catalog: 'demo', table: 'flags' },
+          columns: [{ name: 'IsActive', type: 'bit', notNull: true }],
+        },
+      ],
+    };
+    const run = vi.fn<(sql: string) => Promise<Record<string, unknown>[]>>().mockResolvedValue([
+      { m0: '[{"value":"true","count":2}]' },
+    ]);
+    const result = await sqlServerProfile(run, flags, { metrics: [{ id: 'top_values' }] });
+    expect(result.models[0].columns[0].properties.logicalType).toBe('boolean');
+    expect(result.models[0].columns[0].metrics.top_values).toEqual([{ value: 'true', count: 2 }]);
+  });
+
+  it('keeps the time component in date bounds and escapes JSON with STRING_ESCAPE', async () => {
+    const dated: Schema = {
+      models: [
+        {
+          name: 'events',
+          tableReference: { catalog: 'demo', table: 'events' },
+          columns: [{ name: 'At', type: 'datetime2', notNull: true }],
+        },
+      ],
+    };
+    const run = vi.fn<(sql: string) => Promise<Record<string, unknown>[]>>().mockResolvedValue([{ m0: '0', m1: '0' }]);
+    await sqlServerProfile(run, dated, { metrics: [{ id: 'min' }, { id: 'max' }] });
+    const query = run.mock.calls[0][0];
+    expect(query).toContain('DATEDIFF_BIG(millisecond');
+    expect(query).not.toContain('DATEDIFF_BIG(day');
+
+    const runTop = vi.fn<(sql: string) => Promise<Record<string, unknown>[]>>().mockResolvedValue([{ m0: '[]' }]);
+    await sqlServerProfile(runTop, schema, { metrics: [{ id: 'top_values' }] });
+    const topQuery = runTop.mock.calls[0][0];
+    expect(topQuery).toContain("STRING_ESCAPE(CAST(v AS nvarchar(max)), 'json')");
+    expect(topQuery).not.toContain('REPLACE(CAST(v AS nvarchar(max))');
+  });
+
+  it('converts legacy text/ntext/xml columns to nvarchar(max) for metrics', async () => {
+    const legacy: Schema = {
+      models: [
+        {
+          name: 'docs',
+          tableReference: { catalog: 'demo', table: 'docs' },
+          columns: [{ name: 'Body', type: 'text', notNull: false }],
+        },
+      ],
+    };
+    const run = vi.fn<(sql: string) => Promise<Record<string, unknown>[]>>().mockResolvedValue([{ m0: '1' }]);
+    await sqlServerProfile(run, legacy, { metrics: [{ id: 'distinct_count' }] });
+    expect(run.mock.calls[0][0]).toContain('COUNT(DISTINCT CAST("Body" AS nvarchar(max)))');
+  });
 });
 
 describe('MockQueryConnector', () => {
@@ -247,5 +316,97 @@ describe('MockQueryConnector', () => {
     const again = await connector.query('SELECT Region FROM orders WHERE Region = \'North\'');
     expect(again.rows.length).toBeGreaterThan(0);
     await connector.close();
+  });
+});
+
+describe('MockQueryConnector query semantics', () => {
+  it('rejects a standalone closing bracket instead of hanging', async () => {
+    const connector = new MockQueryConnector({ database: 'demo', tables: SQLSERVER_TABLE_SEED } as never);
+    let timer: ReturnType<typeof setTimeout> | undefined;
+    try {
+      const started = Date.now();
+      const timeout = new Promise<never>((_, reject) => {
+        timer = setTimeout(() => reject(new Error('malformed query timed out')), 1000);
+      });
+      await expect(Promise.race([connector.query('SELECT ]'), timeout])).rejects.toThrow(
+        /Unsupported SQL Server syntax|Unexpected token/
+      );
+      expect(Date.now() - started).toBeLessThan(1000);
+    } finally {
+      if (timer) clearTimeout(timer);
+      await connector.close();
+    }
+  });
+
+  it('evaluates HAVING instead of silently dropping it', async () => {
+    const connector = new MockQueryConnector({ database: 'demo', tables: SQLSERVER_TABLE_SEED } as never);
+    try {
+      const none = await connector.query(
+        'SELECT Region, SUM(Units) AS n FROM orders GROUP BY Region HAVING SUM(Units) > 100'
+      );
+      expect(none.rows).toEqual([]);
+
+      const all = await connector.query(
+        'SELECT Region, SUM(Units) AS n FROM orders GROUP BY Region HAVING SUM(Units) > 10 ORDER BY Region'
+      );
+      expect(all.rows).toEqual([
+        { Region: 'North', n: 12 },
+        { Region: 'South', n: 17 },
+        { Region: 'West', n: 11 },
+      ]);
+    } finally {
+      await connector.close();
+    }
+  });
+
+  it('rejects unsupported HAVING forms with a clear error', async () => {
+    const connector = new MockQueryConnector({ database: 'demo', tables: SQLSERVER_TABLE_SEED } as never);
+    try {
+      await expect(
+        connector.query('SELECT Region FROM orders GROUP BY Region HAVING Region = \'North\'')
+      ).rejects.toThrow('HAVING supports aggregate expressions only');
+    } finally {
+      await connector.close();
+    }
+  });
+
+  it('applies AND before OR in mixed predicates', async () => {
+    const connector = new MockQueryConnector({ database: 'demo', tables: SQLSERVER_TABLE_SEED } as never);
+    try {
+      const result = await connector.query(
+        "SELECT OrderID FROM orders WHERE Region = 'North' OR Region = 'South' AND Units > 10 ORDER BY OrderID"
+      );
+      expect(result.rows.map((row) => row.OrderID)).toEqual([1, 3, 5]);
+    } finally {
+      await connector.close();
+    }
+  });
+
+  it('preserves the full ordered composite primary key', async () => {
+    const connector = new MockQueryConnector({
+      database: 'demo',
+      tables: [
+        {
+          name: 'order_lines',
+          columns: [
+            { name: 'OrderID', type: 'int', notNull: true },
+            { name: 'LineID', type: 'int', notNull: true },
+          ],
+          primaryKey: ['OrderID', 'LineID'],
+          rows: [],
+        },
+      ],
+    } as never);
+    try {
+      const result = await connector.query(
+        'SELECT TABLE_NAME, COLUMN_NAME, ORDINAL_POSITION FROM INFORMATION_SCHEMA.KEY_COLUMN_USAGE ORDER BY ORDINAL_POSITION'
+      );
+      expect(result.rows.filter((row) => row.TABLE_NAME === 'ORDER_LINES')).toEqual([
+        { TABLE_NAME: 'ORDER_LINES', COLUMN_NAME: 'ORDERID', ORDINAL_POSITION: 1 },
+        { TABLE_NAME: 'ORDER_LINES', COLUMN_NAME: 'LINEID', ORDINAL_POSITION: 2 },
+      ]);
+    } finally {
+      await connector.close();
+    }
   });
 });
