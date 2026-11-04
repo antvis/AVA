@@ -56,8 +56,32 @@ await ava.source({
 
 Queries use the Node.js `mssql` driver with read-only T-SQL.
 
+## Snowflake
+
+```typescript
+const ava = new AVA({
+  llm: { model: 'YOUR_MODEL', apiKey: process.env.OPENAI_API_KEY },
+  engine: { type: 'snowflake' },
+});
+await ava.source({
+  type: 'snowflake',
+  options: {
+    account: 'myorg-myaccount',
+    username: 'AVA_READER_SVC',
+    authenticator: 'SNOWFLAKE_JWT',
+    privateKeyPath: '/secure/ava_reader_key.p8',
+    warehouse: 'AVA_WH',
+    role: 'AVA_READER',
+    database: 'ANALYTICS',
+    schema: 'SALES',
+  },
+});
+```
+
+Queries run on your warehouse through the official Snowflake Node.js driver, using the role's privileges. The engine discovers one schema, accepts only statements that compile as a single query (refusing anonymous procedures and `SYSTEM$` functions), and enforces `queryTimeoutMs` in Snowflake and on the client.
+
 ## Shared workflow
 
 All remote engines support `schema()`, `profile()`, `translate()`, `query()`, and `analyze()`. Set the matching source and engine types in the JavaScript API. Release resources with `await ava.dispose()` after use.
 
-See [Supabase parameters](/documentation/data/sources/#supabase), [ClickHouse options](/documentation/data/sources/#clickhouse), and [SQL Server parameters](/documentation/data/sources/#sql-server) for complete configuration tables.
+See [Supabase parameters](/documentation/data/sources/#supabase), [ClickHouse options](/documentation/data/sources/#clickhouse), [SQL Server parameters](/documentation/data/sources/#sql-server), and [Snowflake options](/documentation/data/sources/#snowflake) for complete configuration tables.

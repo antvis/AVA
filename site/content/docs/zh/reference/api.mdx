@@ -65,7 +65,7 @@ import { Heading } from '../../../../mdx-components';
 
 <h4 id="engine-options">引擎选项</h4>
 
-提供 `engine` 时，`config.engine.type` 必填。支持 `duckdb`、`python`、`javascript`、`supabase`、`clickhouse`，以及通过 `registerEngine()` 注册的名称。省略 `engine` 时选择 DuckDB。JavaScript、Supabase、ClickHouse 没有其他引擎字段，连接凭证放在 `source()` 中。
+提供 `engine` 时，`config.engine.type` 必填。支持 `duckdb`、`python`、`javascript`、`supabase`、`clickhouse`、`snowflake`，以及通过 `registerEngine()` 注册的名称。省略 `engine` 时选择 DuckDB。JavaScript、Supabase、ClickHouse、Snowflake 没有其他引擎字段，连接凭证放在 `source()` 中。
 
 <h5 id="duckdb">DuckDB</h5>
 

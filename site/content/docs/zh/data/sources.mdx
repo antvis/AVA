@@ -56,6 +56,11 @@ import { Heading } from '../../../../mdx-components';
     <strong>ClickHouse</strong>
     <span>分析型数据库</span>
   </a>
+  <a href="#snowflake">
+    <img src="/logos/snowflake.svg" alt="" width="28" height="28" />
+    <strong>Snowflake</strong>
+    <span>云数据仓库</span>
+  </a>
   <a href="/zh/documentation/engines/custom/">
     <img src="/logos/contribute.svg" alt="" width="28" height="28" />
     <strong>自定义扩展</strong>
@@ -86,12 +91,12 @@ const schema = await ava.schema();
 
 | 参数 | 类型 | 必填 | 含义 |
 | --------- | ---------------------- | -------- | -------------------------------------------------------------------------------------------------------------------------------------------- |
-| `type` | `SourceType` | 是 | 支持 `csv`、`csv-file`、`json`、`json-file`、`parquet`、`excel`、`text`、`sqlite`、`mysql`、`postgresql`、`mongodb`、`supabase`、`clickhouse`、`feishu-bitable`。 |
+| `type` | `SourceType` | 是 | 支持 `csv`、`csv-file`、`json`、`json-file`、`parquet`、`excel`、`text`、`sqlite`、`mysql`、`postgresql`、`mongodb`、`supabase`、`clickhouse`、`snowflake`、`feishu-bitable`。 |
 | `options` | 数据源对应的对象 | 是 | 使用下方对应的数据源参数表，字段名均相对于 `options`。 |
 
 `source()` 没有返回值，负责为执行准备数据。结构发现会推迟到 `schema()` 或其他操作需要时进行。再次调用 `source()` 会替换当前数据源并清空元数据缓存。使用 `schema()` 查看表名与字段名，结束后调用 `await ava.dispose()`。
 
-示例均在 Node.js 中运行。Supabase 和 ClickHouse 的示例同时给出了必需的构造函数配置。前端应用请参考[浏览器用法](/documentation/browser/)。
+示例均在 Node.js 中运行。Supabase、ClickHouse 和 Snowflake 的示例同时给出了必需的构造函数配置。前端应用请参考[浏览器用法](/documentation/browser/)。
 
 <Heading as="h2" id="csv">CSV</Heading>
 
@@ -557,6 +562,76 @@ await ava.source({
 | `json.stringify` | `<T>(input: T) => string` | 可选，用于序列化值。 |
 
 此客户端的 Zstd 压缩需要 Node.js 22.15 或更高版本。响应压缩可能与引擎强制的服务端只读设置冲突；除非服务端允许，否则请保持关闭。
+
+<Heading as="h2" id="snowflake">Snowflake</Heading>
+
+查询通过 Snowflake 官方 Node.js 驱动（[snowflake-sdk](https://docs.snowflake.com/en/developer-guide/node-js/nodejs-driver)）在 Snowflake 中执行：由仓库完成计算，连接所用的角色决定 AVA 能看到哪些表和视图。数据不会复制到 AVA。
+
+```typescript
+const ava = new AVA({
+  llm: { model: 'YOUR_MODEL', apiKey: process.env.OPENAI_API_KEY },
+  engine: { type: 'snowflake' },
+});
+await ava.source({
+  type: 'snowflake',
+  options: {
+    account: 'myorg-myaccount',
+    username: 'AVA_READER_SVC',
+    authenticator: 'SNOWFLAKE_JWT',
+    privateKeyPath: '/secure/ava_reader_key.p8',
+    warehouse: 'AVA_WH',
+    role: 'AVA_READER',
+    database: 'SNOWFLAKE_SAMPLE_DATA',
+    schema: 'TPCH_SF1',
+  },
+});
+```
+
+<Heading as="h3" id="snowflake-connection-fields">连接字段</Heading>
+
+| 字段 | 类型 | 必填 | 含义与默认值 |
+| --------------- | -------- | -------------------- | ------------------------------------------------------------------------------------ |
+| `account` | `string` | 是 | 账号标识，格式为 `orgname-accountname`。 |
+| `database` | `string` | 是 | 要发现和查询的数据库。 |
+| `schema` | `string` | 否 | 暴露其中表和视图的 schema，也是会话的默认 schema。默认 `PUBLIC`。 |
+| `warehouse` | `string` | 否 | 执行查询的仓库，默认使用用户的 `DEFAULT_WAREHOUSE`。 |
+| `role` | `string` | 否 | 会话使用的角色，默认使用用户的 `DEFAULT_ROLE`。请使用只读角色。 |
+| `username` | `string` | 多数认证方式必填 | 登录名。 |
+| `authenticator` | `string` | 否 | 驱动的认证方式，如 `SNOWFLAKE_JWT`、`PROGRAMMATIC_ACCESS_TOKEN` 或 `OAUTH`。默认 `SNOWFLAKE`（密码）。 |
+| `privateKey` | `string` | `SNOWFLAKE_JWT` 时必填 | PEM 格式私钥；也可用 `privateKeyPath` 从文件读取，加密的私钥用 `privateKeyPass` 提供口令。 |
+| `token` | `string` | 令牌类认证时必填 | Programmatic access token 或 OAuth 访问令牌；也可用 `tokenFilePath` 从文件读取。 |
+| `password` | `string` | `SNOWFLAKE` 时必填 | 密码。Snowflake 正在逐步停用单因素密码登录，建议使用密钥对或令牌。 |
+| `queryTimeoutMs` | `number` | 否 | 单条语句的时限（毫秒）。由 Snowflake 执行（语句超时和排队超时），到期时客户端也会取消语句。默认 `30000`。 |
+
+其他 [snowflake-sdk 连接选项](https://docs.snowflake.com/en/developer-guide/node-js/nodejs-driver-options)，如 `host`、代理设置或 `queryTag`（默认 `AVA`），会原样转发。影响结果和会话的驱动选项由 AVA 设置（`rowMode`、`streamResult`、`fetchAsString`、`jsTreatIntegerAsBigInt`、`representNullAsStringNull`、`serverSessionKeepAlive`）。
+
+<Heading as="h3" id="snowflake-permissions">权限</Heading>
+
+角色需要仓库、数据库和 schema 的 `USAGE` 权限，以及待分析表和视图的 `SELECT` 权限（`SNOWFLAKE_SAMPLE_DATA` 这类共享数据库需要 `IMPORTED PRIVILEGES`）。结构发现读取 `INFORMATION_SCHEMA` 和 `SHOW ... KEYS`，它们只列出角色可访问的对象，所以发现到的 schema 就是授权范围；声明的主键、唯一键和外键会成为键和关系。数据库、schema 或仓库不存在或未授权时，加载会明确报错。
+
+使用密钥对认证的专用只读服务用户：
+
+```sql
+CREATE ROLE AVA_READER;
+GRANT USAGE ON WAREHOUSE AVA_WH TO ROLE AVA_READER;
+GRANT USAGE ON DATABASE ANALYTICS TO ROLE AVA_READER;
+GRANT USAGE ON SCHEMA ANALYTICS.SALES TO ROLE AVA_READER;
+GRANT SELECT ON ALL TABLES IN SCHEMA ANALYTICS.SALES TO ROLE AVA_READER;
+GRANT SELECT ON ALL VIEWS IN SCHEMA ANALYTICS.SALES TO ROLE AVA_READER;
+CREATE USER AVA_READER_SVC TYPE = SERVICE DEFAULT_ROLE = AVA_READER DEFAULT_WAREHOUSE = AVA_WH
+  RSA_PUBLIC_KEY = 'MIIBIjANBgkqh...';
+GRANT ROLE AVA_READER TO USER AVA_READER_SVC;
+```
+
+<Heading as="h3" id="snowflake-query-execution">查询执行</Heading>
+
+- 语句必须能作为子查询编译通过才会执行，而 Snowflake 的子查询只接受单个查询表达式。因此 DDL、DML、`CALL`、脚本块和多语句在执行前就会被拒绝；编译不占用仓库。匿名存储过程（`WITH ... AS PROCEDURE ... CALL`）和 `SYSTEM$` 函数在编译前就会被拒绝：前者即使放在子查询里 Snowflake 也会执行，后者有不少会改变状态。
+- 语句随后按原样执行，因为 Snowflake 不会把子查询的 `ORDER BY` 应用到外层查询。AVA 从流式结果中最多读取 `maxRows + 1` 行，Snowflake 也在相同行数处停止（`ROWS_PER_RESULTSET`）。
+- 登录后 AVA 会设置会话参数：由 `queryTimeoutMs` 得出的语句超时和排队超时、`MULTI_STATEMENT_COUNT = 1`、`ABORT_DETACHED_QUERY`、`STRICT_JSON_OUTPUT` 以及固定的输出格式。
+- `NUMBER` 只有在精确时才转成 JavaScript 数字，更大或更精确的值保留为十进制字符串。浮点数的 `NaN` 和无穷大保留为字符串。日期格式为 `YYYY-MM-DD`；时间和时间戳带九位小数（`2024-03-01 09:00:00.123456789`），带时区的类型再加上偏移量（`+08:00`）。`VARIANT`、`OBJECT` 和 `ARRAY` 是解析后的 JSON，`BINARY` 是十六进制文本。
+- `dispose()` 先取消正在运行的语句，再关闭会话；仅关闭 Snowflake 会话不会停止其中的语句。进程意外退出时，语句超时仍会让语句结束。
+
+查询会消耗仓库 credits：请给 AVA 一个开启自动挂起和资源监控的小规格仓库，也不要授予它不需要的权限，例如存储过程、外部函数或集成的 `USAGE`。一个数据源对应一个 schema；要分析其他 schema，请再加载一个数据源。
 
 <Heading as="h2" id="ssh-options">SSH 选项</Heading>
 
