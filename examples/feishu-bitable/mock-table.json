@@ -1,0 +1,181 @@
+{
+  "description": "Offline stand-in for a Feishu Bitable (飞书多维表格) served to AVA's loader by mock.ts. Shapes follow the Bitable v1 field/record API so the real loader code runs unchanged.",
+  "pageSize": 5,
+  "appToken": "bascnMockAvA1012",
+  "tableId": "tblMockSales1012",
+  "fields": [
+    { "field_name": "区域", "type": 3 },
+    { "field_name": "月份", "type": 1 },
+    { "field_name": "商品", "type": 1 },
+    { "field_name": "销售额", "type": 2 },
+    { "field_name": "库存", "type": 2 },
+    { "field_name": "安全库存", "type": 2 },
+    { "field_name": "负责人", "type": 11 },
+    { "field_name": "标签", "type": 4 },
+    { "field_name": "关联订单", "type": 18 },
+    { "field_name": "备注", "type": 1 },
+    { "field_name": "审批状态", "type": 24 }
+  ],
+  "records": [
+    {
+      "record_id": "recMock0001",
+      "fields": {
+        "区域": "华东",
+        "月份": [{ "text": "2026-01", "type": "text" }],
+        "商品": [{ "text": "智能音箱", "type": "text" }],
+        "销售额": 120000,
+        "库存": 120,
+        "安全库存": 100,
+        "负责人": [{ "id": "ou_mock_huang", "name": "黄泡泡" }],
+        "标签": ["重点", "新品"],
+        "关联订单": { "link_record_ids": ["recOrder0001"] },
+        "备注": [{ "text": "华东大区重点客户", "type": "text" }],
+        "审批状态": "已通过"
+      }
+    },
+    {
+      "record_id": "recMock0002",
+      "fields": {
+        "区域": "华东",
+        "月份": [{ "text": "2026-02", "type": "text" }],
+        "商品": [{ "text": "智能音箱", "type": "text" }],
+        "销售额": 132000,
+        "库存": 90,
+        "安全库存": 100,
+        "负责人": [{ "id": "ou_mock_huang", "name": "黄泡泡" }],
+        "标签": ["重点"],
+        "关联订单": { "link_record_ids": ["recOrder0002"] },
+        "备注": [{ "text": "春节促销拉动", "type": "text" }],
+        "审批状态": "已通过"
+      }
+    },
+    {
+      "record_id": "recMock0003",
+      "fields": {
+        "区域": "华东",
+        "月份": [{ "text": "2026-03", "type": "text" }],
+        "商品": [{ "text": "智能音箱", "type": "text" }],
+        "销售额": 110000,
+        "库存": 60,
+        "安全库存": 100,
+        "负责人": [{ "id": "ou_mock_huang", "name": "黄泡泡" }],
+        "标签": ["重点", "补货"],
+        "关联订单": { "link_record_ids": ["recOrder0003"] },
+        "备注": [{ "text": "渠道库存下降，需补货", "type": "text" }],
+        "审批状态": "审批中"
+      }
+    },
+    {
+      "record_id": "recMock0004",
+      "fields": {
+        "区域": "华北",
+        "月份": [{ "text": "2026-01", "type": "text" }],
+        "商品": [{ "text": "扫地机器人", "type": "text" }],
+        "销售额": 90000,
+        "库存": 40,
+        "安全库存": 30,
+        "负责人": [{ "id": "ou_mock_du", "name": "杜小满" }],
+        "标签": ["新品"],
+        "关联订单": { "link_record_ids": ["recOrder0004"] },
+        "备注": [{ "text": "新客户首单", "type": "text" }],
+        "审批状态": "已通过"
+      }
+    },
+    {
+      "record_id": "recMock0005",
+      "fields": {
+        "区域": "华北",
+        "月份": [{ "text": "2026-02", "type": "text" }],
+        "商品": [{ "text": "扫地机器人", "type": "text" }],
+        "销售额": 86000,
+        "库存": 25,
+        "安全库存": 30,
+        "负责人": [{ "id": "ou_mock_du", "name": "杜小满" }],
+        "标签": ["新品"],
+        "关联订单": { "link_record_ids": ["recOrder0005"] },
+        "备注": [{ "text": "物流延迟影响交付", "type": "text" }],
+        "审批状态": "已通过"
+      }
+    },
+    {
+      "record_id": "recMock0006",
+      "fields": {
+        "区域": "华北",
+        "月份": [{ "text": "2026-03", "type": "text" }],
+        "商品": [{ "text": "扫地机器人", "type": "text" }],
+        "销售额": 104000,
+        "库存": 18,
+        "安全库存": 30,
+        "负责人": [{ "id": "ou_mock_du", "name": "杜小满" }],
+        "标签": ["新品", "补货"],
+        "关联订单": { "link_record_ids": ["recOrder0006"] },
+        "备注": [{ "text": "补货已提交", "type": "text" }],
+        "审批状态": "已通过"
+      }
+    },
+    {
+      "record_id": "recMock0007",
+      "fields": {
+        "区域": "华南",
+        "月份": [{ "text": "2026-01", "type": "text" }],
+        "商品": [{ "text": "空气净化器", "type": "text" }],
+        "销售额": 76000,
+        "库存": 70,
+        "安全库存": 80,
+        "负责人": [{ "id": "ou_mock_lin", "name": "林一舟" }],
+        "标签": ["重点"],
+        "关联订单": { "link_record_ids": ["recOrder0007"] },
+        "备注": [{ "text": "回南天旺季", "type": "text" }],
+        "审批状态": "已通过"
+      }
+    },
+    {
+      "record_id": "recMock0008",
+      "fields": {
+        "区域": "华南",
+        "月份": [{ "text": "2026-02", "type": "text" }],
+        "商品": [{ "text": "空气净化器", "type": "text" }],
+        "销售额": 82000,
+        "库存": 55,
+        "安全库存": 80,
+        "负责人": [{ "id": "ou_mock_lin", "name": "林一舟" }],
+        "标签": ["重点"],
+        "关联订单": { "link_record_ids": ["recOrder0008"] },
+        "备注": [{ "text": "回南天旺季", "type": "text" }],
+        "审批状态": "已通过"
+      }
+    },
+    {
+      "record_id": "recMock0009",
+      "fields": {
+        "区域": "华南",
+        "月份": [{ "text": "2026-03", "type": "text" }],
+        "商品": [{ "text": "空气净化器", "type": "text" }],
+        "销售额": 88000,
+        "库存": 47,
+        "安全库存": 80,
+        "负责人": [{ "id": "ou_mock_lin", "name": "林一舟" }],
+        "标签": ["重点", "补货"],
+        "关联订单": { "link_record_ids": ["recOrder0009"] },
+        "备注": [{ "text": "连续两月低于安全线", "type": "text" }],
+        "审批状态": "审批中"
+      }
+    },
+    {
+      "record_id": "recMock0010",
+      "fields": {
+        "区域": "西南",
+        "月份": [{ "text": "2026-01", "type": "text" }],
+        "商品": [{ "text": "智能门锁", "type": "text" }],
+        "销售额": 45000,
+        "库存": 15,
+        "安全库存": 20,
+        "负责人": [{ "id": "ou_mock_he", "name": "何知远" }],
+        "标签": ["新品", "试销"],
+        "关联订单": { "link_record_ids": ["recOrder0010"] },
+        "备注": [{ "text": "试销区域，暂无对比月份", "type": "text" }],
+        "审批状态": "已通过"
+      }
+    }
+  ]
+}
