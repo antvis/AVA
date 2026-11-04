@@ -142,11 +142,27 @@ describe('source', () => {
     );
   });
 
-  it('loads a source config file and rejects a conflicting type override', async () => {
+  it.each([
+    { type: 'json', options: { data: [{ sales: 10 }] } },
+    {
+      type: 'sqlserver',
+      options: {
+        host: 'localhost',
+        port: 11433,
+        database: 'ava_sqlserver_test',
+        user: 'reader',
+        password: 'test-password',
+        schema: 'dbo',
+        encrypt: true,
+        trustServerCertificate: true,
+        connectionTimeoutMs: 10000,
+        requestTimeoutMs: 30000,
+      },
+    },
+  ])('loads a $type source config file and rejects a conflicting type override', async (config) => {
     const directory = await mkdtemp(join(tmpdir(), 'ava-cli-test-'));
     try {
       const file = join(directory, 'source.json');
-      const config = { type: 'json', options: { data: [{ sales: 10 }] } };
       await writeFile(file, JSON.stringify(config));
       await execute(['source', `@${file}`]);
       expect(createSession).toHaveBeenCalledExactlyOnceWith(config, { model: 'gpt-4o-mini' }, undefined);
@@ -159,7 +175,7 @@ describe('source', () => {
     }
   });
 
-  it.each(['duckdb', 'python', 'javascript', 'supabase', 'clickhouse'])(
+  it.each(['duckdb', 'python', 'javascript', 'supabase', 'clickhouse', 'sqlserver'])(
     'passes an explicit %s engine with a source config',
     async (engine) => {
       const directory = await mkdtemp(join(tmpdir(), 'ava-cli-test-'));
@@ -182,6 +198,18 @@ describe('source', () => {
       { model: 'gpt-4o-mini' },
       'python'
     );
+  });
+
+  it('rejects invalid SQL Server configuration before starting a session', async () => {
+    const directory = await mkdtemp(join(tmpdir(), 'ava-cli-sqlserver-'));
+    try {
+      const file = join(directory, 'sqlserver.json');
+      await writeFile(file, JSON.stringify({ type: 'sqlserver', options: { host: 'localhost' } }));
+      await expect(run(['source', `@${file}`])).rejects.toThrow();
+      expect(createSession).not.toHaveBeenCalled();
+    } finally {
+      await rm(directory, { recursive: true, force: true });
+    }
   });
 
   it.each(['invalid', '', '{"type":"python","execute":"custom"}'])(
