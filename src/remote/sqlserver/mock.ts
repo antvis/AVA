@@ -11,7 +11,8 @@
  */
 import { sqlIdentifier, sqlStringLiteral } from '../../util/sql';
 
-import type { SqlServerSourceOptions } from '../../types';
+import { profileTablesInMemory } from './profile';
+import type { ParsedProfileOptions, Profile, Schema, SqlServerSourceOptions } from '../../types';
 import type { QueryConnector, QueryResult, QueryResultRow } from './connector';
 
 const DEFAULT_SCHEMA = 'DBO';
@@ -25,17 +26,30 @@ interface Column {
 
 interface Table {
   name: string;
+  schema: string;
   columns: Column[];
   rows: Record<string, unknown>[];
   /** Ordered primary-key column names. */
   primaryKey?: string[];
 }
 
+function identifierParts(qualified: string): string[] {
+  return qualified
+    .replace(/\[|\]|"/g, '')
+    .split('.')
+    .filter(Boolean);
+}
+
 /** Normalize an identifier path: strip brackets/quoting, take the last segment, upper-case. */
 function lastIdent(qualified: string): string {
-  const cleaned = qualified.replace(/\[|\]|"/g, '');
-  const segments = cleaned.split('.').filter(Boolean);
+  const segments = identifierParts(qualified);
   return segments[segments.length - 1] ?? '';
+}
+
+function tableSchema(qualified: string, explicit?: string): string {
+  if (explicit) return lastIdent(explicit).toUpperCase();
+  const segments = identifierParts(qualified);
+  return (segments.length > 1 ? segments[segments.length - 2] : DEFAULT_SCHEMA).toUpperCase();
 }
 
 function comparable(a: unknown, b: unknown): number {
@@ -58,14 +72,14 @@ function primaryKeyColumns(t: Table): string[] {
 function makeCatalog(db: string, tables: Table[]): Table[] {
   const tabs: Record<string, unknown>[] = tables.map((t) => ({
     TABLE_CATALOG: db,
-    TABLE_SCHEMA: DEFAULT_SCHEMA,
+    TABLE_SCHEMA: t.schema,
     TABLE_NAME: t.name,
     TABLE_TYPE: 'BASE TABLE',
   }));
   const cols: Record<string, unknown>[] = tables.flatMap((t) =>
     t.columns.map((c, i) => ({
       TABLE_CATALOG: db,
-      TABLE_SCHEMA: DEFAULT_SCHEMA,
+      TABLE_SCHEMA: t.schema,
       TABLE_NAME: t.name,
       COLUMN_NAME: c.name,
       DATA_TYPE: c.type,
@@ -76,7 +90,7 @@ function makeCatalog(db: string, tables: Table[]): Table[] {
   const keyUsage: Record<string, unknown>[] = tables.flatMap((t) =>
     primaryKeyColumns(t).map((name, i) => ({
       TABLE_CATALOG: db,
-      TABLE_SCHEMA: DEFAULT_SCHEMA,
+      TABLE_SCHEMA: t.schema,
       TABLE_NAME: t.name,
       COLUMN_NAME: name,
       CONSTRAINT_NAME: `PK_${t.name}`,
@@ -87,7 +101,7 @@ function makeCatalog(db: string, tables: Table[]): Table[] {
     .filter((t) => primaryKeyColumns(t).length > 0)
     .map((t) => ({
       TABLE_CATALOG: db,
-      TABLE_SCHEMA: DEFAULT_SCHEMA,
+      TABLE_SCHEMA: t.schema,
       TABLE_NAME: t.name,
       CONSTRAINT_NAME: `PK_${t.name}`,
       CONSTRAINT_TYPE: 'PRIMARY KEY',
@@ -96,6 +110,7 @@ function makeCatalog(db: string, tables: Table[]): Table[] {
   return [
     {
       name: 'INFORMATION_SCHEMA.TABLES',
+      schema: 'INFORMATION_SCHEMA',
       columns: [
         { name: 'TABLE_CATALOG', type: 'nvarchar', notNull: true },
         { name: 'TABLE_SCHEMA', type: 'nvarchar', notNull: true },
@@ -106,6 +121,7 @@ function makeCatalog(db: string, tables: Table[]): Table[] {
     },
     {
       name: 'INFORMATION_SCHEMA.COLUMNS',
+      schema: 'INFORMATION_SCHEMA',
       columns: [
         { name: 'TABLE_CATALOG', type: 'nvarchar', notNull: true },
         { name: 'TABLE_SCHEMA', type: 'nvarchar', notNull: true },
@@ -119,6 +135,7 @@ function makeCatalog(db: string, tables: Table[]): Table[] {
     },
     {
       name: 'INFORMATION_SCHEMA.KEY_COLUMN_USAGE',
+      schema: 'INFORMATION_SCHEMA',
       columns: [
         { name: 'TABLE_CATALOG', type: 'nvarchar', notNull: true },
         { name: 'TABLE_SCHEMA', type: 'nvarchar', notNull: true },
@@ -131,6 +148,7 @@ function makeCatalog(db: string, tables: Table[]): Table[] {
     },
     {
       name: 'INFORMATION_SCHEMA.TABLE_CONSTRAINTS',
+      schema: 'INFORMATION_SCHEMA',
       columns: [
         { name: 'TABLE_CATALOG', type: 'nvarchar', notNull: true },
         { name: 'TABLE_SCHEMA', type: 'nvarchar', notNull: true },
@@ -698,17 +716,18 @@ export class MockQueryConnector implements QueryConnector {
     const seeded: Table[] = (this.options.tables ?? [])
       .filter((t) => t.columns.length > 0)
       .map((t) => ({
-              name: lastIdent(t.name).toUpperCase(),
-              columns: t.columns.map((c) => ({ name: c.name.toUpperCase(), type: c.type, notNull: Boolean(c.notNull) })),
-              rows: (t.rows ?? []).map((row) =>
-                Object.fromEntries(Object.entries(row).map(([k, v]) => [k.toUpperCase(), v]))
-              ),
-              primaryKey: t.primaryKey
-              ? (Array.isArray(t.primaryKey)
-                  ? t.primaryKey.map((key) => key.toUpperCase())
-                  : [t.primaryKey.toUpperCase()])
-              : undefined,
-            }));
+        name: lastIdent(t.name).toUpperCase(),
+        schema: tableSchema(t.name, t.schema),
+        columns: t.columns.map((c) => ({ name: c.name.toUpperCase(), type: c.type, notNull: Boolean(c.notNull) })),
+        rows: (t.rows ?? []).map((row) =>
+          Object.fromEntries(Object.entries(row).map(([k, v]) => [k.toUpperCase(), v]))
+        ),
+        primaryKey: t.primaryKey
+          ? Array.isArray(t.primaryKey)
+            ? t.primaryKey.map((key) => key.toUpperCase())
+            : [t.primaryKey.toUpperCase()]
+          : undefined,
+      }));
     this.tables = [...seeded, ...makeCatalog(db, seeded)];
     this.connected = true;
   }
@@ -716,6 +735,18 @@ export class MockQueryConnector implements QueryConnector {
   async query<T extends QueryResultRow = QueryResultRow>(sql: string): Promise<QueryResult & { rows: T[] }> {
     await this.connect();
     return this.run(sql) as QueryResult & { rows: T[] };
+  }
+
+  async profile(schema: Schema, options: ParsedProfileOptions): Promise<Profile> {
+    await this.connect();
+    return profileTablesInMemory(
+      (source) => {
+        const reference = source.tableReference;
+        return this.resolve(`${reference.schema ?? DEFAULT_SCHEMA}.${reference.table}`).rows;
+      },
+      schema,
+      options
+    );
   }
 
   async close(): Promise<void> {
@@ -746,8 +777,9 @@ export class MockQueryConnector implements QueryConnector {
       if (!table) throw new Error(`Invalid object name '${view}'`);
       return table;
     }
-    const name = lastIdent(from);
-    const table = this.tables.find((t) => t.name.toUpperCase() === name.toUpperCase());
+    const name = lastIdent(from).toUpperCase();
+    const schema = tableSchema(from);
+    const table = this.tables.find((t) => t.name.toUpperCase() === name && t.schema === schema);
     if (!table) throw new Error(`Invalid object name '${from}'`);
     return table;
   }

@@ -26,15 +26,15 @@ Files:
 | `schema.ts`   | `getSqlServerSchema` — flat `INFORMATION_SCHEMA.COLUMNS / TABLES / KEY_COLUMN_USAGE` discovery. |
 | `profile.ts`  | Per-column metrics compiled into read-only T-SQL (compiled per table into one aggregate query). |
 | `connector.ts`| `QueryConnector` interface shared by both adapters. |
-| `tedious.ts`  | Production connector (running against a real server) using runtime `require('tedious')`. |
+| `tedious.ts`  | Production connector (running against a real server) using the lazy cross-format tedious loader. |
 | `tds-config.ts`| Builds a tedious connection config from `SqlServerSourceOptions` (structurally typed; never statically imports `tedious`). |
 | `mock.ts`     | In-memory connector + small read-only T-SQL subset (SELECT / TOP / WHERE / GROUP BY / HAVING / ORDER BY / aggregates). |
 | `examples.ts` | `SQLSERVER_TABLE_SEED` sales seed used by docs and tests. |
 
 The dialect is registered in `src/query/sqlserver.ts`, which also exports
 `validateReadOnlySqlServer` (rejects multi-statement / non-SELECT input) and
-`limitedTsqlQuery` (wraps a query with `SELECT TOP (N) * FROM (...) AS __ava_query`
-since T-SQL has no `LIMIT`).
+`limitedTsqlQuery` (adds a bounded `TOP (N)` to the main `SELECT`, preserving leading
+CTEs and final `ORDER BY`; unsupported set/OFFSET forms fail explicitly).
 
 ## Connection
 
@@ -59,11 +59,12 @@ Required: `server`, `database`. Optional: `port` (1433), `user`/`password`
 
 - **Read-only.** Only single read-only `SELECT` statements pass validation;
   multi-statement, `EXEC`, DDL/DML are rejected locally, and the `tedious` adapter
-  opens the connection with `ApplicationIntent=ReadOnly`.
+  opens the connection with `ApplicationIntent=ReadOnly`. Deployments must also use a
+  database principal granted only `SELECT`; `ApplicationIntent` does not revoke writes.
 - **Schema discovery** reads `INFORMATION_SCHEMA.TABLES`, `.COLUMNS`, and
   `.KEY_COLUMN_USAGE` (primary keys mapped to `Schema.primaryKey`).
 - **Result caps.** Query results/profiles are bounded by `maxRows` (default 200)
-  and `maxResultBytes` (default 1 MiB). Row limiting uses `SELECT TOP (N) (...)`.
+  and `maxResultBytes` (default 1 MiB). Row limiting adds `TOP (N)` to the main SELECT.
 - **Resource release.** Call `engine.dispose()` / `ava.dispose()` to `close()` the
   connection; `dispose` is idempotent and tolerates close errors.
 
@@ -72,7 +73,7 @@ Required: `server`, `database`. Optional: `port` (1433), `user`/`password`
 ### `'tedious'` (default)
 
 Production connector through the [`tedious`][tedious] TDS driver. `tedious` is
-loaded with a runtime `require` so this module has **no** hard dependency on it —
+loaded through a lazy dynamic import so this module has **no** hard dependency on it —
 install it when you want real connections:
 
 ```bash
@@ -89,7 +90,7 @@ await ava.source({
   options: {
     adapter: 'mock',
     database: 'demo',
-    tables: SQLSERVER_TABLE_SEED, // from '@antv/ava/remote'
+    tables: SQLSERVER_TABLE_SEED, // import { SQLSERVER_TABLE_SEED } from '@antv/ava'
   },
 });
 ```

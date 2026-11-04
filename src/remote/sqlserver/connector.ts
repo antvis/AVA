@@ -3,7 +3,7 @@
  * tedious adapter; the mock adapter reproduces the same contract in memory so
  * unit tests and demos run without a live SQL Server.
  */
-import type { SqlServerSourceOptions } from '../../types';
+import type { ParsedProfileOptions, Profile, Schema, SqlServerSourceOptions } from '../../types';
 
 /** Shape of a query result row; column values are the driver's native values. */
 export type QueryResultRow = Record<string, unknown>;
@@ -25,6 +25,8 @@ export interface QueryResult {
 export interface QueryConnector {
   connect(): Promise<void>;
   query<T extends QueryResultRow = QueryResultRow>(sql: string): Promise<QueryResult & { rows: T[] }>;
+  /** Optional native profiling path used by the in-memory adapter. */
+  profile?(schema: Schema, options: ParsedProfileOptions): Promise<Profile>;
   close(): Promise<void>;
 }
 

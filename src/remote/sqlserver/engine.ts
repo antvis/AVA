@@ -73,7 +73,9 @@ export class SqlServerEngine implements AnalysisEngine {
 
   async profile(schema: Schema, options: ProfileOptions = {}): Promise<Profile> {
     if (!this.connector) throw new Error('No data loaded. Please call source() first.');
-    return profileTables((sql) => this.runQuery(sql), schema, parseProfileOptions(options, { metrics: DEFAULT_METRICS }));
+    const parsed = parseProfileOptions(options, { metrics: DEFAULT_METRICS });
+    if (this.connector.profile) return this.connector.profile(schema, parsed);
+    return profileTables((sql) => this.runQuery(sql), schema, parsed);
   }
 
   async getDSL(query: string, dataModel: DataModel): Promise<TranslationResult> {

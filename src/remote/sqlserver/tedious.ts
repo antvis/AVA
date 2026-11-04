@@ -41,19 +41,23 @@ export class TediousQueryConnector implements QueryConnector {
     // terminates the process, so install one before connecting.
     connection.on('error', (error) => this.handleConnectionError(connection, error));
 
-    const ok = await new Promise<boolean>((resolve) => {
-      connection.connect((error) => resolve(!error));
-    });
-
-    if (!ok) {
+    try {
+      await new Promise<void>((resolve, reject) => {
+        // Reject connection establishment on either the callback or an early
+        // connection-level error; the lifecycle listener above remains active.
+        connection.on('error', reject);
+        connection.connect((error) => (error ? reject(error) : resolve()));
+      });
+      this.connection = connection;
+    } catch (error) {
       try {
         connection.close();
       } catch {
         // Ignore cleanup failures for a connection that never came up.
       }
-      throw new Error(`Failed to connect to SQL Server: ${config.server}`);
+      const detail = error instanceof Error ? `: ${error.message}` : '';
+      throw new Error(`Failed to connect to SQL Server: ${config.server}${detail}`);
     }
-    this.connection = connection;
   }
 
   async query<T extends QueryResultRow = QueryResultRow>(sql: string): Promise<QueryResult & { rows: T[] }> {

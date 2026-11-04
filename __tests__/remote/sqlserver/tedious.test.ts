@@ -41,7 +41,11 @@ const fake = vi.hoisted(() => {
     }
 
     connect(callback: (error?: Error) => void): void {
-      Promise.resolve().then(() => callback());
+      Promise.resolve().then(() => {
+        const error = state.connectError;
+        if (error) this.emit('error', error);
+        callback(error);
+      });
     }
 
     execSql(request: FakeRequest): void {
@@ -63,7 +67,10 @@ const fake = vi.hoisted(() => {
     }
   }
 
-  const state: { connection: FakeConnection | null; configs: unknown[] } = { connection: null, configs: [] };
+  const state: { connection: FakeConnection | null; configs: unknown[]; connectError?: Error } = {
+    connection: null,
+    configs: [],
+  };
   return { state, FakeConnection, FakeRequest };
 });
 
@@ -86,6 +93,7 @@ async function nextRequest(connection: InstanceType<typeof fake.FakeConnection>)
 afterEach(() => {
   fake.state.connection = null;
   fake.state.configs = [];
+  fake.state.connectError = undefined;
 });
 
 describe('TediousQueryConnector', () => {
@@ -115,6 +123,14 @@ describe('TediousQueryConnector', () => {
       rows: [{ Region: 'North', Units: 12 }],
     });
 
+    await connector.close();
+  });
+
+  it('rejects connection establishment when an early connection error is emitted', async () => {
+    fake.state.connectError = new Error('dial failed');
+    const connector = new TediousQueryConnector(OPTIONS);
+
+    await expect(connector.connect()).rejects.toThrow('dial failed');
     await connector.close();
   });
 

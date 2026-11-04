@@ -19,6 +19,7 @@ export { AVA } from './ava';
 export { registerEngine } from './engines';
 export type { EngineClass } from './engines';
 export { executionResult } from './util/result';
+export { SQLSERVER_TABLE_SEED } from './remote/sqlserver/examples';
 
 export type { JavaScriptEngine } from './interpreter';
 export type {

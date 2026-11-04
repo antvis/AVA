@@ -6,9 +6,8 @@
  */
 import { afterEach, describe, expect, it, vi } from 'vitest';
 
-import { AVA } from '../../src';
-import { MockQueryConnector, SqlServerEngine, validateReadOnlySqlServer } from '../../src/remote/sqlserver';
-import { SQLSERVER_TABLE_SEED } from '../../src/remote/sqlserver/examples';
+import { AVA, SQLSERVER_TABLE_SEED } from '../../src';
+import { limitedTsqlQuery, MockQueryConnector, SqlServerEngine, validateReadOnlySqlServer } from '../../src/remote/sqlserver';
 import { BUILTIN_METRICS as SQL_SERVER_METRICS, logicalType, profileTables as sqlServerProfile } from '../../src/remote/sqlserver/profile';
 import { getLLMConfig } from '../test-utils';
 
@@ -71,6 +70,39 @@ describe('validateReadOnlySqlServer', () => {
   });
 });
 
+describe('limitedTsqlQuery', () => {
+  it('adds TOP to the main SELECT without breaking ORDER BY or a leading CTE', () => {
+    expect(limitedTsqlQuery('SELECT Region FROM orders ORDER BY Region DESC', 3)).toBe(
+      'SELECT TOP (4) Region FROM orders ORDER BY Region DESC'
+    );
+    expect(limitedTsqlQuery('WITH x AS (SELECT 1 AS a) SELECT a FROM x ORDER BY a', 3)).toBe(
+      'WITH x AS (SELECT 1 AS a) SELECT TOP (4) a FROM x ORDER BY a'
+    );
+    expect(limitedTsqlQuery('SELECT DISTINCT Region FROM orders', 3)).toBe(
+      'SELECT DISTINCT TOP (4) Region FROM orders'
+    );
+  });
+
+  it('preserves smaller existing TOP limits and caps larger ones', () => {
+    expect(limitedTsqlQuery('SELECT TOP (2) * FROM orders ORDER BY OrderID', 3)).toBe(
+      'SELECT TOP (2) * FROM orders ORDER BY OrderID'
+    );
+    expect(limitedTsqlQuery('SELECT TOP 20 * FROM orders', 3)).toBe('SELECT TOP 4 * FROM orders');
+    expect(limitedTsqlQuery('SELECT DISTINCT TOP 20 Region FROM orders', 3)).toBe(
+      'SELECT DISTINCT TOP 4 Region FROM orders'
+    );
+  });
+
+  it('validates before rewriting and rejects unsupported limiting forms explicitly', () => {
+    const escape = 'SELECT 1 AS a) AS t SELECT 1 AS b INTO dbo.ava_write_probe FROM (SELECT 1 AS c';
+    expect(() => limitedTsqlQuery(escape, 3)).toThrow(/balanced|read-only/);
+    expect(() => limitedTsqlQuery('SELECT 1 UNION ALL SELECT 2', 3)).toThrow('does not support');
+    expect(() => limitedTsqlQuery('SELECT * FROM orders ORDER BY OrderID OFFSET 0 ROWS', 3)).toThrow(
+      'does not support OFFSET/FETCH'
+    );
+  });
+});
+
 describe('SqlServerEngine (mock adapter)', () => {
   it('rejects an unloaded engine and incompatible sources', async () => {
     const engine = new SqlServerEngine(getLLMConfig());
@@ -99,9 +131,9 @@ describe('SqlServerEngine (mock adapter)', () => {
       await engine.load(MOCK_SOURCE);
       const schema = await engine.schema();
       const names = schema.models.map((m) => m.name);
-      expect(names).toEqual(['CUSTOMERS', 'ORDERS']);
+      expect(names).toEqual(['DBO.CUSTOMERS', 'DBO.ORDERS']);
 
-      const orders = schema.models.find((m) => m.name === 'ORDERS')!;
+      const orders = schema.models.find((m) => m.name === 'DBO.ORDERS')!;
       expect(orders.columns).toEqual(
         expect.arrayContaining([
           { name: 'ORDERID', type: 'int', notNull: true },
@@ -109,6 +141,29 @@ describe('SqlServerEngine (mock adapter)', () => {
         ])
       );
       expect(orders.primaryKey).toBe('ORDERID');
+    } finally {
+      await engine.dispose();
+    }
+  });
+
+  it('discovers and queries same-named mock tables by schema without merging them', async () => {
+    const engine = new SqlServerEngine(getLLMConfig());
+    const table = (schema: string, id: number) => ({
+      name: 'orders',
+      schema,
+      columns: [{ name: 'OrderID', type: 'int', notNull: true }],
+      primaryKey: 'OrderID',
+      rows: [{ OrderID: id }],
+    });
+    try {
+      await engine.load({
+        type: 'sqlserver',
+        options: { ...MOCK_SOURCE.options, tables: [table('dbo', 1), table('sales', 2)] },
+      });
+      const schema = await engine.schema();
+      expect(schema.models.map((model) => model.name)).toEqual(['DBO.ORDERS', 'SALES.ORDERS']);
+      expect((await engine.execute('SELECT OrderID FROM sales.orders')).data).toEqual([{ OrderID: 2 }]);
+      expect((await engine.execute('SELECT OrderID FROM orders')).data).toEqual([{ OrderID: 1 }]);
     } finally {
       await engine.dispose();
     }
@@ -138,6 +193,18 @@ describe('SqlServerEngine (mock adapter)', () => {
       const result = await engine.execute('SELECT * FROM orders', { maxRows: 3 });
       expect(result.data).toHaveLength(3);
       expect(result.truncated).toBe(true);
+      expect(result.truncatedBy).toBe('maxRows');
+    } finally {
+      await engine.dispose();
+    }
+  });
+
+  it('keeps final ordering while applying the row cap', async () => {
+    const engine = new SqlServerEngine(getLLMConfig());
+    try {
+      await engine.load(MOCK_SOURCE);
+      const result = await engine.execute('SELECT OrderID FROM orders ORDER BY OrderID DESC', { maxRows: 2 });
+      expect(result.data).toEqual([{ OrderID: 6 }, { OrderID: 5 }]);
       expect(result.truncatedBy).toBe('maxRows');
     } finally {
       await engine.dispose();
@@ -180,10 +247,31 @@ describe('SqlServerEngine (mock adapter)', () => {
       expect(ava.engine!.language).toEqual({ name: 'Microsoft T-SQL dialect', fence: 'sql' });
 
       const schema = await ava.schema();
-      expect(schema.models.some((m) => m.name === 'ORDERS')).toBe(true);
+      expect(schema.models.some((m) => m.name === 'DBO.ORDERS')).toBe(true);
 
       const result = await ava.query('SELECT COUNT(*) AS N FROM orders');
       expect(result.data).toEqual([{ N: 6 }]);
+    } finally {
+      await ava.dispose();
+    }
+  });
+
+  it('runs default ava.profile() through the actual mock connector', async () => {
+    const ava = new AVA({ llm: getLLMConfig(), engine: { type: 'sqlserver' } });
+    try {
+      await ava.source(MOCK_SOURCE);
+      const profile = await ava.profile();
+      const orders = profile.models.find((model) => model.name === 'DBO.ORDERS')!;
+      const units = orders.columns.find((column) => column.name === 'UNITS')!;
+      const region = orders.columns.find((column) => column.name === 'REGION')!;
+
+      expect(orders.metrics.row_count).toBe(6);
+      expect(units.metrics).toMatchObject({ min: 2, max: 12, mean: 40 / 6, distinct_count: 6 });
+      expect(region.metrics.top_values).toEqual([
+        { value: 'North', count: 2 },
+        { value: 'South', count: 2 },
+        { value: 'West', count: 2 },
+      ]);
     } finally {
       await ava.dispose();
     }
@@ -195,7 +283,7 @@ describe('SqlServerEngine profile', () => {
     models: [
       {
         name: 'orders',
-        tableReference: { catalog: 'demo', table: 'orders' },
+        tableReference: { catalog: 'demo', schema: 'sales', table: 'orders' },
         columns: [
           { name: 'Units', type: 'int', notNull: true },
           { name: 'Region', type: 'nvarchar', notNull: false },
@@ -214,6 +302,7 @@ describe('SqlServerEngine profile', () => {
     expect(result.models[0].columns[0].metrics.mean).toBe(12.5);
     const query = run.mock.calls[0][0];
     expect(query).toContain('AVG(CAST("Units" AS float))');
+    expect(query).toContain('FROM "sales"."orders"');
     expect(query).not.toContain('CREATE');
   });
 

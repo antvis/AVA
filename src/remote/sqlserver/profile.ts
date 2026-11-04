@@ -163,7 +163,8 @@ export async function profileTables(
     models.push(profile);
 
     const pending: { expression: string; id: string; output: Record<string, unknown> }[] = [];
-    const table = sqlIdentifier(source.name);
+    const reference = source.tableReference;
+    const table = [reference.schema ?? 'dbo', reference.table].map(sqlIdentifier).join('.');
     const add = (output: Record<string, unknown>, field?: MetricField) => {
       for (const { metric, definition } of metrics) {
         if (!definition.enable({ target: field ? 'column' : 'table', field })) continue;
@@ -208,6 +209,144 @@ export async function profileTables(
       }
     });
   }
+
+  return { models };
+}
+
+function valuesFor(rows: Record<string, unknown>[], name: string): unknown[] {
+  return rows.map((row) => {
+    const key = Object.prototype.hasOwnProperty.call(row, name)
+      ? name
+      : Object.keys(row).find((candidate) => candidate.toLowerCase() === name.toLowerCase());
+    return key === undefined ? undefined : row[key];
+  });
+}
+
+function numericValues(values: unknown[]): number[] {
+  return values
+    .filter((value) => value != null)
+    .map(Number)
+    .filter((value) => Number.isFinite(value));
+}
+
+function dateValues(values: unknown[]): number[] {
+  return values
+    .filter((value) => value != null)
+    .map((value) => (value instanceof Date ? value.getTime() : Date.parse(String(value))))
+    .filter((value) => Number.isFinite(value));
+}
+
+/**
+ * Evaluate the same metric contract directly over mock rows. This avoids
+ * pretending that the deliberately small mock SELECT parser supports SQL
+ * Server's DISTINCT/CAST/CASE/arithmetic profiling expressions.
+ */
+export function profileTablesInMemory(
+  rowsFor: (source: Schema['models'][number]) => Record<string, unknown>[],
+  schema: Schema,
+  options: ParsedProfileOptions
+): Profile {
+  const metrics = options.metrics.map((metric) => ({ metric, definition: resolveMetric(metric, BUILTIN_METRICS) }));
+
+  const models = schema.models.map((source): Profile['models'][number] => {
+    const rows = rowsFor(source);
+    const profile: Profile['models'][number] = { name: source.name, metrics: {}, columns: [] };
+
+    const add = (output: Record<string, unknown>, field?: MetricField) => {
+      for (const { metric, definition } of metrics) {
+        if (!definition.enable({ target: field ? 'column' : 'table', field })) continue;
+        const values = field ? valuesFor(rows, field.name) : [];
+        const present = values.filter((value) => value != null);
+        const numbers = numericValues(values);
+        let value: unknown;
+
+        switch (metric.id) {
+          case 'row_count':
+            value = rows.length;
+            break;
+          case 'null_count':
+            value = values.length - present.length;
+            break;
+          case 'distinct_count':
+            value = new Set(present).size;
+            break;
+          case 'duplicate_count':
+            value = present.length - new Set(present).size;
+            break;
+          case 'top_values': {
+            const distinct = new Set(present).size;
+            const ratio = Number(metric.maxDistinctRatio ?? 0.5);
+            if (rows.length === 0 || distinct > rows.length * ratio) break;
+            const counts = new Map<string, number>();
+            for (const entry of present) {
+              const key = String(entry);
+              counts.set(key, (counts.get(key) ?? 0) + 1);
+            }
+            const limit = Number(metric.limit ?? 3);
+            value = [...counts]
+              .map(([entry, count]) => ({ value: entry, count }))
+              .sort((a, b) => b.count - a.count || (a.value < b.value ? -1 : a.value > b.value ? 1 : 0))
+              .slice(0, limit);
+            break;
+          }
+          case 'min':
+          case 'max': {
+            const candidates = field?.logicalType === 'date' ? dateValues(values) : numbers;
+            value = candidates.length
+              ? metric.id === 'min'
+                ? Math.min(...candidates)
+                : Math.max(...candidates)
+              : null;
+            break;
+          }
+          case 'min_length':
+          case 'max_length': {
+            const lengths = present.map((entry) => String(entry).length);
+            value = lengths.length
+              ? metric.id === 'min_length'
+                ? Math.min(...lengths)
+                : Math.max(...lengths)
+              : null;
+            break;
+          }
+          case 'mean':
+            value = numbers.length ? numbers.reduce((sum, entry) => sum + entry, 0) / numbers.length : null;
+            break;
+          case 'sum':
+            value = numbers.length ? numbers.reduce((sum, entry) => sum + entry, 0) : null;
+            break;
+          case 'stddev': {
+            if (numbers.length < 2) {
+              value = null;
+              break;
+            }
+            const mean = numbers.reduce((sum, entry) => sum + entry, 0) / numbers.length;
+            value = Math.sqrt(
+              numbers.reduce((sum, entry) => sum + (entry - mean) ** 2, 0) / (numbers.length - 1)
+            );
+            break;
+          }
+          default:
+            throw new Error(`Unknown in-memory metric: ${metric.id}`);
+        }
+
+        if (value !== undefined) output[metric.id] = value;
+      }
+    };
+
+    add(profile.metrics);
+    profile.columns = source.columns.map((column) => {
+      const field = { ...column, logicalType: logicalType(column.type) };
+      const columnMetrics = {};
+      add(columnMetrics, field);
+      return {
+        name: field.name,
+        properties: { logicalType: field.logicalType },
+        metrics: columnMetrics,
+      };
+    });
+    return profile;
+  });
 
   return { models };
 }

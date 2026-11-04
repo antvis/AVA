@@ -614,7 +614,7 @@ const average = await ava.query('SELECT Region, AVG(CAST(Revenue AS float)) AS a
 
 `SqlServerSourceOptions.adapter` selects the connector:
 
-- `'tedious'` (default) — production driver. Each statement runs with `ApplicationIntent=ReadOnly` on the configured database, and a local guard rejects anything other than a single read-only SELECT. Recommended for real deployments.
+- `'tedious'` (default) — production driver. Each statement runs with `ApplicationIntent=ReadOnly` on the configured database, and a local guard rejects anything other than a single read-only SELECT. Real deployments must use a database principal granted only `SELECT`; `ApplicationIntent=ReadOnly` is a routing hint, not a permission boundary.
 - `'mock'` — an in-memory runner seeded from `options.tables`. No network access; schema, `INFORMATION_SCHEMA` catalog views, and a small read-only T-SQL subset (SELECT/TOP/WHERE/GROUP BY/aggregates/ORDER BY) are served against the seeded rows. Use it for demos, CI, and documentation examples without a live SQL Server.
 
 ### Mock seed tables
@@ -628,7 +628,11 @@ When `adapter: 'mock'`, populate `options.tables` with the tables the engine sho
 | `columns` | `{ name, type, notNull? }[]` | Column descriptors. |
 | `rows` | `Record<string, unknown>[]` | Seed rows keyed by column name (uppercased). |
 
-AVA ships a small sales seed (`SQLSERVER_TABLE_SEED` from `@antv/ava/remote`) for the two examples below.
+AVA ships a small sales seed for the two examples below. Import it from the supported package entry point:
+
+```typescript
+import { AVA, SQLSERVER_TABLE_SEED } from '@antv/ava';
+```
 
 ### Natural-language examples
 

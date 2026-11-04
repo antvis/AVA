@@ -184,12 +184,130 @@ Generate exactly one read-only SELECT query (WITH is allowed), without explanati
   }
 }
 
+interface TsqlToken {
+  value: string;
+  upper: string;
+  start: number;
+  end: number;
+  depth: number;
+  kind: 'word' | 'number' | 'symbol';
+}
+
 /**
- * Wrap a read-only T-SQL statement with a row bound. SQL Server has no
- * standard `LIMIT`; `TOP` applied to a derived table keeps statement order
- * while bounding the result (one extra row signals truncation).
+ * Tokenize just enough T-SQL to find the statement's top-level SELECT. Quoted
+ * strings/identifiers and comments are skipped, including escaped delimiters.
+ */
+function scanTsql(sql: string): TsqlToken[] {
+  const tokens: TsqlToken[] = [];
+  let depth = 0;
+  let i = 0;
+  while (i < sql.length) {
+    const ch = sql[i];
+    if (/\s/.test(ch)) {
+      i += 1;
+      continue;
+    }
+    if (ch === '-' && sql[i + 1] === '-') {
+      const end = sql.indexOf('\n', i + 2);
+      i = end < 0 ? sql.length : end + 1;
+      continue;
+    }
+    if (ch === '/' && sql[i + 1] === '*') {
+      const end = sql.indexOf('*/', i + 2);
+      if (end < 0) throw new Error('SQL Server query contains an unterminated comment');
+      i = end + 2;
+      continue;
+    }
+    if (ch === "'" || ch === '[' || ch === '"') {
+      const close = ch === '[' ? ']' : ch;
+      i += 1;
+      let closed = false;
+      while (i < sql.length) {
+        if (sql[i] === close) {
+          if (sql[i + 1] === close) {
+            i += 2;
+            continue;
+          }
+          i += 1;
+          closed = true;
+          break;
+        }
+        i += 1;
+      }
+      if (!closed) throw new Error('SQL Server query contains an unterminated quoted value');
+      continue;
+    }
+    if (ch === '(' || ch === ')') {
+      tokens.push({ value: ch, upper: ch, start: i, end: ++i, depth, kind: 'symbol' });
+      depth += ch === '(' ? 1 : -1;
+      if (depth < 0) throw new Error('SQL Server query has unbalanced parentheses');
+      continue;
+    }
+    const word = /^[A-Za-z_@#]/.test(ch);
+    const number = /^[0-9]$/.test(ch);
+    if (word || number) {
+      const start = i;
+      i += 1;
+      while (i < sql.length && (word ? /[A-Za-z0-9_@$#]/ : /[0-9.]/).test(sql[i])) i += 1;
+      const value = sql.slice(start, i);
+      tokens.push({ value, upper: value.toUpperCase(), start, end: i, depth, kind: word ? 'word' : 'number' });
+      continue;
+    }
+    tokens.push({ value: ch, upper: ch, start: i, end: ++i, depth, kind: 'symbol' });
+  }
+  if (depth !== 0) throw new Error('SQL Server query has unbalanced parentheses');
+  return tokens;
+}
+
+/**
+ * Bound the main SELECT with TOP rather than putting arbitrary T-SQL in a
+ * derived table (which rejects CTEs and ORDER BY). Existing numeric TOP limits
+ * are reduced when necessary. Forms whose meaning cannot be bounded safely by
+ * this small rewrite are rejected explicitly instead of emitting invalid SQL.
  */
 export function limitedTsqlQuery(sql: string, limit: number): string {
-  const query = sql.trim().replace(/;+\s*$/, '');
-  return `SELECT TOP (${limit + 1}) * FROM (\n${query}\n) AS __ava_query`;
+  if (!Number.isSafeInteger(limit) || limit < 0) throw new Error('SQL Server row limit must be a non-negative integer');
+  const query = validateReadOnlySqlServer(sql);
+  const bound = limit + 1;
+  const tokens = scanTsql(query);
+  const mainSelect = tokens.find((token) => token.depth === 0 && token.upper === 'SELECT');
+  if (!mainSelect) throw new Error('SQL Server query must contain a top-level SELECT');
+
+  if (tokens.some((token) => token.depth === 0 && ['UNION', 'INTERSECT', 'EXCEPT'].includes(token.upper))) {
+    throw new Error('SQL Server row limiting does not support top-level UNION, INTERSECT, or EXCEPT');
+  }
+  if (tokens.some((token) => token.depth === 0 && ['OFFSET', 'FETCH'].includes(token.upper))) {
+    throw new Error('SQL Server row limiting does not support OFFSET/FETCH; use a numeric TOP instead');
+  }
+
+  const mainIndex = tokens.indexOf(mainSelect);
+  const modifier = tokens[mainIndex + 1];
+  const hasModifier = modifier?.depth === 0 && ['DISTINCT', 'ALL'].includes(modifier.upper);
+  const insertAt = hasModifier ? modifier.end : mainSelect.end;
+  const topIndex = mainIndex + (hasModifier ? 2 : 1);
+  const top = tokens[topIndex];
+
+  if (top?.depth === 0 && top.upper === 'TOP') {
+    let valueIndex = topIndex + 1;
+    let parenthesized = false;
+    if (tokens[valueIndex]?.value === '(') {
+      parenthesized = true;
+      valueIndex += 1;
+    }
+    const value = tokens[valueIndex];
+    const after = tokens[valueIndex + 1];
+    const validNumber = value?.kind === 'number' && /^\d+$/.test(value.value);
+    if (!validNumber || (parenthesized && after?.value !== ')')) {
+      throw new Error('SQL Server row limiting requires a literal integer TOP value');
+    }
+    const following = tokens[parenthesized ? valueIndex + 2 : valueIndex + 1];
+    if (following?.upper === 'PERCENT' || following?.upper === 'WITH') {
+      throw new Error('SQL Server row limiting does not support TOP PERCENT or WITH TIES');
+    }
+    const existing = Number(value.value);
+    if (!Number.isSafeInteger(existing)) throw new Error('SQL Server TOP value is too large');
+    return existing <= bound ? query : `${query.slice(0, value.start)}${bound}${query.slice(value.end)}`;
+  }
+
+  return `${query.slice(0, insertAt)} TOP (${bound})${query.slice(insertAt)}`;
 }
