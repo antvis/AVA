@@ -28,7 +28,7 @@ export async function createDataset(
 
   ava = new AVA({
     llm,
-    engine: { type: engine ?? (source.type === 'supabase' || source.type === 'clickhouse' ? source.type : 'duckdb') },
+    engine: { type: engine ?? (source.type === 'supabase' || source.type === 'clickhouse' || source.type === 'sqlserver' ? source.type : 'duckdb') },
   });
   const loading = ava.source(source);
   queue = loading.catch(() => undefined);

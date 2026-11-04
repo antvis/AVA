@@ -84,12 +84,12 @@ const schema = await ava.schema();
 
 | Parameter | Type                   | Required | Meaning                                                                                                                                      |
 | --------- | ---------------------- | -------- | -------------------------------------------------------------------------------------------------------------------------------------------- |
-| `type`    | `SourceType`           | Yes      | `csv`, `csv-file`, `json`, `json-file`, `parquet`, `excel`, `text`, `sqlite`, `mysql`, `postgresql`, `mongodb`, `supabase`, `clickhouse`, or `feishu-bitable`. |
+| `type`    | `SourceType`           | Yes      | `csv`, `csv-file`, `json`, `json-file`, `parquet`, `excel`, `text`, `sqlite`, `mysql`, `postgresql`, `mongodb`, `supabase`, `clickhouse`, `sqlserver`, or `feishu-bitable`. |
 | `options` | Source-specific object | Yes      | Use the matching table below. Field names are relative to `options`.                                                                         |
 
 `source()` returns no value and prepares the data for execution. Schema discovery is deferred until `schema()` or another operation needs it. Calling `source()` again replaces the current source and clears its cached metadata. Use `schema()` to inspect table and field names, and call `await ava.dispose()` when finished.
 
-The examples use Node.js. Supabase and ClickHouse include their required constructor settings alongside the source call. For frontend applications, see [browser usage](/documentation/browser/).
+The examples use Node.js. Supabase, ClickHouse, and SQL Server include their required constructor settings alongside the source call. For frontend applications, see [browser usage](/documentation/browser/).
 
 ## CSV
 
@@ -444,6 +444,41 @@ await ava.source({
 Provide `url`, or both `appToken` and `tableId`, along with `appId` and `appSecret`. The CLI also reads credentials from `AVA_FEISHU_APP_ID` / `AVA_FEISHU_APP_SECRET` or `~/.ava/feishu.json`.
 
 Both `/base/` and wiki-hosted `/wiki/` links are supported. Wiki links require wiki read access and wiki space membership so the app can resolve the Bitable. The `view` query parameter is ignored. Complex cells (people, attachments, links, formulas, locations, and groups) are flattened to comma-separated text.
+
+## SQL Server
+
+Provide a server hostname and database. Use SQL authentication.
+
+```typescript
+const ava = new AVA({
+  llm: { model: 'YOUR_MODEL', apiKey: process.env.OPENAI_API_KEY },
+  engine: { type: 'sqlserver' },
+});
+await ava.source({
+  type: 'sqlserver',
+  options: {
+    host: 'localhost',
+    database: 'analytics',
+    user: 'reader',
+    password: process.env.SQLSERVER_PASSWORD!,
+  },
+});
+```
+
+| Field | Type | Required | Meaning / default |
+| --- | --- | --- | --- |
+| `host` | `string` | Yes | SQL Server hostname or IP address. |
+| `port` | `number` | No | Default: `1433`. |
+| `database` | `string` | Yes | Database to analyze. |
+| `user` | `string` | Yes | SQL-authentication login. |
+| `password` | `string` | Yes | Login password. |
+| `schema` | `string` | No | Restrict discovery to one schema; otherwise use all visible user tables and views. |
+| `encrypt` | `boolean` | No | Encrypt the connection; `true`. |
+| `trustServerCertificate` | `boolean` | No | Trust the server certificate without verification; `false`. Only enable for a trusted self-signed test server. |
+| `connectionTimeoutMs` | `number` | No | Connection deadline; `10000` ms. |
+| `requestTimeoutMs` | `number` | No | Query deadline; `30000` ms. |
+
+Grant `SELECT` and `VIEW DEFINITION` permissions to the SQL login.
 
 ## Supabase
 
