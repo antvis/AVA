@@ -1,0 +1,10 @@
+/bin/zsh -lc "python3 - <<'PY'
+import csv
+with open('inputs/sales.csv',newline='') as f:
+ rows=list(csv.DictReader(f))
+for r in rows:
+ if r['order_kind']"'!='"'customer_sale' or r['business_model']"'!='"'self_operated':
+  if (r['paid_at'].startswith(('2026-08','2026-09')) or r['refunded_at'].startswith(('2026-08','2026-09'))):
+   print(r)
+   break
+PY"

@@ -1,0 +1,17 @@
+{
+  "schemaVersion": 1,
+  "families": [
+    {"id": "screen-star", "career": ["actor", "director"], "elements": ["film-strip", "frame-number", "clapboard", "award-plaque", "camera-flash"], "navigation": ["Filmography", "Scenes", "Premieres", "Archive"]},
+    {"id": "stage-star", "career": ["musician", "idol"], "elements": ["ticket-stub", "waveform", "vinyl-record", "track-ring", "liner-note"], "navigation": ["Discography", "Set Lists", "Tour Diary", "Fan Letters"]},
+    {"id": "fan-community", "career": ["idol", "virtual-idol", "creator"], "elements": ["member-card", "constellation", "fanlight-orb", "paper-label", "polaroid"], "navigation": ["Fan Club", "Collections", "Milestones", "Messages"]},
+    {"id": "editorial-icon", "career": ["fashion", "photography", "creator"], "elements": ["crop-mark", "folio-number", "caption-rule", "contact-sheet"], "navigation": ["Issues", "Looks", "Contact Sheets", "Notes"]}
+  ],
+  "rules": {
+    "primaryCareerSystems": 1,
+    "secondaryMemorabiliaFamilies": 1,
+    "fabricatedEndorsement": false,
+    "fabricatedQuotes": false,
+    "officialLabelWithoutPermission": false,
+    "provenanceRequired": true
+  }
+}

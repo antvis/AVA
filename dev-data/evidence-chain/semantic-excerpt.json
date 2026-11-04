@@ -1,0 +1,15 @@
+{
+  "source": "dev-data/agent-contrast/inputs/semantic.json",
+  "metric": "net_sales_cents",
+  "recognition": "Delivered external-customer revenue, net of completed refunds; owned revenue and consignment commissions.",
+  "storage": "Integer CNY cents",
+  "displayUnit": "CNY thousands; divide cents by 100000",
+  "baseline": [
+    "2026-08-03",
+    "2026-08-30"
+  ],
+  "current": [
+    "2026-08-31",
+    "2026-09-27"
+  ]
+}

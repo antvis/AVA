@@ -1,0 +1,21 @@
+{
+  "reference": "Local site Playground",
+  "source_components": [
+    "site/ai/ui/ChatPanel.tsx",
+    "site/ai/ui/ToolRow.tsx",
+    "site/ai/ui/ChatWorkspace.tsx",
+    "site/ai/ui/PromptBar.tsx",
+    "site/ai/ui/AttachmentChip.tsx",
+    "site/app/globals.css"
+  ],
+  "design": "Reuse the existing Playground color tokens, black user bubble, attachment chips, light tool chips, left rule for expanded details, cyan border, and compact prompt bar. Read-only replay of prior real CLI sessions.",
+  "changes": "Presentation only; no new model runs and no change to the user question, model answers or tool results.",
+  "previous_run": "/Users/banxuan/Documents/AVA/outputs/codex-ava-luna-question-20261103",
+  "acceptance": [
+    "all seven selected tools expanded",
+    "full final answers unchanged",
+    "same single question",
+    "responsive no overflow",
+    "Yuque old image replaced with verified new asset"
+  ]
+}

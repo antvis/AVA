@@ -1,0 +1,59 @@
+{
+  "data": [
+    {
+      "selling_store_name": "深圳南山店",
+      "august": 2199815.23,
+      "september": 1651846.34,
+      "change": -547968.89
+    },
+    {
+      "selling_store_name": "北京朝阳店",
+      "august": 507108.42,
+      "september": 467921.86,
+      "change": -39186.56
+    },
+    {
+      "selling_store_name": "上海徐汇店",
+      "august": 507177.2,
+      "september": 473158.39,
+      "change": -34018.81
+    },
+    {
+      "selling_store_name": "杭州武林店",
+      "august": 66123.04,
+      "september": 36817.31,
+      "change": -29305.73
+    },
+    {
+      "selling_store_name": "天津和平店",
+      "august": 494210.72,
+      "september": 482527.16,
+      "change": -11683.56
+    },
+    {
+      "selling_store_name": "广州天河店",
+      "august": 518590.81,
+      "september": 585304.12,
+      "change": 66713.31
+    }
+  ],
+  "schema": [
+    {
+      "name": "selling_store_name",
+      "type": "VARCHAR"
+    },
+    {
+      "name": "august",
+      "type": "DECIMAL(38,2)"
+    },
+    {
+      "name": "september",
+      "type": "DECIMAL(38,2)"
+    },
+    {
+      "name": "change",
+      "type": "DECIMAL(38,2)"
+    }
+  ],
+  "rowCount": 6
+}

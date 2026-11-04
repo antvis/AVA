@@ -1,0 +1,29 @@
+{
+  "created_at": "2026-10-27T13:07:03.455790+00:00",
+  "model": "GLM-5.1",
+  "question": "净销售额下降，要不要加大投放？",
+  "dataset": "sales-investment.json",
+  "data_sha256": "9d1590fd62dd4ae3fb5372e4c0d8e086606ac3994944ceaf34717ae830efea57",
+  "rows": 304,
+  "conditions": [
+    "bare: generic JavaScript tool, no AVA, no semantics",
+    "ava: actual Playground createSession, AVA + supplied semantic definitions"
+  ],
+  "maxSteps": 16,
+  "maxRetries": 0,
+  "thinking": "provider default, unchanged",
+  "endpointOrigin": "https://antchat.alipay.com",
+  "synthetic": true,
+  "selection": "First pair uses unchanged inputs. Any adjusted scenario will run both conditions again and be disclosed; no rewriting answers or selecting one failed bare run as a general benchmark.",
+  "result_reference": "AVA only: session-local R1, R2; bare agent returns ordinary prose/Markdown and has no card/citation protocol",
+  "restart_reason": "Per user: bare agent should have natural output, without interactive cards or citation instructions. Only the bare arm restarts; AVA input and running agent remain unchanged.",
+  "ava_rerun": {
+    "reason": "User requested explicit subquestion answers and all charts rendered.",
+    "same_model_data_semantic_question": true,
+    "chart_generation_max_attempts": 2,
+    "main_agent_review": true,
+    "bare_arm_unchanged": true,
+    "note": "AVA rerun includes an additional actual model review; it is not an equal-inference-budget comparison.",
+    "main_agent_review_calls": 2
+  }
+}

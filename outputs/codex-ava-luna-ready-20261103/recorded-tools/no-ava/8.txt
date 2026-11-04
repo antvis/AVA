@@ -1,0 +1,2 @@
+2026-08 Counter({'completed': 5082, 'paid': 189, 'shipped': 137})
+2026-09 Counter({'completed': 4137, 'paid': 1189, 'shipped': 148})

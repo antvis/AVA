@@ -1,0 +1,1 @@
+/bin/zsh -lc 'head -30 inputs/sales.csv && wc -l inputs/sales.csv'

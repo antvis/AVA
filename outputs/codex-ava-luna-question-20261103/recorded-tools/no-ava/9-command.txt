@@ -1,0 +1,13 @@
+/bin/zsh -lc "python3 - <<'PY'
+import csv,collections
+with open('inputs/sales.csv',newline='') as f: rows=list(csv.DictReader(f))
+for m in ['2026-08','2026-09']:
+ rr=[r for r in rows if r['order_kind']=='customer_sale' and r['paid_at'].startswith(m)]
+ print(m,'unique orders',len(set(x['order_id'] for x in rr)),'qty',sum(int(x['quantity']) for x in rr),'completed net',sum(float(x['line_paid_amount'])-float(x['refund_amount'] or 0) for x in rr if x['status']=='completed'),'all net',sum(float(x['line_paid_amount'])-float(x['refund_amount'] or 0) for x in rr))
+ for d in ['business_model','selling_region','product_name']:
+  v=collections.defaultdict(lambda:[0,0,0])
+  for x in rr:
+   v[x[d]][0]+=float(x['line_paid_amount'])-float(x['refund_amount'] or 0)
+   v[x[d]][1]+=int(x['quantity']); v[x[d]][2]+=1
+  print(d,sorted(v.items(),key=lambda z:-z[1][0]))
+PY"

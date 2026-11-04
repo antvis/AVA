@@ -1,0 +1,5 @@
+请分析 ./inputs/sales.csv。2026年9月的净销售额相比8月发生了什么变化，主要来自哪里？
+
+请先检查数据与可用业务上下文。若上下文已足够，计算两月金额、变化额和变化比例，按销售责任门店、渠道、商品组合定位变化来源，保留增长抵消项并核对分项与整体一致，生成一份HTML图表，保存实际查询或计算脚本、必要结果表。若公司报表口径尚不明确，请说明哪些定义会影响答案，并提出最少必要的确认问题；不要编造一个确定答案。
+
+把产物保存到 ./output，并写一份 ./output/status.json：status取answered或needs_clarification；definition_source记录实际使用的业务定义来源（没有则为null）；reason简述判断。若能回答，也保存 ./output/summary.json，含august、september、change、growth_pct（百分数）、main_decline（store/channel/product/change）、offset（store/change）、reconciled_change。最终用不超过500字中文给出回答或需要确认的问题，注明实际执行了什么与未验证什么。

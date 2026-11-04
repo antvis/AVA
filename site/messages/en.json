@@ -225,11 +225,11 @@
   },
   "AIPage": {
     "exploreYourDataWithAVA": "Explore your data with AVA",
-    "needSQLPythonParquetOrDatabaseConnections": "Need SQL, Python, Parquet, or database connections?",
+    "needSQLPythonParquetOrDatabaseConnections": "Need Python, Parquet or remote database connections?",
     "fullAVACapabilities": "Full AVA capabilities",
     "useAVAThroughThe": "Use AVA through the",
     "or": "or",
-    "intro": "Analyze the sample data or upload your own CSV, Excel (.xlsx), or JSON file (up to {size} MB). Follow each step to inspect the code, charts, and results."
+    "intro": "Analyze sample data or upload CSV, Excel (.xlsx), JSON, or a multi-table SQLite database (up to {size} MB). Inspect the code, charts and results at each step."
   },
   "ArtifactChip": {
     "open": "Open ↗"
@@ -254,7 +254,7 @@
     "fromDataToUnderstanding": "From data to understanding",
     "whatWouldYouLike": "What would you like",
     "toDiscover": "to discover?",
-    "startWithTheSampleDatasetOrUpload": "Start with the sample dataset or upload a CSV, Excel, or JSON file. Choose a question below, or ask your own.",
+    "startWithTheSampleDatasetOrUpload": "Start with sample data or upload CSV, Excel, JSON, or a SQLite database. Choose a question below or ask your own.",
     "summarizeKeyPatterns": "Summarize key patterns",
     "summarizeTheKeyPatternsInThisData": "Summarize the key patterns in this data",
     "visualizeATrend": "Visualize a trend",
@@ -271,7 +271,8 @@
     "datasetStats": "{rows} rows · {columns} columns · Ready for analysis",
     "preview": "Preview of {name}",
     "previewNote": "Preview: first {rows} rows{columns}. Analysis uses the full dataset.",
-    "previewColumns": " · first {count} columns"
+    "previewColumns": " · first {count} columns",
+    "sqliteStats": "{rows} physical rows · {tables} tables/views · Preview: {name}"
   },
   "ChatWorkspace": {
     "connectYourModel": "Connect your model.",
@@ -331,7 +332,7 @@
     "askAboutYourData": "Ask about your data…",
     "prompt": "Prompt",
     "addDataFiles": "Add data files",
-    "cSVExcelOrJSON": "CSV, Excel or JSON",
+    "cSVExcelOrJSON": "CSV, Excel, JSON or SQLite",
     "typeToSearchSourcesFiles": "Type to search sources & files",
     "typeToSearchCommands": "Type to search commands",
     "listening": "Listening…",
@@ -421,13 +422,14 @@
     "completed": "{count} tool calls, 1 message"
   },
   "useChat": {
-    "uploadACSVExcelOrJSONArray": "Upload a CSV, Excel or JSON array containing data records.",
+    "uploadACSVExcelOrJSONArray": "Upload CSV, Excel, a JSON object array, or a SQLite database file.",
     "yourDatasetIsReadyAskAQuestion": "Your dataset is ready. Ask a question or add optional semantics to refine the analysis.",
     "waitForTheCurrentOperationToFinish": "Wait for the current operation to finish.",
     "theDatasetChangedReopenSemanticsAndTry": "The dataset changed. Reopen semantics and try again.",
     "maxFile": "Maximum file size is {size} MB",
     "maxSemantic": "Maximum semantic JSON size is {size} MB.",
-    "suggestError": "Could not generate questions. {error}"
+    "suggestError": "Could not generate questions. {error}",
+    "sqliteReady": "SQLite loaded with {count} tables and views. Query across tables with SQL and define metric conventions in semantics."
   },
   "metadata": {
     "title": "AVA - AI-Native Visual Analytics | AntV",

@@ -5,7 +5,9 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
-    "check:docs": "node scripts/check-docs.mjs"
+    "check:docs": "node scripts/check-docs.mjs",
+    "predev": "node scripts/prepare-sqlite.mjs",
+    "prebuild": "node scripts/prepare-sqlite.mjs"
   },
   "dependencies": {
     "@ai-sdk/openai": "^4.0.73",
@@ -25,9 +27,10 @@
     "rehype-slug": "^6.0.0",
     "remark-gfm": "^4.0.1",
     "shiki": "^4.5.0",
+    "sql.js": "^1.15.2",
     "streamdown": "^2.7.0",
-    "zod": "^4.6.6",
-    "use-intl": "^4.14.9"
+    "use-intl": "^4.14.9",
+    "zod": "^4.6.6"
   },
   "devDependencies": {
     "@types/mdx": "^2.0.14",

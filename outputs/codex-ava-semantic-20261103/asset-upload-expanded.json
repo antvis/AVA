@@ -1,0 +1,27 @@
+{
+  "success": true,
+  "uploaded": 1,
+  "failed": 0,
+  "results": [
+    {
+      "fileName": "dialogue-expanded-final.png",
+      "originalPath": "/Users/banxuan/Documents/AVA/outputs/codex-ava-semantic-20261103/dialogue-expanded-final.png",
+      "type": "image",
+      "target": "space",
+      "spaceId": "S_t5qynC",
+      "asset": {
+        "assetId": "AI_HfwARuFn6tLcB",
+        "assetUrl": "https://mdn.alipayobjects.com/huamei_aphk1k/afts/img/A*aOj4SambnjMAAAAAb2AAAAgAegfkAQ/original",
+        "sourceUrl": "https://mdn.alipayobjects.com/huamei_aphk1k/afts/img/A*aOj4SambnjMAAAAAb2AAAAgAegfkAQ/original",
+        "aftsAliasUrl": ""
+      },
+      "subAssets": [
+        {
+          "assetId": "AI_rFQi6rAhOENgm",
+          "assetUrl": "https://mdn.alipayobjects.com/huamei_aphk1k/afts/img/A*aOj4SambnjMAAAAAb2AAAAgAegfkAQ/fmt.webp",
+          "sourceUrl": "https://mdn.alipayobjects.com/huamei_aphk1k/afts/img/A*aOj4SambnjMAAAAAb2AAAAgAegfkAQ/original"
+        }
+      ]
+    }
+  ]
+}

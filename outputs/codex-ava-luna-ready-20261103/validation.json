@@ -1,0 +1,13 @@
+{
+  "passed": true,
+  "both_arms_completed": true,
+  "same_model": "gpt-6-luna",
+  "effort": "low",
+  "identical_prompt": true,
+  "identical_csv": true,
+  "ava_monthly_matches_independent_reference": true,
+  "all_ava_contributions_reconcile": true,
+  "semantic_loaded_equals_provided": true,
+  "baseline_did_not_call_ava": true,
+  "interpretation": "AVA arm has additional company definition. Demonstrates definition reuse, not isolated tool accuracy advantage. Single paired example."
+}

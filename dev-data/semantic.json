@@ -1,0 +1,2534 @@
+{
+  "description": "办公用品零售合成数据的经营分析语义模型。净销售额采用已交付外部客户销售的确认净收入；自营确认净货款，代销仅确认佣金。完整口径见properties.business_rules。",
+  "properties": {
+    "currency": "CNY",
+    "amount_storage": "integer cents",
+    "timezone": "Asia/Shanghai",
+    "synthetic": true,
+    "snapshot_at": "2026-10-18 23:59:59",
+    "default_current_period": [
+      "2026-08-31",
+      "2026-09-27"
+    ],
+    "default_baseline_period": [
+      "2026-08-03",
+      "2026-08-30"
+    ],
+    "business_rules": "# 经营分析业务口径\n\n这是虚构办公用品零售商的合成数据，不对应真实企业或客户。人民币金额全部以整数“分”保存，转成“元”时除以 100。时间均为 Asia/Shanghai 本地时间。\n\n## 分析范围\n\n- 数据快照截至 **2026-10-18 23:59:59**；订单覆盖 2026-07-06 至 2026-10-11。库存、到货与退货记录保留至快照日。\n- 未指定范围时，经营复盘比较 **2026-08-31 至 2026-09-27** 和 **2026-08-03 至 2026-08-30**，各 28 天，均为周一到周日的完整四周。\n- 主问题为“净销售额下降，要不要加大投放？”需要先核实变化，再检查是否有足够依据支持行动。数据不支持的原因和动作应明确列为待验证项。\n- 顾客历史首购时间来自 CRM；本数据库不包含 2026-07-06 之前的全部历史订单。不能把库内首次出现等同于首次购买。\n\n## 净销售额\n\n本企业经营口径的净销售额，是已交付商品确认的净收入，**不等同于支付 GMV 或广告平台归因销售额**。\n\n1. 只计 `orders.order_kind='customer_sale'`、有支付记录且未取消的外部销售订单。员工内购、赠品、测试、未支付、已取消订单均排除。\n2. 以 **`fulfillments.delivered_at` 的日期**归属期间。一个订单可跨商品、采购批次和交付记录拆分；部分交付时只确认已交付部分，不要求整单状态已经 completed。\n3. 每条交付记录的结算基数为：交付件数 ×（明细商品实付单价 + 平台承担的补贴单价）。明细实付已经扣除了折扣，不能再次扣 `unit_discount_cents`。客户运费不计入商品销售额。\n4. 先按 `fulfillment_id` 汇总快照日前**已完成**的商品退款与平台补贴追回；申请中、已批准未完成、被拒绝的退款不扣减。同一交付可有多笔部分退款，整单取消的退款没有交付 ID。\n5. 自营 `owned` 确认结算基数减有效退款的全部金额；代销 `consignment` 只确认同一净基数 × `commercial_terms.commission_bps / 10000` 的佣金。佣金以交付记录为单位，四舍五入到分，最后汇总。\n6. 退款回记原交付期间，不按退款完成日期另作一笔当期销售。退款观察截至快照日；比较退款时还可使用交付后相同观察时长。退货政策的观察窗口为交付后 21 天，主比较窗口已经成熟，最新订单仍可能未成熟。\n\n## 成本与投放后的经营贡献\n\n- 自营商品成本来自对应采购批次 `purchase_orders.unit_cost_cents`，按交付数量确认；只有已经实际回仓、可继续销售的退货数量才冲回成本。质量问题或未回仓的退款不能自动冲回商品成本。\n- 代销货款属于供应商，确认收入时已经只计佣金，因此本口径不再扣代销商品采购成本。\n- 商品毛利 = 净销售额 − 净商品成本。\n- 履约后贡献 = 商品毛利 − `fulfillment_cost_cents` − `payment_fee_cents`。履约成本字段已经抵减顾客承担的运费，支付手续费不因退款自动退还。\n- 期间投放后贡献 = 同期履约后贡献 − `ad_daily.spend_cents`。这是经营复盘指标，不包含固定人工、租金和总部费用，不是财务净利润，也不直接等于某次投放的因果增量收益。\n- 经营复盘按交付期间聚合，广告花费按发生日期聚合，两者存在时滞。评估获客和投放实验时，应另外按**支付订单批次**追踪后续交付、退款及贡献，不能把两个日期口径混在一起。\n\n## 归属与数据粒度\n\n- 销售责任按 `orders.sales_store_id` → stores → region 归属；`fulfillment_store_id` 表示实际发货门店，不能替代销售责任门店。`market_id` 是顾客所在市场和实验分组单位。\n- `orders` 一行一单；`order_items` 一行一个订单商品明细；`fulfillments` 一行一笔商品交付，可能因采购批次拆成多行；`refund_requests` 一行一次退款申请；`order_touches` 一行一次营销触点。\n- 订单商品总实付只能在订单粒度汇总，不能在连接明细后直接重复求和。退款、触点、流量、广告花费分别先聚合到需要的粒度，再连接销售事实。\n- `inventory_daily` 为“日期 × 发货门店 × 商品”的日初、入库、发货、退货回仓及日末数量，数量变化可以核对。\n- `traffic_daily` 为“日期 × 市场 × 获客渠道 × 商品”的页面漏斗。商品浏览不是去重用户或全站会话，不能跨商品相加后称为 UV。缺货浏览记录来自商品页提示。\n- `ad_daily` 为“日期 × 活动 × 市场”。`campaigns` 中注明了归因窗口与方法。平台订单及归因金额以支付事件为准，不扣后续退款，采用商品实付全额，不区分自营全额与代销佣金。不同活动可能归因同一笔订单，不能直接相加当作去重订单或公司收入。\n- `order_touches` 反映可观测的点击或曝光记录，触点归因不能单独证明新增购买由广告造成。`orders.acquisition_channel_id` 是交易时记录的来源，也不等于因果贡献。\n\n## 实验分析\n\n`experiments` 和 `experiment_assignments` 记录一个按大区分层随机分配市场的品牌词预算实验。分配在实验前完成，每个大区 4 个实验市场和 4 个对照市场。\n\n实验前期为 2026-08-10 至 2026-08-30，实验期为 2026-08-31 至 2026-09-20，均为完整三周。分析时按分配市场纳入**所有获客渠道**的外部客户支付订单，追踪这些订单截至快照的交付、退款与经营贡献，并另外汇总相应市场的广告花费。\n\n不能只比较品牌词平台归因金额，也不能只保留实际点击广告或购买的顾客。以市场为统计单位，查看分组规模、前期基线、实验期变化与不确定性；可以使用市场级前后差分比较，但需要说明这是合成数据中的一项特定预算实验，其结果不能外推到所有渠道或任意预算幅度。\n"
+  },
+  "models": [
+    {
+      "name": "stores",
+      "tableReference": {
+        "table": "stores"
+      },
+      "primaryKey": "store_id",
+      "properties": {
+        "description": "门店维表，一行一个门店；销售责任门店与实际发货门店须分别关联。"
+      },
+      "columns": [
+        {
+          "name": "store_id",
+          "type": "INTEGER",
+          "notNull": true,
+          "isPrimaryKey": true,
+          "properties": {
+            "description": "门店主键"
+          }
+        },
+        {
+          "name": "store_name",
+          "type": "TEXT",
+          "notNull": true,
+          "isPrimaryKey": false,
+          "properties": {
+            "description": "门店名称"
+          }
+        },
+        {
+          "name": "region",
+          "type": "TEXT",
+          "notNull": true,
+          "isPrimaryKey": false,
+          "properties": {
+            "description": "门店所属大区"
+          }
+        },
+        {
+          "name": "city",
+          "type": "TEXT",
+          "notNull": true,
+          "isPrimaryKey": false,
+          "properties": {
+            "description": "门店所在城市"
+          }
+        }
+      ]
+    },
+    {
+      "name": "markets",
+      "tableReference": {
+        "table": "markets"
+      },
+      "primaryKey": "market_id",
+      "properties": {
+        "description": "市场维表，一行一个顾客市场；市场也是预算实验的随机分配单位。"
+      },
+      "columns": [
+        {
+          "name": "market_id",
+          "type": "INTEGER",
+          "notNull": true,
+          "isPrimaryKey": true,
+          "properties": {
+            "description": "市场主键"
+          }
+        },
+        {
+          "name": "market_name",
+          "type": "TEXT",
+          "notNull": true,
+          "isPrimaryKey": false,
+          "properties": {
+            "description": "市场名称"
+          }
+        },
+        {
+          "name": "region",
+          "type": "TEXT",
+          "notNull": true,
+          "isPrimaryKey": false,
+          "properties": {
+            "description": "市场所属大区，实验分层使用"
+          }
+        },
+        {
+          "name": "serving_store_id",
+          "type": "INTEGER",
+          "notNull": true,
+          "isPrimaryKey": false,
+          "properties": {
+            "description": "默认服务门店；实际发货可跨门店"
+          }
+        }
+      ],
+      "uniqueKeys": [
+        "market_name"
+      ]
+    },
+    {
+      "name": "channels",
+      "tableReference": {
+        "table": "channels"
+      },
+      "primaryKey": "channel_id",
+      "properties": {
+        "description": "获客渠道维表；渠道来源不等于广告的因果贡献。"
+      },
+      "columns": [
+        {
+          "name": "channel_id",
+          "type": "INTEGER",
+          "notNull": true,
+          "isPrimaryKey": true,
+          "properties": {
+            "description": "渠道主键"
+          }
+        },
+        {
+          "name": "channel_name",
+          "type": "TEXT",
+          "notNull": true,
+          "isPrimaryKey": false,
+          "properties": {
+            "description": "渠道名称"
+          }
+        },
+        {
+          "name": "channel_type",
+          "type": "TEXT",
+          "notNull": true,
+          "isPrimaryKey": false,
+          "properties": {
+            "description": "渠道类型：organic自然、direct直接、paid付费、offline线下"
+          }
+        }
+      ]
+    },
+    {
+      "name": "products",
+      "tableReference": {
+        "table": "products"
+      },
+      "primaryKey": "product_id",
+      "properties": {
+        "description": "商品维表，一行一个SKU；当前标价不能替代历史成交单价。"
+      },
+      "columns": [
+        {
+          "name": "product_id",
+          "type": "INTEGER",
+          "notNull": true,
+          "isPrimaryKey": true,
+          "properties": {
+            "description": "商品主键"
+          }
+        },
+        {
+          "name": "sku",
+          "type": "TEXT",
+          "notNull": true,
+          "isPrimaryKey": false,
+          "properties": {
+            "description": "唯一SKU编码"
+          }
+        },
+        {
+          "name": "product_name",
+          "type": "TEXT",
+          "notNull": true,
+          "isPrimaryKey": false,
+          "properties": {
+            "description": "商品名称"
+          }
+        },
+        {
+          "name": "category",
+          "type": "TEXT",
+          "notNull": true,
+          "isPrimaryKey": false,
+          "properties": {
+            "description": "商品品类"
+          }
+        },
+        {
+          "name": "list_price_cents",
+          "type": "INTEGER",
+          "notNull": true,
+          "isPrimaryKey": false,
+          "properties": {
+            "description": "当前商品标价单价，非历史实付",
+            "unit": "CNY_cent"
+          }
+        }
+      ],
+      "uniqueKeys": [
+        "sku"
+      ]
+    },
+    {
+      "name": "commercial_terms",
+      "tableReference": {
+        "table": "commercial_terms"
+      },
+      "primaryKey": "term_id",
+      "properties": {
+        "description": "按有效期版本化的商品商务条款；以订单明细term_id匹配成交时条款，不能仅按product_id连接。"
+      },
+      "columns": [
+        {
+          "name": "term_id",
+          "type": "INTEGER",
+          "notNull": true,
+          "isPrimaryKey": true,
+          "properties": {
+            "description": "条款版本主键"
+          }
+        },
+        {
+          "name": "product_id",
+          "type": "INTEGER",
+          "notNull": true,
+          "isPrimaryKey": false,
+          "properties": {
+            "description": "条款对应商品"
+          }
+        },
+        {
+          "name": "valid_from",
+          "type": "TEXT",
+          "notNull": true,
+          "isPrimaryKey": false,
+          "properties": {
+            "description": "条款生效日期，含当天"
+          }
+        },
+        {
+          "name": "valid_to",
+          "type": "TEXT",
+          "notNull": true,
+          "isPrimaryKey": false,
+          "properties": {
+            "description": "条款失效日期，含当天"
+          }
+        },
+        {
+          "name": "revenue_mode",
+          "type": "TEXT",
+          "notNull": true,
+          "isPrimaryKey": false,
+          "properties": {
+            "description": "owned自营确认净货款；consignment代销仅确认净货款的佣金"
+          }
+        },
+        {
+          "name": "commission_bps",
+          "type": "INTEGER",
+          "notNull": true,
+          "isPrimaryKey": false,
+          "properties": {
+            "description": "佣金比例，基点；10000表示100%；代销净结算基数乘此比例后按交付四舍五入到分",
+            "unit": "basis_point"
+          }
+        },
+        {
+          "name": "supplier_name",
+          "type": "TEXT",
+          "notNull": true,
+          "isPrimaryKey": false,
+          "properties": {
+            "description": "供应商名称"
+          }
+        }
+      ]
+    },
+    {
+      "name": "customers",
+      "tableReference": {
+        "table": "customers"
+      },
+      "primaryKey": "customer_id",
+      "properties": {
+        "description": "CRM顾客维表，包含数据窗口之前的首购信息；库内首次订单不等于首购。"
+      },
+      "columns": [
+        {
+          "name": "customer_id",
+          "type": "INTEGER",
+          "notNull": true,
+          "isPrimaryKey": true,
+          "properties": {
+            "description": "顾客主键"
+          }
+        },
+        {
+          "name": "market_id",
+          "type": "INTEGER",
+          "notNull": true,
+          "isPrimaryKey": false,
+          "properties": {
+            "description": "顾客所属市场"
+          }
+        },
+        {
+          "name": "registered_at",
+          "type": "TEXT",
+          "notNull": true,
+          "isPrimaryKey": false,
+          "properties": {
+            "description": "CRM注册时间"
+          }
+        },
+        {
+          "name": "first_paid_at",
+          "type": "TEXT",
+          "notNull": false,
+          "isPrimaryKey": false,
+          "properties": {
+            "description": "CRM历史首次支付时间；无支付为空"
+          }
+        },
+        {
+          "name": "acquisition_channel_id",
+          "type": "INTEGER",
+          "notNull": true,
+          "isPrimaryKey": false,
+          "properties": {
+            "description": "顾客最初获客渠道，区别于每次订单来源"
+          }
+        }
+      ]
+    },
+    {
+      "name": "campaigns",
+      "tableReference": {
+        "table": "campaigns"
+      },
+      "primaryKey": "campaign_id",
+      "properties": {
+        "description": "广告活动维表；平台归因允许活动间重复，不能视作增量收入。"
+      },
+      "columns": [
+        {
+          "name": "campaign_id",
+          "type": "INTEGER",
+          "notNull": true,
+          "isPrimaryKey": true,
+          "properties": {
+            "description": "广告活动主键"
+          }
+        },
+        {
+          "name": "campaign_name",
+          "type": "TEXT",
+          "notNull": true,
+          "isPrimaryKey": false,
+          "properties": {
+            "description": "广告活动名称"
+          }
+        },
+        {
+          "name": "channel_id",
+          "type": "INTEGER",
+          "notNull": true,
+          "isPrimaryKey": false,
+          "properties": {
+            "description": "活动所属渠道"
+          }
+        },
+        {
+          "name": "active_from",
+          "type": "TEXT",
+          "notNull": true,
+          "isPrimaryKey": false,
+          "properties": {
+            "description": "活动开始日期"
+          }
+        },
+        {
+          "name": "active_to",
+          "type": "TEXT",
+          "notNull": true,
+          "isPrimaryKey": false,
+          "properties": {
+            "description": "活动结束日期"
+          }
+        },
+        {
+          "name": "attribution_window_days",
+          "type": "INTEGER",
+          "notNull": true,
+          "isPrimaryKey": false,
+          "properties": {
+            "description": "平台归因窗口天数"
+          }
+        },
+        {
+          "name": "attribution_method",
+          "type": "TEXT",
+          "notNull": true,
+          "isPrimaryKey": false,
+          "properties": {
+            "description": "平台归因方法"
+          }
+        },
+        {
+          "name": "target_audience",
+          "type": "TEXT",
+          "notNull": true,
+          "isPrimaryKey": false,
+          "properties": {
+            "description": "目标受众说明"
+          }
+        }
+      ]
+    },
+    {
+      "name": "experiments",
+      "tableReference": {
+        "table": "experiments"
+      },
+      "primaryKey": "experiment_id",
+      "properties": {
+        "description": "预算实验设计，一行一个实验；分组必须结合experiment_assignments，不按触点筛选样本。"
+      },
+      "columns": [
+        {
+          "name": "experiment_id",
+          "type": "INTEGER",
+          "notNull": true,
+          "isPrimaryKey": true,
+          "properties": {
+            "description": "实验主键"
+          }
+        },
+        {
+          "name": "experiment_name",
+          "type": "TEXT",
+          "notNull": true,
+          "isPrimaryKey": false,
+          "properties": {
+            "description": "实验名称"
+          }
+        },
+        {
+          "name": "campaign_id",
+          "type": "INTEGER",
+          "notNull": true,
+          "isPrimaryKey": false,
+          "properties": {
+            "description": "被调整预算的活动"
+          }
+        },
+        {
+          "name": "randomization_unit",
+          "type": "TEXT",
+          "notNull": true,
+          "isPrimaryKey": false,
+          "properties": {
+            "description": "随机分配单位"
+          }
+        },
+        {
+          "name": "assignment_method",
+          "type": "TEXT",
+          "notNull": true,
+          "isPrimaryKey": false,
+          "properties": {
+            "description": "随机分配方法"
+          }
+        },
+        {
+          "name": "pre_start",
+          "type": "TEXT",
+          "notNull": true,
+          "isPrimaryKey": false,
+          "properties": {
+            "description": "前期开始日期"
+          }
+        },
+        {
+          "name": "pre_end",
+          "type": "TEXT",
+          "notNull": true,
+          "isPrimaryKey": false,
+          "properties": {
+            "description": "前期结束日期"
+          }
+        },
+        {
+          "name": "test_start",
+          "type": "TEXT",
+          "notNull": true,
+          "isPrimaryKey": false,
+          "properties": {
+            "description": "实验期开始日期"
+          }
+        },
+        {
+          "name": "test_end",
+          "type": "TEXT",
+          "notNull": true,
+          "isPrimaryKey": false,
+          "properties": {
+            "description": "实验期结束日期"
+          }
+        },
+        {
+          "name": "treatment_description",
+          "type": "TEXT",
+          "notNull": true,
+          "isPrimaryKey": false,
+          "properties": {
+            "description": "实验干预说明"
+          }
+        }
+      ]
+    },
+    {
+      "name": "experiment_assignments",
+      "tableReference": {
+        "table": "experiment_assignments"
+      },
+      "primaryKey": [
+        "experiment_id",
+        "market_id"
+      ],
+      "properties": {
+        "description": "一行一个实验×市场的事前分组；按分配组纳入所有渠道支付订单，市场为统计单位。"
+      },
+      "columns": [
+        {
+          "name": "experiment_id",
+          "type": "INTEGER",
+          "notNull": true,
+          "isPrimaryKey": true,
+          "properties": {
+            "description": "实验编号，联合主键之一"
+          }
+        },
+        {
+          "name": "market_id",
+          "type": "INTEGER",
+          "notNull": true,
+          "isPrimaryKey": true,
+          "properties": {
+            "description": "市场编号，联合主键之一"
+          }
+        },
+        {
+          "name": "stratum",
+          "type": "TEXT",
+          "notNull": true,
+          "isPrimaryKey": false,
+          "properties": {
+            "description": "随机化分层"
+          }
+        },
+        {
+          "name": "assigned_group",
+          "type": "TEXT",
+          "notNull": true,
+          "isPrimaryKey": false,
+          "properties": {
+            "description": "control对照组、treatment实验组"
+          }
+        },
+        {
+          "name": "assigned_at",
+          "type": "TEXT",
+          "notNull": true,
+          "isPrimaryKey": false,
+          "properties": {
+            "description": "分配时间，早于实验开始"
+          }
+        }
+      ]
+    },
+    {
+      "name": "purchase_orders",
+      "tableReference": {
+        "table": "purchase_orders"
+      },
+      "primaryKey": "purchase_order_id",
+      "properties": {
+        "description": "一行一个门店商品采购批次；实际批次成本与到货时间是库存、质量、利润分析依据。"
+      },
+      "columns": [
+        {
+          "name": "purchase_order_id",
+          "type": "INTEGER",
+          "notNull": true,
+          "isPrimaryKey": true,
+          "properties": {
+            "description": "采购批次主键"
+          }
+        },
+        {
+          "name": "store_id",
+          "type": "INTEGER",
+          "notNull": true,
+          "isPrimaryKey": false,
+          "properties": {
+            "description": "入库门店"
+          }
+        },
+        {
+          "name": "product_id",
+          "type": "INTEGER",
+          "notNull": true,
+          "isPrimaryKey": false,
+          "properties": {
+            "description": "采购商品"
+          }
+        },
+        {
+          "name": "ordered_at",
+          "type": "TEXT",
+          "notNull": true,
+          "isPrimaryKey": false,
+          "properties": {
+            "description": "采购下单时间"
+          }
+        },
+        {
+          "name": "expected_at",
+          "type": "TEXT",
+          "notNull": true,
+          "isPrimaryKey": false,
+          "properties": {
+            "description": "预计到货时间"
+          }
+        },
+        {
+          "name": "received_at",
+          "type": "TEXT",
+          "notNull": false,
+          "isPrimaryKey": false,
+          "properties": {
+            "description": "实际到货时间；未到货为空"
+          }
+        },
+        {
+          "name": "ordered_quantity",
+          "type": "INTEGER",
+          "notNull": true,
+          "isPrimaryKey": false,
+          "properties": {
+            "description": "采购数量"
+          }
+        },
+        {
+          "name": "received_quantity",
+          "type": "INTEGER",
+          "notNull": true,
+          "isPrimaryKey": false,
+          "properties": {
+            "description": "实际收到数量"
+          }
+        },
+        {
+          "name": "unit_cost_cents",
+          "type": "INTEGER",
+          "notNull": true,
+          "isPrimaryKey": false,
+          "properties": {
+            "description": "该采购批次商品单位成本",
+            "unit": "CNY_cent"
+          }
+        },
+        {
+          "name": "lot_code",
+          "type": "TEXT",
+          "notNull": true,
+          "isPrimaryKey": false,
+          "properties": {
+            "description": "供应商生产批号，可跨门店采购单重复"
+          }
+        },
+        {
+          "name": "delay_reason",
+          "type": "TEXT",
+          "notNull": false,
+          "isPrimaryKey": false,
+          "properties": {
+            "description": "延期原因；无记录为空"
+          }
+        }
+      ]
+    },
+    {
+      "name": "orders",
+      "tableReference": {
+        "table": "orders"
+      },
+      "primaryKey": "order_id",
+      "properties": {
+        "description": "一行一单；连接明细、交付、退款、触点后不可重复汇总整单金额。收入不使用支付日期归期。"
+      },
+      "columns": [
+        {
+          "name": "order_id",
+          "type": "INTEGER",
+          "notNull": true,
+          "isPrimaryKey": true,
+          "properties": {
+            "description": "订单主键"
+          }
+        },
+        {
+          "name": "customer_id",
+          "type": "INTEGER",
+          "notNull": true,
+          "isPrimaryKey": false,
+          "properties": {
+            "description": "下单顾客"
+          }
+        },
+        {
+          "name": "sales_store_id",
+          "type": "INTEGER",
+          "notNull": true,
+          "isPrimaryKey": false,
+          "properties": {
+            "description": "销售责任门店，收入地域归属使用此字段"
+          }
+        },
+        {
+          "name": "market_id",
+          "type": "INTEGER",
+          "notNull": true,
+          "isPrimaryKey": false,
+          "properties": {
+            "description": "顾客市场，实验分组使用此字段"
+          }
+        },
+        {
+          "name": "acquisition_channel_id",
+          "type": "INTEGER",
+          "notNull": true,
+          "isPrimaryKey": false,
+          "properties": {
+            "description": "本次交易来源渠道"
+          }
+        },
+        {
+          "name": "acquisition_campaign_id",
+          "type": "INTEGER",
+          "notNull": false,
+          "isPrimaryKey": false,
+          "properties": {
+            "description": "本次交易来源活动；非广告订单为空，不代表因果归因"
+          }
+        },
+        {
+          "name": "sales_channel",
+          "type": "TEXT",
+          "notNull": true,
+          "isPrimaryKey": false,
+          "properties": {
+            "description": "销售场景：线上或线下"
+          }
+        },
+        {
+          "name": "order_kind",
+          "type": "TEXT",
+          "notNull": true,
+          "isPrimaryKey": false,
+          "properties": {
+            "description": "customer_sale外部销售、employee员工内购、gift赠品、test测试；净销售额只含customer_sale"
+          }
+        },
+        {
+          "name": "status",
+          "type": "TEXT",
+          "notNull": true,
+          "isPrimaryKey": false,
+          "properties": {
+            "description": "pending_payment待付、cancelled取消、paid已付部分或尚未交付、completed全部交付；退款不重写此状态"
+          }
+        },
+        {
+          "name": "ordered_at",
+          "type": "TEXT",
+          "notNull": true,
+          "isPrimaryKey": false,
+          "properties": {
+            "description": "下单时间"
+          }
+        },
+        {
+          "name": "paid_at",
+          "type": "TEXT",
+          "notNull": false,
+          "isPrimaryKey": false,
+          "properties": {
+            "description": "实际支付时间，未支付为空"
+          }
+        },
+        {
+          "name": "merchandise_paid_cents",
+          "type": "INTEGER",
+          "notNull": true,
+          "isPrimaryKey": false,
+          "properties": {
+            "description": "整单商品实付，退款前、不含运费；不可在连接明细后重复求和",
+            "unit": "CNY_cent"
+          }
+        },
+        {
+          "name": "freight_paid_cents",
+          "type": "INTEGER",
+          "notNull": true,
+          "isPrimaryKey": false,
+          "properties": {
+            "description": "顾客支付运费，不计商品销售额",
+            "unit": "CNY_cent"
+          }
+        }
+      ]
+    },
+    {
+      "name": "order_items",
+      "tableReference": {
+        "table": "order_items"
+      },
+      "primaryKey": "order_item_id",
+      "properties": {
+        "description": "一行一个订单商品明细；可拆为多个采购批次交付。各单价为成交时历史值。"
+      },
+      "columns": [
+        {
+          "name": "order_item_id",
+          "type": "INTEGER",
+          "notNull": true,
+          "isPrimaryKey": true,
+          "properties": {
+            "description": "订单明细主键"
+          }
+        },
+        {
+          "name": "order_id",
+          "type": "INTEGER",
+          "notNull": true,
+          "isPrimaryKey": false,
+          "properties": {
+            "description": "所属订单"
+          }
+        },
+        {
+          "name": "product_id",
+          "type": "INTEGER",
+          "notNull": true,
+          "isPrimaryKey": false,
+          "properties": {
+            "description": "明细商品"
+          }
+        },
+        {
+          "name": "term_id",
+          "type": "INTEGER",
+          "notNull": true,
+          "isPrimaryKey": false,
+          "properties": {
+            "description": "成交时条款版本，优先按此键关联条款"
+          }
+        },
+        {
+          "name": "quantity",
+          "type": "INTEGER",
+          "notNull": true,
+          "isPrimaryKey": false,
+          "properties": {
+            "description": "原购买数量"
+          }
+        },
+        {
+          "name": "unit_list_price_cents",
+          "type": "INTEGER",
+          "notNull": true,
+          "isPrimaryKey": false,
+          "properties": {
+            "description": "成交时商品标价单价",
+            "unit": "CNY_cent"
+          }
+        },
+        {
+          "name": "unit_discount_cents",
+          "type": "INTEGER",
+          "notNull": true,
+          "isPrimaryKey": false,
+          "properties": {
+            "description": "每件商家折扣，实付已扣除，不能重复扣",
+            "unit": "CNY_cent"
+          }
+        },
+        {
+          "name": "unit_customer_paid_cents",
+          "type": "INTEGER",
+          "notNull": true,
+          "isPrimaryKey": false,
+          "properties": {
+            "description": "每件商品顾客实付，标价减折扣",
+            "unit": "CNY_cent"
+          }
+        },
+        {
+          "name": "unit_platform_subsidy_cents",
+          "type": "INTEGER",
+          "notNull": true,
+          "isPrimaryKey": false,
+          "properties": {
+            "description": "每件平台承担补贴，属于商品结算基数",
+            "unit": "CNY_cent"
+          }
+        }
+      ]
+    },
+    {
+      "name": "fulfillments",
+      "tableReference": {
+        "table": "fulfillments"
+      },
+      "primaryKey": "fulfillment_id",
+      "properties": {
+        "description": "一行一笔商品交付，按采购批次拆分；收入以已交付部分确认，需先汇总退款再连接。"
+      },
+      "columns": [
+        {
+          "name": "fulfillment_id",
+          "type": "INTEGER",
+          "notNull": true,
+          "isPrimaryKey": true,
+          "properties": {
+            "description": "交付主键，财务派生模型的唯一粒度"
+          }
+        },
+        {
+          "name": "order_item_id",
+          "type": "INTEGER",
+          "notNull": true,
+          "isPrimaryKey": false,
+          "properties": {
+            "description": "所属订单明细"
+          }
+        },
+        {
+          "name": "fulfillment_store_id",
+          "type": "INTEGER",
+          "notNull": true,
+          "isPrimaryKey": false,
+          "properties": {
+            "description": "实际发货门店，不替代销售责任门店"
+          }
+        },
+        {
+          "name": "purchase_order_id",
+          "type": "INTEGER",
+          "notNull": true,
+          "isPrimaryKey": false,
+          "properties": {
+            "description": "实际出库采购批次，连接成本及生产批号"
+          }
+        },
+        {
+          "name": "quantity",
+          "type": "INTEGER",
+          "notNull": true,
+          "isPrimaryKey": false,
+          "properties": {
+            "description": "本次交付件数"
+          }
+        },
+        {
+          "name": "shipped_at",
+          "type": "TEXT",
+          "notNull": true,
+          "isPrimaryKey": false,
+          "properties": {
+            "description": "发货时间"
+          }
+        },
+        {
+          "name": "delivered_at",
+          "type": "TEXT",
+          "notNull": false,
+          "isPrimaryKey": false,
+          "properties": {
+            "description": "交付完成时间，未交付为空；净销售额按此日归期"
+          }
+        },
+        {
+          "name": "carrier",
+          "type": "TEXT",
+          "notNull": true,
+          "isPrimaryKey": false,
+          "properties": {
+            "description": "承运商"
+          }
+        },
+        {
+          "name": "fulfillment_cost_cents",
+          "type": "INTEGER",
+          "notNull": true,
+          "isPrimaryKey": false,
+          "properties": {
+            "description": "本笔履约成本，已抵减顾客承担运费",
+            "unit": "CNY_cent"
+          }
+        },
+        {
+          "name": "payment_fee_cents",
+          "type": "INTEGER",
+          "notNull": true,
+          "isPrimaryKey": false,
+          "properties": {
+            "description": "本笔支付手续费，退款不会自动返还",
+            "unit": "CNY_cent"
+          }
+        }
+      ]
+    },
+    {
+      "name": "refund_requests",
+      "tableReference": {
+        "table": "refund_requests"
+      },
+      "primaryKey": "refund_id",
+      "properties": {
+        "description": "一行一次退款申请，同一交付可有多笔部分退款及被拒重复申请；必须按fulfillment_id先聚合。"
+      },
+      "columns": [
+        {
+          "name": "refund_id",
+          "type": "INTEGER",
+          "notNull": true,
+          "isPrimaryKey": true,
+          "properties": {
+            "description": "退款申请主键"
+          }
+        },
+        {
+          "name": "order_item_id",
+          "type": "INTEGER",
+          "notNull": true,
+          "isPrimaryKey": false,
+          "properties": {
+            "description": "退款所属明细"
+          }
+        },
+        {
+          "name": "fulfillment_id",
+          "type": "INTEGER",
+          "notNull": false,
+          "isPrimaryKey": false,
+          "properties": {
+            "description": "对应交付；发货前取消退款为空，不属于已交付收入的扣减"
+          }
+        },
+        {
+          "name": "requested_at",
+          "type": "TEXT",
+          "notNull": true,
+          "isPrimaryKey": false,
+          "properties": {
+            "description": "申请时间"
+          }
+        },
+        {
+          "name": "completed_at",
+          "type": "TEXT",
+          "notNull": false,
+          "isPrimaryKey": false,
+          "properties": {
+            "description": "退款完成时间；未完成为空"
+          }
+        },
+        {
+          "name": "status",
+          "type": "TEXT",
+          "notNull": true,
+          "isPrimaryKey": false,
+          "properties": {
+            "description": "requested申请、approved批准未完成、completed已完成、rejected拒绝；只扣快照日前completed"
+          }
+        },
+        {
+          "name": "refund_customer_cents",
+          "type": "INTEGER",
+          "notNull": true,
+          "isPrimaryKey": false,
+          "properties": {
+            "description": "退还顾客的商品款，不含运费",
+            "unit": "CNY_cent"
+          }
+        },
+        {
+          "name": "clawback_subsidy_cents",
+          "type": "INTEGER",
+          "notNull": true,
+          "isPrimaryKey": false,
+          "properties": {
+            "description": "向平台退回的商品补贴",
+            "unit": "CNY_cent"
+          }
+        },
+        {
+          "name": "returned_quantity",
+          "type": "INTEGER",
+          "notNull": true,
+          "isPrimaryKey": false,
+          "properties": {
+            "description": "本申请实际退货件数；部分补偿可为0"
+          }
+        },
+        {
+          "name": "restocked_quantity",
+          "type": "INTEGER",
+          "notNull": true,
+          "isPrimaryKey": false,
+          "properties": {
+            "description": "实际可再次销售且已回仓的数量，只有此数量冲回成本"
+          }
+        },
+        {
+          "name": "restocked_at",
+          "type": "TEXT",
+          "notNull": false,
+          "isPrimaryKey": false,
+          "properties": {
+            "description": "实际回仓时间；未回仓为空"
+          }
+        },
+        {
+          "name": "reason_code",
+          "type": "TEXT",
+          "notNull": true,
+          "isPrimaryKey": false,
+          "properties": {
+            "description": "退款原因代码"
+          }
+        }
+      ]
+    },
+    {
+      "name": "order_touches",
+      "tableReference": {
+        "table": "order_touches"
+      },
+      "primaryKey": "touch_id",
+      "properties": {
+        "description": "一行一次可观测营销触点；同单可多活动、多次点击或曝光，不可直接连接后汇总收入。"
+      },
+      "columns": [
+        {
+          "name": "touch_id",
+          "type": "INTEGER",
+          "notNull": true,
+          "isPrimaryKey": true,
+          "properties": {
+            "description": "触点主键"
+          }
+        },
+        {
+          "name": "order_id",
+          "type": "INTEGER",
+          "notNull": true,
+          "isPrimaryKey": false,
+          "properties": {
+            "description": "对应订单"
+          }
+        },
+        {
+          "name": "campaign_id",
+          "type": "INTEGER",
+          "notNull": true,
+          "isPrimaryKey": false,
+          "properties": {
+            "description": "对应广告活动"
+          }
+        },
+        {
+          "name": "touched_at",
+          "type": "TEXT",
+          "notNull": true,
+          "isPrimaryKey": false,
+          "properties": {
+            "description": "触点时间"
+          }
+        },
+        {
+          "name": "touch_type",
+          "type": "TEXT",
+          "notNull": true,
+          "isPrimaryKey": false,
+          "properties": {
+            "description": "click点击、view曝光；观测到触点不证明增量效果"
+          }
+        }
+      ]
+    },
+    {
+      "name": "ad_daily",
+      "tableReference": {
+        "table": "ad_daily"
+      },
+      "primaryKey": [
+        "day",
+        "campaign_id",
+        "market_id"
+      ],
+      "properties": {
+        "description": "一行日期×活动×市场；广告花费可加，平台归因订单及金额跨活动可重复。与销售先各自聚合后连接。"
+      },
+      "columns": [
+        {
+          "name": "day",
+          "type": "TEXT",
+          "notNull": true,
+          "isPrimaryKey": true,
+          "properties": {
+            "description": "广告发生日期，平台归因值按订单支付日"
+          }
+        },
+        {
+          "name": "campaign_id",
+          "type": "INTEGER",
+          "notNull": true,
+          "isPrimaryKey": true,
+          "properties": {
+            "description": "广告活动，联合主键之一"
+          }
+        },
+        {
+          "name": "market_id",
+          "type": "INTEGER",
+          "notNull": true,
+          "isPrimaryKey": true,
+          "properties": {
+            "description": "市场，联合主键之一"
+          }
+        },
+        {
+          "name": "impressions",
+          "type": "INTEGER",
+          "notNull": true,
+          "isPrimaryKey": false,
+          "properties": {
+            "description": "曝光次数"
+          }
+        },
+        {
+          "name": "clicks",
+          "type": "INTEGER",
+          "notNull": true,
+          "isPrimaryKey": false,
+          "properties": {
+            "description": "点击次数"
+          }
+        },
+        {
+          "name": "spend_cents",
+          "type": "INTEGER",
+          "notNull": true,
+          "isPrimaryKey": false,
+          "properties": {
+            "description": "广告花费",
+            "unit": "CNY_cent"
+          }
+        },
+        {
+          "name": "platform_reported_orders",
+          "type": "INTEGER",
+          "notNull": true,
+          "isPrimaryKey": false,
+          "properties": {
+            "description": "平台归因订单数，含后续取消等情况；不同活动间可能重复"
+          }
+        },
+        {
+          "name": "platform_reported_value_cents",
+          "type": "INTEGER",
+          "notNull": true,
+          "isPrimaryKey": false,
+          "properties": {
+            "description": "平台归因商品实付全额，退款前、代销未转佣金；不是公司收入",
+            "unit": "CNY_cent"
+          }
+        }
+      ]
+    },
+    {
+      "name": "traffic_daily",
+      "tableReference": {
+        "table": "traffic_daily"
+      },
+      "primaryKey": [
+        "day",
+        "market_id",
+        "channel_id",
+        "product_id"
+      ],
+      "properties": {
+        "description": "一行日期×市场×获客渠道×商品；页面浏览是PV，跨商品求和不能称为去重UV。"
+      },
+      "columns": [
+        {
+          "name": "day",
+          "type": "TEXT",
+          "notNull": true,
+          "isPrimaryKey": true,
+          "properties": {
+            "description": "浏览发生日期"
+          }
+        },
+        {
+          "name": "market_id",
+          "type": "INTEGER",
+          "notNull": true,
+          "isPrimaryKey": true,
+          "properties": {
+            "description": "市场"
+          }
+        },
+        {
+          "name": "channel_id",
+          "type": "INTEGER",
+          "notNull": true,
+          "isPrimaryKey": true,
+          "properties": {
+            "description": "获客渠道"
+          }
+        },
+        {
+          "name": "product_id",
+          "type": "INTEGER",
+          "notNull": true,
+          "isPrimaryKey": true,
+          "properties": {
+            "description": "商品"
+          }
+        },
+        {
+          "name": "product_views",
+          "type": "INTEGER",
+          "notNull": true,
+          "isPrimaryKey": false,
+          "properties": {
+            "description": "商品页面浏览次数，非去重用户数"
+          }
+        },
+        {
+          "name": "add_to_carts",
+          "type": "INTEGER",
+          "notNull": true,
+          "isPrimaryKey": false,
+          "properties": {
+            "description": "加购次数"
+          }
+        },
+        {
+          "name": "checkout_starts",
+          "type": "INTEGER",
+          "notNull": true,
+          "isPrimaryKey": false,
+          "properties": {
+            "description": "发起结算次数"
+          }
+        },
+        {
+          "name": "orders_created",
+          "type": "INTEGER",
+          "notNull": true,
+          "isPrimaryKey": false,
+          "properties": {
+            "description": "成功创建订单次数，含后续未付和取消"
+          }
+        },
+        {
+          "name": "out_of_stock_views",
+          "type": "INTEGER",
+          "notNull": true,
+          "isPrimaryKey": false,
+          "properties": {
+            "description": "显示缺货提示的商品浏览次数"
+          }
+        }
+      ]
+    },
+    {
+      "name": "inventory_daily",
+      "tableReference": {
+        "table": "inventory_daily"
+      },
+      "primaryKey": [
+        "day",
+        "store_id",
+        "product_id"
+      ],
+      "properties": {
+        "description": "一行日期×发货门店×商品的库存流水；日末=日初+到货+可售退货回仓−发货，日末库存不可跨日期求和。"
+      },
+      "columns": [
+        {
+          "name": "day",
+          "type": "TEXT",
+          "notNull": true,
+          "isPrimaryKey": true,
+          "properties": {
+            "description": "库存快照日期"
+          }
+        },
+        {
+          "name": "store_id",
+          "type": "INTEGER",
+          "notNull": true,
+          "isPrimaryKey": true,
+          "properties": {
+            "description": "库存所属门店"
+          }
+        },
+        {
+          "name": "product_id",
+          "type": "INTEGER",
+          "notNull": true,
+          "isPrimaryKey": true,
+          "properties": {
+            "description": "商品"
+          }
+        },
+        {
+          "name": "opening_quantity",
+          "type": "INTEGER",
+          "notNull": true,
+          "isPrimaryKey": false,
+          "properties": {
+            "description": "日初库存件数"
+          }
+        },
+        {
+          "name": "received_quantity",
+          "type": "INTEGER",
+          "notNull": true,
+          "isPrimaryKey": false,
+          "properties": {
+            "description": "当日采购到货件数"
+          }
+        },
+        {
+          "name": "shipped_quantity",
+          "type": "INTEGER",
+          "notNull": true,
+          "isPrimaryKey": false,
+          "properties": {
+            "description": "当日发货件数"
+          }
+        },
+        {
+          "name": "restocked_quantity",
+          "type": "INTEGER",
+          "notNull": true,
+          "isPrimaryKey": false,
+          "properties": {
+            "description": "当日可售退货回仓件数"
+          }
+        },
+        {
+          "name": "closing_quantity",
+          "type": "INTEGER",
+          "notNull": true,
+          "isPrimaryKey": false,
+          "properties": {
+            "description": "日末库存件数；需取指定日期或日均，不能累计为库存"
+          }
+        }
+      ]
+    },
+    {
+      "name": "delivered_sales",
+      "refSql": "-- One row per delivered fulfillment; aggregate refund applications before joining.\nWITH refunds AS (\n  SELECT fulfillment_id,\n         SUM(refund_customer_cents + clawback_subsidy_cents) AS refund_cents,\n         SUM(CASE WHEN restocked_at <= '2026-10-18 23:59:59'\n                  THEN restocked_quantity ELSE 0 END) AS restocked_quantity\n  FROM refund_requests\n  WHERE status = 'completed' AND completed_at <= '2026-10-18 23:59:59'\n    AND fulfillment_id IS NOT NULL\n  GROUP BY fulfillment_id\n), settlement AS (\n  SELECT f.fulfillment_id, o.order_id, i.order_item_id, o.customer_id,\n         o.market_id, m.market_name, o.sales_store_id, s.store_name,\n         s.region AS selling_region, s.city AS selling_city,\n         f.fulfillment_store_id, i.product_id, p.sku, p.product_name, p.category,\n         o.acquisition_channel_id, ch.channel_name, ch.channel_type,\n         o.acquisition_campaign_id, o.sales_channel, t.revenue_mode,\n         t.commission_bps, f.purchase_order_id, po.lot_code,\n         SUBSTR(o.paid_at, 1, 10) AS paid_date,\n         SUBSTR(f.delivered_at, 1, 10) AS delivered_date,\n         CASE WHEN SUBSTR(o.paid_at, 1, 10) = SUBSTR(c.first_paid_at, 1, 10)\n              THEN 'new' ELSE 'returning' END AS customer_type,\n         f.quantity AS delivered_quantity,\n         f.quantity * (i.unit_customer_paid_cents + i.unit_platform_subsidy_cents)\n           AS gross_settlement_cents,\n         COALESCE(r.refund_cents, 0) AS refund_cents,\n         CASE WHEN t.revenue_mode = 'owned'\n              THEN (f.quantity - COALESCE(r.restocked_quantity, 0)) * po.unit_cost_cents\n              ELSE 0 END AS net_cogs_cents,\n         f.fulfillment_cost_cents, f.payment_fee_cents\n  FROM fulfillments f\n  JOIN order_items i ON i.order_item_id = f.order_item_id\n  JOIN orders o ON o.order_id = i.order_id\n  JOIN products p ON p.product_id = i.product_id\n  JOIN commercial_terms t ON t.term_id = i.term_id\n  JOIN purchase_orders po ON po.purchase_order_id = f.purchase_order_id\n  JOIN stores s ON s.store_id = o.sales_store_id\n  JOIN markets m ON m.market_id = o.market_id\n  JOIN channels ch ON ch.channel_id = o.acquisition_channel_id\n  JOIN customers c ON c.customer_id = o.customer_id\n  LEFT JOIN refunds r ON r.fulfillment_id = f.fulfillment_id\n  WHERE o.order_kind = 'customer_sale' AND o.paid_at IS NOT NULL\n    AND o.status IN ('paid', 'completed')\n    AND f.delivered_at IS NOT NULL AND f.delivered_at <= '2026-10-18 23:59:59'\n), revenue AS (\n  SELECT *, CAST(ROUND((gross_settlement_cents - refund_cents) *\n                 CASE WHEN revenue_mode = 'consignment' THEN commission_bps / 10000.0\n                      ELSE 1.0 END, 0) AS BIGINT) AS net_sales_cents\n  FROM settlement\n)\nSELECT *, net_sales_cents - net_cogs_cents AS gross_profit_cents,\n       net_sales_cents - net_cogs_cents - fulfillment_cost_cents - payment_fee_cents\n         AS contribution_before_ads_cents\nFROM revenue\n",
+      "dialect": "duckdb",
+      "primaryKey": "fulfillment_id",
+      "columns": [
+        {
+          "name": "fulfillment_id",
+          "type": "BIGINT",
+          "properties": {
+            "description": "对应交付；发货前取消退款为空，不属于已交付收入的扣减"
+          }
+        },
+        {
+          "name": "order_id",
+          "type": "BIGINT",
+          "properties": {
+            "description": "对应订单"
+          }
+        },
+        {
+          "name": "order_item_id",
+          "type": "BIGINT",
+          "properties": {
+            "description": "退款所属明细"
+          }
+        },
+        {
+          "name": "customer_id",
+          "type": "BIGINT",
+          "properties": {
+            "description": "下单顾客"
+          }
+        },
+        {
+          "name": "market_id",
+          "type": "BIGINT",
+          "properties": {
+            "description": "市场"
+          }
+        },
+        {
+          "name": "market_name",
+          "type": "TEXT",
+          "properties": {
+            "description": "顾客市场名称"
+          }
+        },
+        {
+          "name": "sales_store_id",
+          "type": "BIGINT",
+          "properties": {
+            "description": "销售责任门店，收入地域归属使用此字段"
+          }
+        },
+        {
+          "name": "store_name",
+          "type": "TEXT",
+          "properties": {
+            "description": "门店名称"
+          }
+        },
+        {
+          "name": "selling_region",
+          "type": "TEXT",
+          "properties": {
+            "description": "销售责任大区"
+          }
+        },
+        {
+          "name": "selling_city",
+          "type": "TEXT",
+          "properties": {
+            "description": "销售责任城市"
+          }
+        },
+        {
+          "name": "fulfillment_store_id",
+          "type": "BIGINT",
+          "properties": {
+            "description": "实际发货门店，不替代销售责任门店"
+          }
+        },
+        {
+          "name": "product_id",
+          "type": "BIGINT",
+          "properties": {
+            "description": "商品"
+          }
+        },
+        {
+          "name": "sku",
+          "type": "TEXT",
+          "properties": {
+            "description": "唯一SKU编码"
+          }
+        },
+        {
+          "name": "product_name",
+          "type": "TEXT",
+          "properties": {
+            "description": "商品名称"
+          }
+        },
+        {
+          "name": "category",
+          "type": "TEXT",
+          "properties": {
+            "description": "商品品类"
+          }
+        },
+        {
+          "name": "acquisition_channel_id",
+          "type": "BIGINT",
+          "properties": {
+            "description": "本次交易来源渠道"
+          }
+        },
+        {
+          "name": "channel_name",
+          "type": "TEXT",
+          "properties": {
+            "description": "渠道名称"
+          }
+        },
+        {
+          "name": "channel_type",
+          "type": "TEXT",
+          "properties": {
+            "description": "渠道类型：organic自然、direct直接、paid付费、offline线下"
+          }
+        },
+        {
+          "name": "acquisition_campaign_id",
+          "type": "BIGINT",
+          "properties": {
+            "description": "本次交易来源活动；非广告订单为空，不代表因果归因"
+          }
+        },
+        {
+          "name": "sales_channel",
+          "type": "TEXT",
+          "properties": {
+            "description": "销售场景：线上或线下"
+          }
+        },
+        {
+          "name": "revenue_mode",
+          "type": "TEXT",
+          "properties": {
+            "description": "owned自营确认净货款；consignment代销仅确认净货款的佣金"
+          }
+        },
+        {
+          "name": "commission_bps",
+          "type": "BIGINT",
+          "properties": {
+            "description": "佣金比例，基点；10000表示100%；代销净结算基数乘此比例后按交付四舍五入到分"
+          }
+        },
+        {
+          "name": "purchase_order_id",
+          "type": "BIGINT",
+          "properties": {
+            "description": "实际出库采购批次，连接成本及生产批号"
+          }
+        },
+        {
+          "name": "lot_code",
+          "type": "TEXT",
+          "properties": {
+            "description": "供应商生产批号，可跨门店采购单重复"
+          }
+        },
+        {
+          "name": "paid_date",
+          "type": "TEXT",
+          "properties": {
+            "description": "订单支付日期，获客批次及实验归期使用"
+          }
+        },
+        {
+          "name": "delivered_date",
+          "type": "TEXT",
+          "properties": {
+            "description": "交付完成日期，经营收入归期使用"
+          }
+        },
+        {
+          "name": "customer_type",
+          "type": "TEXT",
+          "properties": {
+            "description": "new为CRM首购同日的订单；returning为更早已首购的顾客；不是逐订单的首次标记"
+          }
+        },
+        {
+          "name": "delivered_quantity",
+          "type": "BIGINT",
+          "properties": {
+            "description": "本交付记录原交付件数，未扣退货"
+          }
+        },
+        {
+          "name": "gross_settlement_cents",
+          "type": "BIGINT",
+          "properties": {
+            "description": "本交付商品实付加平台补贴，退款前，代销未转佣金",
+            "unit": "CNY_cent"
+          }
+        },
+        {
+          "name": "refund_cents",
+          "type": "BIGINT",
+          "properties": {
+            "description": "本交付快照日前已完成的商品退款加补贴追回；按交付预聚合，代销未转佣金",
+            "unit": "CNY_cent"
+          }
+        },
+        {
+          "name": "net_cogs_cents",
+          "type": "BIGINT",
+          "properties": {
+            "description": "自营批次成本减已回仓可售退货成本；代销为0",
+            "unit": "CNY_cent"
+          }
+        },
+        {
+          "name": "fulfillment_cost_cents",
+          "type": "BIGINT",
+          "properties": {
+            "description": "本笔履约成本，已抵减顾客承担运费",
+            "unit": "CNY_cent"
+          }
+        },
+        {
+          "name": "payment_fee_cents",
+          "type": "BIGINT",
+          "properties": {
+            "description": "本笔支付手续费，退款不会自动返还",
+            "unit": "CNY_cent"
+          }
+        },
+        {
+          "name": "net_sales_cents",
+          "type": "BIGINT",
+          "properties": {
+            "description": "净销售额：自营净结算全额、代销净结算乘佣金比例；每笔交付四舍五入到分",
+            "unit": "CNY_cent"
+          }
+        },
+        {
+          "name": "gross_profit_cents",
+          "type": "BIGINT",
+          "properties": {
+            "description": "商品毛利，净销售额减净商品成本",
+            "unit": "CNY_cent"
+          }
+        },
+        {
+          "name": "contribution_before_ads_cents",
+          "type": "BIGINT",
+          "properties": {
+            "description": "履约后贡献，商品毛利减履约成本及支付手续费，未扣广告与固定费用",
+            "unit": "CNY_cent"
+          }
+        }
+      ],
+      "properties": {
+        "description": "已交付外部客户销售，一行一笔交付；快照截至2026-10-18。先聚合有效退款再连接，避免多笔退款重复计数。",
+        "execution": "逻辑模型不会自动建表。查询须将refSql展开为CTE delivered_sales或子查询。",
+        "time_rule": "经营复盘按delivered_date；投放实验按paid_date，二者不可混用。"
+      }
+    }
+  ],
+  "relationships": [
+    {
+      "name": "markets_serving_store_id_to_stores",
+      "models": [
+        "markets",
+        "stores"
+      ],
+      "joinType": "MANY_TO_ONE",
+      "condition": "\"markets\".\"serving_store_id\" = \"stores\".\"store_id\"",
+      "properties": {
+        "description": "markets.serving_store_id对应stores.store_id；按事实表粒度防止重复汇总。"
+      }
+    },
+    {
+      "name": "commercial_terms_product_id_to_products",
+      "models": [
+        "commercial_terms",
+        "products"
+      ],
+      "joinType": "MANY_TO_ONE",
+      "condition": "\"commercial_terms\".\"product_id\" = \"products\".\"product_id\"",
+      "properties": {
+        "description": "commercial_terms.product_id对应products.product_id；按事实表粒度防止重复汇总。"
+      }
+    },
+    {
+      "name": "customers_acquisition_channel_id_to_channels",
+      "models": [
+        "customers",
+        "channels"
+      ],
+      "joinType": "MANY_TO_ONE",
+      "condition": "\"customers\".\"acquisition_channel_id\" = \"channels\".\"channel_id\"",
+      "properties": {
+        "description": "customers.acquisition_channel_id对应channels.channel_id；按事实表粒度防止重复汇总。"
+      }
+    },
+    {
+      "name": "customers_market_id_to_markets",
+      "models": [
+        "customers",
+        "markets"
+      ],
+      "joinType": "MANY_TO_ONE",
+      "condition": "\"customers\".\"market_id\" = \"markets\".\"market_id\"",
+      "properties": {
+        "description": "customers.market_id对应markets.market_id；按事实表粒度防止重复汇总。"
+      }
+    },
+    {
+      "name": "campaigns_channel_id_to_channels",
+      "models": [
+        "campaigns",
+        "channels"
+      ],
+      "joinType": "MANY_TO_ONE",
+      "condition": "\"campaigns\".\"channel_id\" = \"channels\".\"channel_id\"",
+      "properties": {
+        "description": "campaigns.channel_id对应channels.channel_id；按事实表粒度防止重复汇总。"
+      }
+    },
+    {
+      "name": "experiments_campaign_id_to_campaigns",
+      "models": [
+        "experiments",
+        "campaigns"
+      ],
+      "joinType": "MANY_TO_ONE",
+      "condition": "\"experiments\".\"campaign_id\" = \"campaigns\".\"campaign_id\"",
+      "properties": {
+        "description": "experiments.campaign_id对应campaigns.campaign_id；按事实表粒度防止重复汇总。"
+      }
+    },
+    {
+      "name": "experiment_assignments_market_id_to_markets",
+      "models": [
+        "experiment_assignments",
+        "markets"
+      ],
+      "joinType": "MANY_TO_ONE",
+      "condition": "\"experiment_assignments\".\"market_id\" = \"markets\".\"market_id\"",
+      "properties": {
+        "description": "experiment_assignments.market_id对应markets.market_id；按事实表粒度防止重复汇总。"
+      }
+    },
+    {
+      "name": "experiment_assignments_experiment_id_to_experiments",
+      "models": [
+        "experiment_assignments",
+        "experiments"
+      ],
+      "joinType": "MANY_TO_ONE",
+      "condition": "\"experiment_assignments\".\"experiment_id\" = \"experiments\".\"experiment_id\"",
+      "properties": {
+        "description": "experiment_assignments.experiment_id对应experiments.experiment_id；按事实表粒度防止重复汇总。"
+      }
+    },
+    {
+      "name": "purchase_orders_product_id_to_products",
+      "models": [
+        "purchase_orders",
+        "products"
+      ],
+      "joinType": "MANY_TO_ONE",
+      "condition": "\"purchase_orders\".\"product_id\" = \"products\".\"product_id\"",
+      "properties": {
+        "description": "purchase_orders.product_id对应products.product_id；按事实表粒度防止重复汇总。"
+      }
+    },
+    {
+      "name": "purchase_orders_store_id_to_stores",
+      "models": [
+        "purchase_orders",
+        "stores"
+      ],
+      "joinType": "MANY_TO_ONE",
+      "condition": "\"purchase_orders\".\"store_id\" = \"stores\".\"store_id\"",
+      "properties": {
+        "description": "purchase_orders.store_id对应stores.store_id；按事实表粒度防止重复汇总。"
+      }
+    },
+    {
+      "name": "orders_acquisition_campaign_id_to_campaigns",
+      "models": [
+        "orders",
+        "campaigns"
+      ],
+      "joinType": "MANY_TO_ONE",
+      "condition": "\"orders\".\"acquisition_campaign_id\" = \"campaigns\".\"campaign_id\"",
+      "properties": {
+        "description": "orders.acquisition_campaign_id对应campaigns.campaign_id；按事实表粒度防止重复汇总。"
+      }
+    },
+    {
+      "name": "orders_acquisition_channel_id_to_channels",
+      "models": [
+        "orders",
+        "channels"
+      ],
+      "joinType": "MANY_TO_ONE",
+      "condition": "\"orders\".\"acquisition_channel_id\" = \"channels\".\"channel_id\"",
+      "properties": {
+        "description": "orders.acquisition_channel_id对应channels.channel_id；按事实表粒度防止重复汇总。"
+      }
+    },
+    {
+      "name": "orders_market_id_to_markets",
+      "models": [
+        "orders",
+        "markets"
+      ],
+      "joinType": "MANY_TO_ONE",
+      "condition": "\"orders\".\"market_id\" = \"markets\".\"market_id\"",
+      "properties": {
+        "description": "orders.market_id对应markets.market_id；按事实表粒度防止重复汇总。"
+      }
+    },
+    {
+      "name": "orders_sales_store_id_to_stores",
+      "models": [
+        "orders",
+        "stores"
+      ],
+      "joinType": "MANY_TO_ONE",
+      "condition": "\"orders\".\"sales_store_id\" = \"stores\".\"store_id\"",
+      "properties": {
+        "description": "orders.sales_store_id对应stores.store_id；按事实表粒度防止重复汇总。"
+      }
+    },
+    {
+      "name": "orders_customer_id_to_customers",
+      "models": [
+        "orders",
+        "customers"
+      ],
+      "joinType": "MANY_TO_ONE",
+      "condition": "\"orders\".\"customer_id\" = \"customers\".\"customer_id\"",
+      "properties": {
+        "description": "orders.customer_id对应customers.customer_id；按事实表粒度防止重复汇总。"
+      }
+    },
+    {
+      "name": "order_items_term_id_to_commercial_terms",
+      "models": [
+        "order_items",
+        "commercial_terms"
+      ],
+      "joinType": "MANY_TO_ONE",
+      "condition": "\"order_items\".\"term_id\" = \"commercial_terms\".\"term_id\"",
+      "properties": {
+        "description": "order_items.term_id对应commercial_terms.term_id；按事实表粒度防止重复汇总。"
+      }
+    },
+    {
+      "name": "order_items_product_id_to_products",
+      "models": [
+        "order_items",
+        "products"
+      ],
+      "joinType": "MANY_TO_ONE",
+      "condition": "\"order_items\".\"product_id\" = \"products\".\"product_id\"",
+      "properties": {
+        "description": "order_items.product_id对应products.product_id；按事实表粒度防止重复汇总。"
+      }
+    },
+    {
+      "name": "order_items_order_id_to_orders",
+      "models": [
+        "order_items",
+        "orders"
+      ],
+      "joinType": "MANY_TO_ONE",
+      "condition": "\"order_items\".\"order_id\" = \"orders\".\"order_id\"",
+      "properties": {
+        "description": "order_items.order_id对应orders.order_id；按事实表粒度防止重复汇总。"
+      }
+    },
+    {
+      "name": "fulfillments_purchase_order_id_to_purchase_orders",
+      "models": [
+        "fulfillments",
+        "purchase_orders"
+      ],
+      "joinType": "MANY_TO_ONE",
+      "condition": "\"fulfillments\".\"purchase_order_id\" = \"purchase_orders\".\"purchase_order_id\"",
+      "properties": {
+        "description": "fulfillments.purchase_order_id对应purchase_orders.purchase_order_id；按事实表粒度防止重复汇总。"
+      }
+    },
+    {
+      "name": "fulfillments_fulfillment_store_id_to_stores",
+      "models": [
+        "fulfillments",
+        "stores"
+      ],
+      "joinType": "MANY_TO_ONE",
+      "condition": "\"fulfillments\".\"fulfillment_store_id\" = \"stores\".\"store_id\"",
+      "properties": {
+        "description": "fulfillments.fulfillment_store_id对应stores.store_id；按事实表粒度防止重复汇总。"
+      }
+    },
+    {
+      "name": "fulfillments_order_item_id_to_order_items",
+      "models": [
+        "fulfillments",
+        "order_items"
+      ],
+      "joinType": "MANY_TO_ONE",
+      "condition": "\"fulfillments\".\"order_item_id\" = \"order_items\".\"order_item_id\"",
+      "properties": {
+        "description": "fulfillments.order_item_id对应order_items.order_item_id；按事实表粒度防止重复汇总。"
+      }
+    },
+    {
+      "name": "refund_requests_fulfillment_id_to_fulfillments",
+      "models": [
+        "refund_requests",
+        "fulfillments"
+      ],
+      "joinType": "MANY_TO_ONE",
+      "condition": "\"refund_requests\".\"fulfillment_id\" = \"fulfillments\".\"fulfillment_id\"",
+      "properties": {
+        "description": "refund_requests.fulfillment_id对应fulfillments.fulfillment_id；按事实表粒度防止重复汇总。"
+      }
+    },
+    {
+      "name": "refund_requests_order_item_id_to_order_items",
+      "models": [
+        "refund_requests",
+        "order_items"
+      ],
+      "joinType": "MANY_TO_ONE",
+      "condition": "\"refund_requests\".\"order_item_id\" = \"order_items\".\"order_item_id\"",
+      "properties": {
+        "description": "refund_requests.order_item_id对应order_items.order_item_id；按事实表粒度防止重复汇总。"
+      }
+    },
+    {
+      "name": "order_touches_campaign_id_to_campaigns",
+      "models": [
+        "order_touches",
+        "campaigns"
+      ],
+      "joinType": "MANY_TO_ONE",
+      "condition": "\"order_touches\".\"campaign_id\" = \"campaigns\".\"campaign_id\"",
+      "properties": {
+        "description": "order_touches.campaign_id对应campaigns.campaign_id；按事实表粒度防止重复汇总。"
+      }
+    },
+    {
+      "name": "order_touches_order_id_to_orders",
+      "models": [
+        "order_touches",
+        "orders"
+      ],
+      "joinType": "MANY_TO_ONE",
+      "condition": "\"order_touches\".\"order_id\" = \"orders\".\"order_id\"",
+      "properties": {
+        "description": "order_touches.order_id对应orders.order_id；按事实表粒度防止重复汇总。"
+      }
+    },
+    {
+      "name": "ad_daily_market_id_to_markets",
+      "models": [
+        "ad_daily",
+        "markets"
+      ],
+      "joinType": "MANY_TO_ONE",
+      "condition": "\"ad_daily\".\"market_id\" = \"markets\".\"market_id\"",
+      "properties": {
+        "description": "ad_daily.market_id对应markets.market_id；按事实表粒度防止重复汇总。"
+      }
+    },
+    {
+      "name": "ad_daily_campaign_id_to_campaigns",
+      "models": [
+        "ad_daily",
+        "campaigns"
+      ],
+      "joinType": "MANY_TO_ONE",
+      "condition": "\"ad_daily\".\"campaign_id\" = \"campaigns\".\"campaign_id\"",
+      "properties": {
+        "description": "ad_daily.campaign_id对应campaigns.campaign_id；按事实表粒度防止重复汇总。"
+      }
+    },
+    {
+      "name": "traffic_daily_product_id_to_products",
+      "models": [
+        "traffic_daily",
+        "products"
+      ],
+      "joinType": "MANY_TO_ONE",
+      "condition": "\"traffic_daily\".\"product_id\" = \"products\".\"product_id\"",
+      "properties": {
+        "description": "traffic_daily.product_id对应products.product_id；按事实表粒度防止重复汇总。"
+      }
+    },
+    {
+      "name": "traffic_daily_channel_id_to_channels",
+      "models": [
+        "traffic_daily",
+        "channels"
+      ],
+      "joinType": "MANY_TO_ONE",
+      "condition": "\"traffic_daily\".\"channel_id\" = \"channels\".\"channel_id\"",
+      "properties": {
+        "description": "traffic_daily.channel_id对应channels.channel_id；按事实表粒度防止重复汇总。"
+      }
+    },
+    {
+      "name": "traffic_daily_market_id_to_markets",
+      "models": [
+        "traffic_daily",
+        "markets"
+      ],
+      "joinType": "MANY_TO_ONE",
+      "condition": "\"traffic_daily\".\"market_id\" = \"markets\".\"market_id\"",
+      "properties": {
+        "description": "traffic_daily.market_id对应markets.market_id；按事实表粒度防止重复汇总。"
+      }
+    },
+    {
+      "name": "inventory_daily_product_id_to_products",
+      "models": [
+        "inventory_daily",
+        "products"
+      ],
+      "joinType": "MANY_TO_ONE",
+      "condition": "\"inventory_daily\".\"product_id\" = \"products\".\"product_id\"",
+      "properties": {
+        "description": "inventory_daily.product_id对应products.product_id；按事实表粒度防止重复汇总。"
+      }
+    },
+    {
+      "name": "inventory_daily_store_id_to_stores",
+      "models": [
+        "inventory_daily",
+        "stores"
+      ],
+      "joinType": "MANY_TO_ONE",
+      "condition": "\"inventory_daily\".\"store_id\" = \"stores\".\"store_id\"",
+      "properties": {
+        "description": "inventory_daily.store_id对应stores.store_id；按事实表粒度防止重复汇总。"
+      }
+    }
+  ],
+  "cubes": [
+    {
+      "name": "sales_finance",
+      "baseObject": "delivered_sales",
+      "measures": [
+        {
+          "name": "net_sales",
+          "expression": "SUM(net_sales_cents)",
+          "type": "HUGEINT",
+          "description": "净销售额，分；展示元时除以100",
+          "properties": {
+            "unit": "CNY_cent"
+          }
+        },
+        {
+          "name": "effective_orders",
+          "expression": "COUNT(DISTINCT order_id)",
+          "type": "BIGINT",
+          "description": "已交付有效订单数；不同商品分组间不可直接相加",
+          "properties": {
+            "unit": "order"
+          }
+        },
+        {
+          "name": "gross_profit",
+          "expression": "SUM(gross_profit_cents)",
+          "type": "HUGEINT",
+          "description": "商品毛利，分",
+          "properties": {
+            "unit": "CNY_cent"
+          }
+        },
+        {
+          "name": "contribution_before_ads",
+          "expression": "SUM(contribution_before_ads_cents)",
+          "type": "HUGEINT",
+          "description": "履约后贡献，尚未扣广告及固定费用",
+          "properties": {
+            "unit": "CNY_cent"
+          }
+        },
+        {
+          "name": "net_aov",
+          "expression": "SUM(net_sales_cents) * 1.0 / NULLIF(COUNT(DISTINCT order_id), 0)",
+          "type": "DOUBLE",
+          "description": "净客单价，分/单；不能平均分组客单价",
+          "properties": {
+            "unit": "CNY_cent/order"
+          }
+        },
+        {
+          "name": "net_margin",
+          "expression": "SUM(gross_profit_cents) * 1.0 / NULLIF(SUM(net_sales_cents), 0)",
+          "type": "DOUBLE",
+          "description": "商品毛利率，分子分母均按同一范围汇总",
+          "properties": {
+            "unit": "ratio"
+          }
+        }
+      ],
+      "dimensions": [
+        {
+          "name": "selling_region",
+          "expression": "selling_region",
+          "type": "TEXT"
+        },
+        {
+          "name": "selling_city",
+          "expression": "selling_city",
+          "type": "TEXT"
+        },
+        {
+          "name": "sales_store_id",
+          "expression": "sales_store_id",
+          "type": "BIGINT"
+        },
+        {
+          "name": "store_name",
+          "expression": "store_name",
+          "type": "TEXT"
+        },
+        {
+          "name": "market_id",
+          "expression": "market_id",
+          "type": "BIGINT"
+        },
+        {
+          "name": "market_name",
+          "expression": "market_name",
+          "type": "TEXT"
+        },
+        {
+          "name": "category",
+          "expression": "category",
+          "type": "TEXT"
+        },
+        {
+          "name": "product_id",
+          "expression": "product_id",
+          "type": "BIGINT"
+        },
+        {
+          "name": "sku",
+          "expression": "sku",
+          "type": "TEXT"
+        },
+        {
+          "name": "product_name",
+          "expression": "product_name",
+          "type": "TEXT"
+        },
+        {
+          "name": "acquisition_channel_id",
+          "expression": "acquisition_channel_id",
+          "type": "BIGINT"
+        },
+        {
+          "name": "channel_name",
+          "expression": "channel_name",
+          "type": "TEXT"
+        },
+        {
+          "name": "channel_type",
+          "expression": "channel_type",
+          "type": "TEXT"
+        },
+        {
+          "name": "acquisition_campaign_id",
+          "expression": "acquisition_campaign_id",
+          "type": "BIGINT"
+        },
+        {
+          "name": "sales_channel",
+          "expression": "sales_channel",
+          "type": "TEXT"
+        },
+        {
+          "name": "revenue_mode",
+          "expression": "revenue_mode",
+          "type": "TEXT"
+        },
+        {
+          "name": "customer_type",
+          "expression": "customer_type",
+          "type": "TEXT"
+        },
+        {
+          "name": "lot_code",
+          "expression": "lot_code",
+          "type": "TEXT"
+        },
+        {
+          "name": "fulfillment_store_id",
+          "expression": "fulfillment_store_id",
+          "type": "BIGINT"
+        }
+      ],
+      "timeDimensions": [
+        {
+          "name": "delivered_date",
+          "expression": "CAST(delivered_date AS DATE)",
+          "type": "DATE"
+        },
+        {
+          "name": "paid_date",
+          "expression": "CAST(paid_date AS DATE)",
+          "type": "DATE"
+        }
+      ],
+      "hierarchies": {
+        "sales_geography": [
+          "selling_region",
+          "selling_city",
+          "sales_store_id"
+        ],
+        "product": [
+          "category",
+          "product_id"
+        ]
+      },
+      "properties": {
+        "default_time_dimension": "delivered_date",
+        "join_rule": "广告花费另按相同期间/市场聚合，不能与交付逐行连接后求和。退款率另按原交付成熟队列核算。"
+      }
+    },
+    {
+      "name": "advertising",
+      "baseObject": "ad_daily",
+      "measures": [
+        {
+          "name": "spend",
+          "expression": "SUM(spend_cents)",
+          "type": "HUGEINT",
+          "description": "广告花费",
+          "properties": {
+            "unit": "CNY_cent"
+          }
+        },
+        {
+          "name": "clicks",
+          "expression": "SUM(clicks)",
+          "type": "HUGEINT",
+          "description": "广告点击次数",
+          "properties": {
+            "unit": "click"
+          }
+        },
+        {
+          "name": "platform_attributed_value",
+          "expression": "SUM(platform_reported_value_cents)",
+          "type": "HUGEINT",
+          "description": "平台归因商品款；跨活动可重复，非公司收入",
+          "properties": {
+            "unit": "CNY_cent"
+          }
+        },
+        {
+          "name": "platform_roas",
+          "expression": "SUM(platform_reported_value_cents) * 1.0 / NULLIF(SUM(spend_cents), 0)",
+          "type": "DOUBLE",
+          "description": "平台口径ROAS，不代表增量收益或利润",
+          "properties": {
+            "unit": "ratio"
+          }
+        }
+      ],
+      "dimensions": [
+        {
+          "name": "campaign_id",
+          "expression": "campaign_id",
+          "type": "INTEGER"
+        },
+        {
+          "name": "market_id",
+          "expression": "market_id",
+          "type": "INTEGER"
+        }
+      ],
+      "timeDimensions": [
+        {
+          "name": "day",
+          "expression": "CAST(day AS DATE)",
+          "type": "DATE"
+        }
+      ]
+    },
+    {
+      "name": "product_funnel",
+      "baseObject": "traffic_daily",
+      "measures": [
+        {
+          "name": "product_views",
+          "expression": "SUM(product_views)",
+          "type": "HUGEINT",
+          "description": "商品浏览PV，不是UV",
+          "properties": {
+            "unit": "view"
+          }
+        },
+        {
+          "name": "created_orders",
+          "expression": "SUM(orders_created)",
+          "type": "HUGEINT",
+          "description": "创建订单次数，含后续取消和未付款",
+          "properties": {
+            "unit": "order"
+          }
+        },
+        {
+          "name": "view_to_order_rate",
+          "expression": "SUM(orders_created) * 1.0 / NULLIF(SUM(product_views), 0)",
+          "type": "DOUBLE",
+          "description": "浏览到创建订单率，非支付转化率",
+          "properties": {
+            "unit": "ratio"
+          }
+        },
+        {
+          "name": "out_of_stock_view_rate",
+          "expression": "SUM(out_of_stock_views) * 1.0 / NULLIF(SUM(product_views), 0)",
+          "type": "DOUBLE",
+          "description": "商品浏览中缺货提示比例，不能直接等同损失收入",
+          "properties": {
+            "unit": "ratio"
+          }
+        }
+      ],
+      "dimensions": [
+        {
+          "name": "market_id",
+          "expression": "market_id",
+          "type": "INTEGER"
+        },
+        {
+          "name": "channel_id",
+          "expression": "channel_id",
+          "type": "INTEGER"
+        },
+        {
+          "name": "product_id",
+          "expression": "product_id",
+          "type": "INTEGER"
+        }
+      ],
+      "timeDimensions": [
+        {
+          "name": "day",
+          "expression": "CAST(day AS DATE)",
+          "type": "DATE"
+        }
+      ]
+    },
+    {
+      "name": "inventory_flow",
+      "baseObject": "inventory_daily",
+      "measures": [
+        {
+          "name": "received_units",
+          "expression": "SUM(received_quantity)",
+          "type": "HUGEINT",
+          "description": "期间采购到货件数",
+          "properties": {
+            "unit": "unit"
+          }
+        },
+        {
+          "name": "shipped_units",
+          "expression": "SUM(shipped_quantity)",
+          "type": "HUGEINT",
+          "description": "期间发货件数",
+          "properties": {
+            "unit": "unit"
+          }
+        },
+        {
+          "name": "restocked_units",
+          "expression": "SUM(restocked_quantity)",
+          "type": "HUGEINT",
+          "description": "期间可售退货回仓件数",
+          "properties": {
+            "unit": "unit"
+          }
+        },
+        {
+          "name": "zero_closing_store_product_days",
+          "expression": "SUM(CASE WHEN closing_quantity = 0 THEN 1 ELSE 0 END)",
+          "type": "HUGEINT",
+          "description": "日末零库存的门店商品天数，不代表全天无货",
+          "properties": {
+            "unit": "store_product_day"
+          }
+        }
+      ],
+      "dimensions": [
+        {
+          "name": "store_id",
+          "expression": "store_id",
+          "type": "INTEGER"
+        },
+        {
+          "name": "product_id",
+          "expression": "product_id",
+          "type": "INTEGER"
+        }
+      ],
+      "timeDimensions": [
+        {
+          "name": "day",
+          "expression": "CAST(day AS DATE)",
+          "type": "DATE"
+        }
+      ],
+      "properties": {
+        "stock_rule": "opening_quantity和closing_quantity是时点库存，不跨日期求和；日末库存需限定同一日期。"
+      }
+    }
+  ]
+}

@@ -24,10 +24,14 @@ export interface AnalysisArtifact {
   };
   config?: Record<string, unknown>;
   code?: string;
+  codeLanguage?: 'javascript' | 'sql' | 'python';
+  outputText?: string;
   data?: Record<string, unknown>[];
 }
 
 export interface Message {
+  inlineChart?: { title: string; config: Record<string, unknown>; caption: string };
+  recordedTool?: { name: string; label: string; chip: string; input: unknown; output: any; failed?: boolean };
   artifact?: AnalysisArtifact;
   role: 'user' | 'assistant';
   text: string;
@@ -44,6 +48,8 @@ export interface Message {
     rowCount: number;
     columns: string[];
     preview: Record<string, unknown>[];
+    tableName?: string;
+    tableCount?: number;
   };
 }
 export interface LiveChat {
@@ -51,7 +57,7 @@ export interface LiveChat {
   busy: boolean;
   ready: boolean;
   error: string;
-  dataset: { name: string; rowCount: number; semantic?: Semantic };
+  dataset: { name: string; rowCount: number; tableCount?: number; semantic?: Semantic };
   model: string;
   onSend: (text: string) => void;
   onReset: () => void;

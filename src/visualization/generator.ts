@@ -105,7 +105,9 @@ ${JSON.stringify(data, null, 2)}
 3. 数据字段映射必须正确，字段名必须与上述规范一致
 4. 根据数据特征生成合适的标题，单位写在标题或坐标轴标题中
 5. 不要生成 width height，图表会按照容器自适应大小
-6. 直接输出 JSON，不要用代码块包裹，不要有任何说明文字`;
+6. 直接输出 JSON，不要用代码块包裹，不要有任何说明文字
+7. column/bar 同一个 category 有多个系列时，data 中的 group 是系列名称，还必须设置顶层 group=true 才会并排显示；只有可以相加的组成量才用 stack=true。不要把百分比数值和百分点变化作为同一度量的系列
+8. 不得只改单位标签而不换算数值：小数比率标为百分比时乘以100，小数比率之差标为百分点时同样乘以100。保持输入的精度，不要在配置中随意四舍五入`;
 
   const { text } = await generateText({
     model: languageModel(llmConfig),

@@ -1,0 +1,770 @@
+{
+  "description": "财务经营月报的订单明细合成数据，不是真实企业。本项目财务经营月报将“净销售额”定义为已履约外部客户订单的确认收入：仅order_kind=customer_sale且status=completed，按completed_at自然月归属。自营确认本行全部实付减退款；代销只确认对应佣金，不能将代销货款全额视为公司收入。每行确认金额=ROUND(line_paid_amount*commission_rate,2)-ROUND(COALESCE(refund_amount,0)*commission_rate,2)，先分别按行四舍五入到分再汇总。退款快照截至2026-10-05，按原履约月份回记，不按refunded_at另分月份。有效订单为上述范围内order_id去重；净客单价=净销售额/有效订单数。",
+  "properties": {
+    "grain": "每行是一条订单商品明细；line_id唯一，order_id跨行重复。order_paid_amount在每个订单的所有明细重复；销售金额必须按line_paid_amount计算，有效订单必须COUNT(DISTINCT order_id)，不能COUNT(*)。",
+    "ownership": "销售归因一律使用selling_region→selling_city→selling_store_id。fulfillment_*只表示履约地点，跨城市集中履约不能改变销售责任门店。商品层级为category→subcategory→product_id。",
+    "comparisons": "完整自然月。8月31天、9月30天，跨月记录按本报表约定的日期归属；同比/环比由期间总额计算。金额变化额=本期-上期，按绝对变化额定位来源，保留增长抵消项，各互斥分组应加总等于父节点，跨维度贡献不能相加。净客单价由总金额除总有效订单数，不平均明细或门店客单价。",
+    "limitations": "表中没有流量、库存、投放或业务事件记录。可以定位变化来源，不能把订单变化直接解释成缺货或投放变化。"
+  },
+  "models": [
+    {
+      "name": "data",
+      "tableReference": {
+        "catalog": "memory",
+        "schema": "main",
+        "table": "data"
+      },
+      "primaryKey": "line_id",
+      "columns": [
+        {
+          "name": "order_id",
+          "type": "VARCHAR",
+          "properties": {
+            "description": "订单号。跨明细行重复，不是本表主键。"
+          }
+        },
+        {
+          "name": "line_id",
+          "type": "VARCHAR",
+          "properties": {
+            "description": "订单明细行全局唯一编号，本表主键。"
+          }
+        },
+        {
+          "name": "ordered_at",
+          "type": "DATE",
+          "properties": {
+            "description": "下单日期，不能自动等同支付或收入确认日期。"
+          }
+        },
+        {
+          "name": "paid_at",
+          "type": "DATE",
+          "properties": {
+            "description": "实际支付日期；未支付、取消订单为空。"
+          }
+        },
+        {
+          "name": "completed_at",
+          "type": "DATE",
+          "properties": {
+            "description": "履约完成日期；尚未履约或取消订单为空。"
+          }
+        },
+        {
+          "name": "status",
+          "type": "VARCHAR",
+          "properties": {
+            "description": "订单状态：completed履约完成，shipped已发货，paid已支付未发货，pending待支付，cancelled已取消。退款不改写履约状态。"
+          }
+        },
+        {
+          "name": "order_kind",
+          "type": "VARCHAR",
+          "properties": {
+            "description": "customer_sale为外部客户销售，internal_test为系统测试，replacement为无新增收入的换货补发。后两类金额为非收入记录的业务标价或测试款。"
+          }
+        },
+        {
+          "name": "business_model",
+          "type": "VARCHAR",
+          "properties": {
+            "description": "self_operated为自营，consignment为代销。报表确认全额货款还是佣金，由具体报表口径决定。"
+          }
+        },
+        {
+          "name": "selling_region",
+          "type": "VARCHAR",
+          "properties": {
+            "description": "销售责任大区"
+          }
+        },
+        {
+          "name": "selling_city",
+          "type": "VARCHAR",
+          "properties": {
+            "description": "销售责任城市"
+          }
+        },
+        {
+          "name": "selling_store_id",
+          "type": "VARCHAR",
+          "properties": {
+            "description": "销售责任门店编码"
+          }
+        },
+        {
+          "name": "selling_store_name",
+          "type": "VARCHAR",
+          "properties": {
+            "description": "销售责任门店名称"
+          }
+        },
+        {
+          "name": "fulfillment_region",
+          "type": "VARCHAR",
+          "properties": {
+            "description": "履约大区"
+          }
+        },
+        {
+          "name": "fulfillment_city",
+          "type": "VARCHAR",
+          "properties": {
+            "description": "履约城市"
+          }
+        },
+        {
+          "name": "fulfillment_store_id",
+          "type": "VARCHAR",
+          "properties": {
+            "description": "履约门店编码"
+          }
+        },
+        {
+          "name": "fulfillment_store_name",
+          "type": "VARCHAR",
+          "properties": {
+            "description": "履约门店名称"
+          }
+        },
+        {
+          "name": "category",
+          "type": "VARCHAR",
+          "properties": {
+            "description": "商品一级品类。"
+          }
+        },
+        {
+          "name": "subcategory",
+          "type": "VARCHAR",
+          "properties": {
+            "description": "商品二级品类。"
+          }
+        },
+        {
+          "name": "product_id",
+          "type": "VARCHAR",
+          "properties": {
+            "description": "商品SKU编码。"
+          }
+        },
+        {
+          "name": "product_name",
+          "type": "VARCHAR",
+          "properties": {
+            "description": "SKU名称。"
+          }
+        },
+        {
+          "name": "channel",
+          "type": "VARCHAR",
+          "properties": {
+            "description": "销售渠道：线上商城或线下门店。"
+          }
+        },
+        {
+          "name": "quantity",
+          "type": "BIGINT",
+          "properties": {
+            "description": "本明细行原购买件数，未扣退货。"
+          }
+        },
+        {
+          "name": "unit_price",
+          "type": "BIGINT",
+          "properties": {
+            "description": "本明细行商品标价单价，单位人民币元。"
+          }
+        },
+        {
+          "name": "discount_amount",
+          "type": "DOUBLE",
+          "properties": {
+            "description": "本明细行总优惠金额，单位元。"
+          }
+        },
+        {
+          "name": "line_paid_amount",
+          "type": "DOUBLE",
+          "properties": {
+            "description": "本明细行实际支付金额，优惠后、退款前，单位元。不是订单总额。"
+          }
+        },
+        {
+          "name": "refund_amount",
+          "type": "DOUBLE",
+          "properties": {
+            "description": "截至2026-10-05本明细行累计退款，单位元；空值按0。"
+          }
+        },
+        {
+          "name": "refunded_at",
+          "type": "DATE",
+          "properties": {
+            "description": "本明细行退款发生日；每行最多一笔退款，没有退款时为空。"
+          }
+        },
+        {
+          "name": "commission_rate",
+          "type": "DOUBLE",
+          "properties": {
+            "description": "代销佣金比例，例如0.03表示3%；自营行为1。"
+          }
+        },
+        {
+          "name": "order_paid_amount",
+          "type": "DOUBLE",
+          "properties": {
+            "description": "整笔订单支付总额，在该订单每条明细行重复，不能跨行直接求和。"
+          }
+        }
+      ]
+    }
+  ],
+  "cubes": [
+    {
+      "name": "sales",
+      "baseObject": "data",
+      "measures": [
+        {
+          "name": "net_revenue",
+          "expression": "SUM(CASE WHEN order_kind='customer_sale' AND status IN ('completed') THEN (ROUND(CAST(line_paid_amount AS DECIMAL(18,2))*CAST(commission_rate AS DECIMAL(6,4)),2)-ROUND(COALESCE(CAST(refund_amount AS DECIMAL(18,2)),0)*CAST(commission_rate AS DECIMAL(6,4)),2)) ELSE 0 END)",
+          "type": "DOUBLE",
+          "description": "按本报表口径定义的净销售额，人民币元。"
+        },
+        {
+          "name": "order_count",
+          "expression": "COUNT(DISTINCT CASE WHEN order_kind='customer_sale' AND status IN ('completed') THEN order_id END)",
+          "type": "BIGINT",
+          "description": "按本报表口径去重后的有效订单数。"
+        }
+      ],
+      "dimensions": [
+        {
+          "name": "selling_region",
+          "expression": "selling_region",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "selling_city",
+          "expression": "selling_city",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "selling_store_id",
+          "expression": "selling_store_id",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "category",
+          "expression": "category",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "subcategory",
+          "expression": "subcategory",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "product_id",
+          "expression": "product_id",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "channel",
+          "expression": "channel",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "business_model",
+          "expression": "business_model",
+          "type": "VARCHAR"
+        }
+      ],
+      "timeDimensions": [
+        {
+          "name": "report_date",
+          "expression": "CAST(completed_at AS DATE)",
+          "type": "DATE"
+        }
+      ],
+      "hierarchies": {
+        "geography": [
+          "selling_region",
+          "selling_city",
+          "selling_store_id"
+        ],
+        "product": [
+          "category",
+          "subcategory",
+          "product_id"
+        ]
+      }
+    }
+  ]
+}
+
+---AVA COMMANDS---
+✦  AVA  AI-native Visual Analytics
+
+Usage:
+  ava <command> [options]
+
+Commands:
+  source       Load a source and return a dataset ID
+  schema       Describe the dataset
+  profile      Compute dataset statistics
+  semantic     Read or replace business definitions
+  suggest      Suggest analysis questions
+  analyze      Analyze with natural language
+  translate    Generate DSL without executing it
+  query        Execute a query in the dataset engine's language
+  visualize    Generate a chart from query and data
+  recommend    Recommend a chart specification
+  viz          Render a chart specification to HTML
+  dispose      Release the dataset and its process
+
+Options:
+  -h, --help                   Show help
+
+Run "ava <command> --help" for command-specific usage.
+Commands return JSON; source shows a guide in terminals and JSON when piped.
+Errors go to stderr with exit code 1.
+Sessions expire after 30 idle minutes and require macOS or Linux.
+
+---SOURCE REF---
+# Data Sources
+
+## Choose an Engine
+
+| Data source | Engine | Query language |
+| --- | --- | --- |
+| CSV/JSON/Parquet/Excel files | DuckDB by default; Python is optional | DuckDB SQL / Python (pandas) |
+| Inline CSV/JSON | DuckDB by default; Python or JavaScript is optional | SQL / Python / JavaScript |
+| Unstructured text | DuckDB by default; JavaScript is optional; requires a model | SQL / JavaScript |
+| MySQL, PostgreSQL, SQLite, MongoDB | DuckDB only | DuckDB SQL |
+| ClickHouse | ClickHouse only, selected automatically | ClickHouse SQL |
+| Supabase | Supabase only, selected automatically | PostgreSQL SQL |
+| Feishu Bitable | DuckDB only | DuckDB SQL |
+
+To use Python or JavaScript, add `--engine python` or `--engine javascript` to the `source` command. Python does not connect directly to databases. To post-process database results with pandas, query the database first, then export the complete result as described in [Results and Post-Processing](queries.md#results-and-post-processing).
+
+## Files and Configuration
+
+**Load a regular file or URL directly:**
+
+```sh
+ava source /data/sales.csv > session.json
+```
+
+The CLI identifies CSV, JSON, Parquet, XLSX, and SQLite (`.sqlite`, `.sqlite3`, `.db`) files by extension. If the extension is not recognized, use `--type` with `csv-file`, `json-file`, `parquet`, `excel`, or `sqlite`. SQLite supports local files only; other file sources support HTTP(S). Each Excel sheet becomes a table; use the schema to find its actual table name.
+
+**Use configuration for inline data, authentication, or custom read options:**
+
+Configuration includes `type` and `options`. `type` specifies the data format or database type, not the engine. For example, to read a semicolon-delimited CSV while preserving text types, save the following as `source.json`:
+
+```json
+{
+  "type": "csv-file",
+  "options": {
+    "path": "/data/sales.csv",
+    "options": { "delim": ";", "all_varchar": true }
+  }
+}
+```
+
+```sh
+ava source @source.json > session.json
+```
+
+A regular `.json` file is read as data rows. Only `@file` or stdin `-` reads JSON as configuration; configuration input cannot be combined with `--type`. Relative paths are resolved from the command's working directory.
+
+For other common configurations, set `type` and `options` as shown:
+
+| Use case | `type` | Example `options` |
+| --- | --- | --- |
+| JSON rows | `json` | `{"data":[{"region":"East","sales":10}]}` |
+| Inline CSV | `csv` | `{"csv":"region,sales\nEast,10"}` |
+| Unstructured text | `text` | `{"text":"East region sales were 10."}` |
+| Parquet file | `parquet` | `{"path":"/data/sales.parquet"}` |
+| Excel workbook | `excel` | `{"path":"/data/sales.xlsx","sheets":[{"sheet":"Orders","range":"B3:F100","header":true}]}` |
+| Authenticated URL | `json-file` | `{"path":"https://example.com/data.json","headers":{"Authorization":"******"}}` |
+
+File sources except SQLite accept `headers` for HTTP(S) authentication. `csv-file` and `json-file` accept nested `options` for reader settings; `parquet` does not.
+
+For Excel, omitting `sheets` loads every sheet. Otherwise use a nonempty array of unique sheet names, each with `sheet`, optional inclusive A1 `range`, and `header` (default `true`). DuckDB expects `.xlsx` and also accepts per-sheet booleans `all_varchar`, `ignore_errors`, `stop_at_empty`, and `empty_as_varchar`. Python supports `sheet`, `range`, and `header` only.
+
+Python CSV reader options are limited to `header`, `names`, `delim`, `quote`, `escape`, `comment`, `skip`, `nullstr`, `all_varchar`, `decimal_separator`, `thousands`, `encoding`, and `compression`. Python JSON sources do not accept reader `options`. Do not assume DuckDB reader settings work in Python.
+
+The native `text` source extracts rows using an AVA model and requires model credentials (see [Setup](setup.md)). Alternatively, extract JSON rows yourself, keeping only information supported by the source text, then load `json`.
+
+## Databases
+
+Use the configuration format and load command shown above:
+
+| `type` | Example `options` |
+| --- | --- |
+| `mysql` | `{"host":"localhost","database":"sales","user":"reader","password":"REPLACE"}` |
+| `postgresql` | `{"host":"localhost","database":"sales","user":"reader","password":"REPLACE","schema":"public"}` |
+| `sqlite` | `{"path":"/data/sales.sqlite"}` |
+| `mongodb` | `{"connection":"mongodb://localhost:27017","database":"sales"}` |
+| `clickhouse` | `{"url":"http://localhost:8123","database":"sales","username":"reader","password":"REPLACE"}` |
+| `supabase` | `{"accessToken":"REPLACE","projectRef":"REPLACE"}` |
+
+Use authorized read-only credentials. Restrict temporary credential files to the current user and delete them after loading. Do not put credentials in deliverables or logs.
+
+- MySQL, PostgreSQL, SQLite, and MongoDB require the corresponding DuckDB extensions. MongoDB uses the `mongo` community extension. Each collection becomes a table, and its schema is inferred from samples, so rare fields may be missed.
+- MySQL/PostgreSQL accept `port` and `ssh: {"host":"bastion","user":"reader","port":22,"password":"REPLACE"}`. PostgreSQL defaults to schema `public`.
+- MongoDB accepts `connection` or structured `host`, `port`, `user`, `password`, `authSource`, `srv`, `tls`, `ssl`, `tlsCAFile`, and `tlsAllowInvalidCertificates`; `database` is required in either form. `connection` takes precedence; keep its database consistent with `database`.
+- ClickHouse connects over HTTP(S) and requires version 23.10 or later.
+- ClickHouse requires `database` and either `host` or `url`. It accepts `port`, `user`/`username`, `password`, `access_token`, `pathname`, `application`, `session_id`, `role` (string or string array), `http_headers`, `request_timeout`, and other ClickHouse client options.
+- Supabase uses the Management API; `accessToken` must be a token authorized for that API.
+
+## Feishu Bitable
+
+`feishu-bitable` is read-only and uses DuckDB; the Python and JavaScript engines cannot load it. Rows are exposed as one view named `data`. The `view` parameter in the URL is ignored and the whole table is loaded, not one view.
+
+The CLI detects Bitable links on `feishu.cn` and `larksuite.com` automatically (Node.js 22.13+), including tables that live inside a wiki:
+
+```sh
+ava source "https://<tenant>.feishu.cn/base/<app_token>?table=<table_id>" > session.json
+ava source "https://<tenant>.feishu.cn/wiki/<node_token>?table=<table_id>" > session.json
+```
+
+A `/wiki/` URL carries a node token, so AVA calls the wiki `get_node` API and uses the hosted object's `obj_token` as the Bitable app token. The node must host a Bitable (`obj_type=bitable`); the app also needs `wiki:wiki:readonly` and membership of the wiki space, which is separate from the document grant on the table. Docx and Sheets nodes are rejected with an explicit error.
+
+When `?table=` is missing, AVA uses the only table of the Bitable and, when there are several, stops with the table list so you can pick one. For non-URL configs, pass `feishu-bitable` through an `@file` or stdin config; `--type` cannot supply it.
+
+`appId` and `appSecret` are required. They are the internal app credentials used to request a tenant access token, and the app must be added as a collaborator on the table. A `bitable:app:readonly` scope is enough unless the table enables advanced permissions, which require manage rights. Credentials are resolved from the source config first, then `AVA_FEISHU_APP_ID` / `AVA_FEISHU_APP_SECRET`, then `~/.ava/feishu.json`. In a terminal, AVA prompts for the pair, verifies it, and saves it to `~/.ava/feishu.json`.
+
+The app must belong to an account allowed to call the Open Platform. Apps created by signing in to `open.feishu.cn` with a personal account such as a Doubao account are rejected with `Feishu Error 21001` (access denied due to platform policy) when requesting the tenant access token; create the app with a Feishu account bound to a phone number instead.
+
+
+```json
+{
+  "type": "feishu-bitable",
+  "options": {
+    "url": "https://<tenant>.feishu.cn/base/<app_token>?table=<table_id>",
+    "appId": "<app-id>",
+    "appSecret": "<app-secret>"
+  }
+}
+```
+
+```sh
+ava source @feishu.json > session.json
+```
+
+Provide `url`, or both `appToken` and `tableId`; when both are set they must name the same table. The path segment after `base` is `appToken`, and the `table` query parameter is `tableId`. For a `/wiki/` URL the segment after `wiki` is a node token that AVA resolves to the app token, so `appToken` alone is not enough to describe a wiki table. Never commit `appSecret` or put it in deliverables, logs, or screenshots; rotate it if it leaks.
+
+Supported field types become columns. Other types are omitted. Complex cells are flattened to text; list values are joined with a comma.
+
+| type | Field | Cell value |
+| --- | --- | --- |
+|1| Text | string, or null when empty |
+|2| Number | number, or null when empty |
+|3| Single select | option name, or null |
+|4| Multi select | option names joined by comma, or null |
+|5| Date | ISO string, or null |
+|7| Checkbox | boolean |
+|11| User | names joined by comma (name → en_name → email → id) |
+|13| Phone | string, or null |
+|15| URL | link text, or the URL, or null |
+|17| Attachment | file names joined by comma |
+|18| Single link | record IDs joined by comma |
+|19| Lookup | converted from the wrapped result type |
+|20| Formula | converted from the wrapped result type |
+|21| Duplex link | record IDs joined by comma |
+|22| Location | full address, falling back to name, address, or coordinates |
+|23| Group chat | group names joined by comma |
+|1001| Created time | ISO string |
+|1002| Last modified time | ISO string |
+|1003| Created user | names joined by comma |
+|1004| Modified user | names joined by comma |
+|1005| Auto number | string, or null |
+
+Stage (24) and button (3001) fields are read-only and skipped. A formula or
+lookup whose result type is unsupported becomes null.
+
+---QUERY REF---
+# Queries and Results
+
+## Inspect as Needed
+
+Use schema for structure, targeted queries for specific facts, and profile for broader statistics. For example:
+
+```sh
+ava profile "$DATASET_ID" --metrics row_count,null_count,min,max,mean > profile.json
+```
+
+Each profile call recomputes statistics. `--metrics` replaces the defaults and applies to eligible columns across all tables; it cannot filter by table or column. Prefer targeted queries on large remote sources.
+
+## Run a Query
+
+`ava schema` discovers structure on demand and caches it. Use its `models`, `tableReference`, `columns`, and `language`. Write the query according to `language.name` and, when provided, `language.instructions`. Apply confirmed [business definitions](semantic.md) explicitly; `query` executes the supplied DSL without applying semantic filters or expressions for you. Save the query as UTF-8 and run it with `--dsl`:
+
+```sh
+ava query "$DATASET_ID" --dsl @query.sql > result.json
+```
+
+Python and JavaScript queries can be saved as `query.py` and `query.js` and run the same way. The file extension does not change the session engine. Read only the section for the active language and results below, and replace example names with actual table and column names.
+
+## SQL
+
+Write a single read-only `SELECT` statement in the session's dialect. Read-only CTEs are allowed. Access only loaded tables and columns.
+
+```sql
+SELECT region, SUM(amount) AS total
+FROM sales
+GROUP BY region
+ORDER BY total DESC, region;
+```
+
+For ClickHouse, do not add `FORMAT`, `SETTINGS`, or `INTO OUTFILE`; AVA handles execution.
+
+## Python / pandas
+
+| Binding | Usage |
+| --- | --- |
+| `pd` | pandas, already imported |
+| `tables` | A dictionary of DataFrames keyed by schema table name, such as `tables['Orders']` |
+| `df` | Provided only when there is one table; for multiple tables, select one explicitly from `tables` |
+| `result` | Must be assigned. Accepts a DataFrame, Series, list of records, a single record, or a JSON scalar. A scalar is returned at `data[0].value`. |
+
+- Compute on the loaded DataFrames. Do not read or write other files, access the network, install packages, or print the answer.
+- Each query reloads the source and does not preserve variables or changes from prior queries. Include all required transformations in the same query. The default execution timeout is 30 seconds; a timed-out local subprocess is terminated.
+- DataFrame and Series indexes are not included in the result. Use `reset_index()` to preserve index values; for grouping, you can also use `as_index=False`.
+
+For example, sum by region while preserving missing regions and groups with all-null amounts:
+
+```python
+result = (
+    df.groupby('region', dropna=False, as_index=False)['amount']
+      .sum(min_count=1)
+      .rename(columns={'amount': 'total'})
+)
+```
+
+## JavaScript
+
+The input is a `data` array. A `stat` statistics object is provided. Assign the final output to `result` as an array of objects. The example below assumes all `amount` values are numeric:
+
+```javascript
+const result = [{ total: data.reduce((sum, row) => sum + row.amount, 0) }];
+```
+
+Each execution uses a copy of the input and does not preserve variables or changes from previous executions. Node.js file, network, and package-loading APIs are unavailable. Some numeric functions in `stat` treat values that cannot be converted to numbers as zero; handle them explicitly when nulls matter.
+
+## Results and Post-Processing
+
+After a command succeeds, read the returned JSON:
+
+- `data` contains the answer data for responding, charting, or post-processing; `schema` describes the result columns.
+- `truncated: true` means the result is incomplete; `truncatedBy` gives the reason. These fields may be omitted when the result is not truncated.
+- `rowCount` is the number of rows in the current query result, not the source table. It is omitted when the result is truncated.
+
+The default response limit is 200 rows or 1 MiB. Adjust it with `--max-rows` (up to 10000) and `--max-result-bytes`; individual fields are still limited to 1 MiB. These limits apply only to returned data. Perform aggregations and statistics in the execution engine; do not use truncated, limited, or sampled detail rows as a substitute for full-data statistics.
+
+For cross-engine post-processing, first confirm that the result is complete, then save and load `data` as a JSON array rather than loading the entire result object. Keep the query and metric definitions used to generate intermediate data. An untruncated result does not necessarily mean the query covered all source data.
+
+---VIZ REF---
+# Visualization
+
+Build charts from user-provided data or the `data` in query results. All engines use the same charting workflow. Follow the steps in order; at each `IF`, take the first branch that matches.
+
+## Workflow
+
+```
+Step 1 Get data → Step 2 Pick intent → Step 3 Check data shape → Step 4 Choose chart → Step 5 Map fields & build Spec → Step 6 Render & inspect
+```
+
+### Step 1: Get usable data
+
+- IF the user supplied a chart type: use it, and go to Step 3 only to verify the data fits. If it does not fit, say why and use the Step 4 alternative.
+- ELSE IF there is no data yet: run a query first (see queries.md) and come back with the result.
+- ELSE IF the data has many rows (more than can be read in a chart, roughly 50+) and the chart is not `scatter`, `histogram`, `boxplot`, `violin` or `table`: aggregate (`GROUP BY`) or take Top N (usually 10) sorted by value first, and label this in the chart.
+- ELSE: continue.
+
+### Step 2: Identify the intent
+
+- IF the question is about change over time (trend, growth, by month/year): intent = **trend**.
+- ELSE IF it is about comparing or ranking categories (which is highest, top N): intent = **comparison**.
+- ELSE IF it is about share or composition (proportion, breakdown): intent = **part-to-whole**.
+- ELSE IF it is about correlation or the effect of one variable on another: intent = **relationship**.
+- ELSE IF it is about spread, shape, or outliers: intent = **distribution**.
+- ELSE IF it is about stage conversion or drop-off: intent = **funnel**.
+- ELSE IF it is about what increases or decreases a total: intent = **change breakdown**.
+- ELSE IF it is about flow between nodes: intent = **flow**.
+- ELSE IF it is about overlap between sets: intent = **intersection**.
+- ELSE IF it is about exact values or details: intent = **lookup** (use `table`).
+- ELSE: intent unclear; infer from the data shape in Step 3, or ask the user.
+
+### Step 3: Check the data shape
+
+Classify each field as time, category, numeric measure, or text. Numeric IDs and year-like numbers are not measures. Note row count, distinct categories, series count, negatives, nulls, and ordering.
+
+- IF a field that must be numeric is a string (for example `"12%"`, `"1,200"`): convert it to a plain number first.
+- IF the time field is unsorted: sort it ascending.
+- IF there is only one row and the intent is trend, comparison or distribution: stop and use `table`, or ask for more data.
+
+### Step 4: Choose the chart
+
+Use the branch for the intent from Step 2.
+
+**Trend**
+- IF there are two measures on very different scales: `dual-axes`.
+- ELSE IF the total matters and the series add up: `area` with `stack true`.
+- ELSE: `line` (use `group` for multiple series).
+- Never use `line` for unordered categories; use Comparison instead.
+
+**Comparison**
+- IF labels are long or there are more than about 8 categories: `bar`.
+- ELSE: `column`.
+- IF there is a second dimension: add `group` (`stack` or `group true` for `column`/`bar`).
+- IF there are many categories: sort by value and keep Top N.
+
+**Part-to-whole**
+- IF the data is a single percentage or progress: `liquid`, with `percent` from 0 to 1; otherwise use `bar` or `table`.
+- ELSE IF any value is negative: `bar`.
+- ELSE IF the total is zero: `table`.
+- ELSE IF the data is hierarchical (parent/child): `treemap`.
+- ELSE IF there are 5 or fewer categories: `pie` (`innerRadius 0.6` for a donut). Values must be plain numbers, not percentages, with a positive total.
+- ELSE IF there are more than 5 categories: merge the tail into "Other" and use `pie`, or use `bar`.
+
+**Relationship**
+- IF both fields are numeric: `scatter` (`group` for a third categorical dimension).
+- ELSE: use Comparison.
+
+**Distribution**
+- IF one numeric field of raw observations: `histogram`.
+- ELSE IF comparing distributions across categories and each category has many observations: `boxplot` (outliers, quartiles) or `violin` (density).
+- ELSE IF each category has only one value: `column`.
+
+**Funnel**
+- IF ordered stages with decreasing values: `funnel`. ELSE: `column`.
+
+**Change breakdown**
+- IF signed changes that sum to a total: `waterfall` (mark the total with `isTotal true`). ELSE: `column`.
+
+**Flow**
+- IF `source`/`target`/`value` pairs form an acyclic flow: `sankey`. ELSE: `table`.
+
+**Intersection**
+- IF set sizes and overlaps: `venn`. ELSE: `table`.
+
+**Other**
+- IF the text data is about word frequency: `word-cloud`.
+- IF comparing a few entities across several dimensions: `radar` (add `align true` only to compare absolute values on a shared scale).
+- IF the request needs a type not supported by `ava viz` (flow diagram, mind map, tree, network graph, org chart, fishbone, text summary): do not invent a `chartType`; use `table` or the closest supported chart and say why.
+- IF none of the above fits, there are more than two measures with no clear intent, or the user wants exact values: `table`.
+
+### Step 5: Map fields and build the Spec
+
+Map actual fields to the fields below. Unless noted otherwise, fields belong to each item in the `data` array; `value`, `x`, and `y` are numeric. When there are two dimensions, put the axis dimension in `time`/`category` and the other in `group`.
+
+These are all 19 chart types registered by the CLI. `summary` is not registered and cannot be passed to `ava viz`.
+
+| `chartType` | Data fields or structure |
+| --- | --- |
+| `column`, `bar` | `category`, `value`, optional `group`; `stack` or `group true` |
+| `line` | `time`, `value`, optional `group` |
+| `area` | `time`, `value`, optional `group`; `config.stack: true` for stacked area |
+| `pie` | `category`, `value`; `innerRadius` 0.6 creates a donut chart |
+| `scatter` | `x`, `y`, optional `group` |
+| `histogram` | Array of raw numeric observations |
+| `boxplot`, `violin` | `category`, `value`; multiple observations per category |
+| `radar` | `name`, `value`, optional `group` |
+| `funnel` | `category`, `value`, ordered by stage |
+| `waterfall` | `category`, `value`; mark the total item with `"isTotal": true` |
+| `liquid` | Top-level `percent`, from 0 to 1; no `data` array |
+| `word-cloud` | `text`, `value` |
+| `venn` | `sets`, `value`; `sets` is an array; write intersections as `["A", "B"]` |
+| `treemap` | `name`, `value`, optionally nested in a `children` array |
+| `sankey` | `source`, `target`, `value` |
+| `table` | Fields from the original rows |
+| `dual-axes` | Top-level `categories` and `series` arrays; each series has `type` (`column` or `line`), `axisYTitle`, and numeric `data` aligned with `categories` |
+
+Config properties used by AVA's chart generator:
+
+| Property | Applies to |
+| --- | --- |
+| `title`, `theme` (`default`, `light`, `dark`, `academy`), `style` (`backgroundColor`, `palette` array) | All charts |
+| `axisXTitle`, `axisYTitle` | `line`, `area`, `column`, `bar`, `scatter`, `histogram`, `boxplot`, `violin`, `waterfall` |
+| `axisXTitle`, `series[].axisYTitle` | `dual-axes` |
+| `binNumber` | `histogram` |
+| `align` | `radar` |
+| `shape` (`rect`, `circle`, `pin`, `triangle`) | `liquid` |
+| `label` on a set | `venn` |
+| `nodeAlign` (`left`, `center`, `right`, `justify`) | `sankey` |
+
+JSON config fragments for the less obvious structures (wrap each in `{ "chartType": "…", "config": … }` for `--spec`):
+
+```json
+{ "type": "histogram", "data": [68, 72, 85], "binNumber": 10 }
+```
+
+```json
+{
+  "type": "dual-axes",
+  "categories": ["Jan", "Feb"],
+  "series": [
+    { "type": "column", "axisYTitle": "Sales", "data": [820, 650] },
+    { "type": "line", "axisYTitle": "Profit", "data": [12, 10] }
+  ]
+}
+```
+
+```json
+{ "type": "table", "data": [{ "Product": "Laptop", "Region": "East China", "Sales Amount": 3200 }] }
+```
+
+For `table`, every row is one `data` item and each original column is a key. For `waterfall`, the total item has `category` and `isTotal` but no `value`. For `treemap`, put nested items under `children` with the same `name`/`value` fields.
+
+Then build the Spec:
+
+A Spec is a JSON object with exactly two keys: `chartType`, the chart type string, and `config`, the GPT-Vis JSON config object.
+
+- Set `config.type` to `chartType` for consistency; the CLI fills or overrides it with `chartType` before rendering.
+- Put the fields from the table above directly in `config`. Use plain numbers for numeric values; put units in the title or axis title.
+- The chart size adapts to its container, so do not set `width` or `height`.
+
+For example, given regional totals `[{"region":"East","total":25},{"region":"West","total":20}]`, map `region → category` and `total → value`, then save as `chart.json`:
+
+```json
+{
+  "chartType": "column",
+  "config": {
+    "type": "column",
+    "data": [
+      { "category": "East", "value": 25 },
+      { "category": "West", "value": 20 }
+    ],
+    "title": "Total by region",
+    "axisXTitle": "Region",
+    "axisYTitle": "Total"
+  }
+}
+```
+
+### Step 6: Render and inspect
+
+```sh
+ava viz --spec @chart.json --output chart.html
+```
+
+The returned `output` is the absolute path to the HTML file. Existing files are not overwritten. The HTML requires an internet connection to load GPT-Vis.
+
+The CLI validates only the Spec structure and chart type; it does not verify that the config renders correctly. If a browser is available, preview the chart and check the field mappings, ordering, title, units, and data range. If you do not preview it, say so. Label Top N selections and aggregated categories in the chart.
+
+If rendering fails, fix the error and retry up to two times. If it still fails, provide the results table and explain why the chart could not be rendered.
+
+## CLI Entry Points
+
+| Command | Input | Result | Model required |
+| --- | --- | --- | --- |
+| `viz --spec @chart.json --output chart.html` | Complete Spec; inline JSON, `@file`, or stdin `-` | Absolute `output` path | No |
+| `recommend --query "…" --data @rows.json` | Question and array of row objects | Spec, or `null` when no chart fits | Yes |
+| `visualize --query "…" --data @rows.json --output chart.html` | Question and array of row objects | Spec and HTML, plus `output` when requested; or `null` | Yes |
+
+None requires a dataset ID. For `recommend`/`visualize`, `--data` accepts inline JSON, `@file`, or stdin `-`; even histogram input must be row objects. A manual histogram Spec instead uses numeric observations in `config.data`. Model setup is described in [Setup](setup.md).

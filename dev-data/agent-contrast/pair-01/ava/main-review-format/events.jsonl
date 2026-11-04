@@ -1,0 +1,160 @@
+{"type":"start"}
+{"type":"start-step","request":{},"warnings":[]}
+{"type":"text-start","id":"0"}
+{"type":"text-delta","id":"0","text":"## "}
+{"type":"text-delta","id":"0","text":"暂不支持扩大"}
+{"type":"text-delta","id":"0","text":"投放，需优先"}
+{"type":"text-delta","id":"0","text":"补齐广告费用"}
+{"type":"text-delta","id":"0","text":"与增量效果验证"}
+{"type":"text-delta","id":"0","text":"\n\n### "}
+{"type":"text-delta","id":"0","text":"📊 核心"}
+{"type":"text-delta","id":"0","text":"发现\n\n"}
+{"type":"text-delta","id":"0","text":"| 指"}
+{"type":"text-delta","id":"0","text":"标 | "}
+{"type":"text-delta","id":"0","text":"基期(万元"}
+{"type":"text-delta","id":"0","text":") | 本期"}
+{"type":"text-delta","id":"0","text":"(万元) |"}
+{"type":"text-delta","id":"0","text":" 变化量"}
+{"type":"text-delta","id":"0","text":"(万元) |"}
+{"type":"text-delta","id":"0","text":" 变化率"}
+{"type":"text-delta","id":"0","text":" |\n|---|"}
+{"type":"text-delta","id":"0","text":"---|---|"}
+{"type":"text-delta","id":"0","text":"---|---|\n"}
+{"type":"text-delta","id":"0","text":"| 净销售额"}
+{"type":"text-delta","id":"0","text":" | 1853"}
+{"type":"text-delta","id":"0","text":".23 | "}
+{"type":"text-delta","id":"0","text":"1832.65"}
+{"type":"text-delta","id":"0","text":" | -20."}
+{"type":"text-delta","id":"0","text":"58 | -1"}
+{"type":"text-delta","id":"0","text":".11% |\n"}
+{"type":"text-delta","id":"0","text":"| 经营贡献 |"}
+{"type":"text-delta","id":"0","text":" 803."}
+{"type":"text-delta","id":"0","text":"50 | 7"}
+{"type":"text-delta","id":"0","text":"78.87"}
+{"type":"text-delta","id":"0","text":" | -24."}
+{"type":"text-delta","id":"0","text":"64 | -3"}
+{"type":"text-delta","id":"0","text":".07% |\n\n"}
+{"type":"text-delta","id":"0","text":"本期净销售额下降"}
+{"type":"text-delta","id":"0","text":"**20.58"}
+{"type":"text-delta","id":"0","text":"**万元（"}
+{"type":"text-delta","id":"0","text":"-**1."}
+{"type":"text-delta","id":"0","text":"11%**），"}
+{"type":"text-delta","id":"0","text":"经营贡献下降**"}
+{"type":"text-delta","id":"0","text":"24.64**"}
+{"type":"text-delta","id":"0","text":"万元（-**"}
+{"type":"text-delta","id":"0","text":"3.07%"}
+{"type":"text-delta","id":"0","text":"**），贡献降幅"}
+{"type":"text-delta","id":"0","text":"大于收入降幅。\n"}
+{"type":"text-delta","id":"0","text":"[[result:R"}
+{"type":"text-delta","id":"0","text":"2]]\n\n### "}
+{"type":"text-delta","id":"0","text":"🔍 下降集中"}
+{"type":"text-delta","id":"0","text":"在哪里\n\n#### "}
+{"type":"text-delta","id":"0","text":"渠道销售变化"}
+{"type":"text-delta","id":"0","text":"\n下降集中在自然"}
+{"type":"text-delta","id":"0","text":"搜索和直接访问"}
+{"type":"text-delta","id":"0","text":"，分别"}
+{"type":"text-delta","id":"0","text":"减少**87."}
+{"type":"text-delta","id":"0","text":"72**万元和"}
+{"type":"text-delta","id":"0","text":"**82.01"}
+{"type":"text-delta","id":"0","text":"**万元，"}
+{"type":"text-delta","id":"0","text":"但新增社交拓"}
+{"type":"text-delta","id":"0","text":"新及品牌词"}
+{"type":"text-delta","id":"0","text":"搜索增长部分抵"}
+{"type":"text-delta","id":"0","text":"消了整体"}
+{"type":"text-delta","id":"0","text":"下滑。\n[[result"}
+{"type":"text-delta","id":"0","text":":R3]]\n\n"}
+{"type":"text-delta","id":"0","text":"#### 品"}
+{"type":"text-delta","id":"0","text":"类销售变化\n"}
+{"type":"text-delta","id":"0","text":"升降桌拖累"}
+{"type":"text-delta","id":"0","text":"最大，下降**"}
+{"type":"text-delta","id":"0","text":"102.90**"}
+{"type":"text-delta","id":"0","text":"万元，远超"}
+{"type":"text-delta","id":"0","text":"整体净下降额"}
+{"type":"text-delta","id":"0","text":"20.58万元"}
+{"type":"text-delta","id":"0","text":"，差额被精选"}
+{"type":"text-delta","id":"0","text":"代销（+"}
+{"type":"text-delta","id":"0","text":"**61.17"}
+{"type":"text-delta","id":"0","text":"**万元）"}
+{"type":"text-delta","id":"0","text":"等品类"}
+{"type":"text-delta","id":"0","text":"增长抵消。\n"}
+{"type":"text-delta","id":"0","text":"[[result:R"}
+{"type":"text-delta","id":"0","text":"6]]\n\n#### 区域"}
+{"type":"text-delta","id":"0","text":"销售变化\n下降"}
+{"type":"text-delta","id":"0","text":"集中在华东和华北"}
+{"type":"text-delta","id":"0","text":"，分别减少**"}
+{"type":"text-delta","id":"0","text":"30.21**"}
+{"type":"text-delta","id":"0","text":"万元和**14"}
+{"type":"text-delta","id":"0","text":".80**万元"}
+{"type":"text-delta","id":"0","text":"；华南逆势"}
+{"type":"text-delta","id":"0","text":"增长**21."}
+{"type":"text-delta","id":"0","text":"76**万元。\n"}
+{"type":"text-delta","id":"0","text":"[[result:R"}
+{"type":"text-delta","id":"0","text":"5]]\n\n### "}
+{"type":"text-delta","id":"0","text":"⚠️ 经营"}
+{"type":"text-delta","id":"0","text":"贡献变化\n\n"}
+{"type":"text-delta","id":"0","text":"#### 渠道"}
+{"type":"text-delta","id":"0","text":"经营贡献变化\n"}
+{"type":"text-delta","id":"0","text":"自然搜索和直接"}
+{"type":"text-delta","id":"0","text":"访问经营贡献下降"}
+{"type":"text-delta","id":"0","text":"最严重，分别"}
+{"type":"text-delta","id":"0","text":"减少**47."}
+{"type":"text-delta","id":"0","text":"68**万元和"}
+{"type":"text-delta","id":"0","text":"**42.78"}
+{"type":"text-delta","id":"0","text":"**万元；品牌"}
+{"type":"text-delta","id":"0","text":"词搜索和新增"}
+{"type":"text-delta","id":"0","text":"社交拓新分别"}
+{"type":"text-delta","id":"0","text":"提升**29."}
+{"type":"text-delta","id":"0","text":"07**万元与"}
+{"type":"text-delta","id":"0","text":"**64.71"}
+{"type":"text-delta","id":"0","text":"**万元，"}
+{"type":"text-delta","id":"0","text":"但仍不足以弥补整体"}
+{"type":"text-delta","id":"0","text":"亏缺。\n[["}
+{"type":"text-delta","id":"0","text":"result:R4"}
+{"type":"text-delta","id":"0","text":"]]\n\n### ✅"}
+{"type":"text-delta","id":"0","text":" 下一步行动\n\n"}
+{"type":"text-delta","id":"0","text":"| 优先级"}
+{"type":"text-delta","id":"0","text":" | 行动 |"}
+{"type":"text-delta","id":"0","text":" 需要"}
+{"type":"text-delta","id":"0","text":"的证据 |\n|---"}
+{"type":"text-delta","id":"0","text":"|---|---"}
+{"type":"text-delta","id":"0","text":"|\n| "}
+{"type":"text-delta","id":"0","text":"1 | 验"}
+{"type":"text-delta","id":"0","text":"证新增及增长"}
+{"type":"text-delta","id":"0","text":"渠道的增量ROI"}
+{"type":"text-delta","id":"0","text":" | 社交"}
+{"type":"text-delta","id":"0","text":"拓新、品牌"}
+{"type":"text-delta","id":"0","text":"词搜索的广告费用"}
+{"type":"text-delta","id":"0","text":"及增量投放效果"}
+{"type":"text-delta","id":"0","text":"，排除自然增长"}
+{"type":"text-delta","id":"0","text":"因素 |\n| "}
+{"type":"text-delta","id":"0","text":"2 | 查"}
+{"type":"text-delta","id":"0","text":"明自然搜索和"}
+{"type":"text-delta","id":"0","text":"直接访问收入下降"}
+{"type":"text-delta","id":"0","text":"原因 | 流量"}
+{"type":"text-delta","id":"0","text":"、转化率及"}
+{"type":"text-delta","id":"0","text":"未扣减的广告"}
+{"type":"text-delta","id":"0","text":"费等数据，"}
+{"type":"text-delta","id":"0","text":"判断是否由投放"}
+{"type":"text-delta","id":"0","text":"不足导致 |\n|"}
+{"type":"text-delta","id":"0","text":" 3 | "}
+{"type":"text-delta","id":"0","text":"剖析升降"}
+{"type":"text-delta","id":"0","text":"桌拖累及"}
+{"type":"text-delta","id":"0","text":"精选代销真实"}
+{"type":"text-delta","id":"0","text":"利润 | 升"}
+{"type":"text-delta","id":"0","text":"降桌销量"}
+{"type":"text-delta","id":"0","text":"与客单价"}
+{"type":"text-delta","id":"0","text":"变动，精选代"}
+{"type":"text-delta","id":"0","text":"销佣金成本"}
+{"type":"text-delta","id":"0","text":"及经营"}
+{"type":"text-delta","id":"0","text":"贡献明细"}
+{"type":"text-delta","id":"0","text":" |\n\n**当前数据"}
+{"type":"text-delta","id":"0","text":"不含广告成本"}
+{"type":"text-delta","id":"0","text":"与增量效果，"}
+{"type":"text-delta","id":"0","text":"无法证明扩大投放"}
+{"type":"text-delta","id":"0","text":"能扭转收入与"}
+{"type":"text-delta","id":"0","text":"贡献双降局面"}
+{"type":"text-delta","id":"0","text":"，暂不据此"}
+{"type":"text-delta","id":"0","text":"扩大投放。**"}
+{"type":"text-end","id":"0"}
+{"type":"finish-step","finishReason":"stop","rawFinishReason":"stop","usage":{"inputTokens":11043,"inputTokenDetails":{"noCacheTokens":11043,"cacheReadTokens":0},"outputTokens":3884,"outputTokenDetails":{"textTokens":3884,"reasoningTokens":0},"totalTokens":14927,"raw":{"prompt_tokens":11043,"completion_tokens":3884,"total_tokens":14927}},"performance":{"stepTimeMs":71176.680917,"toolExecutionMs":{},"responseTimeMs":71173.98525,"effectiveOutputTokensPerSecond":54.57050053270693,"outputTokensPerSecond":414.5711771231835,"inputTokensPerSecond":178.67408875765824,"effectiveTotalTokensPerSecond":209.7255050081659,"timeToFirstOutputMs":61805.268334,"timeBetweenOutputChunksMs":{"min":1.6238330000051064,"p10":34.50241699999606,"median":56.2622080000001,"avg":60.35856562745099,"p90":78.25712499998917,"max":308.0129589999997}},"providerMetadata":{"openai":{}},"response":{"id":"219fec3217931104136115904e181d","timestamp":"2026-10-27T14:13:35.000Z","modelId":"GLM-5.1","headers":{"access-control-allow-headers":"authorization, content-type, x-stainless-retry-count","access-control-allow-origin":"http://127.0.0.1:3000","connection":"keep-alive","content-type":"text/event-stream","date":"Tue, 27 Oct 2026 14:13:35 GMT","keep-alive":"timeout=5","transfer-encoding":"chunked"}}}
+{"type":"finish","finishReason":"stop","rawFinishReason":"stop","totalUsage":{"inputTokens":11043,"inputTokenDetails":{"noCacheTokens":11043,"cacheReadTokens":0},"outputTokens":3884,"outputTokenDetails":{"textTokens":3884,"reasoningTokens":0},"totalTokens":14927,"raw":{"prompt_tokens":11043,"completion_tokens":3884,"total_tokens":14927}}}

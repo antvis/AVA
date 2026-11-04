@@ -225,11 +225,11 @@
   },
   "AIPage": {
     "exploreYourDataWithAVA": "和 AVA 一起探索数据",
-    "needSQLPythonParquetOrDatabaseConnections": "需要 SQL、Python、Parquet 或数据库连接？",
+    "needSQLPythonParquetOrDatabaseConnections": "需要 Python、Parquet 或远程数据库连接？",
     "fullAVACapabilities": "更多 AVA 能力",
     "useAVAThroughThe": "可以通过",
     "or": "或",
-    "intro": "试试示例数据，或上传自己的 CSV、Excel（.xlsx）或 JSON 文件（最大 {size} MB）。跟着分析过程，逐步查看代码、图表与结果。"
+    "intro": "试试示例数据，或上传 CSV、Excel（.xlsx）、JSON、SQLite 多表数据库（最大 {size} MB）。跟着分析过程，逐步查看代码、图表与结果。"
   },
   "ArtifactChip": {
     "open": "打开 ↗"
@@ -254,7 +254,7 @@
     "fromDataToUnderstanding": "让数据里的信息变成你的发现",
     "whatWouldYouLike": "这份数据里，",
     "toDiscover": "你想了解什么？",
-    "startWithTheSampleDatasetOrUpload": "先试试示例数据，也可以上传 CSV、Excel 或 JSON 文件。从下面的问题开始，或直接说说你想分析什么。",
+    "startWithTheSampleDatasetOrUpload": "先试试示例数据，也可以上传 CSV、Excel、JSON 或 SQLite 数据库。从下面的问题开始，或直接说说你想分析什么。",
     "summarizeKeyPatterns": "概览数据特点",
     "summarizeTheKeyPatternsInThisData": "帮我梳理这份数据的主要特点，有哪些值得关注的现象？",
     "visualizeATrend": "看看数据趋势",
@@ -271,7 +271,8 @@
     "datasetStats": "{rows} 行 · {columns} 列 · 可以开始分析了",
     "preview": "{name} 数据预览",
     "previewNote": "这里只预览前 {rows} 行{columns}，分析时会使用完整数据。",
-    "previewColumns": "、前 {count} 列"
+    "previewColumns": "、前 {count} 列",
+    "sqliteStats": "{rows} 行（业务表合计）· {tables} 张表/视图 · 预览 {name}"
   },
   "ChatWorkspace": {
     "connectYourModel": "连接模型，",
@@ -331,7 +332,7 @@
     "askAboutYourData": "说说你想分析什么…",
     "prompt": "分析问题",
     "addDataFiles": "添加数据文件",
-    "cSVExcelOrJSON": "CSV、Excel 或 JSON",
+    "cSVExcelOrJSON": "CSV、Excel、JSON 或 SQLite",
     "typeToSearchSourcesFiles": "输入名称，查找数据源或文件",
     "typeToSearchCommands": "输入命令名称查找",
     "listening": "正在听，请说…",
@@ -421,13 +422,14 @@
     "completed": "{count} 次工具调用 · 1 条回答"
   },
   "useChat": {
-    "uploadACSVExcelOrJSONArray": "请上传包含数据记录的 CSV、Excel 文件或 JSON 对象数组。",
+    "uploadACSVExcelOrJSONArray": "请上传 CSV、Excel、JSON 对象数组，或 SQLite 数据库文件。",
     "yourDatasetIsReadyAskAQuestion": "数据已准备好。直接提问就能开始分析，也可以先补充业务语义，让结果更贴近你的业务。",
     "waitForTheCurrentOperationToFinish": "请等待当前操作完成。",
     "theDatasetChangedReopenSemanticsAndTry": "数据已更新，请重新打开业务语义设置后再试。",
     "maxFile": "文件不能超过 {size} MB",
     "maxSemantic": "业务语义 JSON 不能超过 {size} MB。",
-    "suggestError": "暂时没能生成推荐问题。{error}"
+    "suggestError": "暂时没能生成推荐问题。{error}",
+    "sqliteReady": "SQLite 已加载，共 {count} 张表和视图。可用 SQL 跨表查询，并在语义设置中定义指标口径。"
   },
   "metadata": {
     "title": "AVA — 让 Agent 更懂数据 | AntV",

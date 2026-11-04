@@ -1,0 +1,25 @@
+{
+  "chartType": "bar",
+  "config": {
+    "type": "bar",
+    "data": [
+      {
+        "category": "Baseline",
+        "value": 4882.34224
+      },
+      {
+        "category": "Current",
+        "value": 4005.10013
+      }
+    ],
+    "axisXTitle": "Period",
+    "axisYTitle": "Net sales (CNY thousands)",
+    "theme": "light",
+    "style": {
+      "backgroundColor": "#ffffff",
+      "palette": [
+        "#5c8dbb"
+      ]
+    }
+  }
+}

@@ -11,10 +11,11 @@ const ChatWorkspace: React.FC<{
   playback: ChatPlayback;
   activeArtifact?: Message['artifact'];
   live?: LiveChat;
+  recorded?: boolean;
   onReplay?: () => void;
   heading?: React.ReactNode;
   artifactDisplay?: ArtifactDisplay;
-}> = ({ playback, activeArtifact, live, onReplay, heading, artifactDisplay }) => {
+}> = ({ playback, activeArtifact, live, recorded, onReplay, heading, artifactDisplay }) => {
   const t = useTranslations('ChatWorkspace');
   const needsModel = !!live && !live.ready;
   const latestId = activeArtifact?.id;
@@ -34,7 +35,7 @@ const ChatWorkspace: React.FC<{
   return (
     <main
       className={`pb-12 [&_p]:max-w-[520px] [&_p]:text-[14px] [&_p]:leading-[1.7] max-md:[&_p]:text-[13px] ${
-        live
+        live || recorded
           ? 'mx-[max(16px,calc((100%-1240px)/2))] 2xl:mx-[max(20px,calc((100%-1320px)/2))]'
           : 'mx-[max(12px,calc((100%-1120px)/2))]'
       }`}
@@ -56,12 +57,13 @@ const ChatWorkspace: React.FC<{
               : 'grid-cols-1'
           }`}
         >
-          <ChatPanel playback={playback} live={live} onArtifact={onArtifact} onRerun={onReplay} heading={heading} />
+          <ChatPanel playback={playback} live={live} onArtifact={onArtifact} onRerun={onReplay} heading={heading} recorded={recorded} />
           {artifact && (
             <ArtifactPanel
               key={artifact.id}
               artifact={artifact}
               live={!!live}
+              recorded={recorded}
               tab={artifactTab}
               onTabChange={setArtifactTab}
               onClose={() => setSelection({ latestId, selectedId: null })}

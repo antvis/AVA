@@ -1,0 +1,20 @@
+{
+  "schemaVersion": 1,
+  "id": "cinema-contact-sheet",
+  "label": "Cinema Contact Sheet",
+  "category": "film-archive",
+  "tags": ["actor", "director", "filmography", "analog"],
+  "derivedFrom": "original-archetype",
+  "concept": {"identityIntensity": "medium-high", "thesis": "An analog film archive turns projects into scenes, takes, and carefully selected frames.", "mood": ["archival", "tactile", "observant"], "forbiddenMotifs": ["glossy-award-show", "fake-film-credits", "excessive-sepia"]},
+  "layout": {"archetype": "contact-sheet-workbench", "navigation": "filmography-index", "hero": "selected-frame", "composer": "script-note", "density": "medium-high"},
+  "palette": {"canvas": "#D9CDB8", "surface": "#E9DFC9", "surfaceRaised": "#F5ECD9", "ink": "#29231D", "mutedInk": "#746756", "accent": "#A33D28", "accentSoft": "#DAB8A5", "line": "#9E8E76", "focus": "#7D281B"},
+  "typography": {"display": "film-serif", "body": "typewriter-sans", "code": "system-monospace", "accent": "frame-counter"},
+  "shape": {"panelRadius": 4, "controlRadius": 3, "elevation": "print-contact"},
+  "decoration": {"level": "medium", "motifs": ["film-strip", "frame-number", "clapboard"], "pointerEvents": "none"},
+  "motion": {"character": "contact-sheet-develop", "durationMs": 180, "reducedMotion": "instant"},
+  "mediaSlots": [{"id": "selectedFrame", "role": "hero", "aspect": "3:2", "focalPoint": "54% 28%", "fallback": "frame-number"}, {"id": "contactFrames", "role": "secondary", "aspect": "3:2", "focalPoint": "50% 50%", "fallback": "blank-film"}],
+  "quickActions": [{"id": "explore", "label": "Review the rushes"}, {"id": "build", "label": "Set up a new scene"}, {"id": "review", "label": "Select the best take"}, {"id": "fix", "label": "Repair the cut"}],
+  "responsive": {"narrowNavigation": "film-index-drawer", "narrowHero": "single-frame", "narrowCards": "two-then-one", "hideMotifs": ["clapboard"], "missingMedia": "frame-number"},
+  "assetPolicy": {"provenance": "required", "remoteHotlink": false, "licensedOrOwned": true},
+  "accessibility": {"contrastTarget": "WCAG-AA", "preserveSemanticStates": true, "decorationAriaHidden": true}
+}

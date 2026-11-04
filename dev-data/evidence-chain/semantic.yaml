@@ -1,0 +1,10 @@
+description: |
+  Delivered revenue, net of refunds.
+  Owned: full revenue.
+  Consignment: commission only.
+properties:
+  metric: net_sales_cents
+  currency: CNY
+  amount_storage: integer cents
+  display_unit: CNY thousands
+  display_divisor: 100000

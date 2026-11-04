@@ -1,0 +1,42 @@
+{
+  "skill": "opcspace/CodexUI/skills/redesign-codex-ui",
+  "scope": "Read-only conversation replay and screenshot, not the installed Codex client",
+  "audience": "AVA product introduction",
+  "primary_task": "Compare raw-data clarification with analysis using configured business definitions",
+  "preserve": [
+    "real CLI messages",
+    "actual tool commands and outputs",
+    "identical user question",
+    "clear input differences"
+  ],
+  "visual_rules": [
+    "neutral Codex-style canvas",
+    "equal-width conversations",
+    "expanded tool panels",
+    "selectable tables/SQL",
+    "actual generated chart preview"
+  ],
+  "exclude": [
+    "promotional hero",
+    "decorative IP",
+    "extra explanatory paragraphs inside the UI",
+    "fake model output"
+  ],
+  "acceptance": [
+    "loaded business definition is visible",
+    "query and two-month result are visible",
+    "graph is actually rendered from the original AVA HTML",
+    "raw answer wording preserved in available replay",
+    "no horizontal overflow at desktop and compact widths"
+  ],
+  "evidence_to_decision": [
+    {
+      "evidence": "Tool calls were collapsed and user could not see AVA features",
+      "decision": "Details are open by default; show schema, semantic, query, viz bodies"
+    },
+    {
+      "evidence": "User requests minimal explanatory UI",
+      "decision": "Methodology remains in the Yuque caption; replay only shows task, actual messages, tools and artifacts"
+    }
+  ]
+}

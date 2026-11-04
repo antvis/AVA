@@ -1,0 +1,35 @@
+{
+  "data": [
+    {
+      "category": "家具",
+      "aug": 3348139.84,
+      "sep": 2656194.21,
+      "change": -691945.63
+    },
+    {
+      "category": "数码",
+      "aug": 944885.58,
+      "sep": 1041380.97,
+      "change": 96495.39
+    }
+  ],
+  "schema": [
+    {
+      "name": "category",
+      "type": "VARCHAR"
+    },
+    {
+      "name": "aug",
+      "type": "DECIMAL(38,2)"
+    },
+    {
+      "name": "sep",
+      "type": "DECIMAL(38,2)"
+    },
+    {
+      "name": "change",
+      "type": "DECIMAL(38,2)"
+    }
+  ],
+  "rowCount": 2
+}

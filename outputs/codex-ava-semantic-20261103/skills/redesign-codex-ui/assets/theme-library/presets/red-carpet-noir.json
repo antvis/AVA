@@ -1,0 +1,20 @@
+{
+  "schemaVersion": 1,
+  "id": "red-carpet-noir",
+  "label": "Red Carpet Noir",
+  "category": "cinematic-celebrity",
+  "tags": ["actor", "premiere", "award", "luxury"],
+  "derivedFrom": "original-archetype",
+  "concept": {"identityIntensity": "high", "thesis": "A cinematic premiere frames each coding task as the next scene worth making.", "mood": ["dramatic", "luxurious", "composed"], "forbiddenMotifs": ["cheap-gold-gradient", "paparazzi-clutter", "false-awards"]},
+  "layout": {"archetype": "velvet-rail-premiere-hero", "navigation": "premiere-program", "hero": "portrait-red-carpet", "composer": "screenplay-command", "density": "medium"},
+  "palette": {"canvas": "#100E0F", "surface": "#181416", "surfaceRaised": "#241D20", "ink": "#F7F0E4", "mutedInk": "#BBAE9F", "accent": "#C5A46D", "accentSoft": "#3C3026", "line": "#493B3D", "focus": "#F2D195"},
+  "typography": {"display": "cinematic-serif", "body": "refined-sans", "code": "system-monospace", "accent": "premiere-caps"},
+  "shape": {"panelRadius": 20, "controlRadius": 8, "elevation": "velvet-depth"},
+  "decoration": {"level": "medium", "motifs": ["velvet-curtain", "award-plaque", "camera-flash"], "pointerEvents": "none"},
+  "motion": {"character": "curtain-reveal", "durationMs": 220, "reducedMotion": "opacity-only"},
+  "mediaSlots": [{"id": "premierePortrait", "role": "hero", "aspect": "4:5", "focalPoint": "50% 24%", "fallback": "spotlight-monogram"}, {"id": "editionPlaque", "role": "accent", "aspect": "3:2", "focalPoint": "50% 50%", "fallback": "edition-name"}],
+  "quickActions": [{"id": "explore", "label": "Scout the codebase"}, {"id": "build", "label": "Shoot the next scene"}, {"id": "review", "label": "Review the final cut"}, {"id": "fix", "label": "Resolve continuity"}],
+  "responsive": {"narrowNavigation": "program-drawer", "narrowHero": "portrait-poster", "narrowCards": "single-column", "hideMotifs": ["velvet-curtain", "camera-flash"], "missingMedia": "spotlight-monogram"},
+  "assetPolicy": {"provenance": "required", "remoteHotlink": false, "licensedOrOwned": true},
+  "accessibility": {"contrastTarget": "WCAG-AA", "preserveSemanticStates": true, "decorationAriaHidden": true}
+}

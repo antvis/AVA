@@ -1,0 +1,17 @@
+{
+  "schemaVersion": 1,
+  "libraryName": "Codex Personal Skin Library",
+  "presets": [
+    {"id": "keepsake-olive", "label": "Keepsake Olive", "category": "collectible", "path": "presets/keepsake-olive.json", "bestFor": ["idol", "portrait", "scrapbook", "warm"]},
+    {"id": "midnight-stage", "label": "Midnight Stage", "category": "performance", "path": "presets/midnight-stage.json", "bestFor": ["concert", "fan-club", "dramatic", "dark"]},
+    {"id": "editorial-muse", "label": "Editorial Muse", "category": "editorial", "path": "presets/editorial-muse.json", "bestFor": ["fashion", "photography", "magazine", "refined"]},
+    {"id": "pixel-companion", "label": "Pixel Companion", "category": "digital-character", "path": "presets/pixel-companion.json", "bestFor": ["virtual-idol", "game", "mascot", "playful"]},
+    {"id": "storybook-garden", "label": "Storybook Garden", "category": "illustrated", "path": "presets/storybook-garden.json", "bestFor": ["fictional-character", "fantasy", "healing", "soft"]},
+    {"id": "quiet-monogram", "label": "Quiet Monogram", "category": "personal-brand", "path": "presets/quiet-monogram.json", "bestFor": ["founder", "author", "consultant", "minimal"]},
+    {"id": "red-carpet-noir", "label": "Red Carpet Noir", "category": "cinematic-celebrity", "path": "presets/red-carpet-noir.json", "bestFor": ["actor", "premiere", "award", "luxury"]},
+    {"id": "cinema-contact-sheet", "label": "Cinema Contact Sheet", "category": "film-archive", "path": "presets/cinema-contact-sheet.json", "bestFor": ["actor", "director", "filmography", "analog"]},
+    {"id": "vinyl-archive", "label": "Vinyl Archive", "category": "music-archive", "path": "presets/vinyl-archive.json", "bestFor": ["musician", "album", "discography", "retro"]},
+    {"id": "celestial-fanclub", "label": "Celestial Fanclub", "category": "fan-community", "path": "presets/celestial-fanclub.json", "bestFor": ["idol", "fan-club", "constellation", "dreamy"]},
+    {"id": "signal-atelier", "label": "Signal Atelier", "category": "signal-workbench", "path": "presets/signal-atelier.json", "bestFor": ["developer", "builder", "technical", "focused", "dark"]}
+  ]
+}

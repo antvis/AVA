@@ -103,6 +103,32 @@ export default function useChat({ config, onConfigure }: { config: LLMConfig; on
     try {
       if (file.size > MAX_UPLOAD_SIZE_BYTES) throw new Error(t('maxFile', { size: MAX_UPLOAD_SIZE_MB }));
       const extension = file.name.split('.').pop()?.toLowerCase();
+      if (['sqlite', 'sqlite3', 'db'].includes(extension || '')) {
+        const bytes = new Uint8Array(await file.arrayBuffer());
+        const { inspectSQLite } = await import('../core/sqlite');
+        const info = await inspectSQLite(bytes);
+        if (!lifecycle.active) return;
+        setDataset({
+          name: file.name,
+          rows: [],
+          sqlite: bytes,
+          rowCount: info.rowCount,
+          tableCount: info.schema.models.length,
+        });
+        setUploadMessage({
+          role: 'assistant',
+          text: t('sqliteReady', { count: info.schema.models.length }),
+          dataset: {
+            name: file.name,
+            rowCount: info.rowCount,
+            tableCount: info.schema.models.length,
+            tableName: info.schema.models[0].name,
+            columns: info.schema.models[0].columns.map((c) => c.name),
+            preview: info.preview,
+          },
+        });
+        return;
+      }
       const rows: unknown =
         extension === 'xlsx'
           ? await parseExcel(await file.arrayBuffer())
@@ -167,7 +193,7 @@ export default function useChat({ config, onConfigure }: { config: LLMConfig; on
   }
   // Generate questions with the new session after data or semantics change.
   useEffect(() => {
-    if (uploadMessage && ready) void suggest();
+    if (uploadMessage && ready && !dataset.sqlite) void suggest();
   }, [dataset]);
   const messages = useMemo(
     () => [
@@ -181,7 +207,12 @@ export default function useChat({ config, onConfigure }: { config: LLMConfig; on
     busy,
     ready,
     error: error || chat.error?.message || '',
-    dataset: { name: dataset.name, rowCount: dataset.rows.length, semantic: dataset.semantic },
+    dataset: {
+      name: dataset.name,
+      rowCount: dataset.rowCount ?? dataset.rows.length,
+      tableCount: dataset.tableCount,
+      semantic: dataset.semantic,
+    },
     model: typeof config.model === 'string' ? config.model : config.model.modelId,
     onSend: (text) => {
       void send(text);

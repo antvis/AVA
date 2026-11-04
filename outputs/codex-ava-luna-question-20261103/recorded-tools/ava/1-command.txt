@@ -1,0 +1,1 @@
+/bin/zsh -lc 'ava --help && ava semantic --help && ava source --help'

@@ -1,0 +1,79 @@
+{
+  "date": "2026-11-03",
+  "scenario": "普通提问下的订单净销售额分析",
+  "model": "gpt-6.1-sol",
+  "reasoning_effort": "high",
+  "codex_version": "0.165.0",
+  "ava_version": "4.0.0-beta.5",
+  "design": "Neutral ordinary user question without instructions to ask about definitions, avoid assumptions, follow a reference, or produce a predetermined result. Baseline gets raw CSV with AVA disabled. Treatment gets same CSV, configured financial definition and AVA skill/CLI.",
+  "user_prompt": "用 ./inputs/sales.csv 看一下，2026年9月净销售额相比8月有什么变化，主要来自哪里？给我结论和图表。",
+  "replications_per_arm": 1,
+  "not_a_benchmark": true,
+  "conditions": [
+    {
+      "arm": "no-ava",
+      "cwd": "/Users/banxuan/Documents/AVA-test-skill-workspace/codex-ava-natural-20261103/no-ava",
+      "sha256": {
+        "sales.csv": "4cb3f6ef611837b7d08abb676114a58f99db211bd7bea01e63da763db08d3877"
+      },
+      "prompt_sha256": "467c53f7952a2dbd9d26183c36703e7669e7dc3dad64aac77495297a778a3670",
+      "status": "completed",
+      "started_at": "2026-11-03T09:20:05.058753+00:00",
+      "argv": [
+        "codex",
+        "exec",
+        "--ephemeral",
+        "--ignore-user-config",
+        "--json",
+        "--skip-git-repo-check",
+        "--approve-for-me",
+        "--model",
+        "gpt-6.1-sol",
+        "-c",
+        "model_reasoning_effort=\"high\"",
+        "-c",
+        "skills.config=[{name=\"ava\",enabled=false}]",
+        "-C",
+        "/Users/banxuan/Documents/AVA-test-skill-workspace/codex-ava-natural-20261103/no-ava",
+        "-o",
+        "/Users/banxuan/Documents/AVA/outputs/codex-ava-natural-20261103/no-ava-answer.txt",
+        "-"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 321.624,
+      "finished_at": "2026-11-03T09:25:26.682793+00:00"
+    },
+    {
+      "arm": "ava",
+      "cwd": "/Users/banxuan/Documents/AVA-test-skill-workspace/codex-ava-natural-20261103/ava",
+      "sha256": {
+        "sales.csv": "4cb3f6ef611837b7d08abb676114a58f99db211bd7bea01e63da763db08d3877",
+        "semantic-finance.json": "1c2aa6675f676a0579f9e26862d8223591dbf1ef6d7d811c0726f824ae1ce50b"
+      },
+      "prompt_sha256": "467c53f7952a2dbd9d26183c36703e7669e7dc3dad64aac77495297a778a3670",
+      "status": "interrupted_on_model_change",
+      "started_at": "2026-11-03T09:25:26.694084+00:00",
+      "argv": [
+        "codex",
+        "exec",
+        "--ephemeral",
+        "--ignore-user-config",
+        "--json",
+        "--skip-git-repo-check",
+        "--approve-for-me",
+        "--model",
+        "gpt-6.1-sol",
+        "-c",
+        "model_reasoning_effort=\"high\"",
+        "-c",
+        "skills.config=[{name=\"ava\",enabled=false},{path=\"/Users/banxuan/Documents/AVA-test-skill-workspace/codex-ava-natural-20261103/ava/.agents/skills/ava/SKILL.md\",enabled=true}]",
+        "-C",
+        "/Users/banxuan/Documents/AVA-test-skill-workspace/codex-ava-natural-20261103/ava",
+        "-o",
+        "/Users/banxuan/Documents/AVA/outputs/codex-ava-natural-20261103/ava-answer.txt",
+        "-"
+      ]
+    }
+  ],
+  "superseded_by": "codex-ava-luna-20261103: user requested lighter model"
+}

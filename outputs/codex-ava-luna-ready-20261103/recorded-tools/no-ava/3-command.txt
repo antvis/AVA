@@ -1,0 +1,11 @@
+/bin/zsh -lc "python3 - <<'PY'
+import csv,collections
+rows=list(csv.DictReader(open('inputs/sales.csv',newline='',encoding='utf-8-sig')))
+for field in ['order_kind','business_model','selling_region','category','channel','status']:
+ print('\\n',field)
+ for m in ['2026-08','2026-09']:
+  d=collections.defaultdict(float)
+  for r in rows:
+   if r['paid_at'].startswith(m): d[r[field]]+=float(r['line_paid_amount'] or 0)-float(r['refund_amount'] or 0)
+  print(m, sorted(d.items(),key=lambda x:-x[1])[:12])
+PY"

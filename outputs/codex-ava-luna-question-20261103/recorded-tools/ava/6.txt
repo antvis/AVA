@@ -1,0 +1,35 @@
+{
+  "data": [
+    {
+      "month": "2026-08",
+      "lines": 5059,
+      "orders": 4197,
+      "net_sales": 4293025.42
+    },
+    {
+      "month": "2026-09",
+      "lines": 4229,
+      "orders": 3387,
+      "net_sales": 3697575.18
+    }
+  ],
+  "schema": [
+    {
+      "name": "month",
+      "type": "VARCHAR"
+    },
+    {
+      "name": "lines",
+      "type": "BIGINT"
+    },
+    {
+      "name": "orders",
+      "type": "BIGINT"
+    },
+    {
+      "name": "net_sales",
+      "type": "DECIMAL(38,2)"
+    }
+  ],
+  "rowCount": 2
+}

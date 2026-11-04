@@ -1,0 +1,111 @@
+{
+  "success": true,
+  "purpose": "final",
+  "result": {
+    "batchId": "fR1qj2Hl3HKunavl",
+    "creatives": [
+      {
+        "gmtCreate": "2026-11-03T08:45:59.000Z",
+        "gmtModified": "2026-11-03T08:45:59.000Z",
+        "creativeId": "CF_krStPUE8vLS35",
+        "templateType": "flow",
+        "templateFormat": "flow",
+        "templateId": "TF_Gri3UO6S5SSIz",
+        "renderType": "png",
+        "taskId": null,
+        "renderStatus": "success",
+        "creativeUrl": "https://mdn.alipayobjects.com/huamei_wspxri/afts/img/A*jcqwTpX6EjYAAAAAZhAAAAgAenh5AQ/original",
+        "creativeAftsId": "A*jcqwTpX6EjYAAAAAZhAAAAgAenh5AQ",
+        "bizType": "huamei_skill",
+        "bizId": "huamei_skill",
+        "width": 2880,
+        "height": 3084,
+        "length": 0,
+        "name": "flow",
+        "customConfig": {
+          "flowInput": {
+            "image_url": "https://mdn.alipayobjects.com/huamei_aphk1k/afts/img/A*s2nORpp9I_UAAAAAZeAAAAgAegfkAQ/original",
+            "displayName": "Codex CLI 有无 AVA 财务口径实测对照"
+          },
+          "renderer": {
+            "type": "ImageList",
+            "props": [
+              {
+                "name": "titleCircleColor",
+                "type": "string",
+                "value": {
+                  "type": "literal",
+                  "content": "rgba(163, 232, 170, 0.4)"
+                }
+              },
+              {
+                "name": "cardBackgroundColor",
+                "type": "string",
+                "value": {
+                  "type": "literal",
+                  "content": "#F8FCF8"
+                }
+              },
+              {
+                "name": "cardTitle",
+                "type": "object",
+                "value": {
+                  "type": "literal",
+                  "content": {
+                    "icon": "icon-a-rongqi6",
+                    "value": "图片创作",
+                    "color": "#629E62"
+                  }
+                }
+              },
+              {
+                "name": "cardTag",
+                "type": "object",
+                "value": {
+                  "type": "literal",
+                  "content": {
+                    "backgroundColor": "#E7F3E7",
+                    "color": "#629E62",
+                    "value": ""
+                  }
+                }
+              },
+              {
+                "name": "loadingTip",
+                "type": "string",
+                "value": {
+                  "type": "literal",
+                  "content": "图片创作中..."
+                }
+              }
+            ]
+          }
+        },
+        "extInfo": {
+          "renderOptions": {
+            "fromAgent": "codex",
+            "cliVersion": "1.32.0"
+          },
+          "performance": {
+            "all": [
+              1793695559330,
+              1793695559497
+            ]
+          },
+          "creativeInstanceId": "FC_9P2aLztfVOBIm",
+          "aigcMetadataAdded": true,
+          "customOutput": {
+            "displayName": "Codex CLI 有无 AVA 财务口"
+          }
+        },
+        "status": 0,
+        "userId": "7099355",
+        "templateReleaseId": "",
+        "batchId": "fR1qj2Hl3HKunavl",
+        "creativeContent": "Codex CLI 有无 AVA 财务口径实测对照",
+        "size": 620337,
+        "auditStatus": "success"
+      }
+    ]
+  }
+}

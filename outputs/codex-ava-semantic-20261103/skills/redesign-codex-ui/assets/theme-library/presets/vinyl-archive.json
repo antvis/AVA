@@ -1,0 +1,20 @@
+{
+  "schemaVersion": 1,
+  "id": "vinyl-archive",
+  "label": "Vinyl Archive",
+  "category": "music-archive",
+  "tags": ["musician", "album", "discography", "retro"],
+  "derivedFrom": "original-archetype",
+  "concept": {"identityIntensity": "high", "thesis": "A tactile record archive maps coding work to tracks, liner notes, and a deliberate listening sequence.", "mood": ["rhythmic", "collectible", "warm"], "forbiddenMotifs": ["continuous-spin", "fake-chart-rank", "visualizer-noise"]},
+  "layout": {"archetype": "record-shelf-tracklist", "navigation": "discography-shelf", "hero": "album-sleeve-portrait", "composer": "liner-note-desk", "density": "medium"},
+  "palette": {"canvas": "#E7DDC6", "surface": "#F3EAD7", "surfaceRaised": "#FFF7E8", "ink": "#26221E", "mutedInk": "#746B61", "accent": "#C6533E", "accentSoft": "#E6B5A4", "line": "#B7AA92", "focus": "#903624"},
+  "typography": {"display": "record-serif", "body": "groove-sans", "code": "system-monospace", "accent": "track-number"},
+  "shape": {"panelRadius": 12, "controlRadius": 6, "elevation": "album-sleeve"},
+  "decoration": {"level": "medium", "motifs": ["vinyl-record", "track-ring", "liner-note"], "pointerEvents": "none"},
+  "motion": {"character": "needle-drop", "durationMs": 180, "reducedMotion": "instant"},
+  "mediaSlots": [{"id": "albumPortrait", "role": "hero", "aspect": "1:1", "focalPoint": "50% 28%", "fallback": "record-label"}, {"id": "recordLabel", "role": "accent", "aspect": "1:1", "focalPoint": "50% 50%", "fallback": "edition-name"}],
+  "quickActions": [{"id": "explore", "label": "Browse the back catalog"}, {"id": "build", "label": "Record a new track"}, {"id": "review", "label": "Listen to the mix"}, {"id": "fix", "label": "Remove the noise"}],
+  "responsive": {"narrowNavigation": "album-drawer", "narrowHero": "album-card", "narrowCards": "horizontal-scroll", "hideMotifs": ["liner-note"], "missingMedia": "record-label"},
+  "assetPolicy": {"provenance": "required", "remoteHotlink": false, "licensedOrOwned": true},
+  "accessibility": {"contrastTarget": "WCAG-AA", "preserveSemanticStates": true, "decorationAriaHidden": true}
+}

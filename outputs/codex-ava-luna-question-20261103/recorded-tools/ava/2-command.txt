@@ -1,0 +1,1 @@
+/bin/zsh -lc 'cat inputs/semantic-finance.json && ava source inputs/sales.csv'

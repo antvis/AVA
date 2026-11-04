@@ -1,0 +1,215 @@
+{
+  "title": "4 个 case",
+  "sections": [
+    {
+      "ref": "section:WUxGUHo",
+      "level": 2,
+      "title": "拿到一份表，快速看懂发生了什么",
+      "preview": "时长 1 分 30 秒"
+    },
+    {
+      "ref": "section:QWc2bTE",
+      "level": 3,
+      "title": "数据准备",
+      "preview": "使用 ./01-sales/sales.csv，8 行数据，4 个产品、2 个月。"
+    },
+    {
+      "ref": "section:U0xIQ28",
+      "level": 3,
+      "title": "00:00 至 00:15 开场",
+      "preview": "画面：打开 CSV，短暂展示三个字段和八行数据。"
+    },
+    {
+      "ref": "section:ZTBhYkw",
+      "level": 3,
+      "title": "00:15 至 00:55 第一轮用户提问",
+      "preview": "> 请用 AVA Skill 分析 ./01-sales/sales.csv。先确认字段和行粒度，再比较2025年1月与2月的收入，按产品拆解增减，找出主要贡献。金额单位是美元。把各产品收入变化画成水平条形图，结论、结果表、实际执行的SQL"
+    },
+    {
+      "ref": "section:ZXZ4dmk",
+      "level": 3,
+      "title": "00:55 至 01:15 第二轮用户提问",
+      "preview": "> Analytics贡献了多少净增量？有没有产品在抵消增长？核对产品变化之和是否等于整体变化。"
+    },
+    {
+      "ref": "section:YUliN1I",
+      "level": 3,
+      "title": "最后展示的结果",
+      "preview": "<table>"
+    },
+    {
+      "ref": "section:ejhPOWs",
+      "level": 3,
+      "title": "收尾口播",
+      "preview": "> AVA把数据接入、实际计算和图表生成接起来，让这份表变成一组可以核对、继续追问的结论。"
+    },
+    {
+      "ref": "section:WUNyNHE",
+      "level": 2,
+      "title": "同一句问题，为什么两个部门得出相反结论？",
+      "preview": "时长 3 分钟"
+    },
+    {
+      "ref": "section:TWNMZ2k",
+      "level": 3,
+      "title": "数据准备",
+      "preview": "使用 ./02-semantics/sales.csv，18971条订单明细、15510笔订单。"
+    },
+    {
+      "ref": "section:ejVsQ1k",
+      "level": 3,
+      "title": "00:00 至 00:20 开场",
+      "preview": "画面：同一数据文件旁放两张报表标题，“财务经营月报”和“交易运营月报”。此时不提前展示答案。"
+    },
+    {
+      "ref": "section:cXdweHA",
+      "level": 3,
+      "title": "00:20 至 01:15 第一轮用户提问",
+      "preview": "> 请用AVA Skill加载 ./02-semantics/sales.csv，并读取、加载 ./02-semantics/semantic-finance.json。严格按其中的财务经营口径，比较2026年9月与8月净销售额，说明变化金"
+    },
+    {
+      "ref": "section:TDVhU3k",
+      "level": 3,
+      "title": "01:15 至 02:10 第二轮用户提问",
+      "preview": "> 同一份订单数据，改用 ./02-semantics/semantic-trading.json 的交易运营口径，重新回答同一个问题。把两种口径的结果并排，并列出影响结果的定义差异。结果另存到 ./demo-output/02-tradi"
+    },
+    {
+      "ref": "section:YVBCNWg",
+      "level": 3,
+      "title": "02:10 至 02:45 第三轮用户提问",
+      "preview": "> 为什么一个下降、一个增长？请解释时间归属、计入范围和代销确认方式的差异。没有逐因素计算时，不要给每条规则编造贡献金额。"
+    },
+    {
+      "ref": "section:SzhJRVg",
+      "level": 3,
+      "title": "最后展示的结果 人民币元",
+      "preview": "财务：8月4293025.42，9月3697575.18，减少595450.24，下降13.87%。"
+    },
+    {
+      "ref": "section:b3piNmg",
+      "level": 3,
+      "title": "收尾口播",
+      "preview": "> 字段告诉我们数据长什么样，业务定义告诉我们这道题该怎么算。AVA可以把这些定义带进分析，并保留计算依据。"
+    },
+    {
+      "ref": "section:cEhXdGE",
+      "level": 2,
+      "title": "从看到异常，到缩小排查范围",
+      "preview": "时长 3 分钟"
+    },
+    {
+      "ref": "section:eU9rcXc",
+      "level": 3,
+      "title": "数据准备",
+      "preview": "使用 ./03-retention/retention.sqlite，包含 users（7300人）和 events（33880条事件）。同目录semantic.json定义指标。"
+    },
+    {
+      "ref": "section:cEZMYTQ",
+      "level": 3,
+      "title": "00:00 至 00:15 开场",
+      "preview": "画面：只显示业务问题，不提前给出渠道答案。"
+    },
+    {
+      "ref": "section:UzE5dDg",
+      "level": 3,
+      "title": "00:15 至 00:55 第一轮用户提问",
+      "preview": "> 请用AVA Skill分析 ./03-retention/retention.sqlite，读取并加载 ./03-retention/semantic.json。比较2026年7月1日至14日与7月22日至8月4日的新增用户和日均DAU"
+    },
+    {
+      "ref": "section:emtTZjI",
+      "level": 3,
+      "title": "00:55 至 01:35 第二轮用户提问",
+      "preview": "> 这两批新用户注册后的留存表现有什么不同？请比较D1、D3、D7，先确认观察窗口完整，再画图。"
+    },
+    {
+      "ref": "section:QnVaSnE",
+      "level": 3,
+      "title": "01:35 至 02:15 第三轮用户提问",
+      "preview": "> 按注册渠道拆开看。是每个渠道自身的D7留存下降，还是新增用户的渠道结构变了？给我各渠道新增人数、占比和D7留存。"
+    },
+    {
+      "ref": "section:bFQxT0s",
+      "level": 3,
+      "title": "02:15 至 02:45 第四轮用户提问",
+      "preview": "> 这种渠道结构变化从哪批注册用户开始？目前能得出什么结论，还需要补什么数据才能判断原因和下一步动作？"
+    },
+    {
+      "ref": "section:ZmI1TEo",
+      "level": 3,
+      "title": "最后展示的结果",
+      "preview": "事实一：新增翻倍，日均DAU增长27.59%。"
+    },
+    {
+      "ref": "section:eWhVbWY",
+      "level": 3,
+      "title": "收尾口播",
+      "preview": "> 从一个总量问题，逐步追问到留存、渠道和时间，分析让我们得到更具体的排查对象，也知道还缺哪些证据。"
+    },
+    {
+      "ref": "section:eUZUMHA",
+      "level": 2,
+      "title": "让自己的产品拥有数据分析能力",
+      "preview": "时长 2 分钟"
+    },
+    {
+      "ref": "section:c1g2cnE",
+      "level": 3,
+      "title": "数据准备",
+      "preview": "复用场景二的销售数据与财务语义。本场景不换数据，以便把注意力放在交互和集成上。"
+    },
+    {
+      "ref": "section:dHhCU2c",
+      "level": 3,
+      "title": "00:00 至 00:15 开场",
+      "preview": "画面：业务系统的门店经营页，顶部显示“财务口径 2026年9月较8月”。"
+    },
+    {
+      "ref": "section:UE1rMGg",
+      "level": 3,
+      "title": "00:15 至 00:50 第一轮用户提问",
+      "preview": "> 按财务经营口径，2026年9月相比8月，净销售额下降金额最大的三家销售责任门店是哪些？展示两个月金额与增减。"
+    },
+    {
+      "ref": "section:RVN5UFg",
+      "level": 3,
+      "title": "00:50 至 01:20 下钻",
+      "preview": "操作：点击深圳南山店，界面带入该店筛选。用户追问：“这家店的下降主要集中在哪个渠道和商品组合？”"
+    },
+    {
+      "ref": "section:aDZtc2s",
+      "level": 3,
+      "title": "01:20 至 01:40 查看依据",
+      "preview": "操作：点击“查看计算依据”，展示当前指标定义、时间范围、门店筛选、SQL及结果。所有内容必须绑定当前这次分析，不能显示上一轮的查询。"
+    },
+    {
+      "ref": "section:T0N6Q2M",
+      "level": 3,
+      "title": "01:40 至 02:00 技术收尾",
+      "preview": "展示分工图："
+    },
+    {
+      "ref": "section:bXNuMzk",
+      "level": 3,
+      "title": "收尾口播",
+      "preview": "> AVA把接入、执行和可视化提供为可组合能力，产品团队可以围绕自己的用户和业务流程来设计体验。"
+    },
+    {
+      "ref": "section:eXVrSmg",
+      "level": 2,
+      "title": "演示前准备",
+      "preview": "1. 当前包的 live-inputs 只放数据与业务定义。把该目录单独复制到一个干净演示目录，在那个目录开启已加载 AVA Skill 的 Agent。不要把整个素材包放进演示 Agent 的工作区，避免读到参考答案或参考 SQL。"
+    },
+    {
+      "ref": "section:RkxXMFg",
+      "level": 2,
+      "title": "演示节奏与验收",
+      "preview": "第一段让观众看到能做什么，第二段解释怎样算对业务，第三段展示能继续问多深，第四段说明如何进入产品。"
+    },
+    {
+      "ref": "section:UEY4RmY",
+      "level": 2,
+      "title": "WeaveFox Builder 有无 AVA 对照测试",
+      "preview": "测试准备日期为2026年11月3日。四个case各准备有AVA、无AVA两个独立任务，共8次运行；每个case先各运行1次，用于观察演示效果，不作为统计意义上的准确率或性能基准。"
+    }
+  ]
+}

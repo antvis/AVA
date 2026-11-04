@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <title>Data Visualization</title>
+    <script src="https://unpkg.com/@antv/gpt-vis/dist/umd/index.min.js"></script>
+    <style>
+      html, body, #container {
+        margin: 0;
+        padding: 0;
+        font-family: Arial, sans-serif;
+        width: 100%;
+        height: 100%;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="container"></div>
+    <script>
+      const gptVis = new GPTVis.GPTVis({
+        container: '#container',
+      });
+
+      const visConfig = {"type":"column","title":"新增用户的渠道结构 人","data":[{"category":"前期","value":280,"group":"推广渠道"},{"category":"前期","value":1120,"group":"自然渠道"},{"category":"近期","value":1680,"group":"推广渠道"},{"category":"近期","value":1120,"group":"自然渠道"}],"group":true,"axisXTitle":"注册期间","axisYTitle":"新增用户 人"};
+
+      gptVis.render(visConfig);
+    </script>
+  </body>
+</html>

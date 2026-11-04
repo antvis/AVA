@@ -1,0 +1,1 @@
+/bin/zsh -lc 'ava source ./inputs/sales.csv > output/session.json && cat output/session.json'

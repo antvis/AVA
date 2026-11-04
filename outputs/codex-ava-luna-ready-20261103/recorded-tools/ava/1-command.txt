@@ -1,0 +1,1 @@
+/bin/zsh -lc "cat inputs/semantic-finance.json && printf '\\n---AVA COMMANDS---\\n' && ava --help && printf '\\n---SOURCE REF---\\n' && cat .agents/skills/ava/references/sources.md && printf '\\n---QUERY REF---\\n' && cat .agents/skills/ava/references/queries.md && printf '\\n---VIZ REF---\\n' && cat .agents/skills/ava/references/visualization.md"

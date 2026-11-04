@@ -1,0 +1,20 @@
+{
+  "schemaVersion": 1,
+  "id": "midnight-stage",
+  "label": "Midnight Stage",
+  "category": "performance",
+  "tags": ["concert", "dramatic", "dark", "fan-club"],
+  "derivedFrom": "original-archetype",
+  "concept": {"identityIntensity": "high", "thesis": "A backstage command center where the spotlight guides the next coding action.", "mood": ["electric", "cinematic", "confident"], "forbiddenMotifs": ["rainbow-neon", "constant-glow", "illegible-black"]},
+  "layout": {"archetype": "rail-spotlight-command-deck", "navigation": "compact-dark-rail", "hero": "edge-lit-stage", "composer": "control-deck", "density": "medium-high"},
+  "palette": {"canvas": "#0E1018", "surface": "#171A26", "surfaceRaised": "#202435", "ink": "#F5F3EE", "mutedInk": "#AAAFC0", "accent": "#A987FF", "accentSoft": "#30294A", "line": "#31374A", "focus": "#D5C5FF"},
+  "typography": {"display": "condensed-sans", "body": "modern-sans", "code": "system-monospace", "accent": "wide-tracking-caps"},
+  "shape": {"panelRadius": 18, "controlRadius": 10, "elevation": "stage-glow-restrained"},
+  "decoration": {"level": "medium", "motifs": ["spotlight-cone", "ticket-stub", "waveform", "star-pin"], "pointerEvents": "none"},
+  "motion": {"character": "spotlight-reveal", "durationMs": 160, "reducedMotion": "instant"},
+  "mediaSlots": [{"id": "heroPortrait", "role": "hero", "aspect": "16:8", "focalPoint": "68% 28%", "fallback": "spotlight-monogram"}, {"id": "tourMark", "role": "accent", "aspect": "4:1", "focalPoint": "50% 50%", "fallback": "edition-name"}],
+  "quickActions": [{"id": "explore", "label": "Open the set list"}, {"id": "build", "label": "Create the next act"}, {"id": "review", "label": "Run rehearsal review"}, {"id": "fix", "label": "Repair the show"}],
+  "responsive": {"narrowNavigation": "icon-drawer", "narrowHero": "portrait-header", "narrowCards": "horizontal-scroll", "hideMotifs": ["spotlight-cone", "ticket-stub"], "missingMedia": "spotlight-monogram"},
+  "assetPolicy": {"provenance": "required", "remoteHotlink": false, "licensedOrOwned": true},
+  "accessibility": {"contrastTarget": "WCAG-AA", "preserveSemanticStates": true, "decorationAriaHidden": true}
+}

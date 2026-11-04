@@ -1,0 +1,34 @@
+data:{"object":"chat.completion.chunk","id":"0b440bc617931089265007453e88ee","choices":[{"index":0,"delta":{"content":"","role":"assistant"}}],"created":1793108926,"model":"GLM-5.1","usage":null}
+
+data:{"object":"chat.completion.chunk","id":"0b440bc617931089265007453e88ee","choices":[{"index":0,"delta":{"content":"","role":"assistant","reasoning_content":"The"}}],"created":1793108926,"model":"GLM-5.1","usage":null}
+
+data:{"object":"chat.completion.chunk","id":"0b440bc617931089265007453e88ee","choices":[{"index":0,"delta":{"content":"","role":"assistant","reasoning_content":" user is"}}],"created":1793108927,"model":"GLM-5.1","usage":null}
+
+data:{"object":"chat.completion.chunk","id":"0b440bc617931089265007453e88ee","choices":[{"index":0,"delta":{"content":"","role":"assistant","reasoning_content":" asking about whether"}}],"created":1793108927,"model":"GLM-5.1","usage":null}
+
+data:{"object":"chat.completion.chunk","id":"0b440bc617931089265007453e88ee","choices":[{"index":0,"delta":{"content":"","role":"assistant","reasoning_content":" to"}}],"created":1793108927,"model":"GLM-5.1","usage":null}
+
+data:{"object":"chat.completion.chunk","id":"0b440bc617931089265007453e88ee","choices":[{"index":0,"delta":{"content":"","role":"assistant","reasoning_content":" increase advertising"}}],"created":1793108927,"model":"GLM-5.1","usage":null}
+
+data:{"object":"chat.completion.chunk","id":"0b440bc617931089265007453e88ee","choices":[{"index":0,"delta":{"content":"","role":"assistant","reasoning_content":" spend"}}],"created":1793108927,"model":"GLM-5.1","usage":null}
+
+data:{"object":"chat.completion.chunk","id":"0b440bc617931089265007453e88ee","choices":[{"index":0,"delta":{"content":"","role":"assistant","reasoning_content":" given that"}}],"created":1793108927,"model":"GLM-5.1","usage":null}
+
+data:{"object":"chat.completion.chunk","id":"0b440bc617931089265007453e88ee","choices":[{"index":0,"delta":{"content":"","role":"assistant","reasoning_content":" net sales are"}}],"created":1793108927,"model":"GLM-5.1","usage":null}
+
+data:{"object":"chat.completion.chunk","id":"0b440bc617931089265007453e88ee","choices":[{"index":0,"delta":{"content":"","role":"assistant","reasoning_content":" declining. Let"}}],"created":1793108927,"model":"GLM-5.1","usage":null}
+
+data:{"object":"chat.completion.chunk","id":"0b440bc617931089265007453e88ee","choices":[{"index":0,"delta":{"content":"","role":"assistant","reasoning_content":" me first inspect"}}],"created":1793108927,"model":"GLM-5.1","usage":null}
+
+data:{"object":"chat.completion.chunk","id":"0b440bc617931089265007453e88ee","choices":[{"index":0,"delta":{"content":"","role":"assistant","reasoning_content":" the schema to understand"}}],"created":1793108927,"model":"GLM-5.1","usage":null}
+
+data:{"object":"chat.completion.chunk","id":"0b440bc617931089265007453e88ee","choices":[{"index":0,"delta":{"content":"","role":"assistant","reasoning_content":" the dataset"}}],"created":1793108927,"model":"GLM-5.1","usage":null}
+
+data:{"object":"chat.completion.chunk","id":"0b440bc617931089265007453e88ee","choices":[{"index":0,"delta":{"content":"","role":"assistant","reasoning_content":" structure."}}],"created":1793108927,"model":"GLM-5.1","usage":null}
+
+data:{"object":"chat.completion.chunk","id":"0b440bc617931089265007453e88ee","choices":[{"index":0,"delta":{"content":"","role":"assistant","tool_calls":[{"index":0,"id":"fc-00bb2de5-c7a2-4514-88a1-ed4edd2ab76c","type":"function","function":{"name":"schema","arguments":"{}"}}]}}],"created":1793108927,"model":"GLM-5.1","usage":null}
+
+data:{"object":"chat.completion.chunk","id":"0b440bc617931089265007453e88ee","choices":[{"index":0,"delta":{"content":"","role":"assistant"},"finish_reason":"tool_calls"}],"created":1793108927,"model":"GLM-5.1","usage":{"completion_tokens":0,"prompt_tokens":0,"total_tokens":0}}
+
+data:{"object":"chat.completion.chunk","id":"0b440bc617931089265007453e88ee","choices":[],"created":1793108927,"model":"GLM-5.1","usage":{"completion_tokens":32,"prompt_tokens":1131,"total_tokens":1163,"completion_tokens_details":{"reasoning_tokens":31},"prompt_tokens_details":{"cached_tokens":0}}}
+

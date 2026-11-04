@@ -1,0 +1,55 @@
+{
+  "data": [
+    {
+      "period": "前期",
+      "channel": "推广渠道",
+      "new_users": 280,
+      "d7_users": 28,
+      "d7_pct": 10
+    },
+    {
+      "period": "前期",
+      "channel": "自然渠道",
+      "new_users": 1120,
+      "d7_users": 672,
+      "d7_pct": 60
+    },
+    {
+      "period": "近期",
+      "channel": "推广渠道",
+      "new_users": 1680,
+      "d7_users": 168,
+      "d7_pct": 10
+    },
+    {
+      "period": "近期",
+      "channel": "自然渠道",
+      "new_users": 1120,
+      "d7_users": 672,
+      "d7_pct": 60
+    }
+  ],
+  "schema": [
+    {
+      "name": "period",
+      "type": "VARCHAR"
+    },
+    {
+      "name": "channel",
+      "type": "VARCHAR"
+    },
+    {
+      "name": "new_users",
+      "type": "BIGINT"
+    },
+    {
+      "name": "d7_users",
+      "type": "BIGINT"
+    },
+    {
+      "name": "d7_pct",
+      "type": "DOUBLE"
+    }
+  ],
+  "rowCount": 4
+}

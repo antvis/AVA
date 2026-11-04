@@ -13,8 +13,9 @@ export function createTools({ ava, dataset }: { ava: AVA; dataset: AIDataset }) 
         await loadDataset(ava, dataset);
         return {
           name: dataset.name,
-          rows: dataset.rows.length,
-          engine: 'javascript',
+          rows: dataset.rowCount ?? dataset.rows.length,
+          tables: dataset.tableCount,
+          engine: dataset.sqlite ? 'sqlite' : 'javascript',
         };
       },
     }),
@@ -26,7 +27,9 @@ export function createTools({ ava, dataset }: { ava: AVA; dataset: AIDataset }) 
     }),
 
     profile: tool({
-      description: 'Inspect column statistics, distributions and missing values.',
+      description: dataset.sqlite
+        ? 'Count rows in each table and view. Column distributions have not been computed.'
+        : 'Inspect column statistics, distributions and missing values.',
       inputSchema: z.object({}),
       execute: () => ava.profile(),
     }),

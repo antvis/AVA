@@ -7,6 +7,7 @@ import { DATASET_PREVIEW_COLUMNS } from './constants';
 import React, { useEffect, useRef, useCallback } from 'react';
 import type { Message, LiveChat, ChatPlayback } from './types';
 import StreamText from './StreamText';
+import RecordedTool from './RecordedTool';
 import ToolTrace from './ToolTrace';
 import ToolPart from './ToolPart';
 import { isToolUIPart } from 'ai';
@@ -16,13 +17,16 @@ import PromptBar from './PromptBar';
 import ResponseLoading from './ResponseLoading';
 import DatasetContext from './DatasetContext';
 
+const GPTVisRenderer = React.lazy(() => import('../../components/GPTVisRenderer'));
+
 const ChatPanel: React.FC<{
   onArtifact: (m: Message) => void;
   onRerun?: () => void;
   playback: ChatPlayback;
   heading?: React.ReactNode;
   live?: LiveChat;
-}> = ({ onArtifact, onRerun, playback, heading, live }) => {
+  recorded?: boolean;
+}> = ({ onArtifact, onRerun, playback, heading, live, recorded }) => {
   const t = useTranslations('ChatPanel');
   /* Follow new content until the user scrolls away from the bottom;
      scrolling back to the bottom resumes following. */
@@ -38,25 +42,26 @@ const ChatPanel: React.FC<{
 
   // Instant updates leave no smooth-scroll animation competing with user input.
   useEffect(() => {
-    if (finished) return;
+    if (finished || recorded) return;
     const id = window.setInterval(() => {
       const el = scrollRef.current;
       if (el && pinnedRef.current) el.scrollTop = el.scrollHeight;
     }, 180);
     return () => window.clearInterval(id);
-  }, [finished]);
+  }, [finished, recorded]);
 
   // Follow message updates only while the user is at the bottom.
   useEffect(() => {
+    if (recorded) return;
     const el = scrollRef.current;
     if (el && pinnedRef.current) el.scrollTop = el.scrollHeight;
-  }, [visible, streamingIdx]);
+  }, [visible, streamingIdx, recorded]);
 
   return (
     <>
       <section
         className={`overflow-hidden flex min-h-0 flex-col ${
-          live
+          recorded ? 'h-auto' : live
             ? 'h-[clamp(520px,calc(100dvh-290px),780px)] max-md:h-[clamp(460px,calc(100dvh-250px),680px)]'
             : 'h-[560px] max-md:h-[500px]'
         }`}
@@ -66,7 +71,7 @@ const ChatPanel: React.FC<{
         <div
           ref={scrollRef}
           onScroll={onChatScroll}
-          className="soft-scroll min-h-0 flex-1 overflow-y-auto px-5 py-5 space-y-5 bg-gradient-to-b from-white to-zinc-50/40"
+          className={`min-h-0 ${recorded ? 'overflow-visible' : 'soft-scroll flex-1 overflow-y-auto'} px-5 py-5 ${recorded ? 'space-y-1' : 'space-y-5'} bg-gradient-to-b from-white to-zinc-50/40`}
         >
           {live && visible.length === 0 && (
             <div className="py-12">
@@ -117,7 +122,7 @@ const ChatPanel: React.FC<{
                 </div>
               );
             return (
-              <div key={i} className={live ? 'space-y-2' : 'space-y-3'}>
+              <div key={i} className={recorded ? (msg.recordedTool ? 'space-y-0' : 'space-y-3 py-2') : live ? 'space-y-2' : 'space-y-3'}>
                 {msg.dataset && (
                   <section
                     aria-label={t('uploadedDataset')}
@@ -131,7 +136,13 @@ const ChatPanel: React.FC<{
                         </span>
                       </div>
                       <div className="mt-1 text-xs text-ink-2" role="status">
-                        {t('datasetStats', { rows: msg.dataset.rowCount, columns: msg.dataset.columns.length })}
+                        {msg.dataset.tableCount
+                          ? t('sqliteStats', {
+                              rows: msg.dataset.rowCount,
+                              tables: msg.dataset.tableCount,
+                              name: msg.dataset.tableName || '',
+                            })
+                          : t('datasetStats', { rows: msg.dataset.rowCount, columns: msg.dataset.columns.length })}
                       </div>
                     </div>
                     <div className="soft-scroll max-h-56 overflow-auto">
@@ -184,6 +195,7 @@ const ChatPanel: React.FC<{
                     </div>
                   </section>
                 )}
+                {msg.recordedTool && <RecordedTool tool={msg.recordedTool} onOpen={msg.artifact ? () => onArtifact(msg) : undefined} />}
                 {msg.parts ? (
                   msg.parts.map((part, partIndex) => {
                     if (part.type === 'text')
@@ -204,10 +216,20 @@ const ChatPanel: React.FC<{
                 ) : (
                   <>
                     <ToolTrace msg={msg} live={streamingIdx === i ? msg.live : undefined} />
-                    <div className="text-[13.5px] leading-relaxed text-zinc-700">
+                    {!(recorded && msg.recordedTool) && <div className="text-[13.5px] leading-relaxed text-zinc-700">
                       <StreamText text={msg.text} streaming={streamingIdx === i && !msg.dataset} />
-                    </div>
+                    </div>}
                   </>
+                )}
+                {msg.inlineChart && (
+                  <figure aria-label={msg.inlineChart.title} className="mt-4 overflow-hidden rounded-xl border border-line bg-white p-4">
+                    <div className="h-[260px] min-w-0">
+                      <React.Suspense fallback={<div role="status" className="flex h-full items-center justify-center text-xs text-ink-2">加载图表…</div>}>
+                        <GPTVisRenderer config={msg.inlineChart.config} />
+                      </React.Suspense>
+                    </div>
+                    <figcaption className="mt-3 border-t border-line pt-3 text-xs leading-6 text-ink-2">{msg.inlineChart.caption}</figcaption>
+                  </figure>
                 )}
                 {msg.dataset && live && (
                   <div className="space-y-2" aria-label={t('suggestedQuestions')}>
@@ -284,7 +306,7 @@ const ChatPanel: React.FC<{
               {live.error}
             </p>
           )}
-          <PromptBar
+          {recorded ? <div className="flex items-center justify-between rounded-xl border border-line bg-field px-4 py-3 text-xs text-ink-2"><span>已保存的对话 · 可展开工具、查看代码与数据</span><span>GLM-5.1</span></div> : <PromptBar
             placeholder={
               live ? t('askAboutYourDataOrTypeFor') : finished ? t('demoCompleteHitToReplay') : t('agentIsWorking')
             }
@@ -293,7 +315,7 @@ const ChatPanel: React.FC<{
             live={live}
             onRerun={live ? undefined : onRerun}
             replayReady={!live && finished}
-          />
+          />}
         </footer>
       </section>
     </>

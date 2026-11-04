@@ -112,6 +112,7 @@ pnpm-lock.yaml
 # Debug files
 .debug
 docs/
+!docs/AVA4.0发布稿_修订版.md
 
 # BIRD scoring runtime
 /evals/BIRD/.venv/

@@ -1,0 +1,40 @@
+{
+  "passed": true,
+  "results": [
+    {
+      "width": 1440,
+      "scrollWidth": 1440,
+      "columns": [
+        681,
+        681
+      ],
+      "tools": 7,
+      "open": 7,
+      "brokenImages": []
+    },
+    {
+      "width": 1100,
+      "scrollWidth": 1100,
+      "columns": [
+        511,
+        511
+      ],
+      "tools": 7,
+      "open": 7,
+      "brokenImages": []
+    },
+    {
+      "width": 760,
+      "scrollWidth": 760,
+      "columns": [
+        724,
+        724
+      ],
+      "tools": 7,
+      "open": 7,
+      "brokenImages": []
+    }
+  ],
+  "keyboardToggle": true,
+  "errors": []
+}

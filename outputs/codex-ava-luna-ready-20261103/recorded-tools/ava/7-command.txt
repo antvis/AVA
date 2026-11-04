@@ -1,0 +1,1 @@
+/bin/zsh -lc 'ava semantic ds_sales_4e138c7b982b --file inputs/semantic-finance.json > output/semantic-loaded.json'

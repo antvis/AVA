@@ -1,0 +1,1 @@
+/bin/zsh -lc 'ava schema ds_sales_4e138c7b982b > output/schema.json && ava semantic ds_sales_4e138c7b982b --help'

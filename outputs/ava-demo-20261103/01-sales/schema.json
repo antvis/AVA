@@ -1,0 +1,40 @@
+{
+  "models": [
+    {
+      "name": "data",
+      "tableReference": {
+        "catalog": "memory",
+        "schema": "main",
+        "table": "data"
+      },
+      "columns": [
+        {
+          "name": "month",
+          "type": "VARCHAR",
+          "notNull": false
+        },
+        {
+          "name": "product",
+          "type": "VARCHAR",
+          "notNull": false
+        },
+        {
+          "name": "revenue",
+          "type": "BIGINT",
+          "notNull": false
+        }
+      ]
+    }
+  ],
+  "relationships": [],
+  "views": [
+    {
+      "name": "data",
+      "statement": "SELECT * FROM read_csv('/Users/banxuan/Documents/AVA/outputs/ava-demo-20261103/01-sales/sales.csv', (auto_detect = CAST('t' AS BOOLEAN)))"
+    }
+  ],
+  "language": {
+    "name": "DuckDB SQL dialect",
+    "fence": "sql"
+  }
+}

@@ -1,0 +1,2459 @@
+{
+  "data": [
+    {
+      "period": "基期",
+      "amount": 0,
+      "density_per_1000": 7.298971e-9,
+      "mean": 800.0000150000001,
+      "sample_size": 2000,
+      "bandwidth": 68.73027511898557,
+      "below_600_pct": 10.4,
+      "above_1100_pct": 6.35
+    },
+    {
+      "period": "基期",
+      "amount": 20,
+      "density_per_1000": 1.7947489e-8,
+      "mean": 800.0000150000001,
+      "sample_size": 2000,
+      "bandwidth": 68.73027511898557,
+      "below_600_pct": 10.4,
+      "above_1100_pct": 6.35
+    },
+    {
+      "period": "基期",
+      "amount": 40,
+      "density_per_1000": 7.5213333e-8,
+      "mean": 800.0000150000001,
+      "sample_size": 2000,
+      "bandwidth": 68.73027511898557,
+      "below_600_pct": 10.4,
+      "above_1100_pct": 6.35
+    },
+    {
+      "period": "基期",
+      "amount": 60,
+      "density_per_1000": 3.01956157e-7,
+      "mean": 800.0000150000001,
+      "sample_size": 2000,
+      "bandwidth": 68.73027511898557,
+      "below_600_pct": 10.4,
+      "above_1100_pct": 6.35
+    },
+    {
+      "period": "基期",
+      "amount": 80,
+      "density_per_1000": 0.000001121492008,
+      "mean": 800.0000150000001,
+      "sample_size": 2000,
+      "bandwidth": 68.73027511898557,
+      "below_600_pct": 10.4,
+      "above_1100_pct": 6.35
+    },
+    {
+      "period": "基期",
+      "amount": 100,
+      "density_per_1000": 0.000003851031549,
+      "mean": 800.0000150000001,
+      "sample_size": 2000,
+      "bandwidth": 68.73027511898557,
+      "below_600_pct": 10.4,
+      "above_1100_pct": 6.35
+    },
+    {
+      "period": "基期",
+      "amount": 120,
+      "density_per_1000": 0.000012238493759,
+      "mean": 800.0000150000001,
+      "sample_size": 2000,
+      "bandwidth": 68.73027511898557,
+      "below_600_pct": 10.4,
+      "above_1100_pct": 6.35
+    },
+    {
+      "period": "基期",
+      "amount": 140,
+      "density_per_1000": 0.000036043530906,
+      "mean": 800.0000150000001,
+      "sample_size": 2000,
+      "bandwidth": 68.73027511898557,
+      "below_600_pct": 10.4,
+      "above_1100_pct": 6.35
+    },
+    {
+      "period": "基期",
+      "amount": 160,
+      "density_per_1000": 0.000098534740645,
+      "mean": 800.0000150000001,
+      "sample_size": 2000,
+      "bandwidth": 68.73027511898557,
+      "below_600_pct": 10.4,
+      "above_1100_pct": 6.35
+    },
+    {
+      "period": "基期",
+      "amount": 180,
+      "density_per_1000": 0.000250545639495,
+      "mean": 800.0000150000001,
+      "sample_size": 2000,
+      "bandwidth": 68.73027511898557,
+      "below_600_pct": 10.4,
+      "above_1100_pct": 6.35
+    },
+    {
+      "period": "基期",
+      "amount": 200,
+      "density_per_1000": 0.000593979241367,
+      "mean": 800.0000150000001,
+      "sample_size": 2000,
+      "bandwidth": 68.73027511898557,
+      "below_600_pct": 10.4,
+      "above_1100_pct": 6.35
+    },
+    {
+      "period": "基期",
+      "amount": 220,
+      "density_per_1000": 0.001316691739684,
+      "mean": 800.0000150000001,
+      "sample_size": 2000,
+      "bandwidth": 68.73027511898557,
+      "below_600_pct": 10.4,
+      "above_1100_pct": 6.35
+    },
+    {
+      "period": "基期",
+      "amount": 240,
+      "density_per_1000": 0.002738112888216,
+      "mean": 800.0000150000001,
+      "sample_size": 2000,
+      "bandwidth": 68.73027511898557,
+      "below_600_pct": 10.4,
+      "above_1100_pct": 6.35
+    },
+    {
+      "period": "基期",
+      "amount": 260,
+      "density_per_1000": 0.005361100869585,
+      "mean": 800.0000150000001,
+      "sample_size": 2000,
+      "bandwidth": 68.73027511898557,
+      "below_600_pct": 10.4,
+      "above_1100_pct": 6.35
+    },
+    {
+      "period": "基期",
+      "amount": 280,
+      "density_per_1000": 0.009921351965555,
+      "mean": 800.0000150000001,
+      "sample_size": 2000,
+      "bandwidth": 68.73027511898557,
+      "below_600_pct": 10.4,
+      "above_1100_pct": 6.35
+    },
+    {
+      "period": "基期",
+      "amount": 300,
+      "density_per_1000": 0.017422031534688,
+      "mean": 800.0000150000001,
+      "sample_size": 2000,
+      "bandwidth": 68.73027511898557,
+      "below_600_pct": 10.4,
+      "above_1100_pct": 6.35
+    },
+    {
+      "period": "基期",
+      "amount": 320,
+      "density_per_1000": 0.029138491962988,
+      "mean": 800.0000150000001,
+      "sample_size": 2000,
+      "bandwidth": 68.73027511898557,
+      "below_600_pct": 10.4,
+      "above_1100_pct": 6.35
+    },
+    {
+      "period": "基期",
+      "amount": 340,
+      "density_per_1000": 0.046577242230879,
+      "mean": 800.0000150000001,
+      "sample_size": 2000,
+      "bandwidth": 68.73027511898557,
+      "below_600_pct": 10.4,
+      "above_1100_pct": 6.35
+    },
+    {
+      "period": "基期",
+      "amount": 360,
+      "density_per_1000": 0.071379179642358,
+      "mean": 800.0000150000001,
+      "sample_size": 2000,
+      "bandwidth": 68.73027511898557,
+      "below_600_pct": 10.4,
+      "above_1100_pct": 6.35
+    },
+    {
+      "period": "基期",
+      "amount": 380,
+      "density_per_1000": 0.105175728578864,
+      "mean": 800.0000150000001,
+      "sample_size": 2000,
+      "bandwidth": 68.73027511898557,
+      "below_600_pct": 10.4,
+      "above_1100_pct": 6.35
+    },
+    {
+      "period": "基期",
+      "amount": 400,
+      "density_per_1000": 0.149437562607695,
+      "mean": 800.0000150000001,
+      "sample_size": 2000,
+      "bandwidth": 68.73027511898557,
+      "below_600_pct": 10.4,
+      "above_1100_pct": 6.35
+    },
+    {
+      "period": "基期",
+      "amount": 420,
+      "density_per_1000": 0.205382362954243,
+      "mean": 800.0000150000001,
+      "sample_size": 2000,
+      "bandwidth": 68.73027511898557,
+      "below_600_pct": 10.4,
+      "above_1100_pct": 6.35
+    },
+    {
+      "period": "基期",
+      "amount": 440,
+      "density_per_1000": 0.274001086861448,
+      "mean": 800.0000150000001,
+      "sample_size": 2000,
+      "bandwidth": 68.73027511898557,
+      "below_600_pct": 10.4,
+      "above_1100_pct": 6.35
+    },
+    {
+      "period": "基期",
+      "amount": 460,
+      "density_per_1000": 0.356202553023667,
+      "mean": 800.0000150000001,
+      "sample_size": 2000,
+      "bandwidth": 68.73027511898557,
+      "below_600_pct": 10.4,
+      "above_1100_pct": 6.35
+    },
+    {
+      "period": "基期",
+      "amount": 480,
+      "density_per_1000": 0.452982963107079,
+      "mean": 800.0000150000001,
+      "sample_size": 2000,
+      "bandwidth": 68.73027511898557,
+      "below_600_pct": 10.4,
+      "above_1100_pct": 6.35
+    },
+    {
+      "period": "基期",
+      "amount": 500,
+      "density_per_1000": 0.565459162652091,
+      "mean": 800.0000150000001,
+      "sample_size": 2000,
+      "bandwidth": 68.73027511898557,
+      "below_600_pct": 10.4,
+      "above_1100_pct": 6.35
+    },
+    {
+      "period": "基期",
+      "amount": 520,
+      "density_per_1000": 0.694624055316935,
+      "mean": 800.0000150000001,
+      "sample_size": 2000,
+      "bandwidth": 68.73027511898557,
+      "below_600_pct": 10.4,
+      "above_1100_pct": 6.35
+    },
+    {
+      "period": "基期",
+      "amount": 540,
+      "density_per_1000": 0.84080478593851,
+      "mean": 800.0000150000001,
+      "sample_size": 2000,
+      "bandwidth": 68.73027511898557,
+      "below_600_pct": 10.4,
+      "above_1100_pct": 6.35
+    },
+    {
+      "period": "基期",
+      "amount": 560,
+      "density_per_1000": 1.002975541655958,
+      "mean": 800.0000150000001,
+      "sample_size": 2000,
+      "bandwidth": 68.73027511898557,
+      "below_600_pct": 10.4,
+      "above_1100_pct": 6.35
+    },
+    {
+      "period": "基期",
+      "amount": 580,
+      "density_per_1000": 1.178200953439845,
+      "mean": 800.0000150000001,
+      "sample_size": 2000,
+      "bandwidth": 68.73027511898557,
+      "below_600_pct": 10.4,
+      "above_1100_pct": 6.35
+    },
+    {
+      "period": "基期",
+      "amount": 600,
+      "density_per_1000": 1.361481439490265,
+      "mean": 800.0000150000001,
+      "sample_size": 2000,
+      "bandwidth": 68.73027511898557,
+      "below_600_pct": 10.4,
+      "above_1100_pct": 6.35
+    },
+    {
+      "period": "基期",
+      "amount": 620,
+      "density_per_1000": 1.546123356424394,
+      "mean": 800.0000150000001,
+      "sample_size": 2000,
+      "bandwidth": 68.73027511898557,
+      "below_600_pct": 10.4,
+      "above_1100_pct": 6.35
+    },
+    {
+      "period": "基期",
+      "amount": 640,
+      "density_per_1000": 1.724532758177306,
+      "mean": 800.0000150000001,
+      "sample_size": 2000,
+      "bandwidth": 68.73027511898557,
+      "below_600_pct": 10.4,
+      "above_1100_pct": 6.35
+    },
+    {
+      "period": "基期",
+      "amount": 660,
+      "density_per_1000": 1.889151393725275,
+      "mean": 800.0000150000001,
+      "sample_size": 2000,
+      "bandwidth": 68.73027511898557,
+      "below_600_pct": 10.4,
+      "above_1100_pct": 6.35
+    },
+    {
+      "period": "基期",
+      "amount": 680,
+      "density_per_1000": 2.033219005208239,
+      "mean": 800.0000150000001,
+      "sample_size": 2000,
+      "bandwidth": 68.73027511898557,
+      "below_600_pct": 10.4,
+      "above_1100_pct": 6.35
+    },
+    {
+      "period": "基期",
+      "amount": 700,
+      "density_per_1000": 2.151174695163154,
+      "mean": 800.0000150000001,
+      "sample_size": 2000,
+      "bandwidth": 68.73027511898557,
+      "below_600_pct": 10.4,
+      "above_1100_pct": 6.35
+    },
+    {
+      "period": "基期",
+      "amount": 720,
+      "density_per_1000": 2.238720548388002,
+      "mean": 800.0000150000001,
+      "sample_size": 2000,
+      "bandwidth": 68.73027511898557,
+      "below_600_pct": 10.4,
+      "above_1100_pct": 6.35
+    },
+    {
+      "period": "基期",
+      "amount": 740,
+      "density_per_1000": 2.292735046846144,
+      "mean": 800.0000150000001,
+      "sample_size": 2000,
+      "bandwidth": 68.73027511898557,
+      "below_600_pct": 10.4,
+      "above_1100_pct": 6.35
+    },
+    {
+      "period": "基期",
+      "amount": 760,
+      "density_per_1000": 2.311253208118928,
+      "mean": 800.0000150000001,
+      "sample_size": 2000,
+      "bandwidth": 68.73027511898557,
+      "below_600_pct": 10.4,
+      "above_1100_pct": 6.35
+    },
+    {
+      "period": "基期",
+      "amount": 780,
+      "density_per_1000": 2.293627452241881,
+      "mean": 800.0000150000001,
+      "sample_size": 2000,
+      "bandwidth": 68.73027511898557,
+      "below_600_pct": 10.4,
+      "above_1100_pct": 6.35
+    },
+    {
+      "period": "基期",
+      "amount": 800,
+      "density_per_1000": 2.240825560328349,
+      "mean": 800.0000150000001,
+      "sample_size": 2000,
+      "bandwidth": 68.73027511898557,
+      "below_600_pct": 10.4,
+      "above_1100_pct": 6.35
+    },
+    {
+      "period": "基期",
+      "amount": 820,
+      "density_per_1000": 2.155700268641601,
+      "mean": 800.0000150000001,
+      "sample_size": 2000,
+      "bandwidth": 68.73027511898557,
+      "below_600_pct": 10.4,
+      "above_1100_pct": 6.35
+    },
+    {
+      "period": "基期",
+      "amount": 840,
+      "density_per_1000": 2.043032415535998,
+      "mean": 800.0000150000001,
+      "sample_size": 2000,
+      "bandwidth": 68.73027511898557,
+      "below_600_pct": 10.4,
+      "above_1100_pct": 6.35
+    },
+    {
+      "period": "基期",
+      "amount": 860,
+      "density_per_1000": 1.909213959765332,
+      "mean": 800.0000150000001,
+      "sample_size": 2000,
+      "bandwidth": 68.73027511898557,
+      "below_600_pct": 10.4,
+      "above_1100_pct": 6.35
+    },
+    {
+      "period": "基期",
+      "amount": 880,
+      "density_per_1000": 1.761572978516507,
+      "mean": 800.0000150000001,
+      "sample_size": 2000,
+      "bandwidth": 68.73027511898557,
+      "below_600_pct": 10.4,
+      "above_1100_pct": 6.35
+    },
+    {
+      "period": "基期",
+      "amount": 900,
+      "density_per_1000": 1.60749488166804,
+      "mean": 800.0000150000001,
+      "sample_size": 2000,
+      "bandwidth": 68.73027511898557,
+      "below_600_pct": 10.4,
+      "above_1100_pct": 6.35
+    },
+    {
+      "period": "基期",
+      "amount": 920,
+      "density_per_1000": 1.453586040613831,
+      "mean": 800.0000150000001,
+      "sample_size": 2000,
+      "bandwidth": 68.73027511898557,
+      "below_600_pct": 10.4,
+      "above_1100_pct": 6.35
+    },
+    {
+      "period": "基期",
+      "amount": 940,
+      "density_per_1000": 1.305099810751912,
+      "mean": 800.0000150000001,
+      "sample_size": 2000,
+      "bandwidth": 68.73027511898557,
+      "below_600_pct": 10.4,
+      "above_1100_pct": 6.35
+    },
+    {
+      "period": "基期",
+      "amount": 960,
+      "density_per_1000": 1.165714130143219,
+      "mean": 800.0000150000001,
+      "sample_size": 2000,
+      "bandwidth": 68.73027511898557,
+      "below_600_pct": 10.4,
+      "above_1100_pct": 6.35
+    },
+    {
+      "period": "基期",
+      "amount": 980,
+      "density_per_1000": 1.037602922038076,
+      "mean": 800.0000150000001,
+      "sample_size": 2000,
+      "bandwidth": 68.73027511898557,
+      "below_600_pct": 10.4,
+      "above_1100_pct": 6.35
+    },
+    {
+      "period": "基期",
+      "amount": 1000,
+      "density_per_1000": 0.921672958382876,
+      "mean": 800.0000150000001,
+      "sample_size": 2000,
+      "bandwidth": 68.73027511898557,
+      "below_600_pct": 10.4,
+      "above_1100_pct": 6.35
+    },
+    {
+      "period": "基期",
+      "amount": 1020,
+      "density_per_1000": 0.817860679308201,
+      "mean": 800.0000150000001,
+      "sample_size": 2000,
+      "bandwidth": 68.73027511898557,
+      "below_600_pct": 10.4,
+      "above_1100_pct": 6.35
+    },
+    {
+      "period": "基期",
+      "amount": 1040,
+      "density_per_1000": 0.725438696423567,
+      "mean": 800.0000150000001,
+      "sample_size": 2000,
+      "bandwidth": 68.73027511898557,
+      "below_600_pct": 10.4,
+      "above_1100_pct": 6.35
+    },
+    {
+      "period": "基期",
+      "amount": 1060,
+      "density_per_1000": 0.643305486135041,
+      "mean": 800.0000150000001,
+      "sample_size": 2000,
+      "bandwidth": 68.73027511898557,
+      "below_600_pct": 10.4,
+      "above_1100_pct": 6.35
+    },
+    {
+      "period": "基期",
+      "amount": 1080,
+      "density_per_1000": 0.570221968124954,
+      "mean": 800.0000150000001,
+      "sample_size": 2000,
+      "bandwidth": 68.73027511898557,
+      "below_600_pct": 10.4,
+      "above_1100_pct": 6.35
+    },
+    {
+      "period": "基期",
+      "amount": 1100,
+      "density_per_1000": 0.504959572646531,
+      "mean": 800.0000150000001,
+      "sample_size": 2000,
+      "bandwidth": 68.73027511898557,
+      "below_600_pct": 10.4,
+      "above_1100_pct": 6.35
+    },
+    {
+      "period": "基期",
+      "amount": 1120,
+      "density_per_1000": 0.446361670545921,
+      "mean": 800.0000150000001,
+      "sample_size": 2000,
+      "bandwidth": 68.73027511898557,
+      "below_600_pct": 10.4,
+      "above_1100_pct": 6.35
+    },
+    {
+      "period": "基期",
+      "amount": 1140,
+      "density_per_1000": 0.393368091176747,
+      "mean": 800.0000150000001,
+      "sample_size": 2000,
+      "bandwidth": 68.73027511898557,
+      "below_600_pct": 10.4,
+      "above_1100_pct": 6.35
+    },
+    {
+      "period": "基期",
+      "amount": 1160,
+      "density_per_1000": 0.345064836436127,
+      "mean": 800.0000150000001,
+      "sample_size": 2000,
+      "bandwidth": 68.73027511898557,
+      "below_600_pct": 10.4,
+      "above_1100_pct": 6.35
+    },
+    {
+      "period": "基期",
+      "amount": 1180,
+      "density_per_1000": 0.300781854512394,
+      "mean": 800.0000150000001,
+      "sample_size": 2000,
+      "bandwidth": 68.73027511898557,
+      "below_600_pct": 10.4,
+      "above_1100_pct": 6.35
+    },
+    {
+      "period": "基期",
+      "amount": 1200,
+      "density_per_1000": 0.26019924887893,
+      "mean": 800.0000150000001,
+      "sample_size": 2000,
+      "bandwidth": 68.73027511898557,
+      "below_600_pct": 10.4,
+      "above_1100_pct": 6.35
+    },
+    {
+      "period": "基期",
+      "amount": 1220,
+      "density_per_1000": 0.223383500813608,
+      "mean": 800.0000150000001,
+      "sample_size": 2000,
+      "bandwidth": 68.73027511898557,
+      "below_600_pct": 10.4,
+      "above_1100_pct": 6.35
+    },
+    {
+      "period": "基期",
+      "amount": 1240,
+      "density_per_1000": 0.190690560759782,
+      "mean": 800.0000150000001,
+      "sample_size": 2000,
+      "bandwidth": 68.73027511898557,
+      "below_600_pct": 10.4,
+      "above_1100_pct": 6.35
+    },
+    {
+      "period": "基期",
+      "amount": 1260,
+      "density_per_1000": 0.162537198529789,
+      "mean": 800.0000150000001,
+      "sample_size": 2000,
+      "bandwidth": 68.73027511898557,
+      "below_600_pct": 10.4,
+      "above_1100_pct": 6.35
+    },
+    {
+      "period": "基期",
+      "amount": 1280,
+      "density_per_1000": 0.139119163830362,
+      "mean": 800.0000150000001,
+      "sample_size": 2000,
+      "bandwidth": 68.73027511898557,
+      "below_600_pct": 10.4,
+      "above_1100_pct": 6.35
+    },
+    {
+      "period": "基期",
+      "amount": 1300,
+      "density_per_1000": 0.120197345060522,
+      "mean": 800.0000150000001,
+      "sample_size": 2000,
+      "bandwidth": 68.73027511898557,
+      "below_600_pct": 10.4,
+      "above_1100_pct": 6.35
+    },
+    {
+      "period": "基期",
+      "amount": 1320,
+      "density_per_1000": 0.105052504285046,
+      "mean": 800.0000150000001,
+      "sample_size": 2000,
+      "bandwidth": 68.73027511898557,
+      "below_600_pct": 10.4,
+      "above_1100_pct": 6.35
+    },
+    {
+      "period": "基期",
+      "amount": 1340,
+      "density_per_1000": 0.092633914667825,
+      "mean": 800.0000150000001,
+      "sample_size": 2000,
+      "bandwidth": 68.73027511898557,
+      "below_600_pct": 10.4,
+      "above_1100_pct": 6.35
+    },
+    {
+      "period": "基期",
+      "amount": 1360,
+      "density_per_1000": 0.081837938518514,
+      "mean": 800.0000150000001,
+      "sample_size": 2000,
+      "bandwidth": 68.73027511898557,
+      "below_600_pct": 10.4,
+      "above_1100_pct": 6.35
+    },
+    {
+      "period": "基期",
+      "amount": 1380,
+      "density_per_1000": 0.071796292625971,
+      "mean": 800.0000150000001,
+      "sample_size": 2000,
+      "bandwidth": 68.73027511898557,
+      "below_600_pct": 10.4,
+      "above_1100_pct": 6.35
+    },
+    {
+      "period": "基期",
+      "amount": 1400,
+      "density_per_1000": 0.062057020184515,
+      "mean": 800.0000150000001,
+      "sample_size": 2000,
+      "bandwidth": 68.73027511898557,
+      "below_600_pct": 10.4,
+      "above_1100_pct": 6.35
+    },
+    {
+      "period": "基期",
+      "amount": 1420,
+      "density_per_1000": 0.052598123212849,
+      "mean": 800.0000150000001,
+      "sample_size": 2000,
+      "bandwidth": 68.73027511898557,
+      "below_600_pct": 10.4,
+      "above_1100_pct": 6.35
+    },
+    {
+      "period": "基期",
+      "amount": 1440,
+      "density_per_1000": 0.04369221924528,
+      "mean": 800.0000150000001,
+      "sample_size": 2000,
+      "bandwidth": 68.73027511898557,
+      "below_600_pct": 10.4,
+      "above_1100_pct": 6.35
+    },
+    {
+      "period": "基期",
+      "amount": 1460,
+      "density_per_1000": 0.03570052990351,
+      "mean": 800.0000150000001,
+      "sample_size": 2000,
+      "bandwidth": 68.73027511898557,
+      "below_600_pct": 10.4,
+      "above_1100_pct": 6.35
+    },
+    {
+      "period": "基期",
+      "amount": 1480,
+      "density_per_1000": 0.028889693372654,
+      "mean": 800.0000150000001,
+      "sample_size": 2000,
+      "bandwidth": 68.73027511898557,
+      "below_600_pct": 10.4,
+      "above_1100_pct": 6.35
+    },
+    {
+      "period": "基期",
+      "amount": 1500,
+      "density_per_1000": 0.023335596012543,
+      "mean": 800.0000150000001,
+      "sample_size": 2000,
+      "bandwidth": 68.73027511898557,
+      "below_600_pct": 10.4,
+      "above_1100_pct": 6.35
+    },
+    {
+      "period": "基期",
+      "amount": 1520,
+      "density_per_1000": 0.018927726569999,
+      "mean": 800.0000150000001,
+      "sample_size": 2000,
+      "bandwidth": 68.73027511898557,
+      "below_600_pct": 10.4,
+      "above_1100_pct": 6.35
+    },
+    {
+      "period": "基期",
+      "amount": 1540,
+      "density_per_1000": 0.015444033635776,
+      "mean": 800.0000150000001,
+      "sample_size": 2000,
+      "bandwidth": 68.73027511898557,
+      "below_600_pct": 10.4,
+      "above_1100_pct": 6.35
+    },
+    {
+      "period": "基期",
+      "amount": 1560,
+      "density_per_1000": 0.012646893182163,
+      "mean": 800.0000150000001,
+      "sample_size": 2000,
+      "bandwidth": 68.73027511898557,
+      "below_600_pct": 10.4,
+      "above_1100_pct": 6.35
+    },
+    {
+      "period": "基期",
+      "amount": 1580,
+      "density_per_1000": 0.010356032333834,
+      "mean": 800.0000150000001,
+      "sample_size": 2000,
+      "bandwidth": 68.73027511898557,
+      "below_600_pct": 10.4,
+      "above_1100_pct": 6.35
+    },
+    {
+      "period": "基期",
+      "amount": 1600,
+      "density_per_1000": 0.008474581215349,
+      "mean": 800.0000150000001,
+      "sample_size": 2000,
+      "bandwidth": 68.73027511898557,
+      "below_600_pct": 10.4,
+      "above_1100_pct": 6.35
+    },
+    {
+      "period": "基期",
+      "amount": 1620,
+      "density_per_1000": 0.006968819616683,
+      "mean": 800.0000150000001,
+      "sample_size": 2000,
+      "bandwidth": 68.73027511898557,
+      "below_600_pct": 10.4,
+      "above_1100_pct": 6.35
+    },
+    {
+      "period": "基期",
+      "amount": 1640,
+      "density_per_1000": 0.005821892810318,
+      "mean": 800.0000150000001,
+      "sample_size": 2000,
+      "bandwidth": 68.73027511898557,
+      "below_600_pct": 10.4,
+      "above_1100_pct": 6.35
+    },
+    {
+      "period": "基期",
+      "amount": 1660,
+      "density_per_1000": 0.004990457300112,
+      "mean": 800.0000150000001,
+      "sample_size": 2000,
+      "bandwidth": 68.73027511898557,
+      "below_600_pct": 10.4,
+      "above_1100_pct": 6.35
+    },
+    {
+      "period": "基期",
+      "amount": 1680,
+      "density_per_1000": 0.004387823879563,
+      "mean": 800.0000150000001,
+      "sample_size": 2000,
+      "bandwidth": 68.73027511898557,
+      "below_600_pct": 10.4,
+      "above_1100_pct": 6.35
+    },
+    {
+      "period": "基期",
+      "amount": 1700,
+      "density_per_1000": 0.0039003323821,
+      "mean": 800.0000150000001,
+      "sample_size": 2000,
+      "bandwidth": 68.73027511898557,
+      "below_600_pct": 10.4,
+      "above_1100_pct": 6.35
+    },
+    {
+      "period": "基期",
+      "amount": 1720,
+      "density_per_1000": 0.003424396809318,
+      "mean": 800.0000150000001,
+      "sample_size": 2000,
+      "bandwidth": 68.73027511898557,
+      "below_600_pct": 10.4,
+      "above_1100_pct": 6.35
+    },
+    {
+      "period": "基期",
+      "amount": 1740,
+      "density_per_1000": 0.002901018131113,
+      "mean": 800.0000150000001,
+      "sample_size": 2000,
+      "bandwidth": 68.73027511898557,
+      "below_600_pct": 10.4,
+      "above_1100_pct": 6.35
+    },
+    {
+      "period": "基期",
+      "amount": 1760,
+      "density_per_1000": 0.002328528227728,
+      "mean": 800.0000150000001,
+      "sample_size": 2000,
+      "bandwidth": 68.73027511898557,
+      "below_600_pct": 10.4,
+      "above_1100_pct": 6.35
+    },
+    {
+      "period": "基期",
+      "amount": 1780,
+      "density_per_1000": 0.001749186908393,
+      "mean": 800.0000150000001,
+      "sample_size": 2000,
+      "bandwidth": 68.73027511898557,
+      "below_600_pct": 10.4,
+      "above_1100_pct": 6.35
+    },
+    {
+      "period": "基期",
+      "amount": 1800,
+      "density_per_1000": 0.001220387647684,
+      "mean": 800.0000150000001,
+      "sample_size": 2000,
+      "bandwidth": 68.73027511898557,
+      "below_600_pct": 10.4,
+      "above_1100_pct": 6.35
+    },
+    {
+      "period": "基期",
+      "amount": 1820,
+      "density_per_1000": 0.000787218179748,
+      "mean": 800.0000150000001,
+      "sample_size": 2000,
+      "bandwidth": 68.73027511898557,
+      "below_600_pct": 10.4,
+      "above_1100_pct": 6.35
+    },
+    {
+      "period": "基期",
+      "amount": 1840,
+      "density_per_1000": 0.00046825401539,
+      "mean": 800.0000150000001,
+      "sample_size": 2000,
+      "bandwidth": 68.73027511898557,
+      "below_600_pct": 10.4,
+      "above_1100_pct": 6.35
+    },
+    {
+      "period": "基期",
+      "amount": 1860,
+      "density_per_1000": 0.000256445935557,
+      "mean": 800.0000150000001,
+      "sample_size": 2000,
+      "bandwidth": 68.73027511898557,
+      "below_600_pct": 10.4,
+      "above_1100_pct": 6.35
+    },
+    {
+      "period": "基期",
+      "amount": 1880,
+      "density_per_1000": 0.00012919853969,
+      "mean": 800.0000150000001,
+      "sample_size": 2000,
+      "bandwidth": 68.73027511898557,
+      "below_600_pct": 10.4,
+      "above_1100_pct": 6.35
+    },
+    {
+      "period": "基期",
+      "amount": 1900,
+      "density_per_1000": 0.000059847729583,
+      "mean": 800.0000150000001,
+      "sample_size": 2000,
+      "bandwidth": 68.73027511898557,
+      "below_600_pct": 10.4,
+      "above_1100_pct": 6.35
+    },
+    {
+      "period": "基期",
+      "amount": 1920,
+      "density_per_1000": 0.000025482346299,
+      "mean": 800.0000150000001,
+      "sample_size": 2000,
+      "bandwidth": 68.73027511898557,
+      "below_600_pct": 10.4,
+      "above_1100_pct": 6.35
+    },
+    {
+      "period": "基期",
+      "amount": 1940,
+      "density_per_1000": 0.000009971475079,
+      "mean": 800.0000150000001,
+      "sample_size": 2000,
+      "bandwidth": 68.73027511898557,
+      "below_600_pct": 10.4,
+      "above_1100_pct": 6.35
+    },
+    {
+      "period": "基期",
+      "amount": 1960,
+      "density_per_1000": 0.000003585625937,
+      "mean": 800.0000150000001,
+      "sample_size": 2000,
+      "bandwidth": 68.73027511898557,
+      "below_600_pct": 10.4,
+      "above_1100_pct": 6.35
+    },
+    {
+      "period": "基期",
+      "amount": 1980,
+      "density_per_1000": 0.000001184762323,
+      "mean": 800.0000150000001,
+      "sample_size": 2000,
+      "bandwidth": 68.73027511898557,
+      "below_600_pct": 10.4,
+      "above_1100_pct": 6.35
+    },
+    {
+      "period": "基期",
+      "amount": 2000,
+      "density_per_1000": 3.59702627e-7,
+      "mean": 800.0000150000001,
+      "sample_size": 2000,
+      "bandwidth": 68.73027511898557,
+      "below_600_pct": 10.4,
+      "above_1100_pct": 6.35
+    },
+    {
+      "period": "基期",
+      "amount": 2020,
+      "density_per_1000": 1.00344499e-7,
+      "mean": 800.0000150000001,
+      "sample_size": 2000,
+      "bandwidth": 68.73027511898557,
+      "below_600_pct": 10.4,
+      "above_1100_pct": 6.35
+    },
+    {
+      "period": "基期",
+      "amount": 2040,
+      "density_per_1000": 2.5720305e-8,
+      "mean": 800.0000150000001,
+      "sample_size": 2000,
+      "bandwidth": 68.73027511898557,
+      "below_600_pct": 10.4,
+      "above_1100_pct": 6.35
+    },
+    {
+      "period": "基期",
+      "amount": 2060,
+      "density_per_1000": 6.057428e-9,
+      "mean": 800.0000150000001,
+      "sample_size": 2000,
+      "bandwidth": 68.73027511898557,
+      "below_600_pct": 10.4,
+      "above_1100_pct": 6.35
+    },
+    {
+      "period": "基期",
+      "amount": 2080,
+      "density_per_1000": 1.310775e-9,
+      "mean": 800.0000150000001,
+      "sample_size": 2000,
+      "bandwidth": 68.73027511898557,
+      "below_600_pct": 10.4,
+      "above_1100_pct": 6.35
+    },
+    {
+      "period": "基期",
+      "amount": 2100,
+      "density_per_1000": 2.60612e-10,
+      "mean": 800.0000150000001,
+      "sample_size": 2000,
+      "bandwidth": 68.73027511898557,
+      "below_600_pct": 10.4,
+      "above_1100_pct": 6.35
+    },
+    {
+      "period": "基期",
+      "amount": 2120,
+      "density_per_1000": 4.7609e-11,
+      "mean": 800.0000150000001,
+      "sample_size": 2000,
+      "bandwidth": 68.73027511898557,
+      "below_600_pct": 10.4,
+      "above_1100_pct": 6.35
+    },
+    {
+      "period": "基期",
+      "amount": 2140,
+      "density_per_1000": 7.991e-12,
+      "mean": 800.0000150000001,
+      "sample_size": 2000,
+      "bandwidth": 68.73027511898557,
+      "below_600_pct": 10.4,
+      "above_1100_pct": 6.35
+    },
+    {
+      "period": "基期",
+      "amount": 2160,
+      "density_per_1000": 1.232e-12,
+      "mean": 800.0000150000001,
+      "sample_size": 2000,
+      "bandwidth": 68.73027511898557,
+      "below_600_pct": 10.4,
+      "above_1100_pct": 6.35
+    },
+    {
+      "period": "基期",
+      "amount": 2180,
+      "density_per_1000": 1.75e-13,
+      "mean": 800.0000150000001,
+      "sample_size": 2000,
+      "bandwidth": 68.73027511898557,
+      "below_600_pct": 10.4,
+      "above_1100_pct": 6.35
+    },
+    {
+      "period": "基期",
+      "amount": 2200,
+      "density_per_1000": 2.3e-14,
+      "mean": 800.0000150000001,
+      "sample_size": 2000,
+      "bandwidth": 68.73027511898557,
+      "below_600_pct": 10.4,
+      "above_1100_pct": 6.35
+    },
+    {
+      "period": "基期",
+      "amount": 2220,
+      "density_per_1000": 3e-15,
+      "mean": 800.0000150000001,
+      "sample_size": 2000,
+      "bandwidth": 68.73027511898557,
+      "below_600_pct": 10.4,
+      "above_1100_pct": 6.35
+    },
+    {
+      "period": "基期",
+      "amount": 2240,
+      "density_per_1000": 2.98941585380105e-16,
+      "mean": 800.0000150000001,
+      "sample_size": 2000,
+      "bandwidth": 68.73027511898557,
+      "below_600_pct": 10.4,
+      "above_1100_pct": 6.35
+    },
+    {
+      "period": "基期",
+      "amount": 2260,
+      "density_per_1000": 3.0189674501581e-17,
+      "mean": 800.0000150000001,
+      "sample_size": 2000,
+      "bandwidth": 68.73027511898557,
+      "below_600_pct": 10.4,
+      "above_1100_pct": 6.35
+    },
+    {
+      "period": "基期",
+      "amount": 2280,
+      "density_per_1000": 2.80127616270329e-18,
+      "mean": 800.0000150000001,
+      "sample_size": 2000,
+      "bandwidth": 68.73027511898557,
+      "below_600_pct": 10.4,
+      "above_1100_pct": 6.35
+    },
+    {
+      "period": "基期",
+      "amount": 2300,
+      "density_per_1000": 2.38824464882402e-19,
+      "mean": 800.0000150000001,
+      "sample_size": 2000,
+      "bandwidth": 68.73027511898557,
+      "below_600_pct": 10.4,
+      "above_1100_pct": 6.35
+    },
+    {
+      "period": "基期",
+      "amount": 2320,
+      "density_per_1000": 1.87079883298337e-20,
+      "mean": 800.0000150000001,
+      "sample_size": 2000,
+      "bandwidth": 68.73027511898557,
+      "below_600_pct": 10.4,
+      "above_1100_pct": 6.35
+    },
+    {
+      "period": "基期",
+      "amount": 2340,
+      "density_per_1000": 1.34648262851571e-21,
+      "mean": 800.0000150000001,
+      "sample_size": 2000,
+      "bandwidth": 68.73027511898557,
+      "below_600_pct": 10.4,
+      "above_1100_pct": 6.35
+    },
+    {
+      "period": "基期",
+      "amount": 2360,
+      "density_per_1000": 8.9043004502047e-23,
+      "mean": 800.0000150000001,
+      "sample_size": 2000,
+      "bandwidth": 68.73027511898557,
+      "below_600_pct": 10.4,
+      "above_1100_pct": 6.35
+    },
+    {
+      "period": "基期",
+      "amount": 2380,
+      "density_per_1000": 5.41033606254089e-24,
+      "mean": 800.0000150000001,
+      "sample_size": 2000,
+      "bandwidth": 68.73027511898557,
+      "below_600_pct": 10.4,
+      "above_1100_pct": 6.35
+    },
+    {
+      "period": "基期",
+      "amount": 2400,
+      "density_per_1000": 3.02046678222204e-25,
+      "mean": 800.0000150000001,
+      "sample_size": 2000,
+      "bandwidth": 68.73027511898557,
+      "below_600_pct": 10.4,
+      "above_1100_pct": 6.35
+    },
+    {
+      "period": "本期",
+      "amount": 0,
+      "density_per_1000": 0.000003878380318,
+      "mean": 799.99993,
+      "sample_size": 2000,
+      "bandwidth": 68.73027511898557,
+      "below_600_pct": 55.50000000000001,
+      "above_1100_pct": 36.55
+    },
+    {
+      "period": "本期",
+      "amount": 20,
+      "density_per_1000": 0.000007241941297,
+      "mean": 799.99993,
+      "sample_size": 2000,
+      "bandwidth": 68.73027511898557,
+      "below_600_pct": 55.50000000000001,
+      "above_1100_pct": 36.55
+    },
+    {
+      "period": "本期",
+      "amount": 40,
+      "density_per_1000": 0.000021817511839,
+      "mean": 799.99993,
+      "sample_size": 2000,
+      "bandwidth": 68.73027511898557,
+      "below_600_pct": 55.50000000000001,
+      "above_1100_pct": 36.55
+    },
+    {
+      "period": "本期",
+      "amount": 60,
+      "density_per_1000": 0.000065280658073,
+      "mean": 799.99993,
+      "sample_size": 2000,
+      "bandwidth": 68.73027511898557,
+      "below_600_pct": 55.50000000000001,
+      "above_1100_pct": 36.55
+    },
+    {
+      "period": "本期",
+      "amount": 80,
+      "density_per_1000": 0.000183434001598,
+      "mean": 799.99993,
+      "sample_size": 2000,
+      "bandwidth": 68.73027511898557,
+      "below_600_pct": 55.50000000000001,
+      "above_1100_pct": 36.55
+    },
+    {
+      "period": "本期",
+      "amount": 100,
+      "density_per_1000": 0.000482791669102,
+      "mean": 799.99993,
+      "sample_size": 2000,
+      "bandwidth": 68.73027511898557,
+      "below_600_pct": 55.50000000000001,
+      "above_1100_pct": 36.55
+    },
+    {
+      "period": "本期",
+      "amount": 120,
+      "density_per_1000": 0.001192270994918,
+      "mean": 799.99993,
+      "sample_size": 2000,
+      "bandwidth": 68.73027511898557,
+      "below_600_pct": 55.50000000000001,
+      "above_1100_pct": 36.55
+    },
+    {
+      "period": "本期",
+      "amount": 140,
+      "density_per_1000": 0.002768298931858,
+      "mean": 799.99993,
+      "sample_size": 2000,
+      "bandwidth": 68.73027511898557,
+      "below_600_pct": 55.50000000000001,
+      "above_1100_pct": 36.55
+    },
+    {
+      "period": "本期",
+      "amount": 160,
+      "density_per_1000": 0.006055581805168,
+      "mean": 799.99993,
+      "sample_size": 2000,
+      "bandwidth": 68.73027511898557,
+      "below_600_pct": 55.50000000000001,
+      "above_1100_pct": 36.55
+    },
+    {
+      "period": "本期",
+      "amount": 180,
+      "density_per_1000": 0.012504639301933,
+      "mean": 799.99993,
+      "sample_size": 2000,
+      "bandwidth": 68.73027511898557,
+      "below_600_pct": 55.50000000000001,
+      "above_1100_pct": 36.55
+    },
+    {
+      "period": "本期",
+      "amount": 200,
+      "density_per_1000": 0.024424266461182,
+      "mean": 799.99993,
+      "sample_size": 2000,
+      "bandwidth": 68.73027511898557,
+      "below_600_pct": 55.50000000000001,
+      "above_1100_pct": 36.55
+    },
+    {
+      "period": "本期",
+      "amount": 220,
+      "density_per_1000": 0.045214793272982,
+      "mean": 799.99993,
+      "sample_size": 2000,
+      "bandwidth": 68.73027511898557,
+      "below_600_pct": 55.50000000000001,
+      "above_1100_pct": 36.55
+    },
+    {
+      "period": "本期",
+      "amount": 240,
+      "density_per_1000": 0.079496269372681,
+      "mean": 799.99993,
+      "sample_size": 2000,
+      "bandwidth": 68.73027511898557,
+      "below_600_pct": 55.50000000000001,
+      "above_1100_pct": 36.55
+    },
+    {
+      "period": "本期",
+      "amount": 260,
+      "density_per_1000": 0.133029308662195,
+      "mean": 799.99993,
+      "sample_size": 2000,
+      "bandwidth": 68.73027511898557,
+      "below_600_pct": 55.50000000000001,
+      "above_1100_pct": 36.55
+    },
+    {
+      "period": "本期",
+      "amount": 280,
+      "density_per_1000": 0.21233665498455,
+      "mean": 799.99993,
+      "sample_size": 2000,
+      "bandwidth": 68.73027511898557,
+      "below_600_pct": 55.50000000000001,
+      "above_1100_pct": 36.55
+    },
+    {
+      "period": "本期",
+      "amount": 300,
+      "density_per_1000": 0.323970385915301,
+      "mean": 799.99993,
+      "sample_size": 2000,
+      "bandwidth": 68.73027511898557,
+      "below_600_pct": 55.50000000000001,
+      "above_1100_pct": 36.55
+    },
+    {
+      "period": "本期",
+      "amount": 320,
+      "density_per_1000": 0.47342306982685,
+      "mean": 799.99993,
+      "sample_size": 2000,
+      "bandwidth": 68.73027511898557,
+      "below_600_pct": 55.50000000000001,
+      "above_1100_pct": 36.55
+    },
+    {
+      "period": "本期",
+      "amount": 340,
+      "density_per_1000": 0.663744991428768,
+      "mean": 799.99993,
+      "sample_size": 2000,
+      "bandwidth": 68.73027511898557,
+      "below_600_pct": 55.50000000000001,
+      "above_1100_pct": 36.55
+    },
+    {
+      "period": "本期",
+      "amount": 360,
+      "density_per_1000": 0.894012751411956,
+      "mean": 799.99993,
+      "sample_size": 2000,
+      "bandwidth": 68.73027511898557,
+      "below_600_pct": 55.50000000000001,
+      "above_1100_pct": 36.55
+    },
+    {
+      "period": "本期",
+      "amount": 380,
+      "density_per_1000": 1.157910067922362,
+      "mean": 799.99993,
+      "sample_size": 2000,
+      "bandwidth": 68.73027511898557,
+      "below_600_pct": 55.50000000000001,
+      "above_1100_pct": 36.55
+    },
+    {
+      "period": "本期",
+      "amount": 400,
+      "density_per_1000": 1.442812580949958,
+      "mean": 799.99993,
+      "sample_size": 2000,
+      "bandwidth": 68.73027511898557,
+      "below_600_pct": 55.50000000000001,
+      "above_1100_pct": 36.55
+    },
+    {
+      "period": "本期",
+      "amount": 420,
+      "density_per_1000": 1.729843667099104,
+      "mean": 799.99993,
+      "sample_size": 2000,
+      "bandwidth": 68.73027511898557,
+      "below_600_pct": 55.50000000000001,
+      "above_1100_pct": 36.55
+    },
+    {
+      "period": "本期",
+      "amount": 440,
+      "density_per_1000": 1.995285903100966,
+      "mean": 799.99993,
+      "sample_size": 2000,
+      "bandwidth": 68.73027511898557,
+      "below_600_pct": 55.50000000000001,
+      "above_1100_pct": 36.55
+    },
+    {
+      "period": "本期",
+      "amount": 460,
+      "density_per_1000": 2.213434504864677,
+      "mean": 799.99993,
+      "sample_size": 2000,
+      "bandwidth": 68.73027511898557,
+      "below_600_pct": 55.50000000000001,
+      "above_1100_pct": 36.55
+    },
+    {
+      "period": "本期",
+      "amount": 480,
+      "density_per_1000": 2.360522497300514,
+      "mean": 799.99993,
+      "sample_size": 2000,
+      "bandwidth": 68.73027511898557,
+      "below_600_pct": 55.50000000000001,
+      "above_1100_pct": 36.55
+    },
+    {
+      "period": "本期",
+      "amount": 500,
+      "density_per_1000": 2.418908766347447,
+      "mean": 799.99993,
+      "sample_size": 2000,
+      "bandwidth": 68.73027511898557,
+      "below_600_pct": 55.50000000000001,
+      "above_1100_pct": 36.55
+    },
+    {
+      "period": "本期",
+      "amount": 520,
+      "density_per_1000": 2.380505350552938,
+      "mean": 799.99993,
+      "sample_size": 2000,
+      "bandwidth": 68.73027511898557,
+      "below_600_pct": 55.50000000000001,
+      "above_1100_pct": 36.55
+    },
+    {
+      "period": "本期",
+      "amount": 540,
+      "density_per_1000": 2.248542164625991,
+      "mean": 799.99993,
+      "sample_size": 2000,
+      "bandwidth": 68.73027511898557,
+      "below_600_pct": 55.50000000000001,
+      "above_1100_pct": 36.55
+    },
+    {
+      "period": "本期",
+      "amount": 560,
+      "density_per_1000": 2.037183427973043,
+      "mean": 799.99993,
+      "sample_size": 2000,
+      "bandwidth": 68.73027511898557,
+      "below_600_pct": 55.50000000000001,
+      "above_1100_pct": 36.55
+    },
+    {
+      "period": "本期",
+      "amount": 580,
+      "density_per_1000": 1.769064003948675,
+      "mean": 799.99993,
+      "sample_size": 2000,
+      "bandwidth": 68.73027511898557,
+      "below_600_pct": 55.50000000000001,
+      "above_1100_pct": 36.55
+    },
+    {
+      "period": "本期",
+      "amount": 600,
+      "density_per_1000": 1.471329728133688,
+      "mean": 799.99993,
+      "sample_size": 2000,
+      "bandwidth": 68.73027511898557,
+      "below_600_pct": 55.50000000000001,
+      "above_1100_pct": 36.55
+    },
+    {
+      "period": "本期",
+      "amount": 620,
+      "density_per_1000": 1.171111934461589,
+      "mean": 799.99993,
+      "sample_size": 2000,
+      "bandwidth": 68.73027511898557,
+      "below_600_pct": 55.50000000000001,
+      "above_1100_pct": 36.55
+    },
+    {
+      "period": "本期",
+      "amount": 640,
+      "density_per_1000": 0.891463706163073,
+      "mean": 799.99993,
+      "sample_size": 2000,
+      "bandwidth": 68.73027511898557,
+      "below_600_pct": 55.50000000000001,
+      "above_1100_pct": 36.55
+    },
+    {
+      "period": "本期",
+      "amount": 660,
+      "density_per_1000": 0.648605536683714,
+      "mean": 799.99993,
+      "sample_size": 2000,
+      "bandwidth": 68.73027511898557,
+      "below_600_pct": 55.50000000000001,
+      "above_1100_pct": 36.55
+    },
+    {
+      "period": "本期",
+      "amount": 680,
+      "density_per_1000": 0.450915705705249,
+      "mean": 799.99993,
+      "sample_size": 2000,
+      "bandwidth": 68.73027511898557,
+      "below_600_pct": 55.50000000000001,
+      "above_1100_pct": 36.55
+    },
+    {
+      "period": "本期",
+      "amount": 700,
+      "density_per_1000": 0.299589390211125,
+      "mean": 799.99993,
+      "sample_size": 2000,
+      "bandwidth": 68.73027511898557,
+      "below_600_pct": 55.50000000000001,
+      "above_1100_pct": 36.55
+    },
+    {
+      "period": "本期",
+      "amount": 720,
+      "density_per_1000": 0.19046351168333,
+      "mean": 799.99993,
+      "sample_size": 2000,
+      "bandwidth": 68.73027511898557,
+      "below_600_pct": 55.50000000000001,
+      "above_1100_pct": 36.55
+    },
+    {
+      "period": "本期",
+      "amount": 740,
+      "density_per_1000": 0.116305943924073,
+      "mean": 799.99993,
+      "sample_size": 2000,
+      "bandwidth": 68.73027511898557,
+      "below_600_pct": 55.50000000000001,
+      "above_1100_pct": 36.55
+    },
+    {
+      "period": "本期",
+      "amount": 760,
+      "density_per_1000": 0.068930348271518,
+      "mean": 799.99993,
+      "sample_size": 2000,
+      "bandwidth": 68.73027511898557,
+      "below_600_pct": 55.50000000000001,
+      "above_1100_pct": 36.55
+    },
+    {
+      "period": "本期",
+      "amount": 780,
+      "density_per_1000": 0.040738607960302,
+      "mean": 799.99993,
+      "sample_size": 2000,
+      "bandwidth": 68.73027511898557,
+      "below_600_pct": 55.50000000000001,
+      "above_1100_pct": 36.55
+    },
+    {
+      "period": "本期",
+      "amount": 800,
+      "density_per_1000": 0.025575726171731,
+      "mean": 799.99993,
+      "sample_size": 2000,
+      "bandwidth": 68.73027511898557,
+      "below_600_pct": 55.50000000000001,
+      "above_1100_pct": 36.55
+    },
+    {
+      "period": "本期",
+      "amount": 820,
+      "density_per_1000": 0.018996146051018,
+      "mean": 799.99993,
+      "sample_size": 2000,
+      "bandwidth": 68.73027511898557,
+      "below_600_pct": 55.50000000000001,
+      "above_1100_pct": 36.55
+    },
+    {
+      "period": "本期",
+      "amount": 840,
+      "density_per_1000": 0.018142668390047,
+      "mean": 799.99993,
+      "sample_size": 2000,
+      "bandwidth": 68.73027511898557,
+      "below_600_pct": 55.50000000000001,
+      "above_1100_pct": 36.55
+    },
+    {
+      "period": "本期",
+      "amount": 860,
+      "density_per_1000": 0.021446779635243,
+      "mean": 799.99993,
+      "sample_size": 2000,
+      "bandwidth": 68.73027511898557,
+      "below_600_pct": 55.50000000000001,
+      "above_1100_pct": 36.55
+    },
+    {
+      "period": "本期",
+      "amount": 880,
+      "density_per_1000": 0.028312943737619,
+      "mean": 799.99993,
+      "sample_size": 2000,
+      "bandwidth": 68.73027511898557,
+      "below_600_pct": 55.50000000000001,
+      "above_1100_pct": 36.55
+    },
+    {
+      "period": "本期",
+      "amount": 900,
+      "density_per_1000": 0.038881687131922,
+      "mean": 799.99993,
+      "sample_size": 2000,
+      "bandwidth": 68.73027511898557,
+      "below_600_pct": 55.50000000000001,
+      "above_1100_pct": 36.55
+    },
+    {
+      "period": "本期",
+      "amount": 920,
+      "density_per_1000": 0.053894589473629,
+      "mean": 799.99993,
+      "sample_size": 2000,
+      "bandwidth": 68.73027511898557,
+      "below_600_pct": 55.50000000000001,
+      "above_1100_pct": 36.55
+    },
+    {
+      "period": "本期",
+      "amount": 940,
+      "density_per_1000": 0.074621956758009,
+      "mean": 799.99993,
+      "sample_size": 2000,
+      "bandwidth": 68.73027511898557,
+      "below_600_pct": 55.50000000000001,
+      "above_1100_pct": 36.55
+    },
+    {
+      "period": "本期",
+      "amount": 960,
+      "density_per_1000": 0.102777829920677,
+      "mean": 799.99993,
+      "sample_size": 2000,
+      "bandwidth": 68.73027511898557,
+      "below_600_pct": 55.50000000000001,
+      "above_1100_pct": 36.55
+    },
+    {
+      "period": "本期",
+      "amount": 980,
+      "density_per_1000": 0.140350507871156,
+      "mean": 799.99993,
+      "sample_size": 2000,
+      "bandwidth": 68.73027511898557,
+      "below_600_pct": 55.50000000000001,
+      "above_1100_pct": 36.55
+    },
+    {
+      "period": "本期",
+      "amount": 1000,
+      "density_per_1000": 0.189316912395813,
+      "mean": 799.99993,
+      "sample_size": 2000,
+      "bandwidth": 68.73027511898557,
+      "below_600_pct": 55.50000000000001,
+      "above_1100_pct": 36.55
+    },
+    {
+      "period": "本期",
+      "amount": 1020,
+      "density_per_1000": 0.251263449583387,
+      "mean": 799.99993,
+      "sample_size": 2000,
+      "bandwidth": 68.73027511898557,
+      "below_600_pct": 55.50000000000001,
+      "above_1100_pct": 36.55
+    },
+    {
+      "period": "本期",
+      "amount": 1040,
+      "density_per_1000": 0.326976354138,
+      "mean": 799.99993,
+      "sample_size": 2000,
+      "bandwidth": 68.73027511898557,
+      "below_600_pct": 55.50000000000001,
+      "above_1100_pct": 36.55
+    },
+    {
+      "period": "本期",
+      "amount": 1060,
+      "density_per_1000": 0.416076938817261,
+      "mean": 799.99993,
+      "sample_size": 2000,
+      "bandwidth": 68.73027511898557,
+      "below_600_pct": 55.50000000000001,
+      "above_1100_pct": 36.55
+    },
+    {
+      "period": "本期",
+      "amount": 1080,
+      "density_per_1000": 0.516770165755932,
+      "mean": 799.99993,
+      "sample_size": 2000,
+      "bandwidth": 68.73027511898557,
+      "below_600_pct": 55.50000000000001,
+      "above_1100_pct": 36.55
+    },
+    {
+      "period": "本期",
+      "amount": 1100,
+      "density_per_1000": 0.625766154163198,
+      "mean": 799.99993,
+      "sample_size": 2000,
+      "bandwidth": 68.73027511898557,
+      "below_600_pct": 55.50000000000001,
+      "above_1100_pct": 36.55
+    },
+    {
+      "period": "本期",
+      "amount": 1120,
+      "density_per_1000": 0.738426998427684,
+      "mean": 799.99993,
+      "sample_size": 2000,
+      "bandwidth": 68.73027511898557,
+      "below_600_pct": 55.50000000000001,
+      "above_1100_pct": 36.55
+    },
+    {
+      "period": "本期",
+      "amount": 1140,
+      "density_per_1000": 0.849166097465955,
+      "mean": 799.99993,
+      "sample_size": 2000,
+      "bandwidth": 68.73027511898557,
+      "below_600_pct": 55.50000000000001,
+      "above_1100_pct": 36.55
+    },
+    {
+      "period": "本期",
+      "amount": 1160,
+      "density_per_1000": 0.952063409869141,
+      "mean": 799.99993,
+      "sample_size": 2000,
+      "bandwidth": 68.73027511898557,
+      "below_600_pct": 55.50000000000001,
+      "above_1100_pct": 36.55
+    },
+    {
+      "period": "本期",
+      "amount": 1180,
+      "density_per_1000": 1.041570575272355,
+      "mean": 799.99993,
+      "sample_size": 2000,
+      "bandwidth": 68.73027511898557,
+      "below_600_pct": 55.50000000000001,
+      "above_1100_pct": 36.55
+    },
+    {
+      "period": "本期",
+      "amount": 1200,
+      "density_per_1000": 1.113118774492689,
+      "mean": 799.99993,
+      "sample_size": 2000,
+      "bandwidth": 68.73027511898557,
+      "below_600_pct": 55.50000000000001,
+      "above_1100_pct": 36.55
+    },
+    {
+      "period": "本期",
+      "amount": 1220,
+      "density_per_1000": 1.16346514264803,
+      "mean": 799.99993,
+      "sample_size": 2000,
+      "bandwidth": 68.73027511898557,
+      "below_600_pct": 55.50000000000001,
+      "above_1100_pct": 36.55
+    },
+    {
+      "period": "本期",
+      "amount": 1240,
+      "density_per_1000": 1.190723400476756,
+      "mean": 799.99993,
+      "sample_size": 2000,
+      "bandwidth": 68.73027511898557,
+      "below_600_pct": 55.50000000000001,
+      "above_1100_pct": 36.55
+    },
+    {
+      "period": "本期",
+      "amount": 1260,
+      "density_per_1000": 1.194160161916632,
+      "mean": 799.99993,
+      "sample_size": 2000,
+      "bandwidth": 68.73027511898557,
+      "below_600_pct": 55.50000000000001,
+      "above_1100_pct": 36.55
+    },
+    {
+      "period": "本期",
+      "amount": 1280,
+      "density_per_1000": 1.173922932022631,
+      "mean": 799.99993,
+      "sample_size": 2000,
+      "bandwidth": 68.73027511898557,
+      "below_600_pct": 55.50000000000001,
+      "above_1100_pct": 36.55
+    },
+    {
+      "period": "本期",
+      "amount": 1300,
+      "density_per_1000": 1.130863073432138,
+      "mean": 799.99993,
+      "sample_size": 2000,
+      "bandwidth": 68.73027511898557,
+      "below_600_pct": 55.50000000000001,
+      "above_1100_pct": 36.55
+    },
+    {
+      "period": "本期",
+      "amount": 1320,
+      "density_per_1000": 1.066543119621333,
+      "mean": 799.99993,
+      "sample_size": 2000,
+      "bandwidth": 68.73027511898557,
+      "below_600_pct": 55.50000000000001,
+      "above_1100_pct": 36.55
+    },
+    {
+      "period": "本期",
+      "amount": 1340,
+      "density_per_1000": 0.983410205328346,
+      "mean": 799.99993,
+      "sample_size": 2000,
+      "bandwidth": 68.73027511898557,
+      "below_600_pct": 55.50000000000001,
+      "above_1100_pct": 36.55
+    },
+    {
+      "period": "本期",
+      "amount": 1360,
+      "density_per_1000": 0.88501186621983,
+      "mean": 799.99993,
+      "sample_size": 2000,
+      "bandwidth": 68.73027511898557,
+      "below_600_pct": 55.50000000000001,
+      "above_1100_pct": 36.55
+    },
+    {
+      "period": "本期",
+      "amount": 1380,
+      "density_per_1000": 0.776066738849238,
+      "mean": 799.99993,
+      "sample_size": 2000,
+      "bandwidth": 68.73027511898557,
+      "below_600_pct": 55.50000000000001,
+      "above_1100_pct": 36.55
+    },
+    {
+      "period": "本期",
+      "amount": 1400,
+      "density_per_1000": 0.662224849969808,
+      "mean": 799.99993,
+      "sample_size": 2000,
+      "bandwidth": 68.73027511898557,
+      "below_600_pct": 55.50000000000001,
+      "above_1100_pct": 36.55
+    },
+    {
+      "period": "本期",
+      "amount": 1420,
+      "density_per_1000": 0.549475667356587,
+      "mean": 799.99993,
+      "sample_size": 2000,
+      "bandwidth": 68.73027511898557,
+      "below_600_pct": 55.50000000000001,
+      "above_1100_pct": 36.55
+    },
+    {
+      "period": "本期",
+      "amount": 1440,
+      "density_per_1000": 0.443337379442092,
+      "mean": 799.99993,
+      "sample_size": 2000,
+      "bandwidth": 68.73027511898557,
+      "below_600_pct": 55.50000000000001,
+      "above_1100_pct": 36.55
+    },
+    {
+      "period": "本期",
+      "amount": 1460,
+      "density_per_1000": 0.348088010648136,
+      "mean": 799.99993,
+      "sample_size": 2000,
+      "bandwidth": 68.73027511898557,
+      "below_600_pct": 55.50000000000001,
+      "above_1100_pct": 36.55
+    },
+    {
+      "period": "本期",
+      "amount": 1480,
+      "density_per_1000": 0.266296291483027,
+      "mean": 799.99993,
+      "sample_size": 2000,
+      "bandwidth": 68.73027511898557,
+      "below_600_pct": 55.50000000000001,
+      "above_1100_pct": 36.55
+    },
+    {
+      "period": "本期",
+      "amount": 1500,
+      "density_per_1000": 0.198777841717391,
+      "mean": 799.99993,
+      "sample_size": 2000,
+      "bandwidth": 68.73027511898557,
+      "below_600_pct": 55.50000000000001,
+      "above_1100_pct": 36.55
+    },
+    {
+      "period": "本期",
+      "amount": 1520,
+      "density_per_1000": 0.144922157651326,
+      "mean": 799.99993,
+      "sample_size": 2000,
+      "bandwidth": 68.73027511898557,
+      "below_600_pct": 55.50000000000001,
+      "above_1100_pct": 36.55
+    },
+    {
+      "period": "本期",
+      "amount": 1540,
+      "density_per_1000": 0.103210208541073,
+      "mean": 799.99993,
+      "sample_size": 2000,
+      "bandwidth": 68.73027511898557,
+      "below_600_pct": 55.50000000000001,
+      "above_1100_pct": 36.55
+    },
+    {
+      "period": "本期",
+      "amount": 1560,
+      "density_per_1000": 0.071724338333912,
+      "mean": 799.99993,
+      "sample_size": 2000,
+      "bandwidth": 68.73027511898557,
+      "below_600_pct": 55.50000000000001,
+      "above_1100_pct": 36.55
+    },
+    {
+      "period": "本期",
+      "amount": 1580,
+      "density_per_1000": 0.04852224525987,
+      "mean": 799.99993,
+      "sample_size": 2000,
+      "bandwidth": 68.73027511898557,
+      "below_600_pct": 55.50000000000001,
+      "above_1100_pct": 36.55
+    },
+    {
+      "period": "本期",
+      "amount": 1600,
+      "density_per_1000": 0.031843157005918,
+      "mean": 799.99993,
+      "sample_size": 2000,
+      "bandwidth": 68.73027511898557,
+      "below_600_pct": 55.50000000000001,
+      "above_1100_pct": 36.55
+    },
+    {
+      "period": "本期",
+      "amount": 1620,
+      "density_per_1000": 0.020182396570555,
+      "mean": 799.99993,
+      "sample_size": 2000,
+      "bandwidth": 68.73027511898557,
+      "below_600_pct": 55.50000000000001,
+      "above_1100_pct": 36.55
+    },
+    {
+      "period": "本期",
+      "amount": 1640,
+      "density_per_1000": 0.012292308089828,
+      "mean": 799.99993,
+      "sample_size": 2000,
+      "bandwidth": 68.73027511898557,
+      "below_600_pct": 55.50000000000001,
+      "above_1100_pct": 36.55
+    },
+    {
+      "period": "本期",
+      "amount": 1660,
+      "density_per_1000": 0.007156329792375,
+      "mean": 799.99993,
+      "sample_size": 2000,
+      "bandwidth": 68.73027511898557,
+      "below_600_pct": 55.50000000000001,
+      "above_1100_pct": 36.55
+    },
+    {
+      "period": "本期",
+      "amount": 1680,
+      "density_per_1000": 0.003961131572891,
+      "mean": 799.99993,
+      "sample_size": 2000,
+      "bandwidth": 68.73027511898557,
+      "below_600_pct": 55.50000000000001,
+      "above_1100_pct": 36.55
+    },
+    {
+      "period": "本期",
+      "amount": 1700,
+      "density_per_1000": 0.002073853107933,
+      "mean": 799.99993,
+      "sample_size": 2000,
+      "bandwidth": 68.73027511898557,
+      "below_600_pct": 55.50000000000001,
+      "above_1100_pct": 36.55
+    },
+    {
+      "period": "本期",
+      "amount": 1720,
+      "density_per_1000": 0.001022079554049,
+      "mean": 799.99993,
+      "sample_size": 2000,
+      "bandwidth": 68.73027511898557,
+      "below_600_pct": 55.50000000000001,
+      "above_1100_pct": 36.55
+    },
+    {
+      "period": "本期",
+      "amount": 1740,
+      "density_per_1000": 0.00047214149162,
+      "mean": 799.99993,
+      "sample_size": 2000,
+      "bandwidth": 68.73027511898557,
+      "below_600_pct": 55.50000000000001,
+      "above_1100_pct": 36.55
+    },
+    {
+      "period": "本期",
+      "amount": 1760,
+      "density_per_1000": 0.000203664879662,
+      "mean": 799.99993,
+      "sample_size": 2000,
+      "bandwidth": 68.73027511898557,
+      "below_600_pct": 55.50000000000001,
+      "above_1100_pct": 36.55
+    },
+    {
+      "period": "本期",
+      "amount": 1780,
+      "density_per_1000": 0.000081778746244,
+      "mean": 799.99993,
+      "sample_size": 2000,
+      "bandwidth": 68.73027511898557,
+      "below_600_pct": 55.50000000000001,
+      "above_1100_pct": 36.55
+    },
+    {
+      "period": "本期",
+      "amount": 1800,
+      "density_per_1000": 0.000030486272507,
+      "mean": 799.99993,
+      "sample_size": 2000,
+      "bandwidth": 68.73027511898557,
+      "below_600_pct": 55.50000000000001,
+      "above_1100_pct": 36.55
+    },
+    {
+      "period": "本期",
+      "amount": 1820,
+      "density_per_1000": 0.000010528796516,
+      "mean": 799.99993,
+      "sample_size": 2000,
+      "bandwidth": 68.73027511898557,
+      "below_600_pct": 55.50000000000001,
+      "above_1100_pct": 36.55
+    },
+    {
+      "period": "本期",
+      "amount": 1840,
+      "density_per_1000": 0.000003362926601,
+      "mean": 799.99993,
+      "sample_size": 2000,
+      "bandwidth": 68.73027511898557,
+      "below_600_pct": 55.50000000000001,
+      "above_1100_pct": 36.55
+    },
+    {
+      "period": "本期",
+      "amount": 1860,
+      "density_per_1000": 9.92035148e-7,
+      "mean": 799.99993,
+      "sample_size": 2000,
+      "bandwidth": 68.73027511898557,
+      "below_600_pct": 55.50000000000001,
+      "above_1100_pct": 36.55
+    },
+    {
+      "period": "本期",
+      "amount": 1880,
+      "density_per_1000": 2.6998506e-7,
+      "mean": 799.99993,
+      "sample_size": 2000,
+      "bandwidth": 68.73027511898557,
+      "below_600_pct": 55.50000000000001,
+      "above_1100_pct": 36.55
+    },
+    {
+      "period": "本期",
+      "amount": 1900,
+      "density_per_1000": 6.7731098e-8,
+      "mean": 799.99993,
+      "sample_size": 2000,
+      "bandwidth": 68.73027511898557,
+      "below_600_pct": 55.50000000000001,
+      "above_1100_pct": 36.55
+    },
+    {
+      "period": "本期",
+      "amount": 1920,
+      "density_per_1000": 1.5652544e-8,
+      "mean": 799.99993,
+      "sample_size": 2000,
+      "bandwidth": 68.73027511898557,
+      "below_600_pct": 55.50000000000001,
+      "above_1100_pct": 36.55
+    },
+    {
+      "period": "本期",
+      "amount": 1940,
+      "density_per_1000": 3.330473e-9,
+      "mean": 799.99993,
+      "sample_size": 2000,
+      "bandwidth": 68.73027511898557,
+      "below_600_pct": 55.50000000000001,
+      "above_1100_pct": 36.55
+    },
+    {
+      "period": "本期",
+      "amount": 1960,
+      "density_per_1000": 6.52193e-10,
+      "mean": 799.99993,
+      "sample_size": 2000,
+      "bandwidth": 68.73027511898557,
+      "below_600_pct": 55.50000000000001,
+      "above_1100_pct": 36.55
+    },
+    {
+      "period": "本期",
+      "amount": 1980,
+      "density_per_1000": 1.17506e-10,
+      "mean": 799.99993,
+      "sample_size": 2000,
+      "bandwidth": 68.73027511898557,
+      "below_600_pct": 55.50000000000001,
+      "above_1100_pct": 36.55
+    },
+    {
+      "period": "本期",
+      "amount": 2000,
+      "density_per_1000": 1.9474e-11,
+      "mean": 799.99993,
+      "sample_size": 2000,
+      "bandwidth": 68.73027511898557,
+      "below_600_pct": 55.50000000000001,
+      "above_1100_pct": 36.55
+    },
+    {
+      "period": "本期",
+      "amount": 2020,
+      "density_per_1000": 2.968e-12,
+      "mean": 799.99993,
+      "sample_size": 2000,
+      "bandwidth": 68.73027511898557,
+      "below_600_pct": 55.50000000000001,
+      "above_1100_pct": 36.55
+    },
+    {
+      "period": "本期",
+      "amount": 2040,
+      "density_per_1000": 4.16e-13,
+      "mean": 799.99993,
+      "sample_size": 2000,
+      "bandwidth": 68.73027511898557,
+      "below_600_pct": 55.50000000000001,
+      "above_1100_pct": 36.55
+    },
+    {
+      "period": "本期",
+      "amount": 2060,
+      "density_per_1000": 5.4e-14,
+      "mean": 799.99993,
+      "sample_size": 2000,
+      "bandwidth": 68.73027511898557,
+      "below_600_pct": 55.50000000000001,
+      "above_1100_pct": 36.55
+    },
+    {
+      "period": "本期",
+      "amount": 2080,
+      "density_per_1000": 6e-15,
+      "mean": 799.99993,
+      "sample_size": 2000,
+      "bandwidth": 68.73027511898557,
+      "below_600_pct": 55.50000000000001,
+      "above_1100_pct": 36.55
+    },
+    {
+      "period": "本期",
+      "amount": 2100,
+      "density_per_1000": 6.911847162737e-16,
+      "mean": 799.99993,
+      "sample_size": 2000,
+      "bandwidth": 68.73027511898557,
+      "below_600_pct": 55.50000000000001,
+      "above_1100_pct": 36.55
+    },
+    {
+      "period": "本期",
+      "amount": 2120,
+      "density_per_1000": 6.91775316647167e-17,
+      "mean": 799.99993,
+      "sample_size": 2000,
+      "bandwidth": 68.73027511898557,
+      "below_600_pct": 55.50000000000001,
+      "above_1100_pct": 36.55
+    },
+    {
+      "period": "本期",
+      "amount": 2140,
+      "density_per_1000": 6.36385963294192e-18,
+      "mean": 799.99993,
+      "sample_size": 2000,
+      "bandwidth": 68.73027511898557,
+      "below_600_pct": 55.50000000000001,
+      "above_1100_pct": 36.55
+    },
+    {
+      "period": "本期",
+      "amount": 2160,
+      "density_per_1000": 5.38076558545666e-19,
+      "mean": 799.99993,
+      "sample_size": 2000,
+      "bandwidth": 68.73027511898557,
+      "below_600_pct": 55.50000000000001,
+      "above_1100_pct": 36.55
+    },
+    {
+      "period": "本期",
+      "amount": 2180,
+      "density_per_1000": 4.18140321991181e-20,
+      "mean": 799.99993,
+      "sample_size": 2000,
+      "bandwidth": 68.73027511898557,
+      "below_600_pct": 55.50000000000001,
+      "above_1100_pct": 36.55
+    },
+    {
+      "period": "本期",
+      "amount": 2200,
+      "density_per_1000": 2.98636982971607e-21,
+      "mean": 799.99993,
+      "sample_size": 2000,
+      "bandwidth": 68.73027511898557,
+      "below_600_pct": 55.50000000000001,
+      "above_1100_pct": 36.55
+    },
+    {
+      "period": "本期",
+      "amount": 2220,
+      "density_per_1000": 1.96019716306118e-22,
+      "mean": 799.99993,
+      "sample_size": 2000,
+      "bandwidth": 68.73027511898557,
+      "below_600_pct": 55.50000000000001,
+      "above_1100_pct": 36.55
+    },
+    {
+      "period": "本期",
+      "amount": 2240,
+      "density_per_1000": 1.18245113474289e-23,
+      "mean": 799.99993,
+      "sample_size": 2000,
+      "bandwidth": 68.73027511898557,
+      "below_600_pct": 55.50000000000001,
+      "above_1100_pct": 36.55
+    },
+    {
+      "period": "本期",
+      "amount": 2260,
+      "density_per_1000": 6.55522869654878e-25,
+      "mean": 799.99993,
+      "sample_size": 2000,
+      "bandwidth": 68.73027511898557,
+      "below_600_pct": 55.50000000000001,
+      "above_1100_pct": 36.55
+    },
+    {
+      "period": "本期",
+      "amount": 2280,
+      "density_per_1000": 3.33970900961964e-26,
+      "mean": 799.99993,
+      "sample_size": 2000,
+      "bandwidth": 68.73027511898557,
+      "below_600_pct": 55.50000000000001,
+      "above_1100_pct": 36.55
+    },
+    {
+      "period": "本期",
+      "amount": 2300,
+      "density_per_1000": 1.56365628669065e-27,
+      "mean": 799.99993,
+      "sample_size": 2000,
+      "bandwidth": 68.73027511898557,
+      "below_600_pct": 55.50000000000001,
+      "above_1100_pct": 36.55
+    },
+    {
+      "period": "本期",
+      "amount": 2320,
+      "density_per_1000": 6.72794231221579e-29,
+      "mean": 799.99993,
+      "sample_size": 2000,
+      "bandwidth": 68.73027511898557,
+      "below_600_pct": 55.50000000000001,
+      "above_1100_pct": 36.55
+    },
+    {
+      "period": "本期",
+      "amount": 2340,
+      "density_per_1000": 2.66028681434863e-30,
+      "mean": 799.99993,
+      "sample_size": 2000,
+      "bandwidth": 68.73027511898557,
+      "below_600_pct": 55.50000000000001,
+      "above_1100_pct": 36.55
+    },
+    {
+      "period": "本期",
+      "amount": 2360,
+      "density_per_1000": 9.66667858550069e-32,
+      "mean": 799.99993,
+      "sample_size": 2000,
+      "bandwidth": 68.73027511898557,
+      "below_600_pct": 55.50000000000001,
+      "above_1100_pct": 36.55
+    },
+    {
+      "period": "本期",
+      "amount": 2380,
+      "density_per_1000": 3.22794730192246e-33,
+      "mean": 799.99993,
+      "sample_size": 2000,
+      "bandwidth": 68.73027511898557,
+      "below_600_pct": 55.50000000000001,
+      "above_1100_pct": 36.55
+    },
+    {
+      "period": "本期",
+      "amount": 2400,
+      "density_per_1000": 9.90544401923532e-35,
+      "mean": 799.99993,
+      "sample_size": 2000,
+      "bandwidth": 68.73027511898557,
+      "below_600_pct": 55.50000000000001,
+      "above_1100_pct": 36.55
+    }
+  ],
+  "schema": [
+    {
+      "name": "period",
+      "type": "object"
+    },
+    {
+      "name": "amount",
+      "type": "float64"
+    },
+    {
+      "name": "density_per_1000",
+      "type": "float64"
+    },
+    {
+      "name": "mean",
+      "type": "float64"
+    },
+    {
+      "name": "sample_size",
+      "type": "int64"
+    },
+    {
+      "name": "bandwidth",
+      "type": "float64"
+    },
+    {
+      "name": "below_600_pct",
+      "type": "float64"
+    },
+    {
+      "name": "above_1100_pct",
+      "type": "float64"
+    }
+  ],
+  "rowCount": 242
+}

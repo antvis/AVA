@@ -1,0 +1,4 @@
+Error: Failed to extract statements: Parser Error: syntax error at or near "month"
+
+LINE 1: SELECT strftime(completed_at,'%Y-%m') month, COUNT(DISTINCT order_id) orders, ROUND(SUM(ROUND...
+                                              ^

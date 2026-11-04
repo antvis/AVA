@@ -1,0 +1,39 @@
+Read or replace business definitions.
+
+Usage:
+  ava semantic <dataset-id> [--file <path>]
+
+Returns the session's semantic definitions as JSON (initially {}).
+Use the datasetId returned by ava source. No API key is required.
+Definitions guide analyze, translate and suggest; query executes DSL as written.
+
+Options:
+  --file <path>  Replace the complete definition with a Semantic JSON file.
+                 Does not replace schema or profile. Use a file containing {} to clear.
+  -h, --help     Show help.
+
+Keep the JSON file to reuse definitions after the session expires or is disposed.
+
+Example:
+  ava semantic ds_...
+  ava semantic ds_... --file semantic.json
+Execute a query in the dataset engine's language.
+
+Usage:
+  ava query <dataset-id> --dsl <code|@file|-> [options]
+
+Use the datasetId returned by ava source. Returns query results as JSON.
+Use ava schema to find the query language, table and field names. No API key is required.
+SQL engines require a read-only SELECT; Python/JavaScript execute analysis code.
+Local Python execution is not sandboxed. Engine selection is fixed by ava source.
+
+Options:
+  --dsl <code|@file|->     Required SQL, Python or JavaScript, @file, or - for stdin (max: 512 KiB).
+  --max-rows <n>          Maximum result rows, 1-10000 (default: 200).
+  --max-result-bytes <n>  Positive integer byte limit for result data
+                         (default: 1048576, or 1 MiB).
+  -h, --help              Show help.
+
+Examples:
+  ava query ds_... --dsl 'SELECT 1 AS value'
+  ava query ds_... --dsl @query.sql

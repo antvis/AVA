@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <title>Data Visualization</title>
+    <script src="https://unpkg.com/@antv/gpt-vis/dist/umd/index.min.js"></script>
+    <style>
+      html, body, #container {
+        margin: 0;
+        padding: 0;
+        font-family: Arial, sans-serif;
+        width: 100%;
+        height: 100%;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="container"></div>
+    <script>
+      const gptVis = new GPTVis.GPTVis({
+        container: '#container',
+      });
+
+      const visConfig = {"type":"line","title":"注册队列留存 前期7月1至14日 近期7月22日至8月4日","data":[{"time":"D0","value":100,"group":"前期"},{"time":"D1","value":70,"group":"前期"},{"time":"D3","value":60,"group":"前期"},{"time":"D7","value":50,"group":"前期"},{"time":"D0","value":100,"group":"近期"},{"time":"D1","value":50,"group":"近期"},{"time":"D3","value":40,"group":"近期"},{"time":"D7","value":30,"group":"近期"}],"axisXTitle":"注册后天数","axisYTitle":"留存率 %"};
+
+      gptVis.render(visConfig);
+    </script>
+  </body>
+</html>

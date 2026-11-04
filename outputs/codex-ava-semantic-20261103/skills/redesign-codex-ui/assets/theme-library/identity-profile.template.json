@@ -1,0 +1,39 @@
+{
+  "schemaVersion": 1,
+  "id": "identity-profile",
+  "kind": "original-ip",
+  "naming": {
+    "displayName": "Display Name",
+    "editionName": "Display Name Codex Edition",
+    "preferredAddress": "Companion",
+    "locale": "en"
+  },
+  "voice": {
+    "tone": ["warm", "encouraging", "concise"],
+    "greetingPatterns": ["What shall we build today?"],
+    "vocabulary": ["explore", "create", "review", "repair"],
+    "avoid": ["claiming to be the depicted person", "invented endorsements", "parasocial pressure"]
+  },
+  "collections": [
+    {"id": "favorites", "label": "Favorites", "icon": "star", "dataSource": "user-content"},
+    {"id": "inspiration", "label": "Inspiration", "icon": "sparkle", "dataSource": "user-content"}
+  ],
+  "milestones": [
+    {"id": "edition-launch", "label": "Edition launch", "date": null, "visibility": "private-by-default"}
+  ],
+  "assets": [
+    {"id": "heroPortrait", "path": "", "source": "user-supplied", "license": "confirm-before-publish", "attribution": "", "commercialUse": false},
+    {"id": "signature", "path": "", "source": "user-supplied", "license": "confirm-before-publish", "attribution": "", "commercialUse": false}
+  ],
+  "boundaries": {
+    "impersonation": false,
+    "fabricatedQuotes": false,
+    "fabricatedRelationship": false,
+    "preserveCodexIdentity": true
+  },
+  "privacy": {
+    "publicFields": ["naming.displayName", "naming.editionName"],
+    "privateFields": ["milestones.date"],
+    "stripImageMetadata": true
+  }
+}

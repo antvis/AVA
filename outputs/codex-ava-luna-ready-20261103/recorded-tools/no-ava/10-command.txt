@@ -1,0 +1,43 @@
+/bin/zsh -lc "python3 - <<'PY'
+import csv,collections
+from decimal import Decimal
+from pathlib import Path
+rows=list(csv.DictReader(open('inputs/sales.csv',newline='',encoding='utf-8-sig')))
+def n(r):return Decimal(r['line_paid_amount'] or '0')-Decimal(r['refund_amount'] or '0')
+months=['2026-08','2026-09']
+vals={m:sum(n(r) for r in rows if r['paid_at'].startswith(m) and r['order_kind']=='customer_sale') for m in months}
+delta=vals[months[1]]-vals[months[0]]; pct=delta/vals[months[0]]*100
+completed={m:sum(n(r) for r in rows if r['paid_at'].startswith(m) and r['order_kind']=='customer_sale' and r['status']=='completed') for m in months}
+deltas={}
+for f in ['business_model','selling_region','selling_city','product_name','channel']:
+ d={m:collections.defaultdict(Decimal) for m in months}
+ for r in rows:
+  m=r['paid_at'][:7]
+  if m in d and r['order_kind']=='customer_sale':d[m][r[f]]+=n(r)
+ deltas[f]={k:d[months[1]][k]-d[months[0]][k] for k in set(d[months[0]])|set(d[months[1]])}
+print(vals,delta,pct,completed)
+print({f:sorted(v.items(),key=lambda x:-x[1]) for f,v in deltas.items()})
+# SVG chart
+W,H=1200,720; parts=[f'<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"{W}\" height=\"{H}\" viewBox=\"0 0 {W} {H}\">','<rect width=\"100%\" height=\"100%\" fill=\"#fbfaf7\"/>','<style>text{font-family:Arial,\"Noto Sans CJK SC\",sans-serif;fill:#23312f}.title{font-size:27px;font-weight:700}.sub{font-size:15px;fill:#566560}.label{font-size:16px}.small{font-size:13px;fill:#68746f}</style>']
+parts += ['<text x=\"55\" y=\"52\" class=\"title\">2026年9月净销售额较8月变化</text>', '<text x=\"55\" y=\"81\" class=\"sub\">客户销售 | 付款月份 | 净额 = 行实收 − 退款 | 单位：百万元</text>']
+# total bars
+parts += ['<text x=\"55\" y=\"135\" class=\"label\" font-weight=\"700\">月度净额</text>']
+for m,x,col in [(months[0],150,'#9bbab1'),(months[1],375,'#2f7d70')]:
+ v=float(vals[m])/1e6; h=v*28; y=295-h
+ parts.append(f'<rect x=\"{x}\" y=\"{y:.1f}\" width=\"105\" height=\"{h:.1f}\" rx=\"6\" fill=\"{col}\"/>')
+ parts.append(f'<text x=\"{x+52}\" y=\"{y-10:.1f}\" text-anchor=\"middle\" class=\"label\" font-weight=\"700\">¥{v:.2f}m</text>')
+ parts.append(f'<text x=\"{x+52}\" y=\"318\" text-anchor=\"middle\" class=\"label\">{m[5:]}</text>')
+parts += [f'<text x=\"550\" y=\"205\" class=\"title\" fill=\"#2f7d70\">+¥{float(delta)/1e6:.2f}m  ({float(pct):+.1f}%)</text>','<text x=\"550\" y=\"235\" class=\"sub\">主要增长：自营 +2.11m、华北 +2.69m、升降桌 +2.12m</text>','<line x1=\"55\" y1=\"350\" x2=\"1145\" y2=\"350\" stroke=\"#d7ddd8\"/>','<text x=\"55\" y=\"388\" class=\"label\" font-weight=\"700\">变化来源（各分组是独立观察维度，不应相加）</text>']
+items=[('经营模式 · 自营',deltas['business_model']['self_operated']),('经营模式 · 寄售',deltas['business_model']['consignment']),('销售区域 · 华北',deltas['selling_region']['华北']),('销售区域 · 华南',deltas['selling_region']['华南']),('销售区域 · 华东',deltas['selling_region']['华东']),('品类 · 家具',sum((n(r) if r['category']=='家具' else 0) for r in rows if r['paid_at'].startswith(months[1]) and r['order_kind']=='customer_sale')-sum((n(r) if r['category']=='家具' else 0) for r in rows if r['paid_at'].startswith(months[0]) and r['order_kind']=='customer_sale')),('渠道 · 线上',deltas['channel']['线上商城']),('城市 · 北京',deltas['selling_city']['北京']),('商品 · 升降桌',deltas['product_name']['电动升降桌']),('商品 · 人体工学椅 Pro',deltas['product_name']['人体工学椅Pro'])]
+maxv=max(abs(float(v)/1e6) for _,v in items); scale=255/maxv; xzero=485
+for i,(label,v) in enumerate(items):
+ y=420+i*26; f=float(v)/1e6; width=abs(f)*scale; color='#2f7d70' if f>=0 else '#c46b55'; x=xzero if f>=0 else xzero-width
+ parts.append(f'<text x=\"55\" y=\"{y+5}\" class=\"small\">{label}</text>')
+ parts.append(f'<rect x=\"{x:.1f}\" y=\"{y-9}\" width=\"{width:.1f}\" height=\"16\" rx=\"3\" fill=\"{color}\"/>')
+ parts.append(f'<text x=\"{xzero+270 if f>=0 else xzero-270}\" y=\"{y+5}\" class=\"small\">{f:+.2f}</text>')
+parts += ['<line x1=\"485\" y1=\"405\" x2=\"485\" y2=\"684\" stroke=\"#9aa6a0\" stroke-width=\"1\"/>','<text x=\"55\" y=\"710\" class=\"small\">状态提示：9月 paid 客户销售 1,189 行（8月 189 行）；按已完成订单行口径，净额变化为 -27.1%。</text>','</svg>']
+Path('output/september_vs_august_net_sales.svg').write_text('\\n'.join(parts),encoding='utf-8')
+report=f'''# 2026年9月净销售额变化\\n\\n**结论：** 按付款月份统计客户销售（"'`order_kind=customer_sale`），逐行净额定义为 `line_paid_amount − refund_amount`。净额从 8 月 **¥{vals[months[0]]:,.2f}** 增至 9 月 **¥{vals[months[1]]:,.2f}**，增加 **¥{delta:,.2f}（{pct:.1f}%）**。'"\\n\\n**主要来自：**\\n\\n- 经营模式：自营增加 **¥{deltas['business_model']['self_operated']:,.2f}**；寄售减少 **¥{abs(deltas['business_model']['consignment']):,.2f}**。\\n- 区域：华北增加 **¥{deltas['selling_region']['华北']:,.2f}**，北京单城增加 **¥{deltas['selling_city']['北京']:,.2f}**；华东、华南分别减少 **¥{abs(deltas['selling_region']['华东']):,.2f}**、**¥{abs(deltas['selling_region']['华南']):,.2f}**。\\n- 商品：电动升降桌增加 **¥{deltas['product_name']['电动升降桌']:,.2f}**；人体工学椅 Pro 减少 **¥{abs(deltas['product_name']['人体工学椅Pro']):,.2f}**。线上渠道增加 **¥{deltas['channel']['线上商城']:,.2f}**。\\n\\n**需注意状态变化：** 9 月客户销售的 "'`paid` 状态有 1,189 行，8 月为 189 行。按仅含已完成订单行计算，净额由 **¥{completed[months[0]]:,.2f}** 降至 **¥{completed[months[1]]:,.2f}**（**{(completed[months[1]]/completed[months[0]]-1)*100:.1f}%**）。所以总体付款口径的上升包含大量尚未完成订单的付款，不能直接等同于已完成销售增长。'"\\n\\n"'![图表：2026年9月净销售额变化](september_vs_august_net_sales.svg)'"\\n'''
+Path('output/september_vs_august_net_sales.md').write_text(report,encoding='utf-8')
+PY
+rg --files output"

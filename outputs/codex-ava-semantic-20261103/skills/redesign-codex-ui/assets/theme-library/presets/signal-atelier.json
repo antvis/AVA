@@ -1,0 +1,86 @@
+{
+  "schemaVersion": 1,
+  "id": "signal-atelier",
+  "label": "Signal Atelier",
+  "category": "signal-workbench",
+  "appearance": "dark",
+  "tags": ["developer", "technical", "dark", "blueprint", "focused"],
+  "derivedFrom": "original-archetype",
+  "concept": {
+    "identityIntensity": "medium",
+    "thesis": "A midnight instrument panel where every task reads as a clear, live signal.",
+    "mood": ["precise", "tactile", "quietly-electric"],
+    "forbiddenMotifs": ["purple-gradient", "glass-dashboard", "constant-glow", "dense-decoration"]
+  },
+  "layout": {
+    "archetype": "instrument-rail-signal-canvas",
+    "navigation": "indexed-technical-rail",
+    "hero": "blueprint-signal-field",
+    "composer": "transmission-deck",
+    "density": "medium-high"
+  },
+  "runtime": {
+    "variant": "signal-atelier",
+    "badgeLabel": "SIGNAL ATELIER / LIVE",
+    "avatarOpacity": 0.14
+  },
+  "palette": {
+    "canvas": "#160E1A",
+    "surface": "#211426",
+    "surfaceRaised": "#2C1B31",
+    "ink": "#F5EEF6",
+    "mutedInk": "#B9A5BC",
+    "accent": "#7FE0C3",
+    "accentSoft": "#283A38",
+    "line": "#59405E",
+    "focus": "#F0A6D2"
+  },
+  "typography": {
+    "display": "technical-grotesk",
+    "body": "humanist-sans",
+    "code": "system-monospace",
+    "accent": "tabular-caps"
+  },
+  "shape": {
+    "panelRadius": 10,
+    "controlRadius": 7,
+    "elevation": "instrument-shadow"
+  },
+  "decoration": {
+    "level": "medium",
+    "motifs": ["blueprint-grid", "signal-pip", "coordinate-label"],
+    "pointerEvents": "none"
+  },
+  "motion": {
+    "character": "signal-lock",
+    "durationMs": 140,
+    "reducedMotion": "instant"
+  },
+  "mediaSlots": [
+    {"id": "heroPortrait", "role": "operator-watermark", "aspect": "4:5", "focalPoint": "50% 24%", "fallback": "signal-monogram"},
+    {"id": "statusMark", "role": "accent", "aspect": "5:1", "focalPoint": "50% 50%", "fallback": "live-status"}
+  ],
+  "quickActions": [
+    {"id": "explore", "label": "Scan the codebase"},
+    {"id": "build", "label": "Open a build channel"},
+    {"id": "review", "label": "Inspect the signal"},
+    {"id": "fix", "label": "Repair the fault line"}
+  ],
+  "responsive": {
+    "narrowNavigation": "indexed-icon-rail",
+    "narrowHero": "compact-signal-field",
+    "narrowCards": "two-column-grid",
+    "hideMotifs": ["coordinate-label"],
+    "missingMedia": "signal-monogram"
+  },
+  "assetPolicy": {
+    "provenance": "required",
+    "remoteHotlink": false,
+    "licensedOrOwned": true
+  },
+  "accessibility": {
+    "contrastTarget": "WCAG-AA",
+    "preserveSemanticStates": true,
+    "decorationAriaHidden": true
+  }
+}

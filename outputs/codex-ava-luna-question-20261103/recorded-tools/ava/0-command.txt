@@ -1,0 +1,1 @@
+/bin/zsh -lc 'cat .agents/skills/ava/SKILL.md && pwd && rg --files inputs output'

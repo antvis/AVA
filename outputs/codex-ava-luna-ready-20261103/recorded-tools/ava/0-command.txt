@@ -1,0 +1,1 @@
+/bin/zsh -lc "cat .agents/skills/ava/SKILL.md && printf '\\n---FILES---\\n' && rg --files inputs output 2>/dev/null"

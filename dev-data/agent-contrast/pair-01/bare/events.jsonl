@@ -1,0 +1,1022 @@
+{"type":"start"}
+{"type":"start-step","request":{},"warnings":[]}
+{"type":"text-start","id":"0"}
+{"type":"text-delta","id":"0","text":"让我"}
+{"type":"text-delta","id":"0","text":"先检查"}
+{"type":"text-delta","id":"0","text":"一下"}
+{"type":"text-delta","id":"0","text":"数据的"}
+{"type":"text-delta","id":"0","text":"结构和内容，然后"}
+{"type":"text-delta","id":"0","text":"分析净销售额与"}
+{"type":"text-delta","id":"0","text":"投放"}
+{"type":"text-delta","id":"0","text":"之间的关系。"}
+{"type":"tool-input-start","id":"fc-b4bca5cf-6ce9-44dc-ba86-9b945d799f17","toolName":"execute_javascript","dynamic":false}
+{"type":"tool-input-delta","id":"fc-b4bca5cf-6ce9-44dc-ba86-9b945d799f17","delta":"{\"code\": \""}
+{"type":"tool-input-delta","id":"fc-b4bca5cf-6ce9-44dc-ba86-9b945d799f17","delta":"//"}
+{"type":"tool-input-delta","id":"fc-b4bca5cf-6ce9-44dc-ba86-9b945d799f17","delta":" 查看数据结构和"}
+{"type":"tool-input-delta","id":"fc-b4bca5cf-6ce9-44dc-ba86-9b945d799f17","delta":"前几条"}
+{"type":"tool-input-delta","id":"fc-b4bca5cf-6ce9-44dc-ba86-9b945d799f17","delta":"记录\\nresult"}
+{"type":"tool-input-delta","id":"fc-b4bca5cf-6ce9-44dc-ba86-9b945d799f17","delta":" = {\\n  total"}
+{"type":"tool-input-delta","id":"fc-b4bca5cf-6ce9-44dc-ba86-9b945d799f17","delta":"Rows: data.length"}
+{"type":"tool-input-delta","id":"fc-b4bca5cf-6ce9-44dc-ba86-9b945d799f17","delta":",\\n  columns"}
+{"type":"tool-input-delta","id":"fc-b4bca5cf-6ce9-44dc-ba86-9b945d799f17","delta":": Object"}
+{"type":"tool-input-delta","id":"fc-b4bca5cf-6ce9-44dc-ba86-9b945d799f17","delta":".keys(data[0"}
+{"type":"tool-input-delta","id":"fc-b4bca5cf-6ce9-44dc-ba86-9b945d799f17","delta":"]),\\n  sample:"}
+{"type":"tool-input-delta","id":"fc-b4bca5cf-6ce9-44dc-ba86-9b945d799f17","delta":" data.slice(0"}
+{"type":"tool-input-delta","id":"fc-b4bca5cf-6ce9-44dc-ba86-9b945d799f17","delta":", 5),"}
+{"type":"tool-input-delta","id":"fc-b4bca5cf-6ce9-44dc-ba86-9b945d799f17","delta":"\\n  dt"}
+{"type":"tool-input-delta","id":"fc-b4bca5cf-6ce9-44dc-ba86-9b945d799f17","delta":"ypes: Object"}
+{"type":"tool-input-delta","id":"fc-b4bca5cf-6ce9-44dc-ba86-9b945d799f17","delta":".fromEntries(Object"}
+{"type":"tool-input-delta","id":"fc-b4bca5cf-6ce9-44dc-ba86-9b945d799f17","delta":".keys"}
+{"type":"tool-input-delta","id":"fc-b4bca5cf-6ce9-44dc-ba86-9b945d799f17","delta":"(data[0])."}
+{"type":"tool-input-delta","id":"fc-b4bca5cf-6ce9-44dc-ba86-9b945d799f17","delta":"map(k => ["}
+{"type":"tool-input-delta","id":"fc-b4bca5cf-6ce9-44dc-ba86-9b945d799f17","delta":"k, typeof data["}
+{"type":"tool-input-delta","id":"fc-b4bca5cf-6ce9-44dc-ba86-9b945d799f17","delta":"0]["}
+{"type":"tool-input-delta","id":"fc-b4bca5cf-6ce9-44dc-ba86-9b945d799f17","delta":"k]]))"}
+{"type":"tool-input-delta","id":"fc-b4bca5cf-6ce9-44dc-ba86-9b945d799f17","delta":"\\n};\"}"}
+{"type":"text-end","id":"0"}
+{"type":"tool-input-end","id":"fc-b4bca5cf-6ce9-44dc-ba86-9b945d799f17"}
+{"type":"tool-call","toolCallId":"fc-b4bca5cf-6ce9-44dc-ba86-9b945d799f17","toolName":"execute_javascript","input":{"code":"// 查看数据结构和前几条记录\nresult = {\n  totalRows: data.length,\n  columns: Object.keys(data[0]),\n  sample: data.slice(0, 5),\n  dtypes: Object.fromEntries(Object.keys(data[0]).map(k => [k, typeof data[0][k]]))\n};"}}
+{"type":"tool-result","toolCallId":"fc-b4bca5cf-6ce9-44dc-ba86-9b945d799f17","toolName":"execute_javascript","input":{"code":"// 查看数据结构和前几条记录\nresult = {\n  totalRows: data.length,\n  columns: Object.keys(data[0]),\n  sample: data.slice(0, 5),\n  dtypes: Object.fromEntries(Object.keys(data[0]).map(k => [k, typeof data[0][k]]))\n};"},"output":{"result":{"totalRows":304,"columns":["period","channel","category","region","net_sales_cents","contribution_cents"],"sample":[{"period":"基期","channel":"品牌词搜索","category":"办公椅","region":"华东","net_sales_cents":19492629,"contribution_cents":8246612},{"period":"基期","channel":"品牌词搜索","category":"办公椅","region":"华北","net_sales_cents":12434905,"contribution_cents":5294923},{"period":"基期","channel":"品牌词搜索","category":"办公椅","region":"华南","net_sales_cents":8247186,"contribution_cents":3479832},{"period":"基期","channel":"品牌词搜索","category":"办公椅","region":"西部","net_sales_cents":9931110,"contribution_cents":4193466},{"period":"基期","channel":"品牌词搜索","category":"升降桌","region":"华东","net_sales_cents":43603896,"contribution_cents":18776266}],"dtypes":{"period":"string","channel":"string","category":"string","region":"string","net_sales_cents":"number","contribution_cents":"number"}}},"dynamic":false}
+{"type":"finish-step","finishReason":"tool-calls","rawFinishReason":"tool_calls","usage":{"inputTokens":327,"inputTokenDetails":{"noCacheTokens":327,"cacheReadTokens":0},"outputTokens":152,"outputTokenDetails":{"textTokens":152,"reasoningTokens":0},"totalTokens":479,"raw":{"prompt_tokens":327,"completion_tokens":152,"total_tokens":479,"prompt_tokens_details":{"cached_tokens":0},"completion_tokens_details":{}}},"performance":{"stepTimeMs":3166.5784999999996,"toolExecutionMs":{"fc-b4bca5cf-6ce9-44dc-ba86-9b945d799f17":1.466041000000132},"responseTimeMs":3163.234042,"effectiveOutputTokensPerSecond":48.052087825880825,"outputTokensPerSecond":98.52461546803521,"inputTokensPerSecond":201.7930111273881,"effectiveTotalTokensPerSecond":151.42730308287446,"timeToFirstOutputMs":1620.4723749999998,"timeBetweenOutputChunksMs":{"min":23.914999999999964,"p10":43.06391699999995,"median":47.07583399999976,"avg":49.71706048387097,"p90":53.990334000000075,"max":95.8857079999998}},"providerMetadata":{"openai":{}},"response":{"id":"0b43d47017931069782507849e02a9","timestamp":"2026-10-27T13:16:18.000Z","modelId":"GLM-5.1","headers":{"access-control-allow-headers":"authorization, content-type, x-stainless-retry-count","access-control-allow-origin":"http://127.0.0.1:3000","connection":"keep-alive","content-type":"text/event-stream","date":"Tue, 27 Oct 2026 13:16:18 GMT","keep-alive":"timeout=5","transfer-encoding":"chunked"}}}
+{"type":"start-step","request":{},"warnings":[]}
+{"type":"text-start","id":"aitxt-FROBLAKPz3bgqfgIPLjkhm9B"}
+{"type":"tool-input-start","id":"fc-2d0e5a89-2ee4-434d-ba7a-af71ad5b9d97","toolName":"execute_javascript","dynamic":false}
+{"type":"tool-input-delta","id":"fc-2d0e5a89-2ee4-434d-ba7a-af71ad5b9d97","delta":"{\"code\": \""}
+{"type":"tool-input-delta","id":"fc-2d0e5a89-2ee4-434d-ba7a-af71ad5b9d97","delta":"// 查看"}
+{"type":"tool-input-delta","id":"fc-2d0e5a89-2ee4-434d-ba7a-af71ad5b9d97","delta":"period和"}
+{"type":"tool-input-delta","id":"fc-2d0e5a89-2ee4-434d-ba7a-af71ad5b9d97","delta":"channel的取"}
+{"type":"tool-input-delta","id":"fc-2d0e5a89-2ee4-434d-ba7a-af71ad5b9d97","delta":"值\\nresult"}
+{"type":"tool-input-delta","id":"fc-2d0e5a89-2ee4-434d-ba7a-af71ad5b9d97","delta":" = {\\n  periods"}
+{"type":"tool-input-delta","id":"fc-2d0e5a89-2ee4-434d-ba7a-af71ad5b9d97","delta":": [..."}
+{"type":"tool-input-delta","id":"fc-2d0e5a89-2ee4-434d-ba7a-af71ad5b9d97","delta":"new Set(data.map"}
+{"type":"tool-input-delta","id":"fc-2d0e5a89-2ee4-434d-ba7a-af71ad5b9d97","delta":"(d => d"}
+{"type":"tool-input-delta","id":"fc-2d0e5a89-2ee4-434d-ba7a-af71ad5b9d97","delta":".period))],"}
+{"type":"tool-input-delta","id":"fc-2d0e5a89-2ee4-434d-ba7a-af71ad5b9d97","delta":"\\n  channels: [...new"}
+{"type":"tool-input-delta","id":"fc-2d0e5a89-2ee4-434d-ba7a-af71ad5b9d97","delta":" Set(data.map(d"}
+{"type":"tool-input-delta","id":"fc-2d0e5a89-2ee4-434d-ba7a-af71ad5b9d97","delta":" => d.channel"}
+{"type":"tool-input-delta","id":"fc-2d0e5a89-2ee4-434d-ba7a-af71ad5b9d97","delta":"))],\\n  categories"}
+{"type":"tool-input-delta","id":"fc-2d0e5a89-2ee4-434d-ba7a-af71ad5b9d97","delta":": [...new Set"}
+{"type":"tool-input-delta","id":"fc-2d0e5a89-2ee4-434d-ba7a-af71ad5b9d97","delta":"(data.map(d =>"}
+{"type":"tool-input-delta","id":"fc-2d0e5a89-2ee4-434d-ba7a-af71ad5b9d97","delta":" d.category))],"}
+{"type":"tool-input-delta","id":"fc-2d0e5a89-2ee4-434d-ba7a-af71ad5b9d97","delta":"\\n  regions: [..."}
+{"type":"tool-input-delta","id":"fc-2d0e5a89-2ee4-434d-ba7a-af71ad5b9d97","delta":"new Set(data.map"}
+{"type":"tool-input-delta","id":"fc-2d0e5a89-2ee4-434d-ba7a-af71ad5b9d97","delta":"(d => d.region"}
+{"type":"tool-input-delta","id":"fc-2d0e5a89-2ee4-434d-ba7a-af71ad5b9d97","delta":"))]\\n};\""}
+{"type":"tool-input-delta","id":"fc-2d0e5a89-2ee4-434d-ba7a-af71ad5b9d97","delta":"}"}
+{"type":"text-end","id":"aitxt-FROBLAKPz3bgqfgIPLjkhm9B"}
+{"type":"tool-input-end","id":"fc-2d0e5a89-2ee4-434d-ba7a-af71ad5b9d97"}
+{"type":"tool-call","toolCallId":"fc-2d0e5a89-2ee4-434d-ba7a-af71ad5b9d97","toolName":"execute_javascript","input":{"code":"// 查看period和channel的取值\nresult = {\n  periods: [...new Set(data.map(d => d.period))],\n  channels: [...new Set(data.map(d => d.channel))],\n  categories: [...new Set(data.map(d => d.category))],\n  regions: [...new Set(data.map(d => d.region))]\n};"}}
+{"type":"tool-result","toolCallId":"fc-2d0e5a89-2ee4-434d-ba7a-af71ad5b9d97","toolName":"execute_javascript","input":{"code":"// 查看period和channel的取值\nresult = {\n  periods: [...new Set(data.map(d => d.period))],\n  channels: [...new Set(data.map(d => d.channel))],\n  categories: [...new Set(data.map(d => d.category))],\n  regions: [...new Set(data.map(d => d.region))]\n};"},"output":{"result":{"periods":["基期","本期"],"channels":["品牌词搜索","直接访问","社交重定向","线下到店","自然搜索","通用词搜索","社交拓新"],"categories":["办公椅","升降桌","收纳","显示器","桌面配件","精选代销"],"regions":["华东","华北","华南","西部"]}},"dynamic":false}
+{"type":"finish-step","finishReason":"tool-calls","rawFinishReason":"tool_calls","usage":{"inputTokens":700,"inputTokenDetails":{"noCacheTokens":700,"cacheReadTokens":0},"outputTokens":81,"outputTokenDetails":{"textTokens":81,"reasoningTokens":0},"totalTokens":781,"raw":{"prompt_tokens":700,"completion_tokens":81,"total_tokens":781,"prompt_tokens_details":{"cached_tokens":0},"completion_tokens_details":{}}},"performance":{"stepTimeMs":2078.423709,"toolExecutionMs":{"fc-2d0e5a89-2ee4-434d-ba7a-af71ad5b9d97":1.41662499999984},"responseTimeMs":2074.7011669999997,"effectiveOutputTokensPerSecond":39.04176721369724,"outputTokensPerSecond":57.61589342358278,"inputTokensPerSecond":1046.5895576260764,"effectiveTotalTokensPerSecond":376.43975548021666,"timeToFirstOutputMs":668.8390829999994,"timeBetweenOutputChunksMs":{"min":0.2670829999997295,"p10":43.997167000000445,"median":53.60308400000031,"avg":63.85693181818181,"p90":58.60791700000027,"max":332.36562500000036}},"providerMetadata":{"openai":{}},"response":{"id":"0b43d47017931069813167992e02a9","timestamp":"2026-10-27T13:16:21.000Z","modelId":"GLM-5.1","headers":{"access-control-allow-headers":"authorization, content-type, x-stainless-retry-count","access-control-allow-origin":"http://127.0.0.1:3000","connection":"keep-alive","content-type":"text/event-stream","date":"Tue, 27 Oct 2026 13:16:21 GMT","keep-alive":"timeout=5","transfer-encoding":"chunked"}}}
+{"type":"start-step","request":{},"warnings":[]}
+{"type":"text-start","id":"aitxt-FsDitEcv1ErALuNIdm5m4nYj"}
+{"type":"tool-input-start","id":"fc-e18e6b00-0ccb-4847-a264-d4ea44807d2e","toolName":"execute_javascript","dynamic":false}
+{"type":"tool-input-delta","id":"fc-e18e6b00-0ccb-4847-a264-d4ea44807d2e","delta":"{\"code\": \""}
+{"type":"tool-input-delta","id":"fc-e18e6b00-0ccb-4847-a264-d4ea44807d2e","delta":"// 分别"}
+{"type":"tool-input-delta","id":"fc-e18e6b00-0ccb-4847-a264-d4ea44807d2e","delta":"看"}
+{"type":"tool-input-delta","id":"fc-e18e6b00-0ccb-4847-a264-d4ea44807d2e","delta":"基期和本"}
+{"type":"tool-input-delta","id":"fc-e18e6b00-0ccb-4847-a264-d4ea44807d2e","delta":"期的汇总"}
+{"type":"tool-input-delta","id":"fc-e18e6b00-0ccb-4847-a264-d4ea44807d2e","delta":":"}
+{"type":"tool-input-delta","id":"fc-e18e6b00-0ccb-4847-a264-d4ea44807d2e","delta":" 净销售额和投放"}
+{"type":"tool-input-delta","id":"fc-e18e6b00-0ccb-4847-a264-d4ea44807d2e","delta":"额"}
+{"type":"tool-input-delta","id":"fc-e18e6b00-0ccb-4847-a264-d4ea44807d2e","delta":"(contribution)\\n"}
+{"type":"tool-input-delta","id":"fc-e18e6b00-0ccb-4847-a264-d4ea44807d2e","delta":"const base"}
+{"type":"tool-input-delta","id":"fc-e18e6b00-0ccb-4847-a264-d4ea44807d2e","delta":" = data"}
+{"type":"tool-input-delta","id":"fc-e18e6b00-0ccb-4847-a264-d4ea44807d2e","delta":".filter(d => d"}
+{"type":"tool-input-delta","id":"fc-e18e6b00-0ccb-4847-a264-d4ea44807d2e","delta":".period === '基"}
+{"type":"tool-input-delta","id":"fc-e18e6b00-0ccb-4847-a264-d4ea44807d2e","delta":"期');\\nconst current"}
+{"type":"tool-input-delta","id":"fc-e18e6b00-0ccb-4847-a264-d4ea44807d2e","delta":" = data.filter(d"}
+{"type":"tool-input-delta","id":"fc-e18e6b00-0ccb-4847-a264-d4ea44807d2e","delta":" => d.period"}
+{"type":"tool-input-delta","id":"fc-e18e6b00-0ccb-4847-a264-d4ea44807d2e","delta":" === '本期');\\n\\n"}
+{"type":"tool-input-delta","id":"fc-e18e6b00-0ccb-4847-a264-d4ea44807d2e","delta":"const sum"}
+{"type":"tool-input-delta","id":"fc-e18e6b00-0ccb-4847-a264-d4ea44807d2e","delta":"Base = {"}
+{"type":"tool-input-delta","id":"fc-e18e6b00-0ccb-4847-a264-d4ea44807d2e","delta":"net"}
+{"type":"tool-input-delta","id":"fc-e18e6b00-0ccb-4847-a264-d4ea44807d2e","delta":"_sales: base.reduce"}
+{"type":"tool-input-delta","id":"fc-e18e6b00-0ccb-4847-a264-d4ea44807d2e","delta":"((s,d"}
+{"type":"tool-input-delta","id":"fc-e18e6b00-0ccb-4847-a264-d4ea44807d2e","delta":")=>"}
+{"type":"tool-input-delta","id":"fc-e18e6b00-0ccb-4847-a264-d4ea44807d2e","delta":"s+d"}
+{"type":"tool-input-delta","id":"fc-e18e6b00-0ccb-4847-a264-d4ea44807d2e","delta":".net_sales_cents"}
+{"type":"tool-input-delta","id":"fc-e18e6b00-0ccb-4847-a264-d4ea44807d2e","delta":",0), contribution"}
+{"type":"tool-input-delta","id":"fc-e18e6b00-0ccb-4847-a264-d4ea44807d2e","delta":": base.reduce(("}
+{"type":"tool-input-delta","id":"fc-e18e6b00-0ccb-4847-a264-d4ea44807d2e","delta":"s,d)=>s"}
+{"type":"tool-input-delta","id":"fc-e18e6b00-0ccb-4847-a264-d4ea44807d2e","delta":"+d.contribution_c"}
+{"type":"tool-input-delta","id":"fc-e18e6b00-0ccb-4847-a264-d4ea44807d2e","delta":"ents,0)};\\n"}
+{"type":"tool-input-delta","id":"fc-e18e6b00-0ccb-4847-a264-d4ea44807d2e","delta":"const sumCurrent"}
+{"type":"tool-input-delta","id":"fc-e18e6b00-0ccb-4847-a264-d4ea44807d2e","delta":" = {net"}
+{"type":"tool-input-delta","id":"fc-e18e6b00-0ccb-4847-a264-d4ea44807d2e","delta":"_sales: current.reduce"}
+{"type":"tool-input-delta","id":"fc-e18e6b00-0ccb-4847-a264-d4ea44807d2e","delta":"((s,d)=>"}
+{"type":"tool-input-delta","id":"fc-e18e6b00-0ccb-4847-a264-d4ea44807d2e","delta":"s+d.net_sales"}
+{"type":"tool-input-delta","id":"fc-e18e6b00-0ccb-4847-a264-d4ea44807d2e","delta":"_cents,0"}
+{"type":"tool-input-delta","id":"fc-e18e6b00-0ccb-4847-a264-d4ea44807d2e","delta":"), contribution: current"}
+{"type":"tool-input-delta","id":"fc-e18e6b00-0ccb-4847-a264-d4ea44807d2e","delta":".reduce((s,d"}
+{"type":"tool-input-delta","id":"fc-e18e6b00-0ccb-4847-a264-d4ea44807d2e","delta":")=>s+d.contrib"}
+{"type":"tool-input-delta","id":"fc-e18e6b00-0ccb-4847-a264-d4ea44807d2e","delta":"ution_cents,"}
+{"type":"tool-input-delta","id":"fc-e18e6b00-0ccb-4847-a264-d4ea44807d2e","delta":"0)};\\n\\nresult"}
+{"type":"tool-input-delta","id":"fc-e18e6b00-0ccb-4847-a264-d4ea44807d2e","delta":" = {\\n"}
+{"type":"tool-input-delta","id":"fc-e18e6b00-0ccb-4847-a264-d4ea44807d2e","delta":"  基期:"}
+{"type":"tool-input-delta","id":"fc-e18e6b00-0ccb-4847-a264-d4ea44807d2e","delta":" sumBase,\\n"}
+{"type":"tool-input-delta","id":"fc-e18e6b00-0ccb-4847-a264-d4ea44807d2e","delta":"  本期: sum"}
+{"type":"tool-input-delta","id":"fc-e18e6b00-0ccb-4847-a264-d4ea44807d2e","delta":"Current,\\n"}
+{"type":"tool-input-delta","id":"fc-e18e6b00-0ccb-4847-a264-d4ea44807d2e","delta":"  净销售额变化:"}
+{"type":"tool-input-delta","id":"fc-e18e6b00-0ccb-4847-a264-d4ea44807d2e","delta":" (("}
+{"type":"tool-input-delta","id":"fc-e18e6b00-0ccb-4847-a264-d4ea44807d2e","delta":"sumCurrent.net"}
+{"type":"tool-input-delta","id":"fc-e18e6b00-0ccb-4847-a264-d4ea44807d2e","delta":"_sales - sumBase"}
+{"type":"tool-input-delta","id":"fc-e18e6b00-0ccb-4847-a264-d4ea44807d2e","delta":".net_sales)/"}
+{"type":"tool-input-delta","id":"fc-e18e6b00-0ccb-4847-a264-d4ea44807d2e","delta":"sumBase.net"}
+{"type":"tool-input-delta","id":"fc-e18e6b00-0ccb-4847-a264-d4ea44807d2e","delta":"_sales *"}
+{"type":"tool-input-delta","id":"fc-e18e6b00-0ccb-4847-a264-d4ea44807d2e","delta":" 100).toFixed"}
+{"type":"tool-input-delta","id":"fc-e18e6b00-0ccb-4847-a264-d4ea44807d2e","delta":"(2) +"}
+{"type":"tool-input-delta","id":"fc-e18e6b00-0ccb-4847-a264-d4ea44807d2e","delta":" '%',\\n"}
+{"type":"tool-input-delta","id":"fc-e18e6b00-0ccb-4847-a264-d4ea44807d2e","delta":"  投放"}
+{"type":"tool-input-delta","id":"fc-e18e6b00-0ccb-4847-a264-d4ea44807d2e","delta":"额"}
+{"type":"tool-input-delta","id":"fc-e18e6b00-0ccb-4847-a264-d4ea44807d2e","delta":"变化: (("}
+{"type":"tool-input-delta","id":"fc-e18e6b00-0ccb-4847-a264-d4ea44807d2e","delta":"sumCurrent.contrib"}
+{"type":"tool-input-delta","id":"fc-e18e6b00-0ccb-4847-a264-d4ea44807d2e","delta":"ution - sumBase"}
+{"type":"tool-input-delta","id":"fc-e18e6b00-0ccb-4847-a264-d4ea44807d2e","delta":".contribution)/sum"}
+{"type":"tool-input-delta","id":"fc-e18e6b00-0ccb-4847-a264-d4ea44807d2e","delta":"Base.contribution *"}
+{"type":"tool-input-delta","id":"fc-e18e6b00-0ccb-4847-a264-d4ea44807d2e","delta":" 100).toFixed"}
+{"type":"tool-input-delta","id":"fc-e18e6b00-0ccb-4847-a264-d4ea44807d2e","delta":"(2) +"}
+{"type":"tool-input-delta","id":"fc-e18e6b00-0ccb-4847-a264-d4ea44807d2e","delta":" '%',\\n"}
+{"type":"tool-input-delta","id":"fc-e18e6b00-0ccb-4847-a264-d4ea44807d2e","delta":"  基期ROI"}
+{"type":"tool-input-delta","id":"fc-e18e6b00-0ccb-4847-a264-d4ea44807d2e","delta":": ("}
+{"type":"tool-input-delta","id":"fc-e18e6b00-0ccb-4847-a264-d4ea44807d2e","delta":"sumBase.net_sales"}
+{"type":"tool-input-delta","id":"fc-e18e6b00-0ccb-4847-a264-d4ea44807d2e","delta":" / sumBase.contrib"}
+{"type":"tool-input-delta","id":"fc-e18e6b00-0ccb-4847-a264-d4ea44807d2e","delta":"ution).toFixed("}
+{"type":"tool-input-delta","id":"fc-e18e6b00-0ccb-4847-a264-d4ea44807d2e","delta":"2),\\n  本"}
+{"type":"tool-input-delta","id":"fc-e18e6b00-0ccb-4847-a264-d4ea44807d2e","delta":"期ROI: ("}
+{"type":"tool-input-delta","id":"fc-e18e6b00-0ccb-4847-a264-d4ea44807d2e","delta":"sumCurrent.net_sales"}
+{"type":"tool-input-delta","id":"fc-e18e6b00-0ccb-4847-a264-d4ea44807d2e","delta":" / sumCurrent.contrib"}
+{"type":"tool-input-delta","id":"fc-e18e6b00-0ccb-4847-a264-d4ea44807d2e","delta":"ution).toFixed("}
+{"type":"tool-input-delta","id":"fc-e18e6b00-0ccb-4847-a264-d4ea44807d2e","delta":"2)\\n};"}
+{"type":"tool-input-delta","id":"fc-e18e6b00-0ccb-4847-a264-d4ea44807d2e","delta":"\"}"}
+{"type":"text-end","id":"aitxt-FsDitEcv1ErALuNIdm5m4nYj"}
+{"type":"tool-input-end","id":"fc-e18e6b00-0ccb-4847-a264-d4ea44807d2e"}
+{"type":"tool-call","toolCallId":"fc-e18e6b00-0ccb-4847-a264-d4ea44807d2e","toolName":"execute_javascript","input":{"code":"// 分别看基期和本期的汇总: 净销售额和投放额(contribution)\nconst base = data.filter(d => d.period === '基期');\nconst current = data.filter(d => d.period === '本期');\n\nconst sumBase = {net_sales: base.reduce((s,d)=>s+d.net_sales_cents,0), contribution: base.reduce((s,d)=>s+d.contribution_cents,0)};\nconst sumCurrent = {net_sales: current.reduce((s,d)=>s+d.net_sales_cents,0), contribution: current.reduce((s,d)=>s+d.contribution_cents,0)};\n\nresult = {\n  基期: sumBase,\n  本期: sumCurrent,\n  净销售额变化: ((sumCurrent.net_sales - sumBase.net_sales)/sumBase.net_sales * 100).toFixed(2) + '%',\n  投放额变化: ((sumCurrent.contribution - sumBase.contribution)/sumBase.contribution * 100).toFixed(2) + '%',\n  基期ROI: (sumBase.net_sales / sumBase.contribution).toFixed(2),\n  本期ROI: (sumCurrent.net_sales / sumCurrent.contribution).toFixed(2)\n};"}}
+{"type":"tool-result","toolCallId":"fc-e18e6b00-0ccb-4847-a264-d4ea44807d2e","toolName":"execute_javascript","input":{"code":"// 分别看基期和本期的汇总: 净销售额和投放额(contribution)\nconst base = data.filter(d => d.period === '基期');\nconst current = data.filter(d => d.period === '本期');\n\nconst sumBase = {net_sales: base.reduce((s,d)=>s+d.net_sales_cents,0), contribution: base.reduce((s,d)=>s+d.contribution_cents,0)};\nconst sumCurrent = {net_sales: current.reduce((s,d)=>s+d.net_sales_cents,0), contribution: current.reduce((s,d)=>s+d.contribution_cents,0)};\n\nresult = {\n  基期: sumBase,\n  本期: sumCurrent,\n  净销售额变化: ((sumCurrent.net_sales - sumBase.net_sales)/sumBase.net_sales * 100).toFixed(2) + '%',\n  投放额变化: ((sumCurrent.contribution - sumBase.contribution)/sumBase.contribution * 100).toFixed(2) + '%',\n  基期ROI: (sumBase.net_sales / sumBase.contribution).toFixed(2),\n  本期ROI: (sumCurrent.net_sales / sumCurrent.contribution).toFixed(2)\n};"},"output":{"result":{"基期":{"net_sales":1853226549,"contribution":803504735},"本期":{"net_sales":1832649685,"contribution":778865620},"净销售额变化":"-1.11%","投放额变化":"-3.07%","基期ROI":"2.31","本期ROI":"2.35"}},"dynamic":false}
+{"type":"finish-step","finishReason":"tool-calls","rawFinishReason":"tool_calls","usage":{"inputTokens":855,"inputTokenDetails":{"noCacheTokens":535,"cacheReadTokens":320},"outputTokens":266,"outputTokenDetails":{"textTokens":266,"reasoningTokens":0},"totalTokens":1121,"raw":{"prompt_tokens":855,"completion_tokens":266,"total_tokens":1121,"prompt_tokens_details":{"cached_tokens":320},"completion_tokens_details":{}}},"performance":{"stepTimeMs":4898.877209,"toolExecutionMs":{"fc-e18e6b00-0ccb-4847-a264-d4ea44807d2e":3.564875000000029},"responseTimeMs":4893.396708,"effectiveOutputTokensPerSecond":54.3589690092218,"outputTokensPerSecond":63.84348586454316,"inputTokensPerSecond":1176.1347129678722,"effectiveTotalTokensPerSecond":229.0842265388633,"timeToFirstOutputMs":726.9575420000001,"timeBetweenOutputChunksMs":{"min":3.0794999999998254,"p10":51.0864160000001,"median":53.058624999999665,"avg":53.39989262820512,"p90":55.38633300000038,"max":111.1972080000005}},"providerMetadata":{"openai":{}},"response":{"id":"0b43d47017931069833968096e02a9","timestamp":"2026-10-27T13:16:24.000Z","modelId":"GLM-5.1","headers":{"access-control-allow-headers":"authorization, content-type, x-stainless-retry-count","access-control-allow-origin":"http://127.0.0.1:3000","connection":"keep-alive","content-type":"text/event-stream","date":"Tue, 27 Oct 2026 13:16:24 GMT","keep-alive":"timeout=5","transfer-encoding":"chunked"}}}
+{"type":"start-step","request":{},"warnings":[]}
+{"type":"text-start","id":"aitxt-qNWt08C5bcAW2G62nK5yXUAe"}
+{"type":"tool-input-start","id":"fc-a366f438-45d9-44f9-9a0c-bc607e935288","toolName":"execute_javascript","dynamic":false}
+{"type":"tool-input-delta","id":"fc-a366f438-45d9-44f9-9a0c-bc607e935288","delta":"{\"code\": \""}
+{"type":"tool-input-delta","id":"fc-a366f438-45d9-44f9-9a0c-bc607e935288","delta":"// 按"}
+{"type":"tool-input-delta","id":"fc-a366f438-45d9-44f9-9a0c-bc607e935288","delta":"渠道分解"}
+{"type":"tool-input-delta","id":"fc-a366f438-45d9-44f9-9a0c-bc607e935288","delta":"：各"}
+{"type":"tool-input-delta","id":"fc-a366f438-45d9-44f9-9a0c-bc607e935288","delta":"渠道基"}
+{"type":"tool-input-delta","id":"fc-a366f438-45d9-44f9-9a0c-bc607e935288","delta":"期vs"}
+{"type":"tool-input-delta","id":"fc-a366f438-45d9-44f9-9a0c-bc607e935288","delta":"本"}
+{"type":"tool-input-delta","id":"fc-a366f438-45d9-44f9-9a0c-bc607e935288","delta":"期的净销售额和"}
+{"type":"tool-input-delta","id":"fc-a366f438-45d9-44f9-9a0c-bc607e935288","delta":"投放\\n"}
+{"type":"tool-input-delta","id":"fc-a366f438-45d9-44f9-9a0c-bc607e935288","delta":"const channels"}
+{"type":"tool-input-delta","id":"fc-a366f438-45d9-44f9-9a0c-bc607e935288","delta":" = [...new Set"}
+{"type":"tool-input-delta","id":"fc-a366f438-45d9-44f9-9a0c-bc607e935288","delta":"(data.map(d =>"}
+{"type":"tool-input-delta","id":"fc-a366f438-45d9-44f9-9a0c-bc607e935288","delta":" d.channel))];\\nconst"}
+{"type":"tool-input-delta","id":"fc-a366f438-45d9-44f9-9a0c-bc607e935288","delta":" byChannel = channels"}
+{"type":"tool-input-delta","id":"fc-a366f438-45d9-44f9-9a0c-bc607e935288","delta":".map(ch => {\\n"}
+{"type":"tool-input-delta","id":"fc-a366f438-45d9-44f9-9a0c-bc607e935288","delta":"  const b"}
+{"type":"tool-input-delta","id":"fc-a366f438-45d9-44f9-9a0c-bc607e935288","delta":" = data.filter(d"}
+{"type":"tool-input-delta","id":"fc-a366f438-45d9-44f9-9a0c-bc607e935288","delta":" => d.period"}
+{"type":"tool-input-delta","id":"fc-a366f438-45d9-44f9-9a0c-bc607e935288","delta":"==='"}
+{"type":"tool-input-delta","id":"fc-a366f438-45d9-44f9-9a0c-bc607e935288","delta":"基期' &&"}
+{"type":"tool-input-delta","id":"fc-a366f438-45d9-44f9-9a0c-bc607e935288","delta":" d.channel==="}
+{"type":"tool-input-delta","id":"fc-a366f438-45d9-44f9-9a0c-bc607e935288","delta":"ch);\\n  const"}
+{"type":"tool-input-delta","id":"fc-a366f438-45d9-44f9-9a0c-bc607e935288","delta":" c = data"}
+{"type":"tool-input-delta","id":"fc-a366f438-45d9-44f9-9a0c-bc607e935288","delta":".filter(d => d"}
+{"type":"tool-input-delta","id":"fc-a366f438-45d9-44f9-9a0c-bc607e935288","delta":".period==='本期'"}
+{"type":"tool-input-delta","id":"fc-a366f438-45d9-44f9-9a0c-bc607e935288","delta":" && d.channel==="}
+{"type":"tool-input-delta","id":"fc-a366f438-45d9-44f9-9a0c-bc607e935288","delta":"ch);\\n  const"}
+{"type":"tool-input-delta","id":"fc-a366f438-45d9-44f9-9a0c-bc607e935288","delta":" bNet"}
+{"type":"tool-input-delta","id":"fc-a366f438-45d9-44f9-9a0c-bc607e935288","delta":" = b.reduce(("}
+{"type":"tool-input-delta","id":"fc-a366f438-45d9-44f9-9a0c-bc607e935288","delta":"s,d)=>s"}
+{"type":"tool-input-delta","id":"fc-a366f438-45d9-44f9-9a0c-bc607e935288","delta":"+d.net_sales_c"}
+{"type":"tool-input-delta","id":"fc-a366f438-45d9-44f9-9a0c-bc607e935288","delta":"ents,0);\\n"}
+{"type":"tool-input-delta","id":"fc-a366f438-45d9-44f9-9a0c-bc607e935288","delta":"  const cNet"}
+{"type":"tool-input-delta","id":"fc-a366f438-45d9-44f9-9a0c-bc607e935288","delta":" = c.reduce"}
+{"type":"tool-input-delta","id":"fc-a366f438-45d9-44f9-9a0c-bc607e935288","delta":"((s,d)=>"}
+{"type":"tool-input-delta","id":"fc-a366f438-45d9-44f9-9a0c-bc607e935288","delta":"s+d.net_sales"}
+{"type":"tool-input-delta","id":"fc-a366f438-45d9-44f9-9a0c-bc607e935288","delta":"_cents,0"}
+{"type":"tool-input-delta","id":"fc-a366f438-45d9-44f9-9a0c-bc607e935288","delta":");\\n  const b"}
+{"type":"tool-input-delta","id":"fc-a366f438-45d9-44f9-9a0c-bc607e935288","delta":"Con = b"}
+{"type":"tool-input-delta","id":"fc-a366f438-45d9-44f9-9a0c-bc607e935288","delta":".reduce((s,d"}
+{"type":"tool-input-delta","id":"fc-a366f438-45d9-44f9-9a0c-bc607e935288","delta":")=>s+d.contrib"}
+{"type":"tool-input-delta","id":"fc-a366f438-45d9-44f9-9a0c-bc607e935288","delta":"ution_cents,"}
+{"type":"tool-input-delta","id":"fc-a366f438-45d9-44f9-9a0c-bc607e935288","delta":"0);\\n  const"}
+{"type":"tool-input-delta","id":"fc-a366f438-45d9-44f9-9a0c-bc607e935288","delta":" cCon = c"}
+{"type":"tool-input-delta","id":"fc-a366f438-45d9-44f9-9a0c-bc607e935288","delta":".reduce((s,d"}
+{"type":"tool-input-delta","id":"fc-a366f438-45d9-44f9-9a0c-bc607e935288","delta":")=>s+d.contrib"}
+{"type":"tool-input-delta","id":"fc-a366f438-45d9-44f9-9a0c-bc607e935288","delta":"ution_cents,"}
+{"type":"tool-input-delta","id":"fc-a366f438-45d9-44f9-9a0c-bc607e935288","delta":"0);\\n  return"}
+{"type":"tool-input-delta","id":"fc-a366f438-45d9-44f9-9a0c-bc607e935288","delta":" {\\n    channel"}
+{"type":"tool-input-delta","id":"fc-a366f438-45d9-44f9-9a0c-bc607e935288","delta":": ch"}
+{"type":"tool-input-delta","id":"fc-a366f438-45d9-44f9-9a0c-bc607e935288","delta":",\\n"}
+{"type":"tool-input-delta","id":"fc-a366f438-45d9-44f9-9a0c-bc607e935288","delta":"    基期净"}
+{"type":"tool-input-delta","id":"fc-a366f438-45d9-44f9-9a0c-bc607e935288","delta":"销售"}
+{"type":"tool-input-delta","id":"fc-a366f438-45d9-44f9-9a0c-bc607e935288","delta":": bNet,\\n"}
+{"type":"tool-input-delta","id":"fc-a366f438-45d9-44f9-9a0c-bc607e935288","delta":"    本期净"}
+{"type":"tool-input-delta","id":"fc-a366f438-45d9-44f9-9a0c-bc607e935288","delta":"销售: c"}
+{"type":"tool-input-delta","id":"fc-a366f438-45d9-44f9-9a0c-bc607e935288","delta":"Net,\\n"}
+{"type":"tool-input-delta","id":"fc-a366f438-45d9-44f9-9a0c-bc607e935288","delta":"    净销售"}
+{"type":"tool-input-delta","id":"fc-a366f438-45d9-44f9-9a0c-bc607e935288","delta":"变化率: (("}
+{"type":"tool-input-delta","id":"fc-a366f438-45d9-44f9-9a0c-bc607e935288","delta":"cNet-b"}
+{"type":"tool-input-delta","id":"fc-a366f438-45d9-44f9-9a0c-bc607e935288","delta":"Net)/b"}
+{"type":"tool-input-delta","id":"fc-a366f438-45d9-44f9-9a0c-bc607e935288","delta":"Net*100"}
+{"type":"tool-input-delta","id":"fc-a366f438-45d9-44f9-9a0c-bc607e935288","delta":").toFixed(1"}
+{"type":"tool-input-delta","id":"fc-a366f438-45d9-44f9-9a0c-bc607e935288","delta":")+'"}
+{"type":"tool-input-delta","id":"fc-a366f438-45d9-44f9-9a0c-bc607e935288","delta":"%',\\n"}
+{"type":"tool-input-delta","id":"fc-a366f438-45d9-44f9-9a0c-bc607e935288","delta":"    基期投放:"}
+{"type":"tool-input-delta","id":"fc-a366f438-45d9-44f9-9a0c-bc607e935288","delta":" bCon,\\n"}
+{"type":"tool-input-delta","id":"fc-a366f438-45d9-44f9-9a0c-bc607e935288","delta":"    本期投放:"}
+{"type":"tool-input-delta","id":"fc-a366f438-45d9-44f9-9a0c-bc607e935288","delta":" cCon,\\n"}
+{"type":"tool-input-delta","id":"fc-a366f438-45d9-44f9-9a0c-bc607e935288","delta":"    投放变化"}
+{"type":"tool-input-delta","id":"fc-a366f438-45d9-44f9-9a0c-bc607e935288","delta":"率: ((c"}
+{"type":"tool-input-delta","id":"fc-a366f438-45d9-44f9-9a0c-bc607e935288","delta":"Con-bCon)/"}
+{"type":"tool-input-delta","id":"fc-a366f438-45d9-44f9-9a0c-bc607e935288","delta":"bCon*100"}
+{"type":"tool-input-delta","id":"fc-a366f438-45d9-44f9-9a0c-bc607e935288","delta":").toFixed(1"}
+{"type":"tool-input-delta","id":"fc-a366f438-45d9-44f9-9a0c-bc607e935288","delta":")+'%',\\n"}
+{"type":"tool-input-delta","id":"fc-a366f438-45d9-44f9-9a0c-bc607e935288","delta":"    基期ROI"}
+{"type":"tool-input-delta","id":"fc-a366f438-45d9-44f9-9a0c-bc607e935288","delta":": (b"}
+{"type":"tool-input-delta","id":"fc-a366f438-45d9-44f9-9a0c-bc607e935288","delta":"Net/b"}
+{"type":"tool-input-delta","id":"fc-a366f438-45d9-44f9-9a0c-bc607e935288","delta":"Con).toFixed("}
+{"type":"tool-input-delta","id":"fc-a366f438-45d9-44f9-9a0c-bc607e935288","delta":"2),\\n    本"}
+{"type":"tool-input-delta","id":"fc-a366f438-45d9-44f9-9a0c-bc607e935288","delta":"期ROI: ("}
+{"type":"tool-input-delta","id":"fc-a366f438-45d9-44f9-9a0c-bc607e935288","delta":"cNet/cCon"}
+{"type":"tool-input-delta","id":"fc-a366f438-45d9-44f9-9a0c-bc607e935288","delta":").toFixed(2"}
+{"type":"tool-input-delta","id":"fc-a366f438-45d9-44f9-9a0c-bc607e935288","delta":")\\n  };\\n});\\n"}
+{"type":"tool-input-delta","id":"fc-a366f438-45d9-44f9-9a0c-bc607e935288","delta":"result = byChannel"}
+{"type":"tool-input-delta","id":"fc-a366f438-45d9-44f9-9a0c-bc607e935288","delta":";"}
+{"type":"tool-input-delta","id":"fc-a366f438-45d9-44f9-9a0c-bc607e935288","delta":"\""}
+{"type":"tool-input-delta","id":"fc-a366f438-45d9-44f9-9a0c-bc607e935288","delta":"}"}
+{"type":"text-end","id":"aitxt-qNWt08C5bcAW2G62nK5yXUAe"}
+{"type":"tool-input-end","id":"fc-a366f438-45d9-44f9-9a0c-bc607e935288"}
+{"type":"tool-call","toolCallId":"fc-a366f438-45d9-44f9-9a0c-bc607e935288","toolName":"execute_javascript","input":{"code":"// 按渠道分解：各渠道基期vs本期的净销售额和投放\nconst channels = [...new Set(data.map(d => d.channel))];\nconst byChannel = channels.map(ch => {\n  const b = data.filter(d => d.period==='基期' && d.channel===ch);\n  const c = data.filter(d => d.period==='本期' && d.channel===ch);\n  const bNet = b.reduce((s,d)=>s+d.net_sales_cents,0);\n  const cNet = c.reduce((s,d)=>s+d.net_sales_cents,0);\n  const bCon = b.reduce((s,d)=>s+d.contribution_cents,0);\n  const cCon = c.reduce((s,d)=>s+d.contribution_cents,0);\n  return {\n    channel: ch,\n    基期净销售: bNet,\n    本期净销售: cNet,\n    净销售变化率: ((cNet-bNet)/bNet*100).toFixed(1)+'%',\n    基期投放: bCon,\n    本期投放: cCon,\n    投放变化率: ((cCon-bCon)/bCon*100).toFixed(1)+'%',\n    基期ROI: (bNet/bCon).toFixed(2),\n    本期ROI: (cNet/cCon).toFixed(2)\n  };\n});\nresult = byChannel;"}}
+{"type":"tool-result","toolCallId":"fc-a366f438-45d9-44f9-9a0c-bc607e935288","toolName":"execute_javascript","input":{"code":"// 按渠道分解：各渠道基期vs本期的净销售额和投放\nconst channels = [...new Set(data.map(d => d.channel))];\nconst byChannel = channels.map(ch => {\n  const b = data.filter(d => d.period==='基期' && d.channel===ch);\n  const c = data.filter(d => d.period==='本期' && d.channel===ch);\n  const bNet = b.reduce((s,d)=>s+d.net_sales_cents,0);\n  const cNet = c.reduce((s,d)=>s+d.net_sales_cents,0);\n  const bCon = b.reduce((s,d)=>s+d.contribution_cents,0);\n  const cCon = c.reduce((s,d)=>s+d.contribution_cents,0);\n  return {\n    channel: ch,\n    基期净销售: bNet,\n    本期净销售: cNet,\n    净销售变化率: ((cNet-bNet)/bNet*100).toFixed(1)+'%',\n    基期投放: bCon,\n    本期投放: cCon,\n    投放变化率: ((cCon-bCon)/bCon*100).toFixed(1)+'%',\n    基期ROI: (bNet/bCon).toFixed(2),\n    本期ROI: (cNet/cCon).toFixed(2)\n  };\n});\nresult = byChannel;"},"output":{"result":[{"channel":"品牌词搜索","基期净销售":221404682,"本期净销售":303061231,"净销售变化率":"36.9%","基期投放":95953262,"本期投放":125020737,"投放变化率":"30.3%","基期ROI":"2.31","本期ROI":"2.42"},{"channel":"直接访问","基期净销售":371006525,"本期净销售":288991754,"净销售变化率":"-22.1%","基期投放":161965229,"本期投放":119189802,"投放变化率":"-26.4%","基期ROI":"2.29","本期ROI":"2.42"},{"channel":"社交重定向","基期净销售":165162280,"本期净销售":170266652,"净销售变化率":"3.1%","基期投放":71106886,"本期投放":69898516,"投放变化率":"-1.7%","基期ROI":"2.32","本期ROI":"2.44"},{"channel":"线下到店","基期净销售":159137571,"本期净销售":157522153,"净销售变化率":"-1.0%","基期投放":69985234,"本期投放":65553823,"投放变化率":"-6.3%","基期ROI":"2.27","本期ROI":"2.40"},{"channel":"自然搜索","基期净销售":488234224,"本期净销售":400510013,"净销售变化率":"-18.0%","基期投放":211382091,"本期投放":163701857,"投放变化率":"-22.6%","基期ROI":"2.31","本期ROI":"2.45"},{"channel":"通用词搜索","基期净销售":448281267,"本期净销售":414216049,"净销售变化率":"-7.6%","基期投放":193112033,"本期投放":170788585,"投放变化率":"-11.6%","基期ROI":"2.32","本期ROI":"2.43"},{"channel":"社交拓新","基期净销售":0,"本期净销售":98081833,"净销售变化率":"Infinity%","基期投放":0,"本期投放":64712300,"投放变化率":"Infinity%","基期ROI":"NaN","本期ROI":"1.52"}]},"dynamic":false}
+{"type":"finish-step","finishReason":"tool-calls","rawFinishReason":"tool_calls","usage":{"inputTokens":1207,"inputTokenDetails":{"noCacheTokens":1207,"cacheReadTokens":0},"outputTokens":303,"outputTokenDetails":{"textTokens":303,"reasoningTokens":0},"totalTokens":1510,"raw":{"prompt_tokens":1207,"completion_tokens":303,"total_tokens":1510,"prompt_tokens_details":{"cached_tokens":0},"completion_tokens_details":{}}},"performance":{"stepTimeMs":4788.6,"toolExecutionMs":{"fc-a366f438-45d9-44f9-9a0c-bc607e935288":3.749791999998706},"responseTimeMs":4781.465584000001,"effectiveOutputTokensPerSecond":63.369691714171275,"outputTokensPerSecond":76.19573232848325,"inputTokensPerSecond":1499.6305274416611,"effectiveTotalTokensPerSecond":315.8027540871242,"timeToFirstOutputMs":804.8649170000008,"timeBetweenOutputChunksMs":{"min":0.517667000000074,"p10":43.033917000000656,"median":46.77641700000095,"avg":45.17519602272728,"p90":49.82945800000016,"max":62.31904199999917}},"providerMetadata":{"openai":{}},"response":{"id":"0b43d47017931069882978387e02a9","timestamp":"2026-10-27T13:16:29.000Z","modelId":"GLM-5.1","headers":{"access-control-allow-headers":"authorization, content-type, x-stainless-retry-count","access-control-allow-origin":"http://127.0.0.1:3000","connection":"keep-alive","content-type":"text/event-stream","date":"Tue, 27 Oct 2026 13:16:29 GMT","keep-alive":"timeout=5","transfer-encoding":"chunked"}}}
+{"type":"start-step","request":{},"warnings":[]}
+{"type":"text-start","id":"aitxt-boOLVnAKcD7morfCRr2zTI2Z"}
+{"type":"tool-input-start","id":"fc-ccb373f2-d182-45d4-8ea2-197347fd43c6","toolName":"execute_javascript","dynamic":false}
+{"type":"tool-input-delta","id":"fc-ccb373f2-d182-45d4-8ea2-197347fd43c6","delta":"{\"code\": \""}
+{"type":"tool-input-delta","id":"fc-ccb373f2-d182-45d4-8ea2-197347fd43c6","delta":"// 按"}
+{"type":"tool-input-delta","id":"fc-ccb373f2-d182-45d4-8ea2-197347fd43c6","delta":"品类分解"}
+{"type":"tool-input-delta","id":"fc-ccb373f2-d182-45d4-8ea2-197347fd43c6","delta":"\\nconst categories"}
+{"type":"tool-input-delta","id":"fc-ccb373f2-d182-45d4-8ea2-197347fd43c6","delta":" = [...new Set"}
+{"type":"tool-input-delta","id":"fc-ccb373f2-d182-45d4-8ea2-197347fd43c6","delta":"(data.map(d =>"}
+{"type":"tool-input-delta","id":"fc-ccb373f2-d182-45d4-8ea2-197347fd43c6","delta":" d.category))];\\nconst"}
+{"type":"tool-input-delta","id":"fc-ccb373f2-d182-45d4-8ea2-197347fd43c6","delta":" byCategory = categories"}
+{"type":"tool-input-delta","id":"fc-ccb373f2-d182-45d4-8ea2-197347fd43c6","delta":".map(cat => {"}
+{"type":"tool-input-delta","id":"fc-ccb373f2-d182-45d4-8ea2-197347fd43c6","delta":"\\n  const b ="}
+{"type":"tool-input-delta","id":"fc-ccb373f2-d182-45d4-8ea2-197347fd43c6","delta":" data.filter(d =>"}
+{"type":"tool-input-delta","id":"fc-ccb373f2-d182-45d4-8ea2-197347fd43c6","delta":" d.period==='基"}
+{"type":"tool-input-delta","id":"fc-ccb373f2-d182-45d4-8ea2-197347fd43c6","delta":"期' && d"}
+{"type":"tool-input-delta","id":"fc-ccb373f2-d182-45d4-8ea2-197347fd43c6","delta":".category===cat);"}
+{"type":"tool-input-delta","id":"fc-ccb373f2-d182-45d4-8ea2-197347fd43c6","delta":"\\n  const c ="}
+{"type":"tool-input-delta","id":"fc-ccb373f2-d182-45d4-8ea2-197347fd43c6","delta":" data.filter(d =>"}
+{"type":"tool-input-delta","id":"fc-ccb373f2-d182-45d4-8ea2-197347fd43c6","delta":" d.period==='本期"}
+{"type":"tool-input-delta","id":"fc-ccb373f2-d182-45d4-8ea2-197347fd43c6","delta":"' && d.category"}
+{"type":"tool-input-delta","id":"fc-ccb373f2-d182-45d4-8ea2-197347fd43c6","delta":"===cat);"}
+{"type":"tool-input-delta","id":"fc-ccb373f2-d182-45d4-8ea2-197347fd43c6","delta":"\\n  const bNet ="}
+{"type":"tool-input-delta","id":"fc-ccb373f2-d182-45d4-8ea2-197347fd43c6","delta":" b.reduce((s"}
+{"type":"tool-input-delta","id":"fc-ccb373f2-d182-45d4-8ea2-197347fd43c6","delta":",d)=>s+d"}
+{"type":"tool-input-delta","id":"fc-ccb373f2-d182-45d4-8ea2-197347fd43c6","delta":".net_sales_cents"}
+{"type":"tool-input-delta","id":"fc-ccb373f2-d182-45d4-8ea2-197347fd43c6","delta":",0);"}
+{"type":"tool-input-delta","id":"fc-ccb373f2-d182-45d4-8ea2-197347fd43c6","delta":"\\n  const cNet ="}
+{"type":"tool-input-delta","id":"fc-ccb373f2-d182-45d4-8ea2-197347fd43c6","delta":" c.reduce((s"}
+{"type":"tool-input-delta","id":"fc-ccb373f2-d182-45d4-8ea2-197347fd43c6","delta":",d)=>s+d"}
+{"type":"tool-input-delta","id":"fc-ccb373f2-d182-45d4-8ea2-197347fd43c6","delta":".net_sales_cents"}
+{"type":"tool-input-delta","id":"fc-ccb373f2-d182-45d4-8ea2-197347fd43c6","delta":",0);"}
+{"type":"tool-input-delta","id":"fc-ccb373f2-d182-45d4-8ea2-197347fd43c6","delta":"\\n  const bCon ="}
+{"type":"tool-input-delta","id":"fc-ccb373f2-d182-45d4-8ea2-197347fd43c6","delta":" b.reduce((s"}
+{"type":"tool-input-delta","id":"fc-ccb373f2-d182-45d4-8ea2-197347fd43c6","delta":",d)=>s+d"}
+{"type":"tool-input-delta","id":"fc-ccb373f2-d182-45d4-8ea2-197347fd43c6","delta":".contribution_cents"}
+{"type":"tool-input-delta","id":"fc-ccb373f2-d182-45d4-8ea2-197347fd43c6","delta":",0);"}
+{"type":"tool-input-delta","id":"fc-ccb373f2-d182-45d4-8ea2-197347fd43c6","delta":"\\n  const cCon ="}
+{"type":"tool-input-delta","id":"fc-ccb373f2-d182-45d4-8ea2-197347fd43c6","delta":" c.reduce((s"}
+{"type":"tool-input-delta","id":"fc-ccb373f2-d182-45d4-8ea2-197347fd43c6","delta":",d)=>s+d"}
+{"type":"tool-input-delta","id":"fc-ccb373f2-d182-45d4-8ea2-197347fd43c6","delta":".contribution_cents"}
+{"type":"tool-input-delta","id":"fc-ccb373f2-d182-45d4-8ea2-197347fd43c6","delta":",0);"}
+{"type":"tool-input-delta","id":"fc-ccb373f2-d182-45d4-8ea2-197347fd43c6","delta":"\\n  return {\\n    category"}
+{"type":"tool-input-delta","id":"fc-ccb373f2-d182-45d4-8ea2-197347fd43c6","delta":": cat,"}
+{"type":"tool-input-delta","id":"fc-ccb373f2-d182-45d4-8ea2-197347fd43c6","delta":"\\n    基期"}
+{"type":"tool-input-delta","id":"fc-ccb373f2-d182-45d4-8ea2-197347fd43c6","delta":"净销售: b"}
+{"type":"tool-input-delta","id":"fc-ccb373f2-d182-45d4-8ea2-197347fd43c6","delta":"Net,\\n    本"}
+{"type":"tool-input-delta","id":"fc-ccb373f2-d182-45d4-8ea2-197347fd43c6","delta":"期净销售: cNet,"}
+{"type":"tool-input-delta","id":"fc-ccb373f2-d182-45d4-8ea2-197347fd43c6","delta":"\\n    净销售变化"}
+{"type":"tool-input-delta","id":"fc-ccb373f2-d182-45d4-8ea2-197347fd43c6","delta":"率: ((c"}
+{"type":"tool-input-delta","id":"fc-ccb373f2-d182-45d4-8ea2-197347fd43c6","delta":"Net-bNet)/"}
+{"type":"tool-input-delta","id":"fc-ccb373f2-d182-45d4-8ea2-197347fd43c6","delta":"bNet*100"}
+{"type":"tool-input-delta","id":"fc-ccb373f2-d182-45d4-8ea2-197347fd43c6","delta":").toFixed(1"}
+{"type":"tool-input-delta","id":"fc-ccb373f2-d182-45d4-8ea2-197347fd43c6","delta":")+'%',"}
+{"type":"tool-input-delta","id":"fc-ccb373f2-d182-45d4-8ea2-197347fd43c6","delta":"\\n    基期投放"}
+{"type":"tool-input-delta","id":"fc-ccb373f2-d182-45d4-8ea2-197347fd43c6","delta":": bCon,"}
+{"type":"tool-input-delta","id":"fc-ccb373f2-d182-45d4-8ea2-197347fd43c6","delta":"\\n    本期投放"}
+{"type":"tool-input-delta","id":"fc-ccb373f2-d182-45d4-8ea2-197347fd43c6","delta":": cCon,"}
+{"type":"tool-input-delta","id":"fc-ccb373f2-d182-45d4-8ea2-197347fd43c6","delta":"\\n    投放"}
+{"type":"tool-input-delta","id":"fc-ccb373f2-d182-45d4-8ea2-197347fd43c6","delta":"变化率: (("}
+{"type":"tool-input-delta","id":"fc-ccb373f2-d182-45d4-8ea2-197347fd43c6","delta":"cCon-bCon"}
+{"type":"tool-input-delta","id":"fc-ccb373f2-d182-45d4-8ea2-197347fd43c6","delta":")/bCon*"}
+{"type":"tool-input-delta","id":"fc-ccb373f2-d182-45d4-8ea2-197347fd43c6","delta":"100).toFixed("}
+{"type":"tool-input-delta","id":"fc-ccb373f2-d182-45d4-8ea2-197347fd43c6","delta":"1)+'%',"}
+{"type":"tool-input-delta","id":"fc-ccb373f2-d182-45d4-8ea2-197347fd43c6","delta":"\\n    基期"}
+{"type":"tool-input-delta","id":"fc-ccb373f2-d182-45d4-8ea2-197347fd43c6","delta":"ROI: (b"}
+{"type":"tool-input-delta","id":"fc-ccb373f2-d182-45d4-8ea2-197347fd43c6","delta":"Net/bCon"}
+{"type":"tool-input-delta","id":"fc-ccb373f2-d182-45d4-8ea2-197347fd43c6","delta":").toFixed(2"}
+{"type":"tool-input-delta","id":"fc-ccb373f2-d182-45d4-8ea2-197347fd43c6","delta":"),\\n    本期"}
+{"type":"tool-input-delta","id":"fc-ccb373f2-d182-45d4-8ea2-197347fd43c6","delta":"ROI: (c"}
+{"type":"tool-input-delta","id":"fc-ccb373f2-d182-45d4-8ea2-197347fd43c6","delta":"Net/cCon"}
+{"type":"tool-input-delta","id":"fc-ccb373f2-d182-45d4-8ea2-197347fd43c6","delta":").toFixed(2"}
+{"type":"tool-input-delta","id":"fc-ccb373f2-d182-45d4-8ea2-197347fd43c6","delta":")\\n  };\\n});\\nresult = byCategory;\"}"}
+{"type":"text-end","id":"aitxt-boOLVnAKcD7morfCRr2zTI2Z"}
+{"type":"tool-input-end","id":"fc-ccb373f2-d182-45d4-8ea2-197347fd43c6"}
+{"type":"tool-call","toolCallId":"fc-ccb373f2-d182-45d4-8ea2-197347fd43c6","toolName":"execute_javascript","input":{"code":"// 按品类分解\nconst categories = [...new Set(data.map(d => d.category))];\nconst byCategory = categories.map(cat => {\n  const b = data.filter(d => d.period==='基期' && d.category===cat);\n  const c = data.filter(d => d.period==='本期' && d.category===cat);\n  const bNet = b.reduce((s,d)=>s+d.net_sales_cents,0);\n  const cNet = c.reduce((s,d)=>s+d.net_sales_cents,0);\n  const bCon = b.reduce((s,d)=>s+d.contribution_cents,0);\n  const cCon = c.reduce((s,d)=>s+d.contribution_cents,0);\n  return {\n    category: cat,\n    基期净销售: bNet,\n    本期净销售: cNet,\n    净销售变化率: ((cNet-bNet)/bNet*100).toFixed(1)+'%',\n    基期投放: bCon,\n    本期投放: cCon,\n    投放变化率: ((cCon-bCon)/bCon*100).toFixed(1)+'%',\n    基期ROI: (bNet/bCon).toFixed(2),\n    本期ROI: (cNet/cCon).toFixed(2)\n  };\n});\nresult = byCategory;"}}
+{"type":"tool-result","toolCallId":"fc-ccb373f2-d182-45d4-8ea2-197347fd43c6","toolName":"execute_javascript","input":{"code":"// 按品类分解\nconst categories = [...new Set(data.map(d => d.category))];\nconst byCategory = categories.map(cat => {\n  const b = data.filter(d => d.period==='基期' && d.category===cat);\n  const c = data.filter(d => d.period==='本期' && d.category===cat);\n  const bNet = b.reduce((s,d)=>s+d.net_sales_cents,0);\n  const cNet = c.reduce((s,d)=>s+d.net_sales_cents,0);\n  const bCon = b.reduce((s,d)=>s+d.contribution_cents,0);\n  const cCon = c.reduce((s,d)=>s+d.contribution_cents,0);\n  return {\n    category: cat,\n    基期净销售: bNet,\n    本期净销售: cNet,\n    净销售变化率: ((cNet-bNet)/bNet*100).toFixed(1)+'%',\n    基期投放: bCon,\n    本期投放: cCon,\n    投放变化率: ((cCon-bCon)/bCon*100).toFixed(1)+'%',\n    基期ROI: (bNet/bCon).toFixed(2),\n    本期ROI: (cNet/cCon).toFixed(2)\n  };\n});\nresult = byCategory;"},"output":{"result":[{"category":"办公椅","基期净销售":420470323,"本期净销售":437901961,"净销售变化率":"4.1%","基期投放":176405009,"本期投放":155998685,"投放变化率":"-11.6%","基期ROI":"2.38","本期ROI":"2.81"},{"category":"升降桌","基期净销售":1127177918,"本期净销售":1024277661,"净销售变化率":"-9.1%","基期投放":483227104,"本期投放":421838002,"投放变化率":"-12.7%","基期ROI":"2.33","本期ROI":"2.43"},{"category":"收纳","基期净销售":21492486,"本期净销售":21225914,"净销售变化率":"-1.2%","基期投放":9434317,"本期投放":9267150,"投放变化率":"-1.8%","基期ROI":"2.28","本期ROI":"2.29"},{"category":"显示器","基期净销售":91050011,"本期净销售":90349228,"净销售变化率":"-0.8%","基期投放":23480178,"本期投放":23010145,"投放变化率":"-2.0%","基期ROI":"3.88","本期ROI":"3.93"},{"category":"桌面配件","基期净销售":158403066,"本期净销售":163093169,"净销售变化率":"3.0%","基期投放":78722666,"本期投放":80156738,"投放变化率":"1.8%","基期ROI":"2.01","本期ROI":"2.03"},{"category":"精选代销","基期净销售":34632745,"本期净销售":95801752,"净销售变化率":"176.6%","基期投放":32235461,"本期投放":88594900,"投放变化率":"174.8%","基期ROI":"1.07","本期ROI":"1.08"}]},"dynamic":false}
+{"type":"finish-step","finishReason":"tool-calls","rawFinishReason":"tool_calls","usage":{"inputTokens":2070,"inputTokenDetails":{"noCacheTokens":1302,"cacheReadTokens":768},"outputTokens":292,"outputTokenDetails":{"textTokens":292,"reasoningTokens":0},"totalTokens":2362,"raw":{"prompt_tokens":2070,"completion_tokens":292,"total_tokens":2362,"prompt_tokens_details":{"cached_tokens":768},"completion_tokens_details":{}}},"performance":{"stepTimeMs":5227.993208999998,"toolExecutionMs":{"fc-ccb373f2-d182-45d4-8ea2-197347fd43c6":2.3810000000012224},"responseTimeMs":5222.369457999999,"effectiveOutputTokensPerSecond":55.91331719219779,"outputTokensPerSecond":65.08326729814897,"inputTokensPerSecond":2813.2292685307066,"effectiveTotalTokensPerSecond":452.28512057524375,"timeToFirstOutputMs":735.8092080000006,"timeBetweenOutputChunksMs":{"min":17.00262500000099,"p10":46.230750000002445,"median":49.41016600000148,"avg":64.07757202857142,"p90":64.90774999999849,"max":548.4536250000019}},"providerMetadata":{"openai":{}},"response":{"id":"0b43d47017931069931038660e02a9","timestamp":"2026-10-27T13:16:33.000Z","modelId":"GLM-5.1","headers":{"access-control-allow-headers":"authorization, content-type, x-stainless-retry-count","access-control-allow-origin":"http://127.0.0.1:3000","connection":"keep-alive","content-type":"text/event-stream","date":"Tue, 27 Oct 2026 13:16:33 GMT","keep-alive":"timeout=5","transfer-encoding":"chunked"}}}
+{"type":"start-step","request":{},"warnings":[]}
+{"type":"text-start","id":"aitxt-XLmsocgeUuPmWqAlRHHiaBhJ"}
+{"type":"tool-input-start","id":"fc-9dea508d-46a3-4cce-90ef-f27e4ed574c7","toolName":"execute_javascript","dynamic":false}
+{"type":"tool-input-delta","id":"fc-9dea508d-46a3-4cce-90ef-f27e4ed574c7","delta":"{\"code\": \""}
+{"type":"tool-input-delta","id":"fc-9dea508d-46a3-4cce-90ef-f27e4ed574c7","delta":"// 按"}
+{"type":"tool-input-delta","id":"fc-9dea508d-46a3-4cce-90ef-f27e4ed574c7","delta":"区域分解"}
+{"type":"tool-input-delta","id":"fc-9dea508d-46a3-4cce-90ef-f27e4ed574c7","delta":"\\nconst regions = [..."}
+{"type":"tool-input-delta","id":"fc-9dea508d-46a3-4cce-90ef-f27e4ed574c7","delta":"new Set(data.map"}
+{"type":"tool-input-delta","id":"fc-9dea508d-46a3-4cce-90ef-f27e4ed574c7","delta":"(d => d.region"}
+{"type":"tool-input-delta","id":"fc-9dea508d-46a3-4cce-90ef-f27e4ed574c7","delta":"))];\\nconst byRegion"}
+{"type":"tool-input-delta","id":"fc-9dea508d-46a3-4cce-90ef-f27e4ed574c7","delta":" = regions.map"}
+{"type":"tool-input-delta","id":"fc-9dea508d-46a3-4cce-90ef-f27e4ed574c7","delta":"(r => {"}
+{"type":"tool-input-delta","id":"fc-9dea508d-46a3-4cce-90ef-f27e4ed574c7","delta":"\\n  const b = data"}
+{"type":"tool-input-delta","id":"fc-9dea508d-46a3-4cce-90ef-f27e4ed574c7","delta":".filter(d => d"}
+{"type":"tool-input-delta","id":"fc-9dea508d-46a3-4cce-90ef-f27e4ed574c7","delta":".period==='基期"}
+{"type":"tool-input-delta","id":"fc-9dea508d-46a3-4cce-90ef-f27e4ed574c7","delta":"' && d.region"}
+{"type":"tool-input-delta","id":"fc-9dea508d-46a3-4cce-90ef-f27e4ed574c7","delta":"===r);"}
+{"type":"tool-input-delta","id":"fc-9dea508d-46a3-4cce-90ef-f27e4ed574c7","delta":"\\n  const c = data"}
+{"type":"tool-input-delta","id":"fc-9dea508d-46a3-4cce-90ef-f27e4ed574c7","delta":".filter(d => d"}
+{"type":"tool-input-delta","id":"fc-9dea508d-46a3-4cce-90ef-f27e4ed574c7","delta":".period==='本期'"}
+{"type":"tool-input-delta","id":"fc-9dea508d-46a3-4cce-90ef-f27e4ed574c7","delta":" && d.region==="}
+{"type":"tool-input-delta","id":"fc-9dea508d-46a3-4cce-90ef-f27e4ed574c7","delta":"r);\\n  const"}
+{"type":"tool-input-delta","id":"fc-9dea508d-46a3-4cce-90ef-f27e4ed574c7","delta":" bNet = b"}
+{"type":"tool-input-delta","id":"fc-9dea508d-46a3-4cce-90ef-f27e4ed574c7","delta":".reduce((s,d"}
+{"type":"tool-input-delta","id":"fc-9dea508d-46a3-4cce-90ef-f27e4ed574c7","delta":")=>s+d.net"}
+{"type":"tool-input-delta","id":"fc-9dea508d-46a3-4cce-90ef-f27e4ed574c7","delta":"_sales_cents,"}
+{"type":"tool-input-delta","id":"fc-9dea508d-46a3-4cce-90ef-f27e4ed574c7","delta":"0);\\n  const"}
+{"type":"tool-input-delta","id":"fc-9dea508d-46a3-4cce-90ef-f27e4ed574c7","delta":" cNet = c"}
+{"type":"tool-input-delta","id":"fc-9dea508d-46a3-4cce-90ef-f27e4ed574c7","delta":".reduce((s,d"}
+{"type":"tool-input-delta","id":"fc-9dea508d-46a3-4cce-90ef-f27e4ed574c7","delta":")=>s+d.net"}
+{"type":"tool-input-delta","id":"fc-9dea508d-46a3-4cce-90ef-f27e4ed574c7","delta":"_sales_cents,"}
+{"type":"tool-input-delta","id":"fc-9dea508d-46a3-4cce-90ef-f27e4ed574c7","delta":"0);\\n  const"}
+{"type":"tool-input-delta","id":"fc-9dea508d-46a3-4cce-90ef-f27e4ed574c7","delta":" bCon = b"}
+{"type":"tool-input-delta","id":"fc-9dea508d-46a3-4cce-90ef-f27e4ed574c7","delta":".reduce((s,d"}
+{"type":"tool-input-delta","id":"fc-9dea508d-46a3-4cce-90ef-f27e4ed574c7","delta":")=>s+d.contrib"}
+{"type":"tool-input-delta","id":"fc-9dea508d-46a3-4cce-90ef-f27e4ed574c7","delta":"ution_cents,"}
+{"type":"tool-input-delta","id":"fc-9dea508d-46a3-4cce-90ef-f27e4ed574c7","delta":"0);\\n  const"}
+{"type":"tool-input-delta","id":"fc-9dea508d-46a3-4cce-90ef-f27e4ed574c7","delta":" cCon = c"}
+{"type":"tool-input-delta","id":"fc-9dea508d-46a3-4cce-90ef-f27e4ed574c7","delta":".reduce((s,d"}
+{"type":"tool-input-delta","id":"fc-9dea508d-46a3-4cce-90ef-f27e4ed574c7","delta":")=>s+d.contrib"}
+{"type":"tool-input-delta","id":"fc-9dea508d-46a3-4cce-90ef-f27e4ed574c7","delta":"ution_cents,"}
+{"type":"tool-input-delta","id":"fc-9dea508d-46a3-4cce-90ef-f27e4ed574c7","delta":"0);\\n  return"}
+{"type":"tool-input-delta","id":"fc-9dea508d-46a3-4cce-90ef-f27e4ed574c7","delta":" {\\n    region"}
+{"type":"tool-input-delta","id":"fc-9dea508d-46a3-4cce-90ef-f27e4ed574c7","delta":": r,"}
+{"type":"tool-input-delta","id":"fc-9dea508d-46a3-4cce-90ef-f27e4ed574c7","delta":"\\n    净销售变化率"}
+{"type":"tool-input-delta","id":"fc-9dea508d-46a3-4cce-90ef-f27e4ed574c7","delta":": ((cNet"}
+{"type":"tool-input-delta","id":"fc-9dea508d-46a3-4cce-90ef-f27e4ed574c7","delta":"-bNet)/"}
+{"type":"tool-input-delta","id":"fc-9dea508d-46a3-4cce-90ef-f27e4ed574c7","delta":"bNet*100"}
+{"type":"tool-input-delta","id":"fc-9dea508d-46a3-4cce-90ef-f27e4ed574c7","delta":").toFixed(1"}
+{"type":"tool-input-delta","id":"fc-9dea508d-46a3-4cce-90ef-f27e4ed574c7","delta":")+'%',"}
+{"type":"tool-input-delta","id":"fc-9dea508d-46a3-4cce-90ef-f27e4ed574c7","delta":"\\n    投放变化率"}
+{"type":"tool-input-delta","id":"fc-9dea508d-46a3-4cce-90ef-f27e4ed574c7","delta":": ((cCon"}
+{"type":"tool-input-delta","id":"fc-9dea508d-46a3-4cce-90ef-f27e4ed574c7","delta":"-bCon)/"}
+{"type":"tool-input-delta","id":"fc-9dea508d-46a3-4cce-90ef-f27e4ed574c7","delta":"bCon*100"}
+{"type":"tool-input-delta","id":"fc-9dea508d-46a3-4cce-90ef-f27e4ed574c7","delta":").toFixed(1"}
+{"type":"tool-input-delta","id":"fc-9dea508d-46a3-4cce-90ef-f27e4ed574c7","delta":")+'%',\\n    本"}
+{"type":"tool-input-delta","id":"fc-9dea508d-46a3-4cce-90ef-f27e4ed574c7","delta":"期ROI: ("}
+{"type":"tool-input-delta","id":"fc-9dea508d-46a3-4cce-90ef-f27e4ed574c7","delta":"cNet/cCon"}
+{"type":"tool-input-delta","id":"fc-9dea508d-46a3-4cce-90ef-f27e4ed574c7","delta":").toFixed(2"}
+{"type":"tool-input-delta","id":"fc-9dea508d-46a3-4cce-90ef-f27e4ed574c7","delta":")\\n  };\\n});"}
+{"type":"tool-input-delta","id":"fc-9dea508d-46a3-4cce-90ef-f27e4ed574c7","delta":"\\nresult = byRegion"}
+{"type":"tool-input-delta","id":"fc-9dea508d-46a3-4cce-90ef-f27e4ed574c7","delta":";\""}
+{"type":"tool-input-delta","id":"fc-9dea508d-46a3-4cce-90ef-f27e4ed574c7","delta":"}"}
+{"type":"text-end","id":"aitxt-XLmsocgeUuPmWqAlRHHiaBhJ"}
+{"type":"tool-input-end","id":"fc-9dea508d-46a3-4cce-90ef-f27e4ed574c7"}
+{"type":"tool-call","toolCallId":"fc-9dea508d-46a3-4cce-90ef-f27e4ed574c7","toolName":"execute_javascript","input":{"code":"// 按区域分解\nconst regions = [...new Set(data.map(d => d.region))];\nconst byRegion = regions.map(r => {\n  const b = data.filter(d => d.period==='基期' && d.region===r);\n  const c = data.filter(d => d.period==='本期' && d.region===r);\n  const bNet = b.reduce((s,d)=>s+d.net_sales_cents,0);\n  const cNet = c.reduce((s,d)=>s+d.net_sales_cents,0);\n  const bCon = b.reduce((s,d)=>s+d.contribution_cents,0);\n  const cCon = c.reduce((s,d)=>s+d.contribution_cents,0);\n  return {\n    region: r,\n    净销售变化率: ((cNet-bNet)/bNet*100).toFixed(1)+'%',\n    投放变化率: ((cCon-bCon)/bCon*100).toFixed(1)+'%',\n    本期ROI: (cNet/cCon).toFixed(2)\n  };\n});\nresult = byRegion;"}}
+{"type":"tool-result","toolCallId":"fc-9dea508d-46a3-4cce-90ef-f27e4ed574c7","toolName":"execute_javascript","input":{"code":"// 按区域分解\nconst regions = [...new Set(data.map(d => d.region))];\nconst byRegion = regions.map(r => {\n  const b = data.filter(d => d.period==='基期' && d.region===r);\n  const c = data.filter(d => d.period==='本期' && d.region===r);\n  const bNet = b.reduce((s,d)=>s+d.net_sales_cents,0);\n  const cNet = c.reduce((s,d)=>s+d.net_sales_cents,0);\n  const bCon = b.reduce((s,d)=>s+d.contribution_cents,0);\n  const cCon = c.reduce((s,d)=>s+d.contribution_cents,0);\n  return {\n    region: r,\n    净销售变化率: ((cNet-bNet)/bNet*100).toFixed(1)+'%',\n    投放变化率: ((cCon-bCon)/bCon*100).toFixed(1)+'%',\n    本期ROI: (cNet/cCon).toFixed(2)\n  };\n});\nresult = byRegion;"},"output":{"result":[{"region":"华东","净销售变化率":"-4.5%","投放变化率":"-6.1%","本期ROI":"2.35"},{"region":"华北","净销售变化率":"-3.7%","投放变化率":"-4.8%","本期ROI":"2.35"},{"region":"华南","净销售变化率":"5.7%","投放变化率":"3.4%","本期ROI":"2.35"},{"region":"西部","净销售变化率":"0.7%","投放变化率":"-2.6%","本期ROI":"2.36"}]},"dynamic":false}
+{"type":"finish-step","finishReason":"tool-calls","rawFinishReason":"tool_calls","usage":{"inputTokens":2847,"inputTokenDetails":{"noCacheTokens":2847,"cacheReadTokens":0},"outputTokens":236,"outputTokenDetails":{"textTokens":236,"reasoningTokens":0},"totalTokens":3083,"raw":{"prompt_tokens":2847,"completion_tokens":236,"total_tokens":3083,"prompt_tokens_details":{"cached_tokens":0},"completion_tokens_details":{}}},"performance":{"stepTimeMs":5321.849333000002,"toolExecutionMs":{"fc-9dea508d-46a3-4cce-90ef-f27e4ed574c7":1.5000419999996666},"responseTimeMs":5318.4180000000015,"effectiveOutputTokensPerSecond":44.374097711011046,"outputTokensPerSecond":51.80337196050302,"inputTokensPerSecond":3732.6445793399866,"effectiveTotalTokensPerSecond":579.6836578095214,"timeToFirstOutputMs":762.7300000000032,"timeBetweenOutputChunksMs":{"min":0.04629199999908451,"p10":47.05737500000032,"median":57.39179199999853,"avg":75.91349929999997,"p90":67.64687499999854,"max":1073.272832999999}},"providerMetadata":{"openai":{}},"response":{"id":"0b43d47017931069983168928e02a9","timestamp":"2026-10-27T13:16:39.000Z","modelId":"GLM-5.1","headers":{"access-control-allow-headers":"authorization, content-type, x-stainless-retry-count","access-control-allow-origin":"http://127.0.0.1:3000","connection":"keep-alive","content-type":"text/event-stream","date":"Tue, 27 Oct 2026 13:16:39 GMT","keep-alive":"timeout=5","transfer-encoding":"chunked"}}}
+{"type":"start-step","request":{},"warnings":[]}
+{"type":"text-start","id":"aitxt-iZNeZh29qUhOewPG9fqikltp"}
+{"type":"tool-input-start","id":"fc-5d37f072-6b8c-4d5b-97ba-7f9f971d876e","toolName":"execute_javascript","dynamic":false}
+{"type":"tool-input-delta","id":"fc-5d37f072-6b8c-4d5b-97ba-7f9f971d876e","delta":"{\"code\": \""}
+{"type":"tool-input-delta","id":"fc-5d37f072-6b8c-4d5b-97ba-7f9f971d876e","delta":"//"}
+{"type":"tool-input-delta","id":"fc-5d37f072-6b8c-4d5b-97ba-7f9f971d876e","delta":" 深入分析"}
+{"type":"tool-input-delta","id":"fc-5d37f072-6b8c-4d5b-97ba-7f9f971d876e","delta":"：本期"}
+{"type":"tool-input-delta","id":"fc-5d37f072-6b8c-4d5b-97ba-7f9f971d876e","delta":"投放下降最多的"}
+{"type":"tool-input-delta","id":"fc-5d37f072-6b8c-4d5b-97ba-7f9f971d876e","delta":"渠道和"}
+{"type":"tool-input-delta","id":"fc-5d37f072-6b8c-4d5b-97ba-7f9f971d876e","delta":"品类交叉"}
+{"type":"tool-input-delta","id":"fc-5d37f072-6b8c-4d5b-97ba-7f9f971d876e","delta":"情况"}
+{"type":"tool-input-delta","id":"fc-5d37f072-6b8c-4d5b-97ba-7f9f971d876e","delta":"\\n// 重点关注"}
+{"type":"tool-input-delta","id":"fc-5d37f072-6b8c-4d5b-97ba-7f9f971d876e","delta":"\\\""}
+{"type":"tool-input-delta","id":"fc-5d37f072-6b8c-4d5b-97ba-7f9f971d876e","delta":"直接访问\\\"和"}
+{"type":"tool-input-delta","id":"fc-5d37f072-6b8c-4d5b-97ba-7f9f971d876e","delta":"\\\"自然搜索\\\""}
+{"type":"tool-input-delta","id":"fc-5d37f072-6b8c-4d5b-97ba-7f9f971d876e","delta":"这两个下降"}
+{"type":"tool-input-delta","id":"fc-5d37f072-6b8c-4d5b-97ba-7f9f971d876e","delta":"最大的渠道，"}
+{"type":"tool-input-delta","id":"fc-5d37f072-6b8c-4d5b-97ba-7f9f971d876e","delta":"看看"}
+{"type":"tool-input-delta","id":"fc-5d37f072-6b8c-4d5b-97ba-7f9f971d876e","delta":"它们"}
+{"type":"tool-input-delta","id":"fc-5d37f072-6b8c-4d5b-97ba-7f9f971d876e","delta":"关联"}
+{"type":"tool-input-delta","id":"fc-5d37f072-6b8c-4d5b-97ba-7f9f971d876e","delta":"的品类"}
+{"type":"tool-input-delta","id":"fc-5d37f072-6b8c-4d5b-97ba-7f9f971d876e","delta":"\\nconst details"}
+{"type":"tool-input-delta","id":"fc-5d37f072-6b8c-4d5b-97ba-7f9f971d876e","delta":" = data"}
+{"type":"tool-input-delta","id":"fc-5d37f072-6b8c-4d5b-97ba-7f9f971d876e","delta":".filter(d => d"}
+{"type":"tool-input-delta","id":"fc-5d37f072-6b8c-4d5b-97ba-7f9f971d876e","delta":".period === '本期"}
+{"type":"tool-input-delta","id":"fc-5d37f072-6b8c-4d5b-97ba-7f9f971d876e","delta":"'"}
+{"type":"tool-input-delta","id":"fc-5d37f072-6b8c-4d5b-97ba-7f9f971d876e","delta":" && (d.channel"}
+{"type":"tool-input-delta","id":"fc-5d37f072-6b8c-4d5b-97ba-7f9f971d876e","delta":" === '直接访问"}
+{"type":"tool-input-delta","id":"fc-5d37f072-6b8c-4d5b-97ba-7f9f971d876e","delta":"' || d.channel"}
+{"type":"tool-input-delta","id":"fc-5d37f072-6b8c-4d5b-97ba-7f9f971d876e","delta":" === '自然搜索"}
+{"type":"tool-input-delta","id":"fc-5d37f072-6b8c-4d5b-97ba-7f9f971d876e","delta":"'))"}
+{"type":"tool-input-delta","id":"fc-5d37f072-6b8c-4d5b-97ba-7f9f971d876e","delta":"\\n  .map(d => {\\n    const base = data"}
+{"type":"tool-input-delta","id":"fc-5d37f072-6b8c-4d5b-97ba-7f9f971d876e","delta":".find(b"}
+{"type":"tool-input-delta","id":"fc-5d37f072-6b8c-4d5b-97ba-7f9f971d876e","delta":" => b.period"}
+{"type":"tool-input-delta","id":"fc-5d37f072-6b8c-4d5b-97ba-7f9f971d876e","delta":"==='基期'"}
+{"type":"tool-input-delta","id":"fc-5d37f072-6b8c-4d5b-97ba-7f9f971d876e","delta":" && b.channel==="}
+{"type":"tool-input-delta","id":"fc-5d37f072-6b8c-4d5b-97ba-7f9f971d876e","delta":"d.channel &&"}
+{"type":"tool-input-delta","id":"fc-5d37f072-6b8c-4d5b-97ba-7f9f971d876e","delta":" d"}
+{"type":"tool-input-delta","id":"fc-5d37f072-6b8c-4d5b-97ba-7f9f971d876e","delta":".category===b"}
+{"type":"tool-input-delta","id":"fc-5d37f072-6b8c-4d5b-97ba-7f9f971d876e","delta":".category && d.region"}
+{"type":"tool-input-delta","id":"fc-5d37f072-6b8c-4d5b-97ba-7f9f971d876e","delta":"===b"}
+{"type":"tool-input-delta","id":"fc-5d37f072-6b8c-4d5b-97ba-7f9f971d876e","delta":".region);\\n    return"}
+{"type":"tool-input-delta","id":"fc-5d37f072-6b8c-4d5b-97ba-7f9f971d876e","delta":" {\\n      channel"}
+{"type":"tool-input-delta","id":"fc-5d37f072-6b8c-4d5b-97ba-7f9f971d876e","delta":": d.channel,"}
+{"type":"tool-input-delta","id":"fc-5d37f072-6b8c-4d5b-97ba-7f9f971d876e","delta":"\\n      category: d"}
+{"type":"tool-input-delta","id":"fc-5d37f072-6b8c-4d5b-97ba-7f9f971d876e","delta":".category,\\n      region"}
+{"type":"tool-input-delta","id":"fc-5d37f072-6b8c-4d5b-97ba-7f9f971d876e","delta":": d.region"}
+{"type":"tool-input-delta","id":"fc-5d37f072-6b8c-4d5b-97ba-7f9f971d876e","delta":",\\n      本期"}
+{"type":"tool-input-delta","id":"fc-5d37f072-6b8c-4d5b-97ba-7f9f971d876e","delta":"净销售: d"}
+{"type":"tool-input-delta","id":"fc-5d37f072-6b8c-4d5b-97ba-7f9f971d876e","delta":".net_sales_cents"}
+{"type":"tool-input-delta","id":"fc-5d37f072-6b8c-4d5b-97ba-7f9f971d876e","delta":","}
+{"type":"tool-input-delta","id":"fc-5d37f072-6b8c-4d5b-97ba-7f9f971d876e","delta":"\\n      基期净"}
+{"type":"tool-input-delta","id":"fc-5d37f072-6b8c-4d5b-97ba-7f9f971d876e","delta":"销售: base"}
+{"type":"tool-input-delta","id":"fc-5d37f072-6b8c-4d5b-97ba-7f9f971d876e","delta":" ? base"}
+{"type":"tool-input-delta","id":"fc-5d37f072-6b8c-4d5b-97ba-7f9f971d876e","delta":".net_sales_cents"}
+{"type":"tool-input-delta","id":"fc-5d37f072-6b8c-4d5b-97ba-7f9f971d876e","delta":" : 0,"}
+{"type":"tool-input-delta","id":"fc-5d37f072-6b8c-4d5b-97ba-7f9f971d876e","delta":"\\n      变化率:"}
+{"type":"tool-input-delta","id":"fc-5d37f072-6b8c-4d5b-97ba-7f9f971d876e","delta":" base ? (("}
+{"type":"tool-input-delta","id":"fc-5d37f072-6b8c-4d5b-97ba-7f9f971d876e","delta":"d.net_sales_c"}
+{"type":"tool-input-delta","id":"fc-5d37f072-6b8c-4d5b-97ba-7f9f971d876e","delta":"ents - base.net"}
+{"type":"tool-input-delta","id":"fc-5d37f072-6b8c-4d5b-97ba-7f9f971d876e","delta":"_sales_cents)/"}
+{"type":"tool-input-delta","id":"fc-5d37f072-6b8c-4d5b-97ba-7f9f971d876e","delta":"base.net_sales_c"}
+{"type":"tool-input-delta","id":"fc-5d37f072-6b8c-4d5b-97ba-7f9f971d876e","delta":"ents*100)."}
+{"type":"tool-input-delta","id":"fc-5d37f072-6b8c-4d5b-97ba-7f9f971d876e","delta":"toFixed(1)+'"}
+{"type":"tool-input-delta","id":"fc-5d37f072-6b8c-4d5b-97ba-7f9f971d876e","delta":"%' : 'N"}
+{"type":"tool-input-delta","id":"fc-5d37f072-6b8c-4d5b-97ba-7f9f971d876e","delta":"/A'"}
+{"type":"tool-input-delta","id":"fc-5d37f072-6b8c-4d5b-97ba-7f9f971d876e","delta":"\\n    };"}
+{"type":"tool-input-delta","id":"fc-5d37f072-6b8c-4d5b-97ba-7f9f971d876e","delta":"\\n  });\\n\\n//"}
+{"type":"tool-input-delta","id":"fc-5d37f072-6b8c-4d5b-97ba-7f9f971d876e","delta":" 汇总:"}
+{"type":"tool-input-delta","id":"fc-5d37f072-6b8c-4d5b-97ba-7f9f971d876e","delta":" 直接访问和自然"}
+{"type":"tool-input-delta","id":"fc-5d37f072-6b8c-4d5b-97ba-7f9f971d876e","delta":"搜索按品类"}
+{"type":"tool-input-delta","id":"fc-5d37f072-6b8c-4d5b-97ba-7f9f971d876e","delta":"\\nconst summary"}
+{"type":"tool-input-delta","id":"fc-5d37f072-6b8c-4d5b-97ba-7f9f971d876e","delta":" = {};"}
+{"type":"tool-input-delta","id":"fc-5d37f072-6b8c-4d5b-97ba-7f9f971d876e","delta":"\\ndata"}
+{"type":"tool-input-delta","id":"fc-5d37f072-6b8c-4d5b-97ba-7f9f971d876e","delta":".filter(d => d"}
+{"type":"tool-input-delta","id":"fc-5d37f072-6b8c-4d5b-97ba-7f9f971d876e","delta":".period === '本期"}
+{"type":"tool-input-delta","id":"fc-5d37f072-6b8c-4d5b-97ba-7f9f971d876e","delta":"'"}
+{"type":"tool-input-delta","id":"fc-5d37f072-6b8c-4d5b-97ba-7f9f971d876e","delta":" && (d.channel"}
+{"type":"tool-input-delta","id":"fc-5d37f072-6b8c-4d5b-97ba-7f9f971d876e","delta":" === '直接访问' || d.channel"}
+{"type":"tool-input-delta","id":"fc-5d37f072-6b8c-4d5b-97ba-7f9f971d876e","delta":" === '自然搜索"}
+{"type":"tool-input-delta","id":"fc-5d37f072-6b8c-4d5b-97ba-7f9f971d876e","delta":"'))\\n  .forEach"}
+{"type":"tool-input-delta","id":"fc-5d37f072-6b8c-4d5b-97ba-7f9f971d876e","delta":"(d => {"}
+{"type":"tool-input-delta","id":"fc-5d37f072-6b8c-4d5b-97ba-7f9f971d876e","delta":"\\n    const key = d"}
+{"type":"tool-input-delta","id":"fc-5d37f072-6b8c-4d5b-97ba-7f9f971d876e","delta":".channel + '|'"}
+{"type":"tool-input-delta","id":"fc-5d37f072-6b8c-4d5b-97ba-7f9f971d876e","delta":" + d.category;"}
+{"type":"tool-input-delta","id":"fc-5d37f072-6b8c-4d5b-97ba-7f9f971d876e","delta":"\\n    if"}
+{"type":"tool-input-delta","id":"fc-5d37f072-6b8c-4d5b-97ba-7f9f971d876e","delta":"(!summary[key])"}
+{"type":"tool-input-delta","id":"fc-5d37f072-6b8c-4d5b-97ba-7f9f971d876e","delta":" summary[key] ="}
+{"type":"tool-input-delta","id":"fc-5d37f072-6b8c-4d5b-97ba-7f9f971d876e","delta":" {channel:d"}
+{"type":"tool-input-delta","id":"fc-5d37f072-6b8c-4d5b-97ba-7f9f971d876e","delta":".channel, category"}
+{"type":"tool-input-delta","id":"fc-5d37f072-6b8c-4d5b-97ba-7f9f971d876e","delta":":d.category,"}
+{"type":"tool-input-delta","id":"fc-5d37f072-6b8c-4d5b-97ba-7f9f971d876e","delta":" 本期净销售:0,"}
+{"type":"tool-input-delta","id":"fc-5d37f072-6b8c-4d5b-97ba-7f9f971d876e","delta":" 基期净销售:0};"}
+{"type":"tool-input-delta","id":"fc-5d37f072-6b8c-4d5b-97ba-7f9f971d876e","delta":"\\n    summary[key]."}
+{"type":"tool-input-delta","id":"fc-5d37f072-6b8c-4d5b-97ba-7f9f971d876e","delta":"本期净销售 +="}
+{"type":"tool-input-delta","id":"fc-5d37f072-6b8c-4d5b-97ba-7f9f971d876e","delta":" d.net_sales_c"}
+{"type":"tool-input-delta","id":"fc-5d37f072-6b8c-4d5b-97ba-7f9f971d876e","delta":"ents;\\n    const"}
+{"type":"tool-input-delta","id":"fc-5d37f072-6b8c-4d5b-97ba-7f9f971d876e","delta":" base = data.find"}
+{"type":"tool-input-delta","id":"fc-5d37f072-6b8c-4d5b-97ba-7f9f971d876e","delta":"(b => b.period"}
+{"type":"tool-input-delta","id":"fc-5d37f072-6b8c-4d5b-97ba-7f9f971d876e","delta":"==='基期'"}
+{"type":"tool-input-delta","id":"fc-5d37f072-6b8c-4d5b-97ba-7f9f971d876e","delta":" && b.channel==="}
+{"type":"tool-input-delta","id":"fc-5d37f072-6b8c-4d5b-97ba-7f9f971d876e","delta":"d.channel && b"}
+{"type":"tool-input-delta","id":"fc-5d37f072-6b8c-4d5b-97ba-7f9f971d876e","delta":".category===d.category"}
+{"type":"tool-input-delta","id":"fc-5d37f072-6b8c-4d5b-97ba-7f9f971d876e","delta":" && b.region"}
+{"type":"tool-input-delta","id":"fc-5d37f072-6b8c-4d5b-97ba-7f9f971d876e","delta":"===d.region);"}
+{"type":"tool-input-delta","id":"fc-5d37f072-6b8c-4d5b-97ba-7f9f971d876e","delta":"\\n    if(base"}
+{"type":"tool-input-delta","id":"fc-5d37f072-6b8c-4d5b-97ba-7f9f971d876e","delta":") summary[key]."}
+{"type":"tool-input-delta","id":"fc-5d37f072-6b8c-4d5b-97ba-7f9f971d876e","delta":"基期净销售"}
+{"type":"tool-input-delta","id":"fc-5d37f072-6b8c-4d5b-97ba-7f9f971d876e","delta":" += base.net"}
+{"type":"tool-input-delta","id":"fc-5d37f072-6b8c-4d5b-97ba-7f9f971d876e","delta":"_sales_cents;"}
+{"type":"tool-input-delta","id":"fc-5d37f072-6b8c-4d5b-97ba-7f9f971d876e","delta":"\\n  });"}
+{"type":"tool-input-delta","id":"fc-5d37f072-6b8c-4d5b-97ba-7f9f971d876e","delta":"\\n\\nconst"}
+{"type":"tool-input-delta","id":"fc-5d37f072-6b8c-4d5b-97ba-7f9f971d876e","delta":" summary"}
+{"type":"tool-input-delta","id":"fc-5d37f072-6b8c-4d5b-97ba-7f9f971d876e","delta":"Arr = Object.values"}
+{"type":"tool-input-delta","id":"fc-5d37f072-6b8c-4d5b-97ba-7f9f971d876e","delta":"(summary).map(s"}
+{"type":"tool-input-delta","id":"fc-5d37f072-6b8c-4d5b-97ba-7f9f971d876e","delta":" => ({"}
+{"type":"tool-input-delta","id":"fc-5d37f072-6b8c-4d5b-97ba-7f9f971d876e","delta":"\\n  ...s,"}
+{"type":"tool-input-delta","id":"fc-5d37f072-6b8c-4d5b-97ba-7f9f971d876e","delta":"\\n  变化率:"}
+{"type":"tool-input-delta","id":"fc-5d37f072-6b8c-4d5b-97ba-7f9f971d876e","delta":" ((s.本期"}
+{"type":"tool-input-delta","id":"fc-5d37f072-6b8c-4d5b-97ba-7f9f971d876e","delta":"净销售 - s"}
+{"type":"tool-input-delta","id":"fc-5d37f072-6b8c-4d5b-97ba-7f9f971d876e","delta":".基期净"}
+{"type":"tool-input-delta","id":"fc-5d37f072-6b8c-4d5b-97ba-7f9f971d876e","delta":"销售)/s."}
+{"type":"tool-input-delta","id":"fc-5d37f072-6b8c-4d5b-97ba-7f9f971d876e","delta":"基期净销售"}
+{"type":"tool-input-delta","id":"fc-5d37f072-6b8c-4d5b-97ba-7f9f971d876e","delta":"*100).toFixed"}
+{"type":"tool-input-delta","id":"fc-5d37f072-6b8c-4d5b-97ba-7f9f971d876e","delta":"(1)+'%'"}
+{"type":"tool-input-delta","id":"fc-5d37f072-6b8c-4d5b-97ba-7f9f971d876e","delta":"\\n}"}
+{"type":"tool-input-delta","id":"fc-5d37f072-6b8c-4d5b-97ba-7f9f971d876e","delta":")).sort((a"}
+{"type":"tool-input-delta","id":"fc-5d37f072-6b8c-4d5b-97ba-7f9f971d876e","delta":",b) => parseFloat"}
+{"type":"tool-input-delta","id":"fc-5d37f072-6b8c-4d5b-97ba-7f9f971d876e","delta":"(a.变化"}
+{"type":"tool-input-delta","id":"fc-5d37f072-6b8c-4d5b-97ba-7f9f971d876e","delta":"率) - parseFloat"}
+{"type":"tool-input-delta","id":"fc-5d37f072-6b8c-4d5b-97ba-7f9f971d876e","delta":"(b.变化率"}
+{"type":"tool-input-delta","id":"fc-5d37f072-6b8c-4d5b-97ba-7f9f971d876e","delta":"));\\n\\nresult = summary"}
+{"type":"tool-input-delta","id":"fc-5d37f072-6b8c-4d5b-97ba-7f9f971d876e","delta":"Arr;\""}
+{"type":"tool-input-delta","id":"fc-5d37f072-6b8c-4d5b-97ba-7f9f971d876e","delta":"}"}
+{"type":"text-end","id":"aitxt-iZNeZh29qUhOewPG9fqikltp"}
+{"type":"tool-input-end","id":"fc-5d37f072-6b8c-4d5b-97ba-7f9f971d876e"}
+{"type":"tool-call","toolCallId":"fc-5d37f072-6b8c-4d5b-97ba-7f9f971d876e","toolName":"execute_javascript","input":{"code":"// 深入分析：本期投放下降最多的渠道和品类交叉情况\n// 重点关注\"直接访问\"和\"自然搜索\"这两个下降最大的渠道，看看它们关联的品类\nconst details = data.filter(d => d.period === '本期' && (d.channel === '直接访问' || d.channel === '自然搜索'))\n  .map(d => {\n    const base = data.find(b => b.period==='基期' && b.channel===d.channel && d.category===b.category && d.region===b.region);\n    return {\n      channel: d.channel,\n      category: d.category,\n      region: d.region,\n      本期净销售: d.net_sales_cents,\n      基期净销售: base ? base.net_sales_cents : 0,\n      变化率: base ? ((d.net_sales_cents - base.net_sales_cents)/base.net_sales_cents*100).toFixed(1)+'%' : 'N/A'\n    };\n  });\n\n// 汇总: 直接访问和自然搜索按品类\nconst summary = {};\ndata.filter(d => d.period === '本期' && (d.channel === '直接访问' || d.channel === '自然搜索'))\n  .forEach(d => {\n    const key = d.channel + '|' + d.category;\n    if(!summary[key]) summary[key] = {channel:d.channel, category:d.category, 本期净销售:0, 基期净销售:0};\n    summary[key].本期净销售 += d.net_sales_cents;\n    const base = data.find(b => b.period==='基期' && b.channel===d.channel && b.category===d.category && b.region===d.region);\n    if(base) summary[key].基期净销售 += base.net_sales_cents;\n  });\n\nconst summaryArr = Object.values(summary).map(s => ({\n  ...s,\n  变化率: ((s.本期净销售 - s.基期净销售)/s.基期净销售*100).toFixed(1)+'%'\n})).sort((a,b) => parseFloat(a.变化率) - parseFloat(b.变化率));\n\nresult = summaryArr;"}}
+{"type":"tool-result","toolCallId":"fc-5d37f072-6b8c-4d5b-97ba-7f9f971d876e","toolName":"execute_javascript","input":{"code":"// 深入分析：本期投放下降最多的渠道和品类交叉情况\n// 重点关注\"直接访问\"和\"自然搜索\"这两个下降最大的渠道，看看它们关联的品类\nconst details = data.filter(d => d.period === '本期' && (d.channel === '直接访问' || d.channel === '自然搜索'))\n  .map(d => {\n    const base = data.find(b => b.period==='基期' && b.channel===d.channel && d.category===b.category && d.region===b.region);\n    return {\n      channel: d.channel,\n      category: d.category,\n      region: d.region,\n      本期净销售: d.net_sales_cents,\n      基期净销售: base ? base.net_sales_cents : 0,\n      变化率: base ? ((d.net_sales_cents - base.net_sales_cents)/base.net_sales_cents*100).toFixed(1)+'%' : 'N/A'\n    };\n  });\n\n// 汇总: 直接访问和自然搜索按品类\nconst summary = {};\ndata.filter(d => d.period === '本期' && (d.channel === '直接访问' || d.channel === '自然搜索'))\n  .forEach(d => {\n    const key = d.channel + '|' + d.category;\n    if(!summary[key]) summary[key] = {channel:d.channel, category:d.category, 本期净销售:0, 基期净销售:0};\n    summary[key].本期净销售 += d.net_sales_cents;\n    const base = data.find(b => b.period==='基期' && b.channel===d.channel && b.category===d.category && b.region===d.region);\n    if(base) summary[key].基期净销售 += base.net_sales_cents;\n  });\n\nconst summaryArr = Object.values(summary).map(s => ({\n  ...s,\n  变化率: ((s.本期净销售 - s.基期净销售)/s.基期净销售*100).toFixed(1)+'%'\n})).sort((a,b) => parseFloat(a.变化率) - parseFloat(b.变化率));\n\nresult = summaryArr;"},"output":{"result":[{"channel":"自然搜索","category":"显示器","本期净销售":22879425,"基期净销售":31634896,"变化率":"-27.7%"},{"channel":"直接访问","category":"办公椅","本期净销售":64316063,"基期净销售":86304893,"变化率":"-25.5%"},{"channel":"直接访问","category":"升降桌","本期净销售":164965713,"基期净销售":214532287,"变化率":"-23.1%"},{"channel":"自然搜索","category":"升降桌","本期净销售":222410872,"基期净销售":284459948,"变化率":"-21.8%"},{"channel":"直接访问","category":"精选代销","本期净销售":6847608,"基期净销售":8552279,"变化率":"-19.9%"},{"channel":"直接访问","category":"桌面配件","本期净销售":30754789,"基期净销售":36502811,"变化率":"-15.7%"},{"channel":"直接访问","category":"收纳","本期净销售":4121080,"基期净销售":4862952,"变化率":"-15.3%"},{"channel":"直接访问","category":"显示器","本期净销售":17986501,"基期净销售":20251303,"变化率":"-11.2%"},{"channel":"自然搜索","category":"办公椅","本期净销售":97828418,"基期净销售":109599374,"变化率":"-10.7%"},{"channel":"自然搜索","category":"桌面配件","本期净销售":42349359,"基期净销售":46237816,"变化率":"-8.4%"},{"channel":"自然搜索","category":"精选代销","本期净销售":9091877,"基期净销售":9928227,"变化率":"-8.4%"},{"channel":"自然搜索","category":"收纳","本期净销售":5950062,"基期净销售":6373963,"变化率":"-6.7%"}]},"dynamic":false}
+{"type":"finish-step","finishReason":"tool-calls","rawFinishReason":"tool_calls","usage":{"inputTokens":3217,"inputTokenDetails":{"noCacheTokens":3217,"cacheReadTokens":0},"outputTokens":456,"outputTokenDetails":{"textTokens":456,"reasoningTokens":0},"totalTokens":3673,"raw":{"prompt_tokens":3217,"completion_tokens":456,"total_tokens":3673,"prompt_tokens_details":{"cached_tokens":0},"completion_tokens_details":{}}},"performance":{"stepTimeMs":13196.1555,"toolExecutionMs":{"fc-5d37f072-6b8c-4d5b-97ba-7f9f971d876e":5.84558300000208},"responseTimeMs":13187.257707999997,"effectiveOutputTokensPerSecond":34.57883436397618,"outputTokensPerSecond":36.90809303523667,"inputTokensPerSecond":3865.45350063407,"effectiveTotalTokensPerSecond":278.52644433965895,"timeToFirstOutputMs":832.2438749999965,"timeBetweenOutputChunksMs":{"min":0.06587500000023283,"p10":49.068584000000556,"median":67.42095799999879,"avg":94.3044138015267,"p90":74.1236659999995,"max":1980.468541000002}},"providerMetadata":{"openai":{}},"response":{"id":"0b43d47017931070036391113e02a9","timestamp":"2026-10-27T13:16:44.000Z","modelId":"GLM-5.1","headers":{"access-control-allow-headers":"authorization, content-type, x-stainless-retry-count","access-control-allow-origin":"http://127.0.0.1:3000","connection":"keep-alive","content-type":"text/event-stream","date":"Tue, 27 Oct 2026 13:16:44 GMT","keep-alive":"timeout=5","transfer-encoding":"chunked"}}}
+{"type":"start-step","request":{},"warnings":[]}
+{"type":"text-start","id":"aitxt-SG80boggrHGoMRdQuysLtcQE"}
+{"type":"tool-input-start","id":"fc-c405ba80-0845-4d18-b72d-ce9583f45fe4","toolName":"execute_javascript","dynamic":false}
+{"type":"tool-input-delta","id":"fc-c405ba80-0845-4d18-b72d-ce9583f45fe4","delta":"{\"code\": \""}
+{"type":"tool-input-delta","id":"fc-c405ba80-0845-4d18-b72d-ce9583f45fe4","delta":"// 最后"}
+{"type":"tool-input-delta","id":"fc-c405ba80-0845-4d18-b72d-ce9583f45fe4","delta":"看看"}
+{"type":"tool-input-delta","id":"fc-c405ba80-0845-4d18-b72d-ce9583f45fe4","delta":"社交"}
+{"type":"tool-input-delta","id":"fc-c405ba80-0845-4d18-b72d-ce9583f45fe4","delta":"拓新这个"}
+{"type":"tool-input-delta","id":"fc-c405ba80-0845-4d18-b72d-ce9583f45fe4","delta":"新渠道的详细"}
+{"type":"tool-input-delta","id":"fc-c405ba80-0845-4d18-b72d-ce9583f45fe4","delta":"情况\\nconst"}
+{"type":"tool-input-delta","id":"fc-c405ba80-0845-4d18-b72d-ce9583f45fe4","delta":" socialNew"}
+{"type":"tool-input-delta","id":"fc-c405ba80-0845-4d18-b72d-ce9583f45fe4","delta":" = data.filter(d"}
+{"type":"tool-input-delta","id":"fc-c405ba80-0845-4d18-b72d-ce9583f45fe4","delta":" => d.period==='"}
+{"type":"tool-input-delta","id":"fc-c405ba80-0845-4d18-b72d-ce9583f45fe4","delta":"本期' && d"}
+{"type":"tool-input-delta","id":"fc-c405ba80-0845-4d18-b72d-ce9583f45fe4","delta":".channel==='社交拓"}
+{"type":"tool-input-delta","id":"fc-c405ba80-0845-4d18-b72d-ce9583f45fe4","delta":"新');\\nconst by"}
+{"type":"tool-input-delta","id":"fc-c405ba80-0845-4d18-b72d-ce9583f45fe4","delta":"Category"}
+{"type":"tool-input-delta","id":"fc-c405ba80-0845-4d18-b72d-ce9583f45fe4","delta":"Social"}
+{"type":"tool-input-delta","id":"fc-c405ba80-0845-4d18-b72d-ce9583f45fe4","delta":" = socialNew.map"}
+{"type":"tool-input-delta","id":"fc-c405ba80-0845-4d18-b72d-ce9583f45fe4","delta":"(d => ({"}
+{"type":"tool-input-delta","id":"fc-c405ba80-0845-4d18-b72d-ce9583f45fe4","delta":"\\n  category"}
+{"type":"tool-input-delta","id":"fc-c405ba80-0845-4d18-b72d-ce9583f45fe4","delta":": d.category,"}
+{"type":"tool-input-delta","id":"fc-c405ba80-0845-4d18-b72d-ce9583f45fe4","delta":"\\n  region: d"}
+{"type":"tool-input-delta","id":"fc-c405ba80-0845-4d18-b72d-ce9583f45fe4","delta":".region,"}
+{"type":"tool-input-delta","id":"fc-c405ba80-0845-4d18-b72d-ce9583f45fe4","delta":"\\n  净销售: d"}
+{"type":"tool-input-delta","id":"fc-c405ba80-0845-4d18-b72d-ce9583f45fe4","delta":".net_sales_cents"}
+{"type":"tool-input-delta","id":"fc-c405ba80-0845-4d18-b72d-ce9583f45fe4","delta":","}
+{"type":"tool-input-delta","id":"fc-c405ba80-0845-4d18-b72d-ce9583f45fe4","delta":"\\n  投放: d"}
+{"type":"tool-input-delta","id":"fc-c405ba80-0845-4d18-b72d-ce9583f45fe4","delta":".contribution_cents"}
+{"type":"tool-input-delta","id":"fc-c405ba80-0845-4d18-b72d-ce9583f45fe4","delta":",\\n  ROI:"}
+{"type":"tool-input-delta","id":"fc-c405ba80-0845-4d18-b72d-ce9583f45fe4","delta":" (d.net"}
+{"type":"tool-input-delta","id":"fc-c405ba80-0845-4d18-b72d-ce9583f45fe4","delta":"_sales_cents /"}
+{"type":"tool-input-delta","id":"fc-c405ba80-0845-4d18-b72d-ce9583f45fe4","delta":" d.contribution_c"}
+{"type":"tool-input-delta","id":"fc-c405ba80-0845-4d18-b72d-ce9583f45fe4","delta":"ents).toFixed("}
+{"type":"tool-input-delta","id":"fc-c405ba80-0845-4d18-b72d-ce9583f45fe4","delta":"2)\\n}));\\n\\n//"}
+{"type":"tool-input-delta","id":"fc-c405ba80-0845-4d18-b72d-ce9583f45fe4","delta":" 汇总"}
+{"type":"tool-input-delta","id":"fc-c405ba80-0845-4d18-b72d-ce9583f45fe4","delta":"按"}
+{"type":"tool-input-delta","id":"fc-c405ba80-0845-4d18-b72d-ce9583f45fe4","delta":"品类\\nconst social"}
+{"type":"tool-input-delta","id":"fc-c405ba80-0845-4d18-b72d-ce9583f45fe4","delta":"ByCat"}
+{"type":"tool-input-delta","id":"fc-c405ba80-0845-4d18-b72d-ce9583f45fe4","delta":" = {};"}
+{"type":"tool-input-delta","id":"fc-c405ba80-0845-4d18-b72d-ce9583f45fe4","delta":"\\nsocial"}
+{"type":"tool-input-delta","id":"fc-c405ba80-0845-4d18-b72d-ce9583f45fe4","delta":"New.forEach(d =>"}
+{"type":"tool-input-delta","id":"fc-c405ba80-0845-4d18-b72d-ce9583f45fe4","delta":" {\\n  if(!"}
+{"type":"tool-input-delta","id":"fc-c405ba80-0845-4d18-b72d-ce9583f45fe4","delta":"socialByCat[d"}
+{"type":"tool-input-delta","id":"fc-c405ba80-0845-4d18-b72d-ce9583f45fe4","delta":".category]) socialBy"}
+{"type":"tool-input-delta","id":"fc-c405ba80-0845-4d18-b72d-ce9583f45fe4","delta":"Cat[d.category]"}
+{"type":"tool-input-delta","id":"fc-c405ba80-0845-4d18-b72d-ce9583f45fe4","delta":" = {净"}
+{"type":"tool-input-delta","id":"fc-c405ba80-0845-4d18-b72d-ce9583f45fe4","delta":"销售:0,"}
+{"type":"tool-input-delta","id":"fc-c405ba80-0845-4d18-b72d-ce9583f45fe4","delta":" 投放:"}
+{"type":"tool-input-delta","id":"fc-c405ba80-0845-4d18-b72d-ce9583f45fe4","delta":"0};\\n  social"}
+{"type":"tool-input-delta","id":"fc-c405ba80-0845-4d18-b72d-ce9583f45fe4","delta":"ByCat[d.category"}
+{"type":"tool-input-delta","id":"fc-c405ba80-0845-4d18-b72d-ce9583f45fe4","delta":"].净销售 +="}
+{"type":"tool-input-delta","id":"fc-c405ba80-0845-4d18-b72d-ce9583f45fe4","delta":" d.net"}
+{"type":"tool-input-delta","id":"fc-c405ba80-0845-4d18-b72d-ce9583f45fe4","delta":"_sales_cents;"}
+{"type":"tool-input-delta","id":"fc-c405ba80-0845-4d18-b72d-ce9583f45fe4","delta":"\\n  socialByCat"}
+{"type":"tool-input-delta","id":"fc-c405ba80-0845-4d18-b72d-ce9583f45fe4","delta":"[d.category].投放"}
+{"type":"tool-input-delta","id":"fc-c405ba80-0845-4d18-b72d-ce9583f45fe4","delta":" += d.contribution"}
+{"type":"tool-input-delta","id":"fc-c405ba80-0845-4d18-b72d-ce9583f45fe4","delta":"_cents;\\n});"}
+{"type":"tool-input-delta","id":"fc-c405ba80-0845-4d18-b72d-ce9583f45fe4","delta":"\\n\\nresult = {"}
+{"type":"tool-input-delta","id":"fc-c405ba80-0845-4d18-b72d-ce9583f45fe4","delta":"\\n  社交"}
+{"type":"tool-input-delta","id":"fc-c405ba80-0845-4d18-b72d-ce9583f45fe4","delta":"拓新按"}
+{"type":"tool-input-delta","id":"fc-c405ba80-0845-4d18-b72d-ce9583f45fe4","delta":"品类: Object"}
+{"type":"tool-input-delta","id":"fc-c405ba80-0845-4d18-b72d-ce9583f45fe4","delta":".entries"}
+{"type":"tool-input-delta","id":"fc-c405ba80-0845-4d18-b72d-ce9583f45fe4","delta":"(socialByCat"}
+{"type":"tool-input-delta","id":"fc-c405ba80-0845-4d18-b72d-ce9583f45fe4","delta":").map((["}
+{"type":"tool-input-delta","id":"fc-c405ba80-0845-4d18-b72d-ce9583f45fe4","delta":"k,v]) =>"}
+{"type":"tool-input-delta","id":"fc-c405ba80-0845-4d18-b72d-ce9583f45fe4","delta":" ({category:k"}
+{"type":"tool-input-delta","id":"fc-c405ba80-0845-4d18-b72d-ce9583f45fe4","delta":", ..."}
+{"type":"tool-input-delta","id":"fc-c405ba80-0845-4d18-b72d-ce9583f45fe4","delta":"v, ROI"}
+{"type":"tool-input-delta","id":"fc-c405ba80-0845-4d18-b72d-ce9583f45fe4","delta":": (v."}
+{"type":"tool-input-delta","id":"fc-c405ba80-0845-4d18-b72d-ce9583f45fe4","delta":"净销售/v"}
+{"type":"tool-input-delta","id":"fc-c405ba80-0845-4d18-b72d-ce9583f45fe4","delta":".投放).toFixed"}
+{"type":"tool-input-delta","id":"fc-c405ba80-0845-4d18-b72d-ce9583f45fe4","delta":"(2)})),"}
+{"type":"tool-input-delta","id":"fc-c405ba80-0845-4d18-b72d-ce9583f45fe4","delta":"\\n  社交"}
+{"type":"tool-input-delta","id":"fc-c405ba80-0845-4d18-b72d-ce9583f45fe4","delta":"拓新总体"}
+{"type":"tool-input-delta","id":"fc-c405ba80-0845-4d18-b72d-ce9583f45fe4","delta":"ROI: (social"}
+{"type":"tool-input-delta","id":"fc-c405ba80-0845-4d18-b72d-ce9583f45fe4","delta":"New.reduce((s"}
+{"type":"tool-input-delta","id":"fc-c405ba80-0845-4d18-b72d-ce9583f45fe4","delta":",d)=>s+d"}
+{"type":"tool-input-delta","id":"fc-c405ba80-0845-4d18-b72d-ce9583f45fe4","delta":".net_sales_cents"}
+{"type":"tool-input-delta","id":"fc-c405ba80-0845-4d18-b72d-ce9583f45fe4","delta":",0) /"}
+{"type":"tool-input-delta","id":"fc-c405ba80-0845-4d18-b72d-ce9583f45fe4","delta":" socialNew.reduce(("}
+{"type":"tool-input-delta","id":"fc-c405ba80-0845-4d18-b72d-ce9583f45fe4","delta":"s,d)=>s"}
+{"type":"tool-input-delta","id":"fc-c405ba80-0845-4d18-b72d-ce9583f45fe4","delta":"+d.contribution_c"}
+{"type":"tool-input-delta","id":"fc-c405ba80-0845-4d18-b72d-ce9583f45fe4","delta":"ents,0))."}
+{"type":"tool-input-delta","id":"fc-c405ba80-0845-4d18-b72d-ce9583f45fe4","delta":"toFixed(2)"}
+{"type":"tool-input-delta","id":"fc-c405ba80-0845-4d18-b72d-ce9583f45fe4","delta":"\\n};\"}"}
+{"type":"text-end","id":"aitxt-SG80boggrHGoMRdQuysLtcQE"}
+{"type":"tool-input-end","id":"fc-c405ba80-0845-4d18-b72d-ce9583f45fe4"}
+{"type":"tool-call","toolCallId":"fc-c405ba80-0845-4d18-b72d-ce9583f45fe4","toolName":"execute_javascript","input":{"code":"// 最后看看社交拓新这个新渠道的详细情况\nconst socialNew = data.filter(d => d.period==='本期' && d.channel==='社交拓新');\nconst byCategorySocial = socialNew.map(d => ({\n  category: d.category,\n  region: d.region,\n  净销售: d.net_sales_cents,\n  投放: d.contribution_cents,\n  ROI: (d.net_sales_cents / d.contribution_cents).toFixed(2)\n}));\n\n// 汇总按品类\nconst socialByCat = {};\nsocialNew.forEach(d => {\n  if(!socialByCat[d.category]) socialByCat[d.category] = {净销售:0, 投放:0};\n  socialByCat[d.category].净销售 += d.net_sales_cents;\n  socialByCat[d.category].投放 += d.contribution_cents;\n});\n\nresult = {\n  社交拓新按品类: Object.entries(socialByCat).map(([k,v]) => ({category:k, ...v, ROI: (v.净销售/v.投放).toFixed(2)})),\n  社交拓新总体ROI: (socialNew.reduce((s,d)=>s+d.net_sales_cents,0) / socialNew.reduce((s,d)=>s+d.contribution_cents,0)).toFixed(2)\n};"}}
+{"type":"tool-result","toolCallId":"fc-c405ba80-0845-4d18-b72d-ce9583f45fe4","toolName":"execute_javascript","input":{"code":"// 最后看看社交拓新这个新渠道的详细情况\nconst socialNew = data.filter(d => d.period==='本期' && d.channel==='社交拓新');\nconst byCategorySocial = socialNew.map(d => ({\n  category: d.category,\n  region: d.region,\n  净销售: d.net_sales_cents,\n  投放: d.contribution_cents,\n  ROI: (d.net_sales_cents / d.contribution_cents).toFixed(2)\n}));\n\n// 汇总按品类\nconst socialByCat = {};\nsocialNew.forEach(d => {\n  if(!socialByCat[d.category]) socialByCat[d.category] = {净销售:0, 投放:0};\n  socialByCat[d.category].净销售 += d.net_sales_cents;\n  socialByCat[d.category].投放 += d.contribution_cents;\n});\n\nresult = {\n  社交拓新按品类: Object.entries(socialByCat).map(([k,v]) => ({category:k, ...v, ROI: (v.净销售/v.投放).toFixed(2)})),\n  社交拓新总体ROI: (socialNew.reduce((s,d)=>s+d.net_sales_cents,0) / socialNew.reduce((s,d)=>s+d.contribution_cents,0)).toFixed(2)\n};"},"output":{"result":{"社交拓新按品类":[{"category":"办公椅","净销售":27891394,"投放":4224114,"ROI":"6.60"},{"category":"收纳","净销售":615330,"投放":209838,"ROI":"2.93"},{"category":"桌面配件","净销售":7180673,"投放":2795254,"ROI":"2.57"},{"category":"精选代销","净销售":62394436,"投放":57483094,"ROI":"1.09"}],"社交拓新总体ROI":"1.52"}},"dynamic":false}
+{"type":"finish-step","finishReason":"tool-calls","rawFinishReason":"tool_calls","usage":{"inputTokens":4153,"inputTokenDetails":{"noCacheTokens":505,"cacheReadTokens":3648},"outputTokens":288,"outputTokenDetails":{"textTokens":288,"reasoningTokens":0},"totalTokens":4441,"raw":{"prompt_tokens":4153,"completion_tokens":288,"total_tokens":4441,"prompt_tokens_details":{"cached_tokens":3648},"completion_tokens_details":{}}},"performance":{"stepTimeMs":6406.269417000003,"toolExecutionMs":{"fc-c405ba80-0845-4d18-b72d-ce9583f45fe4":3.54033299999719},"responseTimeMs":6398.7902500000055,"effectiveOutputTokensPerSecond":45.008507662835136,"outputTokensPerSecond":51.388179713670034,"inputTokensPerSecond":5227.920042718034,"effectiveTotalTokensPerSecond":694.0374393425376,"timeToFirstOutputMs":794.3885840000003,"timeBetweenOutputChunksMs":{"min":0.032499999993888196,"p10":64.06412500000442,"median":67.26383399999759,"avg":67.50379266265065,"p90":70.66545800000313,"max":137.07429100000445}},"providerMetadata":{"openai":{}},"response":{"id":"0b43d47017931070168431646e02a9","timestamp":"2026-10-27T13:16:57.000Z","modelId":"GLM-5.1","headers":{"access-control-allow-headers":"authorization, content-type, x-stainless-retry-count","access-control-allow-origin":"http://127.0.0.1:3000","connection":"keep-alive","content-type":"text/event-stream","date":"Tue, 27 Oct 2026 13:16:57 GMT","keep-alive":"timeout=5","transfer-encoding":"chunked"}}}
+{"type":"start-step","request":{},"warnings":[]}
+{"type":"text-start","id":"aitxt-kdhRdUgTuHJTJlFjkSdSZWvv"}
+{"type":"tool-input-start","id":"fc-2ae28be2-9192-42c9-a131-8932ad62c92b","toolName":"execute_javascript","dynamic":false}
+{"type":"tool-input-delta","id":"fc-2ae28be2-9192-42c9-a131-8932ad62c92b","delta":"{\"code\": \""}
+{"type":"tool-input-delta","id":"fc-2ae28be2-9192-42c9-a131-8932ad62c92b","delta":"//"}
+{"type":"tool-input-delta","id":"fc-2ae28be2-9192-42c9-a131-8932ad62c92b","delta":" 补充："}
+{"type":"tool-input-delta","id":"fc-2ae28be2-9192-42c9-a131-8932ad62c92b","delta":"精选"}
+{"type":"tool-input-delta","id":"fc-2ae28be2-9192-42c9-a131-8932ad62c92b","delta":"代销的"}
+{"type":"tool-input-delta","id":"fc-2ae28be2-9192-42c9-a131-8932ad62c92b","delta":"详细拆"}
+{"type":"tool-input-delta","id":"fc-2ae28be2-9192-42c9-a131-8932ad62c92b","delta":"解，"}
+{"type":"tool-input-delta","id":"fc-2ae28be2-9192-42c9-a131-8932ad62c92b","delta":"看看是否"}
+{"type":"tool-input-delta","id":"fc-2ae28be2-9192-42c9-a131-8932ad62c92b","delta":"值得"}
+{"type":"tool-input-delta","id":"fc-2ae28be2-9192-42c9-a131-8932ad62c92b","delta":"加大投入"}
+{"type":"tool-input-delta","id":"fc-2ae28be2-9192-42c9-a131-8932ad62c92b","delta":"\\nconst j"}
+{"type":"tool-input-delta","id":"fc-2ae28be2-9192-42c9-a131-8932ad62c92b","delta":"x"}
+{"type":"tool-input-delta","id":"fc-2ae28be2-9192-42c9-a131-8932ad62c92b","delta":"Base"}
+{"type":"tool-input-delta","id":"fc-2ae28be2-9192-42c9-a131-8932ad62c92b","delta":" = data.filter(d"}
+{"type":"tool-input-delta","id":"fc-2ae28be2-9192-42c9-a131-8932ad62c92b","delta":" => d.period==='"}
+{"type":"tool-input-delta","id":"fc-2ae28be2-9192-42c9-a131-8932ad62c92b","delta":"基期' &&"}
+{"type":"tool-input-delta","id":"fc-2ae28be2-9192-42c9-a131-8932ad62c92b","delta":" d.category==='精选"}
+{"type":"tool-input-delta","id":"fc-2ae28be2-9192-42c9-a131-8932ad62c92b","delta":"代销');\\nconst"}
+{"type":"tool-input-delta","id":"fc-2ae28be2-9192-42c9-a131-8932ad62c92b","delta":" jxCur"}
+{"type":"tool-input-delta","id":"fc-2ae28be2-9192-42c9-a131-8932ad62c92b","delta":" = data.filter(d"}
+{"type":"tool-input-delta","id":"fc-2ae28be2-9192-42c9-a131-8932ad62c92b","delta":" => d.period==='"}
+{"type":"tool-input-delta","id":"fc-2ae28be2-9192-42c9-a131-8932ad62c92b","delta":"本期' && d"}
+{"type":"tool-input-delta","id":"fc-2ae28be2-9192-42c9-a131-8932ad62c92b","delta":".category==='精选代"}
+{"type":"tool-input-delta","id":"fc-2ae28be2-9192-42c9-a131-8932ad62c92b","delta":"销');\\n\\nconst j"}
+{"type":"tool-input-delta","id":"fc-2ae28be2-9192-42c9-a131-8932ad62c92b","delta":"xBy"}
+{"type":"tool-input-delta","id":"fc-2ae28be2-9192-42c9-a131-8932ad62c92b","delta":"Channel = [..."}
+{"type":"tool-input-delta","id":"fc-2ae28be2-9192-42c9-a131-8932ad62c92b","delta":"new Set(data"}
+{"type":"tool-input-delta","id":"fc-2ae28be2-9192-42c9-a131-8932ad62c92b","delta":".map(d=>"}
+{"type":"tool-input-delta","id":"fc-2ae28be2-9192-42c9-a131-8932ad62c92b","delta":"d.channel))]."}
+{"type":"tool-input-delta","id":"fc-2ae28be2-9192-42c9-a131-8932ad62c92b","delta":"map(ch => {"}
+{"type":"tool-input-delta","id":"fc-2ae28be2-9192-42c9-a131-8932ad62c92b","delta":"\\n  const b ="}
+{"type":"tool-input-delta","id":"fc-2ae28be2-9192-42c9-a131-8932ad62c92b","delta":" jxBase.filter"}
+{"type":"tool-input-delta","id":"fc-2ae28be2-9192-42c9-a131-8932ad62c92b","delta":"(d=>"}
+{"type":"tool-input-delta","id":"fc-2ae28be2-9192-42c9-a131-8932ad62c92b","delta":"d.channel===ch"}
+{"type":"tool-input-delta","id":"fc-2ae28be2-9192-42c9-a131-8932ad62c92b","delta":");\\n  const c"}
+{"type":"tool-input-delta","id":"fc-2ae28be2-9192-42c9-a131-8932ad62c92b","delta":" = jxCur"}
+{"type":"tool-input-delta","id":"fc-2ae28be2-9192-42c9-a131-8932ad62c92b","delta":".filter(d=>d"}
+{"type":"tool-input-delta","id":"fc-2ae28be2-9192-42c9-a131-8932ad62c92b","delta":".channel===ch"}
+{"type":"tool-input-delta","id":"fc-2ae28be2-9192-42c9-a131-8932ad62c92b","delta":");\\n  const"}
+{"type":"tool-input-delta","id":"fc-2ae28be2-9192-42c9-a131-8932ad62c92b","delta":" bNet = b"}
+{"type":"tool-input-delta","id":"fc-2ae28be2-9192-42c9-a131-8932ad62c92b","delta":".reduce((s,d"}
+{"type":"tool-input-delta","id":"fc-2ae28be2-9192-42c9-a131-8932ad62c92b","delta":")=>s+d.net"}
+{"type":"tool-input-delta","id":"fc-2ae28be2-9192-42c9-a131-8932ad62c92b","delta":"_sales_cents,"}
+{"type":"tool-input-delta","id":"fc-2ae28be2-9192-42c9-a131-8932ad62c92b","delta":"0);\\n  const"}
+{"type":"tool-input-delta","id":"fc-2ae28be2-9192-42c9-a131-8932ad62c92b","delta":" cNet = c"}
+{"type":"tool-input-delta","id":"fc-2ae28be2-9192-42c9-a131-8932ad62c92b","delta":".reduce((s,d"}
+{"type":"tool-input-delta","id":"fc-2ae28be2-9192-42c9-a131-8932ad62c92b","delta":")=>s+d.net"}
+{"type":"tool-input-delta","id":"fc-2ae28be2-9192-42c9-a131-8932ad62c92b","delta":"_sales_cents,"}
+{"type":"tool-input-delta","id":"fc-2ae28be2-9192-42c9-a131-8932ad62c92b","delta":"0);\\n  const"}
+{"type":"tool-input-delta","id":"fc-2ae28be2-9192-42c9-a131-8932ad62c92b","delta":" bCon = b"}
+{"type":"tool-input-delta","id":"fc-2ae28be2-9192-42c9-a131-8932ad62c92b","delta":".reduce((s,d"}
+{"type":"tool-input-delta","id":"fc-2ae28be2-9192-42c9-a131-8932ad62c92b","delta":")=>s+d.contrib"}
+{"type":"tool-input-delta","id":"fc-2ae28be2-9192-42c9-a131-8932ad62c92b","delta":"ution_cents,"}
+{"type":"tool-input-delta","id":"fc-2ae28be2-9192-42c9-a131-8932ad62c92b","delta":"0);\\n  const"}
+{"type":"tool-input-delta","id":"fc-2ae28be2-9192-42c9-a131-8932ad62c92b","delta":" cCon = c"}
+{"type":"tool-input-delta","id":"fc-2ae28be2-9192-42c9-a131-8932ad62c92b","delta":".reduce((s,d"}
+{"type":"tool-input-delta","id":"fc-2ae28be2-9192-42c9-a131-8932ad62c92b","delta":")=>s+d.contrib"}
+{"type":"tool-input-delta","id":"fc-2ae28be2-9192-42c9-a131-8932ad62c92b","delta":"ution_cents,"}
+{"type":"tool-input-delta","id":"fc-2ae28be2-9192-42c9-a131-8932ad62c92b","delta":"0);\\n  if"}
+{"type":"tool-input-delta","id":"fc-2ae28be2-9192-42c9-a131-8932ad62c92b","delta":"(bNet ==="}
+{"type":"tool-input-delta","id":"fc-2ae28be2-9192-42c9-a131-8932ad62c92b","delta":" 0 && c"}
+{"type":"tool-input-delta","id":"fc-2ae28be2-9192-42c9-a131-8932ad62c92b","delta":"Net === 0"}
+{"type":"tool-input-delta","id":"fc-2ae28be2-9192-42c9-a131-8932ad62c92b","delta":") return null"}
+{"type":"tool-input-delta","id":"fc-2ae28be2-9192-42c9-a131-8932ad62c92b","delta":";\\n  return {"}
+{"type":"tool-input-delta","id":"fc-2ae28be2-9192-42c9-a131-8932ad62c92b","delta":"\\n    channel: ch"}
+{"type":"tool-input-delta","id":"fc-2ae28be2-9192-42c9-a131-8932ad62c92b","delta":","}
+{"type":"tool-input-delta","id":"fc-2ae28be2-9192-42c9-a131-8932ad62c92b","delta":"\\n    基期净"}
+{"type":"tool-input-delta","id":"fc-2ae28be2-9192-42c9-a131-8932ad62c92b","delta":"销售: b"}
+{"type":"tool-input-delta","id":"fc-2ae28be2-9192-42c9-a131-8932ad62c92b","delta":"Net,\\n    本"}
+{"type":"tool-input-delta","id":"fc-2ae28be2-9192-42c9-a131-8932ad62c92b","delta":"期净销售:"}
+{"type":"tool-input-delta","id":"fc-2ae28be2-9192-42c9-a131-8932ad62c92b","delta":" cNet,"}
+{"type":"tool-input-delta","id":"fc-2ae28be2-9192-42c9-a131-8932ad62c92b","delta":"\\n    净销售变化:"}
+{"type":"tool-input-delta","id":"fc-2ae28be2-9192-42c9-a131-8932ad62c92b","delta":" (("}
+{"type":"tool-input-delta","id":"fc-2ae28be2-9192-42c9-a131-8932ad62c92b","delta":"cNet-bNet"}
+{"type":"tool-input-delta","id":"fc-2ae28be2-9192-42c9-a131-8932ad62c92b","delta":")/Math"}
+{"type":"tool-input-delta","id":"fc-2ae28be2-9192-42c9-a131-8932ad62c92b","delta":".max(bNet,"}
+{"type":"tool-input-delta","id":"fc-2ae28be2-9192-42c9-a131-8932ad62c92b","delta":"1)*100)."}
+{"type":"tool-input-delta","id":"fc-2ae28be2-9192-42c9-a131-8932ad62c92b","delta":"toFixed(1)+'"}
+{"type":"tool-input-delta","id":"fc-2ae28be2-9192-42c9-a131-8932ad62c92b","delta":"%',"}
+{"type":"tool-input-delta","id":"fc-2ae28be2-9192-42c9-a131-8932ad62c92b","delta":"\\n    基期投放"}
+{"type":"tool-input-delta","id":"fc-2ae28be2-9192-42c9-a131-8932ad62c92b","delta":": bCon,"}
+{"type":"tool-input-delta","id":"fc-2ae28be2-9192-42c9-a131-8932ad62c92b","delta":"\\n    本期投放"}
+{"type":"tool-input-delta","id":"fc-2ae28be2-9192-42c9-a131-8932ad62c92b","delta":": cCon,"}
+{"type":"tool-input-delta","id":"fc-2ae28be2-9192-42c9-a131-8932ad62c92b","delta":"\\n    本"}
+{"type":"tool-input-delta","id":"fc-2ae28be2-9192-42c9-a131-8932ad62c92b","delta":"期ROI: c"}
+{"type":"tool-input-delta","id":"fc-2ae28be2-9192-42c9-a131-8932ad62c92b","delta":"Con>"}
+{"type":"tool-input-delta","id":"fc-2ae28be2-9192-42c9-a131-8932ad62c92b","delta":"0 ? (c"}
+{"type":"tool-input-delta","id":"fc-2ae28be2-9192-42c9-a131-8932ad62c92b","delta":"Net/cCon"}
+{"type":"tool-input-delta","id":"fc-2ae28be2-9192-42c9-a131-8932ad62c92b","delta":").toFixed(2"}
+{"type":"tool-input-delta","id":"fc-2ae28be2-9192-42c9-a131-8932ad62c92b","delta":") : 'N"}
+{"type":"tool-input-delta","id":"fc-2ae28be2-9192-42c9-a131-8932ad62c92b","delta":"/A',"}
+{"type":"tool-input-delta","id":"fc-2ae28be2-9192-42c9-a131-8932ad62c92b","delta":"\\n    基"}
+{"type":"tool-input-delta","id":"fc-2ae28be2-9192-42c9-a131-8932ad62c92b","delta":"期ROI: b"}
+{"type":"tool-input-delta","id":"fc-2ae28be2-9192-42c9-a131-8932ad62c92b","delta":"Con>0 ?"}
+{"type":"tool-input-delta","id":"fc-2ae28be2-9192-42c9-a131-8932ad62c92b","delta":" (bNet/b"}
+{"type":"tool-input-delta","id":"fc-2ae28be2-9192-42c9-a131-8932ad62c92b","delta":"Con).toFixed("}
+{"type":"tool-input-delta","id":"fc-2ae28be2-9192-42c9-a131-8932ad62c92b","delta":"2) : '"}
+{"type":"tool-input-delta","id":"fc-2ae28be2-9192-42c9-a131-8932ad62c92b","delta":"N/A'"}
+{"type":"tool-input-delta","id":"fc-2ae28be2-9192-42c9-a131-8932ad62c92b","delta":"\\n  };\\n}).filter(Boolean"}
+{"type":"tool-input-delta","id":"fc-2ae28be2-9192-42c9-a131-8932ad62c92b","delta":");\\n\\nresult = j"}
+{"type":"tool-input-delta","id":"fc-2ae28be2-9192-42c9-a131-8932ad62c92b","delta":"xByChannel"}
+{"type":"tool-input-delta","id":"fc-2ae28be2-9192-42c9-a131-8932ad62c92b","delta":";\"}"}
+{"type":"text-end","id":"aitxt-kdhRdUgTuHJTJlFjkSdSZWvv"}
+{"type":"tool-input-end","id":"fc-2ae28be2-9192-42c9-a131-8932ad62c92b"}
+{"type":"tool-call","toolCallId":"fc-2ae28be2-9192-42c9-a131-8932ad62c92b","toolName":"execute_javascript","input":{"code":"// 补充：精选代销的详细拆解，看看是否值得加大投入\nconst jxBase = data.filter(d => d.period==='基期' && d.category==='精选代销');\nconst jxCur = data.filter(d => d.period==='本期' && d.category==='精选代销');\n\nconst jxByChannel = [...new Set(data.map(d=>d.channel))].map(ch => {\n  const b = jxBase.filter(d=>d.channel===ch);\n  const c = jxCur.filter(d=>d.channel===ch);\n  const bNet = b.reduce((s,d)=>s+d.net_sales_cents,0);\n  const cNet = c.reduce((s,d)=>s+d.net_sales_cents,0);\n  const bCon = b.reduce((s,d)=>s+d.contribution_cents,0);\n  const cCon = c.reduce((s,d)=>s+d.contribution_cents,0);\n  if(bNet === 0 && cNet === 0) return null;\n  return {\n    channel: ch,\n    基期净销售: bNet,\n    本期净销售: cNet,\n    净销售变化: ((cNet-bNet)/Math.max(bNet,1)*100).toFixed(1)+'%',\n    基期投放: bCon,\n    本期投放: cCon,\n    本期ROI: cCon>0 ? (cNet/cCon).toFixed(2) : 'N/A',\n    基期ROI: bCon>0 ? (bNet/bCon).toFixed(2) : 'N/A'\n  };\n}).filter(Boolean);\n\nresult = jxByChannel;"}}
+{"type":"tool-result","toolCallId":"fc-2ae28be2-9192-42c9-a131-8932ad62c92b","toolName":"execute_javascript","input":{"code":"// 补充：精选代销的详细拆解，看看是否值得加大投入\nconst jxBase = data.filter(d => d.period==='基期' && d.category==='精选代销');\nconst jxCur = data.filter(d => d.period==='本期' && d.category==='精选代销');\n\nconst jxByChannel = [...new Set(data.map(d=>d.channel))].map(ch => {\n  const b = jxBase.filter(d=>d.channel===ch);\n  const c = jxCur.filter(d=>d.channel===ch);\n  const bNet = b.reduce((s,d)=>s+d.net_sales_cents,0);\n  const cNet = c.reduce((s,d)=>s+d.net_sales_cents,0);\n  const bCon = b.reduce((s,d)=>s+d.contribution_cents,0);\n  const cCon = c.reduce((s,d)=>s+d.contribution_cents,0);\n  if(bNet === 0 && cNet === 0) return null;\n  return {\n    channel: ch,\n    基期净销售: bNet,\n    本期净销售: cNet,\n    净销售变化: ((cNet-bNet)/Math.max(bNet,1)*100).toFixed(1)+'%',\n    基期投放: bCon,\n    本期投放: cCon,\n    本期ROI: cCon>0 ? (cNet/cCon).toFixed(2) : 'N/A',\n    基期ROI: bCon>0 ? (bNet/bCon).toFixed(2) : 'N/A'\n  };\n}).filter(Boolean);\n\nresult = jxByChannel;"},"output":{"result":[{"channel":"品牌词搜索","基期净销售":4495053,"本期净销售":7625037,"净销售变化":"69.6%","基期投放":4182190,"本期投放":7098627,"本期ROI":"1.07","基期ROI":"1.07"},{"channel":"直接访问","基期净销售":8552279,"本期净销售":6847608,"净销售变化":"-19.9%","基期投放":7964869,"本期投放":6376452,"本期ROI":"1.07","基期ROI":"1.07"},{"channel":"社交重定向","基期净销售":3295049,"本期净销售":3268817,"净销售变化":"-0.8%","基期投放":3061079,"本期投放":3043005,"本期ROI":"1.07","基期ROI":"1.08"},{"channel":"线下到店","基期净销售":4673749,"本期净销售":3414319,"净销售变化":"-26.9%","基期投放":4350092,"本期投放":3192839,"本期ROI":"1.07","基期ROI":"1.07"},{"channel":"自然搜索","基期净销售":9928227,"本期净销售":9091877,"净销售变化":"-8.4%","基期投放":9247708,"本期投放":8459257,"本期ROI":"1.07","基期ROI":"1.07"},{"channel":"通用词搜索","基期净销售":3688388,"本期净销售":3159658,"净销售变化":"-14.3%","基期投放":3429523,"本期投放":2941626,"本期ROI":"1.07","基期ROI":"1.08"},{"channel":"社交拓新","基期净销售":0,"本期净销售":62394436,"净销售变化":"6239443600.0%","基期投放":0,"本期投放":57483094,"本期ROI":"1.09","基期ROI":"N/A"}]},"dynamic":false}
+{"type":"finish-step","finishReason":"tool-calls","rawFinishReason":"tool_calls","usage":{"inputTokens":4573,"inputTokenDetails":{"noCacheTokens":2269,"cacheReadTokens":2304},"outputTokens":361,"outputTokenDetails":{"textTokens":361,"reasoningTokens":0},"totalTokens":4934,"raw":{"prompt_tokens":4573,"completion_tokens":361,"total_tokens":4934,"prompt_tokens_details":{"cached_tokens":2304},"completion_tokens_details":{}}},"performance":{"stepTimeMs":8165.037375,"toolExecutionMs":{"fc-2ae28be2-9192-42c9-a131-8932ad62c92b":6.74833299999591},"responseTimeMs":8152.575374999993,"effectiveOutputTokensPerSecond":44.28048602985168,"outputTokensPerSecond":54.860961029276844,"inputTokensPerSecond":2908.4702399343487,"effectiveTotalTokensPerSecond":605.2075292833467,"timeToFirstOutputMs":1572.3042089999944,"timeBetweenOutputChunksMs":{"min":42.86724999999569,"p10":53.653707999998005,"median":59.116792000000714,"avg":64.50306412745097,"p90":81.62816700000258,"max":150.63154100000247}},"providerMetadata":{"openai":{}},"response":{"id":"0b43d47017931070232491911e02a9","timestamp":"2026-10-27T13:17:04.000Z","modelId":"GLM-5.1","headers":{"access-control-allow-headers":"authorization, content-type, x-stainless-retry-count","access-control-allow-origin":"http://127.0.0.1:3000","connection":"keep-alive","content-type":"text/event-stream","date":"Tue, 27 Oct 2026 13:17:04 GMT","keep-alive":"timeout=5","transfer-encoding":"chunked"}}}
+{"type":"start-step","request":{},"warnings":[]}
+{"type":"text-start","id":"aitxt-gBfVp6wQfwu8HXyeQfpNjrEG"}
+{"type":"text-delta","id":"aitxt-gBfVp6wQfwu8HXyeQfpNjrEG","text":"## 分析结论："}
+{"type":"text-delta","id":"aitxt-gBfVp6wQfwu8HXyeQfpNjrEG","text":"不建议"}
+{"type":"text-delta","id":"aitxt-gBfVp6wQfwu8HXyeQfpNjrEG","text":"盲目加大投放，"}
+{"type":"text-delta","id":"aitxt-gBfVp6wQfwu8HXyeQfpNjrEG","text":"应精准"}
+{"type":"text-delta","id":"aitxt-gBfVp6wQfwu8HXyeQfpNjrEG","text":"补"}
+{"type":"text-delta","id":"aitxt-gBfVp6wQfwu8HXyeQfpNjrEG","text":"投\n\n###"}
+{"type":"text-delta","id":"aitxt-gBfVp6wQfwu8HXyeQfpNjrEG","text":" 📊"}
+{"type":"text-delta","id":"aitxt-gBfVp6wQfwu8HXyeQfpNjrEG","text":" 核心发现"}
+{"type":"text-delta","id":"aitxt-gBfVp6wQfwu8HXyeQfpNjrEG","text":"："}
+{"type":"text-delta","id":"aitxt-gBfVp6wQfwu8HXyeQfpNjrEG","text":"净销售额下降"}
+{"type":"text-delta","id":"aitxt-gBfVp6wQfwu8HXyeQfpNjrEG","text":" 1.11"}
+{"type":"text-delta","id":"aitxt-gBfVp6wQfwu8HXyeQfpNjrEG","text":"%，投放"}
+{"type":"text-delta","id":"aitxt-gBfVp6wQfwu8HXyeQfpNjrEG","text":"额下降"}
+{"type":"text-delta","id":"aitxt-gBfVp6wQfwu8HXyeQfpNjrEG","text":" 3.07"}
+{"type":"text-delta","id":"aitxt-gBfVp6wQfwu8HXyeQfpNjrEG","text":"%——**投放"}
+{"type":"text-delta","id":"aitxt-gBfVp6wQfwu8HXyeQfpNjrEG","text":"缩减"}
+{"type":"text-delta","id":"aitxt-gBfVp6wQfwu8HXyeQfpNjrEG","text":"幅度"}
+{"type":"text-delta","id":"aitxt-gBfVp6wQfwu8HXyeQfpNjrEG","text":"大于销售降幅"}
+{"type":"text-delta","id":"aitxt-gBfVp6wQfwu8HXyeQfpNjrEG","text":"**\n\n整体"}
+{"type":"text-delta","id":"aitxt-gBfVp6wQfwu8HXyeQfpNjrEG","text":" ROI"}
+{"type":"text-delta","id":"aitxt-gBfVp6wQfwu8HXyeQfpNjrEG","text":" 反"}
+{"type":"text-delta","id":"aitxt-gBfVp6wQfwu8HXyeQfpNjrEG","text":"而从"}
+{"type":"text-delta","id":"aitxt-gBfVp6wQfwu8HXyeQfpNjrEG","text":" 2.31"}
+{"type":"text-delta","id":"aitxt-gBfVp6wQfwu8HXyeQfpNjrEG","text":" **"}
+{"type":"text-delta","id":"aitxt-gBfVp6wQfwu8HXyeQfpNjrEG","text":"提升**"}
+{"type":"text-delta","id":"aitxt-gBfVp6wQfwu8HXyeQfpNjrEG","text":" 到"}
+{"type":"text-delta","id":"aitxt-gBfVp6wQfwu8HXyeQfpNjrEG","text":" 2.35"}
+{"type":"text-delta","id":"aitxt-gBfVp6wQfwu8HXyeQfpNjrEG","text":"，说明问题"}
+{"type":"text-delta","id":"aitxt-gBfVp6wQfwu8HXyeQfpNjrEG","text":"不是\"投放效率"}
+{"type":"text-delta","id":"aitxt-gBfVp6wQfwu8HXyeQfpNjrEG","text":"低导致"}
+{"type":"text-delta","id":"aitxt-gBfVp6wQfwu8HXyeQfpNjrEG","text":"销售下滑\"，而是"}
+{"type":"text-delta","id":"aitxt-gBfVp6wQfwu8HXyeQfpNjrEG","text":"**投放"}
+{"type":"text-delta","id":"aitxt-gBfVp6wQfwu8HXyeQfpNjrEG","text":"砍"}
+{"type":"text-delta","id":"aitxt-gBfVp6wQfwu8HXyeQfpNjrEG","text":"多了"}
+{"type":"text-delta","id":"aitxt-gBfVp6wQfwu8HXyeQfpNjrEG","text":"导致"}
+{"type":"text-delta","id":"aitxt-gBfVp6wQfwu8HXyeQfpNjrEG","text":"销售跟不上"}
+{"type":"text-delta","id":"aitxt-gBfVp6wQfwu8HXyeQfpNjrEG","text":"**。\n\n---\n\n###"}
+{"type":"text-delta","id":"aitxt-gBfVp6wQfwu8HXyeQfpNjrEG","text":" 🔍"}
+{"type":"text-delta","id":"aitxt-gBfVp6wQfwu8HXyeQfpNjrEG","text":" 销售"}
+{"type":"text-delta","id":"aitxt-gBfVp6wQfwu8HXyeQfpNjrEG","text":"下滑的根源："}
+{"type":"text-delta","id":"aitxt-gBfVp6wQfwu8HXyeQfpNjrEG","text":"三个"}
+{"type":"text-delta","id":"aitxt-gBfVp6wQfwu8HXyeQfpNjrEG","text":"维度"}
+{"type":"text-delta","id":"aitxt-gBfVp6wQfwu8HXyeQfpNjrEG","text":"交叉"}
+{"type":"text-delta","id":"aitxt-gBfVp6wQfwu8HXyeQfpNjrEG","text":"分析\n\n| 维"}
+{"type":"text-delta","id":"aitxt-gBfVp6wQfwu8HXyeQfpNjrEG","text":"度 |"}
+{"type":"text-delta","id":"aitxt-gBfVp6wQfwu8HXyeQfpNjrEG","text":" 核心问题"}
+{"type":"text-delta","id":"aitxt-gBfVp6wQfwu8HXyeQfpNjrEG","text":" |"}
+{"type":"text-delta","id":"aitxt-gBfVp6wQfwu8HXyeQfpNjrEG","text":"\n|------|---------"}
+{"type":"text-delta","id":"aitxt-gBfVp6wQfwu8HXyeQfpNjrEG","text":"|\n| **渠道"}
+{"type":"text-delta","id":"aitxt-gBfVp6wQfwu8HXyeQfpNjrEG","text":"** | 直接访问"}
+{"type":"text-delta","id":"aitxt-gBfVp6wQfwu8HXyeQfpNjrEG","text":"(-"}
+{"type":"text-delta","id":"aitxt-gBfVp6wQfwu8HXyeQfpNjrEG","text":"22.1%)、"}
+{"type":"text-delta","id":"aitxt-gBfVp6wQfwu8HXyeQfpNjrEG","text":"自然搜索(-"}
+{"type":"text-delta","id":"aitxt-gBfVp6wQfwu8HXyeQfpNjrEG","text":"18.0%)"}
+{"type":"text-delta","id":"aitxt-gBfVp6wQfwu8HXyeQfpNjrEG","text":" 投放"}
+{"type":"text-delta","id":"aitxt-gBfVp6wQfwu8HXyeQfpNjrEG","text":"被大幅砍减"}
+{"type":"text-delta","id":"aitxt-gBfVp6wQfwu8HXyeQfpNjrEG","text":"（-26.4%、-22.6%），销售随之"}
+{"type":"text-delta","id":"aitxt-gBfVp6wQfwu8HXyeQfpNjrEG","text":"崩跌"}
+{"type":"text-delta","id":"aitxt-gBfVp6wQfwu8HXyeQfpNjrEG","text":" |\n| **品类"}
+{"type":"text-delta","id":"aitxt-gBfVp6wQfwu8HXyeQfpNjrEG","text":"** | 升"}
+{"type":"text-delta","id":"aitxt-gBfVp6wQfwu8HXyeQfpNjrEG","text":"降桌(-"}
+{"type":"text-delta","id":"aitxt-gBfVp6wQfwu8HXyeQfpNjrEG","text":"9.1%)"}
+{"type":"text-delta","id":"aitxt-gBfVp6wQfwu8HXyeQfpNjrEG","text":" 是最大拖"}
+{"type":"text-delta","id":"aitxt-gBfVp6wQfwu8HXyeQfpNjrEG","text":"累，"}
+{"type":"text-delta","id":"aitxt-gBfVp6wQfwu8HXyeQfpNjrEG","text":"占"}
+{"type":"text-delta","id":"aitxt-gBfVp6wQfwu8HXyeQfpNjrEG","text":"基"}
+{"type":"text-delta","id":"aitxt-gBfVp6wQfwu8HXyeQfpNjrEG","text":"期销售额"}
+{"type":"text-delta","id":"aitxt-gBfVp6wQfwu8HXyeQfpNjrEG","text":"的"}
+{"type":"text-delta","id":"aitxt-gBfVp6wQfwu8HXyeQfpNjrEG","text":" 60%，在"}
+{"type":"text-delta","id":"aitxt-gBfVp6wQfwu8HXyeQfpNjrEG","text":"自然搜索和直接"}
+{"type":"text-delta","id":"aitxt-gBfVp6wQfwu8HXyeQfpNjrEG","text":"访问中跌幅"}
+{"type":"text-delta","id":"aitxt-gBfVp6wQfwu8HXyeQfpNjrEG","text":"最猛"}
+{"type":"text-delta","id":"aitxt-gBfVp6wQfwu8HXyeQfpNjrEG","text":"（"}
+{"type":"text-delta","id":"aitxt-gBfVp6wQfwu8HXyeQfpNjrEG","text":"-21"}
+{"type":"text-delta","id":"aitxt-gBfVp6wQfwu8HXyeQfpNjrEG","text":".8%、"}
+{"type":"text-delta","id":"aitxt-gBfVp6wQfwu8HXyeQfpNjrEG","text":"-23.1"}
+{"type":"text-delta","id":"aitxt-gBfVp6wQfwu8HXyeQfpNjrEG","text":"%）|"}
+{"type":"text-delta","id":"aitxt-gBfVp6wQfwu8HXyeQfpNjrEG","text":"\n| **区域**"}
+{"type":"text-delta","id":"aitxt-gBfVp6wQfwu8HXyeQfpNjrEG","text":" | 华东(-"}
+{"type":"text-delta","id":"aitxt-gBfVp6wQfwu8HXyeQfpNjrEG","text":"4.5"}
+{"type":"text-delta","id":"aitxt-gBfVp6wQfwu8HXyeQfpNjrEG","text":"%)、华北(-3"}
+{"type":"text-delta","id":"aitxt-gBfVp6wQfwu8HXyeQfpNjrEG","text":".7%)"}
+{"type":"text-delta","id":"aitxt-gBfVp6wQfwu8HXyeQfpNjrEG","text":" 两大"}
+{"type":"text-delta","id":"aitxt-gBfVp6wQfwu8HXyeQfpNjrEG","text":"主力"}
+{"type":"text-delta","id":"aitxt-gBfVp6wQfwu8HXyeQfpNjrEG","text":"区域"}
+{"type":"text-delta","id":"aitxt-gBfVp6wQfwu8HXyeQfpNjrEG","text":"同步"}
+{"type":"text-delta","id":"aitxt-gBfVp6wQfwu8HXyeQfpNjrEG","text":"下滑 |"}
+{"type":"text-delta","id":"aitxt-gBfVp6wQfwu8HXyeQfpNjrEG","text":"\n\n---\n\n###"}
+{"type":"text-delta","id":"aitxt-gBfVp6wQfwu8HXyeQfpNjrEG","text":" ⚠️"}
+{"type":"text-delta","id":"aitxt-gBfVp6wQfwu8HXyeQfpNjrEG","text":" 盲目"}
+{"type":"text-delta","id":"aitxt-gBfVp6wQfwu8HXyeQfpNjrEG","text":"加投"}
+{"type":"text-delta","id":"aitxt-gBfVp6wQfwu8HXyeQfpNjrEG","text":"的风险"}
+{"type":"text-delta","id":"aitxt-gBfVp6wQfwu8HXyeQfpNjrEG","text":"\n\n本期"}
+{"type":"text-delta","id":"aitxt-gBfVp6wQfwu8HXyeQfpNjrEG","text":"新增的**"}
+{"type":"text-delta","id":"aitxt-gBfVp6wQfwu8HXyeQfpNjrEG","text":"社交拓新**"}
+{"type":"text-delta","id":"aitxt-gBfVp6wQfwu8HXyeQfpNjrEG","text":"渠道是"}
+{"type":"text-delta","id":"aitxt-gBfVp6wQfwu8HXyeQfpNjrEG","text":"反面"}
+{"type":"text-delta","id":"aitxt-gBfVp6wQfwu8HXyeQfpNjrEG","text":"案例"}
+{"type":"text-delta","id":"aitxt-gBfVp6wQfwu8HXyeQfpNjrEG","text":"：\n- 总"}
+{"type":"text-delta","id":"aitxt-gBfVp6wQfwu8HXyeQfpNjrEG","text":"体 ROI 仅"}
+{"type":"text-delta","id":"aitxt-gBfVp6wQfwu8HXyeQfpNjrEG","text":" **1.52"}
+{"type":"text-delta","id":"aitxt-gBfVp6wQfwu8HXyeQfpNjrEG","text":"**，"}
+{"type":"text-delta","id":"aitxt-gBfVp6wQfwu8HXyeQfpNjrEG","text":"远低于全"}
+{"type":"text-delta","id":"aitxt-gBfVp6wQfwu8HXyeQfpNjrEG","text":"盘"}
+{"type":"text-delta","id":"aitxt-gBfVp6wQfwu8HXyeQfpNjrEG","text":" 2.35"}
+{"type":"text-delta","id":"aitxt-gBfVp6wQfwu8HXyeQfpNjrEG","text":"\n- 其中"}
+{"type":"text-delta","id":"aitxt-gBfVp6wQfwu8HXyeQfpNjrEG","text":"\""}
+{"type":"text-delta","id":"aitxt-gBfVp6wQfwu8HXyeQfpNjrEG","text":"精选代销\""}
+{"type":"text-delta","id":"aitxt-gBfVp6wQfwu8HXyeQfpNjrEG","text":"占"}
+{"type":"text-delta","id":"aitxt-gBfVp6wQfwu8HXyeQfpNjrEG","text":"其"}
+{"type":"text-delta","id":"aitxt-gBfVp6wQfwu8HXyeQfpNjrEG","text":"投放的 89"}
+{"type":"text-delta","id":"aitxt-gBfVp6wQfwu8HXyeQfpNjrEG","text":"%，ROI"}
+{"type":"text-delta","id":"aitxt-gBfVp6wQfwu8HXyeQfpNjrEG","text":" 仅 **1."}
+{"type":"text-delta","id":"aitxt-gBfVp6wQfwu8HXyeQfpNjrEG","text":"07"}
+{"type":"text-delta","id":"aitxt-gBfVp6wQfwu8HXyeQfpNjrEG","text":"**——花了"}
+{"type":"text-delta","id":"aitxt-gBfVp6wQfwu8HXyeQfpNjrEG","text":" 5"}
+{"type":"text-delta","id":"aitxt-gBfVp6wQfwu8HXyeQfpNjrEG","text":",748 万"}
+{"type":"text-delta","id":"aitxt-gBfVp6wQfwu8HXyeQfpNjrEG","text":"，"}
+{"type":"text-delta","id":"aitxt-gBfVp6wQfwu8HXyeQfpNjrEG","text":"只赚了"}
+{"type":"text-delta","id":"aitxt-gBfVp6wQfwu8HXyeQfpNjrEG","text":" 6"}
+{"type":"text-delta","id":"aitxt-gBfVp6wQfwu8HXyeQfpNjrEG","text":","}
+{"type":"text-delta","id":"aitxt-gBfVp6wQfwu8HXyeQfpNjrEG","text":"239 万，"}
+{"type":"text-delta","id":"aitxt-gBfVp6wQfwu8HXyeQfpNjrEG","text":"几乎亏"}
+{"type":"text-delta","id":"aitxt-gBfVp6wQfwu8HXyeQfpNjrEG","text":"本\n-"}
+{"type":"text-delta","id":"aitxt-gBfVp6wQfwu8HXyeQfpNjrEG","text":" 社交拓新"}
+{"type":"text-delta","id":"aitxt-gBfVp6wQfwu8HXyeQfpNjrEG","text":"中的"}
+{"type":"text-delta","id":"aitxt-gBfVp6wQfwu8HXyeQfpNjrEG","text":"**"}
+{"type":"text-delta","id":"aitxt-gBfVp6wQfwu8HXyeQfpNjrEG","text":"办公椅** ROI"}
+{"type":"text-delta","id":"aitxt-gBfVp6wQfwu8HXyeQfpNjrEG","text":" 高"}
+{"type":"text-delta","id":"aitxt-gBfVp6wQfwu8HXyeQfpNjrEG","text":"达 **"}
+{"type":"text-delta","id":"aitxt-gBfVp6wQfwu8HXyeQfpNjrEG","text":"6.60**"}
+{"type":"text-delta","id":"aitxt-gBfVp6wQfwu8HXyeQfpNjrEG","text":"，但投入"}
+{"type":"text-delta","id":"aitxt-gBfVp6wQfwu8HXyeQfpNjrEG","text":"仅"}
+{"type":"text-delta","id":"aitxt-gBfVp6wQfwu8HXyeQfpNjrEG","text":" 422"}
+{"type":"text-delta","id":"aitxt-gBfVp6wQfwu8HXyeQfpNjrEG","text":" 万，结构"}
+{"type":"text-delta","id":"aitxt-gBfVp6wQfwu8HXyeQfpNjrEG","text":"严重失衡\n\n---"}
+{"type":"text-delta","id":"aitxt-gBfVp6wQfwu8HXyeQfpNjrEG","text":"\n\n###"}
+{"type":"text-delta","id":"aitxt-gBfVp6wQfwu8HXyeQfpNjrEG","text":" ✅"}
+{"type":"text-delta","id":"aitxt-gBfVp6wQfwu8HXyeQfpNjrEG","text":" 建议策略"}
+{"type":"text-delta","id":"aitxt-gBfVp6wQfwu8HXyeQfpNjrEG","text":"：精准补投"}
+{"type":"text-delta","id":"aitxt-gBfVp6wQfwu8HXyeQfpNjrEG","text":"，结构性"}
+{"type":"text-delta","id":"aitxt-gBfVp6wQfwu8HXyeQfpNjrEG","text":"优化"}
+{"type":"text-delta","id":"aitxt-gBfVp6wQfwu8HXyeQfpNjrEG","text":"\n\n|"}
+{"type":"text-delta","id":"aitxt-gBfVp6wQfwu8HXyeQfpNjrEG","text":" 优先级 |"}
+{"type":"text-delta","id":"aitxt-gBfVp6wQfwu8HXyeQfpNjrEG","text":" 动作 |"}
+{"type":"text-delta","id":"aitxt-gBfVp6wQfwu8HXyeQfpNjrEG","text":" 理由 |"}
+{"type":"text-delta","id":"aitxt-gBfVp6wQfwu8HXyeQfpNjrEG","text":"\n|--------"}
+{"type":"text-delta","id":"aitxt-gBfVp6wQfwu8HXyeQfpNjrEG","text":"|------|------"}
+{"type":"text-delta","id":"aitxt-gBfVp6wQfwu8HXyeQfpNjrEG","text":"|\n|"}
+{"type":"text-delta","id":"aitxt-gBfVp6wQfwu8HXyeQfpNjrEG","text":" **🥇"}
+{"type":"text-delta","id":"aitxt-gBfVp6wQfwu8HXyeQfpNjrEG","text":" 紧急**"}
+{"type":"text-delta","id":"aitxt-gBfVp6wQfwu8HXyeQfpNjrEG","text":" |"}
+{"type":"text-delta","id":"aitxt-gBfVp6wQfwu8HXyeQfpNjrEG","text":" 恢复**"}
+{"type":"text-delta","id":"aitxt-gBfVp6wQfwu8HXyeQfpNjrEG","text":"自然"}
+{"type":"text-delta","id":"aitxt-gBfVp6wQfwu8HXyeQfpNjrEG","text":"搜索+"}
+{"type":"text-delta","id":"aitxt-gBfVp6wQfwu8HXyeQfpNjrEG","text":"直接访问**中"}
+{"type":"text-delta","id":"aitxt-gBfVp6wQfwu8HXyeQfpNjrEG","text":"**"}
+{"type":"text-delta","id":"aitxt-gBfVp6wQfwu8HXyeQfpNjrEG","text":"升降桌**"}
+{"type":"text-delta","id":"aitxt-gBfVp6wQfwu8HXyeQfpNjrEG","text":"的投放 |"}
+{"type":"text-delta","id":"aitxt-gBfVp6wQfwu8HXyeQfpNjrEG","text":" 降幅最大的"}
+{"type":"text-delta","id":"aitxt-gBfVp6wQfwu8HXyeQfpNjrEG","text":"品类+"}
+{"type":"text-delta","id":"aitxt-gBfVp6wQfwu8HXyeQfpNjrEG","text":"渠道组合"}
+{"type":"text-delta","id":"aitxt-gBfVp6wQfwu8HXyeQfpNjrEG","text":"，投放"}
+{"type":"text-delta","id":"aitxt-gBfVp6wQfwu8HXyeQfpNjrEG","text":"缩"}
+{"type":"text-delta","id":"aitxt-gBfVp6wQfwu8HXyeQfpNjrEG","text":"水"}
+{"type":"text-delta","id":"aitxt-gBfVp6wQfwu8HXyeQfpNjrEG","text":" →"}
+{"type":"text-delta","id":"aitxt-gBfVp6wQfwu8HXyeQfpNjrEG","text":" 销售下滑"}
+{"type":"text-delta","id":"aitxt-gBfVp6wQfwu8HXyeQfpNjrEG","text":"的"}
+{"type":"text-delta","id":"aitxt-gBfVp6wQfwu8HXyeQfpNjrEG","text":"因果关系明确，补"}
+{"type":"text-delta","id":"aitxt-gBfVp6wQfwu8HXyeQfpNjrEG","text":"投见效"}
+{"type":"text-delta","id":"aitxt-gBfVp6wQfwu8HXyeQfpNjrEG","text":"快"}
+{"type":"text-delta","id":"aitxt-gBfVp6wQfwu8HXyeQfpNjrEG","text":" |\n|"}
+{"type":"text-delta","id":"aitxt-gBfVp6wQfwu8HXyeQfpNjrEG","text":" **🥈"}
+{"type":"text-delta","id":"aitxt-gBfVp6wQfwu8HXyeQfpNjrEG","text":" 高"}
+{"type":"text-delta","id":"aitxt-gBfVp6wQfwu8HXyeQfpNjrEG","text":"优先"}
+{"type":"text-delta","id":"aitxt-gBfVp6wQfwu8HXyeQfpNjrEG","text":"** | 加"}
+{"type":"text-delta","id":"aitxt-gBfVp6wQfwu8HXyeQfpNjrEG","text":"大**品牌"}
+{"type":"text-delta","id":"aitxt-gBfVp6wQfwu8HXyeQfpNjrEG","text":"词搜索**"}
+{"type":"text-delta","id":"aitxt-gBfVp6wQfwu8HXyeQfpNjrEG","text":"中"}
+{"type":"text-delta","id":"aitxt-gBfVp6wQfwu8HXyeQfpNjrEG","text":"**"}
+{"type":"text-delta","id":"aitxt-gBfVp6wQfwu8HXyeQfpNjrEG","text":"办公椅**的"}
+{"type":"text-delta","id":"aitxt-gBfVp6wQfwu8HXyeQfpNjrEG","text":"投放 |"}
+{"type":"text-delta","id":"aitxt-gBfVp6wQfwu8HXyeQfpNjrEG","text":" 办公椅 ROI"}
+{"type":"text-delta","id":"aitxt-gBfVp6wQfwu8HXyeQfpNjrEG","text":" 已"}
+{"type":"text-delta","id":"aitxt-gBfVp6wQfwu8HXyeQfpNjrEG","text":"高达"}
+{"type":"text-delta","id":"aitxt-gBfVp6wQfwu8HXyeQfpNjrEG","text":" 2.81"}
+{"type":"text-delta","id":"aitxt-gBfVp6wQfwu8HXyeQfpNjrEG","text":" 且"}
+{"type":"text-delta","id":"aitxt-gBfVp6wQfwu8HXyeQfpNjrEG","text":"仍在增长"}
+{"type":"text-delta","id":"aitxt-gBfVp6wQfwu8HXyeQfpNjrEG","text":"（"}
+{"type":"text-delta","id":"aitxt-gBfVp6wQfwu8HXyeQfpNjrEG","text":"+4"}
+{"type":"text-delta","id":"aitxt-gBfVp6wQfwu8HXyeQfpNjrEG","text":".1%），"}
+{"type":"text-delta","id":"aitxt-gBfVp6wQfwu8HXyeQfpNjrEG","text":"品牌词 ROI"}
+{"type":"text-delta","id":"aitxt-gBfVp6wQfwu8HXyeQfpNjrEG","text":" 2.42"}
+{"type":"text-delta","id":"aitxt-gBfVp6wQfwu8HXyeQfpNjrEG","text":"，正"}
+{"type":"text-delta","id":"aitxt-gBfVp6wQfwu8HXyeQfpNjrEG","text":"反馈"}
+{"type":"text-delta","id":"aitxt-gBfVp6wQfwu8HXyeQfpNjrEG","text":"飞"}
+{"type":"text-delta","id":"aitxt-gBfVp6wQfwu8HXyeQfpNjrEG","text":"轮已"}
+{"type":"text-delta","id":"aitxt-gBfVp6wQfwu8HXyeQfpNjrEG","text":"转"}
+{"type":"text-delta","id":"aitxt-gBfVp6wQfwu8HXyeQfpNjrEG","text":"起来"}
+{"type":"text-delta","id":"aitxt-gBfVp6wQfwu8HXyeQfpNjrEG","text":" |\n|"}
+{"type":"text-delta","id":"aitxt-gBfVp6wQfwu8HXyeQfpNjrEG","text":" **🥉"}
+{"type":"text-delta","id":"aitxt-gBfVp6wQfwu8HXyeQfpNjrEG","text":" 中优先** |"}
+{"type":"text-delta","id":"aitxt-gBfVp6wQfwu8HXyeQfpNjrEG","text":" 维持**"}
+{"type":"text-delta","id":"aitxt-gBfVp6wQfwu8HXyeQfpNjrEG","text":"显示器**投放"}
+{"type":"text-delta","id":"aitxt-gBfVp6wQfwu8HXyeQfpNjrEG","text":"不变"}
+{"type":"text-delta","id":"aitxt-gBfVp6wQfwu8HXyeQfpNjrEG","text":" | ROI"}
+{"type":"text-delta","id":"aitxt-gBfVp6wQfwu8HXyeQfpNjrEG","text":" 全"}
+{"type":"text-delta","id":"aitxt-gBfVp6wQfwu8HXyeQfpNjrEG","text":"场最高（3"}
+{"type":"text-delta","id":"aitxt-gBfVp6wQfwu8HXyeQfpNjrEG","text":".93），但"}
+{"type":"text-delta","id":"aitxt-gBfVp6wQfwu8HXyeQfpNjrEG","text":"体量小，"}
+{"type":"text-delta","id":"aitxt-gBfVp6wQfwu8HXyeQfpNjrEG","text":"稳定即可"}
+{"type":"text-delta","id":"aitxt-gBfVp6wQfwu8HXyeQfpNjrEG","text":" |\n|"}
+{"type":"text-delta","id":"aitxt-gBfVp6wQfwu8HXyeQfpNjrEG","text":" **🛑 收"}
+{"type":"text-delta","id":"aitxt-gBfVp6wQfwu8HXyeQfpNjrEG","text":"紧"}
+{"type":"text-delta","id":"aitxt-gBfVp6wQfwu8HXyeQfpNjrEG","text":"** |"}
+{"type":"text-delta","id":"aitxt-gBfVp6wQfwu8HXyeQfpNjrEG","text":" 缩减"}
+{"type":"text-delta","id":"aitxt-gBfVp6wQfwu8HXyeQfpNjrEG","text":"**社交拓新"}
+{"type":"text-delta","id":"aitxt-gBfVp6wQfwu8HXyeQfpNjrEG","text":"-"}
+{"type":"text-delta","id":"aitxt-gBfVp6wQfwu8HXyeQfpNjrEG","text":"精选代销**"}
+{"type":"text-delta","id":"aitxt-gBfVp6wQfwu8HXyeQfpNjrEG","text":"的投放 | ROI"}
+{"type":"text-delta","id":"aitxt-gBfVp6wQfwu8HXyeQfpNjrEG","text":" 1.07"}
+{"type":"text-delta","id":"aitxt-gBfVp6wQfwu8HXyeQfpNjrEG","text":" 近"}
+{"type":"text-delta","id":"aitxt-gBfVp6wQfwu8HXyeQfpNjrEG","text":"乎不"}
+{"type":"text-delta","id":"aitxt-gBfVp6wQfwu8HXyeQfpNjrEG","text":"赚钱，每"}
+{"type":"text-delta","id":"aitxt-gBfVp6wQfwu8HXyeQfpNjrEG","text":"投"}
+{"type":"text-delta","id":"aitxt-gBfVp6wQfwu8HXyeQfpNjrEG","text":" 1 元只"}
+{"type":"text-delta","id":"aitxt-gBfVp6wQfwu8HXyeQfpNjrEG","text":"收回"}
+{"type":"text-delta","id":"aitxt-gBfVp6wQfwu8HXyeQfpNjrEG","text":" 1"}
+{"type":"text-delta","id":"aitxt-gBfVp6wQfwu8HXyeQfpNjrEG","text":".07"}
+{"type":"text-delta","id":"aitxt-gBfVp6wQfwu8HXyeQfpNjrEG","text":" 元，"}
+{"type":"text-delta","id":"aitxt-gBfVp6wQfwu8HXyeQfpNjrEG","text":"不值得"}
+{"type":"text-delta","id":"aitxt-gBfVp6wQfwu8HXyeQfpNjrEG","text":"扩张"}
+{"type":"text-delta","id":"aitxt-gBfVp6wQfwu8HXyeQfpNjrEG","text":" |\n|"}
+{"type":"text-delta","id":"aitxt-gBfVp6wQfwu8HXyeQfpNjrEG","text":" **🧪"}
+{"type":"text-delta","id":"aitxt-gBfVp6wQfwu8HXyeQfpNjrEG","text":" 试点** |"}
+{"type":"text-delta","id":"aitxt-gBfVp6wQfwu8HXyeQfpNjrEG","text":" 扩大**社交"}
+{"type":"text-delta","id":"aitxt-gBfVp6wQfwu8HXyeQfpNjrEG","text":"拓新-办公"}
+{"type":"text-delta","id":"aitxt-gBfVp6wQfwu8HXyeQfpNjrEG","text":"椅**的"}
+{"type":"text-delta","id":"aitxt-gBfVp6wQfwu8HXyeQfpNjrEG","text":"投放 | ROI"}
+{"type":"text-delta","id":"aitxt-gBfVp6wQfwu8HXyeQfpNjrEG","text":" 6.60"}
+{"type":"text-delta","id":"aitxt-gBfVp6wQfwu8HXyeQfpNjrEG","text":" 表"}
+{"type":"text-delta","id":"aitxt-gBfVp6wQfwu8HXyeQfpNjrEG","text":"现极佳"}
+{"type":"text-delta","id":"aitxt-gBfVp6wQfwu8HXyeQfpNjrEG","text":"，但当前"}
+{"type":"text-delta","id":"aitxt-gBfVp6wQfwu8HXyeQfpNjrEG","text":"投放"}
+{"type":"text-delta","id":"aitxt-gBfVp6wQfwu8HXyeQfpNjrEG","text":"仅 422"}
+{"type":"text-delta","id":"aitxt-gBfVp6wQfwu8HXyeQfpNjrEG","text":" 万，存在"}
+{"type":"text-delta","id":"aitxt-gBfVp6wQfwu8HXyeQfpNjrEG","text":"巨大"}
+{"type":"text-delta","id":"aitxt-gBfVp6wQfwu8HXyeQfpNjrEG","text":"增量空间 |\n\n###"}
+{"type":"text-delta","id":"aitxt-gBfVp6wQfwu8HXyeQfpNjrEG","text":" 💡 一句话总结"}
+{"type":"text-delta","id":"aitxt-gBfVp6wQfwu8HXyeQfpNjrEG","text":"\n\n> **净"}
+{"type":"text-delta","id":"aitxt-gBfVp6wQfwu8HXyeQfpNjrEG","text":"销售额下降不是因为"}
+{"type":"text-delta","id":"aitxt-gBfVp6wQfwu8HXyeQfpNjrEG","text":"投"}
+{"type":"text-delta","id":"aitxt-gBfVp6wQfwu8HXyeQfpNjrEG","text":"不动"}
+{"type":"text-delta","id":"aitxt-gBfVp6wQfwu8HXyeQfpNjrEG","text":"，而是因为砍"}
+{"type":"text-delta","id":"aitxt-gBfVp6wQfwu8HXyeQfpNjrEG","text":"多了"}
+{"type":"text-delta","id":"aitxt-gBfVp6wQfwu8HXyeQfpNjrEG","text":"。不要"}
+{"type":"text-delta","id":"aitxt-gBfVp6wQfwu8HXyeQfpNjrEG","text":"\""}
+{"type":"text-delta","id":"aitxt-gBfVp6wQfwu8HXyeQfpNjrEG","text":"加大"}
+{"type":"text-delta","id":"aitxt-gBfVp6wQfwu8HXyeQfpNjrEG","text":"投放\""}
+{"type":"text-delta","id":"aitxt-gBfVp6wQfwu8HXyeQfpNjrEG","text":"一"}
+{"type":"text-delta","id":"aitxt-gBfVp6wQfwu8HXyeQfpNjrEG","text":"锅端，应该"}
+{"type":"text-delta","id":"aitxt-gBfVp6wQfwu8HXyeQfpNjrEG","text":"对"}
+{"type":"text-delta","id":"aitxt-gBfVp6wQfwu8HXyeQfpNjrEG","text":"升降桌（"}
+{"type":"text-delta","id":"aitxt-gBfVp6wQfwu8HXyeQfpNjrEG","text":"自然搜索+直接"}
+{"type":"text-delta","id":"aitxt-gBfVp6wQfwu8HXyeQfpNjrEG","text":"访问）精准"}
+{"type":"text-delta","id":"aitxt-gBfVp6wQfwu8HXyeQfpNjrEG","text":"补投恢复"}
+{"type":"text-delta","id":"aitxt-gBfVp6wQfwu8HXyeQfpNjrEG","text":"流量"}
+{"type":"text-delta","id":"aitxt-gBfVp6wQfwu8HXyeQfpNjrEG","text":"，同时把"}
+{"type":"text-delta","id":"aitxt-gBfVp6wQfwu8HXyeQfpNjrEG","text":"社交拓新从"}
+{"type":"text-delta","id":"aitxt-gBfVp6wQfwu8HXyeQfpNjrEG","text":"\""}
+{"type":"text-delta","id":"aitxt-gBfVp6wQfwu8HXyeQfpNjrEG","text":"精选代销\""}
+{"type":"text-delta","id":"aitxt-gBfVp6wQfwu8HXyeQfpNjrEG","text":"转向利"}
+{"type":"text-delta","id":"aitxt-gBfVp6wQfwu8HXyeQfpNjrEG","text":"基"}
+{"type":"text-delta","id":"aitxt-gBfVp6wQfwu8HXyeQfpNjrEG","text":"品类"}
+{"type":"text-delta","id":"aitxt-gBfVp6wQfwu8HXyeQfpNjrEG","text":"\"办公椅\"，"}
+{"type":"text-delta","id":"aitxt-gBfVp6wQfwu8HXyeQfpNjrEG","text":"才能"}
+{"type":"text-delta","id":"aitxt-gBfVp6wQfwu8HXyeQfpNjrEG","text":"把钱"}
+{"type":"text-delta","id":"aitxt-gBfVp6wQfwu8HXyeQfpNjrEG","text":"花在刀"}
+{"type":"text-delta","id":"aitxt-gBfVp6wQfwu8HXyeQfpNjrEG","text":"刃上。**"}
+{"type":"text-end","id":"aitxt-gBfVp6wQfwu8HXyeQfpNjrEG"}
+{"type":"finish-step","finishReason":"stop","rawFinishReason":"stop","usage":{"inputTokens":5424,"inputTokenDetails":{"noCacheTokens":1008,"cacheReadTokens":4416},"outputTokens":1336,"outputTokenDetails":{"textTokens":1336,"reasoningTokens":0},"totalTokens":6760,"raw":{"prompt_tokens":5424,"completion_tokens":1336,"total_tokens":6760,"prompt_tokens_details":{"cached_tokens":4416},"completion_tokens_details":{}}},"performance":{"stepTimeMs":35035.335957999996,"toolExecutionMs":{},"responseTimeMs":35026.784750000006,"effectiveOutputTokensPerSecond":38.14223913315366,"outputTokensPerSecond":79.24754006106369,"inputTokensPerSecond":298.54332501782363,"effectiveTotalTokensPerSecond":192.9951620809272,"timeToFirstOutputMs":18168.217292,"timeBetweenOutputChunksMs":{"min":0.07904199999757111,"p10":42.570542000001296,"median":57.247667000003275,"avg":60.01032014388491,"p90":72.8469999999943,"max":338.46091599999636}},"providerMetadata":{"openai":{}},"response":{"id":"0b43d47017931070314192242e02a9","timestamp":"2026-10-27T13:17:12.000Z","modelId":"GLM-5.1","headers":{"access-control-allow-headers":"authorization, content-type, x-stainless-retry-count","access-control-allow-origin":"http://127.0.0.1:3000","connection":"keep-alive","content-type":"text/event-stream","date":"Tue, 27 Oct 2026 13:17:12 GMT","keep-alive":"timeout=5","transfer-encoding":"chunked"}}}
+{"type":"finish","finishReason":"stop","rawFinishReason":"stop","totalUsage":{"inputTokens":25373,"inputTokenDetails":{"noCacheTokens":13917,"cacheReadTokens":11456},"outputTokens":3771,"outputTokenDetails":{"textTokens":3771,"reasoningTokens":0},"totalTokens":29144}}

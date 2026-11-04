@@ -1,0 +1,7 @@
+/bin/zsh -lc "python3 - <<'PY'
+import csv,collections
+rows=list(csv.DictReader(open('inputs/sales.csv',newline='',encoding='utf-8-sig')))
+for m in ['2026-08','2026-09']:
+ d=collections.Counter(r['status'] for r in rows if r['paid_at'].startswith(m) and r['order_kind']=='customer_sale')
+ print(m,d)
+PY"

@@ -1,0 +1,4 @@
+interface:
+  display_name: "Codex UI Redesign"
+  short_description: "按参考图与明星元素重塑并安全修改本地 Codex UI"
+  default_prompt: "Use $redesign-codex-ui to apply a reference, celebrity, idol, character, or IP skin to my local Codex UI safely."

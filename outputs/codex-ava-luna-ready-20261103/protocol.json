@@ -1,0 +1,85 @@
+{
+  "date": "2026-11-03",
+  "scenario": "普通提问下的订单净销售额分析",
+  "model": "gpt-6-luna",
+  "reasoning_effort": "low",
+  "codex_version": "0.165.0",
+  "ava_version": "4.0.0-beta.5",
+  "design": "Neutral ordinary user question without instructions to ask about definitions, avoid assumptions, follow a reference, or produce a predetermined result. Baseline gets raw CSV with AVA disabled. Treatment gets same CSV, configured financial definition and AVA skill/CLI.",
+  "user_prompt": "用 ./inputs/sales.csv 看一下，2026年9月净销售额相比8月有什么变化，主要来自哪里？给我结论和图表。",
+  "replications_per_arm": 1,
+  "not_a_benchmark": true,
+  "model_selection": "User requested a lighter model; both arms use the same model and low effort.",
+  "conditions": [
+    {
+      "arm": "no-ava",
+      "cwd": "/Users/banxuan/Documents/AVA-test-skill-workspace/codex-ava-luna-ready-20261103/no-ava",
+      "sha256": {
+        "sales.csv": "4cb3f6ef611837b7d08abb676114a58f99db211bd7bea01e63da763db08d3877"
+      },
+      "prompt_sha256": "5799ce1a13ca561963585ace58ac0a3a0ab1efdf0da85c08d256252a4b01668b",
+      "status": "completed",
+      "started_at": "2026-11-03T09:34:53.934837+00:00",
+      "argv": [
+        "codex",
+        "exec",
+        "--ephemeral",
+        "--ignore-user-config",
+        "--json",
+        "--skip-git-repo-check",
+        "--approve-for-me",
+        "--model",
+        "gpt-6-luna",
+        "-c",
+        "model_reasoning_effort=\"low\"",
+        "-c",
+        "skills.config=[{name=\"ava\",enabled=false}]",
+        "-C",
+        "/Users/banxuan/Documents/AVA-test-skill-workspace/codex-ava-luna-ready-20261103/no-ava",
+        "-o",
+        "/Users/banxuan/Documents/AVA/outputs/codex-ava-luna-ready-20261103/no-ava-answer.txt",
+        "-"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 72.344,
+      "finished_at": "2026-11-03T09:36:06.280073+00:00"
+    },
+    {
+      "arm": "ava",
+      "cwd": "/Users/banxuan/Documents/AVA-test-skill-workspace/codex-ava-luna-ready-20261103/ava",
+      "sha256": {
+        "semantic-finance.json": "1c2aa6675f676a0579f9e26862d8223591dbf1ef6d7d811c0726f824ae1ce50b",
+        "sales.csv": "4cb3f6ef611837b7d08abb676114a58f99db211bd7bea01e63da763db08d3877"
+      },
+      "prompt_sha256": "5799ce1a13ca561963585ace58ac0a3a0ab1efdf0da85c08d256252a4b01668b",
+      "status": "completed",
+      "started_at": "2026-11-03T09:36:06.289038+00:00",
+      "argv": [
+        "codex",
+        "exec",
+        "--ephemeral",
+        "--ignore-user-config",
+        "--json",
+        "--skip-git-repo-check",
+        "--approve-for-me",
+        "--model",
+        "gpt-6-luna",
+        "-c",
+        "model_reasoning_effort=\"low\"",
+        "-c",
+        "skills.config=[{name=\"ava\",enabled=false},{path=\"/Users/banxuan/Documents/AVA-test-skill-workspace/codex-ava-luna-ready-20261103/ava/.agents/skills/ava/SKILL.md\",enabled=true}]",
+        "-C",
+        "/Users/banxuan/Documents/AVA-test-skill-workspace/codex-ava-luna-ready-20261103/ava",
+        "-o",
+        "/Users/banxuan/Documents/AVA/outputs/codex-ava-luna-ready-20261103/ava-answer.txt",
+        "-"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 122.598,
+      "finished_at": "2026-11-03T09:38:08.887466+00:00"
+    }
+  ],
+  "environment_note": "Both arms receive identical runtime-only notes about the AVA Node wrapper and requesting sandbox socket permissions. Prior attempt failed before AVA computation; no metric or answer instructions were added.",
+  "previous_attempt": "/Users/banxuan/Documents/AVA/outputs/codex-ava-luna-20261103",
+  "superseded_by": "codex-ava-luna-question-20261103: user requested one business question only, no request for conclusions or charts"
+}

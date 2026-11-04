@@ -1,0 +1,13 @@
+/bin/zsh -lc "python3 - <<'PY'
+import csv,collections
+from decimal import Decimal
+rows=list(csv.DictReader(open('inputs/sales.csv',newline='',encoding='utf-8-sig')))
+def val(r): return Decimal(r['line_paid_amount'] or 0)-Decimal(r['refund_amount'] or 0)
+for f in ['business_model','selling_region','category','channel','selling_city','product_name']:
+ d={m:collections.defaultdict(Decimal) for m in ['2026-08','2026-09']}
+ for r in rows:
+  m=r['paid_at'][:7]
+  if m in d and r['order_kind']=='customer_sale':d[m][r[f]]+=val(r)
+ diff=sorted(((k,d['2026-09'][k]-d['2026-08'][k]) for k in d['2026-08'].keys()|d['2026-09'].keys()),key=lambda x:-x[1])
+ print('\\n',f,diff)
+PY"

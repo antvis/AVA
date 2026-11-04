@@ -1,0 +1,20 @@
+2026-11-03T08:36:57.889901Z  WARN codex_rollout::list: state db discrepancy during find_thread_path_by_id_str_in_subdir: falling_back
+2026-11-03T08:36:57.929197Z  WARN codex_rollout::list: state db discrepancy during find_thread_path_by_id_str_in_subdir: falling_back
+2026-11-03T08:36:57.959777Z  WARN codex_rollout::list: state db discrepancy during find_thread_path_by_id_str_in_subdir: falling_back
+2026-11-03T08:36:57.977595Z  WARN codex_guardian_v2::sync_reviewer::reviewer_config: guardian review session could not disable `features.hooks`; continuing with the feature enabled
+2026-11-03T08:36:57.996496Z  WARN codex_rollout::list: state db discrepancy during find_thread_path_by_id_str_in_subdir: falling_back
+2026-11-03T08:36:58.043351Z  WARN codex_rollout::list: state db discrepancy during find_thread_path_by_id_str_in_subdir: falling_back
+2026-11-03T08:36:58.087304Z  WARN codex_rollout::list: state db discrepancy during find_thread_path_by_id_str_in_subdir: falling_back
+2026-11-03T08:36:58.128417Z  WARN codex_rollout::list: state db discrepancy during find_thread_path_by_id_str_in_subdir: falling_back
+2026-11-03T08:36:58.165210Z  WARN codex_rollout::list: state db discrepancy during find_thread_path_by_id_str_in_subdir: falling_back
+2026-11-03T08:36:58.192910Z  WARN codex_rollout::list: state db discrepancy during find_thread_path_by_id_str_in_subdir: falling_back
+2026-11-03T08:36:58.220657Z  WARN codex_rollout::list: state db discrepancy during find_thread_path_by_id_str_in_subdir: falling_back
+2026-11-03T08:37:17.118302Z  WARN codex_sandboxing::violation: recorded sandbox violation: resource=filesystem backend=seatbelt reason=operation_not_permitted path=unknown
+2026-11-03T08:37:24.996307Z  WARN codex_guardian_v2::sync_reviewer::reviewer_config: guardian review session could not disable `features.hooks`; continuing with the feature enabled
+2026-11-03T08:37:41.511928Z  WARN codex_guardian_v2::sync_reviewer::reviewer_config: guardian review session could not disable `features.hooks`; continuing with the feature enabled
+2026-11-03T08:37:43.268397Z  WARN codex_core::responses_retry: stream disconnected - retrying sampling request (1/1 in 219ms)... turn_id=01a1a08e-960a-76d0-8498-7d5a74541526 retries=1 max_retries=1 sampling_error=stream disconnected before completion: IO error: peer closed connection without sending TLS close_notify: https://docs.rs/rustls/latest/rustls/manual/_03_howto/index.html#unexpected-eof
+2026-11-03T08:38:47.944513Z  WARN codex_guardian_v2::sync_reviewer::reviewer_config: guardian review session could not disable `features.hooks`; continuing with the feature enabled
+2026-11-03T08:38:47.944523Z  WARN codex_guardian_v2::sync_reviewer::reviewer_config: guardian review session could not disable `features.hooks`; continuing with the feature enabled
+2026-11-03T08:38:47.944602Z  WARN codex_guardian_v2::sync_reviewer::reviewer_config: guardian review session could not disable `features.hooks`; continuing with the feature enabled
+2026-11-03T08:38:47.944806Z  WARN codex_guardian_v2::sync_reviewer::reviewer_config: guardian review session could not disable `features.hooks`; continuing with the feature enabled
+2026-11-03T08:41:52.590926Z  WARN codex_guardian_v2::sync_reviewer::reviewer_config: guardian review session could not disable `features.hooks`; continuing with the feature enabled

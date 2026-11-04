@@ -1,0 +1,81 @@
+{
+  "date": "2026-11-03",
+  "scenario": "已配置业务语义对分析回答的作用",
+  "model": "gpt-6.1-sol",
+  "reasoning_effort": "high",
+  "codex_version": "0.165.0",
+  "ava_version": "4.0.0-beta.5",
+  "design": "one fresh ephemeral CLI session per arm; identical raw CSV and user prompt. Treatment adds a preconfigured finance definition plus AVA skill/CLI. Tests the complete configured workflow, not isolated CLI effect.",
+  "replications_per_arm": 1,
+  "not_a_benchmark": true,
+  "conditions": [
+    {
+      "arm": "no-ava",
+      "cwd": "/Users/banxuan/Documents/AVA-test-skill-workspace/codex-ava-semantic-20261103/no-ava",
+      "sha256": {
+        "sales.csv": "4cb3f6ef611837b7d08abb676114a58f99db211bd7bea01e63da763db08d3877"
+      },
+      "prompt_sha256": "5772165b6558148376f523003c2b7c9c2728fddcc97a72ec5e85268423d196f5",
+      "status": "completed",
+      "started_at": "2026-11-03T08:51:11.411048+00:00",
+      "argv": [
+        "codex",
+        "exec",
+        "--ephemeral",
+        "--ignore-user-config",
+        "--json",
+        "--skip-git-repo-check",
+        "--approve-for-me",
+        "--model",
+        "gpt-6.1-sol",
+        "-c",
+        "model_reasoning_effort=\"high\"",
+        "-c",
+        "skills.config=[{name=\"ava\",enabled=false}]",
+        "-C",
+        "/Users/banxuan/Documents/AVA-test-skill-workspace/codex-ava-semantic-20261103/no-ava",
+        "-o",
+        "/Users/banxuan/Documents/AVA/outputs/codex-ava-semantic-20261103/no-ava-answer.txt",
+        "-"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 130.541,
+      "finished_at": "2026-11-03T08:53:21.952482+00:00"
+    },
+    {
+      "arm": "ava",
+      "cwd": "/Users/banxuan/Documents/AVA-test-skill-workspace/codex-ava-semantic-20261103/ava",
+      "sha256": {
+        "sales.csv": "4cb3f6ef611837b7d08abb676114a58f99db211bd7bea01e63da763db08d3877",
+        "semantic-finance.json": "1c2aa6675f676a0579f9e26862d8223591dbf1ef6d7d811c0726f824ae1ce50b"
+      },
+      "prompt_sha256": "5772165b6558148376f523003c2b7c9c2728fddcc97a72ec5e85268423d196f5",
+      "status": "completed",
+      "started_at": "2026-11-03T08:53:21.957621+00:00",
+      "argv": [
+        "codex",
+        "exec",
+        "--ephemeral",
+        "--ignore-user-config",
+        "--json",
+        "--skip-git-repo-check",
+        "--approve-for-me",
+        "--model",
+        "gpt-6.1-sol",
+        "-c",
+        "model_reasoning_effort=\"high\"",
+        "-c",
+        "skills.config=[{name=\"ava\",enabled=false},{path=\"/Users/banxuan/Documents/AVA-test-skill-workspace/codex-ava-semantic-20261103/ava/.agents/skills/ava/SKILL.md\",enabled=true}]",
+        "-C",
+        "/Users/banxuan/Documents/AVA-test-skill-workspace/codex-ava-semantic-20261103/ava",
+        "-o",
+        "/Users/banxuan/Documents/AVA/outputs/codex-ava-semantic-20261103/ava-answer.txt",
+        "-"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 280.177,
+      "finished_at": "2026-11-03T08:58:02.133405+00:00"
+    }
+  ],
+  "interpretation": "Real executions, but common prompt and baseline AGENTS explicitly guided clarification. Superseded by a neutral-prompt comparison; screenshot not inserted in Yuque."
+}

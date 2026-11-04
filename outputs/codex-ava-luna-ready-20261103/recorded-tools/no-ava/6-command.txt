@@ -1,0 +1,13 @@
+/bin/zsh -lc "mkdir -p output && python3 - <<'PY'
+import csv,collections
+from decimal import Decimal
+rows=list(csv.DictReader(open('inputs/sales.csv',newline='',encoding='utf-8-sig')))
+def val(r): return Decimal(r['line_paid_amount'] or '0')-Decimal(r['refund_amount'] or '0')
+for m in ['2026-08','2026-09']:
+ rr=[r for r in rows if r['paid_at'].startswith(m) and r['order_kind']=='customer_sale']
+ print('\\n',m, 'tot',sum(map(val,rr)))
+ for f in ['business_model','selling_region','category','channel','selling_city','product_name']:
+  d=collections.defaultdict(Decimal)
+  for r in rr:d[r[f]]+=val(r)
+  print(f, sorted(d.items(), key=lambda x:-x[1]))
+PY"

@@ -1,0 +1,83 @@
+{
+  "data": [
+    {
+      "period": "前期",
+      "lag": 0,
+      "new_users": 1400,
+      "retained_users": 1400,
+      "retained_pct": 100
+    },
+    {
+      "period": "前期",
+      "lag": 1,
+      "new_users": 1400,
+      "retained_users": 980,
+      "retained_pct": 70
+    },
+    {
+      "period": "前期",
+      "lag": 3,
+      "new_users": 1400,
+      "retained_users": 840,
+      "retained_pct": 60
+    },
+    {
+      "period": "前期",
+      "lag": 7,
+      "new_users": 1400,
+      "retained_users": 700,
+      "retained_pct": 50
+    },
+    {
+      "period": "近期",
+      "lag": 0,
+      "new_users": 2800,
+      "retained_users": 2800,
+      "retained_pct": 100
+    },
+    {
+      "period": "近期",
+      "lag": 1,
+      "new_users": 2800,
+      "retained_users": 1400,
+      "retained_pct": 50
+    },
+    {
+      "period": "近期",
+      "lag": 3,
+      "new_users": 2800,
+      "retained_users": 1120,
+      "retained_pct": 40
+    },
+    {
+      "period": "近期",
+      "lag": 7,
+      "new_users": 2800,
+      "retained_users": 840,
+      "retained_pct": 30
+    }
+  ],
+  "schema": [
+    {
+      "name": "period",
+      "type": "VARCHAR"
+    },
+    {
+      "name": "lag",
+      "type": "INTEGER"
+    },
+    {
+      "name": "new_users",
+      "type": "BIGINT"
+    },
+    {
+      "name": "retained_users",
+      "type": "BIGINT"
+    },
+    {
+      "name": "retained_pct",
+      "type": "DOUBLE"
+    }
+  ],
+  "rowCount": 8
+}

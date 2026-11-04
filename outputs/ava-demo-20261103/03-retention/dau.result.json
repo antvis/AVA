@@ -1,0 +1,23 @@
+{
+  "data": [
+    {
+      "period": "前期",
+      "average_dau": 580
+    },
+    {
+      "period": "近期",
+      "average_dau": 740
+    }
+  ],
+  "schema": [
+    {
+      "name": "period",
+      "type": "VARCHAR"
+    },
+    {
+      "name": "average_dau",
+      "type": "DOUBLE"
+    }
+  ],
+  "rowCount": 2
+}

@@ -1,0 +1,15 @@
+/bin/zsh -lc "python3 - <<'PY'
+import csv,collections
+rows=list(csv.DictReader(open('inputs/sales.csv',newline='',encoding='utf-8-sig')))
+for m in ['2026-08','2026-09']:
+ print('\\n',m)
+ for st in ['completed','paid','shipped']:
+  rr=[r for r in rows if r['paid_at'].startswith(m) and r['status']==st]
+  print(st,len(rr),'gross',round(sum(float(r['line_paid_amount'] or 0) for r in rr),2),'refund',round(sum(float(r['refund_amount'] or 0) for r in rr),2),'net',round(sum(float(r['line_paid_amount'] or 0)-float(r['refund_amount'] or 0) for r in rr),2))
+print('by business_model customer only')
+for m in ['2026-08','2026-09']:
+ d=collections.defaultdict(float)
+ for r in rows:
+  if r['paid_at'].startswith(m) and r['order_kind']=='customer_sale':d[r['business_model']]+=float(r['line_paid_amount'] or 0)-float(r['refund_amount'] or 0)
+ print(m,dict(d))
+PY"

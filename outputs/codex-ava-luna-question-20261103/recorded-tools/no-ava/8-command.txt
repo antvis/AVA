@@ -1,0 +1,12 @@
+/bin/zsh -lc "python3 - <<'PY'
+import csv
+from collections import defaultdict
+with open('inputs/sales.csv',newline='') as f: rows=list(csv.DictReader(f))
+for c in ['2026-08','2026-09']:
+ rr=[r for r in rows if r['order_kind']=='customer_sale' and r['paid_at'].startswith(c)]
+ print('\\n',c)
+ for d in ['business_model','channel','category','selling_region','product_name','status']:
+  vals=defaultdict(float)
+  for r in rr: vals[r[d]]+=float(r['line_paid_amount'] or 0)-float(r['refund_amount'] or 0)
+  print(d,dict(vals))
+PY"

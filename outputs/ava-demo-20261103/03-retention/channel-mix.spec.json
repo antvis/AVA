@@ -1,0 +1,32 @@
+{
+  "chartType": "column",
+  "config": {
+    "type": "column",
+    "title": "新增用户的渠道结构 人",
+    "data": [
+      {
+        "category": "前期",
+        "value": 280,
+        "group": "推广渠道"
+      },
+      {
+        "category": "前期",
+        "value": 1120,
+        "group": "自然渠道"
+      },
+      {
+        "category": "近期",
+        "value": 1680,
+        "group": "推广渠道"
+      },
+      {
+        "category": "近期",
+        "value": 1120,
+        "group": "自然渠道"
+      }
+    ],
+    "group": true,
+    "axisXTitle": "注册期间",
+    "axisYTitle": "新增用户 人"
+  }
+}

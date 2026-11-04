@@ -1,0 +1,127 @@
+{
+  "data": [
+    {
+      "selling_store_name": "深圳南山店",
+      "channel": "线上商城",
+      "product_name": "电动升降桌",
+      "august": 1790783.35,
+      "september": 1232006.98,
+      "change": -558776.37
+    },
+    {
+      "selling_store_name": "深圳南山店",
+      "channel": "线上商城",
+      "product_name": "人体工学椅Pro",
+      "august": 72194.85,
+      "september": 65159.25,
+      "change": -7035.6
+    },
+    {
+      "selling_store_name": "深圳南山店",
+      "channel": "线下门店",
+      "product_name": "无线耳机",
+      "august": 21382.15,
+      "september": 16616.7,
+      "change": -4765.45
+    },
+    {
+      "selling_store_name": "深圳南山店",
+      "channel": "线上商城",
+      "product_name": "无线耳机",
+      "august": 18837.25,
+      "september": 15693.55,
+      "change": -3143.7
+    },
+    {
+      "selling_store_name": "深圳南山店",
+      "channel": "线下门店",
+      "product_name": "无线鼠标",
+      "august": 17147.31,
+      "september": 14364.15,
+      "change": -2783.16
+    },
+    {
+      "selling_store_name": "深圳南山店",
+      "channel": "线下门店",
+      "product_name": "无线键盘",
+      "august": 11915.15,
+      "september": 10928.44,
+      "change": -986.71
+    },
+    {
+      "selling_store_name": "深圳南山店",
+      "channel": "线上商城",
+      "product_name": "无线鼠标",
+      "august": 13764.3,
+      "september": 13851.37,
+      "change": 87.07
+    },
+    {
+      "selling_store_name": "深圳南山店",
+      "channel": "线上商城",
+      "product_name": "无线键盘",
+      "august": 10061.35,
+      "september": 10689.25,
+      "change": 627.9
+    },
+    {
+      "selling_store_name": "深圳南山店",
+      "channel": "线下门店",
+      "product_name": "人体工学椅Pro",
+      "august": 55885.05,
+      "september": 57564,
+      "change": 1678.95
+    },
+    {
+      "selling_store_name": "深圳南山店",
+      "channel": "线下门店",
+      "product_name": "27英寸显示器",
+      "august": 43289.17,
+      "september": 46439.25,
+      "change": 3150.08
+    },
+    {
+      "selling_store_name": "深圳南山店",
+      "channel": "线上商城",
+      "product_name": "27英寸显示器",
+      "august": 45594.9,
+      "september": 51830.1,
+      "change": 6235.2
+    },
+    {
+      "selling_store_name": "深圳南山店",
+      "channel": "线下门店",
+      "product_name": "电动升降桌",
+      "august": 98960.4,
+      "september": 116703.3,
+      "change": 17742.9
+    }
+  ],
+  "schema": [
+    {
+      "name": "selling_store_name",
+      "type": "VARCHAR"
+    },
+    {
+      "name": "channel",
+      "type": "VARCHAR"
+    },
+    {
+      "name": "product_name",
+      "type": "VARCHAR"
+    },
+    {
+      "name": "august",
+      "type": "DECIMAL(38,2)"
+    },
+    {
+      "name": "september",
+      "type": "DECIMAL(38,2)"
+    },
+    {
+      "name": "change",
+      "type": "DECIMAL(38,2)"
+    }
+  ],
+  "rowCount": 12
+}

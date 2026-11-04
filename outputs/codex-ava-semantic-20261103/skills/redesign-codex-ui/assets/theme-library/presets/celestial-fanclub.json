@@ -1,0 +1,20 @@
+{
+  "schemaVersion": 1,
+  "id": "celestial-fanclub",
+  "label": "Celestial Fanclub",
+  "category": "fan-community",
+  "tags": ["idol", "fan-club", "constellation", "dreamy"],
+  "derivedFrom": "original-archetype",
+  "concept": {"identityIntensity": "high", "thesis": "A luminous fan-made constellation connects projects, memories, and real Codex actions.", "mood": ["dreamy", "devoted", "luminous"], "forbiddenMotifs": ["official-claim", "parasocial-copy", "low-contrast-pastel"]},
+  "layout": {"archetype": "constellation-rail-member-hero", "navigation": "collection-orbits", "hero": "portrait-constellation", "composer": "fan-letter-panel", "density": "medium"},
+  "palette": {"canvas": "#171528", "surface": "#211E37", "surfaceRaised": "#2B2745", "ink": "#FBF7FF", "mutedInk": "#BBB3D1", "accent": "#D7A7FF", "accentSoft": "#4A3862", "line": "#4A4464", "focus": "#F0D8FF"},
+  "typography": {"display": "celestial-serif", "body": "soft-sans", "code": "system-monospace", "accent": "fanclub-script"},
+  "shape": {"panelRadius": 28, "controlRadius": 16, "elevation": "orbital-glow"},
+  "decoration": {"level": "high", "motifs": ["constellation", "fanlight-orb", "member-card"], "pointerEvents": "none"},
+  "motion": {"character": "constellation-draw", "durationMs": 240, "reducedMotion": "opacity-only"},
+  "mediaSlots": [{"id": "starPortrait", "role": "hero", "aspect": "16:8", "focalPoint": "64% 26%", "fallback": "constellation-monogram"}, {"id": "memberCard", "role": "accent", "aspect": "3:2", "focalPoint": "50% 50%", "fallback": "edition-name"}],
+  "quickActions": [{"id": "explore", "label": "Explore the constellation"}, {"id": "build", "label": "Light a new star"}, {"id": "review", "label": "Check the orbit"}, {"id": "fix", "label": "Restore the signal"}],
+  "responsive": {"narrowNavigation": "orbit-drawer", "narrowHero": "portrait-orb", "narrowCards": "two-then-one", "hideMotifs": ["member-card"], "missingMedia": "constellation-monogram"},
+  "assetPolicy": {"provenance": "required", "remoteHotlink": false, "licensedOrOwned": true},
+  "accessibility": {"contrastTarget": "WCAG-AA", "preserveSemanticStates": true, "decorationAriaHidden": true}
+}

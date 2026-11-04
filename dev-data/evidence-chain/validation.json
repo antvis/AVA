@@ -1,0 +1,9 @@
+{
+  "engine": "DuckDB",
+  "complete": true,
+  "rowCount": 2,
+  "reconciledWithOriginalSource": true,
+  "baseline": 4882.34224,
+  "current": 4005.10013,
+  "delta": -877.2421100000001
+}

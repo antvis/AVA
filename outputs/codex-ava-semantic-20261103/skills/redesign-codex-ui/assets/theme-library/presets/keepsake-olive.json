@@ -1,0 +1,20 @@
+{
+  "schemaVersion": 1,
+  "id": "keepsake-olive",
+  "label": "Keepsake Olive",
+  "category": "collectible",
+  "tags": ["portrait", "scrapbook", "warm", "fan-edition"],
+  "derivedFrom": "original-archetype",
+  "concept": {"identityIntensity": "high", "thesis": "A warm personal keepsake that still behaves like a serious coding workspace.", "mood": ["gentle", "devoted", "handmade"], "forbiddenMotifs": ["neon", "heavy-glass", "dense-gradients"]},
+  "layout": {"archetype": "sidebar-hero-cards-composer", "navigation": "fixed-personal-rail", "hero": "portrait-collage", "composer": "oversized-paper-panel", "density": "medium"},
+  "palette": {"canvas": "#F4F1E8", "surface": "#FAF8F1", "surfaceRaised": "#FFFDF7", "ink": "#31382B", "mutedInk": "#727566", "accent": "#8F9B5A", "accentSoft": "#E4E8CF", "line": "#D9D8C8", "focus": "#66733D"},
+  "typography": {"display": "elegant-serif", "body": "humanist-sans", "code": "system-monospace", "accent": "signature-script"},
+  "shape": {"panelRadius": 24, "controlRadius": 14, "elevation": "paper-soft"},
+  "decoration": {"level": "high", "motifs": ["botanical-line", "star", "stamp", "paper-label", "polaroid"], "pointerEvents": "none"},
+  "motion": {"character": "gentle-paper-lift", "durationMs": 180, "reducedMotion": "opacity-only"},
+  "mediaSlots": [{"id": "heroPortrait", "role": "hero", "aspect": "16:7", "focalPoint": "62% 32%", "fallback": "accent-silhouette"}, {"id": "avatar", "role": "profile", "aspect": "1:1", "focalPoint": "50% 30%", "fallback": "monogram"}, {"id": "signature", "role": "accent", "aspect": "3:1", "focalPoint": "50% 50%", "fallback": "display-name"}],
+  "quickActions": [{"id": "explore", "label": "Explore and understand code"}, {"id": "build", "label": "Build a feature or app"}, {"id": "review", "label": "Review code and suggest changes"}, {"id": "fix", "label": "Fix problems and failures"}],
+  "responsive": {"narrowNavigation": "drawer", "narrowHero": "stack-copy-over-solid", "narrowCards": "single-column", "hideMotifs": ["polaroid", "stamp"], "missingMedia": "keep-copy-and-actions"},
+  "assetPolicy": {"provenance": "required", "remoteHotlink": false, "licensedOrOwned": true},
+  "accessibility": {"contrastTarget": "WCAG-AA", "preserveSemanticStates": true, "decorationAriaHidden": true}
+}

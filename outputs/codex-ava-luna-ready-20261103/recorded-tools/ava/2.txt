@@ -1,0 +1,1 @@
+Error: listen EPERM: operation not permitted /var/folders/k_/vb8d8qx91sjdmff5l_9j5yvw0000gp/T/ava-ds_sales_d072d8663c82/ipc

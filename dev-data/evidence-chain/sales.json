@@ -1,0 +1,2434 @@
+[
+  {
+    "period": "Baseline",
+    "channel": "Brand search",
+    "category": "办公椅",
+    "region": "华东",
+    "net_sales_cents": 19492629,
+    "contribution_cents": 8246612
+  },
+  {
+    "period": "Baseline",
+    "channel": "Brand search",
+    "category": "办公椅",
+    "region": "华北",
+    "net_sales_cents": 12434905,
+    "contribution_cents": 5294923
+  },
+  {
+    "period": "Baseline",
+    "channel": "Brand search",
+    "category": "办公椅",
+    "region": "华南",
+    "net_sales_cents": 8247186,
+    "contribution_cents": 3479832
+  },
+  {
+    "period": "Baseline",
+    "channel": "Brand search",
+    "category": "办公椅",
+    "region": "西部",
+    "net_sales_cents": 9931110,
+    "contribution_cents": 4193466
+  },
+  {
+    "period": "Baseline",
+    "channel": "Brand search",
+    "category": "升降桌",
+    "region": "华东",
+    "net_sales_cents": 43603896,
+    "contribution_cents": 18776266
+  },
+  {
+    "period": "Baseline",
+    "channel": "Brand search",
+    "category": "升降桌",
+    "region": "华北",
+    "net_sales_cents": 29221640,
+    "contribution_cents": 11989573
+  },
+  {
+    "period": "Baseline",
+    "channel": "Brand search",
+    "category": "升降桌",
+    "region": "华南",
+    "net_sales_cents": 24719613,
+    "contribution_cents": 10709361
+  },
+  {
+    "period": "Baseline",
+    "channel": "Brand search",
+    "category": "升降桌",
+    "region": "西部",
+    "net_sales_cents": 32726966,
+    "contribution_cents": 13969063
+  },
+  {
+    "period": "Baseline",
+    "channel": "Brand search",
+    "category": "收纳",
+    "region": "华东",
+    "net_sales_cents": 1093218,
+    "contribution_cents": 495041
+  },
+  {
+    "period": "Baseline",
+    "channel": "Brand search",
+    "category": "收纳",
+    "region": "华北",
+    "net_sales_cents": 539794,
+    "contribution_cents": 240998
+  },
+  {
+    "period": "Baseline",
+    "channel": "Brand search",
+    "category": "收纳",
+    "region": "华南",
+    "net_sales_cents": 575107,
+    "contribution_cents": 252483
+  },
+  {
+    "period": "Baseline",
+    "channel": "Brand search",
+    "category": "收纳",
+    "region": "西部",
+    "net_sales_cents": 765002,
+    "contribution_cents": 333553
+  },
+  {
+    "period": "Baseline",
+    "channel": "Brand search",
+    "category": "显示器",
+    "region": "华东",
+    "net_sales_cents": 5660224,
+    "contribution_cents": 1498592
+  },
+  {
+    "period": "Baseline",
+    "channel": "Brand search",
+    "category": "显示器",
+    "region": "华北",
+    "net_sales_cents": 2226015,
+    "contribution_cents": 585950
+  },
+  {
+    "period": "Baseline",
+    "channel": "Brand search",
+    "category": "显示器",
+    "region": "华南",
+    "net_sales_cents": 2509326,
+    "contribution_cents": 647722
+  },
+  {
+    "period": "Baseline",
+    "channel": "Brand search",
+    "category": "显示器",
+    "region": "西部",
+    "net_sales_cents": 2221518,
+    "contribution_cents": 577584
+  },
+  {
+    "period": "Baseline",
+    "channel": "Brand search",
+    "category": "桌面配件",
+    "region": "华东",
+    "net_sales_cents": 7268562,
+    "contribution_cents": 3648662
+  },
+  {
+    "period": "Baseline",
+    "channel": "Brand search",
+    "category": "桌面配件",
+    "region": "华北",
+    "net_sales_cents": 5268594,
+    "contribution_cents": 2609444
+  },
+  {
+    "period": "Baseline",
+    "channel": "Brand search",
+    "category": "桌面配件",
+    "region": "华南",
+    "net_sales_cents": 3972079,
+    "contribution_cents": 1984656
+  },
+  {
+    "period": "Baseline",
+    "channel": "Brand search",
+    "category": "桌面配件",
+    "region": "西部",
+    "net_sales_cents": 4432245,
+    "contribution_cents": 2237291
+  },
+  {
+    "period": "Baseline",
+    "channel": "Brand search",
+    "category": "精选代销",
+    "region": "华东",
+    "net_sales_cents": 1392380,
+    "contribution_cents": 1289474
+  },
+  {
+    "period": "Baseline",
+    "channel": "Brand search",
+    "category": "精选代销",
+    "region": "华北",
+    "net_sales_cents": 1098114,
+    "contribution_cents": 1023357
+  },
+  {
+    "period": "Baseline",
+    "channel": "Brand search",
+    "category": "精选代销",
+    "region": "华南",
+    "net_sales_cents": 992833,
+    "contribution_cents": 921756
+  },
+  {
+    "period": "Baseline",
+    "channel": "Brand search",
+    "category": "精选代销",
+    "region": "西部",
+    "net_sales_cents": 1011726,
+    "contribution_cents": 947603
+  },
+  {
+    "period": "Baseline",
+    "channel": "Direct",
+    "category": "办公椅",
+    "region": "华东",
+    "net_sales_cents": 33015187,
+    "contribution_cents": 13924041
+  },
+  {
+    "period": "Baseline",
+    "channel": "Direct",
+    "category": "办公椅",
+    "region": "华北",
+    "net_sales_cents": 20903794,
+    "contribution_cents": 8791309
+  },
+  {
+    "period": "Baseline",
+    "channel": "Direct",
+    "category": "办公椅",
+    "region": "华南",
+    "net_sales_cents": 16395048,
+    "contribution_cents": 6861290
+  },
+  {
+    "period": "Baseline",
+    "channel": "Direct",
+    "category": "办公椅",
+    "region": "西部",
+    "net_sales_cents": 15990864,
+    "contribution_cents": 6673275
+  },
+  {
+    "period": "Baseline",
+    "channel": "Direct",
+    "category": "升降桌",
+    "region": "华东",
+    "net_sales_cents": 80395215,
+    "contribution_cents": 34354525
+  },
+  {
+    "period": "Baseline",
+    "channel": "Direct",
+    "category": "升降桌",
+    "region": "华北",
+    "net_sales_cents": 43740697,
+    "contribution_cents": 18837618
+  },
+  {
+    "period": "Baseline",
+    "channel": "Direct",
+    "category": "升降桌",
+    "region": "华南",
+    "net_sales_cents": 46702406,
+    "contribution_cents": 19853297
+  },
+  {
+    "period": "Baseline",
+    "channel": "Direct",
+    "category": "升降桌",
+    "region": "西部",
+    "net_sales_cents": 43693969,
+    "contribution_cents": 19115618
+  },
+  {
+    "period": "Baseline",
+    "channel": "Direct",
+    "category": "收纳",
+    "region": "华东",
+    "net_sales_cents": 1539664,
+    "contribution_cents": 672498
+  },
+  {
+    "period": "Baseline",
+    "channel": "Direct",
+    "category": "收纳",
+    "region": "华北",
+    "net_sales_cents": 954473,
+    "contribution_cents": 423623
+  },
+  {
+    "period": "Baseline",
+    "channel": "Direct",
+    "category": "收纳",
+    "region": "华南",
+    "net_sales_cents": 1058141,
+    "contribution_cents": 426147
+  },
+  {
+    "period": "Baseline",
+    "channel": "Direct",
+    "category": "收纳",
+    "region": "西部",
+    "net_sales_cents": 1310674,
+    "contribution_cents": 589206
+  },
+  {
+    "period": "Baseline",
+    "channel": "Direct",
+    "category": "显示器",
+    "region": "华东",
+    "net_sales_cents": 6785786,
+    "contribution_cents": 1748403
+  },
+  {
+    "period": "Baseline",
+    "channel": "Direct",
+    "category": "显示器",
+    "region": "华北",
+    "net_sales_cents": 5065121,
+    "contribution_cents": 1341810
+  },
+  {
+    "period": "Baseline",
+    "channel": "Direct",
+    "category": "显示器",
+    "region": "华南",
+    "net_sales_cents": 5576280,
+    "contribution_cents": 1418249
+  },
+  {
+    "period": "Baseline",
+    "channel": "Direct",
+    "category": "显示器",
+    "region": "西部",
+    "net_sales_cents": 2824116,
+    "contribution_cents": 740241
+  },
+  {
+    "period": "Baseline",
+    "channel": "Direct",
+    "category": "桌面配件",
+    "region": "华东",
+    "net_sales_cents": 14123360,
+    "contribution_cents": 7004564
+  },
+  {
+    "period": "Baseline",
+    "channel": "Direct",
+    "category": "桌面配件",
+    "region": "华北",
+    "net_sales_cents": 6893750,
+    "contribution_cents": 3481460
+  },
+  {
+    "period": "Baseline",
+    "channel": "Direct",
+    "category": "桌面配件",
+    "region": "华南",
+    "net_sales_cents": 7152056,
+    "contribution_cents": 3593830
+  },
+  {
+    "period": "Baseline",
+    "channel": "Direct",
+    "category": "桌面配件",
+    "region": "西部",
+    "net_sales_cents": 8333645,
+    "contribution_cents": 4149356
+  },
+  {
+    "period": "Baseline",
+    "channel": "Direct",
+    "category": "精选代销",
+    "region": "华东",
+    "net_sales_cents": 3423540,
+    "contribution_cents": 3183819
+  },
+  {
+    "period": "Baseline",
+    "channel": "Direct",
+    "category": "精选代销",
+    "region": "华北",
+    "net_sales_cents": 1657477,
+    "contribution_cents": 1545403
+  },
+  {
+    "period": "Baseline",
+    "channel": "Direct",
+    "category": "精选代销",
+    "region": "华南",
+    "net_sales_cents": 1839210,
+    "contribution_cents": 1713871
+  },
+  {
+    "period": "Baseline",
+    "channel": "Direct",
+    "category": "精选代销",
+    "region": "西部",
+    "net_sales_cents": 1632052,
+    "contribution_cents": 1521776
+  },
+  {
+    "period": "Baseline",
+    "channel": "Social retargeting",
+    "category": "办公椅",
+    "region": "华东",
+    "net_sales_cents": 14914489,
+    "contribution_cents": 6021390
+  },
+  {
+    "period": "Baseline",
+    "channel": "Social retargeting",
+    "category": "办公椅",
+    "region": "华北",
+    "net_sales_cents": 8719081,
+    "contribution_cents": 3695935
+  },
+  {
+    "period": "Baseline",
+    "channel": "Social retargeting",
+    "category": "办公椅",
+    "region": "华南",
+    "net_sales_cents": 7407264,
+    "contribution_cents": 3137258
+  },
+  {
+    "period": "Baseline",
+    "channel": "Social retargeting",
+    "category": "办公椅",
+    "region": "西部",
+    "net_sales_cents": 7577962,
+    "contribution_cents": 3218826
+  },
+  {
+    "period": "Baseline",
+    "channel": "Social retargeting",
+    "category": "升降桌",
+    "region": "华东",
+    "net_sales_cents": 30751727,
+    "contribution_cents": 13018206
+  },
+  {
+    "period": "Baseline",
+    "channel": "Social retargeting",
+    "category": "升降桌",
+    "region": "华北",
+    "net_sales_cents": 23425147,
+    "contribution_cents": 9789701
+  },
+  {
+    "period": "Baseline",
+    "channel": "Social retargeting",
+    "category": "升降桌",
+    "region": "华南",
+    "net_sales_cents": 21906903,
+    "contribution_cents": 9558602
+  },
+  {
+    "period": "Baseline",
+    "channel": "Social retargeting",
+    "category": "升降桌",
+    "region": "西部",
+    "net_sales_cents": 19900909,
+    "contribution_cents": 8525909
+  },
+  {
+    "period": "Baseline",
+    "channel": "Social retargeting",
+    "category": "收纳",
+    "region": "华东",
+    "net_sales_cents": 711743,
+    "contribution_cents": 318021
+  },
+  {
+    "period": "Baseline",
+    "channel": "Social retargeting",
+    "category": "收纳",
+    "region": "华北",
+    "net_sales_cents": 473894,
+    "contribution_cents": 202359
+  },
+  {
+    "period": "Baseline",
+    "channel": "Social retargeting",
+    "category": "收纳",
+    "region": "华南",
+    "net_sales_cents": 467448,
+    "contribution_cents": 206490
+  },
+  {
+    "period": "Baseline",
+    "channel": "Social retargeting",
+    "category": "收纳",
+    "region": "西部",
+    "net_sales_cents": 289582,
+    "contribution_cents": 127610
+  },
+  {
+    "period": "Baseline",
+    "channel": "Social retargeting",
+    "category": "显示器",
+    "region": "华东",
+    "net_sales_cents": 4113444,
+    "contribution_cents": 1048301
+  },
+  {
+    "period": "Baseline",
+    "channel": "Social retargeting",
+    "category": "显示器",
+    "region": "华北",
+    "net_sales_cents": 2046135,
+    "contribution_cents": 514041
+  },
+  {
+    "period": "Baseline",
+    "channel": "Social retargeting",
+    "category": "显示器",
+    "region": "华南",
+    "net_sales_cents": 1494503,
+    "contribution_cents": 291018
+  },
+  {
+    "period": "Baseline",
+    "channel": "Social retargeting",
+    "category": "显示器",
+    "region": "西部",
+    "net_sales_cents": 1476515,
+    "contribution_cents": 379522
+  },
+  {
+    "period": "Baseline",
+    "channel": "Social retargeting",
+    "category": "桌面配件",
+    "region": "华东",
+    "net_sales_cents": 6045298,
+    "contribution_cents": 2990362
+  },
+  {
+    "period": "Baseline",
+    "channel": "Social retargeting",
+    "category": "桌面配件",
+    "region": "华北",
+    "net_sales_cents": 3926746,
+    "contribution_cents": 1933067
+  },
+  {
+    "period": "Baseline",
+    "channel": "Social retargeting",
+    "category": "桌面配件",
+    "region": "华南",
+    "net_sales_cents": 2948305,
+    "contribution_cents": 1436729
+  },
+  {
+    "period": "Baseline",
+    "channel": "Social retargeting",
+    "category": "桌面配件",
+    "region": "西部",
+    "net_sales_cents": 3270136,
+    "contribution_cents": 1632460
+  },
+  {
+    "period": "Baseline",
+    "channel": "Social retargeting",
+    "category": "精选代销",
+    "region": "华东",
+    "net_sales_cents": 867661,
+    "contribution_cents": 800790
+  },
+  {
+    "period": "Baseline",
+    "channel": "Social retargeting",
+    "category": "精选代销",
+    "region": "华北",
+    "net_sales_cents": 1049922,
+    "contribution_cents": 979627
+  },
+  {
+    "period": "Baseline",
+    "channel": "Social retargeting",
+    "category": "精选代销",
+    "region": "华南",
+    "net_sales_cents": 743649,
+    "contribution_cents": 692294
+  },
+  {
+    "period": "Baseline",
+    "channel": "Social retargeting",
+    "category": "精选代销",
+    "region": "西部",
+    "net_sales_cents": 633817,
+    "contribution_cents": 588368
+  },
+  {
+    "period": "Baseline",
+    "channel": "Offline",
+    "category": "办公椅",
+    "region": "华东",
+    "net_sales_cents": 12971252,
+    "contribution_cents": 5438682
+  },
+  {
+    "period": "Baseline",
+    "channel": "Offline",
+    "category": "办公椅",
+    "region": "华北",
+    "net_sales_cents": 8156537,
+    "contribution_cents": 3405690
+  },
+  {
+    "period": "Baseline",
+    "channel": "Offline",
+    "category": "办公椅",
+    "region": "华南",
+    "net_sales_cents": 6763766,
+    "contribution_cents": 2876001
+  },
+  {
+    "period": "Baseline",
+    "channel": "Offline",
+    "category": "办公椅",
+    "region": "西部",
+    "net_sales_cents": 8876495,
+    "contribution_cents": 3658094
+  },
+  {
+    "period": "Baseline",
+    "channel": "Offline",
+    "category": "升降桌",
+    "region": "华东",
+    "net_sales_cents": 28744073,
+    "contribution_cents": 12301558
+  },
+  {
+    "period": "Baseline",
+    "channel": "Offline",
+    "category": "升降桌",
+    "region": "华北",
+    "net_sales_cents": 17805978,
+    "contribution_cents": 7591931
+  },
+  {
+    "period": "Baseline",
+    "channel": "Offline",
+    "category": "升降桌",
+    "region": "华南",
+    "net_sales_cents": 23438741,
+    "contribution_cents": 10206632
+  },
+  {
+    "period": "Baseline",
+    "channel": "Offline",
+    "category": "升降桌",
+    "region": "西部",
+    "net_sales_cents": 19219186,
+    "contribution_cents": 8311283
+  },
+  {
+    "period": "Baseline",
+    "channel": "Offline",
+    "category": "收纳",
+    "region": "华东",
+    "net_sales_cents": 885294,
+    "contribution_cents": 396477
+  },
+  {
+    "period": "Baseline",
+    "channel": "Offline",
+    "category": "收纳",
+    "region": "华北",
+    "net_sales_cents": 546536,
+    "contribution_cents": 237996
+  },
+  {
+    "period": "Baseline",
+    "channel": "Offline",
+    "category": "收纳",
+    "region": "华南",
+    "net_sales_cents": 434806,
+    "contribution_cents": 188989
+  },
+  {
+    "period": "Baseline",
+    "channel": "Offline",
+    "category": "收纳",
+    "region": "西部",
+    "net_sales_cents": 479054,
+    "contribution_cents": 217876
+  },
+  {
+    "period": "Baseline",
+    "channel": "Offline",
+    "category": "显示器",
+    "region": "华东",
+    "net_sales_cents": 3387740,
+    "contribution_cents": 868328
+  },
+  {
+    "period": "Baseline",
+    "channel": "Offline",
+    "category": "显示器",
+    "region": "华北",
+    "net_sales_cents": 1467521,
+    "contribution_cents": 371986
+  },
+  {
+    "period": "Baseline",
+    "channel": "Offline",
+    "category": "显示器",
+    "region": "华南",
+    "net_sales_cents": 2639739,
+    "contribution_cents": 671186
+  },
+  {
+    "period": "Baseline",
+    "channel": "Offline",
+    "category": "显示器",
+    "region": "西部",
+    "net_sales_cents": 1485509,
+    "contribution_cents": 390756
+  },
+  {
+    "period": "Baseline",
+    "channel": "Offline",
+    "category": "桌面配件",
+    "region": "华东",
+    "net_sales_cents": 6444199,
+    "contribution_cents": 3198693
+  },
+  {
+    "period": "Baseline",
+    "channel": "Offline",
+    "category": "桌面配件",
+    "region": "华北",
+    "net_sales_cents": 3139669,
+    "contribution_cents": 1558347
+  },
+  {
+    "period": "Baseline",
+    "channel": "Offline",
+    "category": "桌面配件",
+    "region": "华南",
+    "net_sales_cents": 3784893,
+    "contribution_cents": 1870528
+  },
+  {
+    "period": "Baseline",
+    "channel": "Offline",
+    "category": "桌面配件",
+    "region": "西部",
+    "net_sales_cents": 3792834,
+    "contribution_cents": 1874109
+  },
+  {
+    "period": "Baseline",
+    "channel": "Offline",
+    "category": "精选代销",
+    "region": "华东",
+    "net_sales_cents": 1134404,
+    "contribution_cents": 1056173
+  },
+  {
+    "period": "Baseline",
+    "channel": "Offline",
+    "category": "精选代销",
+    "region": "华北",
+    "net_sales_cents": 987901,
+    "contribution_cents": 920638
+  },
+  {
+    "period": "Baseline",
+    "channel": "Offline",
+    "category": "精选代销",
+    "region": "华南",
+    "net_sales_cents": 1446430,
+    "contribution_cents": 1344432
+  },
+  {
+    "period": "Baseline",
+    "channel": "Offline",
+    "category": "精选代销",
+    "region": "西部",
+    "net_sales_cents": 1105014,
+    "contribution_cents": 1028849
+  },
+  {
+    "period": "Baseline",
+    "channel": "Organic search",
+    "category": "办公椅",
+    "region": "华东",
+    "net_sales_cents": 39880269,
+    "contribution_cents": 16692873
+  },
+  {
+    "period": "Baseline",
+    "channel": "Organic search",
+    "category": "办公椅",
+    "region": "华北",
+    "net_sales_cents": 19583552,
+    "contribution_cents": 8304767
+  },
+  {
+    "period": "Baseline",
+    "channel": "Organic search",
+    "category": "办公椅",
+    "region": "华南",
+    "net_sales_cents": 23332151,
+    "contribution_cents": 9727607
+  },
+  {
+    "period": "Baseline",
+    "channel": "Organic search",
+    "category": "办公椅",
+    "region": "西部",
+    "net_sales_cents": 26803402,
+    "contribution_cents": 11230756
+  },
+  {
+    "period": "Baseline",
+    "channel": "Organic search",
+    "category": "升降桌",
+    "region": "华东",
+    "net_sales_cents": 98113757,
+    "contribution_cents": 42317039
+  },
+  {
+    "period": "Baseline",
+    "channel": "Organic search",
+    "category": "升降桌",
+    "region": "华北",
+    "net_sales_cents": 60787823,
+    "contribution_cents": 25736225
+  },
+  {
+    "period": "Baseline",
+    "channel": "Organic search",
+    "category": "升降桌",
+    "region": "华南",
+    "net_sales_cents": 61270193,
+    "contribution_cents": 26376183
+  },
+  {
+    "period": "Baseline",
+    "channel": "Organic search",
+    "category": "升降桌",
+    "region": "西部",
+    "net_sales_cents": 64288175,
+    "contribution_cents": 27761043
+  },
+  {
+    "period": "Baseline",
+    "channel": "Organic search",
+    "category": "收纳",
+    "region": "华东",
+    "net_sales_cents": 2079633,
+    "contribution_cents": 927903
+  },
+  {
+    "period": "Baseline",
+    "channel": "Organic search",
+    "category": "收纳",
+    "region": "华北",
+    "net_sales_cents": 1380825,
+    "contribution_cents": 603745
+  },
+  {
+    "period": "Baseline",
+    "channel": "Organic search",
+    "category": "收纳",
+    "region": "华南",
+    "net_sales_cents": 1253570,
+    "contribution_cents": 547409
+  },
+  {
+    "period": "Baseline",
+    "channel": "Organic search",
+    "category": "收纳",
+    "region": "西部",
+    "net_sales_cents": 1659935,
+    "contribution_cents": 720983
+  },
+  {
+    "period": "Baseline",
+    "channel": "Organic search",
+    "category": "显示器",
+    "region": "华东",
+    "net_sales_cents": 11378909,
+    "contribution_cents": 2940673
+  },
+  {
+    "period": "Baseline",
+    "channel": "Organic search",
+    "category": "显示器",
+    "region": "华北",
+    "net_sales_cents": 8413887,
+    "contribution_cents": 2177192
+  },
+  {
+    "period": "Baseline",
+    "channel": "Organic search",
+    "category": "显示器",
+    "region": "华南",
+    "net_sales_cents": 6501163,
+    "contribution_cents": 1680573
+  },
+  {
+    "period": "Baseline",
+    "channel": "Organic search",
+    "category": "显示器",
+    "region": "西部",
+    "net_sales_cents": 5340937,
+    "contribution_cents": 1398358
+  },
+  {
+    "period": "Baseline",
+    "channel": "Organic search",
+    "category": "桌面配件",
+    "region": "华东",
+    "net_sales_cents": 15695873,
+    "contribution_cents": 7766398
+  },
+  {
+    "period": "Baseline",
+    "channel": "Organic search",
+    "category": "桌面配件",
+    "region": "华北",
+    "net_sales_cents": 9607260,
+    "contribution_cents": 4777612
+  },
+  {
+    "period": "Baseline",
+    "channel": "Organic search",
+    "category": "桌面配件",
+    "region": "华南",
+    "net_sales_cents": 10083608,
+    "contribution_cents": 5012497
+  },
+  {
+    "period": "Baseline",
+    "channel": "Organic search",
+    "category": "桌面配件",
+    "region": "西部",
+    "net_sales_cents": 10851075,
+    "contribution_cents": 5434547
+  },
+  {
+    "period": "Baseline",
+    "channel": "Organic search",
+    "category": "精选代销",
+    "region": "华东",
+    "net_sales_cents": 3018452,
+    "contribution_cents": 2816965
+  },
+  {
+    "period": "Baseline",
+    "channel": "Organic search",
+    "category": "精选代销",
+    "region": "华北",
+    "net_sales_cents": 1908468,
+    "contribution_cents": 1777944
+  },
+  {
+    "period": "Baseline",
+    "channel": "Organic search",
+    "category": "精选代销",
+    "region": "华南",
+    "net_sales_cents": 2978179,
+    "contribution_cents": 2765980
+  },
+  {
+    "period": "Baseline",
+    "channel": "Organic search",
+    "category": "精选代销",
+    "region": "西部",
+    "net_sales_cents": 2023128,
+    "contribution_cents": 1886819
+  },
+  {
+    "period": "Baseline",
+    "channel": "Generic search",
+    "category": "办公椅",
+    "region": "华东",
+    "net_sales_cents": 37159243,
+    "contribution_cents": 15400754
+  },
+  {
+    "period": "Baseline",
+    "channel": "Generic search",
+    "category": "办公椅",
+    "region": "华北",
+    "net_sales_cents": 22399174,
+    "contribution_cents": 9424499
+  },
+  {
+    "period": "Baseline",
+    "channel": "Generic search",
+    "category": "办公椅",
+    "region": "华南",
+    "net_sales_cents": 18009930,
+    "contribution_cents": 7547173
+  },
+  {
+    "period": "Baseline",
+    "channel": "Generic search",
+    "category": "办公椅",
+    "region": "西部",
+    "net_sales_cents": 21505033,
+    "contribution_cents": 9159956
+  },
+  {
+    "period": "Baseline",
+    "channel": "Generic search",
+    "category": "升降桌",
+    "region": "华东",
+    "net_sales_cents": 118184008,
+    "contribution_cents": 50802145
+  },
+  {
+    "period": "Baseline",
+    "channel": "Generic search",
+    "category": "升降桌",
+    "region": "华北",
+    "net_sales_cents": 61666986,
+    "contribution_cents": 26243511
+  },
+  {
+    "period": "Baseline",
+    "channel": "Generic search",
+    "category": "升降桌",
+    "region": "华南",
+    "net_sales_cents": 59604144,
+    "contribution_cents": 25387259
+  },
+  {
+    "period": "Baseline",
+    "channel": "Generic search",
+    "category": "升降桌",
+    "region": "西部",
+    "net_sales_cents": 73265766,
+    "contribution_cents": 31694556
+  },
+  {
+    "period": "Baseline",
+    "channel": "Generic search",
+    "category": "收纳",
+    "region": "华东",
+    "net_sales_cents": 1072103,
+    "contribution_cents": 464728
+  },
+  {
+    "period": "Baseline",
+    "channel": "Generic search",
+    "category": "收纳",
+    "region": "华北",
+    "net_sales_cents": 728343,
+    "contribution_cents": 316249
+  },
+  {
+    "period": "Baseline",
+    "channel": "Generic search",
+    "category": "收纳",
+    "region": "华南",
+    "net_sales_cents": 369135,
+    "contribution_cents": 160350
+  },
+  {
+    "period": "Baseline",
+    "channel": "Generic search",
+    "category": "收纳",
+    "region": "西部",
+    "net_sales_cents": 824512,
+    "contribution_cents": 363583
+  },
+  {
+    "period": "Baseline",
+    "channel": "Generic search",
+    "category": "显示器",
+    "region": "华东",
+    "net_sales_cents": 2540805,
+    "contribution_cents": 678296
+  },
+  {
+    "period": "Baseline",
+    "channel": "Generic search",
+    "category": "显示器",
+    "region": "华北",
+    "net_sales_cents": 1329613,
+    "contribution_cents": 343774
+  },
+  {
+    "period": "Baseline",
+    "channel": "Generic search",
+    "category": "显示器",
+    "region": "华南",
+    "net_sales_cents": 2342188,
+    "contribution_cents": 590149
+  },
+  {
+    "period": "Baseline",
+    "channel": "Generic search",
+    "category": "显示器",
+    "region": "西部",
+    "net_sales_cents": 2223017,
+    "contribution_cents": 577474
+  },
+  {
+    "period": "Baseline",
+    "channel": "Generic search",
+    "category": "桌面配件",
+    "region": "华东",
+    "net_sales_cents": 8170903,
+    "contribution_cents": 4026289
+  },
+  {
+    "period": "Baseline",
+    "channel": "Generic search",
+    "category": "桌面配件",
+    "region": "华北",
+    "net_sales_cents": 4615682,
+    "contribution_cents": 2274945
+  },
+  {
+    "period": "Baseline",
+    "channel": "Generic search",
+    "category": "桌面配件",
+    "region": "华南",
+    "net_sales_cents": 4291790,
+    "contribution_cents": 2126132
+  },
+  {
+    "period": "Baseline",
+    "channel": "Generic search",
+    "category": "桌面配件",
+    "region": "西部",
+    "net_sales_cents": 4290504,
+    "contribution_cents": 2100688
+  },
+  {
+    "period": "Baseline",
+    "channel": "Generic search",
+    "category": "精选代销",
+    "region": "华东",
+    "net_sales_cents": 1312758,
+    "contribution_cents": 1223070
+  },
+  {
+    "period": "Baseline",
+    "channel": "Generic search",
+    "category": "精选代销",
+    "region": "华北",
+    "net_sales_cents": 1075832,
+    "contribution_cents": 1002215
+  },
+  {
+    "period": "Baseline",
+    "channel": "Generic search",
+    "category": "精选代销",
+    "region": "华南",
+    "net_sales_cents": 570284,
+    "contribution_cents": 527736
+  },
+  {
+    "period": "Baseline",
+    "channel": "Generic search",
+    "category": "精选代销",
+    "region": "西部",
+    "net_sales_cents": 729514,
+    "contribution_cents": 676502
+  },
+  {
+    "period": "Current",
+    "channel": "Brand search",
+    "category": "办公椅",
+    "region": "华东",
+    "net_sales_cents": 24608437,
+    "contribution_cents": 8312401
+  },
+  {
+    "period": "Current",
+    "channel": "Brand search",
+    "category": "办公椅",
+    "region": "华北",
+    "net_sales_cents": 13651059,
+    "contribution_cents": 5050429
+  },
+  {
+    "period": "Current",
+    "channel": "Brand search",
+    "category": "办公椅",
+    "region": "华南",
+    "net_sales_cents": 14926446,
+    "contribution_cents": 5585225
+  },
+  {
+    "period": "Current",
+    "channel": "Brand search",
+    "category": "办公椅",
+    "region": "西部",
+    "net_sales_cents": 17164787,
+    "contribution_cents": 6581304
+  },
+  {
+    "period": "Current",
+    "channel": "Brand search",
+    "category": "升降桌",
+    "region": "华东",
+    "net_sales_cents": 57412300,
+    "contribution_cents": 23930870
+  },
+  {
+    "period": "Current",
+    "channel": "Brand search",
+    "category": "升降桌",
+    "region": "华北",
+    "net_sales_cents": 34172668,
+    "contribution_cents": 14091548
+  },
+  {
+    "period": "Current",
+    "channel": "Brand search",
+    "category": "升降桌",
+    "region": "华南",
+    "net_sales_cents": 38906711,
+    "contribution_cents": 15964791
+  },
+  {
+    "period": "Current",
+    "channel": "Brand search",
+    "category": "升降桌",
+    "region": "西部",
+    "net_sales_cents": 38366854,
+    "contribution_cents": 15708938
+  },
+  {
+    "period": "Current",
+    "channel": "Brand search",
+    "category": "收纳",
+    "region": "华东",
+    "net_sales_cents": 1532993,
+    "contribution_cents": 698603
+  },
+  {
+    "period": "Current",
+    "channel": "Brand search",
+    "category": "收纳",
+    "region": "华北",
+    "net_sales_cents": 651398,
+    "contribution_cents": 284296
+  },
+  {
+    "period": "Current",
+    "channel": "Brand search",
+    "category": "收纳",
+    "region": "华南",
+    "net_sales_cents": 972779,
+    "contribution_cents": 437081
+  },
+  {
+    "period": "Current",
+    "channel": "Brand search",
+    "category": "收纳",
+    "region": "西部",
+    "net_sales_cents": 900697,
+    "contribution_cents": 409104
+  },
+  {
+    "period": "Current",
+    "channel": "Brand search",
+    "category": "显示器",
+    "region": "华东",
+    "net_sales_cents": 10518483,
+    "contribution_cents": 2747393
+  },
+  {
+    "period": "Current",
+    "channel": "Brand search",
+    "category": "显示器",
+    "region": "华北",
+    "net_sales_cents": 2059626,
+    "contribution_cents": 524199
+  },
+  {
+    "period": "Current",
+    "channel": "Brand search",
+    "category": "显示器",
+    "region": "华南",
+    "net_sales_cents": 4250977,
+    "contribution_cents": 1075639
+  },
+  {
+    "period": "Current",
+    "channel": "Brand search",
+    "category": "显示器",
+    "region": "西部",
+    "net_sales_cents": 4281144,
+    "contribution_cents": 1108151
+  },
+  {
+    "period": "Current",
+    "channel": "Brand search",
+    "category": "桌面配件",
+    "region": "华东",
+    "net_sales_cents": 11317551,
+    "contribution_cents": 5611311
+  },
+  {
+    "period": "Current",
+    "channel": "Brand search",
+    "category": "桌面配件",
+    "region": "华北",
+    "net_sales_cents": 6382772,
+    "contribution_cents": 3222170
+  },
+  {
+    "period": "Current",
+    "channel": "Brand search",
+    "category": "桌面配件",
+    "region": "华南",
+    "net_sales_cents": 6484463,
+    "contribution_cents": 3238587
+  },
+  {
+    "period": "Current",
+    "channel": "Brand search",
+    "category": "桌面配件",
+    "region": "西部",
+    "net_sales_cents": 6874049,
+    "contribution_cents": 3340070
+  },
+  {
+    "period": "Current",
+    "channel": "Brand search",
+    "category": "精选代销",
+    "region": "华东",
+    "net_sales_cents": 3017534,
+    "contribution_cents": 2804071
+  },
+  {
+    "period": "Current",
+    "channel": "Brand search",
+    "category": "精选代销",
+    "region": "华北",
+    "net_sales_cents": 1450645,
+    "contribution_cents": 1348450
+  },
+  {
+    "period": "Current",
+    "channel": "Brand search",
+    "category": "精选代销",
+    "region": "华南",
+    "net_sales_cents": 1384732,
+    "contribution_cents": 1292584
+  },
+  {
+    "period": "Current",
+    "channel": "Brand search",
+    "category": "精选代销",
+    "region": "西部",
+    "net_sales_cents": 1772126,
+    "contribution_cents": 1653522
+  },
+  {
+    "period": "Current",
+    "channel": "Direct",
+    "category": "办公椅",
+    "region": "华东",
+    "net_sales_cents": 24378113,
+    "contribution_cents": 8597578
+  },
+  {
+    "period": "Current",
+    "channel": "Direct",
+    "category": "办公椅",
+    "region": "华北",
+    "net_sales_cents": 16076647,
+    "contribution_cents": 5576957
+  },
+  {
+    "period": "Current",
+    "channel": "Direct",
+    "category": "办公椅",
+    "region": "华南",
+    "net_sales_cents": 13374626,
+    "contribution_cents": 4786126
+  },
+  {
+    "period": "Current",
+    "channel": "Direct",
+    "category": "办公椅",
+    "region": "西部",
+    "net_sales_cents": 10486677,
+    "contribution_cents": 3509308
+  },
+  {
+    "period": "Current",
+    "channel": "Direct",
+    "category": "升降桌",
+    "region": "华东",
+    "net_sales_cents": 54456950,
+    "contribution_cents": 22981675
+  },
+  {
+    "period": "Current",
+    "channel": "Direct",
+    "category": "升降桌",
+    "region": "华北",
+    "net_sales_cents": 36874419,
+    "contribution_cents": 15053870
+  },
+  {
+    "period": "Current",
+    "channel": "Direct",
+    "category": "升降桌",
+    "region": "华南",
+    "net_sales_cents": 37985381,
+    "contribution_cents": 15939145
+  },
+  {
+    "period": "Current",
+    "channel": "Direct",
+    "category": "升降桌",
+    "region": "西部",
+    "net_sales_cents": 35648963,
+    "contribution_cents": 14550950
+  },
+  {
+    "period": "Current",
+    "channel": "Direct",
+    "category": "收纳",
+    "region": "华东",
+    "net_sales_cents": 1193551,
+    "contribution_cents": 527739
+  },
+  {
+    "period": "Current",
+    "channel": "Direct",
+    "category": "收纳",
+    "region": "华北",
+    "net_sales_cents": 929800,
+    "contribution_cents": 404375
+  },
+  {
+    "period": "Current",
+    "channel": "Direct",
+    "category": "收纳",
+    "region": "华南",
+    "net_sales_cents": 1014758,
+    "contribution_cents": 431900
+  },
+  {
+    "period": "Current",
+    "channel": "Direct",
+    "category": "收纳",
+    "region": "西部",
+    "net_sales_cents": 982971,
+    "contribution_cents": 431950
+  },
+  {
+    "period": "Current",
+    "channel": "Direct",
+    "category": "显示器",
+    "region": "华东",
+    "net_sales_cents": 6604594,
+    "contribution_cents": 1677581
+  },
+  {
+    "period": "Current",
+    "channel": "Direct",
+    "category": "显示器",
+    "region": "华北",
+    "net_sales_cents": 3128413,
+    "contribution_cents": 827886
+  },
+  {
+    "period": "Current",
+    "channel": "Direct",
+    "category": "显示器",
+    "region": "华南",
+    "net_sales_cents": 3963356,
+    "contribution_cents": 1008103
+  },
+  {
+    "period": "Current",
+    "channel": "Direct",
+    "category": "显示器",
+    "region": "西部",
+    "net_sales_cents": 4290138,
+    "contribution_cents": 1113218
+  },
+  {
+    "period": "Current",
+    "channel": "Direct",
+    "category": "桌面配件",
+    "region": "华东",
+    "net_sales_cents": 11399866,
+    "contribution_cents": 5726344
+  },
+  {
+    "period": "Current",
+    "channel": "Direct",
+    "category": "桌面配件",
+    "region": "华北",
+    "net_sales_cents": 6477532,
+    "contribution_cents": 3248728
+  },
+  {
+    "period": "Current",
+    "channel": "Direct",
+    "category": "桌面配件",
+    "region": "华南",
+    "net_sales_cents": 6168500,
+    "contribution_cents": 3064514
+  },
+  {
+    "period": "Current",
+    "channel": "Direct",
+    "category": "桌面配件",
+    "region": "西部",
+    "net_sales_cents": 6708891,
+    "contribution_cents": 3355403
+  },
+  {
+    "period": "Current",
+    "channel": "Direct",
+    "category": "精选代销",
+    "region": "华东",
+    "net_sales_cents": 2627337,
+    "contribution_cents": 2446086
+  },
+  {
+    "period": "Current",
+    "channel": "Direct",
+    "category": "精选代销",
+    "region": "华北",
+    "net_sales_cents": 1392177,
+    "contribution_cents": 1294524
+  },
+  {
+    "period": "Current",
+    "channel": "Direct",
+    "category": "精选代销",
+    "region": "华南",
+    "net_sales_cents": 1194588,
+    "contribution_cents": 1114261
+  },
+  {
+    "period": "Current",
+    "channel": "Direct",
+    "category": "精选代销",
+    "region": "西部",
+    "net_sales_cents": 1633506,
+    "contribution_cents": 1521581
+  },
+  {
+    "period": "Current",
+    "channel": "Social acquisition",
+    "category": "办公椅",
+    "region": "华东",
+    "net_sales_cents": 9784355,
+    "contribution_cents": 1469998
+  },
+  {
+    "period": "Current",
+    "channel": "Social acquisition",
+    "category": "办公椅",
+    "region": "华北",
+    "net_sales_cents": 6077494,
+    "contribution_cents": 1005650
+  },
+  {
+    "period": "Current",
+    "channel": "Social acquisition",
+    "category": "办公椅",
+    "region": "华南",
+    "net_sales_cents": 5630853,
+    "contribution_cents": 759287
+  },
+  {
+    "period": "Current",
+    "channel": "Social acquisition",
+    "category": "办公椅",
+    "region": "西部",
+    "net_sales_cents": 6398692,
+    "contribution_cents": 989179
+  },
+  {
+    "period": "Current",
+    "channel": "Social acquisition",
+    "category": "收纳",
+    "region": "华东",
+    "net_sales_cents": 251034,
+    "contribution_cents": 91014
+  },
+  {
+    "period": "Current",
+    "channel": "Social acquisition",
+    "category": "收纳",
+    "region": "华北",
+    "net_sales_cents": 113778,
+    "contribution_cents": 32100
+  },
+  {
+    "period": "Current",
+    "channel": "Social acquisition",
+    "category": "收纳",
+    "region": "华南",
+    "net_sales_cents": 159573,
+    "contribution_cents": 57044
+  },
+  {
+    "period": "Current",
+    "channel": "Social acquisition",
+    "category": "收纳",
+    "region": "西部",
+    "net_sales_cents": 90945,
+    "contribution_cents": 29680
+  },
+  {
+    "period": "Current",
+    "channel": "Social acquisition",
+    "category": "桌面配件",
+    "region": "华东",
+    "net_sales_cents": 2494579,
+    "contribution_cents": 1003443
+  },
+  {
+    "period": "Current",
+    "channel": "Social acquisition",
+    "category": "桌面配件",
+    "region": "华北",
+    "net_sales_cents": 1315620,
+    "contribution_cents": 502616
+  },
+  {
+    "period": "Current",
+    "channel": "Social acquisition",
+    "category": "桌面配件",
+    "region": "华南",
+    "net_sales_cents": 1745087,
+    "contribution_cents": 677703
+  },
+  {
+    "period": "Current",
+    "channel": "Social acquisition",
+    "category": "桌面配件",
+    "region": "西部",
+    "net_sales_cents": 1625387,
+    "contribution_cents": 611492
+  },
+  {
+    "period": "Current",
+    "channel": "Social acquisition",
+    "category": "精选代销",
+    "region": "华东",
+    "net_sales_cents": 22201484,
+    "contribution_cents": 20442166
+  },
+  {
+    "period": "Current",
+    "channel": "Social acquisition",
+    "category": "精选代销",
+    "region": "华北",
+    "net_sales_cents": 12978077,
+    "contribution_cents": 11974484
+  },
+  {
+    "period": "Current",
+    "channel": "Social acquisition",
+    "category": "精选代销",
+    "region": "华南",
+    "net_sales_cents": 14543649,
+    "contribution_cents": 13394403
+  },
+  {
+    "period": "Current",
+    "channel": "Social acquisition",
+    "category": "精选代销",
+    "region": "西部",
+    "net_sales_cents": 12671226,
+    "contribution_cents": 11672041
+  },
+  {
+    "period": "Current",
+    "channel": "Social retargeting",
+    "category": "办公椅",
+    "region": "华东",
+    "net_sales_cents": 17101739,
+    "contribution_cents": 6386167
+  },
+  {
+    "period": "Current",
+    "channel": "Social retargeting",
+    "category": "办公椅",
+    "region": "华北",
+    "net_sales_cents": 7212555,
+    "contribution_cents": 2754723
+  },
+  {
+    "period": "Current",
+    "channel": "Social retargeting",
+    "category": "办公椅",
+    "region": "华南",
+    "net_sales_cents": 7470669,
+    "contribution_cents": 2708040
+  },
+  {
+    "period": "Current",
+    "channel": "Social retargeting",
+    "category": "办公椅",
+    "region": "西部",
+    "net_sales_cents": 9416666,
+    "contribution_cents": 3419532
+  },
+  {
+    "period": "Current",
+    "channel": "Social retargeting",
+    "category": "升降桌",
+    "region": "华东",
+    "net_sales_cents": 30542155,
+    "contribution_cents": 12874843
+  },
+  {
+    "period": "Current",
+    "channel": "Social retargeting",
+    "category": "升降桌",
+    "region": "华北",
+    "net_sales_cents": 18198601,
+    "contribution_cents": 7481626
+  },
+  {
+    "period": "Current",
+    "channel": "Social retargeting",
+    "category": "升降桌",
+    "region": "华南",
+    "net_sales_cents": 20638591,
+    "contribution_cents": 8448263
+  },
+  {
+    "period": "Current",
+    "channel": "Social retargeting",
+    "category": "升降桌",
+    "region": "西部",
+    "net_sales_cents": 28718753,
+    "contribution_cents": 11742035
+  },
+  {
+    "period": "Current",
+    "channel": "Social retargeting",
+    "category": "收纳",
+    "region": "华东",
+    "net_sales_cents": 639956,
+    "contribution_cents": 289319
+  },
+  {
+    "period": "Current",
+    "channel": "Social retargeting",
+    "category": "收纳",
+    "region": "华北",
+    "net_sales_cents": 344274,
+    "contribution_cents": 151747
+  },
+  {
+    "period": "Current",
+    "channel": "Social retargeting",
+    "category": "收纳",
+    "region": "华南",
+    "net_sales_cents": 502845,
+    "contribution_cents": 232117
+  },
+  {
+    "period": "Current",
+    "channel": "Social retargeting",
+    "category": "收纳",
+    "region": "西部",
+    "net_sales_cents": 328388,
+    "contribution_cents": 145684
+  },
+  {
+    "period": "Current",
+    "channel": "Social retargeting",
+    "category": "显示器",
+    "region": "华东",
+    "net_sales_cents": 3414722,
+    "contribution_cents": 895634
+  },
+  {
+    "period": "Current",
+    "channel": "Social retargeting",
+    "category": "显示器",
+    "region": "华北",
+    "net_sales_cents": 2914056,
+    "contribution_cents": 727422
+  },
+  {
+    "period": "Current",
+    "channel": "Social retargeting",
+    "category": "显示器",
+    "region": "华南",
+    "net_sales_cents": 3575115,
+    "contribution_cents": 953486
+  },
+  {
+    "period": "Current",
+    "channel": "Social retargeting",
+    "category": "显示器",
+    "region": "西部",
+    "net_sales_cents": 1032811,
+    "contribution_cents": 264500
+  },
+  {
+    "period": "Current",
+    "channel": "Social retargeting",
+    "category": "桌面配件",
+    "region": "华东",
+    "net_sales_cents": 4906901,
+    "contribution_cents": 2452062
+  },
+  {
+    "period": "Current",
+    "channel": "Social retargeting",
+    "category": "桌面配件",
+    "region": "华北",
+    "net_sales_cents": 3029572,
+    "contribution_cents": 1485840
+  },
+  {
+    "period": "Current",
+    "channel": "Social retargeting",
+    "category": "桌面配件",
+    "region": "华南",
+    "net_sales_cents": 3745578,
+    "contribution_cents": 1814713
+  },
+  {
+    "period": "Current",
+    "channel": "Social retargeting",
+    "category": "桌面配件",
+    "region": "西部",
+    "net_sales_cents": 3263888,
+    "contribution_cents": 1627758
+  },
+  {
+    "period": "Current",
+    "channel": "Social retargeting",
+    "category": "精选代销",
+    "region": "华东",
+    "net_sales_cents": 1670353,
+    "contribution_cents": 1554969
+  },
+  {
+    "period": "Current",
+    "channel": "Social retargeting",
+    "category": "精选代销",
+    "region": "华北",
+    "net_sales_cents": 681333,
+    "contribution_cents": 634784
+  },
+  {
+    "period": "Current",
+    "channel": "Social retargeting",
+    "category": "精选代销",
+    "region": "华南",
+    "net_sales_cents": 568948,
+    "contribution_cents": 530393
+  },
+  {
+    "period": "Current",
+    "channel": "Social retargeting",
+    "category": "精选代销",
+    "region": "西部",
+    "net_sales_cents": 348183,
+    "contribution_cents": 322859
+  },
+  {
+    "period": "Current",
+    "channel": "Offline",
+    "category": "办公椅",
+    "region": "华东",
+    "net_sales_cents": 12417713,
+    "contribution_cents": 4528367
+  },
+  {
+    "period": "Current",
+    "channel": "Offline",
+    "category": "办公椅",
+    "region": "华北",
+    "net_sales_cents": 6932569,
+    "contribution_cents": 2675980
+  },
+  {
+    "period": "Current",
+    "channel": "Offline",
+    "category": "办公椅",
+    "region": "华南",
+    "net_sales_cents": 7797280,
+    "contribution_cents": 3028278
+  },
+  {
+    "period": "Current",
+    "channel": "Offline",
+    "category": "办公椅",
+    "region": "西部",
+    "net_sales_cents": 7875131,
+    "contribution_cents": 3008223
+  },
+  {
+    "period": "Current",
+    "channel": "Offline",
+    "category": "升降桌",
+    "region": "华东",
+    "net_sales_cents": 27388111,
+    "contribution_cents": 11474580
+  },
+  {
+    "period": "Current",
+    "channel": "Offline",
+    "category": "升降桌",
+    "region": "华北",
+    "net_sales_cents": 19718434,
+    "contribution_cents": 7950872
+  },
+  {
+    "period": "Current",
+    "channel": "Offline",
+    "category": "升降桌",
+    "region": "华南",
+    "net_sales_cents": 23072124,
+    "contribution_cents": 9308160
+  },
+  {
+    "period": "Current",
+    "channel": "Offline",
+    "category": "升降桌",
+    "region": "西部",
+    "net_sales_cents": 21861421,
+    "contribution_cents": 9037688
+  },
+  {
+    "period": "Current",
+    "channel": "Offline",
+    "category": "收纳",
+    "region": "华东",
+    "net_sales_cents": 869623,
+    "contribution_cents": 390086
+  },
+  {
+    "period": "Current",
+    "channel": "Offline",
+    "category": "收纳",
+    "region": "华北",
+    "net_sales_cents": 641282,
+    "contribution_cents": 248396
+  },
+  {
+    "period": "Current",
+    "channel": "Offline",
+    "category": "收纳",
+    "region": "华南",
+    "net_sales_cents": 219167,
+    "contribution_cents": 81123
+  },
+  {
+    "period": "Current",
+    "channel": "Offline",
+    "category": "收纳",
+    "region": "西部",
+    "net_sales_cents": 516083,
+    "contribution_cents": 239169
+  },
+  {
+    "period": "Current",
+    "channel": "Offline",
+    "category": "显示器",
+    "region": "华东",
+    "net_sales_cents": 2639739,
+    "contribution_cents": 667288
+  },
+  {
+    "period": "Current",
+    "channel": "Offline",
+    "category": "显示器",
+    "region": "华北",
+    "net_sales_cents": 1025316,
+    "contribution_cents": 251690
+  },
+  {
+    "period": "Current",
+    "channel": "Offline",
+    "category": "显示器",
+    "region": "华南",
+    "net_sales_cents": 899400,
+    "contribution_cents": 241256
+  },
+  {
+    "period": "Current",
+    "channel": "Offline",
+    "category": "显示器",
+    "region": "西部",
+    "net_sales_cents": 3074449,
+    "contribution_cents": 778172
+  },
+  {
+    "period": "Current",
+    "channel": "Offline",
+    "category": "桌面配件",
+    "region": "华东",
+    "net_sales_cents": 5644390,
+    "contribution_cents": 2771952
+  },
+  {
+    "period": "Current",
+    "channel": "Offline",
+    "category": "桌面配件",
+    "region": "华北",
+    "net_sales_cents": 3815092,
+    "contribution_cents": 1889430
+  },
+  {
+    "period": "Current",
+    "channel": "Offline",
+    "category": "桌面配件",
+    "region": "华南",
+    "net_sales_cents": 3451872,
+    "contribution_cents": 1694296
+  },
+  {
+    "period": "Current",
+    "channel": "Offline",
+    "category": "桌面配件",
+    "region": "西部",
+    "net_sales_cents": 4248638,
+    "contribution_cents": 2095978
+  },
+  {
+    "period": "Current",
+    "channel": "Offline",
+    "category": "精选代销",
+    "region": "华东",
+    "net_sales_cents": 1084697,
+    "contribution_cents": 1015916
+  },
+  {
+    "period": "Current",
+    "channel": "Offline",
+    "category": "精选代销",
+    "region": "华北",
+    "net_sales_cents": 787409,
+    "contribution_cents": 737016
+  },
+  {
+    "period": "Current",
+    "channel": "Offline",
+    "category": "精选代销",
+    "region": "华南",
+    "net_sales_cents": 732389,
+    "contribution_cents": 687512
+  },
+  {
+    "period": "Current",
+    "channel": "Offline",
+    "category": "精选代销",
+    "region": "西部",
+    "net_sales_cents": 809824,
+    "contribution_cents": 752395
+  },
+  {
+    "period": "Current",
+    "channel": "Organic search",
+    "category": "办公椅",
+    "region": "华东",
+    "net_sales_cents": 37373681,
+    "contribution_cents": 13705631
+  },
+  {
+    "period": "Current",
+    "channel": "Organic search",
+    "category": "办公椅",
+    "region": "华北",
+    "net_sales_cents": 19263518,
+    "contribution_cents": 6902316
+  },
+  {
+    "period": "Current",
+    "channel": "Organic search",
+    "category": "办公椅",
+    "region": "华南",
+    "net_sales_cents": 20663166,
+    "contribution_cents": 7411621
+  },
+  {
+    "period": "Current",
+    "channel": "Organic search",
+    "category": "办公椅",
+    "region": "西部",
+    "net_sales_cents": 20528053,
+    "contribution_cents": 7645120
+  },
+  {
+    "period": "Current",
+    "channel": "Organic search",
+    "category": "升降桌",
+    "region": "华东",
+    "net_sales_cents": 77444487,
+    "contribution_cents": 31455331
+  },
+  {
+    "period": "Current",
+    "channel": "Organic search",
+    "category": "升降桌",
+    "region": "华北",
+    "net_sales_cents": 49363654,
+    "contribution_cents": 20279090
+  },
+  {
+    "period": "Current",
+    "channel": "Organic search",
+    "category": "升降桌",
+    "region": "华南",
+    "net_sales_cents": 48812923,
+    "contribution_cents": 19731832
+  },
+  {
+    "period": "Current",
+    "channel": "Organic search",
+    "category": "升降桌",
+    "region": "西部",
+    "net_sales_cents": 46789808,
+    "contribution_cents": 18735844
+  },
+  {
+    "period": "Current",
+    "channel": "Organic search",
+    "category": "收纳",
+    "region": "华东",
+    "net_sales_cents": 2388510,
+    "contribution_cents": 1031465
+  },
+  {
+    "period": "Current",
+    "channel": "Organic search",
+    "category": "收纳",
+    "region": "华北",
+    "net_sales_cents": 1135502,
+    "contribution_cents": 499134
+  },
+  {
+    "period": "Current",
+    "channel": "Organic search",
+    "category": "收纳",
+    "region": "华南",
+    "net_sales_cents": 1056650,
+    "contribution_cents": 477223
+  },
+  {
+    "period": "Current",
+    "channel": "Organic search",
+    "category": "收纳",
+    "region": "西部",
+    "net_sales_cents": 1369400,
+    "contribution_cents": 600493
+  },
+  {
+    "period": "Current",
+    "channel": "Organic search",
+    "category": "显示器",
+    "region": "华东",
+    "net_sales_cents": 7821970,
+    "contribution_cents": 2017657
+  },
+  {
+    "period": "Current",
+    "channel": "Organic search",
+    "category": "显示器",
+    "region": "华北",
+    "net_sales_cents": 3844935,
+    "contribution_cents": 886774
+  },
+  {
+    "period": "Current",
+    "channel": "Organic search",
+    "category": "显示器",
+    "region": "华南",
+    "net_sales_cents": 4276647,
+    "contribution_cents": 983861
+  },
+  {
+    "period": "Current",
+    "channel": "Organic search",
+    "category": "显示器",
+    "region": "西部",
+    "net_sales_cents": 6935873,
+    "contribution_cents": 1792705
+  },
+  {
+    "period": "Current",
+    "channel": "Organic search",
+    "category": "桌面配件",
+    "region": "华东",
+    "net_sales_cents": 14813265,
+    "contribution_cents": 7404193
+  },
+  {
+    "period": "Current",
+    "channel": "Organic search",
+    "category": "桌面配件",
+    "region": "华北",
+    "net_sales_cents": 9983444,
+    "contribution_cents": 4908275
+  },
+  {
+    "period": "Current",
+    "channel": "Organic search",
+    "category": "桌面配件",
+    "region": "华南",
+    "net_sales_cents": 9294763,
+    "contribution_cents": 4632737
+  },
+  {
+    "period": "Current",
+    "channel": "Organic search",
+    "category": "桌面配件",
+    "region": "西部",
+    "net_sales_cents": 8257887,
+    "contribution_cents": 4141298
+  },
+  {
+    "period": "Current",
+    "channel": "Organic search",
+    "category": "精选代销",
+    "region": "华东",
+    "net_sales_cents": 2673842,
+    "contribution_cents": 2486027
+  },
+  {
+    "period": "Current",
+    "channel": "Organic search",
+    "category": "精选代销",
+    "region": "华北",
+    "net_sales_cents": 2067903,
+    "contribution_cents": 1919707
+  },
+  {
+    "period": "Current",
+    "channel": "Organic search",
+    "category": "精选代销",
+    "region": "华南",
+    "net_sales_cents": 1843093,
+    "contribution_cents": 1714698
+  },
+  {
+    "period": "Current",
+    "channel": "Organic search",
+    "category": "精选代销",
+    "region": "西部",
+    "net_sales_cents": 2507039,
+    "contribution_cents": 2338825
+  },
+  {
+    "period": "Current",
+    "channel": "Generic search",
+    "category": "办公椅",
+    "region": "华东",
+    "net_sales_cents": 38310770,
+    "contribution_cents": 14578001
+  },
+  {
+    "period": "Current",
+    "channel": "Generic search",
+    "category": "办公椅",
+    "region": "华北",
+    "net_sales_cents": 19627295,
+    "contribution_cents": 7599272
+  },
+  {
+    "period": "Current",
+    "channel": "Generic search",
+    "category": "办公椅",
+    "region": "华南",
+    "net_sales_cents": 24008115,
+    "contribution_cents": 9600808
+  },
+  {
+    "period": "Current",
+    "channel": "Generic search",
+    "category": "办公椅",
+    "region": "西部",
+    "net_sales_cents": 19344855,
+    "contribution_cents": 7823164
+  },
+  {
+    "period": "Current",
+    "channel": "Generic search",
+    "category": "升降桌",
+    "region": "华东",
+    "net_sales_cents": 90569875,
+    "contribution_cents": 37651404
+  },
+  {
+    "period": "Current",
+    "channel": "Generic search",
+    "category": "升降桌",
+    "region": "华北",
+    "net_sales_cents": 59742327,
+    "contribution_cents": 24857901
+  },
+  {
+    "period": "Current",
+    "channel": "Generic search",
+    "category": "升降桌",
+    "region": "华南",
+    "net_sales_cents": 62389292,
+    "contribution_cents": 25743231
+  },
+  {
+    "period": "Current",
+    "channel": "Generic search",
+    "category": "升降桌",
+    "region": "西部",
+    "net_sales_cents": 65202859,
+    "contribution_cents": 26843515
+  },
+  {
+    "period": "Current",
+    "channel": "Generic search",
+    "category": "收纳",
+    "region": "华东",
+    "net_sales_cents": 942854,
+    "contribution_cents": 408796
+  },
+  {
+    "period": "Current",
+    "channel": "Generic search",
+    "category": "收纳",
+    "region": "华北",
+    "net_sales_cents": 342760,
+    "contribution_cents": 150463
+  },
+  {
+    "period": "Current",
+    "channel": "Generic search",
+    "category": "收纳",
+    "region": "华南",
+    "net_sales_cents": 501948,
+    "contribution_cents": 212523
+  },
+  {
+    "period": "Current",
+    "channel": "Generic search",
+    "category": "收纳",
+    "region": "西部",
+    "net_sales_cents": 632395,
+    "contribution_cents": 274526
+  },
+  {
+    "period": "Current",
+    "channel": "Generic search",
+    "category": "显示器",
+    "region": "华东",
+    "net_sales_cents": 4311124,
+    "contribution_cents": 1144409
+  },
+  {
+    "period": "Current",
+    "channel": "Generic search",
+    "category": "显示器",
+    "region": "华北",
+    "net_sales_cents": 1941205,
+    "contribution_cents": 517692
+  },
+  {
+    "period": "Current",
+    "channel": "Generic search",
+    "category": "显示器",
+    "region": "华南",
+    "net_sales_cents": 2217021,
+    "contribution_cents": 574270
+  },
+  {
+    "period": "Current",
+    "channel": "Generic search",
+    "category": "显示器",
+    "region": "西部",
+    "net_sales_cents": 1328114,
+    "contribution_cents": 231159
+  },
+  {
+    "period": "Current",
+    "channel": "Generic search",
+    "category": "桌面配件",
+    "region": "华东",
+    "net_sales_cents": 7131791,
+    "contribution_cents": 3450902
+  },
+  {
+    "period": "Current",
+    "channel": "Generic search",
+    "category": "桌面配件",
+    "region": "华北",
+    "net_sales_cents": 3583586,
+    "contribution_cents": 1773842
+  },
+  {
+    "period": "Current",
+    "channel": "Generic search",
+    "category": "桌面配件",
+    "region": "华南",
+    "net_sales_cents": 4623478,
+    "contribution_cents": 2284341
+  },
+  {
+    "period": "Current",
+    "channel": "Generic search",
+    "category": "桌面配件",
+    "region": "西部",
+    "net_sales_cents": 4304727,
+    "contribution_cents": 2126740
+  },
+  {
+    "period": "Current",
+    "channel": "Generic search",
+    "category": "精选代销",
+    "region": "华东",
+    "net_sales_cents": 1259808,
+    "contribution_cents": 1175245
+  },
+  {
+    "period": "Current",
+    "channel": "Generic search",
+    "category": "精选代销",
+    "region": "华北",
+    "net_sales_cents": 520579,
+    "contribution_cents": 483098
+  },
+  {
+    "period": "Current",
+    "channel": "Generic search",
+    "category": "精选代销",
+    "region": "华南",
+    "net_sales_cents": 512183,
+    "contribution_cents": 477739
+  },
+  {
+    "period": "Current",
+    "channel": "Generic search",
+    "category": "精选代销",
+    "region": "西部",
+    "net_sales_cents": 867088,
+    "contribution_cents": 805544
+  }
+]

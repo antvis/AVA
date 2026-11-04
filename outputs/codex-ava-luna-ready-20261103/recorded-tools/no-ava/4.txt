@@ -1,0 +1,13 @@
+
+ 2026-08
+completed 5528 gross 7067713.25 refund 229237.49 net 6838475.76
+paid 221 gross 183579.45 refund 0.0 net 183579.45
+shipped 154 gross 135917.25 refund 0.0 net 135917.25
+
+ 2026-09
+completed 4626 gross 5302522.1 refund 146230.57 net 5156291.53
+paid 1218 gross 2998964.55 refund 0.0 net 2998964.55
+shipped 172 gross 137686.25 refund 0.0 net 137686.25
+by business_model customer only
+2026-08 {'consignment': 2242460.5000000256, 'self_operated': 4498226.549999975}
+2026-09 {'consignment': 1192945.1500000055, 'self_operated': 6611052.909999873}

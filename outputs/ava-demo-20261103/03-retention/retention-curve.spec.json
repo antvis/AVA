@@ -1,0 +1,51 @@
+{
+  "chartType": "line",
+  "config": {
+    "type": "line",
+    "title": "注册队列留存 前期7月1至14日 近期7月22日至8月4日",
+    "data": [
+      {
+        "time": "D0",
+        "value": 100,
+        "group": "前期"
+      },
+      {
+        "time": "D1",
+        "value": 70,
+        "group": "前期"
+      },
+      {
+        "time": "D3",
+        "value": 60,
+        "group": "前期"
+      },
+      {
+        "time": "D7",
+        "value": 50,
+        "group": "前期"
+      },
+      {
+        "time": "D0",
+        "value": 100,
+        "group": "近期"
+      },
+      {
+        "time": "D1",
+        "value": 50,
+        "group": "近期"
+      },
+      {
+        "time": "D3",
+        "value": 40,
+        "group": "近期"
+      },
+      {
+        "time": "D7",
+        "value": 30,
+        "group": "近期"
+      }
+    ],
+    "axisXTitle": "注册后天数",
+    "axisYTitle": "留存率 %"
+  }
+}

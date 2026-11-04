@@ -1,0 +1,12 @@
+/bin/zsh -lc "python3 - <<'PY'
+import csv,collections
+p='inputs/sales.csv'
+with open(p, newline='',encoding='utf-8-sig') as f:
+ rows=list(csv.DictReader(f))
+print('rows',len(rows))
+for field in ['status','order_kind','business_model']:
+ print(field,collections.Counter(r[field] for r in rows))
+for m in ['2026-08','2026-09']:
+ rr=[r for r in rows if r['paid_at'].startswith(m)]
+ print(m,len(rr), sorted(set(r['status'] for r in rr)),sum(float(r['line_paid_amount'] or 0)-float(r['refund_amount'] or 0) for r in rr))
+PY"

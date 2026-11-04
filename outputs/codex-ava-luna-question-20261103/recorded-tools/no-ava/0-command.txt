@@ -1,0 +1,1 @@
+/bin/zsh -lc "pwd && rg --files -g '"'!*'"'"

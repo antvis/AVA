@@ -1,0 +1,13 @@
+{
+  "inputTokens": 25373,
+  "inputTokenDetails": {
+    "noCacheTokens": 13917,
+    "cacheReadTokens": 11456
+  },
+  "outputTokens": 3771,
+  "outputTokenDetails": {
+    "textTokens": 3771,
+    "reasoningTokens": 0
+  },
+  "totalTokens": 29144
+}

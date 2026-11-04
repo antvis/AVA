@@ -1,0 +1,72 @@
+{
+  "success": true,
+  "kind": "asset",
+  "page": 1,
+  "size": 10,
+  "total": 148,
+  "condition": {
+    "dimensions": []
+  },
+  "items": [
+    {
+      "gmtCreate": "2026-11-03T08:45:38.000Z",
+      "assetId": "AI_mzeQ4jyGjc4Sl",
+      "name": "comparison-final.png",
+      "assetUrl": "https://mdn.alipayobjects.com/huamei_aphk1k/afts/img/A*s2nORpp9I_UAAAAAZeAAAAgAegfkAQ/original"
+    },
+    {
+      "gmtCreate": "2026-11-02T13:35:09.000Z",
+      "assetId": "AI_L7xqMlvALRWMb",
+      "name": "codex-clipboard-34b8fa32-2689-498f-9834-9c356a22cdb7.png",
+      "assetUrl": "https://mdn.alipayobjects.com/huamei_aphk1k/afts/img/A*XjhtSbWcb70AAAAAUlAAAAgAegfkAQ/original"
+    },
+    {
+      "gmtCreate": "2026-11-02T11:52:50.000Z",
+      "assetId": "AI_zDvx0dm2WsUvQ",
+      "name": "feishu.svg",
+      "assetUrl": "https://mdn.alipayobjects.com/huamei_aphk1k/afts/img/A*Rly3Rou8Wv8AAAAAQFAAAAgAegfkAQ/original"
+    },
+    {
+      "gmtCreate": "2026-11-02T11:13:14.000Z",
+      "assetId": "AI_O9vdPjuzeUJtJ",
+      "name": "clickhouse.svg",
+      "assetUrl": "https://mdn.alipayobjects.com/huamei_aphk1k/afts/img/A*o0VuQ5NvHZ8AAAAAELAAAAgAegfkAQ/original"
+    },
+    {
+      "gmtCreate": "2026-11-02T11:12:28.000Z",
+      "assetId": "AI_uiEfHVq1Lo8ZG",
+      "name": "supabase.svg",
+      "assetUrl": "https://mdn.alipayobjects.com/huamei_aphk1k/afts/img/A*IWbeTqNDuu4AAAAAFFAAAAgAegfkAQ/original"
+    },
+    {
+      "gmtCreate": "2026-11-02T11:11:45.000Z",
+      "assetId": "AI_HtOhSzWT2RwJU",
+      "name": "mongodb.svg",
+      "assetUrl": "https://mdn.alipayobjects.com/huamei_aphk1k/afts/img/A*5VYbTakXL7EAAAAAIlAAAAgAegfkAQ/original"
+    },
+    {
+      "gmtCreate": "2026-11-02T11:11:03.000Z",
+      "assetId": "AI_3karI3Tl2YqLz",
+      "name": "sql-server.svg",
+      "assetUrl": "https://mdn.alipayobjects.com/huamei_aphk1k/afts/img/A*XVBPSaYT6p0AAAAAQJAAAAgAegfkAQ/original"
+    },
+    {
+      "gmtCreate": "2026-11-02T11:10:20.000Z",
+      "assetId": "AI_oq0TaCHjPEOsk",
+      "name": "postgresql.svg",
+      "assetUrl": "https://mdn.alipayobjects.com/huamei_aphk1k/afts/img/A*h6xsS5N0EbcAAAAAQFAAAAgAegfkAQ/original"
+    },
+    {
+      "gmtCreate": "2026-11-02T11:09:37.000Z",
+      "assetId": "AI_8p5fdWtfFJufX",
+      "name": "mysql.svg",
+      "assetUrl": "https://mdn.alipayobjects.com/huamei_aphk1k/afts/img/A*8TDeSpgXAi0AAAAAQEAAAAgAegfkAQ/original"
+    },
+    {
+      "gmtCreate": "2026-11-02T11:08:55.000Z",
+      "assetId": "AI_EUZoOlu6l3Elh",
+      "name": "sqlite.svg",
+      "assetUrl": "https://mdn.alipayobjects.com/huamei_aphk1k/afts/img/A*3xulRYi0wWkAAAAAQBAAAAgAegfkAQ/original"
+    }
+  ]
+}

@@ -1,0 +1,306 @@
+{
+  "description": "财务经营月报的订单明细合成数据，不是真实企业。本项目财务经营月报将“净销售额”定义为已履约外部客户订单的确认收入：仅order_kind=customer_sale且status=completed，按completed_at自然月归属。自营确认本行全部实付减退款；代销只确认对应佣金，不能将代销货款全额视为公司收入。每行确认金额=ROUND(line_paid_amount*commission_rate,2)-ROUND(COALESCE(refund_amount,0)*commission_rate,2)，先分别按行四舍五入到分再汇总。退款快照截至2026-10-05，按原履约月份回记，不按refunded_at另分月份。有效订单为上述范围内order_id去重；净客单价=净销售额/有效订单数。",
+  "properties": {
+    "grain": "每行是一条订单商品明细；line_id唯一，order_id跨行重复。order_paid_amount在每个订单的所有明细重复；销售金额必须按line_paid_amount计算，有效订单必须COUNT(DISTINCT order_id)，不能COUNT(*)。",
+    "ownership": "销售归因一律使用selling_region→selling_city→selling_store_id。fulfillment_*只表示履约地点，跨城市集中履约不能改变销售责任门店。商品层级为category→subcategory→product_id。",
+    "comparisons": "完整自然月。8月31天、9月30天，跨月记录按本报表约定的日期归属；同比/环比由期间总额计算。金额变化额=本期-上期，按绝对变化额定位来源，保留增长抵消项，各互斥分组应加总等于父节点，跨维度贡献不能相加。净客单价由总金额除总有效订单数，不平均明细或门店客单价。",
+    "limitations": "表中没有流量、库存、投放或业务事件记录。可以定位变化来源，不能把订单变化直接解释成缺货或投放变化。"
+  },
+  "models": [
+    {
+      "name": "data",
+      "tableReference": {
+        "catalog": "memory",
+        "schema": "main",
+        "table": "data"
+      },
+      "primaryKey": "line_id",
+      "columns": [
+        {
+          "name": "order_id",
+          "type": "VARCHAR",
+          "properties": {
+            "description": "订单号。跨明细行重复，不是本表主键。"
+          }
+        },
+        {
+          "name": "line_id",
+          "type": "VARCHAR",
+          "properties": {
+            "description": "订单明细行全局唯一编号，本表主键。"
+          }
+        },
+        {
+          "name": "ordered_at",
+          "type": "DATE",
+          "properties": {
+            "description": "下单日期，不能自动等同支付或收入确认日期。"
+          }
+        },
+        {
+          "name": "paid_at",
+          "type": "DATE",
+          "properties": {
+            "description": "实际支付日期；未支付、取消订单为空。"
+          }
+        },
+        {
+          "name": "completed_at",
+          "type": "DATE",
+          "properties": {
+            "description": "履约完成日期；尚未履约或取消订单为空。"
+          }
+        },
+        {
+          "name": "status",
+          "type": "VARCHAR",
+          "properties": {
+            "description": "订单状态：completed履约完成，shipped已发货，paid已支付未发货，pending待支付，cancelled已取消。退款不改写履约状态。"
+          }
+        },
+        {
+          "name": "order_kind",
+          "type": "VARCHAR",
+          "properties": {
+            "description": "customer_sale为外部客户销售，internal_test为系统测试，replacement为无新增收入的换货补发。后两类金额为非收入记录的业务标价或测试款。"
+          }
+        },
+        {
+          "name": "business_model",
+          "type": "VARCHAR",
+          "properties": {
+            "description": "self_operated为自营，consignment为代销。报表确认全额货款还是佣金，由具体报表口径决定。"
+          }
+        },
+        {
+          "name": "selling_region",
+          "type": "VARCHAR",
+          "properties": {
+            "description": "销售责任大区"
+          }
+        },
+        {
+          "name": "selling_city",
+          "type": "VARCHAR",
+          "properties": {
+            "description": "销售责任城市"
+          }
+        },
+        {
+          "name": "selling_store_id",
+          "type": "VARCHAR",
+          "properties": {
+            "description": "销售责任门店编码"
+          }
+        },
+        {
+          "name": "selling_store_name",
+          "type": "VARCHAR",
+          "properties": {
+            "description": "销售责任门店名称"
+          }
+        },
+        {
+          "name": "fulfillment_region",
+          "type": "VARCHAR",
+          "properties": {
+            "description": "履约大区"
+          }
+        },
+        {
+          "name": "fulfillment_city",
+          "type": "VARCHAR",
+          "properties": {
+            "description": "履约城市"
+          }
+        },
+        {
+          "name": "fulfillment_store_id",
+          "type": "VARCHAR",
+          "properties": {
+            "description": "履约门店编码"
+          }
+        },
+        {
+          "name": "fulfillment_store_name",
+          "type": "VARCHAR",
+          "properties": {
+            "description": "履约门店名称"
+          }
+        },
+        {
+          "name": "category",
+          "type": "VARCHAR",
+          "properties": {
+            "description": "商品一级品类。"
+          }
+        },
+        {
+          "name": "subcategory",
+          "type": "VARCHAR",
+          "properties": {
+            "description": "商品二级品类。"
+          }
+        },
+        {
+          "name": "product_id",
+          "type": "VARCHAR",
+          "properties": {
+            "description": "商品SKU编码。"
+          }
+        },
+        {
+          "name": "product_name",
+          "type": "VARCHAR",
+          "properties": {
+            "description": "SKU名称。"
+          }
+        },
+        {
+          "name": "channel",
+          "type": "VARCHAR",
+          "properties": {
+            "description": "销售渠道：线上商城或线下门店。"
+          }
+        },
+        {
+          "name": "quantity",
+          "type": "BIGINT",
+          "properties": {
+            "description": "本明细行原购买件数，未扣退货。"
+          }
+        },
+        {
+          "name": "unit_price",
+          "type": "BIGINT",
+          "properties": {
+            "description": "本明细行商品标价单价，单位人民币元。"
+          }
+        },
+        {
+          "name": "discount_amount",
+          "type": "DOUBLE",
+          "properties": {
+            "description": "本明细行总优惠金额，单位元。"
+          }
+        },
+        {
+          "name": "line_paid_amount",
+          "type": "DOUBLE",
+          "properties": {
+            "description": "本明细行实际支付金额，优惠后、退款前，单位元。不是订单总额。"
+          }
+        },
+        {
+          "name": "refund_amount",
+          "type": "DOUBLE",
+          "properties": {
+            "description": "截至2026-10-05本明细行累计退款，单位元；空值按0。"
+          }
+        },
+        {
+          "name": "refunded_at",
+          "type": "DATE",
+          "properties": {
+            "description": "本明细行退款发生日；每行最多一笔退款，没有退款时为空。"
+          }
+        },
+        {
+          "name": "commission_rate",
+          "type": "DOUBLE",
+          "properties": {
+            "description": "代销佣金比例，例如0.03表示3%；自营行为1。"
+          }
+        },
+        {
+          "name": "order_paid_amount",
+          "type": "DOUBLE",
+          "properties": {
+            "description": "整笔订单支付总额，在该订单每条明细行重复，不能跨行直接求和。"
+          }
+        }
+      ]
+    }
+  ],
+  "cubes": [
+    {
+      "name": "sales",
+      "baseObject": "data",
+      "measures": [
+        {
+          "name": "net_revenue",
+          "expression": "SUM(CASE WHEN order_kind='customer_sale' AND status IN ('completed') THEN (ROUND(CAST(line_paid_amount AS DECIMAL(18,2))*CAST(commission_rate AS DECIMAL(6,4)),2)-ROUND(COALESCE(CAST(refund_amount AS DECIMAL(18,2)),0)*CAST(commission_rate AS DECIMAL(6,4)),2)) ELSE 0 END)",
+          "type": "DOUBLE",
+          "description": "按本报表口径定义的净销售额，人民币元。"
+        },
+        {
+          "name": "order_count",
+          "expression": "COUNT(DISTINCT CASE WHEN order_kind='customer_sale' AND status IN ('completed') THEN order_id END)",
+          "type": "BIGINT",
+          "description": "按本报表口径去重后的有效订单数。"
+        }
+      ],
+      "dimensions": [
+        {
+          "name": "selling_region",
+          "expression": "selling_region",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "selling_city",
+          "expression": "selling_city",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "selling_store_id",
+          "expression": "selling_store_id",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "category",
+          "expression": "category",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "subcategory",
+          "expression": "subcategory",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "product_id",
+          "expression": "product_id",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "channel",
+          "expression": "channel",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "business_model",
+          "expression": "business_model",
+          "type": "VARCHAR"
+        }
+      ],
+      "timeDimensions": [
+        {
+          "name": "report_date",
+          "expression": "CAST(completed_at AS DATE)",
+          "type": "DATE"
+        }
+      ],
+      "hierarchies": {
+        "geography": [
+          "selling_region",
+          "selling_city",
+          "selling_store_id"
+        ],
+        "product": [
+          "category",
+          "subcategory",
+          "product_id"
+        ]
+      }
+    }
+  ]
+}

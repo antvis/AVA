@@ -1,0 +1,35 @@
+{
+  "chartType": "bar",
+  "config": {
+    "type": "bar",
+    "title": "财务口径 各门店9月较8月净销售额变化 人民币元",
+    "data": [
+      {
+        "category": "深圳南山店",
+        "value": -547968.89
+      },
+      {
+        "category": "北京朝阳店",
+        "value": -39186.56
+      },
+      {
+        "category": "上海徐汇店",
+        "value": -34018.81
+      },
+      {
+        "category": "杭州武林店",
+        "value": -29305.73
+      },
+      {
+        "category": "天津和平店",
+        "value": -11683.56
+      },
+      {
+        "category": "广州天河店",
+        "value": 66713.31
+      }
+    ],
+    "axisXTitle": "销售责任门店",
+    "axisYTitle": "变化 人民币元"
+  }
+}

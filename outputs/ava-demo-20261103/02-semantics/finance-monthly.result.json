@@ -1,0 +1,23 @@
+{
+  "data": [
+    {
+      "month": "2026-08",
+      "amount": 4293025.42
+    },
+    {
+      "month": "2026-09",
+      "amount": 3697575.18
+    }
+  ],
+  "schema": [
+    {
+      "name": "month",
+      "type": "VARCHAR"
+    },
+    {
+      "name": "amount",
+      "type": "DECIMAL(38,2)"
+    }
+  ],
+  "rowCount": 2
+}

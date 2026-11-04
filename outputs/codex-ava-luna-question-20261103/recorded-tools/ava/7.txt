@@ -1,0 +1,90 @@
+{
+  "data": [
+    {
+      "dimension": "business_model",
+      "value": "self_operated",
+      "aug": 4226902.38,
+      "sep": 3660757.87,
+      "change": -566144.51
+    },
+    {
+      "dimension": "business_model",
+      "value": "consignment",
+      "aug": 66123.04,
+      "sep": 36817.31,
+      "change": -29305.73
+    },
+    {
+      "dimension": "category",
+      "value": "家具",
+      "aug": 3348139.84,
+      "sep": 2656194.21,
+      "change": -691945.63
+    },
+    {
+      "dimension": "category",
+      "value": "数码",
+      "aug": 944885.58,
+      "sep": 1041380.97,
+      "change": 96495.39
+    },
+    {
+      "dimension": "channel",
+      "value": "线上商城",
+      "aug": 3010353.2,
+      "sep": 2389124.04,
+      "change": -621229.16
+    },
+    {
+      "dimension": "channel",
+      "value": "线下门店",
+      "aug": 1282672.22,
+      "sep": 1308451.14,
+      "change": 25778.92
+    },
+    {
+      "dimension": "selling_region",
+      "value": "华南",
+      "aug": 2718406.04,
+      "sep": 2237150.46,
+      "change": -481255.58
+    },
+    {
+      "dimension": "selling_region",
+      "value": "华东",
+      "aug": 573300.24,
+      "sep": 509975.7,
+      "change": -63324.54
+    },
+    {
+      "dimension": "selling_region",
+      "value": "华北",
+      "aug": 1001319.14,
+      "sep": 950449.02,
+      "change": -50870.12
+    }
+  ],
+  "schema": [
+    {
+      "name": "dimension",
+      "type": "VARCHAR"
+    },
+    {
+      "name": "value",
+      "type": "VARCHAR"
+    },
+    {
+      "name": "aug",
+      "type": "DECIMAL(38,2)"
+    },
+    {
+      "name": "sep",
+      "type": "DECIMAL(38,2)"
+    },
+    {
+      "name": "change",
+      "type": "DECIMAL(38,2)"
+    }
+  ],
+  "rowCount": 9
+}

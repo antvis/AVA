@@ -1,0 +1,14 @@
+{
+  "schemaVersion": 1,
+  "htmlEntry": "index.html",
+  "stylesheet": "styles/codex-skin.css",
+  "assetDirectory": "assets/codex-skin",
+  "portraitMarker": "data-codex-ip-portrait",
+  "selectors": {
+    "canvas": "body",
+    "sidebar": ".sidebar",
+    "surface": ".main-panel",
+    "card": ".action-card",
+    "composer": ".composer"
+  }
+}

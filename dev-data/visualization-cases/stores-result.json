@@ -1,0 +1,1115 @@
+{
+  "data": [
+    {
+      "store_id": "S001",
+      "monthly_orders": 1065,
+      "avg_order_value": 351.97,
+      "sales": 374848.05,
+      "cluster": "高频低客单",
+      "selected_k": 3,
+      "silhouette": 0.734945805868529
+    },
+    {
+      "store_id": "S002",
+      "monthly_orders": 972,
+      "avg_order_value": 410.86,
+      "sales": 399355.92,
+      "cluster": "高频低客单",
+      "selected_k": 3,
+      "silhouette": 0.734945805868529
+    },
+    {
+      "store_id": "S003",
+      "monthly_orders": 1021,
+      "avg_order_value": 323.46,
+      "sales": 330252.66,
+      "cluster": "高频低客单",
+      "selected_k": 3,
+      "silhouette": 0.734945805868529
+    },
+    {
+      "store_id": "S004",
+      "monthly_orders": 1237,
+      "avg_order_value": 376.03,
+      "sales": 465149.11,
+      "cluster": "高频低客单",
+      "selected_k": 3,
+      "silhouette": 0.734945805868529
+    },
+    {
+      "store_id": "S005",
+      "monthly_orders": 1069,
+      "avg_order_value": 348.23,
+      "sales": 372257.87,
+      "cluster": "高频低客单",
+      "selected_k": 3,
+      "silhouette": 0.734945805868529
+    },
+    {
+      "store_id": "S006",
+      "monthly_orders": 1238,
+      "avg_order_value": 259.71,
+      "sales": 321520.98,
+      "cluster": "高频低客单",
+      "selected_k": 3,
+      "silhouette": 0.734945805868529
+    },
+    {
+      "store_id": "S007",
+      "monthly_orders": 1257,
+      "avg_order_value": 280.7,
+      "sales": 352839.9,
+      "cluster": "高频低客单",
+      "selected_k": 3,
+      "silhouette": 0.734945805868529
+    },
+    {
+      "store_id": "S008",
+      "monthly_orders": 1284,
+      "avg_order_value": 412.72,
+      "sales": 529932.48,
+      "cluster": "高频低客单",
+      "selected_k": 3,
+      "silhouette": 0.734945805868529
+    },
+    {
+      "store_id": "S009",
+      "monthly_orders": 1138,
+      "avg_order_value": 275.63,
+      "sales": 313666.94,
+      "cluster": "高频低客单",
+      "selected_k": 3,
+      "silhouette": 0.734945805868529
+    },
+    {
+      "store_id": "S010",
+      "monthly_orders": 1226,
+      "avg_order_value": 323.01,
+      "sales": 396010.26,
+      "cluster": "高频低客单",
+      "selected_k": 3,
+      "silhouette": 0.734945805868529
+    },
+    {
+      "store_id": "S011",
+      "monthly_orders": 1158,
+      "avg_order_value": 367.72,
+      "sales": 425819.76,
+      "cluster": "高频低客单",
+      "selected_k": 3,
+      "silhouette": 0.734945805868529
+    },
+    {
+      "store_id": "S012",
+      "monthly_orders": 1144,
+      "avg_order_value": 353.76,
+      "sales": 404701.44,
+      "cluster": "高频低客单",
+      "selected_k": 3,
+      "silhouette": 0.734945805868529
+    },
+    {
+      "store_id": "S013",
+      "monthly_orders": 1202,
+      "avg_order_value": 299.7,
+      "sales": 360239.4,
+      "cluster": "高频低客单",
+      "selected_k": 3,
+      "silhouette": 0.734945805868529
+    },
+    {
+      "store_id": "S014",
+      "monthly_orders": 1125,
+      "avg_order_value": 361.23,
+      "sales": 406383.75,
+      "cluster": "高频低客单",
+      "selected_k": 3,
+      "silhouette": 0.734945805868529
+    },
+    {
+      "store_id": "S015",
+      "monthly_orders": 993,
+      "avg_order_value": 394.2,
+      "sales": 391440.6,
+      "cluster": "高频低客单",
+      "selected_k": 3,
+      "silhouette": 0.734945805868529
+    },
+    {
+      "store_id": "S016",
+      "monthly_orders": 1133,
+      "avg_order_value": 398.55,
+      "sales": 451557.15,
+      "cluster": "高频低客单",
+      "selected_k": 3,
+      "silhouette": 0.734945805868529
+    },
+    {
+      "store_id": "S017",
+      "monthly_orders": 1168,
+      "avg_order_value": 335.86,
+      "sales": 392284.48,
+      "cluster": "高频低客单",
+      "selected_k": 3,
+      "silhouette": 0.734945805868529
+    },
+    {
+      "store_id": "S018",
+      "monthly_orders": 1281,
+      "avg_order_value": 248.6,
+      "sales": 318456.6,
+      "cluster": "高频低客单",
+      "selected_k": 3,
+      "silhouette": 0.734945805868529
+    },
+    {
+      "store_id": "S019",
+      "monthly_orders": 1390,
+      "avg_order_value": 338.24,
+      "sales": 470153.6,
+      "cluster": "高频低客单",
+      "selected_k": 3,
+      "silhouette": 0.734945805868529
+    },
+    {
+      "store_id": "S020",
+      "monthly_orders": 1227,
+      "avg_order_value": 468.84,
+      "sales": 575266.68,
+      "cluster": "高频低客单",
+      "selected_k": 3,
+      "silhouette": 0.734945805868529
+    },
+    {
+      "store_id": "S021",
+      "monthly_orders": 1037,
+      "avg_order_value": 350.79,
+      "sales": 363769.23,
+      "cluster": "高频低客单",
+      "selected_k": 3,
+      "silhouette": 0.734945805868529
+    },
+    {
+      "store_id": "S022",
+      "monthly_orders": 1042,
+      "avg_order_value": 324.68,
+      "sales": 338316.56,
+      "cluster": "高频低客单",
+      "selected_k": 3,
+      "silhouette": 0.734945805868529
+    },
+    {
+      "store_id": "S023",
+      "monthly_orders": 1293,
+      "avg_order_value": 317.21,
+      "sales": 410152.53,
+      "cluster": "高频低客单",
+      "selected_k": 3,
+      "silhouette": 0.734945805868529
+    },
+    {
+      "store_id": "S024",
+      "monthly_orders": 1020,
+      "avg_order_value": 354.44,
+      "sales": 361528.8,
+      "cluster": "高频低客单",
+      "selected_k": 3,
+      "silhouette": 0.734945805868529
+    },
+    {
+      "store_id": "S025",
+      "monthly_orders": 1226,
+      "avg_order_value": 435.51,
+      "sales": 533935.26,
+      "cluster": "高频低客单",
+      "selected_k": 3,
+      "silhouette": 0.734945805868529
+    },
+    {
+      "store_id": "S026",
+      "monthly_orders": 1268,
+      "avg_order_value": 430.12,
+      "sales": 545392.16,
+      "cluster": "高频低客单",
+      "selected_k": 3,
+      "silhouette": 0.734945805868529
+    },
+    {
+      "store_id": "S027",
+      "monthly_orders": 942,
+      "avg_order_value": 250.98,
+      "sales": 236423.16,
+      "cluster": "高频低客单",
+      "selected_k": 3,
+      "silhouette": 0.734945805868529
+    },
+    {
+      "store_id": "S028",
+      "monthly_orders": 1265,
+      "avg_order_value": 318.42,
+      "sales": 402801.3,
+      "cluster": "高频低客单",
+      "selected_k": 3,
+      "silhouette": 0.734945805868529
+    },
+    {
+      "store_id": "S029",
+      "monthly_orders": 1188,
+      "avg_order_value": 356.34,
+      "sales": 423331.92,
+      "cluster": "高频低客单",
+      "selected_k": 3,
+      "silhouette": 0.734945805868529
+    },
+    {
+      "store_id": "S030",
+      "monthly_orders": 1072,
+      "avg_order_value": 375.68,
+      "sales": 402728.96,
+      "cluster": "高频低客单",
+      "selected_k": 3,
+      "silhouette": 0.734945805868529
+    },
+    {
+      "store_id": "S031",
+      "monthly_orders": 1303,
+      "avg_order_value": 313.19,
+      "sales": 408086.57,
+      "cluster": "高频低客单",
+      "selected_k": 3,
+      "silhouette": 0.734945805868529
+    },
+    {
+      "store_id": "S032",
+      "monthly_orders": 1121,
+      "avg_order_value": 352.34,
+      "sales": 394973.14,
+      "cluster": "高频低客单",
+      "selected_k": 3,
+      "silhouette": 0.734945805868529
+    },
+    {
+      "store_id": "S033",
+      "monthly_orders": 1099,
+      "avg_order_value": 354.01,
+      "sales": 389056.99,
+      "cluster": "高频低客单",
+      "selected_k": 3,
+      "silhouette": 0.734945805868529
+    },
+    {
+      "store_id": "S034",
+      "monthly_orders": 1212,
+      "avg_order_value": 312.18,
+      "sales": 378362.16,
+      "cluster": "高频低客单",
+      "selected_k": 3,
+      "silhouette": 0.734945805868529
+    },
+    {
+      "store_id": "S035",
+      "monthly_orders": 1311,
+      "avg_order_value": 422.43,
+      "sales": 553805.73,
+      "cluster": "高频低客单",
+      "selected_k": 3,
+      "silhouette": 0.734945805868529
+    },
+    {
+      "store_id": "S036",
+      "monthly_orders": 1213,
+      "avg_order_value": 310.75,
+      "sales": 376939.75,
+      "cluster": "高频低客单",
+      "selected_k": 3,
+      "silhouette": 0.734945805868529
+    },
+    {
+      "store_id": "S037",
+      "monthly_orders": 1351,
+      "avg_order_value": 378.76,
+      "sales": 511704.76,
+      "cluster": "高频低客单",
+      "selected_k": 3,
+      "silhouette": 0.734945805868529
+    },
+    {
+      "store_id": "S038",
+      "monthly_orders": 1027,
+      "avg_order_value": 353.18,
+      "sales": 362715.86,
+      "cluster": "高频低客单",
+      "selected_k": 3,
+      "silhouette": 0.734945805868529
+    },
+    {
+      "store_id": "S039",
+      "monthly_orders": 1111,
+      "avg_order_value": 367.3,
+      "sales": 408070.3,
+      "cluster": "高频低客单",
+      "selected_k": 3,
+      "silhouette": 0.734945805868529
+    },
+    {
+      "store_id": "S040",
+      "monthly_orders": 1274,
+      "avg_order_value": 437.22,
+      "sales": 557018.28,
+      "cluster": "高频低客单",
+      "selected_k": 3,
+      "silhouette": 0.734945805868529
+    },
+    {
+      "store_id": "S041",
+      "monthly_orders": 693,
+      "avg_order_value": 627.64,
+      "sales": 434954.52,
+      "cluster": "中频中客单",
+      "selected_k": 3,
+      "silhouette": 0.734945805868529
+    },
+    {
+      "store_id": "S042",
+      "monthly_orders": 913,
+      "avg_order_value": 863.68,
+      "sales": 788539.84,
+      "cluster": "中频中客单",
+      "selected_k": 3,
+      "silhouette": 0.734945805868529
+    },
+    {
+      "store_id": "S043",
+      "monthly_orders": 571,
+      "avg_order_value": 597.55,
+      "sales": 341201.05,
+      "cluster": "中频中客单",
+      "selected_k": 3,
+      "silhouette": 0.734945805868529
+    },
+    {
+      "store_id": "S044",
+      "monthly_orders": 719,
+      "avg_order_value": 608.2,
+      "sales": 437295.8,
+      "cluster": "中频中客单",
+      "selected_k": 3,
+      "silhouette": 0.734945805868529
+    },
+    {
+      "store_id": "S045",
+      "monthly_orders": 687,
+      "avg_order_value": 669.25,
+      "sales": 459774.75,
+      "cluster": "中频中客单",
+      "selected_k": 3,
+      "silhouette": 0.734945805868529
+    },
+    {
+      "store_id": "S046",
+      "monthly_orders": 746,
+      "avg_order_value": 565.27,
+      "sales": 421691.42,
+      "cluster": "中频中客单",
+      "selected_k": 3,
+      "silhouette": 0.734945805868529
+    },
+    {
+      "store_id": "S047",
+      "monthly_orders": 752,
+      "avg_order_value": 853.44,
+      "sales": 641786.88,
+      "cluster": "中频中客单",
+      "selected_k": 3,
+      "silhouette": 0.734945805868529
+    },
+    {
+      "store_id": "S048",
+      "monthly_orders": 725,
+      "avg_order_value": 608.33,
+      "sales": 441039.25,
+      "cluster": "中频中客单",
+      "selected_k": 3,
+      "silhouette": 0.734945805868529
+    },
+    {
+      "store_id": "S049",
+      "monthly_orders": 790,
+      "avg_order_value": 744.74,
+      "sales": 588344.6,
+      "cluster": "中频中客单",
+      "selected_k": 3,
+      "silhouette": 0.734945805868529
+    },
+    {
+      "store_id": "S050",
+      "monthly_orders": 708,
+      "avg_order_value": 814.5,
+      "sales": 576666,
+      "cluster": "中频中客单",
+      "selected_k": 3,
+      "silhouette": 0.734945805868529
+    },
+    {
+      "store_id": "S051",
+      "monthly_orders": 704,
+      "avg_order_value": 748.64,
+      "sales": 527042.56,
+      "cluster": "中频中客单",
+      "selected_k": 3,
+      "silhouette": 0.734945805868529
+    },
+    {
+      "store_id": "S052",
+      "monthly_orders": 595,
+      "avg_order_value": 585.94,
+      "sales": 348634.3,
+      "cluster": "中频中客单",
+      "selected_k": 3,
+      "silhouette": 0.734945805868529
+    },
+    {
+      "store_id": "S053",
+      "monthly_orders": 608,
+      "avg_order_value": 703.88,
+      "sales": 427959.04,
+      "cluster": "中频中客单",
+      "selected_k": 3,
+      "silhouette": 0.734945805868529
+    },
+    {
+      "store_id": "S054",
+      "monthly_orders": 747,
+      "avg_order_value": 645.06,
+      "sales": 481859.82,
+      "cluster": "中频中客单",
+      "selected_k": 3,
+      "silhouette": 0.734945805868529
+    },
+    {
+      "store_id": "S055",
+      "monthly_orders": 707,
+      "avg_order_value": 789.13,
+      "sales": 557914.91,
+      "cluster": "中频中客单",
+      "selected_k": 3,
+      "silhouette": 0.734945805868529
+    },
+    {
+      "store_id": "S056",
+      "monthly_orders": 745,
+      "avg_order_value": 707.12,
+      "sales": 526804.4,
+      "cluster": "中频中客单",
+      "selected_k": 3,
+      "silhouette": 0.734945805868529
+    },
+    {
+      "store_id": "S057",
+      "monthly_orders": 729,
+      "avg_order_value": 689.69,
+      "sales": 502784.01,
+      "cluster": "中频中客单",
+      "selected_k": 3,
+      "silhouette": 0.734945805868529
+    },
+    {
+      "store_id": "S058",
+      "monthly_orders": 715,
+      "avg_order_value": 796.38,
+      "sales": 569411.7,
+      "cluster": "中频中客单",
+      "selected_k": 3,
+      "silhouette": 0.734945805868529
+    },
+    {
+      "store_id": "S059",
+      "monthly_orders": 458,
+      "avg_order_value": 753.87,
+      "sales": 345272.46,
+      "cluster": "中频中客单",
+      "selected_k": 3,
+      "silhouette": 0.734945805868529
+    },
+    {
+      "store_id": "S060",
+      "monthly_orders": 753,
+      "avg_order_value": 837.15,
+      "sales": 630373.95,
+      "cluster": "中频中客单",
+      "selected_k": 3,
+      "silhouette": 0.734945805868529
+    },
+    {
+      "store_id": "S061",
+      "monthly_orders": 832,
+      "avg_order_value": 680.86,
+      "sales": 566475.52,
+      "cluster": "中频中客单",
+      "selected_k": 3,
+      "silhouette": 0.734945805868529
+    },
+    {
+      "store_id": "S062",
+      "monthly_orders": 612,
+      "avg_order_value": 735.52,
+      "sales": 450138.24,
+      "cluster": "中频中客单",
+      "selected_k": 3,
+      "silhouette": 0.734945805868529
+    },
+    {
+      "store_id": "S063",
+      "monthly_orders": 753,
+      "avg_order_value": 639.66,
+      "sales": 481663.98,
+      "cluster": "中频中客单",
+      "selected_k": 3,
+      "silhouette": 0.734945805868529
+    },
+    {
+      "store_id": "S064",
+      "monthly_orders": 749,
+      "avg_order_value": 784.2,
+      "sales": 587365.8,
+      "cluster": "中频中客单",
+      "selected_k": 3,
+      "silhouette": 0.734945805868529
+    },
+    {
+      "store_id": "S065",
+      "monthly_orders": 603,
+      "avg_order_value": 670.56,
+      "sales": 404347.68,
+      "cluster": "中频中客单",
+      "selected_k": 3,
+      "silhouette": 0.734945805868529
+    },
+    {
+      "store_id": "S066",
+      "monthly_orders": 517,
+      "avg_order_value": 804.44,
+      "sales": 415895.48,
+      "cluster": "中频中客单",
+      "selected_k": 3,
+      "silhouette": 0.734945805868529
+    },
+    {
+      "store_id": "S067",
+      "monthly_orders": 852,
+      "avg_order_value": 668.8,
+      "sales": 569817.6,
+      "cluster": "中频中客单",
+      "selected_k": 3,
+      "silhouette": 0.734945805868529
+    },
+    {
+      "store_id": "S068",
+      "monthly_orders": 555,
+      "avg_order_value": 604.79,
+      "sales": 335658.45,
+      "cluster": "中频中客单",
+      "selected_k": 3,
+      "silhouette": 0.734945805868529
+    },
+    {
+      "store_id": "S069",
+      "monthly_orders": 809,
+      "avg_order_value": 633.72,
+      "sales": 512679.48,
+      "cluster": "中频中客单",
+      "selected_k": 3,
+      "silhouette": 0.734945805868529
+    },
+    {
+      "store_id": "S070",
+      "monthly_orders": 628,
+      "avg_order_value": 822.4,
+      "sales": 516467.2,
+      "cluster": "中频中客单",
+      "selected_k": 3,
+      "silhouette": 0.734945805868529
+    },
+    {
+      "store_id": "S071",
+      "monthly_orders": 821,
+      "avg_order_value": 772.31,
+      "sales": 634066.51,
+      "cluster": "中频中客单",
+      "selected_k": 3,
+      "silhouette": 0.734945805868529
+    },
+    {
+      "store_id": "S072",
+      "monthly_orders": 652,
+      "avg_order_value": 567.46,
+      "sales": 369983.92,
+      "cluster": "中频中客单",
+      "selected_k": 3,
+      "silhouette": 0.734945805868529
+    },
+    {
+      "store_id": "S073",
+      "monthly_orders": 730,
+      "avg_order_value": 843.46,
+      "sales": 615725.8,
+      "cluster": "中频中客单",
+      "selected_k": 3,
+      "silhouette": 0.734945805868529
+    },
+    {
+      "store_id": "S074",
+      "monthly_orders": 499,
+      "avg_order_value": 691.24,
+      "sales": 344928.76,
+      "cluster": "中频中客单",
+      "selected_k": 3,
+      "silhouette": 0.734945805868529
+    },
+    {
+      "store_id": "S075",
+      "monthly_orders": 924,
+      "avg_order_value": 779.59,
+      "sales": 720341.16,
+      "cluster": "中频中客单",
+      "selected_k": 3,
+      "silhouette": 0.734945805868529
+    },
+    {
+      "store_id": "S076",
+      "monthly_orders": 602,
+      "avg_order_value": 666.93,
+      "sales": 401491.86,
+      "cluster": "中频中客单",
+      "selected_k": 3,
+      "silhouette": 0.734945805868529
+    },
+    {
+      "store_id": "S077",
+      "monthly_orders": 532,
+      "avg_order_value": 821.79,
+      "sales": 437192.28,
+      "cluster": "中频中客单",
+      "selected_k": 3,
+      "silhouette": 0.734945805868529
+    },
+    {
+      "store_id": "S078",
+      "monthly_orders": 739,
+      "avg_order_value": 771.25,
+      "sales": 569953.75,
+      "cluster": "中频中客单",
+      "selected_k": 3,
+      "silhouette": 0.734945805868529
+    },
+    {
+      "store_id": "S079",
+      "monthly_orders": 743,
+      "avg_order_value": 631.54,
+      "sales": 469234.22,
+      "cluster": "中频中客单",
+      "selected_k": 3,
+      "silhouette": 0.734945805868529
+    },
+    {
+      "store_id": "S080",
+      "monthly_orders": 695,
+      "avg_order_value": 682.2,
+      "sales": 474129,
+      "cluster": "中频中客单",
+      "selected_k": 3,
+      "silhouette": 0.734945805868529
+    },
+    {
+      "store_id": "S081",
+      "monthly_orders": 283,
+      "avg_order_value": 1207.51,
+      "sales": 341725.33,
+      "cluster": "低频高客单",
+      "selected_k": 3,
+      "silhouette": 0.734945805868529
+    },
+    {
+      "store_id": "S082",
+      "monthly_orders": 314,
+      "avg_order_value": 1428.51,
+      "sales": 448552.14,
+      "cluster": "低频高客单",
+      "selected_k": 3,
+      "silhouette": 0.734945805868529
+    },
+    {
+      "store_id": "S083",
+      "monthly_orders": 390,
+      "avg_order_value": 1493.76,
+      "sales": 582566.4,
+      "cluster": "低频高客单",
+      "selected_k": 3,
+      "silhouette": 0.734945805868529
+    },
+    {
+      "store_id": "S084",
+      "monthly_orders": 281,
+      "avg_order_value": 1363.35,
+      "sales": 383101.35,
+      "cluster": "低频高客单",
+      "selected_k": 3,
+      "silhouette": 0.734945805868529
+    },
+    {
+      "store_id": "S085",
+      "monthly_orders": 299,
+      "avg_order_value": 1270.58,
+      "sales": 379903.42,
+      "cluster": "低频高客单",
+      "selected_k": 3,
+      "silhouette": 0.734945805868529
+    },
+    {
+      "store_id": "S086",
+      "monthly_orders": 434,
+      "avg_order_value": 1392.04,
+      "sales": 604145.36,
+      "cluster": "低频高客单",
+      "selected_k": 3,
+      "silhouette": 0.734945805868529
+    },
+    {
+      "store_id": "S087",
+      "monthly_orders": 293,
+      "avg_order_value": 1467.69,
+      "sales": 430033.17,
+      "cluster": "低频高客单",
+      "selected_k": 3,
+      "silhouette": 0.734945805868529
+    },
+    {
+      "store_id": "S088",
+      "monthly_orders": 303,
+      "avg_order_value": 1325.93,
+      "sales": 401756.79,
+      "cluster": "低频高客单",
+      "selected_k": 3,
+      "silhouette": 0.734945805868529
+    },
+    {
+      "store_id": "S089",
+      "monthly_orders": 279,
+      "avg_order_value": 1459.31,
+      "sales": 407147.49,
+      "cluster": "低频高客单",
+      "selected_k": 3,
+      "silhouette": 0.734945805868529
+    },
+    {
+      "store_id": "S090",
+      "monthly_orders": 309,
+      "avg_order_value": 1350.66,
+      "sales": 417353.94,
+      "cluster": "低频高客单",
+      "selected_k": 3,
+      "silhouette": 0.734945805868529
+    },
+    {
+      "store_id": "S091",
+      "monthly_orders": 329,
+      "avg_order_value": 1495.66,
+      "sales": 492072.14,
+      "cluster": "低频高客单",
+      "selected_k": 3,
+      "silhouette": 0.734945805868529
+    },
+    {
+      "store_id": "S092",
+      "monthly_orders": 281,
+      "avg_order_value": 1471.61,
+      "sales": 413522.41,
+      "cluster": "低频高客单",
+      "selected_k": 3,
+      "silhouette": 0.734945805868529
+    },
+    {
+      "store_id": "S093",
+      "monthly_orders": 286,
+      "avg_order_value": 1461.68,
+      "sales": 418040.48,
+      "cluster": "低频高客单",
+      "selected_k": 3,
+      "silhouette": 0.734945805868529
+    },
+    {
+      "store_id": "S094",
+      "monthly_orders": 276,
+      "avg_order_value": 1220.89,
+      "sales": 336965.64,
+      "cluster": "低频高客单",
+      "selected_k": 3,
+      "silhouette": 0.734945805868529
+    },
+    {
+      "store_id": "S095",
+      "monthly_orders": 376,
+      "avg_order_value": 1542.34,
+      "sales": 579919.84,
+      "cluster": "低频高客单",
+      "selected_k": 3,
+      "silhouette": 0.734945805868529
+    },
+    {
+      "store_id": "S096",
+      "monthly_orders": 296,
+      "avg_order_value": 1170.57,
+      "sales": 346488.72,
+      "cluster": "低频高客单",
+      "selected_k": 3,
+      "silhouette": 0.734945805868529
+    },
+    {
+      "store_id": "S097",
+      "monthly_orders": 346,
+      "avg_order_value": 1574.43,
+      "sales": 544752.78,
+      "cluster": "低频高客单",
+      "selected_k": 3,
+      "silhouette": 0.734945805868529
+    },
+    {
+      "store_id": "S098",
+      "monthly_orders": 376,
+      "avg_order_value": 1415.52,
+      "sales": 532235.52,
+      "cluster": "低频高客单",
+      "selected_k": 3,
+      "silhouette": 0.734945805868529
+    },
+    {
+      "store_id": "S099",
+      "monthly_orders": 205,
+      "avg_order_value": 1531.85,
+      "sales": 314029.25,
+      "cluster": "低频高客单",
+      "selected_k": 3,
+      "silhouette": 0.734945805868529
+    },
+    {
+      "store_id": "S100",
+      "monthly_orders": 261,
+      "avg_order_value": 1669.58,
+      "sales": 435760.38,
+      "cluster": "低频高客单",
+      "selected_k": 3,
+      "silhouette": 0.734945805868529
+    },
+    {
+      "store_id": "S101",
+      "monthly_orders": 333,
+      "avg_order_value": 1177.37,
+      "sales": 392064.21,
+      "cluster": "低频高客单",
+      "selected_k": 3,
+      "silhouette": 0.734945805868529
+    },
+    {
+      "store_id": "S102",
+      "monthly_orders": 242,
+      "avg_order_value": 1426.91,
+      "sales": 345312.22,
+      "cluster": "低频高客单",
+      "selected_k": 3,
+      "silhouette": 0.734945805868529
+    },
+    {
+      "store_id": "S103",
+      "monthly_orders": 234,
+      "avg_order_value": 1419.13,
+      "sales": 332076.42,
+      "cluster": "低频高客单",
+      "selected_k": 3,
+      "silhouette": 0.734945805868529
+    },
+    {
+      "store_id": "S104",
+      "monthly_orders": 427,
+      "avg_order_value": 1395.77,
+      "sales": 595993.79,
+      "cluster": "低频高客单",
+      "selected_k": 3,
+      "silhouette": 0.734945805868529
+    },
+    {
+      "store_id": "S105",
+      "monthly_orders": 329,
+      "avg_order_value": 1555.49,
+      "sales": 511756.21,
+      "cluster": "低频高客单",
+      "selected_k": 3,
+      "silhouette": 0.734945805868529
+    },
+    {
+      "store_id": "S106",
+      "monthly_orders": 417,
+      "avg_order_value": 1371.69,
+      "sales": 571994.73,
+      "cluster": "低频高客单",
+      "selected_k": 3,
+      "silhouette": 0.734945805868529
+    },
+    {
+      "store_id": "S107",
+      "monthly_orders": 245,
+      "avg_order_value": 1421.55,
+      "sales": 348279.75,
+      "cluster": "低频高客单",
+      "selected_k": 3,
+      "silhouette": 0.734945805868529
+    },
+    {
+      "store_id": "S108",
+      "monthly_orders": 373,
+      "avg_order_value": 1408.61,
+      "sales": 525411.53,
+      "cluster": "低频高客单",
+      "selected_k": 3,
+      "silhouette": 0.734945805868529
+    },
+    {
+      "store_id": "S109",
+      "monthly_orders": 420,
+      "avg_order_value": 1194.32,
+      "sales": 501614.4,
+      "cluster": "低频高客单",
+      "selected_k": 3,
+      "silhouette": 0.734945805868529
+    },
+    {
+      "store_id": "S110",
+      "monthly_orders": 303,
+      "avg_order_value": 1274.25,
+      "sales": 386097.75,
+      "cluster": "低频高客单",
+      "selected_k": 3,
+      "silhouette": 0.734945805868529
+    },
+    {
+      "store_id": "S111",
+      "monthly_orders": 279,
+      "avg_order_value": 1649.75,
+      "sales": 460280.25,
+      "cluster": "低频高客单",
+      "selected_k": 3,
+      "silhouette": 0.734945805868529
+    },
+    {
+      "store_id": "S112",
+      "monthly_orders": 405,
+      "avg_order_value": 1451.7,
+      "sales": 587938.5,
+      "cluster": "低频高客单",
+      "selected_k": 3,
+      "silhouette": 0.734945805868529
+    },
+    {
+      "store_id": "S113",
+      "monthly_orders": 299,
+      "avg_order_value": 1505.34,
+      "sales": 450096.66,
+      "cluster": "低频高客单",
+      "selected_k": 3,
+      "silhouette": 0.734945805868529
+    },
+    {
+      "store_id": "S114",
+      "monthly_orders": 378,
+      "avg_order_value": 1304.14,
+      "sales": 492964.92,
+      "cluster": "低频高客单",
+      "selected_k": 3,
+      "silhouette": 0.734945805868529
+    },
+    {
+      "store_id": "S115",
+      "monthly_orders": 237,
+      "avg_order_value": 1468.52,
+      "sales": 348039.24,
+      "cluster": "低频高客单",
+      "selected_k": 3,
+      "silhouette": 0.734945805868529
+    },
+    {
+      "store_id": "S116",
+      "monthly_orders": 211,
+      "avg_order_value": 1306.76,
+      "sales": 275726.36,
+      "cluster": "低频高客单",
+      "selected_k": 3,
+      "silhouette": 0.734945805868529
+    },
+    {
+      "store_id": "S117",
+      "monthly_orders": 348,
+      "avg_order_value": 1358.99,
+      "sales": 472928.52,
+      "cluster": "低频高客单",
+      "selected_k": 3,
+      "silhouette": 0.734945805868529
+    },
+    {
+      "store_id": "S118",
+      "monthly_orders": 298,
+      "avg_order_value": 1387.86,
+      "sales": 413582.28,
+      "cluster": "低频高客单",
+      "selected_k": 3,
+      "silhouette": 0.734945805868529
+    },
+    {
+      "store_id": "S119",
+      "monthly_orders": 385,
+      "avg_order_value": 1383.35,
+      "sales": 532589.75,
+      "cluster": "低频高客单",
+      "selected_k": 3,
+      "silhouette": 0.734945805868529
+    },
+    {
+      "store_id": "S120",
+      "monthly_orders": 283,
+      "avg_order_value": 1112.62,
+      "sales": 314871.46,
+      "cluster": "低频高客单",
+      "selected_k": 3,
+      "silhouette": 0.734945805868529
+    }
+  ],
+  "schema": [
+    {
+      "name": "store_id",
+      "type": "object"
+    },
+    {
+      "name": "monthly_orders",
+      "type": "int64"
+    },
+    {
+      "name": "avg_order_value",
+      "type": "float64"
+    },
+    {
+      "name": "sales",
+      "type": "float64"
+    },
+    {
+      "name": "cluster",
+      "type": "object"
+    },
+    {
+      "name": "selected_k",
+      "type": "int64"
+    },
+    {
+      "name": "silhouette",
+      "type": "float64"
+    }
+  ],
+  "rowCount": 120
+}

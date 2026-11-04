@@ -1,0 +1,9 @@
+/bin/zsh -lc "python3 - <<'PY'
+import csv,collections
+rows=list(csv.DictReader(open('inputs/sales.csv',newline='',encoding='utf-8-sig')))
+for datef in ['paid_at','completed_at','ordered_at']:
+ print(datef)
+ for m in ['2026-08','2026-09']:
+  rr=[r for r in rows if r[datef].startswith(m) and r['status']=='completed' and r['order_kind']=='customer_sale']
+  print(m,len(rr),round(sum(float(r['line_paid_amount'] or 0)-float(r['refund_amount'] or 0) for r in rr),2))
+PY"

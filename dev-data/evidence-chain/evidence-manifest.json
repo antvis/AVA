@@ -1,0 +1,18 @@
+{
+  "source": "provenance.json",
+  "semantic": "semantic-excerpt.json",
+  "query": "query.sql",
+  "result": "result.json",
+  "chartSpec": "chart.spec.json",
+  "chartHtml": "chart.html",
+  "querySha256": "e2a294931fbc1281a6d04b2452f6236b9c4c88dd34a7bb63e4cdf295c60c0bec",
+  "resultSha256": "11c03c43e80ddc45603dab84126e2cf65f0038ff88cc45af56297ed3fc905222",
+  "chartValuesEqualQueryResult": true,
+  "baseline": 4882.34224,
+  "current": 4005.10013,
+  "change": -877.2421100000001,
+  "displayDecimals": 2,
+  "semanticYaml": "semantic.yaml",
+  "figureSource": "../../docs/assets/ava4-trustworthy-analysis.html",
+  "display": "Result grid preserves all 5 decimal places; chart and finding display 2 decimals"
+}

@@ -1,0 +1,20 @@
+{
+  "schemaVersion": 1,
+  "id": "pixel-companion",
+  "label": "Pixel Companion",
+  "category": "digital-character",
+  "tags": ["virtual-idol", "game", "mascot", "playful"],
+  "derivedFrom": "original-archetype",
+  "concept": {"identityIntensity": "high", "thesis": "A friendly virtual companion adds delight while the coding workspace stays crisp and fast.", "mood": ["playful", "responsive", "optimistic"], "forbiddenMotifs": ["fake-terminal-noise", "unreadable-pixel-font", "flashing-animation"]},
+  "layout": {"archetype": "hud-companion-workspace", "navigation": "quest-log-rail", "hero": "character-status-panel", "composer": "command-console-soft", "density": "medium-high"},
+  "palette": {"canvas": "#171A2B", "surface": "#222641", "surfaceRaised": "#2A3050", "ink": "#F1F4FF", "mutedInk": "#AAB3D5", "accent": "#55D6BE", "accentSoft": "#214B4B", "line": "#3D456B", "focus": "#91F3E0"},
+  "typography": {"display": "rounded-display", "body": "ui-sans", "code": "system-monospace", "accent": "pixel-label-only"},
+  "shape": {"panelRadius": 12, "controlRadius": 8, "elevation": "pixel-step-shadow"},
+  "decoration": {"level": "medium", "motifs": ["pixel-star", "status-chip", "quest-marker", "speech-tail"], "pointerEvents": "none"},
+  "motion": {"character": "two-frame-bounce", "durationMs": 120, "reducedMotion": "instant"},
+  "mediaSlots": [{"id": "characterSprite", "role": "hero", "aspect": "1:1", "focalPoint": "50% 40%", "fallback": "pixel-monogram"}, {"id": "avatar", "role": "profile", "aspect": "1:1", "focalPoint": "50% 40%", "fallback": "status-orb"}],
+  "quickActions": [{"id": "explore", "label": "Scan the map"}, {"id": "build", "label": "Start a new quest"}, {"id": "review", "label": "Inspect the loadout"}, {"id": "fix", "label": "Recover the mission"}],
+  "responsive": {"narrowNavigation": "quest-drawer", "narrowHero": "compact-status-card", "narrowCards": "two-then-one", "hideMotifs": ["speech-tail"], "missingMedia": "status-orb"},
+  "assetPolicy": {"provenance": "required", "remoteHotlink": false, "licensedOrOwned": true},
+  "accessibility": {"contrastTarget": "WCAG-AA", "preserveSemanticStates": true, "decorationAriaHidden": true}
+}

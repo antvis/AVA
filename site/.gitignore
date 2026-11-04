@@ -44,3 +44,6 @@ next-env.d.ts
 !/components/docs/
 !/content/docs/
 !/lib/
+
+# Generated SQLite runtime assets
+/public/vendor/sqlite/

@@ -220,7 +220,7 @@ const PromptBar: React.FC<{
         <input
           ref={fileRef}
           type="file"
-          accept=".csv,.xlsx,.json"
+          accept=".csv,.xlsx,.json,.sqlite,.sqlite3,.db"
           className="hidden"
           aria-label={t('uploadDataset')}
           disabled={busy}

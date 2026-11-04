@@ -1,0 +1,1 @@
+/bin/zsh -lc 'cat prompt.txt && cat AGENTS.md'

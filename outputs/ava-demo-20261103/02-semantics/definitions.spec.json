@@ -1,0 +1,32 @@
+{
+  "chartType": "column",
+  "config": {
+    "type": "column",
+    "title": "同一份订单 两种业务口径 人民币元",
+    "data": [
+      {
+        "category": "2026-08",
+        "value": 4293025.42,
+        "group": "财务确认收入"
+      },
+      {
+        "category": "2026-09",
+        "value": 3697575.18,
+        "group": "财务确认收入"
+      },
+      {
+        "category": "2026-08",
+        "value": 6740687.05,
+        "group": "净支付交易额"
+      },
+      {
+        "category": "2026-09",
+        "value": 7803998.06,
+        "group": "净支付交易额"
+      }
+    ],
+    "group": true,
+    "axisXTitle": "月份",
+    "axisYTitle": "金额 人民币元"
+  }
+}

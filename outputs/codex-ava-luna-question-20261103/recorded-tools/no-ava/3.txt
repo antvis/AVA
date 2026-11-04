@@ -1,0 +1,5 @@
+2026 年 9 月净销售额相比 8 月有什么变化，主要来自哪里？
+本工作区的inputs为只读数据。请将新产物放在output目录。仅在当前工作区操作，不读取父目录、兄弟目录或其他任务结果。不修改全局配置，不读取凭据，不向第三方发送数据，不派生子代理。
+本工作区使用通用编程工具，不使用ava命令、@antv/ava包或AVA skill。
+
+运行环境说明：ava 可执行包装器已固定使用 Node 22.22.0；shell 中 node --version 显示20不代表AVA的实际运行版本。AVA session 使用本机Unix socket，沙箱若报 listen EPERM，请通过 exec_command 的 sandbox_permissions="require_escalated" 申请所需权限并重试该命令，不修改全局配置或切换计算工具。此说明只涉及运行环境。

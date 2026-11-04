@@ -1,0 +1,18 @@
+{
+  "inputTokens": 11043,
+  "inputTokenDetails": {
+    "noCacheTokens": 11043,
+    "cacheReadTokens": 0
+  },
+  "outputTokens": 3884,
+  "outputTokenDetails": {
+    "textTokens": 3884,
+    "reasoningTokens": 0
+  },
+  "totalTokens": 14927,
+  "raw": {
+    "prompt_tokens": 11043,
+    "completion_tokens": 3884,
+    "total_tokens": 14927
+  }
+}

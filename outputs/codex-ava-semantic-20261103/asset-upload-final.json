@@ -1,0 +1,27 @@
+{
+  "success": true,
+  "uploaded": 1,
+  "failed": 0,
+  "results": [
+    {
+      "fileName": "dialogue-comparison-final.png",
+      "originalPath": "/Users/banxuan/Documents/AVA/outputs/codex-ava-semantic-20261103/dialogue-comparison-final.png",
+      "type": "image",
+      "target": "space",
+      "spaceId": "S_t5qynC",
+      "asset": {
+        "assetId": "AI_zca9r2necFyvI",
+        "assetUrl": "https://mdn.alipayobjects.com/huamei_aphk1k/afts/img/A*TT52Q7D2PCgAAAAAagAAAAgAegfkAQ/original",
+        "sourceUrl": "https://mdn.alipayobjects.com/huamei_aphk1k/afts/img/A*TT52Q7D2PCgAAAAAagAAAAgAegfkAQ/original",
+        "aftsAliasUrl": ""
+      },
+      "subAssets": [
+        {
+          "assetId": "AI_f6YJOGEfaGqns",
+          "assetUrl": "https://mdn.alipayobjects.com/huamei_aphk1k/afts/img/A*TT52Q7D2PCgAAAAAagAAAAgAegfkAQ/fmt.webp",
+          "sourceUrl": "https://mdn.alipayobjects.com/huamei_aphk1k/afts/img/A*TT52Q7D2PCgAAAAAagAAAAgAegfkAQ/original"
+        }
+      ]
+    }
+  ]
+}

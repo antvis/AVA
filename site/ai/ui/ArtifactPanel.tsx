@@ -13,6 +13,7 @@ const GPTVisRenderer = lazy(() => import('../../components/GPTVisRenderer'));
 export default function ArtifactPanel({
   artifact,
   live,
+  recorded,
   tab,
   onTabChange,
   onClose,
@@ -20,12 +21,14 @@ export default function ArtifactPanel({
 }: {
   artifact: NonNullable<Message['artifact']>;
   live: boolean;
+  recorded?: boolean;
   tab: ArtifactTab;
   onTabChange: (tab: ArtifactTab) => void;
   onClose: () => void;
   display?: ArtifactDisplay;
 }) {
   const t = useTranslations('ArtifactPanel');
+  const codeLanguage = artifact.codeLanguage ?? 'sql';
   const hasChart = !!artifact.config;
   const activeTab = (tab === 'chart' && !hasChart) || (tab === 'sql' && !artifact.code) ? 'data' : tab;
   const tables = resultTables(artifact.data ?? []);
@@ -39,7 +42,7 @@ export default function ArtifactPanel({
     <section
       data-artifact-panel
       className={`overflow-hidden flex flex-col ${
-        live
+        recorded ? 'h-auto self-start' : live
           ? 'h-[clamp(520px,calc(100dvh-290px),780px)] max-md:h-[clamp(460px,calc(100dvh-250px),680px)]'
           : 'h-[560px] max-md:h-[500px]'
       } border border-[rgb(242,242,237)] rounded-xl shadow-xs`}
@@ -60,7 +63,7 @@ export default function ArtifactPanel({
           </button>
         </header>
       )}
-      <div className="soft-scroll flex-1 min-h-0 overflow-y-auto p-5">
+      <div className={`${recorded ? 'overflow-visible' : 'soft-scroll flex-1 overflow-y-auto'} min-h-0 p-5`}>
         {report && (
           <header className="mb-4">
             <span className="text-[10px] font-semibold uppercase tracking-[0.12em] text-[#648594]">
@@ -110,7 +113,7 @@ export default function ArtifactPanel({
                   : 'text-zinc-500 hover:text-zinc-700'
               }`}
             >
-              {tabId === 'sql' ? (live ? 'JavaScript' : 'SQL') : t(tabId)}
+              {tabId === 'sql' ? (codeLanguage === 'sql' ? 'SQL' : codeLanguage === 'python' ? 'Python' : 'JavaScript') : t(tabId)}
             </button>
           ))}
         </div>
@@ -129,7 +132,7 @@ export default function ArtifactPanel({
             </div>
           )}
           {activeTab === 'data' &&
-            (tables ? (
+            (artifact.outputText !== undefined ? <pre className="soft-scroll overflow-auto whitespace-pre-wrap break-words rounded-lg bg-field p-3 font-mono text-xs leading-6 text-ink">{artifact.outputText}</pre> : tables ? (
               tables.map(({ name, rows }, tableIndex) => (
                 <section key={name ?? tableIndex} className="mb-5 last:mb-0">
                   {name && <h3 className="mb-2 text-xs font-semibold text-zinc-700">{name}</h3>}
@@ -145,7 +148,7 @@ export default function ArtifactPanel({
               <CodePreview code={JSON.stringify(artifact.data ?? [], null, 2)} language="json" />
             ))}
           {activeTab === 'sql' && (
-            <CodePreview code={artifact.code ?? t('noQueryGeneratedYet')} language={live ? 'javascript' : 'sql'} />
+            <CodePreview code={artifact.code ?? t('noQueryGeneratedYet')} language={codeLanguage} />
           )}
         </div>
         {report && (

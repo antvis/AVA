@@ -1,0 +1,17 @@
+/bin/zsh -lc "cat output/monthly.json && cat > output/breakdown.sql <<'SQL'
+WITH base AS (
+ SELECT *,
+  (ROUND(CAST(line_paid_amount AS DECIMAL(18,2))*CAST(commission_rate AS DECIMAL(6,4)),2)-ROUND(COALESCE(CAST(refund_amount AS DECIMAL(18,2)),0)*CAST(commission_rate AS DECIMAL(6,4)),2)) AS net_line,
+  strftime(CAST(completed_at AS DATE), '%Y-%m') AS month
+ FROM data
+ WHERE order_kind='customer_sale' AND status='completed'
+  AND CAST(completed_at AS DATE) >= DATE '2026-08-01'
+  AND CAST(completed_at AS DATE) < DATE '2026-10-01'
+), monthly AS (
+ SELECT category, SUM(CASE WHEN month='2026-08' THEN net_line ELSE 0 END) AS aug,
+        SUM(CASE WHEN month='2026-09' THEN net_line ELSE 0 END) AS sep
+ FROM base GROUP BY category
+)
+SELECT category, aug, sep, sep-aug AS change FROM monthly ORDER BY ABS(sep-aug) DESC;
+SQL
+ava query ds_sales_4e138c7b982b --dsl @output/breakdown.sql > output/breakdown.json"

@@ -1,0 +1,517 @@
+{
+  "data": [
+    {
+      "cohort_date": "2026-07-01",
+      "channel": "推广渠道",
+      "new_users": 20,
+      "d7_users": 2,
+      "d7_pct": 10
+    },
+    {
+      "cohort_date": "2026-07-01",
+      "channel": "自然渠道",
+      "new_users": 80,
+      "d7_users": 48,
+      "d7_pct": 60
+    },
+    {
+      "cohort_date": "2026-07-02",
+      "channel": "推广渠道",
+      "new_users": 20,
+      "d7_users": 2,
+      "d7_pct": 10
+    },
+    {
+      "cohort_date": "2026-07-02",
+      "channel": "自然渠道",
+      "new_users": 80,
+      "d7_users": 48,
+      "d7_pct": 60
+    },
+    {
+      "cohort_date": "2026-07-03",
+      "channel": "推广渠道",
+      "new_users": 20,
+      "d7_users": 2,
+      "d7_pct": 10
+    },
+    {
+      "cohort_date": "2026-07-03",
+      "channel": "自然渠道",
+      "new_users": 80,
+      "d7_users": 48,
+      "d7_pct": 60
+    },
+    {
+      "cohort_date": "2026-07-04",
+      "channel": "推广渠道",
+      "new_users": 20,
+      "d7_users": 2,
+      "d7_pct": 10
+    },
+    {
+      "cohort_date": "2026-07-04",
+      "channel": "自然渠道",
+      "new_users": 80,
+      "d7_users": 48,
+      "d7_pct": 60
+    },
+    {
+      "cohort_date": "2026-07-05",
+      "channel": "推广渠道",
+      "new_users": 20,
+      "d7_users": 2,
+      "d7_pct": 10
+    },
+    {
+      "cohort_date": "2026-07-05",
+      "channel": "自然渠道",
+      "new_users": 80,
+      "d7_users": 48,
+      "d7_pct": 60
+    },
+    {
+      "cohort_date": "2026-07-06",
+      "channel": "推广渠道",
+      "new_users": 20,
+      "d7_users": 2,
+      "d7_pct": 10
+    },
+    {
+      "cohort_date": "2026-07-06",
+      "channel": "自然渠道",
+      "new_users": 80,
+      "d7_users": 48,
+      "d7_pct": 60
+    },
+    {
+      "cohort_date": "2026-07-07",
+      "channel": "推广渠道",
+      "new_users": 20,
+      "d7_users": 2,
+      "d7_pct": 10
+    },
+    {
+      "cohort_date": "2026-07-07",
+      "channel": "自然渠道",
+      "new_users": 80,
+      "d7_users": 48,
+      "d7_pct": 60
+    },
+    {
+      "cohort_date": "2026-07-08",
+      "channel": "推广渠道",
+      "new_users": 20,
+      "d7_users": 2,
+      "d7_pct": 10
+    },
+    {
+      "cohort_date": "2026-07-08",
+      "channel": "自然渠道",
+      "new_users": 80,
+      "d7_users": 48,
+      "d7_pct": 60
+    },
+    {
+      "cohort_date": "2026-07-09",
+      "channel": "推广渠道",
+      "new_users": 20,
+      "d7_users": 2,
+      "d7_pct": 10
+    },
+    {
+      "cohort_date": "2026-07-09",
+      "channel": "自然渠道",
+      "new_users": 80,
+      "d7_users": 48,
+      "d7_pct": 60
+    },
+    {
+      "cohort_date": "2026-07-10",
+      "channel": "推广渠道",
+      "new_users": 20,
+      "d7_users": 2,
+      "d7_pct": 10
+    },
+    {
+      "cohort_date": "2026-07-10",
+      "channel": "自然渠道",
+      "new_users": 80,
+      "d7_users": 48,
+      "d7_pct": 60
+    },
+    {
+      "cohort_date": "2026-07-11",
+      "channel": "推广渠道",
+      "new_users": 20,
+      "d7_users": 2,
+      "d7_pct": 10
+    },
+    {
+      "cohort_date": "2026-07-11",
+      "channel": "自然渠道",
+      "new_users": 80,
+      "d7_users": 48,
+      "d7_pct": 60
+    },
+    {
+      "cohort_date": "2026-07-12",
+      "channel": "推广渠道",
+      "new_users": 20,
+      "d7_users": 2,
+      "d7_pct": 10
+    },
+    {
+      "cohort_date": "2026-07-12",
+      "channel": "自然渠道",
+      "new_users": 80,
+      "d7_users": 48,
+      "d7_pct": 60
+    },
+    {
+      "cohort_date": "2026-07-13",
+      "channel": "推广渠道",
+      "new_users": 20,
+      "d7_users": 2,
+      "d7_pct": 10
+    },
+    {
+      "cohort_date": "2026-07-13",
+      "channel": "自然渠道",
+      "new_users": 80,
+      "d7_users": 48,
+      "d7_pct": 60
+    },
+    {
+      "cohort_date": "2026-07-14",
+      "channel": "推广渠道",
+      "new_users": 20,
+      "d7_users": 2,
+      "d7_pct": 10
+    },
+    {
+      "cohort_date": "2026-07-14",
+      "channel": "自然渠道",
+      "new_users": 80,
+      "d7_users": 48,
+      "d7_pct": 60
+    },
+    {
+      "cohort_date": "2026-07-15",
+      "channel": "推广渠道",
+      "new_users": 120,
+      "d7_users": 12,
+      "d7_pct": 10
+    },
+    {
+      "cohort_date": "2026-07-15",
+      "channel": "自然渠道",
+      "new_users": 80,
+      "d7_users": 48,
+      "d7_pct": 60
+    },
+    {
+      "cohort_date": "2026-07-16",
+      "channel": "推广渠道",
+      "new_users": 120,
+      "d7_users": 12,
+      "d7_pct": 10
+    },
+    {
+      "cohort_date": "2026-07-16",
+      "channel": "自然渠道",
+      "new_users": 80,
+      "d7_users": 48,
+      "d7_pct": 60
+    },
+    {
+      "cohort_date": "2026-07-17",
+      "channel": "推广渠道",
+      "new_users": 120,
+      "d7_users": 12,
+      "d7_pct": 10
+    },
+    {
+      "cohort_date": "2026-07-17",
+      "channel": "自然渠道",
+      "new_users": 80,
+      "d7_users": 48,
+      "d7_pct": 60
+    },
+    {
+      "cohort_date": "2026-07-18",
+      "channel": "推广渠道",
+      "new_users": 120,
+      "d7_users": 12,
+      "d7_pct": 10
+    },
+    {
+      "cohort_date": "2026-07-18",
+      "channel": "自然渠道",
+      "new_users": 80,
+      "d7_users": 48,
+      "d7_pct": 60
+    },
+    {
+      "cohort_date": "2026-07-19",
+      "channel": "推广渠道",
+      "new_users": 120,
+      "d7_users": 12,
+      "d7_pct": 10
+    },
+    {
+      "cohort_date": "2026-07-19",
+      "channel": "自然渠道",
+      "new_users": 80,
+      "d7_users": 48,
+      "d7_pct": 60
+    },
+    {
+      "cohort_date": "2026-07-20",
+      "channel": "推广渠道",
+      "new_users": 120,
+      "d7_users": 12,
+      "d7_pct": 10
+    },
+    {
+      "cohort_date": "2026-07-20",
+      "channel": "自然渠道",
+      "new_users": 80,
+      "d7_users": 48,
+      "d7_pct": 60
+    },
+    {
+      "cohort_date": "2026-07-21",
+      "channel": "推广渠道",
+      "new_users": 120,
+      "d7_users": 12,
+      "d7_pct": 10
+    },
+    {
+      "cohort_date": "2026-07-21",
+      "channel": "自然渠道",
+      "new_users": 80,
+      "d7_users": 48,
+      "d7_pct": 60
+    },
+    {
+      "cohort_date": "2026-07-22",
+      "channel": "推广渠道",
+      "new_users": 120,
+      "d7_users": 12,
+      "d7_pct": 10
+    },
+    {
+      "cohort_date": "2026-07-22",
+      "channel": "自然渠道",
+      "new_users": 80,
+      "d7_users": 48,
+      "d7_pct": 60
+    },
+    {
+      "cohort_date": "2026-07-23",
+      "channel": "推广渠道",
+      "new_users": 120,
+      "d7_users": 12,
+      "d7_pct": 10
+    },
+    {
+      "cohort_date": "2026-07-23",
+      "channel": "自然渠道",
+      "new_users": 80,
+      "d7_users": 48,
+      "d7_pct": 60
+    },
+    {
+      "cohort_date": "2026-07-24",
+      "channel": "推广渠道",
+      "new_users": 120,
+      "d7_users": 12,
+      "d7_pct": 10
+    },
+    {
+      "cohort_date": "2026-07-24",
+      "channel": "自然渠道",
+      "new_users": 80,
+      "d7_users": 48,
+      "d7_pct": 60
+    },
+    {
+      "cohort_date": "2026-07-25",
+      "channel": "推广渠道",
+      "new_users": 120,
+      "d7_users": 12,
+      "d7_pct": 10
+    },
+    {
+      "cohort_date": "2026-07-25",
+      "channel": "自然渠道",
+      "new_users": 80,
+      "d7_users": 48,
+      "d7_pct": 60
+    },
+    {
+      "cohort_date": "2026-07-26",
+      "channel": "推广渠道",
+      "new_users": 120,
+      "d7_users": 12,
+      "d7_pct": 10
+    },
+    {
+      "cohort_date": "2026-07-26",
+      "channel": "自然渠道",
+      "new_users": 80,
+      "d7_users": 48,
+      "d7_pct": 60
+    },
+    {
+      "cohort_date": "2026-07-27",
+      "channel": "推广渠道",
+      "new_users": 120,
+      "d7_users": 12,
+      "d7_pct": 10
+    },
+    {
+      "cohort_date": "2026-07-27",
+      "channel": "自然渠道",
+      "new_users": 80,
+      "d7_users": 48,
+      "d7_pct": 60
+    },
+    {
+      "cohort_date": "2026-07-28",
+      "channel": "推广渠道",
+      "new_users": 120,
+      "d7_users": 12,
+      "d7_pct": 10
+    },
+    {
+      "cohort_date": "2026-07-28",
+      "channel": "自然渠道",
+      "new_users": 80,
+      "d7_users": 48,
+      "d7_pct": 60
+    },
+    {
+      "cohort_date": "2026-07-29",
+      "channel": "推广渠道",
+      "new_users": 120,
+      "d7_users": 12,
+      "d7_pct": 10
+    },
+    {
+      "cohort_date": "2026-07-29",
+      "channel": "自然渠道",
+      "new_users": 80,
+      "d7_users": 48,
+      "d7_pct": 60
+    },
+    {
+      "cohort_date": "2026-07-30",
+      "channel": "推广渠道",
+      "new_users": 120,
+      "d7_users": 12,
+      "d7_pct": 10
+    },
+    {
+      "cohort_date": "2026-07-30",
+      "channel": "自然渠道",
+      "new_users": 80,
+      "d7_users": 48,
+      "d7_pct": 60
+    },
+    {
+      "cohort_date": "2026-07-31",
+      "channel": "推广渠道",
+      "new_users": 120,
+      "d7_users": 12,
+      "d7_pct": 10
+    },
+    {
+      "cohort_date": "2026-07-31",
+      "channel": "自然渠道",
+      "new_users": 80,
+      "d7_users": 48,
+      "d7_pct": 60
+    },
+    {
+      "cohort_date": "2026-08-01",
+      "channel": "推广渠道",
+      "new_users": 120,
+      "d7_users": 12,
+      "d7_pct": 10
+    },
+    {
+      "cohort_date": "2026-08-01",
+      "channel": "自然渠道",
+      "new_users": 80,
+      "d7_users": 48,
+      "d7_pct": 60
+    },
+    {
+      "cohort_date": "2026-08-02",
+      "channel": "推广渠道",
+      "new_users": 120,
+      "d7_users": 12,
+      "d7_pct": 10
+    },
+    {
+      "cohort_date": "2026-08-02",
+      "channel": "自然渠道",
+      "new_users": 80,
+      "d7_users": 48,
+      "d7_pct": 60
+    },
+    {
+      "cohort_date": "2026-08-03",
+      "channel": "推广渠道",
+      "new_users": 120,
+      "d7_users": 12,
+      "d7_pct": 10
+    },
+    {
+      "cohort_date": "2026-08-03",
+      "channel": "自然渠道",
+      "new_users": 80,
+      "d7_users": 48,
+      "d7_pct": 60
+    },
+    {
+      "cohort_date": "2026-08-04",
+      "channel": "推广渠道",
+      "new_users": 120,
+      "d7_users": 12,
+      "d7_pct": 10
+    },
+    {
+      "cohort_date": "2026-08-04",
+      "channel": "自然渠道",
+      "new_users": 80,
+      "d7_users": 48,
+      "d7_pct": 60
+    }
+  ],
+  "schema": [
+    {
+      "name": "cohort_date",
+      "type": "DATE"
+    },
+    {
+      "name": "channel",
+      "type": "VARCHAR"
+    },
+    {
+      "name": "new_users",
+      "type": "BIGINT"
+    },
+    {
+      "name": "d7_users",
+      "type": "BIGINT"
+    },
+    {
+      "name": "d7_pct",
+      "type": "DOUBLE"
+    }
+  ],
+  "rowCount": 70
+}

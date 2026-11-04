@@ -1,0 +1,607 @@
+{
+  "data": [
+    {
+      "selling_store_name": "深圳南山店",
+      "channel": "线上商城",
+      "product_name": "电动升降桌",
+      "august": 1790783.35,
+      "september": 1232006.98,
+      "change": -558776.37
+    },
+    {
+      "selling_store_name": "杭州武林店",
+      "channel": "线上商城",
+      "product_name": "人体工学椅Pro",
+      "august": 52790.97,
+      "september": 24749.5,
+      "change": -28041.47
+    },
+    {
+      "selling_store_name": "北京朝阳店",
+      "channel": "线下门店",
+      "product_name": "人体工学椅Pro",
+      "august": 61961.25,
+      "september": 37856.32,
+      "change": -24104.93
+    },
+    {
+      "selling_store_name": "北京朝阳店",
+      "channel": "线上商城",
+      "product_name": "电动升降桌",
+      "august": 98835.45,
+      "september": 75844.65,
+      "change": -22990.8
+    },
+    {
+      "selling_store_name": "广州天河店",
+      "channel": "线上商城",
+      "product_name": "人体工学椅Pro",
+      "august": 68677.05,
+      "september": 46291.05,
+      "change": -22386
+    },
+    {
+      "selling_store_name": "天津和平店",
+      "channel": "线下门店",
+      "product_name": "人体工学椅Pro",
+      "august": 76752,
+      "september": 55165.5,
+      "change": -21586.5
+    },
+    {
+      "selling_store_name": "广州天河店",
+      "channel": "线下门店",
+      "product_name": "人体工学椅Pro",
+      "august": 74273.55,
+      "september": 58963.12,
+      "change": -15310.43
+    },
+    {
+      "selling_store_name": "上海徐汇店",
+      "channel": "线上商城",
+      "product_name": "电动升降桌",
+      "august": 105707.7,
+      "september": 91838.25,
+      "change": -13869.45
+    },
+    {
+      "selling_store_name": "天津和平店",
+      "channel": "线上商城",
+      "product_name": "电动升降桌",
+      "august": 99085.35,
+      "september": 85715.7,
+      "change": -13369.65
+    },
+    {
+      "selling_store_name": "广州天河店",
+      "channel": "线上商城",
+      "product_name": "电动升降桌",
+      "august": 83903.92,
+      "september": 74095.35,
+      "change": -9808.57
+    },
+    {
+      "selling_store_name": "上海徐汇店",
+      "channel": "线上商城",
+      "product_name": "27英寸显示器",
+      "august": 46828.95,
+      "september": 38645.25,
+      "change": -8183.7
+    },
+    {
+      "selling_store_name": "上海徐汇店",
+      "channel": "线上商城",
+      "product_name": "人体工学椅Pro",
+      "august": 65638.95,
+      "september": 58043.7,
+      "change": -7595.25
+    },
+    {
+      "selling_store_name": "深圳南山店",
+      "channel": "线上商城",
+      "product_name": "人体工学椅Pro",
+      "august": 72194.85,
+      "september": 65159.25,
+      "change": -7035.6
+    },
+    {
+      "selling_store_name": "上海徐汇店",
+      "channel": "线下门店",
+      "product_name": "27英寸显示器",
+      "august": 50466.15,
+      "september": 44166,
+      "change": -6300.15
+    },
+    {
+      "selling_store_name": "深圳南山店",
+      "channel": "线下门店",
+      "product_name": "无线耳机",
+      "august": 21382.15,
+      "september": 16616.7,
+      "change": -4765.45
+    },
+    {
+      "selling_store_name": "广州天河店",
+      "channel": "线上商城",
+      "product_name": "无线耳机",
+      "august": 19984.95,
+      "september": 15668.6,
+      "change": -4316.35
+    },
+    {
+      "selling_store_name": "北京朝阳店",
+      "channel": "线上商城",
+      "product_name": "人体工学椅Pro",
+      "august": 56804.47,
+      "september": 53166.75,
+      "change": -3637.72
+    },
+    {
+      "selling_store_name": "深圳南山店",
+      "channel": "线上商城",
+      "product_name": "无线耳机",
+      "august": 18837.25,
+      "september": 15693.55,
+      "change": -3143.7
+    },
+    {
+      "selling_store_name": "上海徐汇店",
+      "channel": "线下门店",
+      "product_name": "无线耳机",
+      "august": 22629.65,
+      "september": 19585.75,
+      "change": -3043.9
+    },
+    {
+      "selling_store_name": "天津和平店",
+      "channel": "线上商城",
+      "product_name": "无线耳机",
+      "august": 21906.1,
+      "september": 19111.7,
+      "change": -2794.4
+    },
+    {
+      "selling_store_name": "深圳南山店",
+      "channel": "线下门店",
+      "product_name": "无线鼠标",
+      "august": 17147.31,
+      "september": 14364.15,
+      "change": -2783.16
+    },
+    {
+      "selling_store_name": "北京朝阳店",
+      "channel": "线上商城",
+      "product_name": "无线键盘",
+      "august": 12139.4,
+      "september": 9605.37,
+      "change": -2534.03
+    },
+    {
+      "selling_store_name": "天津和平店",
+      "channel": "线下门店",
+      "product_name": "无线耳机",
+      "august": 20658.6,
+      "september": 18487.95,
+      "change": -2170.65
+    },
+    {
+      "selling_store_name": "上海徐汇店",
+      "channel": "线下门店",
+      "product_name": "无线键盘",
+      "august": 11683.42,
+      "september": 9612.85,
+      "change": -2070.57
+    },
+    {
+      "selling_store_name": "广州天河店",
+      "channel": "线下门店",
+      "product_name": "电动升降桌",
+      "august": 97710.9,
+      "september": 96086.55,
+      "change": -1624.35
+    },
+    {
+      "selling_store_name": "广州天河店",
+      "channel": "线下门店",
+      "product_name": "无线耳机",
+      "august": 20459,
+      "september": 18862.2,
+      "change": -1596.8
+    },
+    {
+      "selling_store_name": "北京朝阳店",
+      "channel": "线上商城",
+      "product_name": "无线鼠标",
+      "august": 14406.07,
+      "september": 13087.05,
+      "change": -1319.02
+    },
+    {
+      "selling_store_name": "广州天河店",
+      "channel": "线上商城",
+      "product_name": "无线键盘",
+      "august": 11347.05,
+      "september": 10106.2,
+      "change": -1240.85
+    },
+    {
+      "selling_store_name": "天津和平店",
+      "channel": "线上商城",
+      "product_name": "无线键盘",
+      "august": 10300.55,
+      "september": 9134.45,
+      "change": -1166.1
+    },
+    {
+      "selling_store_name": "天津和平店",
+      "channel": "线上商城",
+      "product_name": "无线鼠标",
+      "august": 15380.01,
+      "september": 14228.69,
+      "change": -1151.32
+    },
+    {
+      "selling_store_name": "北京朝阳店",
+      "channel": "线上商城",
+      "product_name": "无线耳机",
+      "august": 19461,
+      "september": 18413.1,
+      "change": -1047.9
+    },
+    {
+      "selling_store_name": "天津和平店",
+      "channel": "线下门店",
+      "product_name": "27英寸显示器",
+      "august": 41113.35,
+      "september": 40106.62,
+      "change": -1006.73
+    },
+    {
+      "selling_store_name": "天津和平店",
+      "channel": "线下门店",
+      "product_name": "无线鼠标",
+      "august": 15180.07,
+      "september": 14177.1,
+      "change": -1002.97
+    },
+    {
+      "selling_store_name": "深圳南山店",
+      "channel": "线下门店",
+      "product_name": "无线键盘",
+      "august": 11915.15,
+      "september": 10928.44,
+      "change": -986.71
+    },
+    {
+      "selling_store_name": "上海徐汇店",
+      "channel": "线下门店",
+      "product_name": "无线鼠标",
+      "august": 15689.61,
+      "september": 14741.47,
+      "change": -948.14
+    },
+    {
+      "selling_store_name": "上海徐汇店",
+      "channel": "线上商城",
+      "product_name": "无线鼠标",
+      "august": 14967.22,
+      "september": 14064.22,
+      "change": -903
+    },
+    {
+      "selling_store_name": "杭州武林店",
+      "channel": "线上商城",
+      "product_name": "电动升降桌",
+      "august": 3081.23,
+      "september": 2515.19,
+      "change": -566.04
+    },
+    {
+      "selling_store_name": "杭州武林店",
+      "channel": "线下门店",
+      "product_name": "电动升降桌",
+      "august": 2974.39,
+      "september": 2425.26,
+      "change": -549.13
+    },
+    {
+      "selling_store_name": "杭州武林店",
+      "channel": "线下门店",
+      "product_name": "人体工学椅Pro",
+      "august": 1698.09,
+      "september": 1453.44,
+      "change": -244.65
+    },
+    {
+      "selling_store_name": "天津和平店",
+      "channel": "线下门店",
+      "product_name": "无线键盘",
+      "august": 11646.05,
+      "september": 11451.7,
+      "change": -194.35
+    },
+    {
+      "selling_store_name": "杭州武林店",
+      "channel": "线下门店",
+      "product_name": "无线耳机",
+      "august": 661.62,
+      "september": 560.59,
+      "change": -101.03
+    },
+    {
+      "selling_store_name": "杭州武林店",
+      "channel": "线下门店",
+      "product_name": "27英寸显示器",
+      "august": 1512.01,
+      "september": 1425.29,
+      "change": -86.72
+    },
+    {
+      "selling_store_name": "上海徐汇店",
+      "channel": "线下门店",
+      "product_name": "人体工学椅Pro",
+      "august": 59562.75,
+      "september": 59482.8,
+      "change": -79.95
+    },
+    {
+      "selling_store_name": "杭州武林店",
+      "channel": "线下门店",
+      "product_name": "无线键盘",
+      "august": 391.52,
+      "september": 324.89,
+      "change": -66.63
+    },
+    {
+      "selling_store_name": "杭州武林店",
+      "channel": "线下门店",
+      "product_name": "无线鼠标",
+      "august": 414.87,
+      "september": 375.52,
+      "change": -39.35
+    },
+    {
+      "selling_store_name": "广州天河店",
+      "channel": "线下门店",
+      "product_name": "无线键盘",
+      "august": 12184.25,
+      "september": 12214.15,
+      "change": 29.9
+    },
+    {
+      "selling_store_name": "杭州武林店",
+      "channel": "线上商城",
+      "product_name": "无线键盘",
+      "august": 304.49,
+      "september": 346.66,
+      "change": 42.17
+    },
+    {
+      "selling_store_name": "杭州武林店",
+      "channel": "线上商城",
+      "product_name": "无线鼠标",
+      "august": 370.75,
+      "september": 418.37,
+      "change": 47.62
+    },
+    {
+      "selling_store_name": "杭州武林店",
+      "channel": "线上商城",
+      "product_name": "无线耳机",
+      "august": 471.51,
+      "september": 550.84,
+      "change": 79.33
+    },
+    {
+      "selling_store_name": "深圳南山店",
+      "channel": "线上商城",
+      "product_name": "无线鼠标",
+      "august": 13764.3,
+      "september": 13851.37,
+      "change": 87.07
+    },
+    {
+      "selling_store_name": "杭州武林店",
+      "channel": "线上商城",
+      "product_name": "27英寸显示器",
+      "august": 1451.59,
+      "september": 1671.76,
+      "change": 220.17
+    },
+    {
+      "selling_store_name": "广州天河店",
+      "channel": "线上商城",
+      "product_name": "无线鼠标",
+      "august": 14725.35,
+      "september": 15196.2,
+      "change": 470.85
+    },
+    {
+      "selling_store_name": "深圳南山店",
+      "channel": "线上商城",
+      "product_name": "无线键盘",
+      "august": 10061.35,
+      "september": 10689.25,
+      "change": 627.9
+    },
+    {
+      "selling_store_name": "广州天河店",
+      "channel": "线下门店",
+      "product_name": "无线鼠标",
+      "august": 15886.34,
+      "september": 17250.51,
+      "change": 1364.17
+    },
+    {
+      "selling_store_name": "北京朝阳店",
+      "channel": "线下门店",
+      "product_name": "无线耳机",
+      "august": 19261.39,
+      "september": 20696.02,
+      "change": 1434.63
+    },
+    {
+      "selling_store_name": "北京朝阳店",
+      "channel": "线下门店",
+      "product_name": "无线键盘",
+      "august": 12453.35,
+      "september": 14112.8,
+      "change": 1659.45
+    },
+    {
+      "selling_store_name": "深圳南山店",
+      "channel": "线下门店",
+      "product_name": "人体工学椅Pro",
+      "august": 55885.05,
+      "september": 57564,
+      "change": 1678.95
+    },
+    {
+      "selling_store_name": "上海徐汇店",
+      "channel": "线上商城",
+      "product_name": "无线键盘",
+      "august": 9418.5,
+      "september": 11302.2,
+      "change": 1883.7
+    },
+    {
+      "selling_store_name": "北京朝阳店",
+      "channel": "线下门店",
+      "product_name": "27英寸显示器",
+      "august": 51245.55,
+      "september": 53259,
+      "change": 2013.45
+    },
+    {
+      "selling_store_name": "北京朝阳店",
+      "channel": "线下门店",
+      "product_name": "无线鼠标",
+      "august": 12893.54,
+      "september": 14918.85,
+      "change": 2025.31
+    },
+    {
+      "selling_store_name": "天津和平店",
+      "channel": "线上商城",
+      "product_name": "27英寸显示器",
+      "august": 47381.02,
+      "september": 49426.95,
+      "change": 2045.93
+    },
+    {
+      "selling_store_name": "深圳南山店",
+      "channel": "线下门店",
+      "product_name": "27英寸显示器",
+      "august": 43289.17,
+      "september": 46439.25,
+      "change": 3150.08
+    },
+    {
+      "selling_store_name": "北京朝阳店",
+      "channel": "线上商城",
+      "product_name": "27英寸显示器",
+      "august": 51310.5,
+      "september": 54752.85,
+      "change": 3442.35
+    },
+    {
+      "selling_store_name": "上海徐汇店",
+      "channel": "线上商城",
+      "product_name": "无线耳机",
+      "august": 14870.2,
+      "september": 18338.25,
+      "change": 3468.05
+    },
+    {
+      "selling_store_name": "上海徐汇店",
+      "channel": "线下门店",
+      "product_name": "电动升降桌",
+      "august": 89714.1,
+      "september": 93337.65,
+      "change": 3623.55
+    },
+    {
+      "selling_store_name": "北京朝阳店",
+      "channel": "线下门店",
+      "product_name": "电动升降桌",
+      "august": 96336.45,
+      "september": 102209.1,
+      "change": 5872.65
+    },
+    {
+      "selling_store_name": "深圳南山店",
+      "channel": "线上商城",
+      "product_name": "27英寸显示器",
+      "august": 45594.9,
+      "september": 51830.1,
+      "change": 6235.2
+    },
+    {
+      "selling_store_name": "天津和平店",
+      "channel": "线上商城",
+      "product_name": "人体工学椅Pro",
+      "august": 48529.65,
+      "september": 57564,
+      "change": 9034.35
+    },
+    {
+      "selling_store_name": "深圳南山店",
+      "channel": "线下门店",
+      "product_name": "电动升降桌",
+      "august": 98960.4,
+      "september": 116703.3,
+      "change": 17742.9
+    },
+    {
+      "selling_store_name": "天津和平店",
+      "channel": "线下门店",
+      "product_name": "电动升降桌",
+      "august": 86277.97,
+      "september": 107956.8,
+      "change": 21678.83
+    },
+    {
+      "selling_store_name": "广州天河店",
+      "channel": "线下门店",
+      "product_name": "27英寸显示器",
+      "august": 50401.2,
+      "september": 104569.5,
+      "change": 54168.3
+    },
+    {
+      "selling_store_name": "广州天河店",
+      "channel": "线上商城",
+      "product_name": "27英寸显示器",
+      "august": 49037.25,
+      "september": 116000.69,
+      "change": 66963.44
+    }
+  ],
+  "schema": [
+    {
+      "name": "selling_store_name",
+      "type": "VARCHAR"
+    },
+    {
+      "name": "channel",
+      "type": "VARCHAR"
+    },
+    {
+      "name": "product_name",
+      "type": "VARCHAR"
+    },
+    {
+      "name": "august",
+      "type": "DECIMAL(38,2)"
+    },
+    {
+      "name": "september",
+      "type": "DECIMAL(38,2)"
+    },
+    {
+      "name": "change",
+      "type": "DECIMAL(38,2)"
+    }
+  ],
+  "rowCount": 72
+}

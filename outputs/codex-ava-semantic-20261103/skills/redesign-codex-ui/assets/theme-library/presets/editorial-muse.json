@@ -1,0 +1,20 @@
+{
+  "schemaVersion": 1,
+  "id": "editorial-muse",
+  "label": "Editorial Muse",
+  "category": "editorial",
+  "tags": ["magazine", "photography", "fashion", "refined"],
+  "derivedFrom": "original-archetype",
+  "concept": {"identityIntensity": "medium-high", "thesis": "A disciplined editorial layout where portrait, typography, and code share one grid.", "mood": ["art-directed", "precise", "cultured"], "forbiddenMotifs": ["scrapbook-clutter", "rounded-everything", "cute-stickers"]},
+  "layout": {"archetype": "editorial-grid-index", "navigation": "numbered-index", "hero": "split-cover-story", "composer": "caption-bar", "density": "medium"},
+  "palette": {"canvas": "#EEECE7", "surface": "#F9F8F5", "surfaceRaised": "#FFFFFF", "ink": "#171717", "mutedInk": "#6B6862", "accent": "#9C3528", "accentSoft": "#E9D5D1", "line": "#C9C5BE", "focus": "#7D241A"},
+  "typography": {"display": "high-contrast-serif", "body": "neutral-grotesk", "code": "system-monospace", "accent": "italic-serif"},
+  "shape": {"panelRadius": 2, "controlRadius": 2, "elevation": "flat-rule-lines"},
+  "decoration": {"level": "low", "motifs": ["folio-number", "crop-mark", "caption-rule"], "pointerEvents": "none"},
+  "motion": {"character": "page-cut", "durationMs": 140, "reducedMotion": "instant"},
+  "mediaSlots": [{"id": "coverPortrait", "role": "hero", "aspect": "4:5", "focalPoint": "50% 25%", "fallback": "typographic-cover"}, {"id": "wordmark", "role": "accent", "aspect": "5:1", "focalPoint": "50% 50%", "fallback": "display-name"}],
+  "quickActions": [{"id": "explore", "label": "Research the codebase"}, {"id": "build", "label": "Commission a feature"}, {"id": "review", "label": "Edit and review"}, {"id": "fix", "label": "Correct the issue"}],
+  "responsive": {"narrowNavigation": "sheet-index", "narrowHero": "cover-above-copy", "narrowCards": "single-column-rules", "hideMotifs": ["crop-mark"], "missingMedia": "typographic-cover"},
+  "assetPolicy": {"provenance": "required", "remoteHotlink": false, "licensedOrOwned": true},
+  "accessibility": {"contrastTarget": "WCAG-AA", "preserveSemanticStates": true, "decorationAriaHidden": true}
+}

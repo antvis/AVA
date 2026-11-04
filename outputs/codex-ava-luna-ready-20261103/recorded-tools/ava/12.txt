@@ -1,0 +1,91 @@
+{
+  "data": [
+    {
+      "selling_region": "华南",
+      "aug": 2718406.04,
+      "sep": 2237150.46,
+      "change": -481255.58
+    },
+    {
+      "selling_region": "华东",
+      "aug": 573300.24,
+      "sep": 509975.7,
+      "change": -63324.54
+    },
+    {
+      "selling_region": "华北",
+      "aug": 1001319.14,
+      "sep": 950449.02,
+      "change": -50870.12
+    }
+  ],
+  "schema": [
+    {
+      "name": "selling_region",
+      "type": "VARCHAR"
+    },
+    {
+      "name": "aug",
+      "type": "DECIMAL(38,2)"
+    },
+    {
+      "name": "sep",
+      "type": "DECIMAL(38,2)"
+    },
+    {
+      "name": "change",
+      "type": "DECIMAL(38,2)"
+    }
+  ],
+  "rowCount": 3
+}
+{
+  "data": [
+    {
+      "channel": "线上商城",
+      "aug": 3010353.2,
+      "sep": 2389124.04,
+      "change": -621229.16
+    },
+    {
+      "channel": "线下门店",
+      "aug": 1282672.22,
+      "sep": 1308451.14,
+      "change": 25778.92
+    }
+  ],
+  "schema": [
+    {
+      "name": "channel",
+      "type": "VARCHAR"
+    },
+    {
+      "name": "aug",
+      "type": "DECIMAL(38,2)"
+    },
+    {
+      "name": "sep",
+      "type": "DECIMAL(38,2)"
+    },
+    {
+      "name": "change",
+      "type": "DECIMAL(38,2)"
+    }
+  ],
+  "rowCount": 2
+}
+Render a chart specification to HTML.
+
+Usage:
+  ava viz --spec <json|@file|-> --output <path>
+
+Spec must contain chartType and config (GPT-Vis JSON config), as returned by ava recommend.
+Returns { "output": "<absolute-path>" } as JSON. No API key is required.
+
+Options:
+  --spec <json|@file|->  Required JSON spec, @file, or - for stdin.
+  -o, --output <path>    Required HTML file path; existing files are not overwritten.
+  -h, --help             Show help.
+
+Example:
+  ava viz --spec @chart.json --output chart.html

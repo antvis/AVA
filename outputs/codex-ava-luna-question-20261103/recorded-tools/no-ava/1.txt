@@ -1,0 +1,3 @@
+inputs/sales.csv
+AGENTS.md
+prompt.txt

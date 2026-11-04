@@ -1,0 +1,64 @@
+{
+  "synthetic": true,
+  "model": "GLM-5.1",
+  "same_data_question_semantic": true,
+  "bare_unchanged": true,
+  "analysis_results": 5,
+  "all_five_charts_generated": true,
+  "all_five_charts_browser_visually_inspected": true,
+  "all_five_canvases": {
+    "display_width": 955,
+    "display_height": 320
+  },
+  "chart_checks": {
+    "R3": {
+      "source_values_match": true,
+      "change_reconciles": true,
+      "unit": "万元",
+      "config_sha256": "2d573cfad304f3ff6db2131a1984aaafdd726f358b0826e83725a86ee9e60792"
+    },
+    "R4": {
+      "source_values_match": true,
+      "change_reconciles": true,
+      "unit": "万元",
+      "config_sha256": "3165eed0001e58ac14301548b96736e0a3927b8b24ded64646444520e5fcb2e0"
+    },
+    "R5": {
+      "source_values_match": true,
+      "change_reconciles": true,
+      "unit": "万元",
+      "config_sha256": "bc650dea70db65cf6a9e260c015a6edb7d50b58f0cb3984254d925ec449bfd46"
+    },
+    "R6": {
+      "source_values_match": true,
+      "change_reconciles": true,
+      "unit": "万元",
+      "config_sha256": "9a74f24e2c75bdb7e42fcdec5a4ec5f38f361224687eb4facd1f26a05477fbc2"
+    },
+    "R2": {
+      "source_values_match": true,
+      "grouped_bars": true,
+      "unit": "元",
+      "config_sha256": "c43bd35c40c26520991afffee88a4a4b1369295ba393f9c74f8fac740854bd3d"
+    }
+  },
+  "main_answer_file": "pair-01/ava/main-review-format/answer.txt",
+  "all_references_resolve": true,
+  "all_model_text_retained_in_process": true,
+  "final_answer_unchanged_from_model": true,
+  "failed_tool_calls_retained": 4,
+  "main_agent_review_calls": 2,
+  "equal_inference_budget_comparison": false,
+  "checks": {
+    "focused_tests": 14,
+    "site_typecheck": "passed"
+  },
+  "limits": [
+    "Single synthetic case.",
+    "AVA has extra factual and formatting review calls; no general accuracy claim."
+  ],
+  "formatted_final_headings_verified_in_browser": true,
+  "formatted_final_five_canvases_verified": true,
+  "raw_reference_markers_visible": false,
+  "original_failed_calls_retained": 4
+}

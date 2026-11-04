@@ -26,3 +26,4 @@ package.json
 .umi
 .umi-production
 .umi-test
+!4.0-publish-notes.md

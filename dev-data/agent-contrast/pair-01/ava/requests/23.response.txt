@@ -1,0 +1,44 @@
+data:{"object":"chat.completion.chunk","id":"0b43d5dd17931094929965654e7d1a","choices":[{"index":0,"delta":{"content":"","role":"assistant"}}],"created":1793109494,"model":"GLM-5.1","usage":null}
+
+data:{"object":"chat.completion.chunk","id":"0b43d5dd17931094929965654e7d1a","choices":[{"index":0,"delta":{"content":"","role":"assistant","tool_calls":[{"index":0,"id":"fc-202e7ea3-76d0-48f0-b431-49430b7d4271","type":"function","function":{"name":"analyze","arguments":""}}]}}],"created":1793109494,"model":"GLM-5.1","usage":null}
+
+data:{"object":"chat.completion.chunk","id":"0b43d5dd17931094929965654e7d1a","choices":[{"index":0,"delta":{"content":"","role":"assistant","tool_calls":[{"index":0,"id":null,"type":"function","function":{"name":null,"arguments":"{\"query\": \"Drill"}}]}}],"created":1793109494,"model":"GLM-5.1","usage":null}
+
+data:{"object":"chat.completion.chunk","id":"0b43d5dd17931094929965654e7d1a","choices":[{"index":0,"delta":{"content":"","role":"assistant","tool_calls":[{"index":0,"id":null,"type":"function","function":{"name":null,"arguments":" down net"}}]}}],"created":1793109494,"model":"GLM-5.1","usage":null}
+
+data:{"object":"chat.completion.chunk","id":"0b43d5dd17931094929965654e7d1a","choices":[{"index":0,"delta":{"content":"","role":"assistant","tool_calls":[{"index":0,"id":null,"type":"function","function":{"name":null,"arguments":"_sales_cents change"}}]}}],"created":1793109494,"model":"GLM-5.1","usage":null}
+
+data:{"object":"chat.completion.chunk","id":"0b43d5dd17931094929965654e7d1a","choices":[{"index":0,"delta":{"content":"","role":"assistant","tool_calls":[{"index":0,"id":null,"type":"function","function":{"name":null,"arguments":" by region"}}]}}],"created":1793109494,"model":"GLM-5.1","usage":null}
+
+data:{"object":"chat.completion.chunk","id":"0b43d5dd17931094929965654e7d1a","choices":[{"index":0,"delta":{"content":"","role":"assistant","tool_calls":[{"index":0,"id":null,"type":"function","function":{"name":null,"arguments":" between period"}}]}}],"created":1793109494,"model":"GLM-5.1","usage":null}
+
+data:{"object":"chat.completion.chunk","id":"0b43d5dd17931094929965654e7d1a","choices":[{"index":0,"delta":{"content":"","role":"assistant","tool_calls":[{"index":0,"id":null,"type":"function","function":{"name":null,"arguments":" 基期 and 本"}}]}}],"created":1793109494,"model":"GLM-5.1","usage":null}
+
+data:{"object":"chat.completion.chunk","id":"0b43d5dd17931094929965654e7d1a","choices":[{"index":0,"delta":{"content":"","role":"assistant","tool_calls":[{"index":0,"id":null,"type":"function","function":{"name":null,"arguments":"期. For each"}}]}}],"created":1793109494,"model":"GLM-5.1","usage":null}
+
+data:{"object":"chat.completion.chunk","id":"0b43d5dd17931094929965654e7d1a","choices":[{"index":0,"delta":{"content":"","role":"assistant","tool_calls":[{"index":0,"id":null,"type":"function","function":{"name":null,"arguments":" region, compute base"}}]}}],"created":1793109494,"model":"GLM-5.1","usage":null}
+
+data:{"object":"chat.completion.chunk","id":"0b43d5dd17931094929965654e7d1a","choices":[{"index":0,"delta":{"content":"","role":"assistant","tool_calls":[{"index":0,"id":null,"type":"function","function":{"name":null,"arguments":" net sales, current"}}]}}],"created":1793109494,"model":"GLM-5.1","usage":null}
+
+data:{"object":"chat.completion.chunk","id":"0b43d5dd17931094929965654e7d1a","choices":[{"index":0,"delta":{"content":"","role":"assistant","tool_calls":[{"index":0,"id":null,"type":"function","function":{"name":null,"arguments":" net sales, change"}}]}}],"created":1793109494,"model":"GLM-5.1","usage":null}
+
+data:{"object":"chat.completion.chunk","id":"0b43d5dd17931094929965654e7d1a","choices":[{"index":0,"delta":{"content":"","role":"assistant","tool_calls":[{"index":0,"id":null,"type":"function","function":{"name":null,"arguments":" amount in yuan ("}}]}}],"created":1793109495,"model":"GLM-5.1","usage":null}
+
+data:{"object":"chat.completion.chunk","id":"0b43d5dd17931094929965654e7d1a","choices":[{"index":0,"delta":{"content":"","role":"assistant","tool_calls":[{"index":0,"id":null,"type":"function","function":{"name":null,"arguments":"cents/"}}]}}],"created":1793109495,"model":"GLM-5.1","usage":null}
+
+data:{"object":"chat.completion.chunk","id":"0b43d5dd17931094929965654e7d1a","choices":[{"index":0,"delta":{"content":"","role":"assistant","tool_calls":[{"index":0,"id":null,"type":"function","function":{"name":null,"arguments":"100), and change"}}]}}],"created":1793109495,"model":"GLM-5.1","usage":null}
+
+data:{"object":"chat.completion.chunk","id":"0b43d5dd17931094929965654e7d1a","choices":[{"index":0,"delta":{"content":"","role":"assistant","tool_calls":[{"index":0,"id":null,"type":"function","function":{"name":null,"arguments":" rate. Return a"}}]}}],"created":1793109495,"model":"GLM-5.1","usage":null}
+
+data:{"object":"chat.completion.chunk","id":"0b43d5dd17931094929965654e7d1a","choices":[{"index":0,"delta":{"content":"","role":"assistant","tool_calls":[{"index":0,"id":null,"type":"function","function":{"name":null,"arguments":" column chart showing change"}}]}}],"created":1793109495,"model":"GLM-5.1","usage":null}
+
+data:{"object":"chat.completion.chunk","id":"0b43d5dd17931094929965654e7d1a","choices":[{"index":0,"delta":{"content":"","role":"assistant","tool_calls":[{"index":0,"id":null,"type":"function","function":{"name":null,"arguments":" amount in 万元 by"}}]}}],"created":1793109495,"model":"GLM-5.1","usage":null}
+
+data:{"object":"chat.completion.chunk","id":"0b43d5dd17931094929965654e7d1a","choices":[{"index":0,"delta":{"content":"","role":"assistant","tool_calls":[{"index":0,"id":null,"type":"function","function":{"name":null,"arguments":" region.\""}}]}}],"created":1793109495,"model":"GLM-5.1","usage":null}
+
+data:{"object":"chat.completion.chunk","id":"0b43d5dd17931094929965654e7d1a","choices":[{"index":0,"delta":{"content":"","role":"assistant","tool_calls":[{"index":0,"id":null,"type":"function","function":{"name":null,"arguments":"}"}}]}}],"created":1793109495,"model":"GLM-5.1","usage":null}
+
+data:{"object":"chat.completion.chunk","id":"0b43d5dd17931094929965654e7d1a","choices":[{"index":0,"delta":{"content":"","role":"assistant"},"finish_reason":"tool_calls"}],"created":1793109495,"model":"GLM-5.1","usage":{"completion_tokens":0,"prompt_tokens":0,"total_tokens":0}}
+
+data:{"object":"chat.completion.chunk","id":"0b43d5dd17931094929965654e7d1a","choices":[],"created":1793109495,"model":"GLM-5.1","usage":{"completion_tokens":67,"prompt_tokens":10257,"total_tokens":10324,"completion_tokens_details":{},"prompt_tokens_details":{"cached_tokens":2240}}}
+

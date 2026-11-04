@@ -1,0 +1,16 @@
+
+ 2026-08 tot 6740687.05
+business_model [('self_operated', Decimal('4498226.55')), ('consignment', Decimal('2242460.50'))]
+selling_region [('华南', Decimal('2819260.25')), ('华东', Decimal('2785265.28')), ('华北', Decimal('1136161.52'))]
+category [('家具', Decimal('5478111.52')), ('数码', Decimal('1262575.53'))]
+channel [('线上商城', Decimal('5028593.76')), ('线下门店', Decimal('1712093.29'))]
+selling_city [('深圳', Decimal('2254870.34')), ('杭州', Decimal('2242460.50')), ('北京', Decimal('575268.09')), ('广州', Decimal('564389.91')), ('天津', Decimal('560893.43')), ('上海', Decimal('542804.78'))]
+product_name [('电动升降桌', Decimal('2941697.80')), ('人体工学椅Pro', Decimal('2536413.72')), ('27英寸显示器', Decimal('655020.74')), ('无线耳机', Decimal('265218.49')), ('无线鼠标', Decimal('196641.08')), ('无线键盘', Decimal('145695.22'))]
+
+ 2026-09 tot 7803998.06
+business_model [('self_operated', Decimal('6611052.91')), ('consignment', Decimal('1192945.15'))]
+selling_region [('华北', Decimal('3825912.27')), ('华南', Decimal('2251351.10')), ('华东', Decimal('1726734.69'))]
+category [('家具', Decimal('6472272.69')), ('数码', Decimal('1331725.37'))]
+channel [('线上商城', Decimal('6113904.22')), ('线下门店', Decimal('1690093.84'))]
+selling_city [('北京', Decimal('3308729.86')), ('深圳', Decimal('1583694.44')), ('杭州', Decimal('1192945.15')), ('广州', Decimal('667656.66')), ('上海', Decimal('533789.54')), ('天津', Decimal('517182.41'))]
+product_name [('电动升降桌', Decimal('5063473.77')), ('人体工学椅Pro', Decimal('1408798.92')), ('27英寸显示器', Decimal('759168.05')), ('无线耳机', Decimal('239757.02')), ('无线鼠标', Decimal('190207.23')), ('无线键盘', Decimal('142593.07'))]

@@ -1,0 +1,20 @@
+{
+  "source": "dev-data/agent-contrast/inputs/sales-investment.json",
+  "sourceSha256": "9d1590fd62dd4ae3fb5372e4c0d8e086606ac3994944ceaf34717ae830efea57",
+  "semanticSource": "dev-data/agent-contrast/inputs/semantic.json",
+  "synthetic": true,
+  "changes": "Only period and channel labels translated to English. Amounts and all rows unchanged.",
+  "periods": {
+    "基期": "Baseline",
+    "本期": "Current"
+  },
+  "channels": {
+    "品牌词搜索": "Brand search",
+    "直接访问": "Direct",
+    "社交拓新": "Social acquisition",
+    "社交重定向": "Social retargeting",
+    "线下到店": "Offline",
+    "自然搜索": "Organic search",
+    "通用词搜索": "Generic search"
+  }
+}

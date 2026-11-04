@@ -1,0 +1,82 @@
+{
+  "date": "2026-11-03",
+  "scenario": "财务口径下的零售净销售额变化",
+  "model": "gpt-6.1-sol",
+  "reasoning_effort": "high",
+  "codex_version": "0.165.0",
+  "ava_version": "4.0.0-beta.5",
+  "design": "one fresh ephemeral CLI session per arm, sequential baseline then AVA, same prompt/data/semantic, no shared conversation; AVA treatment includes skill and CLI",
+  "replications_per_arm": 1,
+  "not_a_benchmark": true,
+  "conditions": [
+    {
+      "arm": "no-ava",
+      "cwd": "/Users/banxuan/Documents/AVA-test-skill-workspace/codex-ava-finance-20261103/no-ava",
+      "sha256": {
+        "sales.csv": "4cb3f6ef611837b7d08abb676114a58f99db211bd7bea01e63da763db08d3877",
+        "semantic-finance.json": "1c2aa6675f676a0579f9e26862d8223591dbf1ef6d7d811c0726f824ae1ce50b"
+      },
+      "prompt_sha256": "e51f951c760c6dec1248747426febdc12d4c61a59e24e6fc3553d5930c40af85",
+      "status": "completed",
+      "started_at": "2026-11-03T08:33:18.266954+00:00",
+      "argv": [
+        "codex",
+        "exec",
+        "--ephemeral",
+        "--ignore-user-config",
+        "--json",
+        "--skip-git-repo-check",
+        "--approve-for-me",
+        "--model",
+        "gpt-6.1-sol",
+        "-c",
+        "model_reasoning_effort=\"high\"",
+        "-c",
+        "skills.config=[{name=\"ava\",enabled=false}]",
+        "-C",
+        "/Users/banxuan/Documents/AVA-test-skill-workspace/codex-ava-finance-20261103/no-ava",
+        "-o",
+        "/Users/banxuan/Documents/AVA/outputs/codex-ava-finance-20261103/no-ava-answer.txt",
+        "-"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 216.834,
+      "finished_at": "2026-11-03T08:36:55.102384+00:00"
+    },
+    {
+      "arm": "ava",
+      "cwd": "/Users/banxuan/Documents/AVA-test-skill-workspace/codex-ava-finance-20261103/ava",
+      "sha256": {
+        "sales.csv": "4cb3f6ef611837b7d08abb676114a58f99db211bd7bea01e63da763db08d3877",
+        "semantic-finance.json": "1c2aa6675f676a0579f9e26862d8223591dbf1ef6d7d811c0726f824ae1ce50b"
+      },
+      "prompt_sha256": "e51f951c760c6dec1248747426febdc12d4c61a59e24e6fc3553d5930c40af85",
+      "status": "completed",
+      "started_at": "2026-11-03T08:36:55.111662+00:00",
+      "argv": [
+        "codex",
+        "exec",
+        "--ephemeral",
+        "--ignore-user-config",
+        "--json",
+        "--skip-git-repo-check",
+        "--approve-for-me",
+        "--model",
+        "gpt-6.1-sol",
+        "-c",
+        "model_reasoning_effort=\"high\"",
+        "-c",
+        "skills.config=[{name=\"ava\",enabled=false},{path=\"/Users/banxuan/Documents/AVA-test-skill-workspace/codex-ava-finance-20261103/ava/.agents/skills/ava/SKILL.md\",enabled=true}]",
+        "-C",
+        "/Users/banxuan/Documents/AVA-test-skill-workspace/codex-ava-finance-20261103/ava",
+        "-o",
+        "/Users/banxuan/Documents/AVA/outputs/codex-ava-finance-20261103/ava-answer.txt",
+        "-"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 333.302,
+      "finished_at": "2026-11-03T08:42:28.412457+00:00"
+    }
+  ],
+  "interpretation": "Same-definition tool-only contrast. User clarified intended story is preconfigured business semantics. Screenshot uploaded but not inserted in Yuque."
+}

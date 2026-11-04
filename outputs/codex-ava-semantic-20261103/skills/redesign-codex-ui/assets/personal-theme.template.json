@@ -1,0 +1,44 @@
+{
+  "id": "personal-edition",
+  "identity": {
+    "editionName": "Personal Codex Edition",
+    "displayName": "Your Name",
+    "tagline": "Build with a companion that feels like yours"
+  },
+  "copy": {
+    "heroTitle": "What shall we build?",
+    "heroBody": "Explore, create, review, and repair with Codex.",
+    "composerPlaceholder": "Describe what you want to make..."
+  },
+  "media": {
+    "heroImage": "/themes/personal/hero.webp",
+    "avatarImage": "/themes/personal/avatar.webp",
+    "signatureImage": "/themes/personal/signature.svg",
+    "heroFocalPoint": "62% 32%",
+    "heroAlt": "Theme portrait"
+  },
+  "palette": {
+    "canvas": "#F4F1E8",
+    "surface": "#FAF8F1",
+    "ink": "#31382B",
+    "mutedInk": "#727566",
+    "accent": "#8F9B5A",
+    "line": "#D9D8C8"
+  },
+  "shape": {
+    "panelRadius": "24px",
+    "controlRadius": "14px",
+    "shadow": "0 12px 32px rgba(64, 68, 50, 0.10)"
+  },
+  "ornaments": {
+    "motifs": ["star", "botanical-line", "paper-label", "stamp"],
+    "opacity": 0.42,
+    "hideBelow": "720px"
+  },
+  "quickActions": [
+    {"id": "explore", "label": "Explore and understand code"},
+    {"id": "build", "label": "Build a feature or app"},
+    {"id": "review", "label": "Review code and suggest changes"},
+    {"id": "fix", "label": "Fix problems and failures"}
+  ]
+}

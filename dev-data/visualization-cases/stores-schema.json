@@ -1,0 +1,33 @@
+{
+  "models": [
+    {
+      "name": "data",
+      "tableReference": {
+        "table": "data"
+      },
+      "columns": [
+        {
+          "name": "store_id",
+          "type": "object"
+        },
+        {
+          "name": "monthly_orders",
+          "type": "int64"
+        },
+        {
+          "name": "avg_order_value",
+          "type": "float64"
+        },
+        {
+          "name": "sales",
+          "type": "float64"
+        }
+      ]
+    }
+  ],
+  "language": {
+    "name": "Python (pandas)",
+    "fence": "python",
+    "instructions": "pandas is available as pd. Input DataFrames are in tables, keyed by schema table name.\nCSV/JSON use tables['data']; Excel exposes every sheet as tables['SheetName'].\nFor a single table, the DataFrame df is also available. For multiple sheets use tables explicitly.\nAssign the final output to result: a DataFrame, Series, list of records, record, or JSON scalar.\nDataFrame and Series indexes are not returned; use reset_index() when index values matter.\nEach execution starts from fresh input data; variables and mutations do not persist between calls.\nDo not read files, access the network, install packages, or print the answer."
+  }
+}

@@ -1,0 +1,20 @@
+{
+  "schemaVersion": 1,
+  "id": "quiet-monogram",
+  "label": "Quiet Monogram",
+  "category": "personal-brand",
+  "tags": ["founder", "author", "consultant", "minimal"],
+  "derivedFrom": "original-archetype",
+  "concept": {"identityIntensity": "low-medium", "thesis": "A discreet personal signature gives ownership without competing with the work.", "mood": ["calm", "authoritative", "timeless"], "forbiddenMotifs": ["portrait-collage", "stickers", "decorative-gradients"]},
+  "layout": {"archetype": "minimal-rail-reading-desk", "navigation": "text-first-rail", "hero": "monogram-intro", "composer": "precise-writing-desk", "density": "medium"},
+  "palette": {"canvas": "#F5F3EF", "surface": "#FCFBF8", "surfaceRaised": "#FFFFFF", "ink": "#242321", "mutedInk": "#716E68", "accent": "#274C43", "accentSoft": "#D8E2DE", "line": "#D7D3CC", "focus": "#173E35"},
+  "typography": {"display": "book-serif", "body": "neutral-sans", "code": "system-monospace", "accent": "small-caps"},
+  "shape": {"panelRadius": 8, "controlRadius": 6, "elevation": "subtle-rule"},
+  "decoration": {"level": "low", "motifs": ["monogram", "hairline", "folio-dot"], "pointerEvents": "none"},
+  "motion": {"character": "quiet-fade", "durationMs": 120, "reducedMotion": "instant"},
+  "mediaSlots": [{"id": "monogram", "role": "identity", "aspect": "1:1", "focalPoint": "50% 50%", "fallback": "initials"}, {"id": "optionalPortrait", "role": "profile", "aspect": "1:1", "focalPoint": "50% 30%", "fallback": "monogram"}],
+  "quickActions": [{"id": "explore", "label": "Understand the workspace"}, {"id": "build", "label": "Create new work"}, {"id": "review", "label": "Review the draft"}, {"id": "fix", "label": "Resolve an issue"}],
+  "responsive": {"narrowNavigation": "text-drawer", "narrowHero": "monogram-line", "narrowCards": "single-column-rules", "hideMotifs": ["folio-dot"], "missingMedia": "initials"},
+  "assetPolicy": {"provenance": "required", "remoteHotlink": false, "licensedOrOwned": true},
+  "accessibility": {"contrastTarget": "WCAG-AA", "preserveSemanticStates": true, "decorationAriaHidden": true}
+}

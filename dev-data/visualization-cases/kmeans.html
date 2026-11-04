@@ -1,0 +1,62 @@
+<!doctype html><html lang="zh-CN"><head><meta charset="UTF-8"><title>120 家门店，都用同一套运营目标吗？</title>
+<script src="https://unpkg.com/@antv/gpt-vis/dist/umd/index.min.js"></script>
+<script src="https://unpkg.com/@antv/g2@5/dist/g2.min.js"></script>
+<style>@font-face{font-family:"AVA Han";src:local("AlibabaPuHuiTi_3_55_Regular");font-weight:400;font-display:block}@font-face{font-family:"AVA Han";src:local("AlibabaPuHuiTi_3_65_Medium");font-weight:500 700;font-display:block}*{box-sizing:border-box}html,body{margin:0;width:920px;background:#eaf3ff;color:#253140;font-family:"Alibaba Sans","AVA Han","PingFang SC",sans-serif;-webkit-font-smoothing:antialiased}#figure{margin:16px;padding:26px 26px 18px;background:#fff;border-radius:18px}h1{margin:0 0 12px;font-size:26px;line-height:1.5;font-weight:500;letter-spacing:.01em}.answer{margin:0 0 20px;font-size:18px;line-height:1.65;font-weight:400;color:#64728a}#container{width:100%;height:500px}</style></head>
+<body><main id="figure"><h1>120 家门店，都用同一套运营目标吗？</h1><p class="answer">门店经营结构不同，应按走量型、均衡型与高客单型分别制定目标。</p><div id="container"></div></main><script>// Extend these publication figures without changing GPT-Vis or AVA's built-in styles.
+(() => {
+  const create = (options) => {
+    let chart;
+    return {
+      render(config) {
+        chart?.destroy();
+        chart = new G2.Chart({ container: options.container, autoFit: true });
+        const density = config.type === 'area';
+        const groups = [...new Set(config.data.map((row) => row.group))];
+        const palette = config.style.palette;
+        const axis = (title) => ({
+          title, titleFontFamily: 'Alibaba Sans, AVA Han, sans-serif',
+          titleFontSize: 14, titleFontWeight: 400, titleFill: '#64728a',
+          labelFontFamily: 'Alibaba Sans, AVA Han, sans-serif',
+          labelFontSize: 14, labelFontWeight: 400, labelFill: '#64728a', line: true, lineStroke: '#aebbd0',
+          gridStroke: '#e2e8f2', gridLineDash: [3, 4], tick: false,
+        });
+        const children = density
+          ? [
+              ...groups.map((group, i) => ({
+                type: 'area', data: config.data.filter((row) => row.group === group),
+                style: { fill: i === 0
+                  ? 'linear-gradient(-90deg, rgba(99,112,254,0.015) 0%, rgba(99,112,254,0.34) 100%)'
+                  : 'linear-gradient(-90deg, rgba(19,172,157,0.015) 0%, rgba(19,172,157,0.34) 100%)' },
+                tooltip: false, animate: false,
+              })),
+              { type: 'line', style: { lineWidth: 3, lineJoin: 'round' }, animate: false },
+            ]
+          : [{ type: 'point', encode: { shape: 'point', size: 6.5 },
+               style: { fillOpacity: 0.9, stroke: '#fff', lineWidth: 1.2 }, animate: false }];
+        chart.options({
+          type: 'view', data: config.data,
+          encode: { x: density ? 'time' : 'x', y: density ? 'value' : 'y', color: 'group' },
+          scale: { color: { domain: groups, range: palette },
+            x: density ? { type: 'linear', domain: [0, 1800], tickCount: 5 } : { nice: true, tickCount: 5 },
+            y: density ? { domain: [0, 2.5], tickCount: 6 } : { domainMin: 0, nice: true, tickCount: 5 } },
+          axis: { x: { ...axis(config.axisXTitle), grid: false, titleSpacing: 18 },
+                  y: { ...axis(config.axisYTitle), grid: true, titleSpacing: 20 } },
+          legend: { color: { position: 'top', title: false, itemLabelFontFamily: 'Alibaba Sans, AVA Han, sans-serif',
+            itemLabelFontSize: 14, itemLabelFontWeight: 400, itemSpacing: 24 } },
+          children, animate: false,
+          theme: { type: 'light', fontFamily: 'Alibaba Sans, AVA Han, sans-serif' },
+        });
+        window.chartReady = chart.render();
+      },
+      destroy() { chart?.destroy(); },
+    };
+  };
+  GPTVis.GPTVis.chartRegistry.area = create;
+  GPTVis.GPTVis.chartRegistry.scatter = create;
+})();
+
+const gptVis=new GPTVis.GPTVis({container:'#container'});
+const visConfig={"type": "scatter", "data": [{"x": 1065, "y": 351.97, "group": "走量型"}, {"x": 972, "y": 410.86, "group": "走量型"}, {"x": 1021, "y": 323.46, "group": "走量型"}, {"x": 1237, "y": 376.03, "group": "走量型"}, {"x": 1069, "y": 348.23, "group": "走量型"}, {"x": 1238, "y": 259.71, "group": "走量型"}, {"x": 1257, "y": 280.7, "group": "走量型"}, {"x": 1284, "y": 412.72, "group": "走量型"}, {"x": 1138, "y": 275.63, "group": "走量型"}, {"x": 1226, "y": 323.01, "group": "走量型"}, {"x": 1158, "y": 367.72, "group": "走量型"}, {"x": 1144, "y": 353.76, "group": "走量型"}, {"x": 1202, "y": 299.7, "group": "走量型"}, {"x": 1125, "y": 361.23, "group": "走量型"}, {"x": 993, "y": 394.2, "group": "走量型"}, {"x": 1133, "y": 398.55, "group": "走量型"}, {"x": 1168, "y": 335.86, "group": "走量型"}, {"x": 1281, "y": 248.6, "group": "走量型"}, {"x": 1390, "y": 338.24, "group": "走量型"}, {"x": 1227, "y": 468.84, "group": "走量型"}, {"x": 1037, "y": 350.79, "group": "走量型"}, {"x": 1042, "y": 324.68, "group": "走量型"}, {"x": 1293, "y": 317.21, "group": "走量型"}, {"x": 1020, "y": 354.44, "group": "走量型"}, {"x": 1226, "y": 435.51, "group": "走量型"}, {"x": 1268, "y": 430.12, "group": "走量型"}, {"x": 942, "y": 250.98, "group": "走量型"}, {"x": 1265, "y": 318.42, "group": "走量型"}, {"x": 1188, "y": 356.34, "group": "走量型"}, {"x": 1072, "y": 375.68, "group": "走量型"}, {"x": 1303, "y": 313.19, "group": "走量型"}, {"x": 1121, "y": 352.34, "group": "走量型"}, {"x": 1099, "y": 354.01, "group": "走量型"}, {"x": 1212, "y": 312.18, "group": "走量型"}, {"x": 1311, "y": 422.43, "group": "走量型"}, {"x": 1213, "y": 310.75, "group": "走量型"}, {"x": 1351, "y": 378.76, "group": "走量型"}, {"x": 1027, "y": 353.18, "group": "走量型"}, {"x": 1111, "y": 367.3, "group": "走量型"}, {"x": 1274, "y": 437.22, "group": "走量型"}, {"x": 693, "y": 627.64, "group": "均衡型"}, {"x": 913, "y": 863.68, "group": "均衡型"}, {"x": 571, "y": 597.55, "group": "均衡型"}, {"x": 719, "y": 608.2, "group": "均衡型"}, {"x": 687, "y": 669.25, "group": "均衡型"}, {"x": 746, "y": 565.27, "group": "均衡型"}, {"x": 752, "y": 853.44, "group": "均衡型"}, {"x": 725, "y": 608.33, "group": "均衡型"}, {"x": 790, "y": 744.74, "group": "均衡型"}, {"x": 708, "y": 814.5, "group": "均衡型"}, {"x": 704, "y": 748.64, "group": "均衡型"}, {"x": 595, "y": 585.94, "group": "均衡型"}, {"x": 608, "y": 703.88, "group": "均衡型"}, {"x": 747, "y": 645.06, "group": "均衡型"}, {"x": 707, "y": 789.13, "group": "均衡型"}, {"x": 745, "y": 707.12, "group": "均衡型"}, {"x": 729, "y": 689.69, "group": "均衡型"}, {"x": 715, "y": 796.38, "group": "均衡型"}, {"x": 458, "y": 753.87, "group": "均衡型"}, {"x": 753, "y": 837.15, "group": "均衡型"}, {"x": 832, "y": 680.86, "group": "均衡型"}, {"x": 612, "y": 735.52, "group": "均衡型"}, {"x": 753, "y": 639.66, "group": "均衡型"}, {"x": 749, "y": 784.2, "group": "均衡型"}, {"x": 603, "y": 670.56, "group": "均衡型"}, {"x": 517, "y": 804.44, "group": "均衡型"}, {"x": 852, "y": 668.8, "group": "均衡型"}, {"x": 555, "y": 604.79, "group": "均衡型"}, {"x": 809, "y": 633.72, "group": "均衡型"}, {"x": 628, "y": 822.4, "group": "均衡型"}, {"x": 821, "y": 772.31, "group": "均衡型"}, {"x": 652, "y": 567.46, "group": "均衡型"}, {"x": 730, "y": 843.46, "group": "均衡型"}, {"x": 499, "y": 691.24, "group": "均衡型"}, {"x": 924, "y": 779.59, "group": "均衡型"}, {"x": 602, "y": 666.93, "group": "均衡型"}, {"x": 532, "y": 821.79, "group": "均衡型"}, {"x": 739, "y": 771.25, "group": "均衡型"}, {"x": 743, "y": 631.54, "group": "均衡型"}, {"x": 695, "y": 682.2, "group": "均衡型"}, {"x": 283, "y": 1207.51, "group": "高客单型"}, {"x": 314, "y": 1428.51, "group": "高客单型"}, {"x": 390, "y": 1493.76, "group": "高客单型"}, {"x": 281, "y": 1363.35, "group": "高客单型"}, {"x": 299, "y": 1270.58, "group": "高客单型"}, {"x": 434, "y": 1392.04, "group": "高客单型"}, {"x": 293, "y": 1467.69, "group": "高客单型"}, {"x": 303, "y": 1325.93, "group": "高客单型"}, {"x": 279, "y": 1459.31, "group": "高客单型"}, {"x": 309, "y": 1350.66, "group": "高客单型"}, {"x": 329, "y": 1495.66, "group": "高客单型"}, {"x": 281, "y": 1471.61, "group": "高客单型"}, {"x": 286, "y": 1461.68, "group": "高客单型"}, {"x": 276, "y": 1220.89, "group": "高客单型"}, {"x": 376, "y": 1542.34, "group": "高客单型"}, {"x": 296, "y": 1170.57, "group": "高客单型"}, {"x": 346, "y": 1574.43, "group": "高客单型"}, {"x": 376, "y": 1415.52, "group": "高客单型"}, {"x": 205, "y": 1531.85, "group": "高客单型"}, {"x": 261, "y": 1669.58, "group": "高客单型"}, {"x": 333, "y": 1177.37, "group": "高客单型"}, {"x": 242, "y": 1426.91, "group": "高客单型"}, {"x": 234, "y": 1419.13, "group": "高客单型"}, {"x": 427, "y": 1395.77, "group": "高客单型"}, {"x": 329, "y": 1555.49, "group": "高客单型"}, {"x": 417, "y": 1371.69, "group": "高客单型"}, {"x": 245, "y": 1421.55, "group": "高客单型"}, {"x": 373, "y": 1408.61, "group": "高客单型"}, {"x": 420, "y": 1194.32, "group": "高客单型"}, {"x": 303, "y": 1274.25, "group": "高客单型"}, {"x": 279, "y": 1649.75, "group": "高客单型"}, {"x": 405, "y": 1451.7, "group": "高客单型"}, {"x": 299, "y": 1505.34, "group": "高客单型"}, {"x": 378, "y": 1304.14, "group": "高客单型"}, {"x": 237, "y": 1468.52, "group": "高客单型"}, {"x": 211, "y": 1306.76, "group": "高客单型"}, {"x": 348, "y": 1358.99, "group": "高客单型"}, {"x": 298, "y": 1387.86, "group": "高客单型"}, {"x": 385, "y": 1383.35, "group": "高客单型"}, {"x": 283, "y": 1112.62, "group": "高客单型"}], "axisXTitle": "月订单量（笔）", "axisYTitle": "客单价（元）", "theme": "light", "style": {"backgroundColor": "#ffffff", "palette": ["#6370fe", "#13ac9d", "#e4a14a"]}};
+Promise.all([document.fonts.load('400 16px "AVA Han"'), document.fonts.load('500 30px "AVA Han"')])
+  .then(() => gptVis.render(visConfig));
+</script></body></html>

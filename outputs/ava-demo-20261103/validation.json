@@ -1,0 +1,7 @@
+{
+  "passed": true,
+  "checks": "AVA query results cross-checked with independent Python Decimal and SQLite aggregations; all returned results untruncated.",
+  "agent_dialogue_run": false,
+  "sdk_integration_run": false,
+  "chart_browser_preview": "Not completed: Chrome DevTools browser profile was already in use; Chrome unavailable through CUA."
+}

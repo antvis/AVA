@@ -1,0 +1,7 @@
+请分析 ./inputs/sales.csv，业务定义见 ./inputs/semantic-finance.json。
+
+2026年9月的净销售额相比8月发生了什么变化，主要来自哪里？
+
+请采用文件中的财务经营口径，给出两月金额、变化额和变化比例，按销售责任门店、渠道、商品组合定位最大的下降来源，保留门店层面的主要增长抵消项。核对各互斥分组的变化之和等于整体变化，不推断订单数据没有提供的业务原因。金额单位人民币元。
+
+将实际计算脚本或查询、必要结果表和一份产品/门店贡献HTML图表保存在 ./output。图表基于实际执行结果。保存 ./output/summary.json，字段包含 august、september、change、growth_pct（百分数）、main_decline（store/channel/product/change）、offset（store/change）、reconciled_change。最终用不超过500字的中文给出结论、采用口径、核验情况和产物路径；任何未执行的检查请如实说明。

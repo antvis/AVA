@@ -1,0 +1,55 @@
+{
+  "models": [
+    {
+      "name": "data",
+      "tableReference": {
+        "catalog": "memory",
+        "schema": "main",
+        "table": "data"
+      },
+      "columns": [
+        {
+          "name": "period",
+          "type": "VARCHAR",
+          "notNull": false
+        },
+        {
+          "name": "channel",
+          "type": "VARCHAR",
+          "notNull": false
+        },
+        {
+          "name": "category",
+          "type": "VARCHAR",
+          "notNull": false
+        },
+        {
+          "name": "region",
+          "type": "VARCHAR",
+          "notNull": false
+        },
+        {
+          "name": "net_sales_cents",
+          "type": "BIGINT",
+          "notNull": false
+        },
+        {
+          "name": "contribution_cents",
+          "type": "BIGINT",
+          "notNull": false
+        }
+      ]
+    }
+  ],
+  "relationships": [],
+  "views": [
+    {
+      "name": "data",
+      "statement": "SELECT * FROM read_json('/Users/banxuan/Documents/AVA/dev-data/evidence-chain/sales.json', (auto_detect = true))"
+    }
+  ],
+  "language": {
+    "name": "DuckDB SQL dialect",
+    "fence": "sql"
+  }
+}

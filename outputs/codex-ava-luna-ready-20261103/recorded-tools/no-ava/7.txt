@@ -1,0 +1,12 @@
+
+ business_model [('self_operated', Decimal('2112826.36')), ('consignment', Decimal('-1049515.35'))]
+
+ selling_region [('华北', Decimal('2689750.75')), ('华南', Decimal('-567909.15')), ('华东', Decimal('-1058530.59'))]
+
+ category [('家具', Decimal('994161.17')), ('数码', Decimal('69149.84'))]
+
+ channel [('线上商城', Decimal('1085310.46')), ('线下门店', Decimal('-21999.45'))]
+
+ selling_city [('北京', Decimal('2733461.77')), ('广州', Decimal('103266.75')), ('上海', Decimal('-9015.24')), ('天津', Decimal('-43711.02')), ('深圳', Decimal('-671175.90')), ('杭州', Decimal('-1049515.35'))]
+
+ product_name [('电动升降桌', Decimal('2121775.97')), ('27英寸显示器', Decimal('104147.31')), ('无线键盘', Decimal('-3102.15')), ('无线鼠标', Decimal('-6433.85')), ('无线耳机', Decimal('-25461.47')), ('人体工学椅Pro', Decimal('-1127614.80'))]

@@ -1,0 +1,7 @@
+/bin/zsh -lc "python3 - <<'PY'
+import csv
+p='inputs/sales.csv'
+with open(p, newline='', encoding='utf-8-sig') as f:
+ r=csv.reader(f)
+ for i,row in zip(range(8),r): print(row)
+PY"

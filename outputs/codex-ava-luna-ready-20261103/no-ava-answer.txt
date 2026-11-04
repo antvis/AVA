@@ -1,0 +1,10 @@
+9 月客户销售净额按付款月份统计为 **¥7,803,998**，比 8 月的 **¥6,740,687** 增加 **¥1,063,311（+15.8%）**。
+
+增长主要来自自营业务（**+¥2,112,826**）、华北区域（**+¥2,689,751**，其中北京 **+¥2,733,462**）和电动升降桌（**+¥2,121,776**）。寄售减少 **¥1,049,515**，人体工学椅 Pro 减少 **¥1,127,615**，抵消了部分增长。
+
+**口径需要留意：**9 月状态为 `paid` 的客户销售行有 1,189 行，8 月为 189 行。若只看已完成订单，9 月净额为 **¥4,708,686**，较 8 月下降 **27.1%**。因此，付款口径的增长包含较多尚未完成的订单付款。
+
+图表和简报已保存：
+
+- [查看图表 SVG](< /Users/banxuan/Documents/AVA-test-skill-workspace/codex-ava-luna-ready-20261103/no-ava/output/september_vs_august_net_sales.svg >)
+- [查看简报 Markdown](< /Users/banxuan/Documents/AVA-test-skill-workspace/codex-ava-luna-ready-20261103/no-ava/output/september_vs_august_net_sales.md >)

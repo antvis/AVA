@@ -1,0 +1,10 @@
+/bin/zsh -lc "python3 - <<'PY'
+import csv,collections
+p='inputs/sales.csv'
+with open(p,newline='') as f:
+ r=csv.DictReader(f); rows=list(r)
+print('rows',len(rows),'cols',r.fieldnames)
+for c in ['status','order_kind','business_model','channel','selling_region','category','paid_at','refunded_at','completed_at']:
+ d=collections.Counter((x.get(c,'') or '')[:7] if c.endswith('_at') else (x.get(c,'') or '') for x in rows)
+ print('\\n',c,d.most_common(20))
+PY"

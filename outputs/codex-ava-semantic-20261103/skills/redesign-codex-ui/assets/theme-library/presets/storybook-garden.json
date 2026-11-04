@@ -1,0 +1,20 @@
+{
+  "schemaVersion": 1,
+  "id": "storybook-garden",
+  "label": "Storybook Garden",
+  "category": "illustrated",
+  "tags": ["fantasy", "healing", "illustrated", "soft"],
+  "derivedFrom": "original-archetype",
+  "concept": {"identityIntensity": "medium-high", "thesis": "A gentle illustrated world frames focused work as a calm journey.", "mood": ["quiet", "whimsical", "restorative"], "forbiddenMotifs": ["childish-ui-copy", "low-contrast-code", "dense-ornaments"]},
+  "layout": {"archetype": "chapter-rail-garden-hero", "navigation": "chapter-list", "hero": "illustrated-landscape", "composer": "letter-panel", "density": "low-medium"},
+  "palette": {"canvas": "#F3EFE6", "surface": "#FCF8EF", "surfaceRaised": "#FFFDF8", "ink": "#304039", "mutedInk": "#6C786F", "accent": "#5D8B74", "accentSoft": "#DCE9DF", "line": "#CFD8CE", "focus": "#356A52"},
+  "typography": {"display": "storybook-serif", "body": "soft-humanist-sans", "code": "system-monospace", "accent": "handwritten-caption"},
+  "shape": {"panelRadius": 28, "controlRadius": 16, "elevation": "watercolor-soft"},
+  "decoration": {"level": "medium", "motifs": ["leaf", "cloud", "tiny-star", "chapter-flourish"], "pointerEvents": "none"},
+  "motion": {"character": "slow-breeze", "durationMs": 240, "reducedMotion": "opacity-only"},
+  "mediaSlots": [{"id": "heroIllustration", "role": "hero", "aspect": "16:7", "focalPoint": "60% 45%", "fallback": "botanical-wash"}, {"id": "characterMedallion", "role": "profile", "aspect": "1:1", "focalPoint": "50% 40%", "fallback": "leaf-monogram"}],
+  "quickActions": [{"id": "explore", "label": "Read the code story"}, {"id": "build", "label": "Begin a new chapter"}, {"id": "review", "label": "Polish the manuscript"}, {"id": "fix", "label": "Mend the path"}],
+  "responsive": {"narrowNavigation": "chapter-drawer", "narrowHero": "illustration-banner", "narrowCards": "single-column", "hideMotifs": ["cloud", "chapter-flourish"], "missingMedia": "botanical-wash"},
+  "assetPolicy": {"provenance": "required", "remoteHotlink": false, "licensedOrOwned": true},
+  "accessibility": {"contrastTarget": "WCAG-AA", "preserveSemanticStates": true, "decorationAriaHidden": true}
+}

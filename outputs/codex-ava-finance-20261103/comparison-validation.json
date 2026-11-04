@@ -1,0 +1,154 @@
+{
+  "all_calculation_checks_passed": true,
+  "source": "Independent Python Decimal reference aggregation, not provided to either evaluation subject",
+  "conditions": [
+    {
+      "arm": "no-ava",
+      "summary": {
+        "august": 4293025.42,
+        "september": 3697575.18,
+        "change": -595450.24,
+        "growth_pct": -13.870177,
+        "main_decline": {
+          "store": "深圳南山店",
+          "channel": "线上商城",
+          "product": "电动升降桌",
+          "change": -558776.37
+        },
+        "offset": {
+          "store": "广州天河店",
+          "change": 66713.31
+        },
+        "reconciled_change": -595450.24
+      },
+      "checks": {
+        "august": true,
+        "september": true,
+        "change": true,
+        "reconciled_change": true,
+        "growth_pct": true,
+        "main_decline": true,
+        "offset": true,
+        "no_ava_invocation": true
+      },
+      "passed": true,
+      "answer": "9月净销售额为 **3,697,575.18元**，8月为 **4,293,025.42元**，减少 **595,450.24元（13.87%）**。\n\n主要下降来源：\n\n- 门店：深圳南山店减少547,968.89元。\n- 渠道：线上商城减少621,229.16元。\n- 商品：电动升降桌减少572,636.43元。\n- 最大组合：深圳南山店×线上商城×电动升降桌，减少558,776.37元。\n- 门店增长抵消项：广州天河店增加66,713.31元。\n\n以上维度不可相加。采用外部客户已履约订单、按完成月归属；自营确认实付减退款，代销仅确认佣金，实付与退款分别逐行四舍五入到分，退款回记原履约月。\n\n11套互斥分组及9套父子分组全部对账，差额为0，并完成独立复算。HTML数据一致性及21种筛选检查通过；未执行真实浏览器测试或外部账务核对。不推断订单未提供的业务原因。\n\n产物保存于 [output](./output)：`analyze.py`、结果CSV、`summary.json`、`contributions.html`及核验记录。",
+      "artifact_references": {
+        "analyze.py": true,
+        "summary.json": true,
+        "contributions.html": true
+      },
+      "command_count": 6,
+      "failed_commands": 0,
+      "files": [
+        "README.md",
+        "analyze.py",
+        "business_model_contributions.csv",
+        "category_contributions.csv",
+        "channel_contributions.csv",
+        "chart_validation.json",
+        "city_contributions.csv",
+        "contributions.html",
+        "line_revenue_audit.csv",
+        "monthly_totals.csv",
+        "product_contributions.csv",
+        "reconciliation.csv",
+        "region_contributions.csv",
+        "results.json",
+        "store_channel_contributions.csv",
+        "store_channel_product_contributions.csv",
+        "store_contributions.csv",
+        "store_growth_offsets.csv",
+        "store_product_contributions.csv",
+        "subcategory_contributions.csv",
+        "summary.json",
+        "validation.json"
+      ]
+    },
+    {
+      "arm": "ava",
+      "summary": {
+        "august": 4293025.42,
+        "september": 3697575.18,
+        "change": -595450.24,
+        "growth_pct": -13.87017736317061,
+        "main_decline": {
+          "store": "深圳南山店",
+          "channel": "线上商城",
+          "product": "电动升降桌",
+          "change": -558776.37
+        },
+        "offset": {
+          "store": "广州天河店",
+          "change": 66713.31
+        },
+        "reconciled_change": -595450.24
+      },
+      "checks": {
+        "august": true,
+        "september": true,
+        "change": true,
+        "reconciled_change": true,
+        "growth_pct": true,
+        "main_decline": true,
+        "offset": true,
+        "ava_source": true,
+        "ava_schema": true,
+        "ava_query": true,
+        "ava_viz": true
+      },
+      "passed": true,
+      "answer": "8月净销售额 **4,293,025.42元**，9月 **3,697,575.18元**，减少 **595,450.24元（13.87%）**。\n\n最大下降门店为深圳南山店（−547,968.89元）；渠道为线上商城（−621,229.16元）；商品为电动升降桌（−572,636.43元）。最大交叉组合是“深圳南山店×线上商城×电动升降桌”，减少558,776.37元。广州天河店增长66,713.31元，是主要门店抵消项。上述维度不能相加。\n\n采用已完成外部客户订单，按履约月、销售责任门店归属；自营确认实付减退款，代销仅确认佣金，实付与退款分别逐行四舍五入到分后汇总。退款回记原履约月。不推断数据未提供的业务原因。\n\nAVA实际计算完成，11个互斥分组及父子层级共95项金额对账全部通过；会话已释放。未做浏览器渲染及外部账簿完整性核验，图表库需联网加载。\n\n产物均在 `./output`：`summary.json`、`contribution.html`、各维度CSV、`reconciliation.json`、实际执行的SQL及处理脚本；命令见 `executed_commands.txt`。",
+      "artifact_references": {
+        "summary.json": true,
+        "contribution.html": true,
+        "reconciliation.json": true,
+        "executed_commands.txt": true
+      },
+      "command_count": 29,
+      "failed_commands": 2,
+      "files": [
+        "analysis.txt",
+        "base.sql",
+        "business_model.csv",
+        "category.csv",
+        "channel.csv",
+        "city.csv",
+        "compose_report.py",
+        "contribution.html",
+        "contributions.json",
+        "contributions.sql",
+        "dispose.json",
+        "executed_commands.txt",
+        "monthly.json",
+        "monthly.sql",
+        "overall.csv",
+        "population.json",
+        "population.sql",
+        "postprocess.py",
+        "prepare_queries.py",
+        "product.csv",
+        "product_chart_spec.json",
+        "product_contribution.html",
+        "product_viz_result.json",
+        "quality.json",
+        "quality.sql",
+        "reconciliation.json",
+        "region.csv",
+        "schema.json",
+        "semantic_before.json",
+        "semantic_loaded.json",
+        "session.json",
+        "store.csv",
+        "store_channel.csv",
+        "store_channel_product.csv",
+        "store_chart_spec.json",
+        "store_contribution.html",
+        "store_product.csv",
+        "store_viz_result.json",
+        "subcategory.csv",
+        "summary.json"
+      ]
+    }
+  ]
+}

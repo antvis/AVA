@@ -1,0 +1,9 @@
+/bin/zsh -lc "python3 - <<'PY'
+import csv
+from collections import defaultdict,Counter
+with open('inputs/sales.csv',newline='') as f: rows=list(csv.DictReader(f))
+for r in rows:
+ if r['paid_at'].startswith(('2026-08','2026-09')):
+  print(r['order_kind'],r['business_model'],r['status'],r['line_paid_amount'],r['refund_amount'],r['refunded_at'],r['order_paid_amount'])
+  if r['paid_at'].startswith('2026-08'): break
+PY"

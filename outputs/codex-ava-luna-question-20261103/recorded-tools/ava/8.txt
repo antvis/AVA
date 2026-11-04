@@ -1,0 +1,89 @@
+{
+  "data": [
+    {
+      "selling_region": "华南",
+      "selling_city": "深圳",
+      "selling_store_id": "SZ01",
+      "selling_store_name": "深圳南山店",
+      "aug": 2199815.23,
+      "sep": 1651846.34,
+      "change": -547968.89
+    },
+    {
+      "selling_region": "华南",
+      "selling_city": "广州",
+      "selling_store_id": "GZ01",
+      "selling_store_name": "广州天河店",
+      "aug": 518590.81,
+      "sep": 585304.12,
+      "change": 66713.31
+    },
+    {
+      "selling_region": "华北",
+      "selling_city": "北京",
+      "selling_store_id": "BJ01",
+      "selling_store_name": "北京朝阳店",
+      "aug": 507108.42,
+      "sep": 467921.86,
+      "change": -39186.56
+    },
+    {
+      "selling_region": "华东",
+      "selling_city": "上海",
+      "selling_store_id": "SH01",
+      "selling_store_name": "上海徐汇店",
+      "aug": 507177.2,
+      "sep": 473158.39,
+      "change": -34018.81
+    },
+    {
+      "selling_region": "华东",
+      "selling_city": "杭州",
+      "selling_store_id": "HZ01",
+      "selling_store_name": "杭州武林店",
+      "aug": 66123.04,
+      "sep": 36817.31,
+      "change": -29305.73
+    },
+    {
+      "selling_region": "华北",
+      "selling_city": "天津",
+      "selling_store_id": "TJ01",
+      "selling_store_name": "天津和平店",
+      "aug": 494210.72,
+      "sep": 482527.16,
+      "change": -11683.56
+    }
+  ],
+  "schema": [
+    {
+      "name": "selling_region",
+      "type": "VARCHAR"
+    },
+    {
+      "name": "selling_city",
+      "type": "VARCHAR"
+    },
+    {
+      "name": "selling_store_id",
+      "type": "VARCHAR"
+    },
+    {
+      "name": "selling_store_name",
+      "type": "VARCHAR"
+    },
+    {
+      "name": "aug",
+      "type": "DECIMAL(38,2)"
+    },
+    {
+      "name": "sep",
+      "type": "DECIMAL(38,2)"
+    },
+    {
+      "name": "change",
+      "type": "DECIMAL(38,2)"
+    }
+  ],
+  "rowCount": 6
+}

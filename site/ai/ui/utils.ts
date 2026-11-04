@@ -3,6 +3,7 @@ import { createHighlighterCore } from 'shiki/core';
 import { createJavaScriptRegexEngine } from 'shiki/engine/javascript';
 import javascript from 'shiki/langs/javascript.mjs';
 import sql from 'shiki/langs/sql.mjs';
+import python from 'shiki/langs/python.mjs';
 import json from 'shiki/langs/json.mjs';
 import githubLight from 'shiki/themes/github-light.mjs';
 import type { Message } from './types';
@@ -14,6 +15,7 @@ import type { AIUIMessage } from '../core/session';
 
 // This is a render projection; useChat owns the messages and their tool states.
 export function toDisplayMessage(source: AIUIMessage, datasetName: string): Message {
+  const codeLanguage = /\.(sqlite|sqlite3|db)$/i.test(datasetName) ? 'sql' : 'javascript';
   const message: Message = {
     role: source.role === 'user' ? 'user' : 'assistant',
     text: '',
@@ -26,7 +28,8 @@ export function toDisplayMessage(source: AIUIMessage, datasetName: string): Mess
     } else if (part.type === 'tool-analyze' && part.state === 'output-available') {
       message.artifact = {
         id: `${source.id}:${part.toolCallId}`,
-        title: 'query.js',
+        title: codeLanguage === 'sql' ? 'query.sql' : 'query.js',
+        codeLanguage,
         description: part.output.query,
         code: part.output.sql,
         data: part.output.data,
@@ -36,6 +39,7 @@ export function toDisplayMessage(source: AIUIMessage, datasetName: string): Mess
       message.artifact = {
         id: `${source.id}:${part.toolCallId}`,
         title: 'visualization.html',
+        codeLanguage,
         description: result.query,
         code: result.sql,
         data: result.data,
@@ -118,10 +122,10 @@ export function parseToken(draft: string): { kind: 'at' | 'slash'; query: string
 
 let highlighter: Promise<HighlighterCore> | undefined;
 
-export async function highlightCode(code: string, language: 'javascript' | 'sql' | 'json') {
+export async function highlightCode(code: string, language: 'javascript' | 'sql' | 'json' | 'python' | 'python' | 'python' | 'python') {
   highlighter ??= createHighlighterCore({
     themes: [githubLight],
-    langs: [javascript, sql, json],
+    langs: [javascript, sql, json, python],
     engine: createJavaScriptRegexEngine(),
   });
   return (await highlighter).codeToTokens(code, { lang: language, theme: 'github-light' }).tokens;

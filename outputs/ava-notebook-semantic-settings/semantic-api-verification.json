@@ -1,0 +1,293 @@
+{
+  "id": "f56640da-6288-480d-8475-cd773abc3ed0",
+  "status": "running",
+  "question": "净销售额下降，要不要加大投放？",
+  "model": "deepseek-flash",
+  "createdAt": "2026-11-03T09:03:41.139Z",
+  "updatedAt": "2026-11-03T09:03:45.125Z",
+  "semantic": {
+    "name": "业务口径",
+    "hash": "a71856db85c3527b6f0a1ecb71b52604cd584d93214c815c27c016e9b23337f3",
+    "definition": {
+      "description": "合成家电零售经营数据。用于多轮探索和证据链演示，不是真实业务数据。金额均为人民币元。先验证统计范围与口径，再比较经营表现。",
+      "properties": {
+        "grain": "一行 = 一个自然日 × 一个商品 SKU × 一个地区 × 一个渠道；所有组合每天都有记录，包括零访问零订单日。",
+        "accounting": "净销售额 = 标价销售额 - 优惠 - 退款；广告后经营贡献 = 净销售额 - 商品净成本 - 履约成本 - 交易费 - 广告费用。此贡献不含固定人工、租金及所得税，不能称为净利润。",
+        "comparison": "2025 年 1 月 31 天、2 月 28 天。总量与自然日日均都要报告；跨组合的贡献拆解必须采用相同的月份分母。比率使用汇总后的分子/分母；零分母用 NULLIF 返回 NULL，不填 0；不平均各行转化率。",
+        "queryRules": "CSV 实际物理表为 data。所有 SQL 使用 data 和物理字段。语义计算列和 cube 不会自动创建数据库列或视图，必须展开表达式或使用 CTE。金额保留计算精度，仅展示时四舍五入。",
+        "analysisGuidance": [
+          "先验证日期覆盖、每日组合完整性、复合键唯一性、空值和零值，再核对金额恒等式；不要从前五行推断整体。",
+          "比较月总量与自然日日均净销售额、广告后经营贡献；把月份天数与经营强度变化区分开。",
+          "从商品、地区、渠道逐层下钻到交叉组合；同时列出负向贡献和抵消下降的正向贡献，并与总体差额对账。",
+          "对关键组合检查日趋势、销量、折后价格、退款件数率、广告费及缺货小时；根据上一步结果选择下一步，不强制固定 SQL。",
+          "经营贡献的会计桥 = 标价销售额变化 - 优惠变化 - 退款变化 - 商品成本变化 - 履约成本变化 - 交易费变化 - 广告费变化。分项必须与总体变化一致。",
+          "活动、广告、缺货与经营变化的同时出现是线索，不自动构成因果；不能据此给出确定的投放增量回报或预算。优先建议可核查的操作及所需补充证据。"
+        ],
+        "loopPresentation": "遵守 AVA loop 协议。EXPLORE 在代码块前写 -- Purpose: 简短中文目的；REFINE 用 Findings: 总结已返回结果、Plan: 描述下一步；SQL 只提供代码块；CONFIRM 用 Verification: 和 Conclusion: 给出核验及中文结论。结论只能引用已经执行的结果，不能提前宣称当前未执行查询的发现。"
+      },
+      "models": [
+        {
+          "name": "data",
+          "tableReference": {
+            "table": "data"
+          },
+          "primaryKey": [
+            "date",
+            "sku",
+            "region",
+            "channel"
+          ],
+          "columns": [
+            {
+              "name": "date",
+              "type": "DATE",
+              "properties": {
+                "description": "营业自然日，ISO 日期；按原销售日期归属退款；数据快照截止 2025-03-31，两个销售月退款均已成熟。"
+              }
+            },
+            {
+              "name": "region",
+              "type": "VARCHAR",
+              "properties": {
+                "description": "销售归属地区。"
+              }
+            },
+            {
+              "name": "channel",
+              "type": "VARCHAR",
+              "properties": {
+                "description": "销售渠道。"
+              }
+            },
+            {
+              "name": "sku",
+              "type": "VARCHAR",
+              "properties": {
+                "description": "商品唯一编码。"
+              }
+            },
+            {
+              "name": "product",
+              "type": "VARCHAR",
+              "properties": {
+                "description": "商品名称。"
+              }
+            },
+            {
+              "name": "category",
+              "type": "VARCHAR",
+              "properties": {
+                "description": "商品品类。"
+              }
+            },
+            {
+              "name": "campaign",
+              "type": "VARCHAR",
+              "properties": {
+                "description": "观察到的活动标签，不代表活动因果效果。"
+              }
+            },
+            {
+              "name": "sessions",
+              "type": "BIGINT",
+              "properties": {
+                "description": "归属该商品×地区×渠道的访问次数，可加总，不是去重访客数。"
+              }
+            },
+            {
+              "name": "orders",
+              "type": "BIGINT",
+              "properties": {
+                "description": "已支付订单数；本合成案例每单只包含一个 SKU，可跨行加总；不含取消和未支付订单。"
+              }
+            },
+            {
+              "name": "units",
+              "type": "BIGINT",
+              "properties": {
+                "description": "已发货件数，含后续退回件数；一个订单可能购买多件同 SKU。"
+              }
+            },
+            {
+              "name": "returned_units",
+              "type": "BIGINT",
+              "properties": {
+                "description": "已全额退款的退货件数，不是退款订单数；退款件数率 = SUM(returned_units)/SUM(units)。"
+              }
+            },
+            {
+              "name": "list_price",
+              "type": "DOUBLE",
+              "properties": {
+                "description": "每件标价，人民币元；不按行求和。"
+              }
+            },
+            {
+              "name": "gross_sales",
+              "type": "DOUBLE",
+              "properties": {
+                "description": "标价销售额 = units × list_price，未扣优惠和退款，人民币元。"
+              }
+            },
+            {
+              "name": "discount_amount",
+              "type": "DOUBLE",
+              "properties": {
+                "description": "发货商品实际优惠金额，人民币元；包含后续退款商品享受的优惠。"
+              }
+            },
+            {
+              "name": "refund_amount",
+              "type": "DOUBLE",
+              "properties": {
+                "description": "按折后实付价计算的累计退款金额，人民币元；空值明确表示零退款。不可再按退货件数重复扣减收入。"
+              }
+            },
+            {
+              "name": "cogs",
+              "type": "DOUBLE",
+              "properties": {
+                "description": "扣除可再次销售的退货商品成本回收后的商品成本，人民币元；已经是净成本，不可再扣退货成本。"
+              }
+            },
+            {
+              "name": "fulfillment_cost",
+              "type": "DOUBLE",
+              "properties": {
+                "description": "发货履约成本，退货后不退还，人民币元。"
+              }
+            },
+            {
+              "name": "platform_fee",
+              "type": "DOUBLE",
+              "properties": {
+                "description": "按折后支付金额计算的交易费用，退款后不退还，人民币元。"
+              }
+            },
+            {
+              "name": "ad_spend",
+              "type": "DOUBLE",
+              "properties": {
+                "description": "分配至此行粒度的实际广告费用，人民币元，可加总；没有投放实验或增量收益数据。"
+              }
+            },
+            {
+              "name": "stockout_hours",
+              "type": "BIGINT",
+              "properties": {
+                "description": "此商品×地区×渠道当天缺货小时，范围 0–24；跨商品求和不等于营业小时，建议按组合比较平均值。"
+              }
+            }
+          ]
+        }
+      ],
+      "cubes": [
+        {
+          "name": "retail_sales",
+          "baseObject": "data",
+          "measures": [
+            {
+              "name": "net_revenue",
+              "type": "DOUBLE",
+              "expression": "SUM(gross_sales - discount_amount - COALESCE(refund_amount, 0))",
+              "description": "净销售额，人民币元。"
+            },
+            {
+              "name": "contribution_after_ads",
+              "type": "DOUBLE",
+              "expression": "SUM(gross_sales - discount_amount - COALESCE(refund_amount, 0) - cogs - fulfillment_cost - platform_fee - ad_spend)",
+              "description": "广告后经营贡献，人民币元，不是净利润。"
+            },
+            {
+              "name": "daily_net_revenue",
+              "type": "DOUBLE",
+              "expression": "SUM(gross_sales - discount_amount - COALESCE(refund_amount, 0)) / NULLIF(COUNT(DISTINCT date), 0)"
+            },
+            {
+              "name": "daily_contribution_after_ads",
+              "type": "DOUBLE",
+              "expression": "SUM(gross_sales - discount_amount - COALESCE(refund_amount, 0) - cogs - fulfillment_cost - platform_fee - ad_spend) / NULLIF(COUNT(DISTINCT date), 0)"
+            },
+            {
+              "name": "conversion_rate",
+              "type": "DOUBLE",
+              "expression": "SUM(orders)::DOUBLE / NULLIF(SUM(sessions), 0)"
+            },
+            {
+              "name": "return_rate",
+              "type": "DOUBLE",
+              "expression": "SUM(returned_units)::DOUBLE / NULLIF(SUM(units), 0)"
+            },
+            {
+              "name": "net_order_value",
+              "type": "DOUBLE",
+              "expression": "SUM(gross_sales - discount_amount - COALESCE(refund_amount, 0)) / NULLIF(SUM(orders), 0)"
+            }
+          ],
+          "dimensions": [
+            {
+              "name": "region",
+              "expression": "region",
+              "type": "VARCHAR"
+            },
+            {
+              "name": "channel",
+              "expression": "channel",
+              "type": "VARCHAR"
+            },
+            {
+              "name": "sku",
+              "expression": "sku",
+              "type": "VARCHAR"
+            },
+            {
+              "name": "product",
+              "expression": "product",
+              "type": "VARCHAR"
+            },
+            {
+              "name": "category",
+              "expression": "category",
+              "type": "VARCHAR"
+            },
+            {
+              "name": "campaign",
+              "expression": "campaign",
+              "type": "VARCHAR"
+            }
+          ],
+          "timeDimensions": [
+            {
+              "name": "sales_date",
+              "expression": "date",
+              "type": "DATE"
+            }
+          ],
+          "hierarchies": {
+            "product_path": [
+              "category",
+              "product",
+              "sku"
+            ]
+          }
+        }
+      ]
+    }
+  },
+  "semanticApiEvents": [
+    {
+      "type": "semanticstart"
+    },
+    {
+      "type": "semanticend"
+    }
+  ],
+  "context": {
+    "hasSemantic": true,
+    "descriptionMatches": true,
+    "accounting": "净销售额 = 标价销售额 - 优惠 - 退款；广告后经营贡献 = 净销售额 - 商品净成本 - 履约成本 - 交易费 - 广告费用。此贡献不含固定人工、租金及所得税，不能称为净利润。",
+    "models": 1,
+    "cubes": 1
+  },
+  "queryStatuses": []
+}

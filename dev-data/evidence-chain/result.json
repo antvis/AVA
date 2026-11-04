@@ -1,0 +1,23 @@
+{
+  "data": [
+    {
+      "period": "Baseline",
+      "net_sales_k": 4882.34224
+    },
+    {
+      "period": "Current",
+      "net_sales_k": 4005.10013
+    }
+  ],
+  "schema": [
+    {
+      "name": "period",
+      "type": "VARCHAR"
+    },
+    {
+      "name": "net_sales_k",
+      "type": "DOUBLE"
+    }
+  ],
+  "rowCount": 2
+}

@@ -1,0 +1,48 @@
+{
+  "dataOrigin": "mock",
+  "randomSeed": 20261027,
+  "periods": {
+    "基期": {
+      "period": "基期",
+      "amount": 0,
+      "density_per_1000": 7.298971e-09,
+      "mean": 800.0000150000001,
+      "sample_size": 2000,
+      "bandwidth": 68.73027511898557,
+      "below_600_pct": 10.4,
+      "above_1100_pct": 6.35
+    },
+    "本期": {
+      "period": "本期",
+      "amount": 0,
+      "density_per_1000": 3.878380318e-06,
+      "mean": 799.99993,
+      "sample_size": 2000,
+      "bandwidth": 68.73027511898557,
+      "below_600_pct": 55.50000000000001,
+      "above_1100_pct": 36.55
+    }
+  },
+  "clusters": [
+    {
+      "name": "高频低客单",
+      "count": 40,
+      "orders": 1167.575,
+      "amount": 351.11375000000004
+    },
+    {
+      "name": "中频中客单",
+      "count": 40,
+      "orders": 697.8,
+      "amount": 712.0545000000002
+    },
+    {
+      "name": "低频高客单",
+      "count": 40,
+      "orders": 316.575,
+      "amount": 1397.1897499999998
+    }
+  ],
+  "k": 3,
+  "silhouette": 0.734945805868529
+}

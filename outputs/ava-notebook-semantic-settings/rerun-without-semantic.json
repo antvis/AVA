@@ -1,0 +1,1496 @@
+{
+  "id": "8e0aa633-b608-4ee3-a5f0-f1fee6e8351d",
+  "status": "completed",
+  "question": "净销售额下降，要不要加大投放？",
+  "model": "deepseek-flash",
+  "createdAt": "2026-11-03T08:35:54.659Z",
+  "updatedAt": "2026-11-03T08:37:01.904Z",
+  "nodes": [
+    {
+      "id": "source",
+      "kind": "source",
+      "status": "succeeded",
+      "title": "sales-case.csv",
+      "parents": [],
+      "payload": {
+        "id": "70adfba3-3255-48ee-b979-0120f3877214",
+        "name": "sales-case.csv",
+        "bytes": 196590,
+        "hash": "04d84a44f59c54ee681e8a208debcca32b135509e52056064d0e0569c627d378",
+        "headers": [
+          "date",
+          "region",
+          "channel",
+          "sku",
+          "product",
+          "category",
+          "campaign",
+          "sessions",
+          "orders",
+          "units",
+          "returned_units",
+          "list_price",
+          "gross_sales",
+          "discount_amount",
+          "refund_amount",
+          "cogs",
+          "fulfillment_cost",
+          "platform_fee",
+          "ad_spend",
+          "stockout_hours"
+        ],
+        "rows": 1416,
+        "preview": [
+          {
+            "date": "2025-01-01",
+            "region": "华东",
+            "channel": "自营商城",
+            "sku": "COF-01",
+            "product": "晨光咖啡机",
+            "category": "厨房电器",
+            "campaign": "常规经营",
+            "sessions": "627",
+            "orders": "34",
+            "units": "38",
+            "returned_units": "1",
+            "list_price": "899",
+            "gross_sales": "34162",
+            "discount_amount": "1366.48",
+            "refund_amount": "863.04",
+            "cogs": "17760",
+            "fulfillment_cost": "380",
+            "platform_fee": "262.36",
+            "ad_spend": "112.86",
+            "stockout_hours": "0"
+          },
+          {
+            "date": "2025-01-01",
+            "region": "华东",
+            "channel": "平台店",
+            "sku": "COF-01",
+            "product": "晨光咖啡机",
+            "category": "厨房电器",
+            "campaign": "常规经营",
+            "sessions": "751",
+            "orders": "41",
+            "units": "46",
+            "returned_units": "1",
+            "list_price": "899",
+            "gross_sales": "41354",
+            "discount_amount": "3308.32",
+            "refund_amount": "827.08",
+            "cogs": "21600",
+            "fulfillment_cost": "368",
+            "platform_fee": "1331.6",
+            "ad_spend": "285.38",
+            "stockout_hours": "0"
+          },
+          {
+            "date": "2025-01-01",
+            "region": "华南",
+            "channel": "自营商城",
+            "sku": "COF-01",
+            "product": "晨光咖啡机",
+            "category": "厨房电器",
+            "campaign": "常规经营",
+            "sessions": "549",
+            "orders": "30",
+            "units": "33",
+            "returned_units": "1",
+            "list_price": "899",
+            "gross_sales": "29667",
+            "discount_amount": "1186.68",
+            "refund_amount": "863.04",
+            "cogs": "15360",
+            "fulfillment_cost": "330",
+            "platform_fee": "227.84",
+            "ad_spend": "98.82",
+            "stockout_hours": "0"
+          },
+          {
+            "date": "2025-01-01",
+            "region": "华南",
+            "channel": "平台店",
+            "sku": "COF-01",
+            "product": "晨光咖啡机",
+            "category": "厨房电器",
+            "campaign": "常规经营",
+            "sessions": "657",
+            "orders": "36",
+            "units": "40",
+            "returned_units": "1",
+            "list_price": "899",
+            "gross_sales": "35960",
+            "discount_amount": "2876.8",
+            "refund_amount": "827.08",
+            "cogs": "18720",
+            "fulfillment_cost": "320",
+            "platform_fee": "1157.91",
+            "ad_spend": "249.66",
+            "stockout_hours": "0"
+          },
+          {
+            "date": "2025-01-01",
+            "region": "华北",
+            "channel": "自营商城",
+            "sku": "COF-01",
+            "product": "晨光咖啡机",
+            "category": "厨房电器",
+            "campaign": "常规经营",
+            "sessions": "472",
+            "orders": "26",
+            "units": "29",
+            "returned_units": "1",
+            "list_price": "899",
+            "gross_sales": "26071",
+            "discount_amount": "1042.84",
+            "refund_amount": "863.04",
+            "cogs": "13440",
+            "fulfillment_cost": "290",
+            "platform_fee": "200.23",
+            "ad_spend": "84.96",
+            "stockout_hours": "0"
+          }
+        ]
+      }
+    },
+    {
+      "id": "context",
+      "kind": "context",
+      "status": "succeeded",
+      "title": "结构与数据质量",
+      "parents": [
+        "source"
+      ],
+      "payload": {
+        "schema": {
+          "models": [
+            {
+              "name": "data",
+              "tableReference": {
+                "catalog": "memory",
+                "schema": "main",
+                "table": "data"
+              },
+              "columns": [
+                {
+                  "name": "date",
+                  "type": "DATE",
+                  "notNull": false
+                },
+                {
+                  "name": "region",
+                  "type": "VARCHAR",
+                  "notNull": false
+                },
+                {
+                  "name": "channel",
+                  "type": "VARCHAR",
+                  "notNull": false
+                },
+                {
+                  "name": "sku",
+                  "type": "VARCHAR",
+                  "notNull": false
+                },
+                {
+                  "name": "product",
+                  "type": "VARCHAR",
+                  "notNull": false
+                },
+                {
+                  "name": "category",
+                  "type": "VARCHAR",
+                  "notNull": false
+                },
+                {
+                  "name": "campaign",
+                  "type": "VARCHAR",
+                  "notNull": false
+                },
+                {
+                  "name": "sessions",
+                  "type": "BIGINT",
+                  "notNull": false
+                },
+                {
+                  "name": "orders",
+                  "type": "BIGINT",
+                  "notNull": false
+                },
+                {
+                  "name": "units",
+                  "type": "BIGINT",
+                  "notNull": false
+                },
+                {
+                  "name": "returned_units",
+                  "type": "BIGINT",
+                  "notNull": false
+                },
+                {
+                  "name": "list_price",
+                  "type": "BIGINT",
+                  "notNull": false
+                },
+                {
+                  "name": "gross_sales",
+                  "type": "BIGINT",
+                  "notNull": false
+                },
+                {
+                  "name": "discount_amount",
+                  "type": "DOUBLE",
+                  "notNull": false
+                },
+                {
+                  "name": "refund_amount",
+                  "type": "DOUBLE",
+                  "notNull": false
+                },
+                {
+                  "name": "cogs",
+                  "type": "BIGINT",
+                  "notNull": false
+                },
+                {
+                  "name": "fulfillment_cost",
+                  "type": "BIGINT",
+                  "notNull": false
+                },
+                {
+                  "name": "platform_fee",
+                  "type": "DOUBLE",
+                  "notNull": false
+                },
+                {
+                  "name": "ad_spend",
+                  "type": "DOUBLE",
+                  "notNull": false
+                },
+                {
+                  "name": "stockout_hours",
+                  "type": "BIGINT",
+                  "notNull": false
+                }
+              ]
+            }
+          ],
+          "relationships": [],
+          "views": []
+        },
+        "profile": {
+          "models": [
+            {
+              "name": "data",
+              "metrics": {
+                "row_count": 1416
+              },
+              "columns": [
+                {
+                  "name": "date",
+                  "metrics": {
+                    "null_count": 0
+                  },
+                  "properties": {
+                    "logicalType": "date"
+                  }
+                },
+                {
+                  "name": "region",
+                  "metrics": {
+                    "null_count": 0
+                  },
+                  "properties": {
+                    "logicalType": "string"
+                  }
+                },
+                {
+                  "name": "channel",
+                  "metrics": {
+                    "null_count": 0
+                  },
+                  "properties": {
+                    "logicalType": "string"
+                  }
+                },
+                {
+                  "name": "sku",
+                  "metrics": {
+                    "null_count": 0
+                  },
+                  "properties": {
+                    "logicalType": "string"
+                  }
+                },
+                {
+                  "name": "product",
+                  "metrics": {
+                    "null_count": 0
+                  },
+                  "properties": {
+                    "logicalType": "string"
+                  }
+                },
+                {
+                  "name": "category",
+                  "metrics": {
+                    "null_count": 0
+                  },
+                  "properties": {
+                    "logicalType": "string"
+                  }
+                },
+                {
+                  "name": "campaign",
+                  "metrics": {
+                    "null_count": 0
+                  },
+                  "properties": {
+                    "logicalType": "string"
+                  }
+                },
+                {
+                  "name": "sessions",
+                  "metrics": {
+                    "null_count": 0
+                  },
+                  "properties": {
+                    "logicalType": "numeric"
+                  }
+                },
+                {
+                  "name": "orders",
+                  "metrics": {
+                    "null_count": 0
+                  },
+                  "properties": {
+                    "logicalType": "numeric"
+                  }
+                },
+                {
+                  "name": "units",
+                  "metrics": {
+                    "null_count": 0
+                  },
+                  "properties": {
+                    "logicalType": "numeric"
+                  }
+                },
+                {
+                  "name": "returned_units",
+                  "metrics": {
+                    "null_count": 0
+                  },
+                  "properties": {
+                    "logicalType": "numeric"
+                  }
+                },
+                {
+                  "name": "list_price",
+                  "metrics": {
+                    "null_count": 0
+                  },
+                  "properties": {
+                    "logicalType": "numeric"
+                  }
+                },
+                {
+                  "name": "gross_sales",
+                  "metrics": {
+                    "null_count": 0
+                  },
+                  "properties": {
+                    "logicalType": "numeric"
+                  }
+                },
+                {
+                  "name": "discount_amount",
+                  "metrics": {
+                    "null_count": 0
+                  },
+                  "properties": {
+                    "logicalType": "numeric"
+                  }
+                },
+                {
+                  "name": "refund_amount",
+                  "metrics": {
+                    "null_count": 6
+                  },
+                  "properties": {
+                    "logicalType": "numeric"
+                  }
+                },
+                {
+                  "name": "cogs",
+                  "metrics": {
+                    "null_count": 0
+                  },
+                  "properties": {
+                    "logicalType": "numeric"
+                  }
+                },
+                {
+                  "name": "fulfillment_cost",
+                  "metrics": {
+                    "null_count": 0
+                  },
+                  "properties": {
+                    "logicalType": "numeric"
+                  }
+                },
+                {
+                  "name": "platform_fee",
+                  "metrics": {
+                    "null_count": 0
+                  },
+                  "properties": {
+                    "logicalType": "numeric"
+                  }
+                },
+                {
+                  "name": "ad_spend",
+                  "metrics": {
+                    "null_count": 0
+                  },
+                  "properties": {
+                    "logicalType": "numeric"
+                  }
+                },
+                {
+                  "name": "stockout_hours",
+                  "metrics": {
+                    "null_count": 0
+                  },
+                  "properties": {
+                    "logicalType": "numeric"
+                  }
+                }
+              ]
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "Lhh8kMP2ZgiQIVys",
+      "kind": "step",
+      "status": "succeeded",
+      "title": "探索数据",
+      "parents": [
+        "context"
+      ],
+      "payload": {
+        "step": 0,
+        "action": "EXPLORE",
+        "text": "-- Purpose: Verify date coverage, dimensions, and candidate net-sales components before analyzing the decline and ad-spend relationship.\n```sql\nSELECT\n  MIN(date) AS min_date,\n  MAX(date) AS max_date,\n  COUNT(*) AS rows,\n  COUNT(DISTINCT date) AS distinct_dates,\n  COUNT(DISTINCT region) AS regions,\n  COUNT(DISTINCT channel) AS channels,\n  COUNT(DISTINCT campaign) AS campaigns,\n  COUNT(DISTINCT sku) AS skus,\n  SUM(gross_sales) AS gross_sales,\n  SUM(discount_amount) AS discount_amount,\n  SUM(refund_amount) AS refund_amount,\n  SUM(ad_spend) AS ad_spend,\n  SUM(sessions) AS sessions,\n  SUM(orders) AS orders,\n  SUM(units) AS units,\n  SUM(returned_units) AS returned_units\nFROM memory.main.data;\n```\n\n```sql\n-- Purpose: Inspect representative rows and campaign/channel encodings.\nSELECT *\nFROM memory.main.data\nORDER BY date\nLIMIT 10;\n```"
+      }
+    },
+    {
+      "id": "RSRHRGSfM5xElSv0",
+      "kind": "query",
+      "status": "succeeded",
+      "title": "查询 1 · 获取数据",
+      "parents": [
+        "Lhh8kMP2ZgiQIVys"
+      ],
+      "payload": {
+        "dsl": "SELECT\n  MIN(date) AS min_date,\n  MAX(date) AS max_date,\n  COUNT(*) AS rows,\n  COUNT(DISTINCT date) AS distinct_dates,\n  COUNT(DISTINCT region) AS regions,\n  COUNT(DISTINCT channel) AS channels,\n  COUNT(DISTINCT campaign) AS campaigns,\n  COUNT(DISTINCT sku) AS skus,\n  SUM(gross_sales) AS gross_sales,\n  SUM(discount_amount) AS discount_amount,\n  SUM(refund_amount) AS refund_amount,\n  SUM(ad_spend) AS ad_spend,\n  SUM(sessions) AS sessions,\n  SUM(orders) AS orders,\n  SUM(units) AS units,\n  SUM(returned_units) AS returned_units\nFROM memory.main.data;",
+        "sql": "SELECT\n  MIN(date) AS min_date,\n  MAX(date) AS max_date,\n  COUNT(*) AS rows,\n  COUNT(DISTINCT date) AS distinct_dates,\n  COUNT(DISTINCT region) AS regions,\n  COUNT(DISTINCT channel) AS channels,\n  COUNT(DISTINCT campaign) AS campaigns,\n  COUNT(DISTINCT sku) AS skus,\n  SUM(gross_sales) AS gross_sales,\n  SUM(discount_amount) AS discount_amount,\n  SUM(refund_amount) AS refund_amount,\n  SUM(ad_spend) AS ad_spend,\n  SUM(sessions) AS sessions,\n  SUM(orders) AS orders,\n  SUM(units) AS units,\n  SUM(returned_units) AS returned_units\nFROM memory.main.data;"
+      }
+    },
+    {
+      "id": "RSRHRGSfM5xElSv0:end",
+      "kind": "result",
+      "status": "succeeded",
+      "title": "结果 · 1 行",
+      "parents": [
+        "RSRHRGSfM5xElSv0"
+      ],
+      "payload": {
+        "data": [
+          {
+            "min_date": 1735689600000,
+            "max_date": 1740700800000,
+            "rows": 1416,
+            "distinct_dates": 59,
+            "regions": 3,
+            "channels": 2,
+            "campaigns": 4,
+            "skus": 4,
+            "gross_sales": 23410359,
+            "discount_amount": 1885518.9799999981,
+            "refund_amount": 702383.2500000006,
+            "ad_spend": 258684.4600000001,
+            "sessions": 768663,
+            "orders": 50461,
+            "units": 56161,
+            "returned_units": 1664
+          }
+        ],
+        "schema": [
+          {
+            "name": "min_date",
+            "type": "DATE"
+          },
+          {
+            "name": "max_date",
+            "type": "DATE"
+          },
+          {
+            "name": "rows",
+            "type": "BIGINT"
+          },
+          {
+            "name": "distinct_dates",
+            "type": "BIGINT"
+          },
+          {
+            "name": "regions",
+            "type": "BIGINT"
+          },
+          {
+            "name": "channels",
+            "type": "BIGINT"
+          },
+          {
+            "name": "campaigns",
+            "type": "BIGINT"
+          },
+          {
+            "name": "skus",
+            "type": "BIGINT"
+          },
+          {
+            "name": "gross_sales",
+            "type": "HUGEINT"
+          },
+          {
+            "name": "discount_amount",
+            "type": "DOUBLE"
+          },
+          {
+            "name": "refund_amount",
+            "type": "DOUBLE"
+          },
+          {
+            "name": "ad_spend",
+            "type": "DOUBLE"
+          },
+          {
+            "name": "sessions",
+            "type": "HUGEINT"
+          },
+          {
+            "name": "orders",
+            "type": "HUGEINT"
+          },
+          {
+            "name": "units",
+            "type": "HUGEINT"
+          },
+          {
+            "name": "returned_units",
+            "type": "HUGEINT"
+          }
+        ],
+        "rowCount": 1
+      },
+      "visualization": {
+        "status": "ready"
+      }
+    },
+    {
+      "id": "ebsL4zIdSffeD3gL",
+      "kind": "query",
+      "status": "succeeded",
+      "title": "查询 2 · 获取数据",
+      "parents": [
+        "Lhh8kMP2ZgiQIVys"
+      ],
+      "payload": {
+        "dsl": "-- Purpose: Inspect representative rows and campaign/channel encodings.\nSELECT *\nFROM memory.main.data\nORDER BY date\nLIMIT 10;",
+        "sql": "-- Purpose: Inspect representative rows and campaign/channel encodings.\nSELECT *\nFROM memory.main.data\nORDER BY date\nLIMIT 10;"
+      }
+    },
+    {
+      "id": "ebsL4zIdSffeD3gL:end",
+      "kind": "result",
+      "status": "succeeded",
+      "title": "结果 · 10 行",
+      "parents": [
+        "ebsL4zIdSffeD3gL"
+      ],
+      "payload": {
+        "data": [
+          {
+            "date": 1735689600000,
+            "region": "华东",
+            "channel": "自营商城",
+            "sku": "COF-01",
+            "product": "晨光咖啡机",
+            "category": "厨房电器",
+            "campaign": "常规经营",
+            "sessions": 627,
+            "orders": 34,
+            "units": 38,
+            "returned_units": 1,
+            "list_price": 899,
+            "gross_sales": 34162,
+            "discount_amount": 1366.48,
+            "refund_amount": 863.04,
+            "cogs": 17760,
+            "fulfillment_cost": 380,
+            "platform_fee": 262.36,
+            "ad_spend": 112.86,
+            "stockout_hours": 0
+          },
+          {
+            "date": 1735689600000,
+            "region": "华东",
+            "channel": "平台店",
+            "sku": "COF-01",
+            "product": "晨光咖啡机",
+            "category": "厨房电器",
+            "campaign": "常规经营",
+            "sessions": 751,
+            "orders": 41,
+            "units": 46,
+            "returned_units": 1,
+            "list_price": 899,
+            "gross_sales": 41354,
+            "discount_amount": 3308.32,
+            "refund_amount": 827.08,
+            "cogs": 21600,
+            "fulfillment_cost": 368,
+            "platform_fee": 1331.6,
+            "ad_spend": 285.38,
+            "stockout_hours": 0
+          },
+          {
+            "date": 1735689600000,
+            "region": "华南",
+            "channel": "自营商城",
+            "sku": "COF-01",
+            "product": "晨光咖啡机",
+            "category": "厨房电器",
+            "campaign": "常规经营",
+            "sessions": 549,
+            "orders": 30,
+            "units": 33,
+            "returned_units": 1,
+            "list_price": 899,
+            "gross_sales": 29667,
+            "discount_amount": 1186.68,
+            "refund_amount": 863.04,
+            "cogs": 15360,
+            "fulfillment_cost": 330,
+            "platform_fee": 227.84,
+            "ad_spend": 98.82,
+            "stockout_hours": 0
+          },
+          {
+            "date": 1735689600000,
+            "region": "华南",
+            "channel": "平台店",
+            "sku": "COF-01",
+            "product": "晨光咖啡机",
+            "category": "厨房电器",
+            "campaign": "常规经营",
+            "sessions": 657,
+            "orders": 36,
+            "units": 40,
+            "returned_units": 1,
+            "list_price": 899,
+            "gross_sales": 35960,
+            "discount_amount": 2876.8,
+            "refund_amount": 827.08,
+            "cogs": 18720,
+            "fulfillment_cost": 320,
+            "platform_fee": 1157.91,
+            "ad_spend": 249.66,
+            "stockout_hours": 0
+          },
+          {
+            "date": 1735689600000,
+            "region": "华北",
+            "channel": "自营商城",
+            "sku": "COF-01",
+            "product": "晨光咖啡机",
+            "category": "厨房电器",
+            "campaign": "常规经营",
+            "sessions": 472,
+            "orders": 26,
+            "units": 29,
+            "returned_units": 1,
+            "list_price": 899,
+            "gross_sales": 26071,
+            "discount_amount": 1042.84,
+            "refund_amount": 863.04,
+            "cogs": 13440,
+            "fulfillment_cost": 290,
+            "platform_fee": 200.23,
+            "ad_spend": 84.96,
+            "stockout_hours": 0
+          },
+          {
+            "date": 1735689600000,
+            "region": "华北",
+            "channel": "平台店",
+            "sku": "COF-01",
+            "product": "晨光咖啡机",
+            "category": "厨房电器",
+            "campaign": "常规经营",
+            "sessions": 564,
+            "orders": 31,
+            "units": 34,
+            "returned_units": 1,
+            "list_price": 899,
+            "gross_sales": 30566,
+            "discount_amount": 2445.28,
+            "refund_amount": 827.08,
+            "cogs": 15840,
+            "fulfillment_cost": 272,
+            "platform_fee": 984.23,
+            "ad_spend": 214.32,
+            "stockout_hours": 0
+          },
+          {
+            "date": 1735689600000,
+            "region": "华东",
+            "channel": "自营商城",
+            "sku": "AIR-01",
+            "product": "轻食空气炸锅",
+            "category": "厨房电器",
+            "campaign": "常规经营",
+            "sessions": 568,
+            "orders": 36,
+            "units": 40,
+            "returned_units": 1,
+            "list_price": 499,
+            "gross_sales": 19960,
+            "discount_amount": 798.4,
+            "refund_amount": 479.04,
+            "cogs": 10140,
+            "fulfillment_cost": 400,
+            "platform_fee": 153.29,
+            "ad_spend": 102.24,
+            "stockout_hours": 0
+          },
+          {
+            "date": 1735689600000,
+            "region": "华东",
+            "channel": "平台店",
+            "sku": "AIR-01",
+            "product": "轻食空气炸锅",
+            "category": "厨房电器",
+            "campaign": "常规经营",
+            "sessions": 678,
+            "orders": 43,
+            "units": 48,
+            "returned_units": 1,
+            "list_price": 499,
+            "gross_sales": 23952,
+            "discount_amount": 1916.16,
+            "refund_amount": 459.08,
+            "cogs": 12220,
+            "fulfillment_cost": 384,
+            "platform_fee": 771.25,
+            "ad_spend": 257.64,
+            "stockout_hours": 0
+          },
+          {
+            "date": 1735689600000,
+            "region": "华南",
+            "channel": "自营商城",
+            "sku": "AIR-01",
+            "product": "轻食空气炸锅",
+            "category": "厨房电器",
+            "campaign": "常规经营",
+            "sessions": 500,
+            "orders": 32,
+            "units": 36,
+            "returned_units": 1,
+            "list_price": 499,
+            "gross_sales": 17964,
+            "discount_amount": 718.56,
+            "refund_amount": 479.04,
+            "cogs": 9100,
+            "fulfillment_cost": 360,
+            "platform_fee": 137.96,
+            "ad_spend": 90,
+            "stockout_hours": 0
+          },
+          {
+            "date": 1735689600000,
+            "region": "华南",
+            "channel": "平台店",
+            "sku": "AIR-01",
+            "product": "轻食空气炸锅",
+            "category": "厨房电器",
+            "campaign": "常规经营",
+            "sessions": 595,
+            "orders": 37,
+            "units": 41,
+            "returned_units": 1,
+            "list_price": 499,
+            "gross_sales": 20459,
+            "discount_amount": 1636.72,
+            "refund_amount": 459.08,
+            "cogs": 10400,
+            "fulfillment_cost": 328,
+            "platform_fee": 658.78,
+            "ad_spend": 226.1,
+            "stockout_hours": 0
+          }
+        ],
+        "schema": [
+          {
+            "name": "date",
+            "type": "DATE"
+          },
+          {
+            "name": "region",
+            "type": "VARCHAR"
+          },
+          {
+            "name": "channel",
+            "type": "VARCHAR"
+          },
+          {
+            "name": "sku",
+            "type": "VARCHAR"
+          },
+          {
+            "name": "product",
+            "type": "VARCHAR"
+          },
+          {
+            "name": "category",
+            "type": "VARCHAR"
+          },
+          {
+            "name": "campaign",
+            "type": "VARCHAR"
+          },
+          {
+            "name": "sessions",
+            "type": "BIGINT"
+          },
+          {
+            "name": "orders",
+            "type": "BIGINT"
+          },
+          {
+            "name": "units",
+            "type": "BIGINT"
+          },
+          {
+            "name": "returned_units",
+            "type": "BIGINT"
+          },
+          {
+            "name": "list_price",
+            "type": "BIGINT"
+          },
+          {
+            "name": "gross_sales",
+            "type": "BIGINT"
+          },
+          {
+            "name": "discount_amount",
+            "type": "DOUBLE"
+          },
+          {
+            "name": "refund_amount",
+            "type": "DOUBLE"
+          },
+          {
+            "name": "cogs",
+            "type": "BIGINT"
+          },
+          {
+            "name": "fulfillment_cost",
+            "type": "BIGINT"
+          },
+          {
+            "name": "platform_fee",
+            "type": "DOUBLE"
+          },
+          {
+            "name": "ad_spend",
+            "type": "DOUBLE"
+          },
+          {
+            "name": "stockout_hours",
+            "type": "BIGINT"
+          }
+        ],
+        "rowCount": 10
+      },
+      "visualization": {
+        "status": "ready"
+      }
+    },
+    {
+      "id": "h0o4cxuC93RP5xSv",
+      "kind": "step",
+      "status": "succeeded",
+      "title": "执行查询",
+      "parents": [
+        "RSRHRGSfM5xElSv0:end",
+        "ebsL4zIdSffeD3gL:end"
+      ],
+      "payload": {
+        "step": 1,
+        "action": "SQL",
+        "text": "```sql\nWITH daily AS (\n  SELECT\n    date,\n    SUM(gross_sales - discount_amount - COALESCE(refund_amount, 0)) AS net_sales,\n    SUM(ad_spend) AS ad_spend,\n    SUM(sessions) AS sessions,\n    SUM(orders) AS orders,\n    SUM(stockout_hours) AS stockout_hours\n  FROM memory.main.data\n  GROUP BY date\n)\nSELECT\n  'first_30d' AS period,\n  COUNT(*) AS days,\n  SUM(net_sales) AS net_sales,\n  SUM(ad_spend) AS ad_spend,\n  SUM(net_sales) / NULLIF(SUM(ad_spend), 0) AS roas,\n  SUM(sessions) AS sessions,\n  SUM(orders) AS orders,\n  SUM(stockout_hours) AS stockout_hours\nFROM daily\nWHERE date <= DATE '2025-01-30'\nUNION ALL\nSELECT\n  'last_29d',\n  COUNT(*),\n  SUM(net_sales),\n  SUM(ad_spend),\n  SUM(net_sales) / NULLIF(SUM(ad_spend), 0),\n  SUM(sessions),\n  SUM(orders),\n  SUM(stockout_hours)\nFROM daily\nWHERE date > DATE '2025-01-30'\nUNION ALL\nSELECT\n  'all',\n  COUNT(*),\n  SUM(net_sales),\n  SUM(ad_spend),\n  SUM(net_sales) / NULLIF(SUM(ad_spend), 0),\n  SUM(sessions),\n  SUM(orders),\n  SUM(stockout_hours)\nFROM daily;\n```"
+      }
+    },
+    {
+      "id": "Ci8cQIoOyoeTdpaO",
+      "kind": "query",
+      "status": "succeeded",
+      "title": "查询 1 · 获取数据",
+      "parents": [
+        "h0o4cxuC93RP5xSv"
+      ],
+      "payload": {
+        "dsl": "WITH daily AS (\n  SELECT\n    date,\n    SUM(gross_sales - discount_amount - COALESCE(refund_amount, 0)) AS net_sales,\n    SUM(ad_spend) AS ad_spend,\n    SUM(sessions) AS sessions,\n    SUM(orders) AS orders,\n    SUM(stockout_hours) AS stockout_hours\n  FROM memory.main.data\n  GROUP BY date\n)\nSELECT\n  'first_30d' AS period,\n  COUNT(*) AS days,\n  SUM(net_sales) AS net_sales,\n  SUM(ad_spend) AS ad_spend,\n  SUM(net_sales) / NULLIF(SUM(ad_spend), 0) AS roas,\n  SUM(sessions) AS sessions,\n  SUM(orders) AS orders,\n  SUM(stockout_hours) AS stockout_hours\nFROM daily\nWHERE date <= DATE '2025-01-30'\nUNION ALL\nSELECT\n  'last_29d',\n  COUNT(*),\n  SUM(net_sales),\n  SUM(ad_spend),\n  SUM(net_sales) / NULLIF(SUM(ad_spend), 0),\n  SUM(sessions),\n  SUM(orders),\n  SUM(stockout_hours)\nFROM daily\nWHERE date > DATE '2025-01-30'\nUNION ALL\nSELECT\n  'all',\n  COUNT(*),\n  SUM(net_sales),\n  SUM(ad_spend),\n  SUM(net_sales) / NULLIF(SUM(ad_spend), 0),\n  SUM(sessions),\n  SUM(orders),\n  SUM(stockout_hours)\nFROM daily;",
+        "sql": "WITH daily AS (\n  SELECT\n    date,\n    SUM(gross_sales - discount_amount - COALESCE(refund_amount, 0)) AS net_sales,\n    SUM(ad_spend) AS ad_spend,\n    SUM(sessions) AS sessions,\n    SUM(orders) AS orders,\n    SUM(stockout_hours) AS stockout_hours\n  FROM memory.main.data\n  GROUP BY date\n)\nSELECT\n  'first_30d' AS period,\n  COUNT(*) AS days,\n  SUM(net_sales) AS net_sales,\n  SUM(ad_spend) AS ad_spend,\n  SUM(net_sales) / NULLIF(SUM(ad_spend), 0) AS roas,\n  SUM(sessions) AS sessions,\n  SUM(orders) AS orders,\n  SUM(stockout_hours) AS stockout_hours\nFROM daily\nWHERE date <= DATE '2025-01-30'\nUNION ALL\nSELECT\n  'last_29d',\n  COUNT(*),\n  SUM(net_sales),\n  SUM(ad_spend),\n  SUM(net_sales) / NULLIF(SUM(ad_spend), 0),\n  SUM(sessions),\n  SUM(orders),\n  SUM(stockout_hours)\nFROM daily\nWHERE date > DATE '2025-01-30'\nUNION ALL\nSELECT\n  'all',\n  COUNT(*),\n  SUM(net_sales),\n  SUM(ad_spend),\n  SUM(net_sales) / NULLIF(SUM(ad_spend), 0),\n  SUM(sessions),\n  SUM(orders),\n  SUM(stockout_hours)\nFROM daily;"
+      }
+    },
+    {
+      "id": "Ci8cQIoOyoeTdpaO:end",
+      "kind": "result",
+      "status": "succeeded",
+      "title": "结果 · 3 行",
+      "parents": [
+        "Ci8cQIoOyoeTdpaO"
+      ],
+      "payload": {
+        "data": [
+          {
+            "period": "first_30d",
+            "days": 30,
+            "net_sales": 10632002.680000002,
+            "ad_spend": 110537.07999999999,
+            "roas": 96.18494246455582,
+            "sessions": 382746,
+            "orders": 25161,
+            "stockout_hours": 0
+          },
+          {
+            "period": "last_29d",
+            "days": 29,
+            "net_sales": 10190454.09,
+            "ad_spend": 148147.37999999998,
+            "roas": 68.78592176250434,
+            "sessions": 385917,
+            "orders": 25300,
+            "stockout_hours": 192
+          },
+          {
+            "period": "all",
+            "days": 59,
+            "net_sales": 20822456.770000003,
+            "ad_spend": 258684.46000000005,
+            "roas": 80.49365149340629,
+            "sessions": 768663,
+            "orders": 50461,
+            "stockout_hours": 192
+          }
+        ],
+        "schema": [
+          {
+            "name": "period",
+            "type": "VARCHAR"
+          },
+          {
+            "name": "days",
+            "type": "BIGINT"
+          },
+          {
+            "name": "net_sales",
+            "type": "DOUBLE"
+          },
+          {
+            "name": "ad_spend",
+            "type": "DOUBLE"
+          },
+          {
+            "name": "roas",
+            "type": "DOUBLE"
+          },
+          {
+            "name": "sessions",
+            "type": "HUGEINT"
+          },
+          {
+            "name": "orders",
+            "type": "HUGEINT"
+          },
+          {
+            "name": "stockout_hours",
+            "type": "HUGEINT"
+          }
+        ],
+        "rowCount": 3
+      },
+      "visualization": {
+        "status": "ready"
+      }
+    },
+    {
+      "id": "HC3Q1a7Eemc5wAyk",
+      "kind": "step",
+      "status": "succeeded",
+      "title": "探索数据",
+      "parents": [
+        "Ci8cQIoOyoeTdpaO:end"
+      ],
+      "payload": {
+        "step": 2,
+        "action": "EXPLORE",
+        "text": "-- Purpose: Compare campaign-level performance between the first 30 days and last 29 days to identify net-sales decline drivers and ad-spend efficiency.\n```sql\nWITH periodized AS (\n  SELECT\n    CASE WHEN date <= DATE '2025-01-30' THEN 'first_30d' ELSE 'last_29d' END AS period,\n    campaign,\n    gross_sales,\n    discount_amount,\n    COALESCE(refund_amount, 0) AS refund_amount,\n    ad_spend,\n    sessions,\n    orders,\n    units,\n    returned_units,\n    stockout_hours\n  FROM memory.main.data\n),\nagg AS (\n  SELECT\n    period,\n    campaign,\n    SUM(gross_sales - discount_amount - COALESCE(refund_amount, 0)) AS net_sales,\n    SUM(ad_spend) AS ad_spend,\n    SUM(sessions) AS sessions,\n    SUM(orders) AS orders,\n    SUM(units) AS units,\n    SUM(returned_units) AS returned_units,\n    SUM(discount_amount) AS discount_amount,\n    SUM(COALESCE(refund_amount, 0)) AS refund_amount,\n    SUM(gross_sales) AS gross_sales,\n    SUM(stockout_hours) AS stockout_hours\n  FROM periodized\n  GROUP BY period, campaign\n)\nSELECT\n  period,\n  campaign,\n  net_sales,\n  ad_spend,\n  net_sales / NULLIF(ad_spend, 0) AS roas,\n  sessions,\n  orders,\n  orders * 1.0 / NULLIF(sessions, 0) AS conv_rate,\n  net_sales / NULLIF(orders, 0) AS net_sales_per_order,\n  stockout_hours,\n  returned_units * 1.0 / NULLIF(units, 0) AS return_rate,\n  discount_amount / NULLIF(gross_sales, 0) AS discount_rate,\n  refund_amount / NULLIF(gross_sales, 0) AS refund_rate\nFROM agg\nORDER BY campaign, period;\n```\n\n```sql\n-- Purpose: Check SKU-level net sales and stockout shifts, since stockouts may explain lost sales despite higher ad spend.\nWITH periodized AS (\n  SELECT\n    CASE WHEN date <= DATE '2025-01-30' THEN 'first_30d' ELSE 'last_29d' END AS period,\n    sku,\n    product,\n    gross_sales,\n    discount_amount,\n    COALESCE(refund_amount, 0) AS refund_amount,\n    ad_spend,\n    sessions,\n    orders,\n    units,\n    returned_units,\n    stockout_hours\n  FROM memory.main.data\n),\nagg AS (\n  SELECT\n    period,\n    sku,\n    product,\n    SUM(gross_sales - discount_amount - COALESCE(refund_amount, 0)) AS net_sales,\n    SUM(ad_spend) AS ad_spend,\n    SUM(sessions) AS sessions,\n    SUM(orders) AS orders,\n    SUM(units) AS units,\n    SUM(returned_units) AS returned_units,\n    SUM(stockout_hours) AS stockout_hours\n  FROM periodized\n  GROUP BY period, sku, product\n)\nSELECT\n  period,\n  sku,\n  product,\n  net_sales,\n  ad_spend,\n  net_sales / NULLIF(ad_spend, 0) AS roas,\n  sessions,\n  orders,\n  orders * 1.0 / NULLIF(sessions, 0) AS conv_rate,\n  returned_units * 1.0 / NULLIF(units, 0) AS return_rate,\n  stockout_hours\nFROM agg\nORDER BY sku, period;\n```"
+      }
+    },
+    {
+      "id": "qH4TFpT4SDGhFF71",
+      "kind": "query",
+      "status": "succeeded",
+      "title": "查询 1 · 获取数据",
+      "parents": [
+        "HC3Q1a7Eemc5wAyk"
+      ],
+      "payload": {
+        "dsl": "WITH periodized AS (\n  SELECT\n    CASE WHEN date <= DATE '2025-01-30' THEN 'first_30d' ELSE 'last_29d' END AS period,\n    campaign,\n    gross_sales,\n    discount_amount,\n    COALESCE(refund_amount, 0) AS refund_amount,\n    ad_spend,\n    sessions,\n    orders,\n    units,\n    returned_units,\n    stockout_hours\n  FROM memory.main.data\n),\nagg AS (\n  SELECT\n    period,\n    campaign,\n    SUM(gross_sales - discount_amount - COALESCE(refund_amount, 0)) AS net_sales,\n    SUM(ad_spend) AS ad_spend,\n    SUM(sessions) AS sessions,\n    SUM(orders) AS orders,\n    SUM(units) AS units,\n    SUM(returned_units) AS returned_units,\n    SUM(discount_amount) AS discount_amount,\n    SUM(COALESCE(refund_amount, 0)) AS refund_amount,\n    SUM(gross_sales) AS gross_sales,\n    SUM(stockout_hours) AS stockout_hours\n  FROM periodized\n  GROUP BY period, campaign\n)\nSELECT\n  period,\n  campaign,\n  net_sales,\n  ad_spend,\n  net_sales / NULLIF(ad_spend, 0) AS roas,\n  sessions,\n  orders,\n  orders * 1.0 / NULLIF(sessions, 0) AS conv_rate,\n  net_sales / NULLIF(orders, 0) AS net_sales_per_order,\n  stockout_hours,\n  returned_units * 1.0 / NULLIF(units, 0) AS return_rate,\n  discount_amount / NULLIF(gross_sales, 0) AS discount_rate,\n  refund_amount / NULLIF(gross_sales, 0) AS refund_rate\nFROM agg\nORDER BY campaign, period;",
+        "sql": "WITH periodized AS (\n  SELECT\n    CASE WHEN date <= DATE '2025-01-30' THEN 'first_30d' ELSE 'last_29d' END AS period,\n    campaign,\n    gross_sales,\n    discount_amount,\n    COALESCE(refund_amount, 0) AS refund_amount,\n    ad_spend,\n    sessions,\n    orders,\n    units,\n    returned_units,\n    stockout_hours\n  FROM memory.main.data\n),\nagg AS (\n  SELECT\n    period,\n    campaign,\n    SUM(gross_sales - discount_amount - COALESCE(refund_amount, 0)) AS net_sales,\n    SUM(ad_spend) AS ad_spend,\n    SUM(sessions) AS sessions,\n    SUM(orders) AS orders,\n    SUM(units) AS units,\n    SUM(returned_units) AS returned_units,\n    SUM(discount_amount) AS discount_amount,\n    SUM(COALESCE(refund_amount, 0)) AS refund_amount,\n    SUM(gross_sales) AS gross_sales,\n    SUM(stockout_hours) AS stockout_hours\n  FROM periodized\n  GROUP BY period, campaign\n)\nSELECT\n  period,\n  campaign,\n  net_sales,\n  ad_spend,\n  net_sales / NULLIF(ad_spend, 0) AS roas,\n  sessions,\n  orders,\n  orders * 1.0 / NULLIF(sessions, 0) AS conv_rate,\n  net_sales / NULLIF(orders, 0) AS net_sales_per_order,\n  stockout_hours,\n  returned_units * 1.0 / NULLIF(units, 0) AS return_rate,\n  discount_amount / NULLIF(gross_sales, 0) AS discount_rate,\n  refund_amount / NULLIF(gross_sales, 0) AS refund_rate\nFROM agg\nORDER BY campaign, period;"
+      }
+    },
+    {
+      "id": "qH4TFpT4SDGhFF71:end",
+      "kind": "result",
+      "status": "succeeded",
+      "title": "结果 · 5 行",
+      "parents": [
+        "qH4TFpT4SDGhFF71"
+      ],
+      "payload": {
+        "data": [
+          {
+            "period": "first_30d",
+            "campaign": "常规经营",
+            "net_sales": 10632002.679999985,
+            "ad_spend": 110537.08000000002,
+            "roas": 96.18494246455563,
+            "sessions": 382746,
+            "orders": 25161,
+            "conv_rate": 0.06573811352698657,
+            "net_sales_per_order": 422.5588283454547,
+            "stockout_hours": 0,
+            "return_rate": 0.025720715893259027,
+            "discount_rate": 0.06178820166751401,
+            "refund_rate": 0.02409069606022673
+          },
+          {
+            "period": "last_29d",
+            "campaign": "常规经营",
+            "net_sales": 7873149.919999994,
+            "ad_spend": 78740.2400000001,
+            "roas": 99.98889919563344,
+            "sessions": 288328,
+            "orders": 18760,
+            "conv_rate": 0.06506478732554591,
+            "net_sales_per_order": 419.67750106609776,
+            "stockout_hours": 192,
+            "return_rate": 0.025936046790354283,
+            "discount_rate": 0.05954766332992725,
+            "refund_rate": 0.024066295129814622
+          },
+          {
+            "period": "last_29d",
+            "campaign": "新品组合推荐",
+            "net_sales": 677841.6,
+            "ad_spend": 3364.74,
+            "roas": 201.45437686121366,
+            "sessions": 18693,
+            "orders": 1295,
+            "conv_rate": 0.06927726956614776,
+            "net_sales_per_order": 523.4298069498069,
+            "stockout_hours": 0,
+            "return_rate": 0.019404019404019403,
+            "discount_rate": 0.04,
+            "refund_rate": 0.01862785862785864
+          },
+          {
+            "period": "last_29d",
+            "campaign": "春节促销",
+            "net_sales": 1031000.1700000006,
+            "ad_spend": 38221.2,
+            "roas": 26.974563069710022,
+            "sessions": 28312,
+            "orders": 1654,
+            "conv_rate": 0.058420457756428366,
+            "net_sales_per_order": 623.3374667472797,
+            "stockout_hours": 0,
+            "return_rate": 0.15446716899892357,
+            "discount_rate": 0.2699999999999999,
+            "refund_rate": 0.11276103336921418
+          },
+          {
+            "period": "last_29d",
+            "campaign": "限时折扣",
+            "net_sales": 608462.4,
+            "ad_spend": 27821.199999999997,
+            "roas": 21.870458499273937,
+            "sessions": 50584,
+            "orders": 3591,
+            "conv_rate": 0.07099082713901629,
+            "net_sales_per_order": 169.44093567251463,
+            "stockout_hours": 0,
+            "return_rate": 0.021956087824351298,
+            "discount_rate": 0.22000000000000006,
+            "refund_rate": 0.017125748502993986
+          }
+        ],
+        "schema": [
+          {
+            "name": "period",
+            "type": "VARCHAR"
+          },
+          {
+            "name": "campaign",
+            "type": "VARCHAR"
+          },
+          {
+            "name": "net_sales",
+            "type": "DOUBLE"
+          },
+          {
+            "name": "ad_spend",
+            "type": "DOUBLE"
+          },
+          {
+            "name": "roas",
+            "type": "DOUBLE"
+          },
+          {
+            "name": "sessions",
+            "type": "HUGEINT"
+          },
+          {
+            "name": "orders",
+            "type": "HUGEINT"
+          },
+          {
+            "name": "conv_rate",
+            "type": "DOUBLE"
+          },
+          {
+            "name": "net_sales_per_order",
+            "type": "DOUBLE"
+          },
+          {
+            "name": "stockout_hours",
+            "type": "HUGEINT"
+          },
+          {
+            "name": "return_rate",
+            "type": "DOUBLE"
+          },
+          {
+            "name": "discount_rate",
+            "type": "DOUBLE"
+          },
+          {
+            "name": "refund_rate",
+            "type": "DOUBLE"
+          }
+        ],
+        "rowCount": 5
+      },
+      "visualization": {
+        "status": "ready"
+      }
+    },
+    {
+      "id": "Rnx7bkKfFhYDo6cb",
+      "kind": "query",
+      "status": "succeeded",
+      "title": "查询 2 · 获取数据",
+      "parents": [
+        "HC3Q1a7Eemc5wAyk"
+      ],
+      "payload": {
+        "dsl": "-- Purpose: Check SKU-level net sales and stockout shifts, since stockouts may explain lost sales despite higher ad spend.\nWITH periodized AS (\n  SELECT\n    CASE WHEN date <= DATE '2025-01-30' THEN 'first_30d' ELSE 'last_29d' END AS period,\n    sku,\n    product,\n    gross_sales,\n    discount_amount,\n    COALESCE(refund_amount, 0) AS refund_amount,\n    ad_spend,\n    sessions,\n    orders,\n    units,\n    returned_units,\n    stockout_hours\n  FROM memory.main.data\n),\nagg AS (\n  SELECT\n    period,\n    sku,\n    product,\n    SUM(gross_sales - discount_amount - COALESCE(refund_amount, 0)) AS net_sales,\n    SUM(ad_spend) AS ad_spend,\n    SUM(sessions) AS sessions,\n    SUM(orders) AS orders,\n    SUM(units) AS units,\n    SUM(returned_units) AS returned_units,\n    SUM(stockout_hours) AS stockout_hours\n  FROM periodized\n  GROUP BY period, sku, product\n)\nSELECT\n  period,\n  sku,\n  product,\n  net_sales,\n  ad_spend,\n  net_sales / NULLIF(ad_spend, 0) AS roas,\n  sessions,\n  orders,\n  orders * 1.0 / NULLIF(sessions, 0) AS conv_rate,\n  returned_units * 1.0 / NULLIF(units, 0) AS return_rate,\n  stockout_hours\nFROM agg\nORDER BY sku, period;",
+        "sql": "-- Purpose: Check SKU-level net sales and stockout shifts, since stockouts may explain lost sales despite higher ad spend.\nWITH periodized AS (\n  SELECT\n    CASE WHEN date <= DATE '2025-01-30' THEN 'first_30d' ELSE 'last_29d' END AS period,\n    sku,\n    product,\n    gross_sales,\n    discount_amount,\n    COALESCE(refund_amount, 0) AS refund_amount,\n    ad_spend,\n    sessions,\n    orders,\n    units,\n    returned_units,\n    stockout_hours\n  FROM memory.main.data\n),\nagg AS (\n  SELECT\n    period,\n    sku,\n    product,\n    SUM(gross_sales - discount_amount - COALESCE(refund_amount, 0)) AS net_sales,\n    SUM(ad_spend) AS ad_spend,\n    SUM(sessions) AS sessions,\n    SUM(orders) AS orders,\n    SUM(units) AS units,\n    SUM(returned_units) AS returned_units,\n    SUM(stockout_hours) AS stockout_hours\n  FROM periodized\n  GROUP BY period, sku, product\n)\nSELECT\n  period,\n  sku,\n  product,\n  net_sales,\n  ad_spend,\n  net_sales / NULLIF(ad_spend, 0) AS roas,\n  sessions,\n  orders,\n  orders * 1.0 / NULLIF(sessions, 0) AS conv_rate,\n  returned_units * 1.0 / NULLIF(units, 0) AS return_rate,\n  stockout_hours\nFROM agg\nORDER BY sku, period;"
+      }
+    },
+    {
+      "id": "Rnx7bkKfFhYDo6cb:end",
+      "kind": "result",
+      "status": "succeeded",
+      "title": "结果 · 8 行",
+      "parents": [
+        "Rnx7bkKfFhYDo6cb"
+      ],
+      "payload": {
+        "data": [
+          {
+            "period": "first_30d",
+            "sku": "AIR-01",
+            "product": "轻食空气炸锅",
+            "net_sales": 3249947.0800000005,
+            "ad_spend": 29305.359999999993,
+            "roas": 110.89940816287536,
+            "sessions": 101472,
+            "orders": 6400,
+            "conv_rate": 0.0630715862503942,
+            "return_rate": 0.02527379949452401,
+            "stockout_hours": 0
+          },
+          {
+            "period": "last_29d",
+            "sku": "AIR-01",
+            "product": "轻食空气炸锅",
+            "net_sales": 3356254.040000001,
+            "ad_spend": 29169.039999999994,
+            "roas": 115.06220430977508,
+            "sessions": 102628,
+            "orders": 6585,
+            "conv_rate": 0.06416377596757221,
+            "return_rate": 0.02372835128869494,
+            "stockout_hours": 0
+          },
+          {
+            "period": "first_30d",
+            "sku": "COF-01",
+            "product": "晨光咖啡机",
+            "net_sales": 5736770.72,
+            "ad_spend": 32967.35999999999,
+            "roas": 174.01365229123596,
+            "sessions": 114132,
+            "orders": 6279,
+            "conv_rate": 0.0550152455052045,
+            "return_rate": 0.025780578630764824,
+            "stockout_hours": 0
+          },
+          {
+            "period": "last_29d",
+            "sku": "COF-01",
+            "product": "晨光咖啡机",
+            "net_sales": 5274316.130000001,
+            "ad_spend": 61713.44000000002,
+            "roas": 85.46462699211062,
+            "sessions": 116620,
+            "orders": 6288,
+            "conv_rate": 0.05391871034127937,
+            "return_rate": 0.05984859305813455,
+            "stockout_hours": 168
+          },
+          {
+            "period": "first_30d",
+            "sku": "FIL-01",
+            "product": "咖啡滤芯套装",
+            "net_sales": 371095.8400000001,
+            "ad_spend": 22621.080000000013,
+            "roas": 16.4048683794054,
+            "sessions": 78346,
+            "orders": 6187,
+            "conv_rate": 0.0789702090725755,
+            "return_rate": 0.026147588611272515,
+            "stockout_hours": 0
+          },
+          {
+            "period": "last_29d",
+            "sku": "FIL-01",
+            "product": "咖啡滤芯套装",
+            "net_sales": 356714.00000000023,
+            "ad_spend": 21797.879999999994,
+            "roas": 16.36461894459463,
+            "sessions": 75346,
+            "orders": 5949,
+            "conv_rate": 0.07895575080296234,
+            "return_rate": 0.026140828044726505,
+            "stockout_hours": 24
+          },
+          {
+            "period": "first_30d",
+            "sku": "KET-01",
+            "product": "恒温电热水壶",
+            "net_sales": 1274189.0400000012,
+            "ad_spend": 25643.28000000002,
+            "roas": 49.689003902776875,
+            "sessions": 88796,
+            "orders": 6295,
+            "conv_rate": 0.07089283301049597,
+            "return_rate": 0.02569593147751606,
+            "stockout_hours": 0
+          },
+          {
+            "period": "last_29d",
+            "sku": "KET-01",
+            "product": "恒温电热水壶",
+            "net_sales": 1203169.9200000009,
+            "ad_spend": 35467.02,
+            "roas": 33.92362594883926,
+            "sessions": 91323,
+            "orders": 6478,
+            "conv_rate": 0.07093503279568127,
+            "return_rate": 0.02466740576496674,
+            "stockout_hours": 0
+          }
+        ],
+        "schema": [
+          {
+            "name": "period",
+            "type": "VARCHAR"
+          },
+          {
+            "name": "sku",
+            "type": "VARCHAR"
+          },
+          {
+            "name": "product",
+            "type": "VARCHAR"
+          },
+          {
+            "name": "net_sales",
+            "type": "DOUBLE"
+          },
+          {
+            "name": "ad_spend",
+            "type": "DOUBLE"
+          },
+          {
+            "name": "roas",
+            "type": "DOUBLE"
+          },
+          {
+            "name": "sessions",
+            "type": "HUGEINT"
+          },
+          {
+            "name": "orders",
+            "type": "HUGEINT"
+          },
+          {
+            "name": "conv_rate",
+            "type": "DOUBLE"
+          },
+          {
+            "name": "return_rate",
+            "type": "DOUBLE"
+          },
+          {
+            "name": "stockout_hours",
+            "type": "HUGEINT"
+          }
+        ],
+        "rowCount": 8
+      },
+      "visualization": {
+        "status": "ready"
+      }
+    },
+    {
+      "id": "cMaD3flZB6B6F3d1",
+      "kind": "step",
+      "status": "succeeded",
+      "title": "核验结论",
+      "parents": [
+        "qH4TFpT4SDGhFF71:end",
+        "Rnx7bkKfFhYDo6cb:end"
+      ],
+      "payload": {
+        "step": 3,
+        "action": "CONFIRM",
+        "text": "Verification:\n- 首30天 vs 后29天：净销售额 1063.2万 -> 1019.0万（-4.2%），投放 11.05万 -> 14.81万（+34.0%），ROAS 96.2 -> 68.8；sessions、orders 基本持平。\n- 分活动：常规经营净销售额下降但投放也下降，ROAS 约 96 -> 100；新品组合推荐 ROAS 201.5，春节促销 ROAS 27.0（折扣率27%、退货率15.4%），限时折扣 ROAS 21.9（折扣率22%）。\n- 分SKU：COF-01 净销售额 -8.1%，投放 +87.2%，ROAS 174.0 -> 85.5，库存中断168小时，退货率 2.6% -> 6.0%；KET-01 投放 +38.3% 但净销售额 -5.6%，ROAS 49.7 -> 33.9。\n\nConclusion:\n不建议现在全面加大投放。应先压缩/暂停低ROAS的春节促销和限时折扣，把预算优先给新品组合推荐，常规经营保持并优化；同时先解决COF-01缺货和退货率上升问题，KET-01需降低投放或优化转化。库存和退货修复后，再按严格ROAS阈值小步测试增量，而不是直接扩量。"
+      }
+    },
+    {
+      "id": "conclusion",
+      "kind": "conclusion",
+      "status": "succeeded",
+      "title": "分析结论",
+      "parents": [
+        "cMaD3flZB6B6F3d1"
+      ],
+      "payload": {
+        "query": "净销售额下降，要不要加大投放？",
+        "data": [
+          {
+            "period": "first_30d",
+            "days": 30,
+            "net_sales": 10632002.680000002,
+            "ad_spend": 110537.07999999999,
+            "roas": 96.18494246455582,
+            "sessions": 382746,
+            "orders": 25161,
+            "stockout_hours": 0
+          },
+          {
+            "period": "last_29d",
+            "days": 29,
+            "net_sales": 10190454.09,
+            "ad_spend": 148147.37999999998,
+            "roas": 68.78592176250434,
+            "sessions": 385917,
+            "orders": 25300,
+            "stockout_hours": 192
+          },
+          {
+            "period": "all",
+            "days": 59,
+            "net_sales": 20822456.770000003,
+            "ad_spend": 258684.46000000005,
+            "roas": 80.49365149340629,
+            "sessions": 768663,
+            "orders": 50461,
+            "stockout_hours": 192
+          }
+        ],
+        "schema": [
+          {
+            "name": "period",
+            "type": "VARCHAR"
+          },
+          {
+            "name": "days",
+            "type": "BIGINT"
+          },
+          {
+            "name": "net_sales",
+            "type": "DOUBLE"
+          },
+          {
+            "name": "ad_spend",
+            "type": "DOUBLE"
+          },
+          {
+            "name": "roas",
+            "type": "DOUBLE"
+          },
+          {
+            "name": "sessions",
+            "type": "HUGEINT"
+          },
+          {
+            "name": "orders",
+            "type": "HUGEINT"
+          },
+          {
+            "name": "stockout_hours",
+            "type": "HUGEINT"
+          }
+        ],
+        "rowCount": 3,
+        "sql": "WITH daily AS (\n  SELECT\n    date,\n    SUM(gross_sales - discount_amount - COALESCE(refund_amount, 0)) AS net_sales,\n    SUM(ad_spend) AS ad_spend,\n    SUM(sessions) AS sessions,\n    SUM(orders) AS orders,\n    SUM(stockout_hours) AS stockout_hours\n  FROM memory.main.data\n  GROUP BY date\n)\nSELECT\n  'first_30d' AS period,\n  COUNT(*) AS days,\n  SUM(net_sales) AS net_sales,\n  SUM(ad_spend) AS ad_spend,\n  SUM(net_sales) / NULLIF(SUM(ad_spend), 0) AS roas,\n  SUM(sessions) AS sessions,\n  SUM(orders) AS orders,\n  SUM(stockout_hours) AS stockout_hours\nFROM daily\nWHERE date <= DATE '2025-01-30'\nUNION ALL\nSELECT\n  'last_29d',\n  COUNT(*),\n  SUM(net_sales),\n  SUM(ad_spend),\n  SUM(net_sales) / NULLIF(SUM(ad_spend), 0),\n  SUM(sessions),\n  SUM(orders),\n  SUM(stockout_hours)\nFROM daily\nWHERE date > DATE '2025-01-30'\nUNION ALL\nSELECT\n  'all',\n  COUNT(*),\n  SUM(net_sales),\n  SUM(ad_spend),\n  SUM(net_sales) / NULLIF(SUM(ad_spend), 0),\n  SUM(sessions),\n  SUM(orders),\n  SUM(stockout_hours)\nFROM daily;",
+        "text": "Verification:\n- 首30天 vs 后29天：净销售额 1063.2万 -> 1019.0万（-4.2%），投放 11.05万 -> 14.81万（+34.0%），ROAS 96.2 -> 68.8；sessions、orders 基本持平。\n- 分活动：常规经营净销售额下降但投放也下降，ROAS 约 96 -> 100；新品组合推荐 ROAS 201.5，春节促销 ROAS 27.0（折扣率27%、退货率15.4%），限时折扣 ROAS 21.9（折扣率22%）。\n- 分SKU：COF-01 净销售额 -8.1%，投放 +87.2%，ROAS 174.0 -> 85.5，库存中断168小时，退货率 2.6% -> 6.0%；KET-01 投放 +38.3% 但净销售额 -5.6%，ROAS 49.7 -> 33.9。\n\nConclusion:\n不建议现在全面加大投放。应先压缩/暂停低ROAS的春节促销和限时折扣，把预算优先给新品组合推荐，常规经营保持并优化；同时先解决COF-01缺货和退货率上升问题，KET-01需降低投放或优化转化。库存和退货修复后，再按严格ROAS阈值小步测试增量，而不是直接扩量。",
+        "conclusion": "Verification:\n- 首30天 vs 后29天：净销售额 1063.2万 -> 1019.0万（-4.2%），投放 11.05万 -> 14.81万（+34.0%），ROAS 96.2 -> 68.8；sessions、orders 基本持平。\n- 分活动：常规经营净销售额下降但投放也下降，ROAS 约 96 -> 100；新品组合推荐 ROAS 201.5，春节促销 ROAS 27.0（折扣率27%、退货率15.4%），限时折扣 ROAS 21.9（折扣率22%）。\n- 分SKU：COF-01 净销售额 -8.1%，投放 +87.2%，ROAS 174.0 -> 85.5，库存中断168小时，退货率 2.6% -> 6.0%；KET-01 投放 +38.3% 但净销售额 -5.6%，ROAS 49.7 -> 33.9。\n\nConclusion:\n不建议现在全面加大投放。应先压缩/暂停低ROAS的春节促销和限时折扣，把预算优先给新品组合推荐，常规经营保持并优化；同时先解决COF-01缺货和退货率上升问题，KET-01需降低投放或优化转化。库存和退货修复后，再按严格ROAS阈值小步测试增量，而不是直接扩量。"
+      }
+    }
+  ]
+}

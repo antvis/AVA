@@ -1,0 +1,3 @@
+{
+  "output": "/Users/banxuan/Documents/AVA-test-skill-workspace/codex-ava-luna-ready-20261103/ava/output/net-sales-change.html"
+}

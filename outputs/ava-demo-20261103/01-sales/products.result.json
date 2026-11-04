@@ -1,0 +1,47 @@
+{
+  "data": [
+    {
+      "product": "Analytics",
+      "january": 12000,
+      "february": 18000,
+      "change": 6000
+    },
+    {
+      "product": "Automation",
+      "january": 8000,
+      "february": 10000,
+      "change": 2000
+    },
+    {
+      "product": "Support",
+      "january": 4000,
+      "february": 4500,
+      "change": 500
+    },
+    {
+      "product": "Reporting",
+      "january": 6000,
+      "february": 5000,
+      "change": -1000
+    }
+  ],
+  "schema": [
+    {
+      "name": "product",
+      "type": "VARCHAR"
+    },
+    {
+      "name": "january",
+      "type": "HUGEINT"
+    },
+    {
+      "name": "february",
+      "type": "HUGEINT"
+    },
+    {
+      "name": "change",
+      "type": "HUGEINT"
+    }
+  ],
+  "rowCount": 4
+}

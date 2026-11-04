@@ -1,0 +1,26 @@
+data:{"object":"chat.completion.chunk","id":"0b440bc617931089292337509e88ee","choices":[{"index":0,"delta":{"content":"","role":"assistant"}}],"created":1793108929,"model":"GLM-5.1","usage":null}
+
+data:{"object":"chat.completion.chunk","id":"0b440bc617931089292337509e88ee","choices":[{"index":0,"delta":{"content":"","role":"assistant","reasoning_content":"The"}}],"created":1793108929,"model":"GLM-5.1","usage":null}
+
+data:{"object":"chat.completion.chunk","id":"0b440bc617931089292337509e88ee","choices":[{"index":0,"delta":{"content":"","role":"assistant","reasoning_content":" user wants me to"}}],"created":1793108929,"model":"GLM-5.1","usage":null}
+
+data:{"object":"chat.completion.chunk","id":"0b440bc617931089292337509e88ee","choices":[{"index":0,"delta":{"content":"","role":"assistant","reasoning_content":" use the semantic tool"}}],"created":1793108929,"model":"GLM-5.1","usage":null}
+
+data:{"object":"chat.completion.chunk","id":"0b440bc617931089292337509e88ee","choices":[{"index":0,"delta":{"content":"","role":"assistant","reasoning_content":"."}}],"created":1793108929,"model":"GLM-5.1","usage":null}
+
+data:{"object":"chat.completion.chunk","id":"0b440bc617931089292337509e88ee","choices":[{"index":0,"delta":{"content":"","role":"assistant","reasoning_content":" Let me call"}}],"created":1793108929,"model":"GLM-5.1","usage":null}
+
+data:{"object":"chat.completion.chunk","id":"0b440bc617931089292337509e88ee","choices":[{"index":0,"delta":{"content":"","role":"assistant","reasoning_content":" it to"}}],"created":1793108930,"model":"GLM-5.1","usage":null}
+
+data:{"object":"chat.completion.chunk","id":"0b440bc617931089292337509e88ee","choices":[{"index":0,"delta":{"content":"","role":"assistant","reasoning_content":" get the metric"}}],"created":1793108930,"model":"GLM-5.1","usage":null}
+
+data:{"object":"chat.completion.chunk","id":"0b440bc617931089292337509e88ee","choices":[{"index":0,"delta":{"content":"","role":"assistant","reasoning_content":" definitions and drill"}}],"created":1793108930,"model":"GLM-5.1","usage":null}
+
+data:{"object":"chat.completion.chunk","id":"0b440bc617931089292337509e88ee","choices":[{"index":0,"delta":{"content":"","role":"assistant","reasoning_content":"-down hierarchies."}}],"created":1793108930,"model":"GLM-5.1","usage":null}
+
+data:{"object":"chat.completion.chunk","id":"0b440bc617931089292337509e88ee","choices":[{"index":0,"delta":{"content":"","role":"assistant","tool_calls":[{"index":0,"id":"fc-ef45506f-85d1-4da1-b479-7eb4d2aed279","type":"function","function":{"name":"semantic","arguments":"{}"}}]}}],"created":1793108930,"model":"GLM-5.1","usage":null}
+
+data:{"object":"chat.completion.chunk","id":"0b440bc617931089292337509e88ee","choices":[{"index":0,"delta":{"content":"","role":"assistant"},"finish_reason":"tool_calls"}],"created":1793108930,"model":"GLM-5.1","usage":{"completion_tokens":0,"prompt_tokens":0,"total_tokens":0}}
+
+data:{"object":"chat.completion.chunk","id":"0b440bc617931089292337509e88ee","choices":[],"created":1793108930,"model":"GLM-5.1","usage":{"completion_tokens":30,"prompt_tokens":1579,"total_tokens":1609,"completion_tokens_details":{"reasoning_tokens":29},"prompt_tokens_details":{"cached_tokens":0}}}
+

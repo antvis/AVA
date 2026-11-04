@@ -1,0 +1,170 @@
+{
+  "models": [
+    {
+      "name": "data",
+      "tableReference": {
+        "catalog": "memory",
+        "schema": "main",
+        "table": "data"
+      },
+      "columns": [
+        {
+          "name": "order_id",
+          "type": "VARCHAR",
+          "notNull": false
+        },
+        {
+          "name": "line_id",
+          "type": "VARCHAR",
+          "notNull": false
+        },
+        {
+          "name": "ordered_at",
+          "type": "DATE",
+          "notNull": false
+        },
+        {
+          "name": "paid_at",
+          "type": "DATE",
+          "notNull": false
+        },
+        {
+          "name": "completed_at",
+          "type": "DATE",
+          "notNull": false
+        },
+        {
+          "name": "status",
+          "type": "VARCHAR",
+          "notNull": false
+        },
+        {
+          "name": "order_kind",
+          "type": "VARCHAR",
+          "notNull": false
+        },
+        {
+          "name": "business_model",
+          "type": "VARCHAR",
+          "notNull": false
+        },
+        {
+          "name": "selling_region",
+          "type": "VARCHAR",
+          "notNull": false
+        },
+        {
+          "name": "selling_city",
+          "type": "VARCHAR",
+          "notNull": false
+        },
+        {
+          "name": "selling_store_id",
+          "type": "VARCHAR",
+          "notNull": false
+        },
+        {
+          "name": "selling_store_name",
+          "type": "VARCHAR",
+          "notNull": false
+        },
+        {
+          "name": "fulfillment_region",
+          "type": "VARCHAR",
+          "notNull": false
+        },
+        {
+          "name": "fulfillment_city",
+          "type": "VARCHAR",
+          "notNull": false
+        },
+        {
+          "name": "fulfillment_store_id",
+          "type": "VARCHAR",
+          "notNull": false
+        },
+        {
+          "name": "fulfillment_store_name",
+          "type": "VARCHAR",
+          "notNull": false
+        },
+        {
+          "name": "category",
+          "type": "VARCHAR",
+          "notNull": false
+        },
+        {
+          "name": "subcategory",
+          "type": "VARCHAR",
+          "notNull": false
+        },
+        {
+          "name": "product_id",
+          "type": "VARCHAR",
+          "notNull": false
+        },
+        {
+          "name": "product_name",
+          "type": "VARCHAR",
+          "notNull": false
+        },
+        {
+          "name": "channel",
+          "type": "VARCHAR",
+          "notNull": false
+        },
+        {
+          "name": "quantity",
+          "type": "BIGINT",
+          "notNull": false
+        },
+        {
+          "name": "unit_price",
+          "type": "BIGINT",
+          "notNull": false
+        },
+        {
+          "name": "discount_amount",
+          "type": "DOUBLE",
+          "notNull": false
+        },
+        {
+          "name": "line_paid_amount",
+          "type": "DOUBLE",
+          "notNull": false
+        },
+        {
+          "name": "refund_amount",
+          "type": "DOUBLE",
+          "notNull": false
+        },
+        {
+          "name": "refunded_at",
+          "type": "DATE",
+          "notNull": false
+        },
+        {
+          "name": "commission_rate",
+          "type": "DOUBLE",
+          "notNull": false
+        },
+        {
+          "name": "order_paid_amount",
+          "type": "DOUBLE",
+          "notNull": false
+        }
+      ]
+    }
+  ],
+  "relationships": [],
+  "views": [
+    {
+      "name": "data",
+      "statement": "SELECT * FROM read_csv('/Users/banxuan/Documents/AVA-test-skill-workspace/codex-ava-luna-question-20261103/ava/inputs/sales.csv', (auto_detect = CAST('t' AS BOOLEAN)))"
+    }
+  ],
+  "language": {
+    "name": "DuckDB SQL dialect",
+    "fence": "sql"
+  }
+}

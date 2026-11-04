@@ -1,0 +1,27 @@
+{
+  "chartType": "bar",
+  "config": {
+    "type": "bar",
+    "title": "各产品收入变化 2025年2月较1月 美元",
+    "data": [
+      {
+        "category": "Analytics",
+        "value": 6000
+      },
+      {
+        "category": "Automation",
+        "value": 2000
+      },
+      {
+        "category": "Support",
+        "value": 500
+      },
+      {
+        "category": "Reporting",
+        "value": -1000
+      }
+    ],
+    "axisXTitle": "产品",
+    "axisYTitle": "收入变化 美元"
+  }
+}

@@ -1,0 +1,2 @@
+SELECT strftime(completed_at, '%Y-%m') AS month, SUM(CASE WHEN order_kind='customer_sale' AND status IN ('completed') THEN (ROUND(CAST(line_paid_amount AS DECIMAL(18,2))*CAST(commission_rate AS DECIMAL(6,4)),2)-ROUND(COALESCE(CAST(refund_amount AS DECIMAL(18,2)),0)*CAST(commission_rate AS DECIMAL(6,4)),2)) ELSE 0 END) AS amount
+FROM data WHERE completed_at >= DATE '2026-08-01' AND completed_at < DATE '2026-10-01' GROUP BY month ORDER BY month;

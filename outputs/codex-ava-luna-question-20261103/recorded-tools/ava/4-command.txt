@@ -1,0 +1,1 @@
+/bin/zsh -lc 'ava schema ds_sales_bfa5845ca5bb && ava semantic ds_sales_bfa5845ca5bb --file inputs/semantic-finance.json'

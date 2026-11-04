@@ -67,7 +67,8 @@ function executeInBrowser(data: any[], code: string): Promise<any> {
 }
 
 async function executeInNode(data: any[], code: string): Promise<any> {
-  const vm = await import('node:vm');
+  // Keep the Node-only import out of browser bundles.
+  const vm = await import(/* webpackIgnore: true */ 'node:vm');
   const context = vm.createContext({ data, stat });
   return vm.runInContext(`${code}\nresult;`, context, { timeout: EXECUTION_TIMEOUT });
 }

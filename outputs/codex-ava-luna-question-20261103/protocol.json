@@ -1,0 +1,106 @@
+{
+  "date": "2026-11-03",
+  "scenario": "普通提问下的订单净销售额分析",
+  "model": "gpt-6-luna",
+  "reasoning_effort": "low",
+  "codex_version": "0.165.0",
+  "ava_version": "4.0.0-beta.5",
+  "design": "Neutral ordinary user question without instructions to ask about definitions, avoid assumptions, follow a reference, or produce a predetermined result. Baseline gets raw CSV with AVA disabled. Treatment gets same CSV, configured financial definition and AVA skill/CLI.",
+  "user_prompt": "2026 年 9 月净销售额相比 8 月有什么变化，主要来自哪里？",
+  "replications_per_arm": 1,
+  "not_a_benchmark": true,
+  "model_selection": "User requested a lighter model; both arms use the same model and low effort.",
+  "conditions": [
+    {
+      "arm": "no-ava",
+      "cwd": "/Users/banxuan/Documents/AVA-test-skill-workspace/codex-ava-luna-question-20261103/no-ava",
+      "sha256": {
+        "sales.csv": "4cb3f6ef611837b7d08abb676114a58f99db211bd7bea01e63da763db08d3877"
+      },
+      "prompt_sha256": "531b9dd3d4a1ba018c6115314dcccf580b8b9f16971b613780849e7fa69621b3",
+      "status": "completed",
+      "agents_sha256": "22b828342f2cdbf28730d3bd8bf53016835c584e7d40b34c300195da5e522b59",
+      "started_at": "2026-11-03T09:44:01.715382+00:00",
+      "argv": [
+        "codex",
+        "exec",
+        "--ephemeral",
+        "--ignore-user-config",
+        "--json",
+        "--skip-git-repo-check",
+        "--approve-for-me",
+        "--model",
+        "gpt-6-luna",
+        "-c",
+        "model_reasoning_effort=\"low\"",
+        "-c",
+        "skills.config=[{name=\"ava\",enabled=false}]",
+        "-C",
+        "/Users/banxuan/Documents/AVA-test-skill-workspace/codex-ava-luna-question-20261103/no-ava",
+        "-o",
+        "/Users/banxuan/Documents/AVA/outputs/codex-ava-luna-question-20261103/no-ava-answer.txt",
+        "-"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 53.281,
+      "finished_at": "2026-11-03T09:44:54.998341+00:00"
+    },
+    {
+      "arm": "ava",
+      "cwd": "/Users/banxuan/Documents/AVA-test-skill-workspace/codex-ava-luna-question-20261103/ava",
+      "sha256": {
+        "semantic-finance.json": "1c2aa6675f676a0579f9e26862d8223591dbf1ef6d7d811c0726f824ae1ce50b",
+        "sales.csv": "4cb3f6ef611837b7d08abb676114a58f99db211bd7bea01e63da763db08d3877"
+      },
+      "prompt_sha256": "531b9dd3d4a1ba018c6115314dcccf580b8b9f16971b613780849e7fa69621b3",
+      "status": "completed",
+      "agents_sha256": "65df55285869955555189e0f42454a01771232b66229d8610afcf7b3530d2da6",
+      "started_at": "2026-11-03T09:44:55.003221+00:00",
+      "argv": [
+        "codex",
+        "exec",
+        "--ephemeral",
+        "--ignore-user-config",
+        "--json",
+        "--skip-git-repo-check",
+        "--approve-for-me",
+        "--model",
+        "gpt-6-luna",
+        "-c",
+        "model_reasoning_effort=\"low\"",
+        "-c",
+        "skills.config=[{name=\"ava\",enabled=false},{path=\"/Users/banxuan/Documents/AVA-test-skill-workspace/codex-ava-luna-question-20261103/ava/.agents/skills/ava/SKILL.md\",enabled=true}]",
+        "-C",
+        "/Users/banxuan/Documents/AVA-test-skill-workspace/codex-ava-luna-question-20261103/ava",
+        "-o",
+        "/Users/banxuan/Documents/AVA/outputs/codex-ava-luna-question-20261103/ava-answer.txt",
+        "-"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 74.902,
+      "finished_at": "2026-11-03T09:46:09.905748+00:00"
+    }
+  ],
+  "environment_note": "Both arms receive identical runtime-only notes about the AVA Node wrapper and requesting sandbox socket permissions. Prior attempt failed before AVA computation; no metric or answer instructions were added.",
+  "previous_attempt": "/Users/banxuan/Documents/AVA/outputs/codex-ava-luna-ready-20261103",
+  "prompt_change": "Only a business question; does not request charts, conclusions, tools or clarification.",
+  "runtime_instruction_change": "AVA workspace instruction selects the data tool without requiring charts. Neither user question nor workspace rules ask for a chart or a specific answer.",
+  "results": {
+    "baseline": {
+      "definition": "customer_sale, paid_at month, full line paid minus snapshot refunds, all paid/shipped/completed",
+      "august": 6740687.05,
+      "september": 7803998.06,
+      "growth_pct": 15.77451975017888,
+      "answer_display_pct": "+15.8%",
+      "caveat_in_answer": "Notes growth includes uncompleted paid orders."
+    },
+    "ava": {
+      "definition": "Preconfigured finance definition loaded into session",
+      "august": 4293025.42,
+      "september": 3697575.18,
+      "growth_pct": -13.87017736317061,
+      "answer_display_pct": "-13.9%"
+    },
+    "charts_generated": false
+  }
+}

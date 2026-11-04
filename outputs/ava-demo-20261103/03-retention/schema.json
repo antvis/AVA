@@ -1,0 +1,62 @@
+{
+  "models": [
+    {
+      "name": "events",
+      "tableReference": {
+        "table": "events"
+      },
+      "columns": [
+        {
+          "name": "user_id",
+          "type": "TEXT",
+          "notNull": false
+        },
+        {
+          "name": "event_date",
+          "type": "TEXT",
+          "notNull": false
+        },
+        {
+          "name": "event_name",
+          "type": "TEXT",
+          "notNull": false
+        }
+      ],
+      "primaryKey": [
+        "user_id",
+        "event_date",
+        "event_name"
+      ]
+    },
+    {
+      "name": "users",
+      "tableReference": {
+        "table": "users"
+      },
+      "columns": [
+        {
+          "name": "user_id",
+          "type": "TEXT",
+          "notNull": false
+        },
+        {
+          "name": "registered_at",
+          "type": "TEXT",
+          "notNull": false
+        },
+        {
+          "name": "channel",
+          "type": "TEXT",
+          "notNull": false
+        }
+      ],
+      "primaryKey": "user_id"
+    }
+  ],
+  "relationships": [],
+  "views": [],
+  "language": {
+    "name": "DuckDB SQL dialect",
+    "fence": "sql"
+  }
+}

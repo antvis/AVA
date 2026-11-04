@@ -1,0 +1,4 @@
+{'2026-08': Decimal('6740687.05'), '2026-09': Decimal('7803998.06')} 1063311.01 15.77451975017887827918075502 {'2026-08': Decimal('6459677.00'), '2026-09': Decimal('4708686.11')}
+{'business_model': [('self_operated', Decimal('2112826.36')), ('consignment', Decimal('-1049515.35'))], 'selling_region': [('华北', Decimal('2689750.75')), ('华南', Decimal('-567909.15')), ('华东', Decimal('-1058530.59'))], 'selling_city': [('北京', Decimal('2733461.77')), ('广州', Decimal('103266.75')), ('上海', Decimal('-9015.24')), ('天津', Decimal('-43711.02')), ('深圳', Decimal('-671175.90')), ('杭州', Decimal('-1049515.35'))], 'product_name': [('电动升降桌', Decimal('2121775.97')), ('27英寸显示器', Decimal('104147.31')), ('无线键盘', Decimal('-3102.15')), ('无线鼠标', Decimal('-6433.85')), ('无线耳机', Decimal('-25461.47')), ('人体工学椅Pro', Decimal('-1127614.80'))], 'channel': [('线上商城', Decimal('1085310.46')), ('线下门店', Decimal('-21999.45'))]}
+output/september_vs_august_net_sales.md
+output/september_vs_august_net_sales.svg

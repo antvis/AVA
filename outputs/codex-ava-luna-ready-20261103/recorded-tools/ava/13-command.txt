@@ -1,0 +1,18 @@
+/bin/zsh -lc "cat > output/chart.json <<'JSON'
+{
+  \"chartType\": \"waterfall\",
+  \"config\": {
+    \"type\": \"waterfall\",
+    \"data\": [
+      {\"category\": \"8月净销售额\", \"value\": 4293025.42},
+      {\"category\": \"家具\", \"value\": -691945.63},
+      {\"category\": \"数码\", \"value\": 96495.39},
+      {\"category\": \"9月净销售额\", \"isTotal\": true}
+    ],
+    \"title\": \"2026年9月净销售额环比变化（按品类拆解，元）\",
+    \"axisXTitle\": \"品类贡献\",
+    \"axisYTitle\": \"人民币元\"
+  }
+}
+JSON
+ava viz --spec @output/chart.json --output output/net-sales-change.html"

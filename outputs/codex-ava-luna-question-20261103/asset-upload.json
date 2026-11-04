@@ -1,0 +1,27 @@
+{
+  "success": true,
+  "uploaded": 1,
+  "failed": 0,
+  "results": [
+    {
+      "fileName": "comparison-v1.png",
+      "originalPath": "/Users/banxuan/Documents/AVA/outputs/codex-ava-luna-question-20261103/comparison-v1.png",
+      "type": "image",
+      "target": "space",
+      "spaceId": "S_t5qynC",
+      "asset": {
+        "assetId": "AI_JT5SnA1y2bABF",
+        "assetUrl": "https://mdn.alipayobjects.com/huamei_aphk1k/afts/img/A*Lj0YRL-37bsAAAAAe3AAAAgAegfkAQ/original",
+        "sourceUrl": "https://mdn.alipayobjects.com/huamei_aphk1k/afts/img/A*Lj0YRL-37bsAAAAAe3AAAAgAegfkAQ/original",
+        "aftsAliasUrl": ""
+      },
+      "subAssets": [
+        {
+          "assetId": "AI_Nvz9HUSLDKm8d",
+          "assetUrl": "https://mdn.alipayobjects.com/huamei_aphk1k/afts/img/A*Lj0YRL-37bsAAAAAe3AAAAgAegfkAQ/fmt.webp",
+          "sourceUrl": "https://mdn.alipayobjects.com/huamei_aphk1k/afts/img/A*Lj0YRL-37bsAAAAAe3AAAAgAegfkAQ/original"
+        }
+      ]
+    }
+  ]
+}

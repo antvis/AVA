@@ -1,0 +1,23 @@
+{
+  "data": [
+    {
+      "period": "前期",
+      "new_users": 1400
+    },
+    {
+      "period": "近期",
+      "new_users": 2800
+    }
+  ],
+  "schema": [
+    {
+      "name": "period",
+      "type": "VARCHAR"
+    },
+    {
+      "name": "new_users",
+      "type": "BIGINT"
+    }
+  ],
+  "rowCount": 2
+}

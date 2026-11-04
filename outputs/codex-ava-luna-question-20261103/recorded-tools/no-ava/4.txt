@@ -1,0 +1,19 @@
+rows 18971 cols ['order_id', 'line_id', 'ordered_at', 'paid_at', 'completed_at', 'status', 'order_kind', 'business_model', 'selling_region', 'selling_city', 'selling_store_id', 'selling_store_name', 'fulfillment_region', 'fulfillment_city', 'fulfillment_store_id', 'fulfillment_store_name', 'category', 'subcategory', 'product_id', 'product_name', 'channel', 'quantity', 'unit_price', 'discount_amount', 'line_paid_amount', 'refund_amount', 'refunded_at', 'commission_rate', 'order_paid_amount']
+
+ status [('completed', 16138), ('paid', 1674), ('shipped', 506), ('cancelled', 354), ('pending', 299)]
+
+ order_kind [('customer_sale', 17265), ('internal_test', 1111), ('replacement', 595)]
+
+ business_model [('self_operated', 14355), ('consignment', 4616)]
+
+ channel [('线上商城', 11999), ('线下门店', 6972)]
+
+ selling_region [('华东', 6925), ('华南', 6420), ('华北', 5626)]
+
+ category [('数码', 10454), ('家具', 8517)]
+
+ paid_at [('2026-09', 6016), ('2026-08', 5903), ('2026-07', 5861), ('', 653), ('2026-06', 380), ('2026-10', 158)]
+
+ refunded_at [('', 18250), ('2026-08', 254), ('2026-07', 245), ('2026-09', 194), ('2026-10', 28)]
+
+ completed_at [('2026-08', 5503), ('2026-07', 5483), ('2026-09', 4721), ('', 2833), ('2026-10', 431)]

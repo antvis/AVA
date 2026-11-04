@@ -1,0 +1,1 @@
+/bin/zsh -lc 'cat output/geo.json && cat output/channel.json && ava viz --help'

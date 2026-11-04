@@ -1,0 +1,578 @@
+{
+  "id": "f2c08967-6d73-435f-8b75-915e34b82bac",
+  "status": "completed",
+  "question": "净销售额下降，要不要加大投放？",
+  "model": "deepseek-flash",
+  "nodes": [
+    {
+      "id": "source",
+      "kind": "source",
+      "status": "succeeded",
+      "title": "sales-case.csv",
+      "parents": []
+    },
+    {
+      "id": "context",
+      "kind": "context",
+      "status": "succeeded",
+      "title": "结构与数据质量",
+      "parents": [
+        "source"
+      ]
+    },
+    {
+      "id": "yettn5VpXoCbrrnP",
+      "kind": "step",
+      "status": "succeeded",
+      "title": "探索数据",
+      "parents": [
+        "context"
+      ]
+    },
+    {
+      "id": "3UCGF4egdRzrzxRK",
+      "kind": "query",
+      "status": "failed",
+      "title": "查询 1 · 获取数据",
+      "parents": [
+        "yettn5VpXoCbrrnP"
+      ],
+      "payload": {
+        "dsl": "SELECT\n  MIN(date) AS min_date,\n  MAX(date) AS max_date,\n  COUNT(*) AS rows,\n  COUNT(DISTINCT date) AS distinct_dates,\n  COUNT(DISTINCT region) AS regions,\n  COUNT(DISTINCT channel) AS channels,\n  COUNT(DISTINCT campaign) AS campaigns\nFROM data;\n\nSELECT\n  date,\n  region,\n  channel,\n  sku,\n  product,\n  category,\n  campaign,\n  sessions,\n  orders,\n  units,\n  returned_units,\n  gross_sales,\n  discount_amount,\n  refund_amount,\n  ad_spend\nFROM data\nORDER BY date\nLIMIT 10;",
+        "sql": "SELECT\n  MIN(date) AS min_date,\n  MAX(date) AS max_date,\n  COUNT(*) AS rows,\n  COUNT(DISTINCT date) AS distinct_dates,\n  COUNT(DISTINCT region) AS regions,\n  COUNT(DISTINCT channel) AS channels,\n  COUNT(DISTINCT campaign) AS campaigns\nFROM data;\n\nSELECT\n  date,\n  region,\n  channel,\n  sku,\n  product,\n  category,\n  campaign,\n  sessions,\n  orders,\n  units,\n  returned_units,\n  gross_sales,\n  discount_amount,\n  refund_amount,\n  ad_spend\nFROM data\nORDER BY date\nLIMIT 10;",
+        "error": {
+          "name": "Error",
+          "message": "Parser Error: syntax error at or near \";\"\n\nLINE 10: FROM data;\n                  ^"
+        }
+      }
+    },
+    {
+      "id": "FDmo9zvnZ2Ss08Sp",
+      "kind": "query",
+      "status": "failed",
+      "title": "查询 2 · 获取数据",
+      "parents": [
+        "yettn5VpXoCbrrnP"
+      ],
+      "payload": {
+        "dsl": "SELECT 'region' AS field, region AS value, COUNT(*) AS n FROM data GROUP BY region\nUNION ALL\nSELECT 'channel', channel, COUNT(*) FROM data GROUP BY channel\nUNION ALL\nSELECT 'campaign', campaign, COUNT(*) FROM data GROUP BY campaign\nORDER BY field, value;\n\nSELECT\n  MIN(ad_spend) AS min_ad_spend,\n  MAX(ad_spend) AS max_ad_spend,\n  AVG(ad_spend) AS avg_ad_spend,\n  MIN(gross_sales - discount_amount - COALESCE(refund_amount, 0)) AS min_net_sales,\n  MAX(gross_sales - discount_amount - COALESCE(refund_amount, 0)) AS max_net_sales,\n  AVG(gross_sales - discount_amount - COALESCE(refund_amount, 0)) AS avg_net_sales\nFROM data;",
+        "sql": "SELECT 'region' AS field, region AS value, COUNT(*) AS n FROM data GROUP BY region\nUNION ALL\nSELECT 'channel', channel, COUNT(*) FROM data GROUP BY channel\nUNION ALL\nSELECT 'campaign', campaign, COUNT(*) FROM data GROUP BY campaign\nORDER BY field, value;\n\nSELECT\n  MIN(ad_spend) AS min_ad_spend,\n  MAX(ad_spend) AS max_ad_spend,\n  AVG(ad_spend) AS avg_ad_spend,\n  MIN(gross_sales - discount_amount - COALESCE(refund_amount, 0)) AS min_net_sales,\n  MAX(gross_sales - discount_amount - COALESCE(refund_amount, 0)) AS max_net_sales,\n  AVG(gross_sales - discount_amount - COALESCE(refund_amount, 0)) AS avg_net_sales\nFROM data;",
+        "error": {
+          "name": "Error",
+          "message": "Parser Error: syntax error at or near \";\"\n\nLINE 7: ORDER BY field, value;\n                             ^"
+        }
+      }
+    },
+    {
+      "id": "exo2OeX1Cero0uP2",
+      "kind": "step",
+      "status": "succeeded",
+      "title": "探索数据",
+      "parents": [
+        "3UCGF4egdRzrzxRK",
+        "FDmo9zvnZ2Ss08Sp"
+      ]
+    },
+    {
+      "id": "9jW1hnbybSSowMZv",
+      "kind": "query",
+      "status": "succeeded",
+      "title": "查询 1 · 获取数据",
+      "parents": [
+        "exo2OeX1Cero0uP2"
+      ],
+      "payload": {
+        "dsl": "SELECT\n  MIN(date) AS min_date,\n  MAX(date) AS max_date,\n  COUNT(*) AS row_count,\n  COUNT(DISTINCT date) AS distinct_dates,\n  COUNT(DISTINCT region) AS region_count,\n  COUNT(DISTINCT channel) AS channel_count,\n  COUNT(DISTINCT campaign) AS campaign_count\nFROM data;",
+        "sql": "SELECT\n  MIN(date) AS min_date,\n  MAX(date) AS max_date,\n  COUNT(*) AS row_count,\n  COUNT(DISTINCT date) AS distinct_dates,\n  COUNT(DISTINCT region) AS region_count,\n  COUNT(DISTINCT channel) AS channel_count,\n  COUNT(DISTINCT campaign) AS campaign_count\nFROM data;"
+      }
+    },
+    {
+      "id": "9jW1hnbybSSowMZv:end",
+      "kind": "result",
+      "status": "succeeded",
+      "title": "结果 · 1 行",
+      "parents": [
+        "9jW1hnbybSSowMZv"
+      ],
+      "payload": {
+        "data": [
+          {
+            "min_date": 1735689600000,
+            "max_date": 1740700800000,
+            "row_count": 1416,
+            "distinct_dates": 59,
+            "region_count": 3,
+            "channel_count": 2,
+            "campaign_count": 4
+          }
+        ],
+        "schema": [
+          {
+            "name": "min_date",
+            "type": "DATE"
+          },
+          {
+            "name": "max_date",
+            "type": "DATE"
+          },
+          {
+            "name": "row_count",
+            "type": "BIGINT"
+          },
+          {
+            "name": "distinct_dates",
+            "type": "BIGINT"
+          },
+          {
+            "name": "region_count",
+            "type": "BIGINT"
+          },
+          {
+            "name": "channel_count",
+            "type": "BIGINT"
+          },
+          {
+            "name": "campaign_count",
+            "type": "BIGINT"
+          }
+        ],
+        "rowCount": 1
+      },
+      "visualization": {
+        "status": "ready"
+      }
+    },
+    {
+      "id": "HxPQbIELdBBFCLB6",
+      "kind": "step",
+      "status": "succeeded",
+      "title": "探索数据",
+      "parents": [
+        "9jW1hnbybSSowMZv:end"
+      ]
+    },
+    {
+      "id": "6TLritdTbOHceoYa",
+      "kind": "query",
+      "status": "succeeded",
+      "title": "查询 1 · 获取数据",
+      "parents": [
+        "HxPQbIELdBBFCLB6"
+      ],
+      "payload": {
+        "dsl": "SELECT 'region' AS field, region AS value, COUNT(*) AS n\nFROM data\nGROUP BY region\nUNION ALL\nSELECT 'channel', channel, COUNT(*)\nFROM data\nGROUP BY channel\nUNION ALL\nSELECT 'campaign', campaign, COUNT(*)\nFROM data\nGROUP BY campaign\nORDER BY field, value;",
+        "sql": "SELECT 'region' AS field, region AS value, COUNT(*) AS n\nFROM data\nGROUP BY region\nUNION ALL\nSELECT 'channel', channel, COUNT(*)\nFROM data\nGROUP BY channel\nUNION ALL\nSELECT 'campaign', campaign, COUNT(*)\nFROM data\nGROUP BY campaign\nORDER BY field, value;"
+      }
+    },
+    {
+      "id": "6TLritdTbOHceoYa:end",
+      "kind": "result",
+      "status": "succeeded",
+      "title": "结果 · 9 行",
+      "parents": [
+        "6TLritdTbOHceoYa"
+      ],
+      "payload": {
+        "data": [
+          {
+            "field": "campaign",
+            "value": "常规经营",
+            "n": 1276
+          },
+          {
+            "field": "campaign",
+            "value": "新品组合推荐",
+            "n": 28
+          },
+          {
+            "field": "campaign",
+            "value": "春节促销",
+            "n": 28
+          },
+          {
+            "field": "campaign",
+            "value": "限时折扣",
+            "n": 84
+          },
+          {
+            "field": "channel",
+            "value": "平台店",
+            "n": 708
+          },
+          {
+            "field": "channel",
+            "value": "自营商城",
+            "n": 708
+          },
+          {
+            "field": "region",
+            "value": "华东",
+            "n": 472
+          },
+          {
+            "field": "region",
+            "value": "华北",
+            "n": 472
+          },
+          {
+            "field": "region",
+            "value": "华南",
+            "n": 472
+          }
+        ],
+        "schema": [
+          {
+            "name": "field",
+            "type": "VARCHAR"
+          },
+          {
+            "name": "value",
+            "type": "VARCHAR"
+          },
+          {
+            "name": "n",
+            "type": "BIGINT"
+          }
+        ],
+        "rowCount": 9
+      },
+      "visualization": {
+        "status": "ready"
+      }
+    },
+    {
+      "id": "LODEv7AiOENZnISZ",
+      "kind": "step",
+      "status": "succeeded",
+      "title": "执行查询",
+      "parents": [
+        "6TLritdTbOHceoYa:end"
+      ]
+    },
+    {
+      "id": "xYE6myQht7Qvx5S3",
+      "kind": "query",
+      "status": "succeeded",
+      "title": "查询 1 · 获取数据",
+      "parents": [
+        "LODEv7AiOENZnISZ"
+      ],
+      "payload": {
+        "dsl": "WITH daily AS (\n  SELECT\n    date,\n    SUM(gross_sales - discount_amount - COALESCE(refund_amount, 0)) AS net_sales,\n    SUM(ad_spend) AS ad_spend,\n    SUM(sessions) AS sessions,\n    SUM(orders) AS orders,\n    SUM(gross_sales) AS gross_sales,\n    SUM(discount_amount) AS discount_amount,\n    SUM(COALESCE(refund_amount, 0)) AS refund_amount\n  FROM data\n  GROUP BY date\n),\ndaily_ranked AS (\n  SELECT *, NTILE(2) OVER (ORDER BY date) AS half\n  FROM daily\n),\ndaily_indexed AS (\n  SELECT *,\n         date_diff('day', (SELECT MIN(date) FROM daily), date) AS day_index\n  FROM daily\n),\ndaily_lagged AS (\n  SELECT *,\n         LEAD(net_sales) OVER (ORDER BY date) AS net_sales_next\n  FROM daily_indexed\n),\ncampaign_summary AS (\n  SELECT\n    campaign,\n    SUM(gross_sales - discount_amount - COALESCE(refund_amount, 0)) AS net_sales,\n    SUM(ad_spend) AS ad_spend\n  FROM data\n  GROUP BY campaign\n)\nSELECT\n  'period' AS analysis,\n  CASE WHEN half = 1 THEN 'first_half' ELSE 'second_half' END AS label,\n  SUM(net_sales) AS net_sales,\n  SUM(ad_spend) AS ad_spend,\n  SUM(net_sales) / NULLIF(SUM(ad_spend), 0) AS roas,\n  SUM(orders) * 1.0 / NULLIF(SUM(sessions), 0) AS conversion,\n  SUM(refund_amount) / NULLIF(SUM(gross_sales), 0) AS refund_rate,\n  CAST(NULL AS DOUBLE) AS share_net_sales\nFROM daily_ranked\nGROUP BY half\nUNION ALL\nSELECT\n  'campaign',\n  campaign,\n  net_sales,\n  ad_spend,\n  net_sales / NULLIF(ad_spend, 0) AS roas,\n  CAST(NULL AS DOUBLE),\n  CAST(NULL AS DOUBLE),\n  net_sales / NULLIF(SUM(net_sales) OVER (), 0) AS share_net_sales\nFROM campaign_summary\nUNION ALL\nSELECT\n  'trend',\n  'net_sales_slope_per_day',\n  regr_slope(net_sales, day_index),\n  CAST(NULL AS DOUBLE),\n  CAST(NULL AS DOUBLE),\n  CAST(NULL AS DOUBLE),\n  CAST(NULL AS DOUBLE),\n  CAST(NULL AS DOUBLE)\nFROM daily_indexed\nUNION ALL\nSELECT\n  'trend',\n  'ad_spend_slope_per_day',\n  regr_slope(ad_spend, day_index),\n  CAST(NULL AS DOUBLE),\n  CAST(NULL AS DOUBLE),\n  CAST(NULL AS DOUBLE),\n  CAST(NULL AS DOUBLE),\n  CAST(NULL AS DOUBLE)\nFROM daily_indexed\nUNION ALL\nSELECT\n  'correlation',\n  'ad_spend_vs_same_day_net_sales',\n  corr(ad_spend, net_sales),\n  CAST(NULL AS DOUBLE),\n  CAST(NULL AS DOUBLE),\n  CAST(NULL AS DOUBLE),\n  CAST(NULL AS DOUBLE),\n  CAST(NULL AS DOUBLE)\nFROM daily_indexed\nUNION ALL\nSELECT\n  'correlation',\n  'ad_spend_vs_next_day_net_sales',\n  corr(ad_spend, net_sales_next),\n  CAST(NULL AS DOUBLE),\n  CAST(NULL AS DOUBLE),\n  CAST(NULL AS DOUBLE),\n  CAST(NULL AS DOUBLE),\n  CAST(NULL AS DOUBLE)\nFROM daily_lagged\nORDER BY analysis, label;",
+        "sql": "WITH daily AS (\n  SELECT\n    date,\n    SUM(gross_sales - discount_amount - COALESCE(refund_amount, 0)) AS net_sales,\n    SUM(ad_spend) AS ad_spend,\n    SUM(sessions) AS sessions,\n    SUM(orders) AS orders,\n    SUM(gross_sales) AS gross_sales,\n    SUM(discount_amount) AS discount_amount,\n    SUM(COALESCE(refund_amount, 0)) AS refund_amount\n  FROM data\n  GROUP BY date\n),\ndaily_ranked AS (\n  SELECT *, NTILE(2) OVER (ORDER BY date) AS half\n  FROM daily\n),\ndaily_indexed AS (\n  SELECT *,\n         date_diff('day', (SELECT MIN(date) FROM daily), date) AS day_index\n  FROM daily\n),\ndaily_lagged AS (\n  SELECT *,\n         LEAD(net_sales) OVER (ORDER BY date) AS net_sales_next\n  FROM daily_indexed\n),\ncampaign_summary AS (\n  SELECT\n    campaign,\n    SUM(gross_sales - discount_amount - COALESCE(refund_amount, 0)) AS net_sales,\n    SUM(ad_spend) AS ad_spend\n  FROM data\n  GROUP BY campaign\n)\nSELECT\n  'period' AS analysis,\n  CASE WHEN half = 1 THEN 'first_half' ELSE 'second_half' END AS label,\n  SUM(net_sales) AS net_sales,\n  SUM(ad_spend) AS ad_spend,\n  SUM(net_sales) / NULLIF(SUM(ad_spend), 0) AS roas,\n  SUM(orders) * 1.0 / NULLIF(SUM(sessions), 0) AS conversion,\n  SUM(refund_amount) / NULLIF(SUM(gross_sales), 0) AS refund_rate,\n  CAST(NULL AS DOUBLE) AS share_net_sales\nFROM daily_ranked\nGROUP BY half\nUNION ALL\nSELECT\n  'campaign',\n  campaign,\n  net_sales,\n  ad_spend,\n  net_sales / NULLIF(ad_spend, 0) AS roas,\n  CAST(NULL AS DOUBLE),\n  CAST(NULL AS DOUBLE),\n  net_sales / NULLIF(SUM(net_sales) OVER (), 0) AS share_net_sales\nFROM campaign_summary\nUNION ALL\nSELECT\n  'trend',\n  'net_sales_slope_per_day',\n  regr_slope(net_sales, day_index),\n  CAST(NULL AS DOUBLE),\n  CAST(NULL AS DOUBLE),\n  CAST(NULL AS DOUBLE),\n  CAST(NULL AS DOUBLE),\n  CAST(NULL AS DOUBLE)\nFROM daily_indexed\nUNION ALL\nSELECT\n  'trend',\n  'ad_spend_slope_per_day',\n  regr_slope(ad_spend, day_index),\n  CAST(NULL AS DOUBLE),\n  CAST(NULL AS DOUBLE),\n  CAST(NULL AS DOUBLE),\n  CAST(NULL AS DOUBLE),\n  CAST(NULL AS DOUBLE)\nFROM daily_indexed\nUNION ALL\nSELECT\n  'correlation',\n  'ad_spend_vs_same_day_net_sales',\n  corr(ad_spend, net_sales),\n  CAST(NULL AS DOUBLE),\n  CAST(NULL AS DOUBLE),\n  CAST(NULL AS DOUBLE),\n  CAST(NULL AS DOUBLE),\n  CAST(NULL AS DOUBLE)\nFROM daily_indexed\nUNION ALL\nSELECT\n  'correlation',\n  'ad_spend_vs_next_day_net_sales',\n  corr(ad_spend, net_sales_next),\n  CAST(NULL AS DOUBLE),\n  CAST(NULL AS DOUBLE),\n  CAST(NULL AS DOUBLE),\n  CAST(NULL AS DOUBLE),\n  CAST(NULL AS DOUBLE)\nFROM daily_lagged\nORDER BY analysis, label;"
+      }
+    },
+    {
+      "id": "xYE6myQht7Qvx5S3:end",
+      "kind": "result",
+      "status": "succeeded",
+      "title": "结果 · 10 行",
+      "parents": [
+        "xYE6myQht7Qvx5S3"
+      ],
+      "payload": {
+        "data": [
+          {
+            "analysis": "campaign",
+            "label": "常规经营",
+            "net_sales": 18505152.6,
+            "ad_spend": 189277.3200000001,
+            "roas": 97.76740604738059,
+            "conversion": null,
+            "refund_rate": null,
+            "share_net_sales": 0.8887112987868625
+          },
+          {
+            "analysis": "campaign",
+            "label": "新品组合推荐",
+            "net_sales": 677841.6,
+            "ad_spend": 3364.74,
+            "roas": 201.45437686121366,
+            "conversion": null,
+            "refund_rate": null,
+            "share_net_sales": 0.03255339211348978
+          },
+          {
+            "analysis": "campaign",
+            "label": "春节促销",
+            "net_sales": 1031000.1700000006,
+            "ad_spend": 38221.2,
+            "roas": 26.974563069710022,
+            "conversion": null,
+            "refund_rate": null,
+            "share_net_sales": 0.04951385810945307
+          },
+          {
+            "analysis": "campaign",
+            "label": "限时折扣",
+            "net_sales": 608462.4,
+            "ad_spend": 27821.199999999997,
+            "roas": 21.870458499273937,
+            "conversion": null,
+            "refund_rate": null,
+            "share_net_sales": 0.02922145099019456
+          },
+          {
+            "analysis": "correlation",
+            "label": "ad_spend_vs_next_day_net_sales",
+            "net_sales": -0.00912181840308002,
+            "ad_spend": null,
+            "roas": null,
+            "conversion": null,
+            "refund_rate": null,
+            "share_net_sales": null
+          },
+          {
+            "analysis": "correlation",
+            "label": "ad_spend_vs_same_day_net_sales",
+            "net_sales": 0.2935590311864704,
+            "ad_spend": null,
+            "roas": null,
+            "conversion": null,
+            "refund_rate": null,
+            "share_net_sales": null
+          },
+          {
+            "analysis": "period",
+            "label": "first_half",
+            "net_sales": 10632002.680000002,
+            "ad_spend": 110537.07999999999,
+            "roas": 96.18494246455582,
+            "conversion": 0.06573811352698657,
+            "refund_rate": 0.024090696060226742,
+            "share_net_sales": null
+          },
+          {
+            "analysis": "period",
+            "label": "second_half",
+            "net_sales": 10190454.09,
+            "ad_spend": 148147.37999999998,
+            "roas": 68.78592176250434,
+            "conversion": 0.06555813814887657,
+            "refund_rate": 0.035840877788485645,
+            "share_net_sales": null
+          },
+          {
+            "analysis": "trend",
+            "label": "ad_spend_slope_per_day",
+            "net_sales": 36.6194354178843,
+            "ad_spend": null,
+            "roas": null,
+            "conversion": null,
+            "refund_rate": null,
+            "share_net_sales": null
+          },
+          {
+            "analysis": "trend",
+            "label": "net_sales_slope_per_day",
+            "net_sales": -247.92323436586176,
+            "ad_spend": null,
+            "roas": null,
+            "conversion": null,
+            "refund_rate": null,
+            "share_net_sales": null
+          }
+        ],
+        "schema": [
+          {
+            "name": "analysis",
+            "type": "VARCHAR"
+          },
+          {
+            "name": "label",
+            "type": "VARCHAR"
+          },
+          {
+            "name": "net_sales",
+            "type": "DOUBLE"
+          },
+          {
+            "name": "ad_spend",
+            "type": "DOUBLE"
+          },
+          {
+            "name": "roas",
+            "type": "DOUBLE"
+          },
+          {
+            "name": "conversion",
+            "type": "DOUBLE"
+          },
+          {
+            "name": "refund_rate",
+            "type": "DOUBLE"
+          },
+          {
+            "name": "share_net_sales",
+            "type": "DOUBLE"
+          }
+        ],
+        "rowCount": 10
+      },
+      "visualization": {
+        "status": "ready"
+      }
+    },
+    {
+      "id": "qj2roaksHuW1Hr8o",
+      "kind": "step",
+      "status": "succeeded",
+      "title": "核验结论",
+      "parents": [
+        "xYE6myQht7Qvx5S3:end"
+      ]
+    },
+    {
+      "id": "conclusion",
+      "kind": "conclusion",
+      "status": "succeeded",
+      "title": "分析结论",
+      "parents": [
+        "qj2roaksHuW1Hr8o"
+      ],
+      "payload": {
+        "query": "净销售额下降，要不要加大投放？",
+        "data": [
+          {
+            "analysis": "campaign",
+            "label": "常规经营",
+            "net_sales": 18505152.6,
+            "ad_spend": 189277.3200000001,
+            "roas": 97.76740604738059,
+            "conversion": null,
+            "refund_rate": null,
+            "share_net_sales": 0.8887112987868625
+          },
+          {
+            "analysis": "campaign",
+            "label": "新品组合推荐",
+            "net_sales": 677841.6,
+            "ad_spend": 3364.74,
+            "roas": 201.45437686121366,
+            "conversion": null,
+            "refund_rate": null,
+            "share_net_sales": 0.03255339211348978
+          },
+          {
+            "analysis": "campaign",
+            "label": "春节促销",
+            "net_sales": 1031000.1700000006,
+            "ad_spend": 38221.2,
+            "roas": 26.974563069710022,
+            "conversion": null,
+            "refund_rate": null,
+            "share_net_sales": 0.04951385810945307
+          },
+          {
+            "analysis": "campaign",
+            "label": "限时折扣",
+            "net_sales": 608462.4,
+            "ad_spend": 27821.199999999997,
+            "roas": 21.870458499273937,
+            "conversion": null,
+            "refund_rate": null,
+            "share_net_sales": 0.02922145099019456
+          },
+          {
+            "analysis": "correlation",
+            "label": "ad_spend_vs_next_day_net_sales",
+            "net_sales": -0.00912181840308002,
+            "ad_spend": null,
+            "roas": null,
+            "conversion": null,
+            "refund_rate": null,
+            "share_net_sales": null
+          },
+          {
+            "analysis": "correlation",
+            "label": "ad_spend_vs_same_day_net_sales",
+            "net_sales": 0.2935590311864704,
+            "ad_spend": null,
+            "roas": null,
+            "conversion": null,
+            "refund_rate": null,
+            "share_net_sales": null
+          },
+          {
+            "analysis": "period",
+            "label": "first_half",
+            "net_sales": 10632002.680000002,
+            "ad_spend": 110537.07999999999,
+            "roas": 96.18494246455582,
+            "conversion": 0.06573811352698657,
+            "refund_rate": 0.024090696060226742,
+            "share_net_sales": null
+          },
+          {
+            "analysis": "period",
+            "label": "second_half",
+            "net_sales": 10190454.09,
+            "ad_spend": 148147.37999999998,
+            "roas": 68.78592176250434,
+            "conversion": 0.06555813814887657,
+            "refund_rate": 0.035840877788485645,
+            "share_net_sales": null
+          },
+          {
+            "analysis": "trend",
+            "label": "ad_spend_slope_per_day",
+            "net_sales": 36.6194354178843,
+            "ad_spend": null,
+            "roas": null,
+            "conversion": null,
+            "refund_rate": null,
+            "share_net_sales": null
+          },
+          {
+            "analysis": "trend",
+            "label": "net_sales_slope_per_day",
+            "net_sales": -247.92323436586176,
+            "ad_spend": null,
+            "roas": null,
+            "conversion": null,
+            "refund_rate": null,
+            "share_net_sales": null
+          }
+        ],
+        "schema": [
+          {
+            "name": "analysis",
+            "type": "VARCHAR"
+          },
+          {
+            "name": "label",
+            "type": "VARCHAR"
+          },
+          {
+            "name": "net_sales",
+            "type": "DOUBLE"
+          },
+          {
+            "name": "ad_spend",
+            "type": "DOUBLE"
+          },
+          {
+            "name": "roas",
+            "type": "DOUBLE"
+          },
+          {
+            "name": "conversion",
+            "type": "DOUBLE"
+          },
+          {
+            "name": "refund_rate",
+            "type": "DOUBLE"
+          },
+          {
+            "name": "share_net_sales",
+            "type": "DOUBLE"
+          }
+        ],
+        "rowCount": 10,
+        "sql": "WITH daily AS (\n  SELECT\n    date,\n    SUM(gross_sales - discount_amount - COALESCE(refund_amount, 0)) AS net_sales,\n    SUM(ad_spend) AS ad_spend,\n    SUM(sessions) AS sessions,\n    SUM(orders) AS orders,\n    SUM(gross_sales) AS gross_sales,\n    SUM(discount_amount) AS discount_amount,\n    SUM(COALESCE(refund_amount, 0)) AS refund_amount\n  FROM data\n  GROUP BY date\n),\ndaily_ranked AS (\n  SELECT *, NTILE(2) OVER (ORDER BY date) AS half\n  FROM daily\n),\ndaily_indexed AS (\n  SELECT *,\n         date_diff('day', (SELECT MIN(date) FROM daily), date) AS day_index\n  FROM daily\n),\ndaily_lagged AS (\n  SELECT *,\n         LEAD(net_sales) OVER (ORDER BY date) AS net_sales_next\n  FROM daily_indexed\n),\ncampaign_summary AS (\n  SELECT\n    campaign,\n    SUM(gross_sales - discount_amount - COALESCE(refund_amount, 0)) AS net_sales,\n    SUM(ad_spend) AS ad_spend\n  FROM data\n  GROUP BY campaign\n)\nSELECT\n  'period' AS analysis,\n  CASE WHEN half = 1 THEN 'first_half' ELSE 'second_half' END AS label,\n  SUM(net_sales) AS net_sales,\n  SUM(ad_spend) AS ad_spend,\n  SUM(net_sales) / NULLIF(SUM(ad_spend), 0) AS roas,\n  SUM(orders) * 1.0 / NULLIF(SUM(sessions), 0) AS conversion,\n  SUM(refund_amount) / NULLIF(SUM(gross_sales), 0) AS refund_rate,\n  CAST(NULL AS DOUBLE) AS share_net_sales\nFROM daily_ranked\nGROUP BY half\nUNION ALL\nSELECT\n  'campaign',\n  campaign,\n  net_sales,\n  ad_spend,\n  net_sales / NULLIF(ad_spend, 0) AS roas,\n  CAST(NULL AS DOUBLE),\n  CAST(NULL AS DOUBLE),\n  net_sales / NULLIF(SUM(net_sales) OVER (), 0) AS share_net_sales\nFROM campaign_summary\nUNION ALL\nSELECT\n  'trend',\n  'net_sales_slope_per_day',\n  regr_slope(net_sales, day_index),\n  CAST(NULL AS DOUBLE),\n  CAST(NULL AS DOUBLE),\n  CAST(NULL AS DOUBLE),\n  CAST(NULL AS DOUBLE),\n  CAST(NULL AS DOUBLE)\nFROM daily_indexed\nUNION ALL\nSELECT\n  'trend',\n  'ad_spend_slope_per_day',\n  regr_slope(ad_spend, day_index),\n  CAST(NULL AS DOUBLE),\n  CAST(NULL AS DOUBLE),\n  CAST(NULL AS DOUBLE),\n  CAST(NULL AS DOUBLE),\n  CAST(NULL AS DOUBLE)\nFROM daily_indexed\nUNION ALL\nSELECT\n  'correlation',\n  'ad_spend_vs_same_day_net_sales',\n  corr(ad_spend, net_sales),\n  CAST(NULL AS DOUBLE),\n  CAST(NULL AS DOUBLE),\n  CAST(NULL AS DOUBLE),\n  CAST(NULL AS DOUBLE),\n  CAST(NULL AS DOUBLE)\nFROM daily_indexed\nUNION ALL\nSELECT\n  'correlation',\n  'ad_spend_vs_next_day_net_sales',\n  corr(ad_spend, net_sales_next),\n  CAST(NULL AS DOUBLE),\n  CAST(NULL AS DOUBLE),\n  CAST(NULL AS DOUBLE),\n  CAST(NULL AS DOUBLE),\n  CAST(NULL AS DOUBLE)\nFROM daily_lagged\nORDER BY analysis, label;",
+        "text": "Verification:\n- 净销售额按 `gross_sales - discount_amount - COALESCE(refund_amount, 0)` 计算，并按日期汇总后比较前后半段；数据共 59 天、1416 行，未使用会产生重复的 join。\n- 后半段净销售额约 1019.05 万，较前半段 1063.20 万下降约 4.2%；同期广告支出从约 11.05 万升至 14.81 万，增长约 34.0%，ROAS 从 96.2 降至 68.8。\n- 退款率由 2.41% 升至 3.58%，转化率基本持平；广告支出与次日净销售额相关性约 -0.009，当日相关性仅 0.29。\nConclusion:\n不建议“整体加大投放”。当前数据显示投放增加但净销售额下降、ROAS 走弱，且广告对次日销售几乎没有领先相关性。应先控制退款/折扣、排查需求下滑；若投放，只对高 ROAS 且可验证增量收益的 campaign（如“新品组合推荐”）做小额测试，不宜全面加投。",
+        "conclusion": "Verification:\n- 净销售额按 `gross_sales - discount_amount - COALESCE(refund_amount, 0)` 计算，并按日期汇总后比较前后半段；数据共 59 天、1416 行，未使用会产生重复的 join。\n- 后半段净销售额约 1019.05 万，较前半段 1063.20 万下降约 4.2%；同期广告支出从约 11.05 万升至 14.81 万，增长约 34.0%，ROAS 从 96.2 降至 68.8。\n- 退款率由 2.41% 升至 3.58%，转化率基本持平；广告支出与次日净销售额相关性约 -0.009，当日相关性仅 0.29。\nConclusion:\n不建议“整体加大投放”。当前数据显示投放增加但净销售额下降、ROAS 走弱，且广告对次日销售几乎没有领先相关性。应先控制退款/折扣、排查需求下滑；若投放，只对高 ROAS 且可验证增量收益的 campaign（如“新品组合推荐”）做小额测试，不宜全面加投。"
+      }
+    }
+  ]
+}

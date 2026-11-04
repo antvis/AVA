@@ -54,3 +54,13 @@ English keeps `/`, `/ai/`, and `/documentation/`. Chinese uses the corresponding
 - `content/docs/en/` and `content/docs/zh/` use matching slugs, heading levels, examples, tables, callouts, and custom layouts. Write Chinese explanations for Chinese readers rather than matching English sentences; preserve the information, API names, units, and behavior. Preserve stable heading IDs even when wording differs.
 - Use `LocaleLink` for internal navigation. Assets and external URLs keep their original paths. Language switching opens the matching page, reloads the document, and starts a new AI conversation.
 - When adding a chapter, update both locales, explicit MDX imports, `public/sitemap.xml`, and `public/llms.txt`. Run `pnpm build` and `pnpm check:docs` to verify both languages.
+
+## SQLite uploads in AI Playground
+
+The `/ai/` page accepts `.sqlite`, `.sqlite3` and `.db` files up to 25 MB. Tables, views, primary/unique keys and declared foreign keys are discovered from the database. SQLite runs locally in a dedicated sql.js Web Worker; multi-table SQL is generated from the discovered schema and user-supplied semantic model. `profile` currently reports row counts for each table/view, not column distribution statistics.
+
+Queries are restricted to one read-only SELECT/CTE, with `query_only` enabled, result row/byte limits and a 30-second worker timeout. A timed-out database must be reloaded. Query data can be sent to the configured analysis model; the database file itself is not uploaded to a server.
+
+The `predev` and `prebuild` scripts copy sql.js browser/WASM assets into `public/vendor/sqlite/`; deploy the generated `out/` directory as usual.
+
+The SQLite worker is bundled through `new URL(..., import.meta.url)` so each build gives it a content-addressed asset URL. This prevents a previous worker build from surviving an SDK contract update in the browser cache. Run `node scripts/test-sqlite.mjs` to verify the worker and the AVA profile contract.

@@ -1,0 +1,36 @@
+{
+  "passed": true,
+  "checks": [
+    {
+      "width": 1440,
+      "scrollWidth": 1440,
+      "expanded": 5,
+      "columns": [
+        681,
+        681
+      ],
+      "chartReady": true
+    },
+    {
+      "width": 1100,
+      "scrollWidth": 1100,
+      "expanded": 5,
+      "columns": [
+        511,
+        511
+      ],
+      "chartReady": true
+    },
+    {
+      "width": 760,
+      "scrollWidth": 760,
+      "expanded": 5,
+      "columns": [
+        724,
+        724
+      ],
+      "chartReady": true
+    }
+  ],
+  "keyboardToggle": true
+}

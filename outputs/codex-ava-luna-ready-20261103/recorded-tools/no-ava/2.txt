@@ -1,0 +1,6 @@
+rows 18971
+status Counter({'completed': 16138, 'paid': 1674, 'shipped': 506, 'cancelled': 354, 'pending': 299})
+order_kind Counter({'customer_sale': 17265, 'internal_test': 1111, 'replacement': 595})
+business_model Counter({'self_operated': 14355, 'consignment': 4616})
+2026-08 5903 ['completed', 'paid', 'shipped'] 7157972.459999614
+2026-09 6016 ['completed', 'paid', 'shipped'] 8292942.32999963

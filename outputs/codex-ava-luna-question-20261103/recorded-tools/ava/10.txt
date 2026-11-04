@@ -1,0 +1,29 @@
+{
+  "data": [
+    {
+      "period": "2026-08",
+      "orders": 4197,
+      "aov": 1022.88
+    },
+    {
+      "period": "2026-09",
+      "orders": 3387,
+      "aov": 1091.7
+    }
+  ],
+  "schema": [
+    {
+      "name": "period",
+      "type": "VARCHAR"
+    },
+    {
+      "name": "orders",
+      "type": "BIGINT"
+    },
+    {
+      "name": "aov",
+      "type": "DOUBLE"
+    }
+  ],
+  "rowCount": 2
+}

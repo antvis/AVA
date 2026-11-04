@@ -1,0 +1,41 @@
+{
+  "passed": true,
+  "design": "one fresh ephemeral CLI session per arm; identical raw CSV and user prompt. Treatment adds a preconfigured finance definition plus AVA skill/CLI. Tests the complete configured workflow, not isolated CLI effect.",
+  "data_and_prompt_equal": true,
+  "baseline_status": {
+    "status": "needs_clarification",
+    "definition_source": null,
+    "reason": "仅有订单明细，无公司净销售额定义；归月日期、订单范围、代销确认、退款规则、销售责任门店及商品层级均待确认，不能据字段名决定报表口径。"
+  },
+  "ava_status": {
+    "status": "answered",
+    "definition_source": "./inputs/semantic-finance.json",
+    "reason": "已读取并加载公司确认的财务报表语义，字段与数据质量检查通过，AVA完整聚合及各维度、逐层贡献均与整体按分核对一致。",
+    "validation": {
+      "html_generated_by": "ava viz",
+      "browser_render_verified": false,
+      "external_ledger_verified": false
+    }
+  },
+  "ava_summary": {
+    "august": 4293025.42,
+    "september": 3697575.18,
+    "change": -595450.24,
+    "growth_pct": -13.87017736317061,
+    "main_decline": {
+      "store": "深圳南山店",
+      "channel": "线上商城",
+      "product": "电动升降桌",
+      "change": -558776.37
+    },
+    "offset": {
+      "store": "广州天河店",
+      "change": 66713.31
+    },
+    "reconciled_change": -595450.24
+  },
+  "definition_provided_only_to_ava": true,
+  "raw_answers_preserved": true,
+  "display_mode": "Verbatim excerpts; full raw transcripts retained",
+  "ui_skill": "opcspace/CodexUI/redesign-codex-ui"
+}

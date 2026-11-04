@@ -30,8 +30,9 @@ export default function ToolRow({
   chip,
   mono,
   running,
+  onActivate,
   children,
-}: Pick<ToolStep, 'icon' | 'label' | 'chip' | 'mono'> & { running: boolean; children: React.ReactNode }) {
+}: Pick<ToolStep, 'icon' | 'label' | 'chip' | 'mono'> & { running: boolean; children: React.ReactNode; onActivate?: () => void }) {
   const [open, setOpen] = useState(false);
 
   return (
@@ -39,7 +40,7 @@ export default function ToolRow({
       <button
         type="button"
         aria-expanded={open}
-        onClick={() => setOpen((value) => !value)}
+        onClick={() => { setOpen((value) => !value); onActivate?.(); }}
         className="group/row -mx-[3px] flex h-7 w-[calc(100%+6px)] min-w-0 items-center gap-2 rounded-control px-[3px] text-left transition-colors duration-100 hover:bg-hover-2"
       >
         <span className="relative flex size-4 shrink-0 items-center justify-center text-ink-3">

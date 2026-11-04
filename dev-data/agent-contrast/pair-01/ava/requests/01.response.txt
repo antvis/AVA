@@ -1,0 +1,30 @@
+data:{"object":"chat.completion.chunk","id":"0b440bc617931089243407384e88ee","choices":[{"index":0,"delta":{"content":"","role":"assistant"}}],"created":1793108924,"model":"GLM-5.1","usage":null}
+
+data:{"object":"chat.completion.chunk","id":"0b440bc617931089243407384e88ee","choices":[{"index":0,"delta":{"content":"","role":"assistant","reasoning_content":"The"}}],"created":1793108924,"model":"GLM-5.1","usage":null}
+
+data:{"object":"chat.completion.chunk","id":"0b440bc617931089243407384e88ee","choices":[{"index":0,"delta":{"content":"","role":"assistant","reasoning_content":" user is asking about"}}],"created":1793108925,"model":"GLM-5.1","usage":null}
+
+data:{"object":"chat.completion.chunk","id":"0b440bc617931089243407384e88ee","choices":[{"index":0,"delta":{"content":"","role":"assistant","reasoning_content":" whether to"}}],"created":1793108925,"model":"GLM-5.1","usage":null}
+
+data:{"object":"chat.completion.chunk","id":"0b440bc617931089243407384e88ee","choices":[{"index":0,"delta":{"content":"","role":"assistant","reasoning_content":" increase advertising"}}],"created":1793108925,"model":"GLM-5.1","usage":null}
+
+data:{"object":"chat.completion.chunk","id":"0b440bc617931089243407384e88ee","choices":[{"index":0,"delta":{"content":"","role":"assistant","reasoning_content":" spend"}}],"created":1793108925,"model":"GLM-5.1","usage":null}
+
+data:{"object":"chat.completion.chunk","id":"0b440bc617931089243407384e88ee","choices":[{"index":0,"delta":{"content":"","role":"assistant","reasoning_content":" given that"}}],"created":1793108925,"model":"GLM-5.1","usage":null}
+
+data:{"object":"chat.completion.chunk","id":"0b440bc617931089243407384e88ee","choices":[{"index":0,"delta":{"content":"","role":"assistant","reasoning_content":" net sales are"}}],"created":1793108925,"model":"GLM-5.1","usage":null}
+
+data:{"object":"chat.completion.chunk","id":"0b440bc617931089243407384e88ee","choices":[{"index":0,"delta":{"content":"","role":"assistant","reasoning_content":" declining. Let"}}],"created":1793108925,"model":"GLM-5.1","usage":null}
+
+data:{"object":"chat.completion.chunk","id":"0b440bc617931089243407384e88ee","choices":[{"index":0,"delta":{"content":"","role":"assistant","reasoning_content":" me start by loading"}}],"created":1793108925,"model":"GLM-5.1","usage":null}
+
+data:{"object":"chat.completion.chunk","id":"0b440bc617931089243407384e88ee","choices":[{"index":0,"delta":{"content":"","role":"assistant","reasoning_content":" the dataset and understanding"}}],"created":1793108925,"model":"GLM-5.1","usage":null}
+
+data:{"object":"chat.completion.chunk","id":"0b440bc617931089243407384e88ee","choices":[{"index":0,"delta":{"content":"","role":"assistant","reasoning_content":" its structure."}}],"created":1793108925,"model":"GLM-5.1","usage":null}
+
+data:{"object":"chat.completion.chunk","id":"0b440bc617931089243407384e88ee","choices":[{"index":0,"delta":{"content":"","role":"assistant","tool_calls":[{"index":0,"id":"fc-5c6fa2c0-ac7d-4ed5-89c4-a83f8f592568","type":"function","function":{"name":"source","arguments":"{}"}}]}}],"created":1793108926,"model":"GLM-5.1","usage":null}
+
+data:{"object":"chat.completion.chunk","id":"0b440bc617931089243407384e88ee","choices":[{"index":0,"delta":{"content":"","role":"assistant"},"finish_reason":"tool_calls"}],"created":1793108926,"model":"GLM-5.1","usage":{"completion_tokens":0,"prompt_tokens":0,"total_tokens":0}}
+
+data:{"object":"chat.completion.chunk","id":"0b440bc617931089243407384e88ee","choices":[],"created":1793108926,"model":"GLM-5.1","usage":{"completion_tokens":31,"prompt_tokens":1112,"total_tokens":1143,"completion_tokens_details":{"reasoning_tokens":30},"prompt_tokens_details":{"cached_tokens":0}}}
+
