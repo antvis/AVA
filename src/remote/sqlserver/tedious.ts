@@ -20,6 +20,19 @@ function typeName(value: TediousColumnMetadata | TediousCell): string {
   return metadata?.type?.name ?? value.type?.name ?? value.typeName ?? 'sql_variant';
 }
 
+/** Keep duplicate aliases addressable in object rows without overwriting earlier cells. */
+function uniqueColumnName(name: string | undefined, index: number, used: Set<string>): string {
+  const base = name || `column_${index + 1}`;
+  let unique = base;
+  let suffix = 2;
+  while (used.has(unique)) {
+    unique = `${base}_${suffix}`;
+    suffix += 1;
+  }
+  used.add(unique);
+  return unique;
+}
+
 export class TediousQueryConnector implements QueryConnector {
   private readonly options: SqlServerSourceOptions;
   private connection: TediousConnection | null = null;
@@ -68,6 +81,7 @@ export class TediousQueryConnector implements QueryConnector {
     return new Promise<QueryResult & { rows: T[] }>((resolve, reject) => {
       const columns: QueryColumnMeta[] = [];
       const rows: T[] = [];
+      const usedColumnNames = new Set<string>();
 
       this.pendingReject = (error) => {
         this.pendingReject = null;
@@ -84,15 +98,19 @@ export class TediousQueryConnector implements QueryConnector {
       });
 
       request.on('columnMetadata', (metadata) => {
-        for (const cell of metadata) columns.push({ name: cell.colName ?? '', type: typeName(cell) });
+        metadata.forEach((cell, index) => {
+          const name = uniqueColumnName(cell.colName, index, usedColumnNames);
+          columns.push({ name, type: typeName(cell) });
+        });
       });
 
       request.on('row', (row) => {
         const record: Record<string, unknown> = {};
-        // Tedious emits an array of cells; the column name lives in each
-        // cell's metadata (not in the array index).
+        const usedRowNames = new Set(usedColumnNames);
+        // Tedious emits an array of cells. Decode by position using the result
+        // metadata so SQL aliases become keys and duplicate aliases stay distinct.
         row.forEach((cell, index) => {
-          const name = cell.metadata?.colName ?? columns[index]?.name ?? String(index);
+          const name = columns[index]?.name ?? uniqueColumnName(cell.metadata?.colName, index, usedRowNames);
           record[name] = cell.value;
         });
         rows.push(record as T);

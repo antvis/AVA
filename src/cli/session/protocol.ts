@@ -3,6 +3,7 @@ import { join } from 'path';
 
 import { z } from 'zod';
 
+import { tencentDocsOptionsSchema } from '../../duckdb/loaders/tencent/config';
 import { excelOptionsSchema } from '../../util/excel';
 import { profileMetadataSchema } from '../../util/profile';
 import { schemaMetadataSchema } from '../../util/schema';
@@ -93,10 +94,16 @@ const feishuBitable = z
 
 const sourceSchema = z.discriminatedUnion('type', [
   z
-    .object({ type: z.literal('csv-file'), options: file.extend({ options: z.record(z.string(), z.unknown()).optional() }) })
+    .object({
+      type: z.literal('csv-file'),
+      options: file.extend({ options: z.record(z.string(), z.unknown()).optional() }),
+    })
     .strict(),
   z
-    .object({ type: z.literal('json-file'), options: file.extend({ options: z.record(z.string(), z.unknown()).optional() }) })
+    .object({
+      type: z.literal('json-file'),
+      options: file.extend({ options: z.record(z.string(), z.unknown()).optional() }),
+    })
     .strict(),
   z.object({ type: z.literal('parquet'), options: file }).strict(),
   z.object({ type: z.literal('excel'), options: excelOptionsSchema }).strict(),
@@ -111,7 +118,10 @@ const sourceSchema = z.discriminatedUnion('type', [
     .object({
       type: z.literal('json'),
       options: z
-        .object({ data: z.array(z.record(z.string(), z.unknown())), options: z.record(z.string(), z.unknown()).optional() })
+        .object({
+          data: z.array(z.record(z.string(), z.unknown())),
+          options: z.record(z.string(), z.unknown()).optional(),
+        })
         .strict(),
     })
     .strict(),
@@ -145,6 +155,7 @@ const sourceSchema = z.discriminatedUnion('type', [
   z.object({ type: z.literal('clickhouse'), options: clickhouse }).strict(),
   z.object({ type: z.literal('sqlserver'), options: sqlServer }).strict(),
   z.object({ type: z.literal('feishu-bitable'), options: feishuBitable }).strict(),
+  z.object({ type: z.literal('tencent-smartsheet'), options: tencentDocsOptionsSchema }).strict(),
 ]);
 
 export const sourceConfig = sourceSchema.transform((value) => value as DataSourceConfig);

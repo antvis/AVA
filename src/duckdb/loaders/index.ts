@@ -15,6 +15,7 @@ import { loadPostgreSQL } from './postgresql';
 import { loadSQLite } from './sqlite';
 import { loadText } from './text';
 import { loadFeishuBitable } from './feishu-bitable';
+import { loadTencentDocs } from './tencent-smartsheet';
 
 import type { DataSourceConfig, LLMConfig, LoadedSource } from '../../types';
 
@@ -61,6 +62,8 @@ export async function loadSource(config: DataSourceConfig, llmConfig: LLMConfig)
       throw new Error('SQL Server sources are handled by SqlServerEngine, not the DuckDB engine');
     case 'feishu-bitable':
       return loadFeishuBitable(config.options);
+    case 'tencent-smartsheet':
+      return loadTencentDocs(config.options);
     default: {
       // exhaustiveness guard: unknown data source types must fail loudly, and a
       // future DataSourceConfig member without a case becomes a compile error.

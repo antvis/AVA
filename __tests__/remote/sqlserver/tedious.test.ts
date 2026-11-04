@@ -97,7 +97,7 @@ afterEach(() => {
 });
 
 describe('TediousQueryConnector', () => {
-  it('decodes array rows using each cell metadata column name', async () => {
+  it('decodes array rows using column metadata aliases', async () => {
     const connector = new TediousQueryConnector(OPTIONS);
     await connector.connect();
     const connection = fake.state.connection!;
@@ -109,10 +109,7 @@ describe('TediousQueryConnector', () => {
       { colName: 'Region', type: { name: 'nvarchar' } },
       { colName: 'Units', type: { name: 'int' } },
     ]);
-    request.emit('row', [
-      { value: 'North', metadata: { colName: 'Region', type: { name: 'nvarchar' } } },
-      { value: 12, metadata: { colName: 'Units', type: { name: 'int' } } },
-    ]);
+    request.emit('row', [{ value: 'North' }, { value: 12 }]);
     request.complete();
 
     await expect(pending).resolves.toEqual({
@@ -121,6 +118,33 @@ describe('TediousQueryConnector', () => {
         { name: 'Units', type: 'int' },
       ],
       rows: [{ Region: 'North', Units: 12 }],
+    });
+
+    await connector.close();
+  });
+
+  it('keeps duplicate aliases and generated-name collisions distinct', async () => {
+    const connector = new TediousQueryConnector(OPTIONS);
+    await connector.connect();
+    const connection = fake.state.connection!;
+
+    const pending = connector.query('SELECT 1 AS amount, 2 AS amount, 3 AS amount_2');
+    const request = await nextRequest(connection);
+    request.emit('columnMetadata', [
+      { colName: 'amount', type: { name: 'int' } },
+      { colName: 'amount', type: { name: 'int' } },
+      { colName: 'amount_2', type: { name: 'int' } },
+    ]);
+    request.emit('row', [{ value: 1 }, { value: 2 }, { value: 3 }]);
+    request.complete();
+
+    await expect(pending).resolves.toEqual({
+      columns: [
+        { name: 'amount', type: 'int' },
+        { name: 'amount_2', type: 'int' },
+        { name: 'amount_2_2', type: 'int' },
+      ],
+      rows: [{ amount: 1, amount_2: 2, amount_2_2: 3 }],
     });
 
     await connector.close();

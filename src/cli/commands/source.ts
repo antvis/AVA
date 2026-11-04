@@ -52,6 +52,9 @@ export async function run([dataset]: string[], options: Options): Promise<{ data
   }
 
   const config = sourceConfig.parse(input);
+  if (config.type === 'tencent-smartsheet' && engine !== undefined && engine !== 'duckdb') {
+    throw new Error('Tencent Docs SmartSheet sources require the duckdb engine.');
+  }
 
   if ('path' in config.options && !/^https?:\/\//i.test(config.options.path)) {
     config.options.path = resolve(config.options.path);
@@ -145,4 +148,12 @@ feishu.json:
 }
     Provide url or both appToken and tableId; they must name the same table.
     Keep appSecret out of version control and logs.
+
+Tencent Docs SmartSheet (Node.js / DuckDB):
+  tencent-docs.json:
+    { "type": "tencent-smartsheet", "options": { "fileId": "<file-id>", "sheetId": "<sheet-id>", "clientId": "<client-id>", "openId": "<open-id>", "accessToken": "<access-token>" } }
+  Pass all three OpenAPI credentials explicitly in options; environment variables are not resolved. fileId must be a native API ID.
+  Reads a complete, bounded snapshot into data; _record_id preserves source identity.
+  Explicit IDs are required; document sharing URLs are not auto-detected.
+  Dataset sessions require macOS/Linux; on Windows use the SDK or WSL.
 `;
