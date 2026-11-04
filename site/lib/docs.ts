@@ -39,6 +39,12 @@ export const docs = [
     description: 'Write business definitions, model mappings, and reusable measures, with a worked sales example.',
   },
   {
+    slug: 'data/feishu-bitable',
+    title: 'Feishu Bitable setup',
+    group: 'Working with data',
+    description: 'Create an app, grant document access, and load a Feishu or Lark Bitable with an illustrated guide.',
+  },
+  {
     slug: 'analysis/overview',
     title: 'Analyze data',
     group: 'Analysis & visualization',

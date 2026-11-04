@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="680" height="350" viewBox="0 0 680 350" role="img" aria-labelledby="title desc">
+  <title id="title">API permissions and document access</title>
+  <desc id="desc">Get credentials, enable read APIs and publish in Open Platform. Add the same app to the target Bitable, with Wiki space access for Wiki links.</desc>
+  <style>text{font-family:system-ui,sans-serif;fill:#203c4a}.heading{font-size:18px;font-weight:600}.label{font-size:14px}.muted{font-size:13px;fill:#526e7c}.code{font-family:monospace;font-size:13px}.tag{font-size:12px;fill:#397f97}</style>
+  <rect x="16" y="16" width="310" height="290" rx="12" fill="#f8fafb" stroke="#cbd7de"/>
+  <rect x="354" y="16" width="310" height="290" rx="12" fill="#f8fafb" stroke="#cbd7de"/>
+  <text x="36" y="48" class="heading">Feishu Open Platform</text><text x="36" y="73" class="muted">Custom app → Credentials</text>
+  <rect x="36" y="91" width="270" height="74" rx="8" fill="#fff" stroke="#cbd7de"/>
+  <text x="50" y="119" class="code">App ID     cli_YOUR_APP_ID</text><text x="50" y="147" class="code">App Secret ••••••••••••••</text>
+  <text x="36" y="197" class="label">Permissions → Enable read APIs</text><text x="36" y="222" class="muted">Tables, fields, records; Wiki nodes</text>
+  <rect x="36" y="244" width="270" height="40" rx="8" fill="#edf9fc" stroke="#73b9c9"/><text x="51" y="269" class="label">Release → Publish + approval</text>
+  <text x="374" y="48" class="heading">Target Bitable</text><text x="374" y="73" class="muted">Document apps → Add document app</text>
+  <rect x="374" y="91" width="270" height="74" rx="8" fill="#fff" stroke="#cbd7de"/>
+  <text x="388" y="119" class="label">AVA analytics</text><text x="388" y="147" class="tag">Add the same app · Grant read access</text>
+  <text x="374" y="197" class="label">Advanced permissions → Scope</text><text x="374" y="222" class="muted">Target table, records, and fields</text>
+  <rect x="374" y="244" width="270" height="40" rx="8" fill="#edf9fc" stroke="#73b9c9"/><text x="389" y="269" class="label">Wiki URL → Grant space access</text>
+  <text x="340" y="333" text-anchor="middle" class="muted">Configuration schematic · Set up API and document access separately</text>
+</svg>

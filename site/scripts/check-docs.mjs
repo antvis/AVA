@@ -1,9 +1,10 @@
 import assert from 'node:assert/strict';
 import { readFile, readdir } from 'node:fs/promises';
-import { join, relative } from 'node:path';
+import { join, relative, sep } from 'node:path';
+import { fileURLToPath } from 'node:url';
 import ts from 'typescript';
 
-const site = new URL('../', import.meta.url).pathname;
+const site = fileURLToPath(new URL('../', import.meta.url));
 async function files(directory) {
   const entries = await readdir(directory, { withFileTypes: true });
   return (
@@ -76,6 +77,8 @@ for (const declaration of types.statements) {
 const pages = new Map();
 for (const source of sources) {
   const [locale, ...segments] = relative(join(site, 'content/docs'), source)
+    .split(sep)
+    .join('/')
     .replace(/\.mdx$/, '')
     .split('/');
   const slug = segments.join('/');
@@ -126,11 +129,11 @@ console.log(
 );
 
 const englishSlugs = sources
-  .filter((path) => path.includes('/en/'))
+  .filter((path) => path.includes(`${sep}en${sep}`))
   .map((path) => relative(join(site, 'content/docs/en'), path))
   .sort();
 const chineseSlugs = sources
-  .filter((path) => path.includes('/zh/'))
+  .filter((path) => path.includes(`${sep}zh${sep}`))
   .map((path) => relative(join(site, 'content/docs/zh'), path))
   .sort();
 assert.deepEqual(chineseSlugs, englishSlugs, 'Both languages cover the same chapters');

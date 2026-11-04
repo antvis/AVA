@@ -18,6 +18,7 @@ DuckDB is the default Node.js engine. JavaScript supports browsers and Node.js; 
 ## Data, analysis, and visualization
 
 - [Data sources](https://ava.antv.vision/documentation/data/sources/): Source types and parameters for inline data, files, and databases.
+- [Feishu Bitable setup](https://ava.antv.vision/documentation/data/feishu-bitable/): Illustrated app creation, permissions, document access, credential binding, CLI / SDK examples, and troubleshooting for Feishu and Lark.
 - [Inspect your data](https://ava.antv.vision/documentation/data/schema/): AVA discovers the structural starting point automatically; optionally compute statistics, then supply business meaning through semantic definitions. No schema needs to be authored for ordinary use.
 - [Define data semantics](https://ava.antv.vision/documentation/data/semantic/): Author business context, model and column mappings, relationships, views, and cubes; includes a worked sales example and links to the complete API fields. Definitions guide query generation and do not materialize objects or enforce access policies.
 - [Analyze data](https://ava.antv.vision/documentation/analysis/overview/): Ask questions, get suggestions, and translate or execute queries separately.
@@ -56,6 +57,7 @@ DuckDB is the default Node.js engine. JavaScript supports browsers and Node.js; 
 - [Agent Skill](https://ava.antv.vision/zh/documentation/agent-skill/): 让现有 AI Agent 用上 AVA，完成从数据探索到图表交付的完整流程。
 - [安装与快速开始](https://ava.antv.vision/zh/documentation/quickstart/): 安装 AVA，接入第一份数据，跑通分析与图表生成。
 - [接入数据](https://ava.antv.vision/zh/documentation/data/sources/): 连接内存数据、文件、数据库和飞书多维表格。
+- [飞书多维表格配置](https://ava.antv.vision/zh/documentation/data/feishu-bitable/): 图文介绍应用创建、权限授权、凭证绑定、CLI / SDK 加载验证与常见问题。
 - [了解你的数据](https://ava.antv.vision/zh/documentation/data/schema/): 自动发现表结构，按需查看统计信息，再补充业务背景。
 - [补充业务语义](https://ava.antv.vision/zh/documentation/data/semantic/): 说明业务口径、字段映射与可复用指标，让分析更贴近实际业务。
 - [分析数据](https://ava.antv.vision/zh/documentation/analysis/overview/): 用自然语言提问，获得可检查的查询结果与分析结论。

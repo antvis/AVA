@@ -485,6 +485,10 @@
       "title": "Inspect your data",
       "description": "Let AVA discover the structure, inspect statistics when useful, then add business meaning."
     },
+    "data_feishu-bitable": {
+      "title": "Feishu Bitable setup",
+      "description": "Create an app, grant document access, and load a Feishu or Lark Bitable with an illustrated guide."
+    },
     "data_semantic": {
       "title": "Define data semantics",
       "description": "Write business definitions, model mappings, and reusable measures, with a worked sales example."

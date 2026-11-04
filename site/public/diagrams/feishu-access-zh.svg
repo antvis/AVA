@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="680" height="350" viewBox="0 0 680 350" role="img" aria-labelledby="title desc">
+  <title id="title">接口权限与文档授权</title>
+  <desc id="desc">开放平台中获取凭证、开通读取接口并发布，在目标多维表格添加同一个应用，Wiki 链接还需知识空间访问。</desc>
+  <style>text{font-family:system-ui,"Microsoft YaHei",sans-serif;fill:#203c4a}.heading{font-size:18px;font-weight:600}.label{font-size:14px}.muted{font-size:13px;fill:#526e7c}.code{font-family:monospace;font-size:13px}.tag{font-size:12px;fill:#397f97}</style>
+  <rect x="16" y="16" width="310" height="290" rx="12" fill="#f8fafb" stroke="#cbd7de"/>
+  <rect x="354" y="16" width="310" height="290" rx="12" fill="#f8fafb" stroke="#cbd7de"/>
+  <text x="36" y="48" class="heading">飞书开放平台</text><text x="36" y="73" class="muted">企业自建应用 → 凭证与基础信息</text>
+  <rect x="36" y="91" width="270" height="74" rx="8" fill="#fff" stroke="#cbd7de"/>
+  <text x="50" y="119" class="code">App ID     cli_YOUR_APP_ID</text><text x="50" y="147" class="code">App Secret ••••••••••••••</text>
+  <text x="36" y="197" class="label">权限管理 → 开通读取接口</text><text x="36" y="222" class="muted">数据表、字段、记录；Wiki 节点读取</text>
+  <rect x="36" y="244" width="270" height="40" rx="8" fill="#edf9fc" stroke="#73b9c9"/><text x="51" y="269" class="label">版本管理与发布 → 发布并审批</text>
+  <text x="374" y="48" class="heading">目标多维表格</text><text x="374" y="73" class="muted">文档应用入口 → 添加文档应用</text>
+  <rect x="374" y="91" width="270" height="74" rx="8" fill="#fff" stroke="#cbd7de"/>
+  <text x="388" y="119" class="label">AVA 数据分析</text><text x="388" y="147" class="tag">添加同一个应用 · 授予读取权限</text>
+  <text x="374" y="197" class="label">高级权限 → 核对可读取范围</text><text x="374" y="222" class="muted">目标数据表、记录和字段</text>
+  <rect x="374" y="244" width="270" height="40" rx="8" fill="#edf9fc" stroke="#73b9c9"/><text x="389" y="269" class="label">Wiki 链接 → 额外授权知识空间</text>
+  <text x="340" y="333" text-anchor="middle" class="muted">操作位置示意 · 接口权限与文档访问分别配置</text>
+</svg>
