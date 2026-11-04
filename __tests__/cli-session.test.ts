@@ -22,6 +22,11 @@ const schema: Schema = {
   relationships: [],
 };
 
+const sqlserverSource = {
+  type: 'sqlserver' as const,
+  options: { host: 'localhost', database: 'sales', user: 'reader', password: 'test-password' },
+};
+
 describe('session startup protocol', () => {
   const platform = Object.getOwnPropertyDescriptor(process, 'platform')!;
   afterEach(() => {
@@ -76,6 +81,22 @@ describe('session startup protocol', () => {
     ).toThrow();
     expect(() => startupSchema.parse({ source, llm, metadata: { schema } })).toThrow();
   });
+
+  it('preserves SQL Server source fields and engine through the startup protocol', () => {
+    const source = {
+      ...sqlserverSource,
+      options: {
+        ...sqlserverSource.options,
+        port: 11433,
+        schema: 'reporting',
+        encrypt: false,
+        trustServerCertificate: true,
+        connectionTimeoutMs: 5000,
+        requestTimeoutMs: 12000,
+      },
+    };
+    expect(startupSchema.parse({ source, llm, engine: 'sqlserver' })).toEqual({ source, llm, engine: 'sqlserver' });
+  });
 });
 
 describe('dataset engine and language', () => {
@@ -97,6 +118,7 @@ describe('dataset engine and language', () => {
     { source, engine: 'javascript', explicit: 'javascript' },
     { source: { type: 'supabase', options: { accessToken: 'test', projectRef: 'test' } }, engine: 'supabase' },
     { source: { type: 'clickhouse', options: { host: 'localhost', database: 'sales' } }, engine: 'clickhouse' },
+    { source: sqlserverSource, engine: 'sqlserver' },
   ])('selects $engine and exposes its language without changing the schema', async ({ source, engine, explicit }) => {
     const { getEngineClass } = await import('../src/engines');
     const Engine = getEngineClass(engine);
