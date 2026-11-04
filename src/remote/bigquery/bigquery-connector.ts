@@ -5,10 +5,11 @@
  * additionally validates each statement as a single read-only SELECT before it
  * reaches this connector.
  *
- * The @google-cloud/bigquery package is loaded lazily via `require()` so this
- * module type-checks and is exercised by tests even where the bindings are
- * optional; tests stub the module with `vi.mock`.
+ * The optional driver is loaded through a deferred dynamic import so both the
+ * CommonJS and ESM published builds can load it without a bare `require()`.
  */
+import { runWithTimeout } from '../../util/timeout';
+
 import type { BigQuerySourceOptions } from '../../types';
 import type { QueryColumnMeta, QueryConnector, QueryResult, QueryResultRow } from './connector';
 
@@ -23,10 +24,17 @@ interface BigQueryRow {
   [name: string]: unknown;
 }
 
-interface BigQueryQueryJobResult {
-  [0]: BigQueryRow[];
-  [1]: unknown;
-  [2]?: BigQuerySchemaField[];
+interface BigQueryQueryResultsMetadata {
+  schema?: {
+    fields?: BigQuerySchemaField[];
+  };
+}
+
+type BigQueryQueryResults = [BigQueryRow[], unknown, BigQueryQueryResultsMetadata?];
+
+interface BigQueryJob {
+  getQueryResults(): Promise<BigQueryQueryResults>;
+  cancel(): Promise<unknown>;
 }
 
 interface BigQueryCreateQueryJobOptions {
@@ -35,29 +43,39 @@ interface BigQueryCreateQueryJobOptions {
   maxResults?: number;
   useLegacySql: boolean;
   maximumBytesBilled?: number;
+  defaultDataset?: {
+    projectId: string;
+    datasetId: string;
+  };
 }
 
 interface BigQueryClient {
-  createQueryJob(options: BigQueryCreateQueryJobOptions): Promise<[unknown, BigQueryQueryJobResult]>;
+  createQueryJob(options: BigQueryCreateQueryJobOptions): Promise<[BigQueryJob, unknown]>;
 }
 
 interface BigQueryModule {
   BigQuery: new (config: unknown) => BigQueryClient;
 }
 
-let cachedModule: BigQueryModule | null | undefined;
+const DRIVER_MODULE = '@google-cloud/bigquery';
+const DEFAULT_TIMEOUT_MS = 60000;
+let cachedModule: Promise<BigQueryModule> | undefined;
 
 /** Load (and cache) the @google-cloud/bigquery bindings, throwing a clear error when absent. */
-function loadBigQuery(): BigQueryModule {
-  if (cachedModule !== undefined) return cachedModule;
-  try {
-    // eslint-disable-next-line @typescript-eslint/no-var-requires
-    cachedModule = require('@google-cloud/bigquery') as BigQueryModule;
-  } catch {
-    throw new Error(
-      'BigQuery adapter requires the optional "@google-cloud/bigquery" dependency. ' +
-        'Install it (npm i @google-cloud/bigquery) or set adapter: "mock" to use the in-memory connector.'
-    );
+async function loadBigQuery(): Promise<BigQueryModule> {
+  if (!cachedModule) {
+    cachedModule = import(DRIVER_MODULE)
+      .then((loaded) => {
+        const module = loaded as BigQueryModule & { default?: BigQueryModule };
+        return module.BigQuery ? module : (module.default ?? module);
+      })
+      .catch(() => {
+        cachedModule = undefined;
+        throw new Error(
+          'BigQuery adapter requires the optional "@google-cloud/bigquery" dependency. ' +
+            'Install it (npm i @google-cloud/bigquery) or set adapter: "mock" to use the in-memory connector.'
+        );
+      });
   }
   return cachedModule;
 }
@@ -80,6 +98,15 @@ function normalizeCredentials(options: BigQuerySourceOptions): Record<string, un
   return undefined;
 }
 
+/** Best-effort cancellation; the timeout error remains the primary failure. */
+function cancelJob(job: BigQueryJob): void {
+  try {
+    void job.cancel().catch(() => undefined);
+  } catch {
+    // A synchronously failing cancellation must not mask the query timeout.
+  }
+}
+
 export class BigQueryQueryConnector implements QueryConnector {
   private readonly options: BigQuerySourceOptions;
   private client: BigQueryClient | null = null;
@@ -90,7 +117,7 @@ export class BigQueryQueryConnector implements QueryConnector {
 
   async connect(): Promise<void> {
     if (this.client) return;
-    const { BigQuery } = loadBigQuery();
+    const { BigQuery } = await loadBigQuery();
     const credentials = normalizeCredentials(this.options);
     this.client = new BigQuery({
       projectId: this.options.projectId,
@@ -101,25 +128,39 @@ export class BigQueryQueryConnector implements QueryConnector {
   async query<T extends QueryResultRow = QueryResultRow>(sql: string): Promise<QueryResult & { rows: T[] }> {
     await this.connect();
     const client = this.client!;
-    const [, rowsResponse] = await client.createQueryJob({
-      query: sql,
-      location: this.options.location,
-      maxResults: this.options.defaultRowLimit,
-      useLegacySql: false,
-      ...(this.options.maxBytesBilled !== undefined
-        ? { maximumBytesBilled: this.options.maxBytesBilled }
-        : {}),
+    const timeoutMs = this.options.timeoutMs ?? DEFAULT_TIMEOUT_MS;
+    let job: BigQueryJob | undefined;
+    let timedOut = false;
+
+    const operation = (async (): Promise<BigQueryQueryResults> => {
+      const [createdJob] = await client.createQueryJob({
+        query: sql,
+        location: this.options.location,
+        maxResults: this.options.defaultRowLimit,
+        useLegacySql: false,
+        ...(this.options.maxBytesBilled !== undefined
+          ? { maximumBytesBilled: this.options.maxBytesBilled }
+          : {}),
+        ...(this.options.dataset
+          ? { defaultDataset: { projectId: this.options.projectId, datasetId: this.options.dataset } }
+          : {}),
+      });
+      job = createdJob;
+      if (timedOut) cancelJob(createdJob);
+      return createdJob.getQueryResults();
+    })();
+
+    const response = await runWithTimeout(operation, timeoutMs, {
+      onTimeout: () => {
+        timedOut = true;
+        if (job) cancelJob(job);
+        return new Error(`BigQuery query timed out after ${timeoutMs}ms; job cancellation was requested`);
+      },
+      unref: true,
     });
 
-    const response = await Promise.resolve(rowsResponse);
-    const responseArray = response as unknown as {
-      [0]?: BigQueryRow[];
-      [2]?: BigQuerySchemaField[];
-    };
-    const rows = responseArray[0] ?? [];
-    const schema = responseArray[2];
-
-    const columns: QueryColumnMeta[] = (schema ?? []).map((field) => ({
+    const rows = response[0] ?? [];
+    const columns: QueryColumnMeta[] = (response[2]?.schema?.fields ?? []).map((field) => ({
       name: field.name,
       type: field.type,
     }));

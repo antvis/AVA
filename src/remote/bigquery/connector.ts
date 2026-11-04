@@ -3,7 +3,7 @@
  * `@google-cloud/bigquery` adapter; the mock adapter reproduces the same
  * contract in memory so unit tests and demos run without a live GCP project.
  */
-import type { BigQuerySourceOptions } from '../../types';
+import type { BigQuerySourceOptions, ParsedProfileOptions, Profile, Schema } from '../../types';
 
 /** Shape of a query result row; column values are the driver's native values. */
 export type QueryResultRow = Record<string, unknown>;
@@ -26,6 +26,12 @@ export interface QueryConnector {
   connect(): Promise<void>;
   query<T extends QueryResultRow = QueryResultRow>(sql: string): Promise<QueryResult & { rows: T[] }>;
   close(): Promise<void>;
+  /**
+   * Optional in-memory profiling path. The mock connector evaluates metrics
+   * directly over its seeded rows because it does not implement the full
+   * GoogleSQL expression surface used by production profiling.
+   */
+  profile?(schema: Schema, options: ParsedProfileOptions): Promise<Profile>;
 }
 
 /** Build the connector for the configured adapter. */

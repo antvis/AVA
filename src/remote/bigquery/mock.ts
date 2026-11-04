@@ -10,9 +10,12 @@
  * The subset is intentionally small — it exists to exercise the engine's
  * schema-discovery queries and simple data queries, not to be a SQL engine.
  */
+import { resolveMetric } from '../../util/profile';
 import { sqlIdentifier, sqlStringLiteral } from '../../util/sql';
+import { BUILTIN_METRICS, logicalType } from './profile';
 
-import type { BigQuerySourceOptions } from '../../types';
+import type { BigQuerySourceOptions, JsonValue, ParsedProfileOptions, Profile, Schema } from '../../types';
+import type { MetricField } from '../../util/profile';
 import type { QueryConnector, QueryResult, QueryResultRow } from './connector';
 
 const DEFAULT_DATASET = 'demo';
@@ -28,7 +31,7 @@ interface Table {
   name: string;
   columns: Column[];
   rows: Record<string, unknown>[];
-  primaryKey?: string;
+  primaryKey?: string[];
 }
 
 /** Normalize an identifier path: strip backticks/quotes, take the last segment, lower-case. */
@@ -68,11 +71,10 @@ function makeCatalog(dataset: string, tables: Table[]): Table[] {
     }))
   );
   const keyUsage: Record<string, unknown>[] = tables.flatMap((t) => {
-    const v = t.primaryKey
-      ? t.columns.filter((c) => c.name === t.primaryKey)
-      : t.columns.filter((c) => c.notNull && c.name === 'id');
-    return v
-      .slice(0, 1)
+    const primaryKey = t.primaryKey ?? t.columns.filter((c) => c.notNull && c.name === 'id').map((c) => c.name);
+    return primaryKey
+      .map((name) => t.columns.find((c) => c.name === name))
+      .filter((c): c is Column => c !== undefined)
       .map((c, i) => ({
         table_catalog: dataset,
         table_schema: dataset,
@@ -84,6 +86,17 @@ function makeCatalog(dataset: string, tables: Table[]): Table[] {
         ordinal_position: i + 1,
       }));
   });
+  const tableConstraints = tables
+    .filter((t) => keyUsage.some((key) => key.table_name === t.name))
+    .map((t) => ({
+      table_catalog: dataset,
+      table_schema: dataset,
+      table_name: t.name,
+      constraint_catalog: dataset,
+      constraint_schema: dataset,
+      constraint_name: `PK_${t.name}`,
+      constraint_type: 'PRIMARY KEY',
+    }));
 
   return [
     {
@@ -126,6 +139,20 @@ function makeCatalog(dataset: string, tables: Table[]): Table[] {
       ],
       rows: keyUsage,
     },
+    {
+      dataset,
+      name: 'INFORMATION_SCHEMA.TABLE_CONSTRAINTS',
+      columns: [
+        { name: 'table_catalog', type: 'STRING', notNull: true },
+        { name: 'table_schema', type: 'STRING', notNull: true },
+        { name: 'table_name', type: 'STRING', notNull: true },
+        { name: 'constraint_catalog', type: 'STRING', notNull: true },
+        { name: 'constraint_schema', type: 'STRING', notNull: true },
+        { name: 'constraint_name', type: 'STRING', notNull: true },
+        { name: 'constraint_type', type: 'STRING', notNull: true },
+      ],
+      rows: tableConstraints,
+    },
   ];
 }
 
@@ -142,22 +169,32 @@ function tokenize(sql: string): Token[] {
       i += 1;
       continue;
     }
-    if (ch === "'") {
+    if (ch === "'" || ch === '"') {
+      const quote = ch;
       let value = '';
+      let closed = false;
       i += 1;
       while (i < n) {
-        if (sql[i] === "'") {
-          if (sql[i + 1] === "'") {
-            value += "'";
+        if (sql[i] === '\\') {
+          if (i + 1 >= n) break;
+          value += sql[i + 1];
+          i += 2;
+          continue;
+        }
+        if (sql[i] === quote) {
+          if (sql[i + 1] === quote) {
+            value += quote;
             i += 2;
             continue;
           }
           i += 1;
+          closed = true;
           break;
         }
         value += sql[i];
         i += 1;
       }
+      if (!closed) throw new Error('Unterminated quoted string in BigQuery statement');
       tokens.push({ t: 'string', v: value });
       continue;
     }
@@ -186,7 +223,7 @@ function tokenize(sql: string): Token[] {
       i = j;
       continue;
     }
-    if (/[a-zA-Z_"]/.test(ch)) {
+    if (/[a-zA-Z_]/.test(ch)) {
       let value = '';
       while (i < n && /[a-zA-Z0-9_$#@]/.test(sql[i])) {
         value += sql[i];
@@ -233,9 +270,10 @@ interface Expr {
 }
 
 interface Predicate {
-  col: string;
+  expr: Expr;
   op: string;
   value: unknown;
+  /** Connector marker; null identifies a comparison. */
   and: boolean | null;
 }
 
@@ -243,6 +281,7 @@ interface ParsedSelect {
   items: SelectItem[];
   from?: string;
   predicates: Predicate[];
+  having: Predicate[];
   groupBy: string[];
   orderBy: { name: string; dir: 'ASC' | 'DESC' }[];
   limit?: number;
@@ -328,10 +367,7 @@ class Parser {
       }
     }
 
-    // skip HAVING token(s) if present (ignored)
-    if (this.is('HAVING')) {
-      while (this.peek() && !this.is('ORDER') && !this.is('LIMIT')) this.next();
-    }
+    const having: Predicate[] = this.is('HAVING') ? this.parsePredicates('HAVING', true) : [];
 
     const orderBy: { name: string; dir: 'ASC' | 'DESC' }[] = [];
     if (this.is('ORDER')) {
@@ -362,7 +398,7 @@ class Parser {
 
     if (this.peek()) throw new Error(`Unsupported BigQuery syntax near "${this.peek()?.v}"`);
 
-    return { items, from, predicates, groupBy, orderBy, limit };
+    return { items, from, predicates, having, groupBy, orderBy, limit };
   }
 
   private isKeyword(word: string): boolean {
@@ -481,13 +517,16 @@ class Parser {
   }
 
   private parseWhere(): Predicate[] {
-    this.kw('WHERE');
+    return this.parsePredicates('WHERE', false);
+  }
+
+  private parsePredicates(keyword: string, allowAggregate: boolean): Predicate[] {
+    this.kw(keyword);
     const predicates: Predicate[] = [];
     for (;;) {
-      let colPath = this.next().v;
-      while (this.peek()?.t === 'sym' && this.peek()?.v === '.') {
-        this.next();
-        colPath = `${colPath}.${this.next().v}`;
+      const expr = this.parseExpr();
+      if (expr.kind !== 'ident' && !(allowAggregate && expr.kind === 'call')) {
+        throw new Error(`Unsupported expression in ${keyword} clause`);
       }
       const op = this.next();
       let opStr = op.v;
@@ -499,13 +538,13 @@ class Parser {
       if (valueToken.t === 'string') value = valueToken.v;
       else if (valueToken.t === 'number') value = Number(valueToken.v);
       else if (valueToken.t === 'word' && valueToken.v.toUpperCase() === 'NULL') value = null;
-      else throw new Error('Unsupported value in WHERE clause');
-      predicates.push({ col: lastIdent(colPath).toLowerCase(), op: opStr, value, and: null });
+      else throw new Error(`Unsupported value in ${keyword} clause`);
+      predicates.push({ expr, op: opStr, value, and: null });
 
       if (this.is('AND') || this.is('OR')) {
         const and = this.is('AND');
         this.next();
-        predicates.push({ col: '', op: '', value: null, and });
+        predicates.push({ expr: { kind: 'literal', value: null }, op: '', value: null, and });
         continue;
       }
       break;
@@ -514,46 +553,60 @@ class Parser {
   }
 }
 
-function matches(predicates: Predicate[], row: Record<string, unknown>): boolean {
+function matches(
+  predicates: Predicate[],
+  row: Record<string, unknown>,
+  group?: Record<string, unknown>[]
+): boolean {
   if (predicates.length === 0) return true;
-  let result = true;
-  let pendingAnd: boolean | null = null;
+  // Each inner array is an AND group; OR only starts a new group. This gives
+  // AND higher precedence without changing the deliberately small parser.
+  const orGroups: boolean[][] = [[]];
   for (const p of predicates) {
     if (p.and !== null) {
-      pendingAnd = p.and;
+      if (!p.and) orGroups.push([]);
       continue;
     }
-    const c = comparable(row[p.col], p.value);
-    let current: boolean;
-    switch (p.op) {
-      case '=':
-        current = c === 0;
-        break;
-      case '<>':
-      case '!=':
-        current = c !== 0;
-        break;
-      case '<':
-        current = c < 0;
-        break;
-      case '>':
-        current = c > 0;
-        break;
-      case '<=':
-        current = c <= 0;
-        break;
-      case '>=':
-        current = c >= 0;
-        break;
-      default:
-        throw new Error(`Unsupported comparison operator: ${p.op}`);
+    let left: unknown;
+    if (p.expr.kind === 'ident') left = row[p.expr.name!];
+    else if (p.expr.kind === 'call' && group) {
+      left = applyAggregate(p.expr.name!, p.expr.args ?? [], group);
+    } else {
+      throw new Error('Aggregate predicates require an aggregate group');
     }
-    if (pendingAnd === null) result = current;
-    else if (pendingAnd) result = result && current;
-    else result = result || current;
-    pendingAnd = null;
+
+    // SQL comparisons with NULL evaluate to UNKNOWN, which does not pass a
+    // WHERE/HAVING filter (including !=, <= and >=).
+    let current = false;
+    if (left != null && p.value != null) {
+      const c = comparable(left, p.value);
+      switch (p.op) {
+        case '=':
+          current = c === 0;
+          break;
+        case '<>':
+        case '!=':
+          current = c !== 0;
+          break;
+        case '<':
+          current = c < 0;
+          break;
+        case '>':
+          current = c > 0;
+          break;
+        case '<=':
+          current = c <= 0;
+          break;
+        case '>=':
+          current = c >= 0;
+          break;
+        default:
+          throw new Error(`Unsupported comparison operator: ${p.op}`);
+      }
+    }
+    orGroups[orGroups.length - 1].push(current);
   }
-  return result;
+  return orGroups.some((andGroup) => andGroup.every(Boolean));
 }
 
 function applyAggregate(name: string, args: Expr[], group: Record<string, unknown>[]): unknown {
@@ -565,7 +618,7 @@ function applyAggregate(name: string, args: Expr[], group: Record<string, unknow
   }
   const col = args[0]?.kind === 'ident' ? args[0]!.name! : '';
   const values = group.map((r) => r[col]).filter((v) => typeof v === 'number');
-  if (upper === 'SUM') return values.reduce<number>((s, v) => s + v, 0);
+  if (upper === 'SUM') return values.length ? values.reduce<number>((s, v) => s + v, 0) : null;
   if (upper === 'AVG' || upper === 'MEAN') return values.length ? values.reduce<number>((s, v) => s + v, 0) / values.length : null;
   if (values.length === 0) return null;
   if (upper === 'MIN') return Math.min(...values);
@@ -577,6 +630,131 @@ function applyAggregate(name: string, args: Expr[], group: Record<string, unknow
     return Math.sqrt(variance);
   }
   return null;
+}
+
+function distinctValues(values: unknown[]): unknown[] {
+  const seen = new Set<string>();
+  return values.filter((value) => {
+    const key = `${typeof value}:${JSON.stringify(value)}`;
+    if (seen.has(key)) return false;
+    seen.add(key);
+    return true;
+  });
+}
+
+function temporalMs(value: unknown, type: string): number | null {
+  if (value instanceof Date) return Number.isFinite(value.getTime()) ? value.getTime() : null;
+  const text = String(value);
+  if (type.toLowerCase() === 'time') {
+    const match = text.match(/^(\d{2}):(\d{2}):(\d{2})(?:\.(\d{1,6}))?$/);
+    if (!match) return null;
+    const milliseconds = Number(`${match[4] ?? ''}000`.slice(0, 3));
+    return Number(match[1]) * 3600000 + Number(match[2]) * 60000 + Number(match[3]) * 1000 + milliseconds;
+  }
+  const normalized = type.toLowerCase() === 'datetime' ? `${text.replace(' ', 'T')}Z` : text;
+  const parsed = Date.parse(normalized);
+  return Number.isFinite(parsed) ? parsed : null;
+}
+
+function mockMetricValue(
+  id: string,
+  metric: ParsedProfileOptions['metrics'][number],
+  rows: Record<string, unknown>[],
+  field?: MetricField
+): JsonValue {
+  if (id === 'row_count') return rows.length;
+  if (!field) throw new Error(`Metric ${id} requires a column`);
+  const values = rows.map((row) => row[field.name.toLowerCase()]);
+  const present = values.filter((value) => value != null);
+  const distinct = distinctValues(present);
+  const numbers = present.map(Number).filter(Number.isFinite);
+
+  switch (id) {
+    case 'null_count':
+      return values.length - present.length;
+    case 'distinct_count':
+      return distinct.length;
+    case 'duplicate_count':
+      return present.length - distinct.length;
+    case 'top_values': {
+      const limit = metric.limit === undefined ? 3 : Number(metric.limit);
+      const maxDistinctRatio = metric.maxDistinctRatio === undefined ? 0.5 : Number(metric.maxDistinctRatio);
+      if (distinct.length > rows.length * maxDistinctRatio) return null;
+      const counts = new Map<string, { value: string; count: number }>();
+      for (const value of present) {
+        const stringValue = String(value);
+        const entry = counts.get(stringValue) ?? { value: stringValue, count: 0 };
+        entry.count += 1;
+        counts.set(stringValue, entry);
+      }
+      return [...counts.values()]
+        .sort((a, b) => b.count - a.count || comparable(a.value, b.value))
+        .slice(0, limit);
+    }
+    case 'min':
+    case 'max': {
+      const candidates =
+        field.logicalType === 'date'
+          ? present.map((value) => temporalMs(value, field.type)).filter((value): value is number => value != null)
+          : numbers;
+      if (!candidates.length) return null;
+      return id === 'min' ? Math.min(...candidates) : Math.max(...candidates);
+    }
+    case 'min_length':
+    case 'max_length': {
+      const lengths = present.map((value) => Array.from(String(value)).length);
+      if (!lengths.length) return null;
+      return id === 'min_length' ? Math.min(...lengths) : Math.max(...lengths);
+    }
+    case 'mean':
+      return numbers.length ? numbers.reduce((sum, value) => sum + value, 0) / numbers.length : null;
+    case 'sum':
+      return numbers.length ? numbers.reduce((sum, value) => sum + value, 0) : null;
+    case 'stddev': {
+      if (numbers.length < 2) return null;
+      const mean = numbers.reduce((sum, value) => sum + value, 0) / numbers.length;
+      const variance = numbers.reduce((sum, value) => sum + (value - mean) ** 2, 0) / (numbers.length - 1);
+      return Math.sqrt(variance);
+    }
+    default:
+      throw new Error(`Unsupported mock profile metric: ${id}`);
+  }
+}
+
+/** Evaluate profiling directly over seed rows instead of unsupported profiling SQL. */
+function profileMockTables(tables: Table[], schema: Schema, options: ParsedProfileOptions): Profile {
+  const metrics = options.metrics.map((metric) => ({
+    metric,
+    definition: resolveMetric(metric, BUILTIN_METRICS),
+  }));
+
+  return {
+    models: schema.models.map((source) => {
+      const name = lastIdent(source.name).toLowerCase();
+      const table = tables.find((candidate) => candidate.name === name && !candidate.name.startsWith('INFORMATION_SCHEMA.'));
+      if (!table) throw new Error(`Table ${source.name} not found in mock seed`);
+      const model: Profile['models'][number] = { name: source.name, metrics: {}, columns: [] };
+      const add = (output: Record<string, JsonValue>, field?: MetricField) => {
+        for (const { metric, definition } of metrics) {
+          if (!definition.enable({ target: field ? 'column' : 'table', field })) continue;
+          const value = mockMetricValue(metric.id, metric, table.rows, field);
+          delete output[metric.id];
+          // A null top_values CASE means the metric was skipped; other SQL NULL
+          // metrics remain explicit null observations.
+          if (metric.id !== 'top_values' || value != null) output[metric.id] = value;
+        }
+      };
+
+      add(model.metrics);
+      model.columns = source.columns.map((column) => {
+        const field: MetricField = { ...column, logicalType: logicalType(column.type) };
+        const output: Record<string, JsonValue> = {};
+        add(output, field);
+        return { name: field.name, properties: { logicalType: field.logicalType }, metrics: output };
+      });
+      return model;
+    }),
+  };
 }
 
 export class MockQueryConnector implements QueryConnector {
@@ -603,7 +781,7 @@ export class MockQueryConnector implements QueryConnector {
           Object.fromEntries(Object.entries(row).map(([k, v]) => [k.toLowerCase(), v]))
         ),
         primaryKey: t.primaryKey
-          ? (Array.isArray(t.primaryKey) ? t.primaryKey[0]?.toLowerCase() : t.primaryKey.toLowerCase())
+          ? (Array.isArray(t.primaryKey) ? t.primaryKey : [t.primaryKey]).map((name) => name.toLowerCase())
           : undefined,
       }));
     this.tables = [...seeded, ...makeCatalog(dataset, seeded)];
@@ -613,6 +791,11 @@ export class MockQueryConnector implements QueryConnector {
   async query<T extends QueryResultRow = QueryResultRow>(sql: string): Promise<QueryResult & { rows: T[] }> {
     await this.connect();
     return this.run(sql) as QueryResult & { rows: T[] };
+  }
+
+  async profile(schema: Schema, options: ParsedProfileOptions): Promise<Profile> {
+    await this.connect();
+    return profileMockTables(this.tables, schema, options);
   }
 
   async close(): Promise<void> {
@@ -665,8 +848,10 @@ export class MockQueryConnector implements QueryConnector {
         arr.push(row);
         groups.set(key, arr);
       }
-      resultRows = [...groups.entries()].map(([, group]) => {
-        const out: Record<string, unknown> = {};
+      resultRows = [...groups.values()]
+        .filter((group) => matches(parsed.having, group[0], group))
+        .map((group) => {
+          const out: Record<string, unknown> = {};
         for (const item of parsed.items) {
           if (item.isStar) continue;
           if (item.expr.kind === 'call') {
@@ -698,8 +883,11 @@ export class MockQueryConnector implements QueryConnector {
             return out;
           })(),
         ];
-        resultRows = resultRows.filter((r) => Object.keys(r).length > 0);
+        resultRows = resultRows.filter(
+          (r) => Object.keys(r).length > 0 && matches(parsed.having, rows[0] ?? {}, rows)
+        );
       } else {
+        if (parsed.having.length) throw new Error('HAVING requires GROUP BY or an aggregate query');
         resultRows = rows.map((row) => {
           const out: Record<string, unknown> = {};
           for (const item of parsed.items) {

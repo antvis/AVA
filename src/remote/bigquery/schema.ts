@@ -26,7 +26,14 @@ interface ColumnRow {
 interface KeyRow {
   table_name: string;
   column_name: string;
+  constraint_name: string;
   ordinal_position: number;
+}
+
+interface ConstraintRow {
+  table_name: string;
+  constraint_name: string;
+  constraint_type: string;
 }
 
 function bool(value: unknown): boolean {
@@ -49,13 +56,19 @@ export async function getBigQuerySchema(
 
   if (tables.length === 0) return { models: [], relationships: [] };
 
-  const [columnRows, keyRows] = await Promise.all([
+  const [columnRows, keyRows, constraintRows] = await Promise.all([
     runQuery(`SELECT ${columnsProjection}\nFROM ${ds}.INFORMATION_SCHEMA.COLUMNS\nORDER BY table_name, ordinal_position`) as Promise<unknown>,
-    runQuery(`SELECT table_name, column_name, ordinal_position\nFROM ${ds}.INFORMATION_SCHEMA.KEY_COLUMN_USAGE\nORDER BY table_name, ordinal_position`) as Promise<unknown>,
+    runQuery(`SELECT table_name, column_name, constraint_name, ordinal_position\nFROM ${ds}.INFORMATION_SCHEMA.KEY_COLUMN_USAGE\nORDER BY table_name, ordinal_position`) as Promise<unknown>,
+    runQuery(`SELECT table_name, constraint_name, constraint_type\nFROM ${ds}.INFORMATION_SCHEMA.TABLE_CONSTRAINTS\nORDER BY table_name, constraint_name`) as Promise<unknown>,
   ]);
 
   const columnData = columnRows as unknown as ColumnRow[];
   const keyData = keyRows as unknown as KeyRow[];
+  const primaryConstraints = new Set(
+    (constraintRows as unknown as ConstraintRow[])
+      .filter((constraint) => constraint.constraint_type === 'PRIMARY KEY')
+      .map((constraint) => `${constraint.table_name}\u0000${constraint.constraint_name}`)
+  );
 
   return {
     models: tables.map(({ table_name }) => {
@@ -68,7 +81,10 @@ export async function getBigQuerySchema(
         }));
 
       const primaryColumns = keyData
-        .filter((key) => key.table_name === table_name)
+        .filter(
+          (key) =>
+            key.table_name === table_name && primaryConstraints.has(`${key.table_name}\u0000${key.constraint_name}`)
+        )
         .sort((a, b) => Number(a.ordinal_position) - Number(b.ordinal_position))
         .map((key) => key.column_name);
 
