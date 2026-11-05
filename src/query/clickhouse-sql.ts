@@ -48,10 +48,9 @@ export class ClickHouseSQLDialect implements QueryDialect {
       statements.length !== 1 ||
       statements[0].type !== 'SelectWithUnionQuery' ||
       findNodes(statements, 'Settings').length > 0 ||
-      [
-        ...findNodes(statements, 'SelectWithUnionQuery'),
-        ...findNodes(statements, 'SelectIntersectExceptQuery'),
-      ].some((node) => node.out_file !== undefined || node.format !== undefined)
+      [...findNodes(statements, 'SelectWithUnionQuery'), ...findNodes(statements, 'SelectIntersectExceptQuery')].some(
+        (node) => node.out_file !== undefined || node.format !== undefined
+      )
     ) {
       throw new Error('ClickHouse query must contain exactly one read-only SELECT without SETTINGS or output clauses');
     }
