@@ -89,6 +89,26 @@ describe.skipIf(process.env.AVA_CLICKHOUSE_TEST !== '1')('clickhouse/engine', ()
     });
   }, 30000);
 
+  it('preserves UNION defaults and explicit INTERSECT ALL semantics', async () => {
+    engine = new ClickHouseEngine(getLLMConfig());
+    await engine.load({
+      type: 'clickhouse',
+      options: {
+        url: `http://127.0.0.1:${Number(process.env.AVA_CLICKHOUSE_TEST_PORT ?? 13123)}`,
+        database: 'ava_clickhouse_test',
+        username: 'ava_test',
+        password: 'ava_test_password',
+        clickhouse_settings: { union_default_mode: 'DISTINCT', intersect_default_mode: 'DISTINCT' },
+      },
+    });
+    const union = await engine.execute('SELECT 1 AS value UNION SELECT 1 AS value; -- trailing comment');
+    expect(union.data).toEqual([{ value: 1 }]);
+    const intersect = await engine.execute(
+      'SELECT 1 AS value FROM numbers(2) INTERSECT ALL SELECT 1 AS value FROM numbers(2)'
+    );
+    expect(intersect.data).toEqual([{ value: 1 }, { value: 1 }]);
+  }, 30000);
+
   it('profiles the fixture tables', async () => {
     await load();
     const profile = await engine!.profile(await engine!.schema());

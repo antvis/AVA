@@ -1,6 +1,6 @@
 import { createClient } from '@clickhouse/client';
 
-import { ClickHouseQueryDialect } from '../../query/clickhouse';
+import { ClickHouseSQLDialect } from '../../query/clickhouse-sql';
 import { DEFAULT_METRICS, parseProfileOptions } from '../../util/profile';
 import { executionResult, inferQuerySchema, limitedQuery, maxRows } from '../../util/result';
 
@@ -50,10 +50,10 @@ export class ClickHouseEngine implements AnalysisEngine {
 
   private client: ClickHouseClient | null = null;
   private database: string | null = null;
-  private readonly queryDialect: ClickHouseQueryDialect;
+  private readonly dialect: ClickHouseSQLDialect;
 
   constructor(llmConfig: LLMConfig) {
-    this.queryDialect = new ClickHouseQueryDialect(llmConfig);
+    this.dialect = new ClickHouseSQLDialect(llmConfig);
   }
 
   async load(config: DataSourceConfig): Promise<void> {
@@ -83,12 +83,12 @@ export class ClickHouseEngine implements AnalysisEngine {
 
   async getDSL(query: string, dataModel: DataModel): Promise<TranslationResult> {
     if (!this.client) throw new Error('No data loaded. Please call source() first.');
-    return this.queryDialect.getDSL(query, dataModel);
+    return this.dialect.getDSL(query, dataModel);
   }
 
   async execute<T = Record<string, unknown>>(dsl: string, options?: ExecutionOptions): Promise<ExecutionResult<T>> {
     if (!this.client) throw new Error('No data loaded. Please call source() first.');
-    const query = await this.queryDialect.validateDSL(dsl, this.client);
+    const query = await this.dialect.validateDSL(dsl);
     const rows = await this.runQuery<T>(limitedQuery(query, maxRows(options)));
     return executionResult(rows, inferQuerySchema(rows), options);
   }
