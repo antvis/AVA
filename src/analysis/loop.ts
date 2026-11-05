@@ -12,7 +12,6 @@
 import { generateText } from 'ai';
 
 import { languageModel } from '../util/model';
-import { getLanguageId } from '../util/language';
 import { stringifyDataModel } from '../util/data-model';
 import { AnalysisEvent, AnalysisEventType, eventPair } from '../event';
 import { serializeError } from '../util/error';
@@ -180,7 +179,8 @@ export const loopAnalysis: AnalysisStrategy = async (query, config, { dataModel,
   const emitEvent = (type: AnalysisEventType, data: object, eventId: string) =>
     emit(new AnalysisEvent(type, data, { stepId, parentStepIds, eventId }));
 
-  const language = getLanguageId(engine);
+  const language = engine.dialect?.id ?? engine.language;
+  if (!language) throw new Error('Engine must provide a query dialect or a language id');
   const fence = language.endsWith('sql') ? 'sql' : language;
   const instructions = engine.dialect?.rules ?? engine.instructions;
   const basePrompt = loopPrompt(language, fence, config.includeSummary !== false, instructions);

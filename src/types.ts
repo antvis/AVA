@@ -651,9 +651,9 @@ export interface TranslationResult {
  * to allow alternative engines in the future.
  */
 export interface AnalysisEngine {
-  /** SQL engines expose their selected dialect directly. */
+  /** Built-in engines expose their selected query language directly. */
   readonly dialect?: QueryDialect;
-  /** Interpreter and custom engine language id when no SQL dialect is provided. */
+  /** Custom engine language id when no query dialect is provided. */
   readonly language?: QueryLanguage;
   /** Environment bindings and result conventions needed when generating code. */
   readonly instructions?: string;
@@ -935,15 +935,15 @@ export type AnalysisStrategy = (
 ) => Promise<AnalysisResponse>;
 
 /**
- * Turns a natural-language query into a database-specific DSL.
+ * Generates and validates code for one query language.
  */
 export interface QueryDialect {
   readonly id: string;
-  /** SQL syntax and read-only rules, independent of the model response format. */
+  /** Language rules and execution bindings, independent of the model response format. */
   readonly rules: string;
-  /** Generate the executable DSL (SQL) for a natural-language query. */
+  /** Generate executable code for a natural-language query. */
   getDSL(query: string, dataModel: DataModel): Promise<TranslationResult>;
-  /** Validate one read-only statement and return the DSL to execute, normalized if needed. */
+  /** Validate the DSL without executing it, preserving its source semantics. */
   validateDSL(dsl: string): Promise<string>;
 }
 

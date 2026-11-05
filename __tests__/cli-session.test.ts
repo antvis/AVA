@@ -125,14 +125,18 @@ describe('dataset engine and language', () => {
       language,
       ...(instructions ? { instructions } : {}),
     });
-    if (instance!.dialect) {
+    if (language.endsWith('sql')) {
       expect(description.instructions).toContain('read-only SELECT');
       expect(description.instructions).not.toContain('Return only SQL text');
     }
     expect(discover).toHaveBeenCalledOnce();
     if (engine === 'python') {
-      expect(instance!.instructions).toContain('tables');
-      expect(instance!.instructions).toContain('result');
+      expect(instance!.dialect!.rules).toContain('tables');
+      expect(instance!.dialect!.rules).toContain('result');
+    }
+    if (engine === 'javascript') {
+      expect(instance!.dialect!.rules).toContain('data');
+      expect(instance!.dialect!.rules).toContain('stat');
     }
   });
 

@@ -73,6 +73,15 @@ describe('python/engine', () => {
     await expect(engine.execute('result = df')).resolves.toEqual(answer);
   });
 
+  it('rejects invalid Python before calling the executor', async () => {
+    const execute = vi.fn();
+    const engine = new PythonEngine({ model: 'unused' }, { execute });
+    await engine.load(source);
+    await expect(engine.execute('result = (')).rejects.toThrow();
+    expect(execute).not.toHaveBeenCalled();
+    await engine.dispose();
+  });
+
   it('rejects invalid executor results, propagates failures and times out stalled execution', async () => {
     const execute = vi.fn().mockResolvedValue(metadata);
     const engine = new PythonEngine({ model: 'unused' }, { execute, queryTimeoutMs: 20 });

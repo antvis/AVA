@@ -468,7 +468,7 @@ it.each([
 ])('uses language id %s and links the fallback to the previous step', async (language, fence, dsl) => {
   const { runtime, engine, doGenerate, model, emit } = setup();
   const instructions = 'Use the supplied bindings and return the supported result shape.';
-  runtime.engine = language.endsWith('sql')
+  runtime.engine = language !== 'json'
     ? { ...runtime.engine, dialect: { id: language, rules: instructions, getDSL: engine.getDSL, validateDSL: async (sql) => sql }, instructions: 'Unused interpreter instructions.' }
     : { ...runtime.engine, dialect: undefined, language, instructions };
   doGenerate
@@ -503,7 +503,7 @@ it('requires an execution language id before calling the loop model', async () =
   const { runtime, doGenerate } = setup();
   runtime.engine = { ...runtime.engine, dialect: undefined, language: undefined };
   await expect(analyze('Question', { strategy: { type: 'loop' } }, runtime)).rejects.toThrow(
-    'Engine must provide a SQL dialect or a language id'
+    'Engine must provide a query dialect or a language id'
   );
   expect(doGenerate).not.toHaveBeenCalled();
 });

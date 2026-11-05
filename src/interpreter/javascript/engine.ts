@@ -6,18 +6,14 @@
  * browser-friendly, but only supports csv/json/text sources.
  */
 
-import { generateText } from 'ai';
-
-import { languageModel } from '../../util/model';
+import { JavaScriptDialect } from '../../query/javascript';
 import { extractDataSchema } from '../../util/schema';
-import { stringifyDataModel } from '../../util/data-model';
 import { executionResult, inferQuerySchema } from '../../util/result';
 import { DEFAULT_METRICS, parseProfileOptions } from '../../util/profile';
 
 import { profileTables } from './profile';
 import { executeCode } from './sandbox';
 import { loadSource } from './loaders';
-import { STAT_OPS_PROMPT, STAT_OPS_EXAMPLE } from './stat';
 
 import type {
   TranslationResult,
@@ -33,11 +29,13 @@ import type {
 } from '../../types';
 
 export class JavaScriptEngine implements AnalysisEngine {
-  readonly language = 'javascript';
+  readonly dialect: JavaScriptDialect;
 
   private data: any[] | null = null;
 
-  constructor(private readonly llmConfig: LLMConfig) {}
+  constructor(private readonly llmConfig: LLMConfig) {
+    this.dialect = new JavaScriptDialect(llmConfig);
+  }
 
   async load(config: DataSourceConfig): Promise<void> {
     this.data = null;
@@ -72,34 +70,7 @@ export class JavaScriptEngine implements AnalysisEngine {
       throw new Error('No data loaded. Please call source() first.');
     }
 
-    const dataset = stringifyDataModel(dataModel);
-
-    const prompt = `You are a data analysis expert. Given the following dataset information and user query, generate JavaScript code to answer the question.
-
-Dataset Information:
-${dataset}
-
-User Query: ${query}
-
-${STAT_OPS_PROMPT}
-
-Generate ONLY the JavaScript code without any explanation. Store the final result in a variable named "result".
-
-${STAT_OPS_EXAMPLE}
-
-Now generate the code:`;
-
-    const { text, usage } = await generateText({
-      model: languageModel(this.llmConfig),
-      maxRetries: this.llmConfig.maxRetries ?? 3,
-      prompt,
-    });
-
-    const dsl = text
-      .trim()
-      .replace(/^```(?:javascript|js)?\s*|\s*```$/gi, '')
-      .trim();
-    return { dsl, usage };
+    return this.dialect.getDSL(query, dataModel);
   }
 
   async execute<T = Record<string, unknown>>(code: string, options?: ExecutionOptions): Promise<ExecutionResult<T>> {
@@ -107,7 +78,8 @@ Now generate the code:`;
       throw new Error('No data loaded. Please call source() first.');
     }
 
-    const result = await executeCode(structuredClone(this.data), code);
+    const validated = await this.dialect.validateDSL(code);
+    const result = await executeCode(structuredClone(this.data), validated);
     const rows = (Array.isArray(result) ? result : [{ value: result }]) as T[];
     return executionResult(rows, inferQuerySchema(rows), options);
   }
