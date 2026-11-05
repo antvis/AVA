@@ -36,7 +36,6 @@ export class PythonEngine implements AnalysisEngine {
   private readonly executor: ReturnType<typeof createPythonExecutor>;
 
   constructor(llmConfig: LLMConfig, engineOptions: PythonEngineOptions = {}) {
-    this.dialect = new PythonDialect(llmConfig);
     if (engineOptions.execute !== undefined && typeof engineOptions.execute !== 'function') {
       throw new Error('Python execute must be a function');
     }
@@ -47,6 +46,11 @@ export class PythonEngine implements AnalysisEngine {
       .max(2_147_483_647)
       .parse(engineOptions.queryTimeoutMs ?? DEFAULT_QUERY_TIMEOUT_MS);
     this.executor = engineOptions.execute ?? createPythonExecutor(this.timeoutMs);
+    this.dialect = new PythonDialect(llmConfig, (script) =>
+      runWithTimeout(this.executor(script, 64 * 1024), this.timeoutMs, {
+        onTimeout: () => new Error(`Python validation timed out after ${this.timeoutMs}ms`),
+      })
+    );
   }
 
   async load(config: DataSourceConfig): Promise<void> {

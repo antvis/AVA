@@ -35,7 +35,7 @@ describe('interpreter/javascript/engine', () => {
     const schema = await engine.schema();
     expect(schema.models[0].columns).toEqual([{ name: 'value', type: 'number' }]);
     expect((await engine.execute('const result = stat.sum(data, "value");')).data).toEqual([{ value: 30 }]);
-    await expect(engine.execute('const result = (')).rejects.toThrow();
+    await expect(engine.execute('const result = (')).rejects.toThrow('Failed to execute data code');
     const result = await engine.execute('const result = data;', { maxRows: 1 });
     expect(result.data).toEqual([{ value: 10 }]);
     expect(result.truncated).toBe(true);

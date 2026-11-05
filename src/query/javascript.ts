@@ -88,10 +88,6 @@ Return only executable JavaScript code, without explanation or Markdown.`,
 
   async validateDSL(code: string): Promise<string> {
     if (!code.trim()) throw new Error('JavaScript query must contain code');
-    // Match the synchronous script context used by the engine, without executing user code.
-    // https://github.com/acornjs/acorn/tree/master/acorn#interface
-    const { parse } = await import('acorn');
-    parse(code, { ecmaVersion: 'latest', sourceType: 'script' });
     return code;
   }
 }

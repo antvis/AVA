@@ -57,10 +57,11 @@ export interface PythonEngineOptions {
   /**
    * Override local python3 execution with a custom environment. Local execution is not sandboxed.
    * Run the complete Python script and return its JSON output as ExecutionResult.
-   * Source loading and result limits are included in the script; configure remote execution deadlines separately.
+   * Each query first sends a compile-only validation script, then the source-loading and result script.
+   * Configure remote execution deadlines separately.
    */
   execute?: (code: string) => Promise<ExecutionResult>;
-  /** Client wait limit and local process execution deadline. Default 30000 ms. */
+  /** Wait and local process deadline for each validation or execution call. Default 30000 ms. */
   queryTimeoutMs?: number;
 }
 

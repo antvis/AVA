@@ -6,15 +6,7 @@ import { PythonDialect } from '../../src/query/python';
 
 vi.mock('ai', () => ({ generateText: vi.fn() }));
 vi.mock('../../src/util/model', () => ({ languageModel: vi.fn(() => 'test-model') }));
-const parserState = vi.hoisted(() => ({ javascript: 0, python: 0 }));
-vi.mock('acorn', async (importOriginal) => {
-  parserState.javascript += 1;
-  return importOriginal();
-});
-vi.mock('@lezer/python', async (importOriginal) => {
-  parserState.python += 1;
-  return importOriginal();
-});
+const executePython = vi.fn().mockResolvedValue({ data: [], schema: [], rowCount: 0 });
 
 afterEach(() => vi.clearAllMocks());
 
@@ -24,35 +16,35 @@ describe.each([
     create: () => new JavaScriptDialect({ model: 'test', maxRetries: 0 }),
     fence: 'js',
     code: "const result = '```';",
-    valid: [
+    sources: [
       '// 中文😀\nconst result = `value: ${data[0]?.value ?? 0}`;',
-      'const {value} = data[0];\nconst result = [1, 2].map(n => n + value);',
+      'const result =',
     ],
-    invalid: ['', 'const result =', 'return 1;', 'export const result = 1;'],
+    invalid: ['', ' \n\t'],
     notExecuted: "throw new Error('must not execute');",
   },
   {
     id: 'python' as const,
-    create: () => new PythonDialect({ model: 'test', maxRetries: 0 }),
+    create: () => new PythonDialect({ model: 'test', maxRetries: 0 }, executePython),
     fence: 'py',
     code: "result = '```'",
-    valid: [
+    sources: [
       "# 中文😀\ndef total(frame):\n    return frame['value'].sum()\nresult = total(df)",
       "   # comment\nresult = '''中文😀\n  literal indentation'''\n",
     ],
-    invalid: ['', 'result = (', 'if True\n    result = 1', 'if True:\nresult = 1', '\n  result = 1', "result = '\0'"],
+    invalid: ['', "result = '\0'"],
     notExecuted: "raise RuntimeError('must not execute')",
   },
-])('$id query language', ({ id, create, fence, code, valid, invalid, notExecuted }) => {
+])('$id query language', ({ id, create, fence, code, sources, invalid, notExecuted }) => {
   const dialect = create();
 
-  it('loads the parser only for validation', async () => {
+  it('generates code without invoking the Python executor', async () => {
     vi.mocked(generateText).mockResolvedValue({ text: code, finishReason: 'stop' } as never);
-    expect(parserState[id]).toBe(0);
+    expect(executePython).not.toHaveBeenCalled();
     await expect(dialect.getDSL('one', { models: [] })).resolves.toMatchObject({ dsl: code });
-    expect(parserState[id]).toBe(0);
+    expect(executePython).not.toHaveBeenCalled();
     await dialect.validateDSL(code);
-    expect(parserState[id]).toBe(1);
+    expect(executePython).toHaveBeenCalledTimes(id === 'python' ? 1 : 0);
   });
 
   it('extracts code and preserves rules, context and usage', async () => {
@@ -75,15 +67,40 @@ describe.each([
     await expect(dialect.getDSL('one', { models: [] })).rejects.toThrow(error);
   });
 
-  it.each(valid)('preserves valid source, literals, comments and indentation: %s', async (source) => {
+  it.each(sources)('preserves source, literals, comments and indentation: %s', async (source) => {
     await expect(dialect.validateDSL(source)).resolves.toBe(source);
   });
 
-  it('parses without executing user code', async () => {
+  it('checks input without executing user code', async () => {
     await expect(dialect.validateDSL(notExecuted)).resolves.toBe(notExecuted);
   });
 
   it.each(invalid)('rejects invalid or empty code: %s', async (source) => {
     await expect(dialect.validateDSL(source)).rejects.toThrow();
   });
+});
+
+it('propagates failures from the configured Python compiler', async () => {
+  const failure = new Error('SyntaxError: invalid syntax');
+  executePython.mockRejectedValueOnce(failure);
+  const dialect = new PythonDialect({ model: 'test' }, executePython);
+  await expect(dialect.validateDSL('result = (')).rejects.toBe(failure);
+  expect(executePython).toHaveBeenCalledOnce();
+  expect(executePython.mock.calls[0][0]).toContain('compile(json.loads(');
+});
+
+describe.skipIf(process.env.AVA_PYTHON_LOCAL_TEST !== '1')('Python official compiler', () => {
+  const dialect = new PythonDialect({ model: 'unused' });
+
+  it('preserves source without executing code or resolving data bindings', async () => {
+    const code = "# 中文😀\ndef total(frame):\n    return frame['value'].sum()\nresult = total(df)\nraise RuntimeError('must not execute')\n";
+    await expect(dialect.validateDSL(code)).resolves.toBe(code);
+  });
+
+  it.each(['result = (', 'if True:\nresult = 1', '  result = 1', 'return 1'])(
+    'rejects code that Python cannot compile: %s',
+    async (code) => {
+      await expect(dialect.validateDSL(code)).rejects.toThrow(/SyntaxError|IndentationError/);
+    }
+  );
 });

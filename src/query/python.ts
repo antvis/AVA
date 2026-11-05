@@ -3,7 +3,7 @@ import { generateText } from 'ai';
 import { languageModel } from '../util/model';
 import { stringifyDataModel } from '../util/data-model';
 
-import type { DataModel, LLMConfig, QueryDialect, TranslationResult } from '../types';
+import type { DataModel, LLMConfig, PythonEngineOptions, QueryDialect, TranslationResult } from '../types';
 
 export class PythonDialect implements QueryDialect {
   readonly id = 'python';
@@ -18,7 +18,7 @@ DataFrame and Series indexes are not returned; use reset_index() when index valu
 Each execution starts from fresh input data; variables and mutations do not persist between calls.
 Do not read files, access the network, install packages, or print the answer.`;
 
-  constructor(private readonly llmConfig: LLMConfig) {}
+  constructor(private readonly llmConfig: LLMConfig, private readonly execute?: PythonEngineOptions['execute']) {}
 
   async getDSL(query: string, dataModel: DataModel): Promise<TranslationResult> {
     const { text, usage, finishReason } = await generateText({
@@ -46,17 +46,17 @@ Return only executable Python code, without explanation or Markdown.`,
   async validateDSL(code: string): Promise<string> {
     if (!code.trim()) throw new Error('Python query must contain code');
     if (code.includes('\0')) throw new Error('Python query contains a NUL character');
-    // Strict mode raises on syntax errors rather than accepting a recovered editor tree.
-    // https://github.com/lezer-parser/python
-    // https://lezer.codemirror.net/docs/ref/#lr.ParserConfig.strict
-    const { parser } = await import('@lezer/python');
-    const tree = parser.configure({ strict: true }).parse(code);
-    // The grammar tolerates initial indentation; Python top-level statements start at column zero.
-    // https://docs.python.org/3/reference/lexical_analysis.html#indentation
-    for (let node = tree.topNode.firstChild; node; node = node.nextSibling) {
-      if (!node.type.is('Statement')) continue;
-      const prefix = code.slice(code.lastIndexOf('\n', node.from - 1) + 1, node.from);
-      if (/^[\t ]+$/.test(prefix)) throw new Error('Python query has unexpected top-level indentation');
+    // Compile in the execution environment without running the user's code or loading source data.
+    // https://docs.python.org/3/library/functions.html#compile
+    const script = `import json
+compile(json.loads(${JSON.stringify(JSON.stringify(code))}), '<ava-query>', 'exec')
+print('{"data":[],"schema":[],"rowCount":0}')
+`;
+    if (this.execute) {
+      await this.execute(script);
+    } else {
+      const { createPythonExecutor } = await import('../interpreter/python/util/execute');
+      await createPythonExecutor(30_000)(script, 64 * 1024);
     }
     return code;
   }

@@ -9,6 +9,7 @@ const source = { type: 'json' as const, options: { data: [{ value: 2 }] } };
 const table = { name: 'data', columns: [{ name: 'value', type: 'int64' }], tableReference: { table: 'data' } };
 const metadata = { data: [table], schema: [], rowCount: 1 };
 const answer = { data: [{ value: 2 }], schema: [{ name: 'value', type: 'int64' }], rowCount: 1 };
+const compiled = { data: [], schema: [], rowCount: 0 };
 
 afterEach(() => {
   vi.useRealTimers();
@@ -38,7 +39,7 @@ describe('python/engine', () => {
   );
 
   it('initializes the default executor once and preserves per-call buffer limits', async () => {
-    const execute = vi.fn().mockResolvedValueOnce(metadata).mockResolvedValue(answer);
+    const execute = vi.fn().mockResolvedValueOnce(compiled).mockResolvedValueOnce(metadata).mockResolvedValue(answer);
     const createExecutor = vi.spyOn(pythonExecutor, 'createPythonExecutor').mockReturnValue(execute);
     const engine = new PythonEngine({ model: 'unused' }, { queryTimeoutMs: 1234 });
     expect(createExecutor).toHaveBeenCalledExactlyOnceWith(1234);
@@ -47,7 +48,11 @@ describe('python/engine', () => {
     await engine.execute('result = df', { maxResultBytes: 100 });
     await engine.execute('result = df', { maxResultBytes: 200 });
     expect(createExecutor).toHaveBeenCalledTimes(1);
-    expect(execute.mock.calls.map((call) => call[1])).toEqual([2 * 1024 * 1024, 1024 * 1024 + 100, 1024 * 1024 + 200]);
+    expect(execute.mock.calls.map((call) => call[1])).toEqual([
+      64 * 1024, 2 * 1024 * 1024,
+      64 * 1024, 1024 * 1024 + 100,
+      64 * 1024, 1024 * 1024 + 200,
+    ]);
 
     new PythonEngine({ model: 'unused' }, { execute });
     expect(createExecutor).toHaveBeenCalledTimes(1);
@@ -69,16 +74,18 @@ describe('python/engine', () => {
     await engine.dispose();
     await expectUnloaded();
     await engine.load(source);
-    execute.mockResolvedValueOnce(answer);
+    execute.mockResolvedValue(answer);
     await expect(engine.execute('result = df')).resolves.toEqual(answer);
   });
 
-  it('rejects invalid Python before calling the executor', async () => {
-    const execute = vi.fn();
+  it('stops before data execution when the configured Python compiler rejects code', async () => {
+    const execute = vi.fn().mockRejectedValueOnce(new Error('SyntaxError: invalid syntax'));
     const engine = new PythonEngine({ model: 'unused' }, { execute });
     await engine.load(source);
     await expect(engine.execute('result = (')).rejects.toThrow();
-    expect(execute).not.toHaveBeenCalled();
+    expect(execute).toHaveBeenCalledOnce();
+    expect(execute.mock.calls[0][0]).toContain('compile(json.loads(');
+    expect(execute.mock.calls[0][0]).not.toContain('import pandas');
     await engine.dispose();
   });
 
@@ -86,16 +93,20 @@ describe('python/engine', () => {
     const execute = vi.fn().mockResolvedValue(metadata);
     const engine = new PythonEngine({ model: 'unused' }, { execute, queryTimeoutMs: 20 });
     await engine.load(source);
-    execute.mockResolvedValueOnce({ ...answer, data: [1] });
+    execute.mockResolvedValueOnce(compiled).mockResolvedValueOnce({ ...answer, data: [1] });
     await expect(engine.execute('result = 1')).rejects.toThrow();
     const failure = new Error('executor failed');
-    execute.mockRejectedValueOnce(failure);
+    execute.mockResolvedValueOnce(compiled).mockRejectedValueOnce(failure);
     await expect(engine.execute('result = 1')).rejects.toBe(failure);
     vi.useFakeTimers();
-    execute.mockReturnValueOnce(new Promise(() => {}));
+    execute.mockResolvedValueOnce(compiled).mockReturnValueOnce(new Promise(() => {}));
     const pending = expect(engine.execute('result = 1')).rejects.toThrow('timed out after 20ms');
     await vi.advanceTimersByTimeAsync(20);
     await pending;
+    execute.mockReturnValueOnce(new Promise(() => {}));
+    const validation = expect(engine.execute('result = 1')).rejects.toThrow('validation timed out after 20ms');
+    await vi.advanceTimersByTimeAsync(20);
+    await validation;
   });
 });
 
@@ -171,8 +182,8 @@ describe('python/engine metadata', () => {
       const computed = await engine.profile(input, { metrics: ['row_count'] });
       expect(computed).toEqual({ models: tables });
       expect(input.models[0].uniqueKeys).toEqual(['value']);
-      expect(execute).toHaveBeenCalledOnce();
-      expect(execute.mock.calls[0][0]).not.toContain('def field_type');
+      expect(execute).toHaveBeenCalledTimes(2);
+      expect(execute.mock.calls[1][0]).not.toContain('def field_type');
       execute.mockResolvedValue({ schema: [{ name: 'value' }], data: [{ value: 2 }], rowCount: 1 });
       expect((await engine.execute('result = df')).data).toEqual([{ value: 2 }]);
     } finally {
