@@ -457,15 +457,15 @@ it('wraps loop queries in steps across exploration, refinement, and confirmation
 });
 
 it.each([
-  ['duckdb-sql', 'sql', 'SELECT 1'],
+  ['duckdb-sql', '', 'SELECT 1'],
   ['clickhouse-sql', 'sql', 'SELECT 1'],
-  ['postgresql', 'sql', 'SELECT 1'],
-  ['tsql', 'sql', 'SELECT 1'],
-  ['custom-sql', 'sql', 'SELECT 1'],
+  ['postgresql', 'postgresql', 'SELECT 1'],
+  ['tsql', 'tsql', 'SELECT 1'],
+  ['custom-sql', '', 'SELECT 1'],
   ['python', 'python', "result = [{'value': 1}]"],
-  ['javascript', 'javascript', 'const result = [{value: 1}];'],
+  ['javascript', 'js', 'const result = [{value: 1}];'],
   ['json', 'json', '{"metric":"total_revenue"}'],
-])('uses language id %s and links the fallback to the previous step', async (language, fence, dsl) => {
+])('uses dialect %s independently of code-block labels in the final attempt', async (language, label, dsl) => {
   const { runtime, engine, doGenerate, model, emit } = setup();
   const rules = 'Use the supplied bindings and return the supported result shape.';
   runtime.engine = {
@@ -474,7 +474,7 @@ it.each([
   };
   doGenerate
     .mockResolvedValueOnce(response('[REFINE] Need an answer query.'))
-    .mockResolvedValueOnce(response(`[SQL]\n\`\`\`${fence}\n${dsl}\n\`\`\``));
+    .mockResolvedValueOnce(response(`[SQL]\n\`\`\`${label}\n${dsl}\n\`\`\``));
 
   await analyze('Give me one', { strategy: { type: 'loop', maxSteps: 1 } }, runtime);
 
@@ -494,9 +494,29 @@ it.each([
     usage: { inputTokens: 10, outputTokens: 5 },
     finalAttempt: true,
     action: 'SQL',
-    text: `\`\`\`${fence}\n${dsl}\n\`\`\``,
+    text: `\`\`\`${label}\n${dsl}\n\`\`\``,
   });
   expectStepContexts(events);
+});
+
+it('extracts an unlabeled code block without truncating backticks inside the code', async () => {
+  const { runtime, engine, doGenerate } = setup();
+  const dsl = "SELECT '```' AS value";
+  doGenerate.mockResolvedValueOnce(response(`[SQL]\n\`\`\`\n${dsl}\n\`\`\``));
+
+  await analyze('Give me one', { strategy: { type: 'loop', maxSteps: 1 } }, runtime);
+
+  expect(engine.execute).toHaveBeenCalledExactlyOnceWith(dsl, expect.any(Object));
+});
+
+it.each([0, 1])('rejects multiple answer code blocks regardless of label at maxSteps=%s', async (maxSteps) => {
+  const { runtime, engine, doGenerate } = setup();
+  doGenerate.mockResolvedValueOnce(response('[SQL]\n```sql\nSELECT 1\n```\n```text\nextra\n```'));
+
+  await expect(analyze('Give me one', { strategy: { type: 'loop', maxSteps } }, runtime)).rejects.toThrow(
+    'exactly one code block'
+  );
+  expect(engine.execute).not.toHaveBeenCalled();
 });
 
 it('requires a non-empty dialect id before calling the loop model', async () => {

@@ -22,14 +22,11 @@ import type { SerializedError } from '../util/error';
 
 const DEFAULT_MAX_STEPS = 12;
 
-function codeBlocks(response: string, language: string): string[] {
-  const escaped = language.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-  return [...response.matchAll(new RegExp('```' + escaped + '\\s*([\\s\\S]*?)```', 'gi'))].map((match) =>
-    match[1].trim()
-  );
+function codeBlocks(response: string): string[] {
+  return [...response.matchAll(/^[ \t]*```[^\r\n`]*\r?\n([\s\S]*?)^[ \t]*```[ \t]*\r?$/gm)].map((match) => match[1].trim());
 }
 
-function loopPrompt(language: QueryLanguage, fence: string, includeSummary: boolean, rules: string): string {
+function loopPrompt(language: QueryLanguage, includeSummary: boolean, rules: string): string {
   return `You are a data analysis agent. Answer the user's question by querying the provided data source.
 
 # 1. RESPONSE PROTOCOL
@@ -44,9 +41,9 @@ Every response is one machine-readable action.
 
 Action-specific syntax:
 
-- [EXPLORE] must contain at least one fenced ${fence} code block. Multiple blocks are allowed.
+- [EXPLORE] must contain at least one code block. Multiple blocks are allowed.
 - [REFINE] must contain reasoning and a next-step plan, but no executable code block.
-- [SQL] must contain exactly one fenced ${fence} code block and no other code block.
+- [SQL] must contain exactly one code block.
 - [CONFIRM] must contain verification${
     includeSummary ? ' and a concise conclusion' : ' only, without a summary or conclusion'
   }, but no executable code block.
@@ -96,7 +93,7 @@ Format:
 
 [EXPLORE]
 -- Purpose: <uncertainty being tested>
-\`\`\`${fence}
+\`\`\`
 <exploration query>
 \`\`\`
 
@@ -130,7 +127,7 @@ Before writing the statement, verify that:
 Format:
 
 [SQL]
-\`\`\`${fence}
+\`\`\`
 <one answer query>
 \`\`\`
 
@@ -181,8 +178,7 @@ export const loopAnalysis: AnalysisStrategy = async (query, config, { dataModel,
 
   const language = engine.dialect.id;
   if (!language) throw new Error('Query dialect must provide a non-empty id');
-  const fence = language.endsWith('sql') ? 'sql' : language;
-  const basePrompt = loopPrompt(language, fence, config.includeSummary !== false, engine.dialect.rules);
+  const basePrompt = loopPrompt(language, config.includeSummary !== false, engine.dialect.rules);
   const dataset = stringifyDataModel(dataModel);
   const transcript: string[] = [];
   let sql: string | undefined;
@@ -225,10 +221,10 @@ export const loopAnalysis: AnalysisStrategy = async (query, config, { dataModel,
       if (!action) throw new Error('Loop response must begin with [EXPLORE], [REFINE], [SQL], or [CONFIRM]');
 
       if (action === 'EXPLORE' || action === 'SQL') {
-        queries = codeBlocks(text, fence);
+        queries = codeBlocks(text);
         if (queries.length === 0 || (action === 'SQL' && queries.length !== 1)) {
           throw new Error(
-            `Loop ${action} response must contain ${action === 'SQL' ? 'exactly one' : 'at least one'} ${fence} code block`
+            `Loop ${action} response must contain ${action === 'SQL' ? 'exactly one' : 'at least one'} code block`
           );
         }
       }
@@ -349,9 +345,9 @@ export const loopAnalysis: AnalysisStrategy = async (query, config, { dataModel,
 
     usage = responseUsage;
     finalText = responseText.trim();
-    const proposals = codeBlocks(finalText, fence);
+    const proposals = codeBlocks(finalText);
     if (!finalText.startsWith('[SQL]') || proposals.length !== 1) {
-      throw new Error(`Loop final fallback response must contain exactly one ${fence} code block`);
+      throw new Error('Loop final fallback response must contain exactly one code block');
     }
     finalText = finalText.replace(/^\[SQL\]\s*/, '');
 
