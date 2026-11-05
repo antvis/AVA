@@ -47,13 +47,13 @@ describe.skipIf(!sqlserverEnabled)('SQL Server actual CLI sessions', () => {
   it.each(['query', 'schema'])('loads only T-SQL parsers on demand for %s', async (operation) => {
     const { stdout } = await execute(process.execPath, ['-e', `
       require('./lib');
-      const { SQLServerQueryDialect } = require('./lib/query/sqlserver');
+      const { TSQLDialect } = require('./lib/query/tsql');
       const { getSQLServerSchema } = require('./lib/remote/sqlserver/schema');
       const grammars = () => Object.keys(require.cache).filter(file => file.includes('grammar-output'));
       const before = grammars().length;
       (async () => {
         if (process.argv[1] === 'query') {
-          await new SQLServerQueryDialect({ model: 'unused' }).validateDSL('SELECT 1');
+          await new TSQLDialect({ model: 'unused' }).validateDSL('SELECT 1');
         } else {
           await getSQLServerSchema(async () => [{
             kind: 'view', table_name: '[dbo].[example]', source_table: 'example',
