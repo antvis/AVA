@@ -10,7 +10,7 @@ import { DuckDBInstance } from '@duckdb/node-api';
 import { DuckDBEngine } from '../../src/duckdb';
 import { buildDataModel } from '../../src/util/data-model';
 import { QueryTimeoutError } from '../../src/duckdb/engine';
-import { DuckDBQueryDialect } from '../../src/query/duckdb';
+import { DuckDBSQLDialect } from '../../src/query/duckdb-sql';
 import { maxRows } from '../../src/util/result';
 import { getLLMConfig, skipLLMTests } from '../test-utils';
 
@@ -36,7 +36,7 @@ describe('DuckDBEngine', () => {
   });
 
   it('uses caller-supplied context without retaining schema or profile', async () => {
-    const generate = vi.spyOn(DuckDBQueryDialect.prototype, 'getDSL').mockResolvedValue({ dsl: 'SELECT 1' });
+    const generate = vi.spyOn(DuckDBSQLDialect.prototype, 'getDSL').mockResolvedValue({ dsl: 'SELECT 1' });
     const compute = vi.spyOn(engine, 'profile');
     await engine.load({ type: 'json', options: { data: [{ value: 1 }] } });
     const schema = await engine.schema();
@@ -118,7 +118,9 @@ describe('DuckDBEngine', () => {
   it('should bound large query results', async () => {
     await engine.load({ type: 'json', options: { data: Array.from({ length: 5 }, (_, id) => ({ id })) } });
 
-    const result = await engine.execute<{ id: number }>('SELECT * FROM data ORDER BY id', { maxRows: 2 });
+    const result = await engine.execute<{ id: number }>('SELECT * FROM data ORDER BY id; -- trailing comment', {
+      maxRows: 2,
+    });
 
     expect(result.data).toEqual([{ id: 0 }, { id: 1 }]);
     expect(result.truncated).toBe(true);
@@ -191,10 +193,10 @@ describe('DuckDBEngine', () => {
 
     await expect(engine.execute('SELECT * FROM data; SELECT 1')).rejects.toThrow('exactly one');
     await expect(engine.execute('CREATE TABLE blocked (a INTEGER)')).rejects.toThrow(
-      'only read-only SELECT statements'
+      'read-only SELECT statement'
     );
     await expect(engine.execute('SELECT * FROM data; CREATE TABLE blocked_too (a INTEGER)')).rejects.toThrow(
-      'only read-only SELECT statements'
+      'read-only SELECT statement'
     );
   });
 

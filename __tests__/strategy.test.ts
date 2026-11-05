@@ -3,7 +3,7 @@ import { MockLanguageModelV4 } from 'ai/test';
 import { createOpenAI } from '@ai-sdk/openai';
 
 import { analyze } from '../src/analysis';
-import { DuckDBQueryDialect } from '../src/query/duckdb';
+import { DuckDBSQLDialect } from '../src/query/duckdb-sql';
 
 import type { AnalysisEngine } from '../src/types';
 import type { AnalysisEvent } from '../src/event';
@@ -256,7 +256,7 @@ describe('directAnalysis', () => {
     const model = new MockLanguageModelV4({
       doGenerate: vi.fn().mockResolvedValueOnce(response('BAD SQL')).mockResolvedValueOnce(response('SELECT 1')),
     });
-    const dialect = new DuckDBQueryDialect({ model });
+    const dialect = new DuckDBSQLDialect({ model });
     engine.getDSL.mockImplementation((query, dataModel) => dialect.getDSL(query, dataModel));
     engine.execute.mockRejectedValueOnce(new Error('Invalid SQL'));
 
@@ -289,7 +289,7 @@ describe('directAnalysis', () => {
         return result;
       },
     });
-    const dialect = new DuckDBQueryDialect({ model });
+    const dialect = new DuckDBSQLDialect({ model });
     engine.getDSL.mockImplementation((query, dataModel) => dialect.getDSL(query, dataModel));
     const firstEmit = vi.fn();
     const secondEmit = vi.fn();
