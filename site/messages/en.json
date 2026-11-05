@@ -485,6 +485,10 @@
       "title": "Inspect your data",
       "description": "Let AVA discover the structure, inspect statistics when useful, then add business meaning."
     },
+    "data_feishu-bitable": {
+      "title": "Lark Base setup",
+      "description": "Create an app, grant document access, and load data from Lark Base with an illustrated guide."
+    },
     "data_semantic": {
       "title": "Define data semantics",
       "description": "Write business definitions, model mappings, and reusable measures, with a worked sales example."

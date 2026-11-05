@@ -436,6 +436,8 @@ await ava.source({
 
 Use `type: 'feishu-bitable'` with the DuckDB engine in Node.js. Rows are exposed as one read-only view named `data`.
 
+For first-time setup, follow the illustrated [Lark Base setup guide](/documentation/data/feishu-bitable/) to create an app, grant access, bind credentials, and verify the data with CLI / SDK examples and troubleshooting.
+
 ```typescript
 await ava.source({
   type: 'feishu-bitable',
@@ -449,7 +451,7 @@ await ava.source({
 
 Provide `url`, or both `appToken` and `tableId`, along with `appId` and `appSecret`. The CLI also reads credentials from `AVA_FEISHU_APP_ID` / `AVA_FEISHU_APP_SECRET` or `~/.ava/feishu.json`.
 
-Both `/base/` and wiki-hosted `/wiki/` links are supported. Wiki links require wiki read access and wiki space membership so the app can resolve the Bitable. The `view` query parameter is ignored. Complex cells (people, attachments, links, formulas, locations, and groups) are flattened to comma-separated text.
+Both `/base/` and wiki-hosted `/wiki/` links are supported. Wiki links require wiki read access and wiki space membership so the app can resolve the Bitable. The `view` query parameter is ignored. Complex cells (people, attachments, links, locations, and groups) become text, usually with multiple values separated by commas; formula and lookup fields are converted according to their returned value types.
 
 ## SQL Server
 

@@ -438,6 +438,8 @@ await ava.source({
 
 在 Node.js 的 DuckDB 引擎中使用 `type: 'feishu-bitable'`。记录会暴露为名为 `data` 的只读视图。
 
+首次接入请按[飞书多维表格配置指南](/documentation/data/feishu-bitable/)完成应用创建、权限授权和凭证绑定，指南包含流程示意图、CLI / SDK 示例与常见问题。
+
 ```typescript
 await ava.source({
   type: 'feishu-bitable',
@@ -451,7 +453,7 @@ await ava.source({
 
 提供 `url`，或同时提供 `appToken` 与 `tableId`，并设置 `appId`、`appSecret`。CLI 也会从 `AVA_FEISHU_APP_ID`、`AVA_FEISHU_APP_SECRET` 或 `~/.ava/feishu.json` 读取凭证。
 
-支持 `/base/` 链接和知识库中的 `/wiki/` 链接。Wiki 链接要求应用具备知识库读取权限并加入相应知识空间，才能解析多维表格。URL 中的 `view` 参数会被忽略。人员、附件、链接、公式、位置、群组等复杂单元格会展开为逗号分隔的文本。
+支持 `/base/` 链接和知识库中的 `/wiki/` 链接。Wiki 链接要求应用具备知识库读取权限并加入相应知识空间，才能解析多维表格。URL 中的 `view` 参数会被忽略。人员、附件、链接、位置、群组等复杂单元格会转换为文本，多个值通常以逗号分隔；公式和查找引用字段按返回值类型转换。
 
 <Heading as="h2" id="supabase">Supabase</Heading>
 
