@@ -1,0 +1,334 @@
+3:"$Sreact.fragment"
+4:"/_next/static/chunks/2qw5ule3nfj6b.js"
+5:"/_next/static/chunks/024mr0my09zgj.js"
+6:"/_next/static/chunks/1kz1ekcaagb9u.js"
+7:"/_next/static/chunks/086pqg3mbf2qd.js"
+8:"/_next/static/chunks/1lxucu_dj41ds.js"
+9:I[400503,["$4","$5","$6","$7","$8"],"default"]
+a:I[697790,["$4","$5","$6","$7"],"default"]
+b:I[474333,["$4","$5","$6","$7"],"default"]
+c:"/_next/static/chunks/0xpkuc787v-p9.js"
+d:I[936064,["$c"],"default"]
+e:I[481497,["$c"],"default"]
+15:I[5138,["$4","$5","$6","$7","$8"],"default"]
+21:"ViewportBoundary"
+22:I[675049,["$c"],"$21"]
+23:"MetadataBoundary"
+24:I[675049,["$c"],"$23"]
+25:"$Sreact.suspense"
+26:I[934035,["$c"],"IconMark"]
+:HL["/_next/static/chunks/0o-6jlwxqyz8v.css","style"]
+:HL["https://mdn.alipayobjects.com/huamei_qa8qxu/afts/img/A*A-lcQbVTpjwAAAAAAAAAAAAADmJ7AQ/original","image"]
+10:X
+13:X
+13:C
+16:T393c,# Lark Base setup
+
+Create an app, grant document access, and load data from Lark Base with an illustrated guide.
+
+import { Heading } from '../../../../mdx-components';
+
+Create a Lark app, grant access to your Base, and load its data into AVA. Once connected, query it with the CLI or Node.js SDK, or use the [Agent Skill](/documentation/agent-skill/) to analyze the data and generate charts.
+
+<Heading as="h2" id="before-you-start">Before you start</Heading>
+
+- A Lark account that can create an enterprise custom app, and permission to manage the target Base. Ask your administrator or document owner to complete any required approvals.
+- **Node.js 22.13.0 or later**. The CLI currently supports macOS / Linux; see the [CLI guide](/documentation/reference/cli/) for installation.
+- The browser URL of the target table, usually containing `/base/` or `/wiki/`.
+
+AVA reads as the app and loads records into a read-only view named `data` using the Node.js DuckDB engine. Loading, inspecting the schema, and running SQL do not require a model API key. Configure a model for AVA's natural-language analysis and visualization as described in [Model configuration](/documentation/configuration/).
+
+Click any screenshot to view it at full size.
+
+<Heading as="h2" id="create-an-app">1. Create an app and get credentials</Heading>
+
+1. Open the developer console on the [Lark Open Platform](https://open.larksuite.com/) and create an **enterprise custom app**, or reuse an existing one.
+2. Enter a name and description, such as “AVA analytics”.
+3. Find **App ID** and **App Secret** on the app's **Credentials & Basic Info** page for the binding step below.
+
+App ID identifies the Open Platform app; App Secret authenticates it to obtain a `tenant_access_token`. These are different from the App Token in a Base URL. AVA obtains the access token automatically, so you do not need to copy one manually.
+
+<figure>
+  <a href="/screenshots/lark/create-app.webp" target="_blank" rel="noopener noreferrer">
+    <img src="/screenshots/lark/create-app.webp" width="1204" height="360" loading="lazy" style={{ width: '100%', height: 'auto' }} alt="Create Custom App button in the Lark Developer Console" />
+  </a>
+  <figcaption>Select <strong>Create Custom App</strong> to begin.</figcaption>
+</figure>
+
+<figure>
+  <a href="/screenshots/lark/credentials.webp" target="_blank" rel="noopener noreferrer">
+    <img src="/screenshots/lark/credentials.webp" width="1793" height="922" loading="lazy" style={{ width: '100%', height: 'auto' }} alt="Credentials & Basic Info entry in the Lark app sidebar" />
+  </a>
+  <figcaption>Open <strong>Credentials & Basic Info</strong> to find your app credentials.</figcaption>
+</figure>
+
+<Heading as="h2" id="grant-access">2. Enable permissions and grant document access</Heading>
+
+<Heading as="h3" id="api-permissions">Open Platform: allow the app to call read APIs</Heading>
+
+In **Permissions & Scopes**, search for Base and request permissions to read tables, fields, and records. Follow the permission requirements in Lark's API documentation. AVA calls the following read endpoints:
+
+<figure>
+  <a href="/screenshots/lark/api-permissions.webp" target="_blank" rel="noopener noreferrer">
+    <img src="/screenshots/lark/api-permissions.webp" width="1906" height="630" loading="lazy" style={{ width: '100%', height: 'auto' }} alt="Permissions & Scopes page listing Lark Base scopes" />
+  </a>
+  <figcaption>Use <strong>Permissions & Scopes</strong> to find the read scopes required by the endpoints below. The <strong>Create Version</strong> button opens the release form.</figcaption>
+</figure>
+
+| Endpoint | Purpose | When required |
+| --- | --- | --- |
+| `GET /open-apis/bitable/v1/apps/{app_token}/tables/{table_id}/fields` | Read field names and types | Every load |
+| `GET /open-apis/bitable/v1/apps/{app_token}/tables/{table_id}/records` | Read records | Every load |
+| `GET /open-apis/bitable/v1/apps/{app_token}/tables` | Find the target table | When the URL has no `table` parameter |
+| `GET /open-apis/wiki/v2/spaces/get_node` | Resolve a Wiki node to its Base | For `/wiki/` URLs; also request Wiki read permissions |
+
+See the [Lark Base API documentation](https://open.larksuite.com/document/server-docs/docs/bitable-v1/overview). Create and publish a version under **Version Management & Release** after requesting permissions. Wait for administrator approval when required, and confirm the permissions have taken effect.
+
+<Heading as="h3" id="document-access">Base: allow the app to read the target document</Heading>
+
+1. In the target Base, open the top-right **···** menu and choose **More → Add Applications**. The entry may also appear as **Add Document App**.
+2. Search for and add the app you created, granting read access. If the entry or app is unavailable, ask the document owner to check document permissions, app publication, and availability.
+3. If advanced permissions are enabled, confirm the app can read the tables, records, and fields you want to analyze.
+4. For a `/wiki/` URL, also grant the app access to the corresponding Wiki space through its access settings. Base permissions alone do not allow Wiki node resolution.
+
+<figure>
+  <a href="/screenshots/lark/document-menu.png" target="_blank" rel="noopener noreferrer">
+    <img src="/screenshots/lark/document-menu.png" width="594" height="623" loading="lazy" style={{ maxWidth: '100%', height: 'auto' }} alt="Lark Base menu with More and Add Applications highlighted" />
+  </a>
+  <figcaption>Open <strong>More → Add Applications</strong> in the target Base.</figcaption>
+</figure>
+
+<figure>
+  <a href="/screenshots/lark/document-access.png" target="_blank" rel="noopener noreferrer">
+    <img src="/screenshots/lark/document-access.png" width="634" height="475" loading="lazy" style={{ maxWidth: '100%', height: 'auto' }} alt="Lark Applications dialog showing an added app and its access dropdown" />
+  </a>
+  <figcaption>Use the dropdown next to the added app to check its access. The example shows <strong>Can manage</strong>. Choose read access for AVA.</figcaption>
+</figure>
+
+<Heading as="h2" id="copy-the-link">3. Copy the target table URL</Heading>
+
+Select the table you want to analyze, then copy the full URL from the browser address bar, keeping the `table` parameter:
+
+```text
+https://my.larksuite.com/base/APP_TOKEN?table=TABLE_ID&view=VIEW_ID
+https://my.larksuite.com/wiki/NODE_TOKEN?table=TABLE_ID&view=VIEW_ID
+```
+
+| URL value | Configuration | Meaning |
+| --- | --- | --- |
+| `APP_TOKEN` after `/base/` | `appToken` | Base identifier, distinct from App ID |
+| `NODE_TOKEN` after `/wiki/` | Keep it in `url` | Wiki node identifier; AVA resolves the actual App Token. Do not use the node token as `appToken`. |
+| `table=TABLE_ID` | `tableId` | Target table identifier |
+| `view=VIEW_ID` | None | Ignored by AVA |
+
+Without `table`, AVA tries to discover the table: it uses the only table when there is one, or reports candidate names and IDs when there are several. Specify `table` or `tableId` and reload. Lark `/docx/`, `/sheets/`, and Wiki nodes hosting other document types are not supported by this source.
+
+<Callout>
+  AVA loads the entire table accessible to the app, paginating through fields and records. Base view filters are not applied.
+  A view showing only this month's records will not limit the loaded data, even if its `view` parameter is present. Add the filter explicitly in SQL.
+</Callout>
+
+Always pass the full Lark URL in `url`. AVA uses its `larksuite.com` domain to select the Lark API. When you supply only `appToken` and `tableId`, AVA defaults to the Feishu China API.
+
+<Heading as="h2" id="bind-and-load">4. Bind credentials and load data</Heading>
+
+<Heading as="h3" id="terminal-binding">Option 1: first-time terminal binding</Heading>
+
+Install the CLI and run the following in an interactive terminal, replacing the URL with your actual table URL:
+
+```bash
+npm install -g @antv/ava@4
+ava source "https://my.larksuite.com/base/APP_TOKEN?table=TABLE_ID"
+```
+
+If credentials are not configured, AVA prompts for App ID and App Secret. The secret is not echoed. Successful binding saves credentials to the current user's `~/.ava/feishu.json` for later loads. Binding only verifies that the app can obtain a token; document access is checked during the subsequent load.
+
+```text
+App ID: cli_YOUR_APP_ID
+App Secret:
+```
+
+<Heading as="h3" id="environment-variables">Option 2: environment variables</Heading>
+
+Set these variables in your macOS / Linux shell. For automation, use the runtime's secret configuration.
+
+```bash
+export AVA_FEISHU_APP_ID='YOUR_APP_ID'
+export AVA_FEISHU_APP_SECRET='YOUR_APP_SECRET'
+ava source "https://my.larksuite.com/base/APP_TOKEN?table=TABLE_ID"
+```
+
+<Heading as="h3" id="source-config">Option 3: source configuration file</Heading>
+
+Save the following as `lark-source.json`. This file specifies the source only; credentials can still come from environment variables or saved binding information.
+
+```json
+{
+  "type": "feishu-bitable",
+  "options": {
+    "url": "https://my.larksuite.com/base/APP_TOKEN?table=TABLE_ID"
+  }
+}
+```
+
+```bash
+ava source @lark-source.json
+```
+
+| Configuration field | Required | Description |
+| --- | --- | --- |
+| `url` | Yes for Lark | Full Base or Wiki URL on `larksuite.com` |
+| `appToken` | No | Base App Token, if supplied alongside the URL |
+| `tableId` | No | Target table ID. Supply it if the URL omits `table` and the Base has multiple tables. |
+| `appId` | SDK: yes; CLI: can be resolved elsewhere | Open Platform App ID |
+| `appSecret` | SDK: yes; CLI: can be resolved elsewhere | Open Platform App Secret |
+
+When both `url` and `appToken` / `tableId` are supplied, they must identify the same table.
+
+CLI credential priority is **configuration `appId` + `appSecret` → environment variables → `~/.ava/feishu.json` → interactive terminal binding**. A partial pair in either of the first two sources causes an error; credentials from different sources are not combined. Piped input, redirection, and other non-interactive environments do not prompt for binding, so configure credentials beforehand.
+
+Keep App Secret and the saved binding file out of Git and logs. To change a saved app, update the complete credential pair in the binding file, or override it with higher-priority environment variables.
+
+<Heading as="h2" id="verify-the-data">5. Verify the data and start analysis</Heading>
+
+A successful load returns a dataset ID. Replace `YOUR_DATASET_ID` with that actual value to inspect the schema, sample rows, and record count:
+
+```bash
+ava schema YOUR_DATASET_ID
+ava query YOUR_DATASET_ID --dsl 'SELECT * FROM data LIMIT 5'
+ava query YOUR_DATASET_ID --dsl 'SELECT COUNT(*) AS row_count FROM data'
+```
+
+Check the `data` view, field names, and read scope. The count should match the target table accessible to the app. Run `ava dispose YOUR_DATASET_ID` when finished. After changes in Base, run `ava source` again and use the new ID; existing sessions do not continuously synchronize remote changes.
+
+Complex fields such as people, attachments, and linked records become queryable text, usually with multiple values separated by commas. Attachments expose metadata without downloading files. Formula and lookup fields are converted according to their returned value types and are not necessarily text. Unsupported field types are skipped; an empty table preserves supported field definitions.
+
+After installing the [AVA Skill](/documentation/agent-skill/), you can ask your agent:
+
+```text
+Use AVA Skill to analyze this Lark Base: <replace with the full URL>.
+Credentials are configured locally. Inspect the schema and verify the record count,
+then count records by department using the actual fields.
+Provide the query, results, and a chart. Make any time filters explicit in the query.
+```
+
+<Heading as="h2" id="nodejs-sdk">Use the Node.js SDK</Heading>
+
+Pass credentials explicitly to the SDK; it does not automatically read the CLI binding file or environment variables. This example reads environment variables in application code and runs queries without calling a model:
+
+```javascript
+import { AVA } from '@antv/ava';
+
+const ava = new AVA({
+  llm: { model: 'gpt-4o-mini' },
+  engine: { type: 'duckdb' },
+});
+
+try {
+  await ava.source({
+    type: 'feishu-bitable',
+    options: {
+      url: 'https://my.larksuite.com/base/APP_TOKEN?table=TABLE_ID',
+      appId: process.env.AVA_FEISHU_APP_ID,
+      appSecret: process.env.AVA_FEISHU_APP_SECRET,
+    },
+  });
+  console.log(await ava.schema());
+  console.log(await ava.query('SELECT COUNT(*) AS row_count FROM data'));
+} finally {
+  await ava.dispose();
+}
+```
+
+<Heading as="h2" id="troubleshooting">Troubleshooting</Heading>
+
+| Symptom | Check and resolution |
+| --- | --- |
+| App binding fails | Check that App ID and App Secret belong to the same enterprise custom app, are copied in full, and belong to the Lark tenant hosting your Base. The error preserves the platform's code and message. |
+| Binding succeeds but loading reports insufficient permissions | Confirm read API permissions are published and effective, and the same app is added to the target document. Your own access does not grant app access. |
+| `/base/` works but `/wiki/` fails | Check Wiki read API permissions, space access, and whether the node hosts a Base. |
+| Error contains `has … tables` | Specify `?table=TABLE_ID` or `tableId`; do not use a view ID as a table ID. |
+| Error contains `does not match` | Remove redundant identifiers or ensure `url`, `appToken`, and `tableId` identify the same table. |
+| Missing credentials in a non-interactive environment | Configure paired environment variables, a complete source configuration, or a saved binding file beforehand. |
+| `~/.ava/feishu.json is not valid JSON` | Repair the file to valid JSON containing `appId` and `appSecret`, or override it with environment variables. |
+| More records than the view shows, or remote changes are missing | `view` filters are ignored; filter in SQL. Reload the source to read remote updates. |
+| Network error or non-JSON response | Check connectivity and proxy settings for `open.larksuite.com`, and inspect the original failing request. |
+
+See the [CLI guide](/documentation/reference/cli/) for complete commands and [Data sources](/documentation/data/sources/) for other connectors.
+
+Screenshot references include [LadiPage’s Lark Base setup guide](https://helpv3.ladipage.vn/form-data/cac-buoc-cai-dat-luu-data/luu-data-ve-lark-base/cach-tao-app-va-lay-cac-thong-tin-ket-noi-cua-lark-base) and the [Lark AnyCross Base archiving tutorial](https://note.com/hiroshikinoshita/n/ndcf1b853e7f5).
+14:[["children",{"s":"__PAGE__","h":160,"d":{"r":["$","$3","c",{"children":[[["$","main",null,{"className":"docs-main","id":"docs-content","children":[["$","div",null,{"className":"docs-page-toolbar","children":[["$","div",null,{"className":"docs-eyebrow","children":"Working with data"}],["$","$L15","data/feishu-bitable",{"label":"Copy Markdown","text":"$16"}]]}],"$L17","$L18","$L19","$L1a","$L1b","$L1c"]}],"$L1d"],["$L1e"],"$L1f"]}],"p":"$@20","v":null,"s":"$10"}}]]
+11:[["children",{"s":{"n":"slug","t":"c","k":"data/feishu-bitable","s":[]},"h":65632,"d":{"r":["$","$3","c",{"children":[null,["$","$Ld",null,{"parallelRouterKey":"children","template":["$","$Le",null,{}]}]]}],"p":"$@12","v":"$13","s":"$10"},"c":"$Q14"}]]
+2:[["children",{"s":"documentation","h":131136,"d":{"r":["$","$3","c",{"children":[[["$","link","0",{"rel":"stylesheet","href":"/_next/static/chunks/0o-6jlwxqyz8v.css","precedence":"next"}],["$","script","script-0",{"src":"/_next/static/chunks/1kz1ekcaagb9u.js","async":true}],["$","script","script-1",{"src":"/_next/static/chunks/086pqg3mbf2qd.js","async":true}]],["$","div",null,{"className":"docs-site","children":[["$","a",null,{"className":"docs-skip","href":"#docs-content","children":"Skip to content"}],["$","header",null,{"className":"docs-header","children":["$","div",null,{"className":"docs-header-inner","children":[["$","$L9",null,{"href":"/","className":"docs-brand","aria-label":"AVA home","children":[["$","img",null,{"src":"https://mdn.alipayobjects.com/huamei_qa8qxu/afts/img/A*A-lcQbVTpjwAAAAAAAAAAAAADmJ7AQ/original","alt":"","width":"80","height":"48"}],["$","strong",null,{"children":"AVA"}],["$","span",null,{"children":"Documentation"}]]}],["$","nav",null,{"aria-label":"Main navigation","className":"docs-header-links","children":[["$","$L9",null,{"href":"/","className":"docs-website","children":["Website"," ",["$","span",null,{"aria-hidden":"true","children":"↗"}]]}],["$","a",null,{"href":"https://github.com/antvis/AVA","className":"docs-github","children":["GitHub ",["$","span",null,{"aria-hidden":"true","children":"↗"}]]}],["$","$La",null,{}],["$","$L9",null,{"href":"/ai/","className":"docs-ai","children":["AI"," ",["$","span",null,{"aria-hidden":"true","children":"→"}]]}]]}]]}]}],["$","$Lb",null,{"mobile":true}],["$","div",null,{"className":"docs-layout","children":[["$","aside",null,{"className":"docs-sidebar","children":[["$","$L9",null,{"href":"/documentation/","className":"docs-sidebar-label","children":[["$","span",null,{"className":"docs-book-icon","aria-hidden":"true","children":"▤"}]," ","Documentation"]}],["$","$Lb",null,{}],["$","div",null,{"className":"docs-sidebar-footer","children":[["$","span",null,{"className":"docs-status-dot"}]," ","AVA · AI Visual Analytics"]}]]}],["$","$Ld",null,{"parallelRouterKey":"children","template":["$","$Le",null,{}]}]]}]]}]]}],"p":"$@f","v":null,"s":"$10"},"c":"$Q11"}]]
+1:[["children",{"s":"(en)","h":131120,"c":"$Q2"}]]
+0:{"t":{"t":{"s":"","h":131152,"c":"$Q1"},"h":{"r":["$","$3","h",{"children":[null,["$","$L22",null,{"children":[["$","meta","0",{"charSet":"utf-8"}],["$","meta","1",{"name":"viewport","content":"width=device-width, initial-scale=1"}]]}],["$","$L24",null,{"children":[["$","div",null,{"hidden":true,"children":["$","$25",null,{"name":"Next.Metadata","children":[["$","title","0",{"children":"Lark Base setup — AVA Docs"}],["$","meta","1",{"name":"description","content":"Create an app, grant document access, and load data from Lark Base with an illustrated guide."}],["$","meta","2",{"name":"author","content":"AntV"}],["$","meta","3",{"name":"keywords","content":"AVA, visual analytics, AI-native, LLM, data visualization, natural language, data analysis, AntV, chart generation"}],["$","link","4",{"rel":"canonical","href":"https://ava.antv.vision/documentation/data/feishu-bitable/"}],["$","link","5",{"rel":"alternate","hrefLang":"en","href":"https://ava.antv.vision/documentation/data/feishu-bitable/"}],["$","link","6",{"rel":"alternate","hrefLang":"zh-CN","href":"https://ava.antv.vision/zh/documentation/data/feishu-bitable/"}],["$","link","7",{"rel":"alternate","hrefLang":"x-default","href":"https://ava.antv.vision/documentation/data/feishu-bitable/"}],["$","meta","8",{"property":"og:title","content":"Lark Base setup — AVA Docs"}],["$","meta","9",{"property":"og:description","content":"Create an app, grant document access, and load data from Lark Base with an illustrated guide."}],["$","meta","10",{"property":"og:url","content":"https://ava.antv.vision/documentation/data/feishu-bitable/"}],["$","meta","11",{"property":"og:type","content":"article"}],["$","meta","12",{"name":"twitter:card","content":"summary"}],["$","meta","13",{"name":"twitter:title","content":"Lark Base setup — AVA Docs"}],["$","meta","14",{"name":"twitter:description","content":"Create an app, grant document access, and load data from Lark Base with an illustrated guide."}],["$","link","15",{"rel":"icon","href":"https://mdn.alipayobjects.com/huamei_qa8qxu/afts/img/A*FBLnQIAzx6cAAAAAQDAAAAgAemJ7AQ/original"}],["$","$L26","16",{}]]}]}],null]}],null]}],"p":"$@27","v":null,"s":"$10"}},"a":"$@28","u":"$@29","b":"94iMdv1MttvpGyEeOZD-8"}
+58:I[754170,["$4","$5","$6","$7","$8"],"default"]
+59:I[675049,["$c"],"OutletBoundary"]
+17:["$","h1",null,{"children":"Lark Base setup"}]
+18:["$","p",null,{"className":"docs-description","children":"Create an app, grant document access, and load data from Lark Base with an illustrated guide."}]
+19:["$","article",null,{"className":"docs-prose","children":[["$","p",null,{"children":["Create a Lark app, grant access to your Base, and load its data into AVA. Once connected, query it with the CLI or Node.js SDK, or use the ",["$","$L9",null,{"href":"/documentation/agent-skill/","children":"Agent Skill"}]," to analyze the data and generate charts."]}],"\n",["$","h2",null,{"id":"before-you-start","children":["$","a",null,{"href":"#before-you-start","className":"docs-heading-link","children":"Before you start"}]}],"\n",["$","ul",null,{"children":["\n",["$","li",null,{"children":"A Lark account that can create an enterprise custom app, and permission to manage the target Base. Ask your administrator or document owner to complete any required approvals."}],"\n",["$","li",null,{"children":[["$","strong",null,{"children":"Node.js 22.13.0 or later"}],". The CLI currently supports macOS / Linux; see the ",["$","$L9",null,{"href":"/documentation/reference/cli/","children":"CLI guide"}]," for installation."]}],"\n",["$","li",null,{"children":["The browser URL of the target table, usually containing ",["$","code",null,{"children":"/base/"}]," or ",["$","code",null,{"children":"/wiki/"}],"."]}],"\n"]}],"\n",["$","p",null,{"children":["AVA reads as the app and loads records into a read-only view named ",["$","code",null,{"children":"data"}]," using the Node.js DuckDB engine. Loading, inspecting the schema, and running SQL do not require a model API key. Configure a model for AVA's natural-language analysis and visualization as described in ",["$","$L9",null,{"href":"/documentation/configuration/","children":"Model configuration"}],"."]}],"\n",["$","p",null,{"children":"Click any screenshot to view it at full size."}],"\n",["$","h2",null,{"id":"create-an-app","children":["$","a",null,{"href":"#create-an-app","className":"docs-heading-link","children":"1. Create an app and get credentials"}]}],"\n",["$","ol",null,{"children":["\n",["$","li",null,{"children":["Open the developer console on the ",["$","$L9",null,{"href":"https://open.larksuite.com/","children":"Lark Open Platform"}]," and create an ",["$","strong",null,{"children":"enterprise custom app"}],", or reuse an existing one."]}],"\n",["$","li",null,{"children":"Enter a name and description, such as “AVA analytics”."}],"\n",["$","li",null,{"children":["Find ",["$","strong",null,{"children":"App ID"}]," and ",["$","strong",null,{"children":"App Secret"}]," on the app's ",["$","strong",null,{"children":"Credentials & Basic Info"}]," page for the binding step below."]}],"\n"]}],"\n",["$","p",null,{"children":["App ID identifies the Open Platform app; App Secret authenticates it to obtain a ",["$","code",null,{"children":"tenant_access_token"}],". These are different from the App Token in a Base URL. AVA obtains the access token automatically, so you do not need to copy one manually."]}],"\n",["$","figure",null,{"children":[["$","a",null,{"href":"/screenshots/lark/create-app.webp","target":"_blank","rel":"noopener noreferrer","children":["$","img",null,{"src":"/screenshots/lark/create-app.webp","width":"1204","height":"360","loading":"lazy","style":{"width":"100%","height":"auto"},"alt":"Create Custom App button in the Lark Developer Console"}]}],["$","figcaption",null,{"children":["Select ",["$","strong",null,{"children":"Create Custom App"}]," to begin."]}]]}],"\n",["$","figure",null,{"children":[["$","a",null,{"href":"/screenshots/lark/credentials.webp","target":"_blank","rel":"noopener noreferrer","children":["$","img",null,{"src":"/screenshots/lark/credentials.webp","width":"1793","height":"922","loading":"lazy","style":{"width":"100%","height":"auto"},"alt":"Credentials & Basic Info entry in the Lark app sidebar"}]}],["$","figcaption",null,{"children":["Open ",["$","strong",null,{"children":"Credentials & Basic Info"}]," to find your app credentials."]}]]}],"\n",["$","h2",null,{"id":"grant-access","children":["$","a",null,{"href":"#grant-access","className":"docs-heading-link","children":"2. Enable permissions and grant document access"}]}],"\n",["$","h3",null,{"id":"api-permissions","children":["$","a",null,{"href":"#api-permissions","className":"docs-heading-link","children":"Open Platform: allow the app to call read APIs"}]}],"\n","$L2a","\n","$L2b","\n","$L2c","\n","$L2d","\n","$L2e","\n","$L2f","\n","$L30","\n","$L31","\n","$L32","\n","$L33","\n","$L34","\n","$L35","\n","$L36","\n","$L37","\n","$L38","\n","$L39","\n","$L3a","\n","$L3b","\n","$L3c","\n","$L3d","\n","$L3e","\n","$L3f","\n","$L40","\n","$L41","\n","$L42","\n","$L43","\n","$L44","\n","$L45","\n","$L46","\n","$L47","\n","$L48","\n","$L49","\n","$L4a","\n","$L4b","\n","$L4c","\n","$L4d","\n","$L4e","\n","$L4f","\n","$L50","\n","$L51","\n","$L52","\n","$L53","\n","$L54","\n","$L55","\n","$L56","\n","$L57"]}]
+1a:["$","div",null,{"className":"docs-page-meta","children":["$","a",null,{"href":"https://github.com/antvis/AVA/blob/ai/site/content/docs/en/data/feishu-bitable.mdx","children":["Edit this page on GitHub"," ",["$","span",null,{"aria-hidden":"true","children":"↗"}]]}]}]
+1b:["$","nav",null,{"className":"docs-pagination","aria-label":"Chapter navigation","children":[["$","$L9",null,{"href":"/documentation/data/semantic/","children":[["$","span",null,{"children":"← Previous"}],["$","strong",null,{"children":"Define data semantics"}]]}],["$","$L9",null,{"href":"/documentation/analysis/overview/","className":"docs-next","children":[["$","span",null,{"children":"Next →"}],["$","strong",null,{"children":"Analyze data"}]]}]]}]
+1c:["$","footer",null,{"className":"docs-footer","children":[["$","span",null,{"children":"AVA · An AntV project"}],["$","a",null,{"href":"https://github.com/antvis/AVA","children":"Open source on GitHub ↗"}]]}]
+1d:["$","$L58","data/feishu-bitable",{}]
+1e:["$","script","script-0",{"src":"/_next/static/chunks/1lxucu_dj41ds.js","async":true}]
+1f:["$","$L59",null,{"children":["$","$25",null,{"name":"Next.MetadataOutlet","children":"$@5a"}]}]
+29:true
+10:300
+2a:["$","p",null,{"children":["In ",["$","strong",null,{"children":"Permissions & Scopes"}],", search for Base and request permissions to read tables, fields, and records. Follow the permission requirements in Lark's API documentation. AVA calls the following read endpoints:"]}]
+2b:["$","figure",null,{"children":[["$","a",null,{"href":"/screenshots/lark/api-permissions.webp","target":"_blank","rel":"noopener noreferrer","children":["$","img",null,{"src":"/screenshots/lark/api-permissions.webp","width":"1906","height":"630","loading":"lazy","style":{"width":"100%","height":"auto"},"alt":"Permissions & Scopes page listing Lark Base scopes"}]}],["$","figcaption",null,{"children":["Use ",["$","strong",null,{"children":"Permissions & Scopes"}]," to find the read scopes required by the endpoints below. The ",["$","strong",null,{"children":"Create Version"}]," button opens the release form."]}]]}]
+2c:["$","div",null,{"className":"docs-table","children":["$","table",null,{"children":[["$","thead",null,{"children":["$","tr",null,{"children":[["$","th",null,{"children":"Endpoint"}],["$","th",null,{"children":"Purpose"}],["$","th",null,{"children":"When required"}]]}]}],["$","tbody",null,{"children":[["$","tr",null,{"children":[["$","td",null,{"children":["$","code",null,{"children":"GET /open-apis/bitable/v1/apps/{app_token}/tables/{table_id}/fields"}]}],["$","td",null,{"children":"Read field names and types"}],["$","td",null,{"children":"Every load"}]]}],["$","tr",null,{"children":[["$","td",null,{"children":["$","code",null,{"children":"GET /open-apis/bitable/v1/apps/{app_token}/tables/{table_id}/records"}]}],["$","td",null,{"children":"Read records"}],["$","td",null,{"children":"Every load"}]]}],["$","tr",null,{"children":[["$","td",null,{"children":["$","code",null,{"children":"GET /open-apis/bitable/v1/apps/{app_token}/tables"}]}],["$","td",null,{"children":"Find the target table"}],["$","td",null,{"children":["When the URL has no ",["$","code",null,{"children":"table"}]," parameter"]}]]}],["$","tr",null,{"children":[["$","td",null,{"children":["$","code",null,{"children":"GET /open-apis/wiki/v2/spaces/get_node"}]}],["$","td",null,{"children":"Resolve a Wiki node to its Base"}],["$","td",null,{"children":["For ",["$","code",null,{"children":"/wiki/"}]," URLs; also request Wiki read permissions"]}]]}]]}]]}]}]
+2d:["$","p",null,{"children":["See the ",["$","$L9",null,{"href":"https://open.larksuite.com/document/server-docs/docs/bitable-v1/overview","children":"Lark Base API documentation"}],". Create and publish a version under ",["$","strong",null,{"children":"Version Management & Release"}]," after requesting permissions. Wait for administrator approval when required, and confirm the permissions have taken effect."]}]
+2e:["$","h3",null,{"id":"document-access","children":["$","a",null,{"href":"#document-access","className":"docs-heading-link","children":"Base: allow the app to read the target document"}]}]
+2f:["$","ol",null,{"children":["\n",["$","li",null,{"children":["In the target Base, open the top-right ",["$","strong",null,{"children":"···"}]," menu and choose ",["$","strong",null,{"children":"More → Add Applications"}],". The entry may also appear as ",["$","strong",null,{"children":"Add Document App"}],"."]}],"\n",["$","li",null,{"children":"Search for and add the app you created, granting read access. If the entry or app is unavailable, ask the document owner to check document permissions, app publication, and availability."}],"\n",["$","li",null,{"children":"If advanced permissions are enabled, confirm the app can read the tables, records, and fields you want to analyze."}],"\n",["$","li",null,{"children":["For a ",["$","code",null,{"children":"/wiki/"}]," URL, also grant the app access to the corresponding Wiki space through its access settings. Base permissions alone do not allow Wiki node resolution."]}],"\n"]}]
+30:["$","figure",null,{"children":[["$","a",null,{"href":"/screenshots/lark/document-menu.png","target":"_blank","rel":"noopener noreferrer","children":["$","img",null,{"src":"/screenshots/lark/document-menu.png","width":"594","height":"623","loading":"lazy","style":{"maxWidth":"100%","height":"auto"},"alt":"Lark Base menu with More and Add Applications highlighted"}]}],["$","figcaption",null,{"children":["Open ",["$","strong",null,{"children":"More → Add Applications"}]," in the target Base."]}]]}]
+31:["$","figure",null,{"children":[["$","a",null,{"href":"/screenshots/lark/document-access.png","target":"_blank","rel":"noopener noreferrer","children":["$","img",null,{"src":"/screenshots/lark/document-access.png","width":"634","height":"475","loading":"lazy","style":{"maxWidth":"100%","height":"auto"},"alt":"Lark Applications dialog showing an added app and its access dropdown"}]}],["$","figcaption",null,{"children":["Use the dropdown next to the added app to check its access. The example shows ",["$","strong",null,{"children":"Can manage"}],". Choose read access for AVA."]}]]}]
+32:["$","h2",null,{"id":"copy-the-link","children":["$","a",null,{"href":"#copy-the-link","className":"docs-heading-link","children":"3. Copy the target table URL"}]}]
+33:["$","p",null,{"children":["Select the table you want to analyze, then copy the full URL from the browser address bar, keeping the ",["$","code",null,{"children":"table"}]," parameter:"]}]
+34:["$","figure",null,{"data-rehype-pretty-code-figure":"","children":["$","div",null,{"className":"docs-code-block","children":[["$","div",null,{"className":"docs-code-toolbar","children":[["$","span",null,{"children":"text"}],["$","$L15",null,{}]]}],["$","pre",null,{"tabIndex":"0","data-language":"text","data-theme":"github-light","children":["$","code",null,{"data-language":"text","data-theme":"github-light","style":{"display":"grid"},"children":[["$","span",null,{"data-line":"","children":["$","span",null,{"children":"https://my.larksuite.com/base/APP_TOKEN?table=TABLE_ID&view=VIEW_ID"}]}],"\n",["$","span",null,{"data-line":"","children":["$","span",null,{"children":"https://my.larksuite.com/wiki/NODE_TOKEN?table=TABLE_ID&view=VIEW_ID"}]}]]}]}]]}]}]
+35:["$","div",null,{"className":"docs-table","children":["$","table",null,{"children":[["$","thead",null,{"children":["$","tr",null,{"children":[["$","th",null,{"children":"URL value"}],["$","th",null,{"children":"Configuration"}],["$","th",null,{"children":"Meaning"}]]}]}],["$","tbody",null,{"children":[["$","tr",null,{"children":[["$","td",null,{"children":[["$","code",null,{"children":"APP_TOKEN"}]," after ",["$","code",null,{"children":"/base/"}]]}],["$","td",null,{"children":["$","code",null,{"children":"appToken"}]}],["$","td",null,{"children":"Base identifier, distinct from App ID"}]]}],["$","tr",null,{"children":[["$","td",null,{"children":[["$","code",null,{"children":"NODE_TOKEN"}]," after ",["$","code",null,{"children":"/wiki/"}]]}],["$","td",null,{"children":["Keep it in ",["$","code",null,{"children":"url"}]]}],["$","td",null,{"children":["Wiki node identifier; AVA resolves the actual App Token. Do not use the node token as ",["$","code",null,{"children":"appToken"}],"."]}]]}],["$","tr",null,{"children":[["$","td",null,{"children":["$","code",null,{"children":"table=TABLE_ID"}]}],["$","td",null,{"children":["$","code",null,{"children":"tableId"}]}],["$","td",null,{"children":"Target table identifier"}]]}],["$","tr",null,{"children":[["$","td",null,{"children":["$","code",null,{"children":"view=VIEW_ID"}]}],["$","td",null,{"children":"None"}],["$","td",null,{"children":"Ignored by AVA"}]]}]]}]]}]}]
+36:["$","p",null,{"children":["Without ",["$","code",null,{"children":"table"}],", AVA tries to discover the table: it uses the only table when there is one, or reports candidate names and IDs when there are several. Specify ",["$","code",null,{"children":"table"}]," or ",["$","code",null,{"children":"tableId"}]," and reload. Lark ",["$","code",null,{"children":"/docx/"}],", ",["$","code",null,{"children":"/sheets/"}],", and Wiki nodes hosting other document types are not supported by this source."]}]
+37:["$","aside",null,{"className":"docs-callout","children":[["$","span",null,{"aria-hidden":"true","children":"i"}],["$","div",null,{"children":["$","p",null,{"children":["AVA loads the entire table accessible to the app, paginating through fields and records. Base view filters are not applied.\nA view showing only this month's records will not limit the loaded data, even if its ",["$","code",null,{"children":"view"}]," parameter is present. Add the filter explicitly in SQL."]}]}]]}]
+38:["$","p",null,{"children":["Always pass the full Lark URL in ",["$","code",null,{"children":"url"}],". AVA uses its ",["$","code",null,{"children":"larksuite.com"}]," domain to select the Lark API. When you supply only ",["$","code",null,{"children":"appToken"}]," and ",["$","code",null,{"children":"tableId"}],", AVA defaults to the Feishu China API."]}]
+39:["$","h2",null,{"id":"bind-and-load","children":["$","a",null,{"href":"#bind-and-load","className":"docs-heading-link","children":"4. Bind credentials and load data"}]}]
+3a:["$","h3",null,{"id":"terminal-binding","children":["$","a",null,{"href":"#terminal-binding","className":"docs-heading-link","children":"Option 1: first-time terminal binding"}]}]
+3b:["$","p",null,{"children":"Install the CLI and run the following in an interactive terminal, replacing the URL with your actual table URL:"}]
+3c:["$","figure",null,{"data-rehype-pretty-code-figure":"","children":["$","div",null,{"className":"docs-code-block","children":[["$","div",null,{"className":"docs-code-toolbar","children":[["$","span",null,{"children":"bash"}],["$","$L15",null,{}]]}],["$","pre",null,{"tabIndex":"0","data-language":"bash","data-theme":"github-light","children":["$","code",null,{"data-language":"bash","data-theme":"github-light","style":{"display":"grid"},"children":[["$","span",null,{"data-line":"","children":[["$","span",null,{"style":{"color":"#6F42C1"},"children":"npm"}],["$","span",null,{"style":{"color":"#032F62"},"children":" install"}],["$","span",null,{"style":{"color":"#005CC5"},"children":" -g"}],["$","span",null,{"style":{"color":"#032F62"},"children":" @antv/ava@4"}]]}],"\n",["$","span",null,{"data-line":"","children":[["$","span",null,{"style":{"color":"#6F42C1"},"children":"ava"}],["$","span",null,{"style":{"color":"#032F62"},"children":" source"}],["$","span",null,{"style":{"color":"#032F62"},"children":" \"https://my.larksuite.com/base/APP_TOKEN?table=TABLE_ID\""}]]}]]}]}]]}]}]
+3d:["$","p",null,{"children":["If credentials are not configured, AVA prompts for App ID and App Secret. The secret is not echoed. Successful binding saves credentials to the current user's ",["$","code",null,{"children":"~/.ava/feishu.json"}]," for later loads. Binding only verifies that the app can obtain a token; document access is checked during the subsequent load."]}]
+3e:["$","figure",null,{"data-rehype-pretty-code-figure":"","children":["$","div",null,{"className":"docs-code-block","children":[["$","div",null,{"className":"docs-code-toolbar","children":[["$","span",null,{"children":"text"}],["$","$L15",null,{}]]}],["$","pre",null,{"tabIndex":"0","data-language":"text","data-theme":"github-light","children":["$","code",null,{"data-language":"text","data-theme":"github-light","style":{"display":"grid"},"children":[["$","span",null,{"data-line":"","children":["$","span",null,{"children":"App ID: cli_YOUR_APP_ID"}]}],"\n",["$","span",null,{"data-line":"","children":["$","span",null,{"children":"App Secret:"}]}]]}]}]]}]}]
+3f:["$","h3",null,{"id":"environment-variables","children":["$","a",null,{"href":"#environment-variables","className":"docs-heading-link","children":"Option 2: environment variables"}]}]
+40:["$","p",null,{"children":"Set these variables in your macOS / Linux shell. For automation, use the runtime's secret configuration."}]
+41:["$","figure",null,{"data-rehype-pretty-code-figure":"","children":["$","div",null,{"className":"docs-code-block","children":[["$","div",null,{"className":"docs-code-toolbar","children":[["$","span",null,{"children":"bash"}],["$","$L15",null,{}]]}],["$","pre",null,{"tabIndex":"0","data-language":"bash","data-theme":"github-light","children":["$","code",null,{"data-language":"bash","data-theme":"github-light","style":{"display":"grid"},"children":[["$","span",null,{"data-line":"","children":[["$","span",null,{"style":{"color":"#D73A49"},"children":"export"}],["$","span",null,{"style":{"color":"#24292E"},"children":" AVA_FEISHU_APP_ID"}],["$","span",null,{"style":{"color":"#D73A49"},"children":"="}],["$","span",null,{"style":{"color":"#032F62"},"children":"'YOUR_APP_ID'"}]]}],"\n",["$","span",null,{"data-line":"","children":[["$","span",null,{"style":{"color":"#D73A49"},"children":"export"}],["$","span",null,{"style":{"color":"#24292E"},"children":" AVA_FEISHU_APP_SECRET"}],["$","span",null,{"style":{"color":"#D73A49"},"children":"="}],["$","span",null,{"style":{"color":"#032F62"},"children":"'YOUR_APP_SECRET'"}]]}],"\n",["$","span",null,{"data-line":"","children":[["$","span",null,{"style":{"color":"#6F42C1"},"children":"ava"}],["$","span",null,{"style":{"color":"#032F62"},"children":" source"}],["$","span",null,{"style":{"color":"#032F62"},"children":" \"https://my.larksuite.com/base/APP_TOKEN?table=TABLE_ID\""}]]}]]}]}]]}]}]
+42:["$","h3",null,{"id":"source-config","children":["$","a",null,{"href":"#source-config","className":"docs-heading-link","children":"Option 3: source configuration file"}]}]
+43:["$","p",null,{"children":["Save the following as ",["$","code",null,{"children":"lark-source.json"}],". This file specifies the source only; credentials can still come from environment variables or saved binding information."]}]
+44:["$","figure",null,{"data-rehype-pretty-code-figure":"","children":["$","div",null,{"className":"docs-code-block","children":[["$","div",null,{"className":"docs-code-toolbar","children":[["$","span",null,{"children":"json"}],["$","$L15",null,{}]]}],["$","pre",null,{"tabIndex":"0","data-language":"json","data-theme":"github-light","children":["$","code",null,{"data-language":"json","data-theme":"github-light","style":{"display":"grid"},"children":[["$","span",null,{"data-line":"","children":["$","span",null,{"style":{"color":"#24292E"},"children":"{"}]}],"\n",["$","span",null,{"data-line":"","children":[["$","span",null,{"style":{"color":"#005CC5"},"children":"  \"type\""}],["$","span",null,{"style":{"color":"#24292E"},"children":": "}],["$","span",null,{"style":{"color":"#032F62"},"children":"\"feishu-bitable\""}],["$","span",null,{"style":{"color":"#24292E"},"children":","}]]}],"\n",["$","span",null,{"data-line":"","children":[["$","span",null,{"style":{"color":"#005CC5"},"children":"  \"options\""}],["$","span",null,{"style":{"color":"#24292E"},"children":": {"}]]}],"\n",["$","span",null,{"data-line":"","children":[["$","span",null,{"style":{"color":"#005CC5"},"children":"    \"url\""}],["$","span",null,{"style":{"color":"#24292E"},"children":": "}],["$","span",null,{"style":{"color":"#032F62"},"children":"\"https://my.larksuite.com/base/APP_TOKEN?table=TABLE_ID\""}]]}],"\n",["$","span",null,{"data-line":"","children":["$","span",null,{"style":{"color":"#24292E"},"children":"  }"}]}],"\n",["$","span",null,{"data-line":"","children":["$","span",null,{"style":{"color":"#24292E"},"children":"}"}]}]]}]}]]}]}]
+45:["$","figure",null,{"data-rehype-pretty-code-figure":"","children":["$","div",null,{"className":"docs-code-block","children":[["$","div",null,{"className":"docs-code-toolbar","children":[["$","span",null,{"children":"bash"}],["$","$L15",null,{}]]}],["$","pre",null,{"tabIndex":"0","data-language":"bash","data-theme":"github-light","children":["$","code",null,{"data-language":"bash","data-theme":"github-light","style":{"display":"grid"},"children":["$","span",null,{"data-line":"","children":[["$","span",null,{"style":{"color":"#6F42C1"},"children":"ava"}],["$","span",null,{"style":{"color":"#032F62"},"children":" source"}],["$","span",null,{"style":{"color":"#032F62"},"children":" @lark-source.json"}]]}]}]}]]}]}]
+46:["$","div",null,{"className":"docs-table","children":["$","table",null,{"children":[["$","thead",null,{"children":["$","tr",null,{"children":[["$","th",null,{"children":"Configuration field"}],["$","th",null,{"children":"Required"}],["$","th",null,{"children":"Description"}]]}]}],["$","tbody",null,{"children":[["$","tr",null,{"children":[["$","td",null,{"children":["$","code",null,{"children":"url"}]}],["$","td",null,{"children":"Yes for Lark"}],["$","td",null,{"children":["Full Base or Wiki URL on ",["$","code",null,{"children":"larksuite.com"}]]}]]}],["$","tr",null,{"children":[["$","td",null,{"children":["$","code",null,{"children":"appToken"}]}],["$","td",null,{"children":"No"}],["$","td",null,{"children":"Base App Token, if supplied alongside the URL"}]]}],["$","tr",null,{"children":[["$","td",null,{"children":["$","code",null,{"children":"tableId"}]}],["$","td",null,{"children":"No"}],["$","td",null,{"children":["Target table ID. Supply it if the URL omits ",["$","code",null,{"children":"table"}]," and the Base has multiple tables."]}]]}],["$","tr",null,{"children":[["$","td",null,{"children":["$","code",null,{"children":"appId"}]}],["$","td",null,{"children":"SDK: yes; CLI: can be resolved elsewhere"}],["$","td",null,{"children":"Open Platform App ID"}]]}],["$","tr",null,{"children":[["$","td",null,{"children":["$","code",null,{"children":"appSecret"}]}],["$","td",null,{"children":"SDK: yes; CLI: can be resolved elsewhere"}],["$","td",null,{"children":"Open Platform App Secret"}]]}]]}]]}]}]
+47:["$","p",null,{"children":["When both ",["$","code",null,{"children":"url"}]," and ",["$","code",null,{"children":"appToken"}]," / ",["$","code",null,{"children":"tableId"}]," are supplied, they must identify the same table."]}]
+48:["$","p",null,{"children":["CLI credential priority is ",["$","strong",null,{"children":["configuration ",["$","code",null,{"children":"appId"}]," + ",["$","code",null,{"children":"appSecret"}]," → environment variables → ",["$","code",null,{"children":"~/.ava/feishu.json"}]," → interactive terminal binding"]}],". A partial pair in either of the first two sources causes an error; credentials from different sources are not combined. Piped input, redirection, and other non-interactive environments do not prompt for binding, so configure credentials beforehand."]}]
+49:["$","p",null,{"children":"Keep App Secret and the saved binding file out of Git and logs. To change a saved app, update the complete credential pair in the binding file, or override it with higher-priority environment variables."}]
+4a:["$","h2",null,{"id":"verify-the-data","children":["$","a",null,{"href":"#verify-the-data","className":"docs-heading-link","children":"5. Verify the data and start analysis"}]}]
+4b:["$","p",null,{"children":["A successful load returns a dataset ID. Replace ",["$","code",null,{"children":"YOUR_DATASET_ID"}]," with that actual value to inspect the schema, sample rows, and record count:"]}]
+4c:["$","figure",null,{"data-rehype-pretty-code-figure":"","children":["$","div",null,{"className":"docs-code-block","children":[["$","div",null,{"className":"docs-code-toolbar","children":[["$","span",null,{"children":"bash"}],["$","$L15",null,{}]]}],["$","pre",null,{"tabIndex":"0","data-language":"bash","data-theme":"github-light","children":["$","code",null,{"data-language":"bash","data-theme":"github-light","style":{"display":"grid"},"children":[["$","span",null,{"data-line":"","children":[["$","span",null,{"style":{"color":"#6F42C1"},"children":"ava"}],["$","span",null,{"style":{"color":"#032F62"},"children":" schema"}],["$","span",null,{"style":{"color":"#032F62"},"children":" YOUR_DATASET_ID"}]]}],"\n",["$","span",null,{"data-line":"","children":[["$","span",null,{"style":{"color":"#6F42C1"},"children":"ava"}],["$","span",null,{"style":{"color":"#032F62"},"children":" query"}],["$","span",null,{"style":{"color":"#032F62"},"children":" YOUR_DATASET_ID"}],["$","span",null,{"style":{"color":"#005CC5"},"children":" --dsl"}],["$","span",null,{"style":{"color":"#032F62"},"children":" 'SELECT * FROM data LIMIT 5'"}]]}],"\n",["$","span",null,{"data-line":"","children":[["$","span",null,{"style":{"color":"#6F42C1"},"children":"ava"}],["$","span",null,{"style":{"color":"#032F62"},"children":" query"}],["$","span",null,{"style":{"color":"#032F62"},"children":" YOUR_DATASET_ID"}],["$","span",null,{"style":{"color":"#005CC5"},"children":" --dsl"}],["$","span",null,{"style":{"color":"#032F62"},"children":" 'SELECT COUNT(*) AS row_count FROM data'"}]]}]]}]}]]}]}]
+4d:["$","p",null,{"children":["Check the ",["$","code",null,{"children":"data"}]," view, field names, and read scope. The count should match the target table accessible to the app. Run ",["$","code",null,{"children":"ava dispose YOUR_DATASET_ID"}]," when finished. After changes in Base, run ",["$","code",null,{"children":"ava source"}]," again and use the new ID; existing sessions do not continuously synchronize remote changes."]}]
+4e:["$","p",null,{"children":"Complex fields such as people, attachments, and linked records become queryable text, usually with multiple values separated by commas. Attachments expose metadata without downloading files. Formula and lookup fields are converted according to their returned value types and are not necessarily text. Unsupported field types are skipped; an empty table preserves supported field definitions."}]
+4f:["$","p",null,{"children":["After installing the ",["$","$L9",null,{"href":"/documentation/agent-skill/","children":"AVA Skill"}],", you can ask your agent:"]}]
+50:["$","figure",null,{"data-rehype-pretty-code-figure":"","children":["$","div",null,{"className":"docs-code-block","children":[["$","div",null,{"className":"docs-code-toolbar","children":[["$","span",null,{"children":"text"}],["$","$L15",null,{}]]}],["$","pre",null,{"tabIndex":"0","data-language":"text","data-theme":"github-light","children":["$","code",null,{"data-language":"text","data-theme":"github-light","style":{"display":"grid"},"children":[["$","span",null,{"data-line":"","children":["$","span",null,{"children":"Use AVA Skill to analyze this Lark Base: <replace with the full URL>."}]}],"\n",["$","span",null,{"data-line":"","children":["$","span",null,{"children":"Credentials are configured locally. Inspect the schema and verify the record count,"}]}],"\n",["$","span",null,{"data-line":"","children":["$","span",null,{"children":"then count records by department using the actual fields."}]}],"\n",["$","span",null,{"data-line":"","children":["$","span",null,{"children":"Provide the query, results, and a chart. Make any time filters explicit in the query."}]}]]}]}]]}]}]
+51:["$","h2",null,{"id":"nodejs-sdk","children":["$","a",null,{"href":"#nodejs-sdk","className":"docs-heading-link","children":"Use the Node.js SDK"}]}]
+52:["$","p",null,{"children":"Pass credentials explicitly to the SDK; it does not automatically read the CLI binding file or environment variables. This example reads environment variables in application code and runs queries without calling a model:"}]
+53:["$","figure",null,{"data-rehype-pretty-code-figure":"","children":["$","div",null,{"className":"docs-code-block","children":[["$","div",null,{"className":"docs-code-toolbar","children":[["$","span",null,{"children":"javascript"}],["$","$L15",null,{}]]}],["$","pre",null,{"tabIndex":"0","data-language":"javascript","data-theme":"github-light","children":["$","code",null,{"data-language":"javascript","data-theme":"github-light","style":{"display":"grid"},"children":[["$","span",null,{"data-line":"","children":[["$","span",null,{"style":{"color":"#D73A49"},"children":"import"}],["$","span",null,{"style":{"color":"#24292E"},"children":" { AVA } "}],["$","span",null,{"style":{"color":"#D73A49"},"children":"from"}],["$","span",null,{"style":{"color":"#032F62"},"children":" '@antv/ava'"}],["$","span",null,{"style":{"color":"#24292E"},"children":";"}]]}],"\n",["$","span",null,{"data-line":"","children":" "}],"\n",["$","span",null,{"data-line":"","children":[["$","span",null,{"style":{"color":"#D73A49"},"children":"const"}],["$","span",null,{"style":{"color":"#005CC5"},"children":" ava"}],["$","span",null,{"style":{"color":"#D73A49"},"children":" ="}],["$","span",null,{"style":{"color":"#D73A49"},"children":" new"}],["$","span",null,{"style":{"color":"#6F42C1"},"children":" AVA"}],["$","span",null,{"style":{"color":"#24292E"},"children":"({"}]]}],"\n",["$","span",null,{"data-line":"","children":[["$","span",null,{"style":{"color":"#24292E"},"children":"  llm: { model: "}],["$","span",null,{"style":{"color":"#032F62"},"children":"'gpt-4o-mini'"}],["$","span",null,{"style":{"color":"#24292E"},"children":" },"}]]}],"\n",["$","span",null,{"data-line":"","children":[["$","span",null,{"style":{"color":"#24292E"},"children":"  engine: { type: "}],["$","span",null,{"style":{"color":"#032F62"},"children":"'duckdb'"}],["$","span",null,{"style":{"color":"#24292E"},"children":" },"}]]}],"\n",["$","span",null,{"data-line":"","children":["$","span",null,{"style":{"color":"#24292E"},"children":"});"}]}],"\n",["$","span",null,{"data-line":"","children":" "}],"\n",["$","span",null,{"data-line":"","children":[["$","span",null,{"style":{"color":"#D73A49"},"children":"try"}],["$","span",null,{"style":{"color":"#24292E"},"children":" {"}]]}],"\n",["$","span",null,{"data-line":"","children":[["$","span",null,{"style":{"color":"#D73A49"},"children":"  await"}],["$","span",null,{"style":{"color":"#24292E"},"children":" ava."}],["$","span",null,{"style":{"color":"#6F42C1"},"children":"source"}],["$","span",null,{"style":{"color":"#24292E"},"children":"({"}]]}],"\n",["$","span",null,{"data-line":"","children":[["$","span",null,{"style":{"color":"#24292E"},"children":"    type: "}],["$","span",null,{"style":{"color":"#032F62"},"children":"'feishu-bitable'"}],["$","span",null,{"style":{"color":"#24292E"},"children":","}]]}],"\n",["$","span",null,{"data-line":"","children":["$","span",null,{"style":{"color":"#24292E"},"children":"    options: {"}]}],"\n",["$","span",null,{"data-line":"","children":[["$","span",null,{"style":{"color":"#24292E"},"children":"      url: "}],["$","span",null,{"style":{"color":"#032F62"},"children":"'https://my.larksuite.com/base/APP_TOKEN?table=TABLE_ID'"}],["$","span",null,{"style":{"color":"#24292E"},"children":","}]]}],"\n",["$","span",null,{"data-line":"","children":[["$","span",null,{"style":{"color":"#24292E"},"children":"      appId: process.env."}],["$","span",null,{"style":{"color":"#005CC5"},"children":"AVA_FEISHU_APP_ID"}],["$","span",null,{"style":{"color":"#24292E"},"children":","}]]}],"\n",["$","span",null,{"data-line":"","children":[["$","span",null,{"style":{"color":"#24292E"},"children":"      appSecret: process.env."}],["$","span",null,{"style":{"color":"#005CC5"},"children":"AVA_FEISHU_APP_SECRET"}],["$","span",null,{"style":{"color":"#24292E"},"children":","}]]}],"\n",["$","span",null,{"data-line":"","children":["$","span",null,{"style":{"color":"#24292E"},"children":"    },"}]}],"\n",["$","span",null,{"data-line":"","children":["$","span",null,{"style":{"color":"#24292E"},"children":"  });"}]}],"\n",["$","span",null,{"data-line":"","children":[["$","span",null,{"style":{"color":"#24292E"},"children":"  console."}],["$","span",null,{"style":{"color":"#6F42C1"},"children":"log"}],["$","span",null,{"style":{"color":"#24292E"},"children":"("}],["$","span",null,{"style":{"color":"#D73A49"},"children":"await"}],["$","span",null,{"style":{"color":"#24292E"},"children":" ava."}],["$","span",null,{"style":{"color":"#6F42C1"},"children":"schema"}],["$","span",null,{"style":{"color":"#24292E"},"children":"());"}]]}],"\n",["$","span",null,{"data-line":"","children":[["$","span",null,{"style":{"color":"#24292E"},"children":"  console."}],["$","span",null,{"style":{"color":"#6F42C1"},"children":"log"}],["$","span",null,{"style":{"color":"#24292E"},"children":"("}],["$","span",null,{"style":{"color":"#D73A49"},"children":"await"}],["$","span",null,{"style":{"color":"#24292E"},"children":" ava."}],["$","span",null,{"style":{"color":"#6F42C1"},"children":"query"}],["$","span",null,{"style":{"color":"#24292E"},"children":"("}],["$","span",null,{"style":{"color":"#032F62"},"children":"'SELECT COUNT(*) AS row_count FROM data'"}],["$","span",null,{"style":{"color":"#24292E"},"children":"));"}]]}],"\n",["$","span",null,{"data-line":"","children":[["$","span",null,{"style":{"color":"#24292E"},"children":"} "}],"$L5b","$L5c"]}],"\n","$L5d","\n","$L5e"]}]}]]}]}]
+54:["$","h2",null,{"id":"troubleshooting","children":["$","a",null,{"href":"#troubleshooting","className":"docs-heading-link","children":"Troubleshooting"}]}]
+55:["$","div",null,{"className":"docs-table","children":["$","table",null,{"children":[["$","thead",null,{"children":["$","tr",null,{"children":[["$","th",null,{"children":"Symptom"}],["$","th",null,{"children":"Check and resolution"}]]}]}],["$","tbody",null,{"children":[["$","tr",null,{"children":[["$","td",null,{"children":"App binding fails"}],["$","td",null,{"children":"Check that App ID and App Secret belong to the same enterprise custom app, are copied in full, and belong to the Lark tenant hosting your Base. The error preserves the platform's code and message."}]]}],["$","tr",null,{"children":[["$","td",null,{"children":"Binding succeeds but loading reports insufficient permissions"}],["$","td",null,{"children":"Confirm read API permissions are published and effective, and the same app is added to the target document. Your own access does not grant app access."}]]}],["$","tr",null,{"children":[["$","td",null,{"children":[["$","code",null,{"children":"/base/"}]," works but ",["$","code",null,{"children":"/wiki/"}]," fails"]}],["$","td",null,{"children":"Check Wiki read API permissions, space access, and whether the node hosts a Base."}]]}],["$","tr",null,{"children":[["$","td",null,{"children":["Error contains ",["$","code",null,{"children":"has … tables"}]]}],["$","td",null,{"children":["Specify ",["$","code",null,{"children":"?table=TABLE_ID"}]," or ",["$","code",null,{"children":"tableId"}],"; do not use a view ID as a table ID."]}]]}],["$","tr",null,{"children":[["$","td",null,{"children":["Error contains ",["$","code",null,{"children":"does not match"}]]}],["$","td",null,{"children":["Remove redundant identifiers or ensure ",["$","code",null,{"children":"url"}],", ",["$","code",null,{"children":"appToken"}],", and ",["$","code",null,{"children":"tableId"}]," identify the same table."]}]]}],["$","tr",null,{"children":[["$","td",null,{"children":"Missing credentials in a non-interactive environment"}],["$","td",null,{"children":"Configure paired environment variables, a complete source configuration, or a saved binding file beforehand."}]]}],["$","tr",null,{"children":[["$","td",null,{"children":["$","code",null,{"children":"~/.ava/feishu.json is not valid JSON"}]}],["$","td",null,{"children":["Repair the file to valid JSON containing ",["$","code",null,{"children":"appId"}]," and ",["$","code",null,{"children":"appSecret"}],", or override it with environment variables."]}]]}],["$","tr",null,{"children":[["$","td",null,{"children":"More records than the view shows, or remote changes are missing"}],["$","td",null,{"children":[["$","code",null,{"children":"view"}]," filters are ignored; filter in SQL. Reload the source to read remote updates."]}]]}],["$","tr",null,{"children":[["$","td",null,{"children":"Network error or non-JSON response"}],["$","td",null,{"children":["Check connectivity and proxy settings for ",["$","code",null,{"children":"open.larksuite.com"}],", and inspect the original failing request."]}]]}]]}]]}]}]
+56:["$","p",null,{"children":["See the ",["$","$L9",null,{"href":"/documentation/reference/cli/","children":"CLI guide"}]," for complete commands and ",["$","$L9",null,{"href":"/documentation/data/sources/","children":"Data sources"}]," for other connectors."]}]
+57:["$","p",null,{"children":["Screenshot references include ",["$","$L9",null,{"href":"https://helpv3.ladipage.vn/form-data/cac-buoc-cai-dat-luu-data/luu-data-ve-lark-base/cach-tao-app-va-lay-cac-thong-tin-ket-noi-cua-lark-base","children":"LadiPage’s Lark Base setup guide"}]," and the ",["$","$L9",null,{"href":"https://note.com/hiroshikinoshita/n/ndcf1b853e7f5","children":"Lark AnyCross Base archiving tutorial"}],"."]}]
+5a:null
+10:C
+5b:["$","span",null,{"style":{"color":"#D73A49"},"children":"finally"}]
+5c:["$","span",null,{"style":{"color":"#24292E"},"children":" {"}]
+5d:["$","span",null,{"data-line":"","children":[["$","span",null,{"style":{"color":"#D73A49"},"children":"  await"}],["$","span",null,{"style":{"color":"#24292E"},"children":" ava."}],["$","span",null,{"style":{"color":"#6F42C1"},"children":"dispose"}],["$","span",null,{"style":{"color":"#24292E"},"children":"();"}]]}]
+5e:["$","span",null,{"data-line":"","children":["$","span",null,{"style":{"color":"#24292E"},"children":"}"}]}]
+28:0
+12:"$undefined"
+f:"$undefined"
+27:"$undefined"
+20:"$undefined"

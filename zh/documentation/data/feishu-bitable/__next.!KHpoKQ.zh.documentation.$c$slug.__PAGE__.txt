@@ -1,0 +1,344 @@
+3:"$Sreact.fragment"
+4:"/_next/static/chunks/0xpkuc787v-p9.js"
+5:I[936064,["$4"],"default"]
+6:I[481497,["$4"],"default"]
+b:"/_next/static/chunks/2qw5ule3nfj6b.js"
+c:"/_next/static/chunks/024mr0my09zgj.js"
+d:"/_next/static/chunks/1kz1ekcaagb9u.js"
+e:"/_next/static/chunks/086pqg3mbf2qd.js"
+f:"/_next/static/chunks/1lxucu_dj41ds.js"
+10:I[400503,["$b","$c","$d","$e","$f"],"default"]
+11:I[697790,["$b","$c","$d","$e"],"default"]
+12:I[474333,["$b","$c","$d","$e"],"default"]
+17:I[5138,["$b","$c","$d","$e","$f"],"default"]
+23:"ViewportBoundary"
+24:I[675049,["$4"],"$23"]
+25:"MetadataBoundary"
+26:I[675049,["$4"],"$25"]
+27:"$Sreact.suspense"
+28:I[934035,["$4"],"IconMark"]
+:HL["/_next/static/chunks/0o-6jlwxqyz8v.css","style"]
+:HL["https://mdn.alipayobjects.com/huamei_qa8qxu/afts/img/A*A-lcQbVTpjwAAAAAAAAAAAAADmJ7AQ/original","image"]
+8:X
+8:C
+9:X
+18:T3ccf,# 飞书多维表格配置
+
+图文介绍应用创建、权限授权、凭证绑定和多维表格加载验证。
+
+import { Heading } from '../../../../mdx-components';
+
+这篇指南带你创建飞书应用、授予数据访问权限，再把多维表格接入 AVA。完成后，可以通过 CLI 或 Node.js SDK 查询数据，也可以交给 [Agent Skill](/documentation/agent-skill/)继续分析和生成图表。
+
+<Heading as="h2" id="before-you-start">开始前准备</Heading>
+
+- 一个允许创建企业自建应用的飞书账号，以及目标多维表格的管理权限；需要审批时，请联系企业管理员或表格所有者。
+- **Node.js 22.13.0 或更高版本**。CLI 当前支持 macOS / Linux，安装方式见[命令行工具](/documentation/reference/cli/)。
+- 目标数据表的浏览器地址，通常包含 `/base/` 或 `/wiki/`。
+
+AVA 使用应用身份读取数据，在 Node.js 的 DuckDB 引擎中将记录加载为名为 `data` 的只读视图。加载、查看结构和执行 SQL 不需要模型 API 密钥；使用 AVA 的自然语言分析与可视化功能时，再按[模型配置](/documentation/configuration/)设置模型。
+
+以下使用飞书官方教程中的真实界面截图，点击图片可查看原图。截图中的应用名称仅为示例，请使用你自己的应用；界面布局可能随飞书版本更新。
+
+<Heading as="h2" id="create-an-app">1. 创建应用并获取凭证</Heading>
+
+1. 打开[飞书开放平台](https://open.feishu.cn/)，进入开发者后台，创建 **企业自建应用**；已有应用也可以复用。
+2. 填写应用名称和描述，例如「AVA 数据分析」。
+3. 在应用的 **凭证与基础信息** 页面找到 **App ID** 和 **App Secret**，供后续绑定使用。
+
+这里的 App ID 标识开放平台应用，App Secret 用来获取 `tenant_access_token`。它们与多维表格链接中的 App Token 是不同的值，不能互相替代。AVA 会自动获取访问令牌，无需手动复制令牌。
+
+<figure>
+  <a href="/screenshots/feishu/create-app.webp" target="_blank" rel="noopener noreferrer" aria-label="开发者后台的创建企业自建应用按钮">
+    <img src="/screenshots/feishu/create-app.webp" width="1593" height="742" loading="lazy" style={{ width: '100%', height: 'auto' }} alt="开发者后台的创建企业自建应用按钮" />
+  </a>
+  <figcaption>在开发者后台点击「创建企业自建应用」，再填写应用名称、描述和图标。</figcaption>
+</figure>
+
+<figure>
+  <a href="/screenshots/feishu/credentials.webp" target="_blank" rel="noopener noreferrer" aria-label="凭证与基础信息页面中的 App ID 和已隐藏的 App Secret">
+    <img src="/screenshots/feishu/credentials.webp" width="1589" height="923" loading="lazy" style={{ width: '100%', height: 'auto' }} alt="凭证与基础信息页面中的 App ID 和已隐藏的 App Secret" />
+  </a>
+  <figcaption>创建后进入「凭证与基础信息」，复制自己的 App ID 和 App Secret。</figcaption>
+</figure>
+
+<Heading as="h2" id="grant-access">2. 开通权限并授权表格</Heading>
+
+<Heading as="h3" id="api-permissions">开放平台：允许应用调用读取接口</Heading>
+
+在应用的 **权限管理** 中搜索多维表格，申请能够读取数据表、字段和记录的权限。以飞书当前接口文档列出的权限要求为准；下面列出了 AVA 实际会调用的读取接口，便于逐项核对。
+
+<figure>
+  <a href="/screenshots/feishu/api-permissions.webp" target="_blank" rel="noopener noreferrer" aria-label="权限管理中搜索 bitable:app 后的多维表格权限列表">
+    <img src="/screenshots/feishu/api-permissions.webp" width="1906" height="1088" loading="lazy" style={{ width: '100%', height: 'auto' }} alt="权限管理中搜索 bitable:app 后的多维表格权限列表" />
+  </a>
+  <figcaption>在「权限管理」中搜索多维表格相关权限。截图演示搜索入口，不必照抄全选；按下表接口申请所需读取权限。</figcaption>
+</figure>
+
+| 接口 | 用途 | 何时需要 |
+| --- | --- | --- |
+| `GET /open-apis/bitable/v1/apps/{app_token}/tables/{table_id}/fields` | 读取字段名称和类型 | 每次加载 |
+| `GET /open-apis/bitable/v1/apps/{app_token}/tables/{table_id}/records` | 读取记录 | 每次加载 |
+| `GET /open-apis/bitable/v1/apps/{app_token}/tables` | 查找数据表 | 链接没有 `table` 参数时 |
+| `GET /open-apis/wiki/v2/spaces/get_node` | 将知识库节点解析为多维表格 | 使用 `/wiki/` 链接时，额外申请知识库读取权限 |
+
+参考[飞书服务端 API 文档](https://open.feishu.cn/document/server-docs/docs/bitable-v1/overview)。申请后，在 **版本管理与发布** 中创建版本并发布；如果企业要求管理员审批，等待审批完成，确认权限已生效。
+
+<figure>
+  <a href="/screenshots/feishu/publish-version.webp" target="_blank" rel="noopener noreferrer" aria-label="版本管理与发布页面的创建版本按钮">
+    <img src="/screenshots/feishu/publish-version.webp" width="1636" height="850" loading="lazy" style={{ width: '100%', height: 'auto' }} alt="版本管理与发布页面的创建版本按钮" />
+  </a>
+  <figcaption>开通权限后，在「版本管理与发布」中点击「创建版本」，填写版本信息并提交发布。</figcaption>
+</figure>
+
+<Heading as="h3" id="document-access">多维表格：允许应用访问目标文档</Heading>
+
+1. 打开目标多维表格，在右上角的 **更多** 或文档应用入口中找到 **添加文档应用**；具体入口名称以当前飞书界面为准。
+2. 搜索并添加刚创建的应用，使其获得读取目标表格的权限。若入口不可用或找不到应用，让表格所有者检查文档权限与应用的发布状态、可用范围。
+3. 表格启用了高级权限时，确认应用可以读取要分析的数据表、记录和字段。
+4. 使用知识库中的 `/wiki/` 链接时，还需要为应用授予相应知识空间的访问权限，按知识空间设置添加应用。仅有多维表格权限不足以解析 Wiki 节点。
+
+<figure>
+  <a href="/screenshots/feishu/document-menu.webp" target="_blank" rel="noopener noreferrer" aria-label="多维表格右上角更多菜单中的添加文档应用入口">
+    <img src="/screenshots/feishu/document-menu.webp" width="1906" height="1088" loading="lazy" style={{ width: '100%', height: 'auto' }} alt="多维表格右上角更多菜单中的添加文档应用入口" />
+  </a>
+  <figcaption>在目标多维表格中打开「··· → 更多 → 添加文档应用」。</figcaption>
+</figure>
+
+<figure>
+  <a href="/screenshots/feishu/document-access.webp" target="_blank" rel="noopener noreferrer" aria-label="添加文档应用弹窗中的应用及可阅读权限选项">
+    <img src="/screenshots/feishu/document-access.webp" width="1906" height="1088" loading="lazy" style={{ width: '100%', height: 'auto' }} alt="添加文档应用弹窗中的应用及可阅读权限选项" />
+  </a>
+  <figcaption>搜索并选择自己的应用，设置能够读取目标表格的权限，再点击「添加」。截图展示权限选项；读取场景可选择「可阅读」。</figcaption>
+</figure>
+
+<Heading as="h2" id="copy-the-link">3. 复制目标数据表链接</Heading>
+
+在多维表格中切换到要分析的数据表，复制浏览器地址栏中的完整链接，并保留 `table` 参数。例如：
+
+```text
+https://my.feishu.cn/base/APP_TOKEN?table=TABLE_ID&view=VIEW_ID
+https://my.feishu.cn/wiki/NODE_TOKEN?table=TABLE_ID&view=VIEW_ID
+```
+
+| 链接中的值 | 对应配置 | 含义 |
+| --- | --- | --- |
+| `/base/` 后的 `APP_TOKEN` | `appToken` | 多维表格标识，不是 App ID |
+| `/wiki/` 后的 `NODE_TOKEN` | 放在 `url` 中 | 知识库节点标识；AVA 自动解析实际 App Token，不能直接用作 `appToken` |
+| `table=TABLE_ID` | `tableId` | 当前数据表标识 |
+| `view=VIEW_ID` | 无 | AVA 会忽略这个参数 |
+
+缺少 `table` 参数时，AVA 会尝试查找数据表：只有一张表就自动使用；有多张表则报错并列出候选表名和 ID，需要指定 `table` 或 `tableId` 后重新加载。飞书文档 `/docx/`、电子表格 `/sheets/` 和知识库中的其他文档类型不支持作为该数据源加载。
+
+<Callout>
+  AVA 加载的是应用可读取的整张数据表，按接口分页读取字段和记录，不会应用飞书视图中的筛选条件。
+  例如某个视图只显示本月记录，带上它的 `view` 参数也不会把 AVA 的数据限制为本月；请在 SQL 中明确筛选。
+</Callout>
+
+Lark 国际版同样支持 `larksuite.com` 下的 `/base/` 和 `/wiki/` 链接，使用 [Lark 开放平台](https://open.larksuite.com/)创建的应用。AVA 根据链接域名自动选择接口服务；使用 Lark 时请保留 `url`，仅提供 `appToken` / `tableId` 会默认访问飞书中国版接口。
+
+<Heading as="h2" id="bind-and-load">4. 绑定凭证并加载</Heading>
+
+<Heading as="h3" id="terminal-binding">方式一：在终端中首次绑定</Heading>
+
+安装 CLI 后，把示例链接替换成实际链接，在交互终端执行：
+
+```bash
+npm install -g @antv/ava@4
+ava source "https://my.feishu.cn/base/APP_TOKEN?table=TABLE_ID"
+```
+
+没有配置凭证时，AVA 会提示输入 App ID 和 App Secret。App Secret 输入时不回显；绑定成功后，凭证保存到当前用户的 `~/.ava/feishu.json`，以后加载时可以复用。绑定只验证应用凭证能否获取令牌，目标表格的访问权限会在随后加载时验证。
+
+```text
+App ID: cli_YOUR_APP_ID
+App Secret:
+```
+
+<Heading as="h3" id="environment-variables">方式二：使用环境变量</Heading>
+
+在 macOS / Linux 的 shell 中设置以下变量；自动化任务则使用运行环境的密钥管理配置。
+
+```bash
+export AVA_FEISHU_APP_ID='YOUR_APP_ID'
+export AVA_FEISHU_APP_SECRET='YOUR_APP_SECRET'
+ava source "https://my.feishu.cn/base/APP_TOKEN?table=TABLE_ID"
+```
+
+<Heading as="h3" id="source-config">方式三：使用数据源配置文件</Heading>
+
+把下面的内容保存为 `feishu-source.json`。这个文件只指定数据源，凭证仍可使用环境变量或已保存的绑定信息。
+
+```json
+{
+  "type": "feishu-bitable",
+  "options": {
+    "url": "https://my.feishu.cn/base/APP_TOKEN?table=TABLE_ID"
+  }
+}
+```
+
+```bash
+ava source @feishu-source.json
+```
+
+| 配置字段 | 必填 | 说明 |
+| --- | --- | --- |
+| `url` | 与 `appToken` + `tableId` 二选一 | 普通多维表格或知识库链接 |
+| `appToken` | 不提供 `url` 时必填 | 实际多维表格的 App Token |
+| `tableId` | 不提供 `url` 时必填 | 目标数据表 ID；也可补充到不含 `table` 的链接 |
+| `appId` | SDK 必填；CLI 可从其他位置读取 | 开放平台应用 App ID |
+| `appSecret` | SDK 必填；CLI 可从其他位置读取 | 开放平台应用 App Secret |
+
+如果同时指定 `url` 与 `appToken` / `tableId`，它们必须指向同一张数据表。
+
+CLI 的凭证优先级依次为：**配置中的 `appId` + `appSecret` → 环境变量 → `~/.ava/feishu.json` → 交互终端绑定**。前两处若只填一个值会直接报错，不会拼接不同来源的凭证。管道输入、重定向或其他非交互环境不会提示绑定，需要事先配置好凭证。
+
+App Secret 和本地绑定文件都属于敏感信息，避免提交到 Git 或输出到日志。更换已保存的应用时，可以修改本地绑定文件中的完整凭证对，或用优先级更高的环境变量覆盖。
+
+<Heading as="h2" id="verify-the-data">5. 验证数据并开始分析</Heading>
+
+加载成功会返回数据集 ID。将下方的 `YOUR_DATASET_ID` 替换为实际返回值，再查看结构、样本和记录数：
+
+```bash
+ava schema YOUR_DATASET_ID
+ava query YOUR_DATASET_ID --dsl 'SELECT * FROM data LIMIT 5'
+ava query YOUR_DATASET_ID --dsl 'SELECT COUNT(*) AS row_count FROM data'
+```
+
+核对表名 `data`、字段名称和读取范围；记录数应与应用可访问的目标数据表一致。完成后运行 `ava dispose YOUR_DATASET_ID` 释放会话。飞书数据更新后，重新运行 `ava source` 加载新数据，再使用新返回的 ID；现有会话不会持续同步远端变更。
+
+人员、附件、关联记录等复杂字段会转换成便于查询的文本，多个值通常以逗号分隔；附件只读取元信息，不下载文件。公式和查找引用字段按返回值类型转换，不保证全部为文本。不支持的字段类型会跳过；空表仍保留支持的字段结构。
+
+如果希望把后续分析交给 Agent，可以在安装 [AVA Skill](/documentation/agent-skill/)后提出需求：
+
+```text
+请用 AVA Skill 分析这张飞书多维表格：<替换为完整链接>。
+凭证已在本地配置。先查看结构、核对记录数，再按实际字段统计各部门的记录数。
+请给出查询、结果和图表；如果需要按时间筛选，请明确写入查询条件。
+```
+
+<Heading as="h2" id="nodejs-sdk">在 Node.js SDK 中使用</Heading>
+
+SDK 需要显式传入凭证，不会自动读取 CLI 的绑定文件或环境变量。下面的示例由应用代码读取环境变量，查询时不调用模型：
+
+```javascript
+import { AVA } from '@antv/ava';
+
+const ava = new AVA({
+  llm: { model: 'gpt-4o-mini' },
+  engine: { type: 'duckdb' },
+});
+
+try {
+  await ava.source({
+    type: 'feishu-bitable',
+    options: {
+      url: 'https://my.feishu.cn/base/APP_TOKEN?table=TABLE_ID',
+      appId: process.env.AVA_FEISHU_APP_ID,
+      appSecret: process.env.AVA_FEISHU_APP_SECRET,
+    },
+  });
+  console.log(await ava.schema());
+  console.log(await ava.query('SELECT COUNT(*) AS row_count FROM data'));
+} finally {
+  await ava.dispose();
+}
+```
+
+<Heading as="h2" id="troubleshooting">常见问题</Heading>
+
+| 现象 | 排查与处理 |
+| --- | --- |
+| 提示「飞书应用绑定失败」 | 核对 App ID 与 App Secret 是否属于同一个企业自建应用、是否复制完整，以及飞书 / Lark 平台是否对应；错误保留平台返回的 code 和 msg。 |
+| 绑定成功，加载却提示权限不足 | 检查读取接口权限是否已发布生效，再检查目标文档是否添加了同一个应用；本人有权限不代表应用有权限。 |
+| `/base/` 能加载，`/wiki/` 失败 | 检查知识库读取接口权限、知识空间访问权限，以及节点承载的对象是否为多维表格。 |
+| 提示 `has … tables` | 指定 `?table=TABLE_ID` 或配置 `tableId`，不要把视图 ID 当成数据表 ID。 |
+| 提示 `does not match` | 删除重复配置，或核对 `url`、`appToken` 与 `tableId` 是否指向同一张表。 |
+| 非交互环境提示缺少凭证 | 预先设置成对的环境变量，或提供完整配置 / 本地绑定文件。 |
+| 提示 `~/.ava/feishu.json is not valid JSON` | 修复绑定文件为包含 `appId` 和 `appSecret` 的有效 JSON；环境变量可优先覆盖该文件。 |
+| 结果多于视图中看到的记录，或远端修改未出现 | `view` 筛选会被忽略；在 SQL 中加筛选。远端更新需要重新加载数据源。 |
+| 返回网络错误或非 JSON 响应 | 检查到 `open.feishu.cn` / `open.larksuite.com` 的网络连接与代理设置，根据原始错误定位失败请求。 |
+
+完整 CLI 用法见[命令行工具](/documentation/reference/cli/)，其他数据源见[接入数据](/documentation/data/sources/)。
+
+截图参考：[应用创建与发布](https://www.feishu.cn/content/817244137021)、[多维表格权限配置](https://www.feishu.cn/content/137710114294)。
+16:[["children",{"s":"__PAGE__","h":160,"d":{"r":["$","$3","c",{"children":[[["$","main",null,{"className":"docs-main","id":"docs-content","children":[["$","div",null,{"className":"docs-page-toolbar","children":[["$","div",null,{"className":"docs-eyebrow","children":"理解与接入数据"}],["$","$L17","data/feishu-bitable",{"label":"复制 Markdown","text":"$18"}]]}],"$L19","$L1a","$L1b","$L1c","$L1d","$L1e"]}],"$L1f"],["$L20"],"$L21"]}],"p":"$@22","v":null,"s":"$9"}}]]
+14:[["children",{"s":{"n":"slug","t":"c","k":"data/feishu-bitable","s":[]},"h":65632,"d":{"r":["$","$3","c",{"children":[null,["$","$L5",null,{"parallelRouterKey":"children","template":["$","$L6",null,{}]}]]}],"p":"$@15","v":"$8","s":"$9"},"c":"$Q16"}]]
+a:[["children",{"s":"documentation","h":131168,"d":{"r":["$","$3","c",{"children":[[["$","link","0",{"rel":"stylesheet","href":"/_next/static/chunks/0o-6jlwxqyz8v.css","precedence":"next"}],["$","script","script-0",{"src":"/_next/static/chunks/1kz1ekcaagb9u.js","async":true}],["$","script","script-1",{"src":"/_next/static/chunks/086pqg3mbf2qd.js","async":true}]],["$","div",null,{"className":"docs-site","children":[["$","a",null,{"className":"docs-skip","href":"#docs-content","children":"跳至正文"}],["$","header",null,{"className":"docs-header","children":["$","div",null,{"className":"docs-header-inner","children":[["$","$L10",null,{"href":"/","className":"docs-brand","aria-label":"AVA 首页","children":[["$","img",null,{"src":"https://mdn.alipayobjects.com/huamei_qa8qxu/afts/img/A*A-lcQbVTpjwAAAAAAAAAAAAADmJ7AQ/original","alt":"","width":"80","height":"48"}],["$","strong",null,{"children":"AVA"}],["$","span",null,{"children":"使用文档"}]]}],["$","nav",null,{"aria-label":"主导航","className":"docs-header-links","children":[["$","$L10",null,{"href":"/","className":"docs-website","children":["官网首页"," ",["$","span",null,{"aria-hidden":"true","children":"↗"}]]}],["$","a",null,{"href":"https://github.com/antvis/AVA","className":"docs-github","children":["GitHub ",["$","span",null,{"aria-hidden":"true","children":"↗"}]]}],["$","$L11",null,{}],["$","$L10",null,{"href":"/ai/","className":"docs-ai","children":["AI 体验"," ",["$","span",null,{"aria-hidden":"true","children":"→"}]]}]]}]]}]}],["$","$L12",null,{"mobile":true}],["$","div",null,{"className":"docs-layout","children":[["$","aside",null,{"className":"docs-sidebar","children":[["$","$L10",null,{"href":"/documentation/","className":"docs-sidebar-label","children":[["$","span",null,{"className":"docs-book-icon","aria-hidden":"true","children":"▤"}]," ","使用文档"]}],["$","$L12",null,{}],["$","div",null,{"className":"docs-sidebar-footer","children":[["$","span",null,{"className":"docs-status-dot"}]," ","AVA · AI Visual Analytics"]}]]}],["$","$L5",null,{"parallelRouterKey":"children","template":["$","$L6",null,{}]}]]}]]}]]}],"p":"$@13","v":null,"s":"$9"},"c":"$Q14"}]]
+2:[["children",{"s":"zh","h":131136,"d":{"r":["$","$3","c",{"children":[null,["$","$L5",null,{"parallelRouterKey":"children","template":["$","$L6",null,{}]}]]}],"p":"$@7","v":"$8","s":"$9"},"c":"$Qa"}]]
+1:[["children",{"s":"(zh)","h":131120,"c":"$Q2"}]]
+0:{"t":{"t":{"s":"","h":131152,"c":"$Q1"},"h":{"r":["$","$3","h",{"children":[null,["$","$L24",null,{"children":[["$","meta","0",{"charSet":"utf-8"}],["$","meta","1",{"name":"viewport","content":"width=device-width, initial-scale=1"}]]}],["$","$L26",null,{"children":[["$","div",null,{"hidden":true,"children":["$","$27",null,{"name":"Next.Metadata","children":[["$","title","0",{"children":"飞书多维表格配置 — AVA 文档"}],["$","meta","1",{"name":"description","content":"图文介绍应用创建、权限授权、凭证绑定和多维表格加载验证。"}],["$","meta","2",{"name":"author","content":"AntV"}],["$","meta","3",{"name":"keywords","content":"AVA, visual analytics, AI-native, LLM, data visualization, natural language, data analysis, AntV, chart generation"}],["$","link","4",{"rel":"canonical","href":"https://ava.antv.vision/zh/documentation/data/feishu-bitable/"}],["$","link","5",{"rel":"alternate","hrefLang":"en","href":"https://ava.antv.vision/documentation/data/feishu-bitable/"}],["$","link","6",{"rel":"alternate","hrefLang":"zh-CN","href":"https://ava.antv.vision/zh/documentation/data/feishu-bitable/"}],["$","link","7",{"rel":"alternate","hrefLang":"x-default","href":"https://ava.antv.vision/documentation/data/feishu-bitable/"}],["$","meta","8",{"property":"og:title","content":"飞书多维表格配置 — AVA 文档"}],["$","meta","9",{"property":"og:description","content":"图文介绍应用创建、权限授权、凭证绑定和多维表格加载验证。"}],["$","meta","10",{"property":"og:url","content":"https://ava.antv.vision/zh/documentation/data/feishu-bitable/"}],["$","meta","11",{"property":"og:type","content":"article"}],["$","meta","12",{"name":"twitter:card","content":"summary"}],["$","meta","13",{"name":"twitter:title","content":"飞书多维表格配置 — AVA 文档"}],["$","meta","14",{"name":"twitter:description","content":"图文介绍应用创建、权限授权、凭证绑定和多维表格加载验证。"}],["$","link","15",{"rel":"icon","href":"https://mdn.alipayobjects.com/huamei_qa8qxu/afts/img/A*FBLnQIAzx6cAAAAAQDAAAAgAemJ7AQ/original"}],["$","$L28","16",{}]]}]}],null]}],null]}],"p":"$@29","v":null,"s":"$9"}},"a":"$@2a","u":"$@2b","b":"94iMdv1MttvpGyEeOZD-8"}
+5c:I[754170,["$b","$c","$d","$e","$f"],"default"]
+5d:I[675049,["$4"],"OutletBoundary"]
+19:["$","h1",null,{"children":"飞书多维表格配置"}]
+1a:["$","p",null,{"className":"docs-description","children":"图文介绍应用创建、权限授权、凭证绑定和多维表格加载验证。"}]
+1b:["$","article",null,{"className":"docs-prose","children":[["$","p",null,{"children":["这篇指南带你创建飞书应用、授予数据访问权限，再把多维表格接入 AVA。完成后，可以通过 CLI 或 Node.js SDK 查询数据，也可以交给 ",["$","$L10",null,{"href":"/documentation/agent-skill/","children":"Agent Skill"}],"继续分析和生成图表。"]}],"\n",["$","h2",null,{"id":"before-you-start","children":["$","a",null,{"href":"#before-you-start","className":"docs-heading-link","children":"开始前准备"}]}],"\n",["$","ul",null,{"children":["\n",["$","li",null,{"children":"一个允许创建企业自建应用的飞书账号，以及目标多维表格的管理权限；需要审批时，请联系企业管理员或表格所有者。"}],"\n",["$","li",null,{"children":[["$","strong",null,{"children":"Node.js 22.13.0 或更高版本"}],"。CLI 当前支持 macOS / Linux，安装方式见",["$","$L10",null,{"href":"/documentation/reference/cli/","children":"命令行工具"}],"。"]}],"\n",["$","li",null,{"children":["目标数据表的浏览器地址，通常包含 ",["$","code",null,{"children":"/base/"}]," 或 ",["$","code",null,{"children":"/wiki/"}],"。"]}],"\n"]}],"\n",["$","p",null,{"children":["AVA 使用应用身份读取数据，在 Node.js 的 DuckDB 引擎中将记录加载为名为 ",["$","code",null,{"children":"data"}]," 的只读视图。加载、查看结构和执行 SQL 不需要模型 API 密钥；使用 AVA 的自然语言分析与可视化功能时，再按",["$","$L10",null,{"href":"/documentation/configuration/","children":"模型配置"}],"设置模型。"]}],"\n",["$","p",null,{"children":"以下使用飞书官方教程中的真实界面截图，点击图片可查看原图。截图中的应用名称仅为示例，请使用你自己的应用；界面布局可能随飞书版本更新。"}],"\n",["$","h2",null,{"id":"create-an-app","children":["$","a",null,{"href":"#create-an-app","className":"docs-heading-link","children":"1. 创建应用并获取凭证"}]}],"\n",["$","ol",null,{"children":["\n",["$","li",null,{"children":["打开",["$","$L10",null,{"href":"https://open.feishu.cn/","children":"飞书开放平台"}],"，进入开发者后台，创建 ",["$","strong",null,{"children":"企业自建应用"}],"；已有应用也可以复用。"]}],"\n",["$","li",null,{"children":"填写应用名称和描述，例如「AVA 数据分析」。"}],"\n",["$","li",null,{"children":["在应用的 ",["$","strong",null,{"children":"凭证与基础信息"}]," 页面找到 ",["$","strong",null,{"children":"App ID"}]," 和 ",["$","strong",null,{"children":"App Secret"}],"，供后续绑定使用。"]}],"\n"]}],"\n",["$","p",null,{"children":["这里的 App ID 标识开放平台应用，App Secret 用来获取 ",["$","code",null,{"children":"tenant_access_token"}],"。它们与多维表格链接中的 App Token 是不同的值，不能互相替代。AVA 会自动获取访问令牌，无需手动复制令牌。"]}],"\n",["$","figure",null,{"children":[["$","a",null,{"href":"/screenshots/feishu/create-app.webp","target":"_blank","rel":"noopener noreferrer","aria-label":"开发者后台的创建企业自建应用按钮","children":["$","img",null,{"src":"/screenshots/feishu/create-app.webp","width":"1593","height":"742","loading":"lazy","style":{"width":"100%","height":"auto"},"alt":"开发者后台的创建企业自建应用按钮"}]}],["$","figcaption",null,{"children":"在开发者后台点击「创建企业自建应用」，再填写应用名称、描述和图标。"}]]}],"\n",["$","figure",null,{"children":[["$","a",null,{"href":"/screenshots/feishu/credentials.webp","target":"_blank","rel":"noopener noreferrer","aria-label":"凭证与基础信息页面中的 App ID 和已隐藏的 App Secret","children":["$","img",null,{"src":"/screenshots/feishu/credentials.webp","width":"1589","height":"923","loading":"lazy","style":{"width":"100%","height":"auto"},"alt":"凭证与基础信息页面中的 App ID 和已隐藏的 App Secret"}]}],["$","figcaption",null,{"children":"创建后进入「凭证与基础信息」，复制自己的 App ID 和 App Secret。"}]]}],"\n",["$","h2",null,{"id":"grant-access","children":["$","a",null,{"href":"#grant-access","className":"docs-heading-link","children":"2. 开通权限并授权表格"}]}],"\n",["$","h3",null,{"id":"api-permissions","children":["$","a",null,{"href":"#api-permissions","className":"docs-heading-link","children":"开放平台：允许应用调用读取接口"}]}],"\n",["$","p",null,{"children":["在应用的 ",["$","strong",null,{"children":"权限管理"}]," 中搜索多维表格，申请能够读取数据表、字段和记录的权限。以飞书当前接口文档列出的权限要求为准；下面列出了 AVA 实际会调用的读取接口，便于逐项核对。"]}],"\n",["$","figure",null,{"children":[["$","a",null,{"href":"/screenshots/feishu/api-permissions.webp","target":"_blank","rel":"noopener noreferrer","aria-label":"权限管理中搜索 bitable:app 后的多维表格权限列表","children":["$","img",null,{"src":"/screenshots/feishu/api-permissions.webp","width":"1906","height":"1088","loading":"lazy","style":{"width":"100%","height":"auto"},"alt":"权限管理中搜索 bitable:app 后的多维表格权限列表"}]}],["$","figcaption",null,{"children":"在「权限管理」中搜索多维表格相关权限。截图演示搜索入口，不必照抄全选；按下表接口申请所需读取权限。"}]]}],"\n",["$","div",null,{"className":"docs-table","children":["$","table",null,{"children":[["$","thead",null,{"children":["$","tr",null,{"children":[["$","th",null,{"children":"接口"}],["$","th",null,{"children":"用途"}],["$","th",null,{"children":"何时需要"}]]}]}],["$","tbody",null,{"children":[["$","tr",null,{"children":[["$","td",null,{"children":["$","code",null,{"children":"GET /open-apis/bitable/v1/apps/{app_token}/tables/{table_id}/fields"}]}],["$","td",null,{"children":"读取字段名称和类型"}],["$","td",null,{"children":"每次加载"}]]}],["$","tr",null,{"children":[["$","td",null,{"children":["$","code",null,{"children":"GET /open-apis/bitable/v1/apps/{app_token}/tables/{table_id}/records"}]}],"$L2c","$L2d"]}],"$L2e","$L2f"]}]]}]}],"\n","$L30","\n","$L31","\n","$L32","\n","$L33","\n","$L34","\n","$L35","\n","$L36","\n","$L37","\n","$L38","\n","$L39","\n","$L3a","\n","$L3b","\n","$L3c","\n","$L3d","\n","$L3e","\n","$L3f","\n","$L40","\n","$L41","\n","$L42","\n","$L43","\n","$L44","\n","$L45","\n","$L46","\n","$L47","\n","$L48","\n","$L49","\n","$L4a","\n","$L4b","\n","$L4c","\n","$L4d","\n","$L4e","\n","$L4f","\n","$L50","\n","$L51","\n","$L52","\n","$L53","\n","$L54","\n","$L55","\n","$L56","\n","$L57","\n","$L58","\n","$L59","\n","$L5a","\n","$L5b"]}]
+1c:["$","div",null,{"className":"docs-page-meta","children":["$","a",null,{"href":"https://github.com/antvis/AVA/blob/ai/site/content/docs/zh/data/feishu-bitable.mdx","children":["在 GitHub 编辑本页"," ",["$","span",null,{"aria-hidden":"true","children":"↗"}]]}]}]
+1d:["$","nav",null,{"className":"docs-pagination","aria-label":"章节导航","children":[["$","$L10",null,{"href":"/documentation/data/semantic/","children":[["$","span",null,{"children":"← 上一篇"}],["$","strong",null,{"children":"补充业务语义"}]]}],["$","$L10",null,{"href":"/documentation/analysis/overview/","className":"docs-next","children":[["$","span",null,{"children":"下一篇 →"}],["$","strong",null,{"children":"分析数据"}]]}]]}]
+1e:["$","footer",null,{"className":"docs-footer","children":[["$","span",null,{"children":"AVA · AntV 开源项目"}],["$","a",null,{"href":"https://github.com/antvis/AVA","children":"在 GitHub 查看源码 ↗"}]]}]
+1f:["$","$L5c","data/feishu-bitable",{}]
+20:["$","script","script-0",{"src":"/_next/static/chunks/1lxucu_dj41ds.js","async":true}]
+21:["$","$L5d",null,{"children":["$","$27",null,{"name":"Next.MetadataOutlet","children":"$@5e"}]}]
+2b:true
+9:300
+2c:["$","td",null,{"children":"读取记录"}]
+2d:["$","td",null,{"children":"每次加载"}]
+2e:["$","tr",null,{"children":[["$","td",null,{"children":["$","code",null,{"children":"GET /open-apis/bitable/v1/apps/{app_token}/tables"}]}],["$","td",null,{"children":"查找数据表"}],["$","td",null,{"children":["链接没有 ",["$","code",null,{"children":"table"}]," 参数时"]}]]}]
+2f:["$","tr",null,{"children":[["$","td",null,{"children":["$","code",null,{"children":"GET /open-apis/wiki/v2/spaces/get_node"}]}],["$","td",null,{"children":"将知识库节点解析为多维表格"}],["$","td",null,{"children":["使用 ",["$","code",null,{"children":"/wiki/"}]," 链接时，额外申请知识库读取权限"]}]]}]
+30:["$","p",null,{"children":["参考",["$","$L10",null,{"href":"https://open.feishu.cn/document/server-docs/docs/bitable-v1/overview","children":"飞书服务端 API 文档"}],"。申请后，在 ",["$","strong",null,{"children":"版本管理与发布"}]," 中创建版本并发布；如果企业要求管理员审批，等待审批完成，确认权限已生效。"]}]
+31:["$","figure",null,{"children":[["$","a",null,{"href":"/screenshots/feishu/publish-version.webp","target":"_blank","rel":"noopener noreferrer","aria-label":"版本管理与发布页面的创建版本按钮","children":["$","img",null,{"src":"/screenshots/feishu/publish-version.webp","width":"1636","height":"850","loading":"lazy","style":{"width":"100%","height":"auto"},"alt":"版本管理与发布页面的创建版本按钮"}]}],["$","figcaption",null,{"children":"开通权限后，在「版本管理与发布」中点击「创建版本」，填写版本信息并提交发布。"}]]}]
+32:["$","h3",null,{"id":"document-access","children":["$","a",null,{"href":"#document-access","className":"docs-heading-link","children":"多维表格：允许应用访问目标文档"}]}]
+33:["$","ol",null,{"children":["\n",["$","li",null,{"children":["打开目标多维表格，在右上角的 ",["$","strong",null,{"children":"更多"}]," 或文档应用入口中找到 ",["$","strong",null,{"children":"添加文档应用"}],"；具体入口名称以当前飞书界面为准。"]}],"\n",["$","li",null,{"children":"搜索并添加刚创建的应用，使其获得读取目标表格的权限。若入口不可用或找不到应用，让表格所有者检查文档权限与应用的发布状态、可用范围。"}],"\n",["$","li",null,{"children":"表格启用了高级权限时，确认应用可以读取要分析的数据表、记录和字段。"}],"\n",["$","li",null,{"children":["使用知识库中的 ",["$","code",null,{"children":"/wiki/"}]," 链接时，还需要为应用授予相应知识空间的访问权限，按知识空间设置添加应用。仅有多维表格权限不足以解析 Wiki 节点。"]}],"\n"]}]
+34:["$","figure",null,{"children":[["$","a",null,{"href":"/screenshots/feishu/document-menu.webp","target":"_blank","rel":"noopener noreferrer","aria-label":"多维表格右上角更多菜单中的添加文档应用入口","children":["$","img",null,{"src":"/screenshots/feishu/document-menu.webp","width":"1906","height":"1088","loading":"lazy","style":{"width":"100%","height":"auto"},"alt":"多维表格右上角更多菜单中的添加文档应用入口"}]}],["$","figcaption",null,{"children":"在目标多维表格中打开「··· → 更多 → 添加文档应用」。"}]]}]
+35:["$","figure",null,{"children":[["$","a",null,{"href":"/screenshots/feishu/document-access.webp","target":"_blank","rel":"noopener noreferrer","aria-label":"添加文档应用弹窗中的应用及可阅读权限选项","children":["$","img",null,{"src":"/screenshots/feishu/document-access.webp","width":"1906","height":"1088","loading":"lazy","style":{"width":"100%","height":"auto"},"alt":"添加文档应用弹窗中的应用及可阅读权限选项"}]}],["$","figcaption",null,{"children":"搜索并选择自己的应用，设置能够读取目标表格的权限，再点击「添加」。截图展示权限选项；读取场景可选择「可阅读」。"}]]}]
+36:["$","h2",null,{"id":"copy-the-link","children":["$","a",null,{"href":"#copy-the-link","className":"docs-heading-link","children":"3. 复制目标数据表链接"}]}]
+37:["$","p",null,{"children":["在多维表格中切换到要分析的数据表，复制浏览器地址栏中的完整链接，并保留 ",["$","code",null,{"children":"table"}]," 参数。例如："]}]
+38:["$","figure",null,{"data-rehype-pretty-code-figure":"","children":["$","div",null,{"className":"docs-code-block","children":[["$","div",null,{"className":"docs-code-toolbar","children":[["$","span",null,{"children":"text"}],["$","$L17",null,{}]]}],["$","pre",null,{"tabIndex":"0","data-language":"text","data-theme":"github-light","children":["$","code",null,{"data-language":"text","data-theme":"github-light","style":{"display":"grid"},"children":[["$","span",null,{"data-line":"","children":["$","span",null,{"children":"https://my.feishu.cn/base/APP_TOKEN?table=TABLE_ID&view=VIEW_ID"}]}],"\n",["$","span",null,{"data-line":"","children":["$","span",null,{"children":"https://my.feishu.cn/wiki/NODE_TOKEN?table=TABLE_ID&view=VIEW_ID"}]}]]}]}]]}]}]
+39:["$","div",null,{"className":"docs-table","children":["$","table",null,{"children":[["$","thead",null,{"children":["$","tr",null,{"children":[["$","th",null,{"children":"链接中的值"}],["$","th",null,{"children":"对应配置"}],["$","th",null,{"children":"含义"}]]}]}],["$","tbody",null,{"children":[["$","tr",null,{"children":[["$","td",null,{"children":[["$","code",null,{"children":"/base/"}]," 后的 ",["$","code",null,{"children":"APP_TOKEN"}]]}],["$","td",null,{"children":["$","code",null,{"children":"appToken"}]}],["$","td",null,{"children":"多维表格标识，不是 App ID"}]]}],["$","tr",null,{"children":[["$","td",null,{"children":[["$","code",null,{"children":"/wiki/"}]," 后的 ",["$","code",null,{"children":"NODE_TOKEN"}]]}],["$","td",null,{"children":["放在 ",["$","code",null,{"children":"url"}]," 中"]}],["$","td",null,{"children":["知识库节点标识；AVA 自动解析实际 App Token，不能直接用作 ",["$","code",null,{"children":"appToken"}]]}]]}],["$","tr",null,{"children":[["$","td",null,{"children":["$","code",null,{"children":"table=TABLE_ID"}]}],["$","td",null,{"children":["$","code",null,{"children":"tableId"}]}],["$","td",null,{"children":"当前数据表标识"}]]}],["$","tr",null,{"children":[["$","td",null,{"children":["$","code",null,{"children":"view=VIEW_ID"}]}],["$","td",null,{"children":"无"}],["$","td",null,{"children":"AVA 会忽略这个参数"}]]}]]}]]}]}]
+3a:["$","p",null,{"children":["缺少 ",["$","code",null,{"children":"table"}]," 参数时，AVA 会尝试查找数据表：只有一张表就自动使用；有多张表则报错并列出候选表名和 ID，需要指定 ",["$","code",null,{"children":"table"}]," 或 ",["$","code",null,{"children":"tableId"}]," 后重新加载。飞书文档 ",["$","code",null,{"children":"/docx/"}],"、电子表格 ",["$","code",null,{"children":"/sheets/"}]," 和知识库中的其他文档类型不支持作为该数据源加载。"]}]
+3b:["$","aside",null,{"className":"docs-callout","children":[["$","span",null,{"aria-hidden":"true","children":"i"}],["$","div",null,{"children":["$","p",null,{"children":["AVA 加载的是应用可读取的整张数据表，按接口分页读取字段和记录，不会应用飞书视图中的筛选条件。\n例如某个视图只显示本月记录，带上它的 ",["$","code",null,{"children":"view"}]," 参数也不会把 AVA 的数据限制为本月；请在 SQL 中明确筛选。"]}]}]]}]
+3c:["$","p",null,{"children":["Lark 国际版同样支持 ",["$","code",null,{"children":"larksuite.com"}]," 下的 ",["$","code",null,{"children":"/base/"}]," 和 ",["$","code",null,{"children":"/wiki/"}]," 链接，使用 ",["$","$L10",null,{"href":"https://open.larksuite.com/","children":"Lark 开放平台"}],"创建的应用。AVA 根据链接域名自动选择接口服务；使用 Lark 时请保留 ",["$","code",null,{"children":"url"}],"，仅提供 ",["$","code",null,{"children":"appToken"}]," / ",["$","code",null,{"children":"tableId"}]," 会默认访问飞书中国版接口。"]}]
+3d:["$","h2",null,{"id":"bind-and-load","children":["$","a",null,{"href":"#bind-and-load","className":"docs-heading-link","children":"4. 绑定凭证并加载"}]}]
+3e:["$","h3",null,{"id":"terminal-binding","children":["$","a",null,{"href":"#terminal-binding","className":"docs-heading-link","children":"方式一：在终端中首次绑定"}]}]
+3f:["$","p",null,{"children":"安装 CLI 后，把示例链接替换成实际链接，在交互终端执行："}]
+40:["$","figure",null,{"data-rehype-pretty-code-figure":"","children":["$","div",null,{"className":"docs-code-block","children":[["$","div",null,{"className":"docs-code-toolbar","children":[["$","span",null,{"children":"bash"}],["$","$L17",null,{}]]}],["$","pre",null,{"tabIndex":"0","data-language":"bash","data-theme":"github-light","children":["$","code",null,{"data-language":"bash","data-theme":"github-light","style":{"display":"grid"},"children":[["$","span",null,{"data-line":"","children":[["$","span",null,{"style":{"color":"#6F42C1"},"children":"npm"}],["$","span",null,{"style":{"color":"#032F62"},"children":" install"}],["$","span",null,{"style":{"color":"#005CC5"},"children":" -g"}],["$","span",null,{"style":{"color":"#032F62"},"children":" @antv/ava@4"}]]}],"\n",["$","span",null,{"data-line":"","children":[["$","span",null,{"style":{"color":"#6F42C1"},"children":"ava"}],["$","span",null,{"style":{"color":"#032F62"},"children":" source"}],["$","span",null,{"style":{"color":"#032F62"},"children":" \"https://my.feishu.cn/base/APP_TOKEN?table=TABLE_ID\""}]]}]]}]}]]}]}]
+41:["$","p",null,{"children":["没有配置凭证时，AVA 会提示输入 App ID 和 App Secret。App Secret 输入时不回显；绑定成功后，凭证保存到当前用户的 ",["$","code",null,{"children":"~/.ava/feishu.json"}],"，以后加载时可以复用。绑定只验证应用凭证能否获取令牌，目标表格的访问权限会在随后加载时验证。"]}]
+42:["$","figure",null,{"data-rehype-pretty-code-figure":"","children":["$","div",null,{"className":"docs-code-block","children":[["$","div",null,{"className":"docs-code-toolbar","children":[["$","span",null,{"children":"text"}],["$","$L17",null,{}]]}],["$","pre",null,{"tabIndex":"0","data-language":"text","data-theme":"github-light","children":["$","code",null,{"data-language":"text","data-theme":"github-light","style":{"display":"grid"},"children":[["$","span",null,{"data-line":"","children":["$","span",null,{"children":"App ID: cli_YOUR_APP_ID"}]}],"\n",["$","span",null,{"data-line":"","children":["$","span",null,{"children":"App Secret:"}]}]]}]}]]}]}]
+43:["$","h3",null,{"id":"environment-variables","children":["$","a",null,{"href":"#environment-variables","className":"docs-heading-link","children":"方式二：使用环境变量"}]}]
+44:["$","p",null,{"children":"在 macOS / Linux 的 shell 中设置以下变量；自动化任务则使用运行环境的密钥管理配置。"}]
+45:["$","figure",null,{"data-rehype-pretty-code-figure":"","children":["$","div",null,{"className":"docs-code-block","children":[["$","div",null,{"className":"docs-code-toolbar","children":[["$","span",null,{"children":"bash"}],["$","$L17",null,{}]]}],["$","pre",null,{"tabIndex":"0","data-language":"bash","data-theme":"github-light","children":["$","code",null,{"data-language":"bash","data-theme":"github-light","style":{"display":"grid"},"children":[["$","span",null,{"data-line":"","children":[["$","span",null,{"style":{"color":"#D73A49"},"children":"export"}],["$","span",null,{"style":{"color":"#24292E"},"children":" AVA_FEISHU_APP_ID"}],["$","span",null,{"style":{"color":"#D73A49"},"children":"="}],["$","span",null,{"style":{"color":"#032F62"},"children":"'YOUR_APP_ID'"}]]}],"\n",["$","span",null,{"data-line":"","children":[["$","span",null,{"style":{"color":"#D73A49"},"children":"export"}],["$","span",null,{"style":{"color":"#24292E"},"children":" AVA_FEISHU_APP_SECRET"}],["$","span",null,{"style":{"color":"#D73A49"},"children":"="}],["$","span",null,{"style":{"color":"#032F62"},"children":"'YOUR_APP_SECRET'"}]]}],"\n",["$","span",null,{"data-line":"","children":[["$","span",null,{"style":{"color":"#6F42C1"},"children":"ava"}],["$","span",null,{"style":{"color":"#032F62"},"children":" source"}],["$","span",null,{"style":{"color":"#032F62"},"children":" \"https://my.feishu.cn/base/APP_TOKEN?table=TABLE_ID\""}]]}]]}]}]]}]}]
+46:["$","h3",null,{"id":"source-config","children":["$","a",null,{"href":"#source-config","className":"docs-heading-link","children":"方式三：使用数据源配置文件"}]}]
+47:["$","p",null,{"children":["把下面的内容保存为 ",["$","code",null,{"children":"feishu-source.json"}],"。这个文件只指定数据源，凭证仍可使用环境变量或已保存的绑定信息。"]}]
+48:["$","figure",null,{"data-rehype-pretty-code-figure":"","children":["$","div",null,{"className":"docs-code-block","children":[["$","div",null,{"className":"docs-code-toolbar","children":[["$","span",null,{"children":"json"}],["$","$L17",null,{}]]}],["$","pre",null,{"tabIndex":"0","data-language":"json","data-theme":"github-light","children":["$","code",null,{"data-language":"json","data-theme":"github-light","style":{"display":"grid"},"children":[["$","span",null,{"data-line":"","children":["$","span",null,{"style":{"color":"#24292E"},"children":"{"}]}],"\n",["$","span",null,{"data-line":"","children":[["$","span",null,{"style":{"color":"#005CC5"},"children":"  \"type\""}],["$","span",null,{"style":{"color":"#24292E"},"children":": "}],["$","span",null,{"style":{"color":"#032F62"},"children":"\"feishu-bitable\""}],["$","span",null,{"style":{"color":"#24292E"},"children":","}]]}],"\n",["$","span",null,{"data-line":"","children":[["$","span",null,{"style":{"color":"#005CC5"},"children":"  \"options\""}],["$","span",null,{"style":{"color":"#24292E"},"children":": {"}]]}],"\n",["$","span",null,{"data-line":"","children":[["$","span",null,{"style":{"color":"#005CC5"},"children":"    \"url\""}],["$","span",null,{"style":{"color":"#24292E"},"children":": "}],["$","span",null,{"style":{"color":"#032F62"},"children":"\"https://my.feishu.cn/base/APP_TOKEN?table=TABLE_ID\""}]]}],"\n",["$","span",null,{"data-line":"","children":["$","span",null,{"style":{"color":"#24292E"},"children":"  }"}]}],"\n",["$","span",null,{"data-line":"","children":["$","span",null,{"style":{"color":"#24292E"},"children":"}"}]}]]}]}]]}]}]
+49:["$","figure",null,{"data-rehype-pretty-code-figure":"","children":["$","div",null,{"className":"docs-code-block","children":[["$","div",null,{"className":"docs-code-toolbar","children":[["$","span",null,{"children":"bash"}],["$","$L17",null,{}]]}],["$","pre",null,{"tabIndex":"0","data-language":"bash","data-theme":"github-light","children":["$","code",null,{"data-language":"bash","data-theme":"github-light","style":{"display":"grid"},"children":["$","span",null,{"data-line":"","children":[["$","span",null,{"style":{"color":"#6F42C1"},"children":"ava"}],["$","span",null,{"style":{"color":"#032F62"},"children":" source"}],["$","span",null,{"style":{"color":"#032F62"},"children":" @feishu-source.json"}]]}]}]}]]}]}]
+4a:["$","div",null,{"className":"docs-table","children":["$","table",null,{"children":[["$","thead",null,{"children":["$","tr",null,{"children":[["$","th",null,{"children":"配置字段"}],["$","th",null,{"children":"必填"}],["$","th",null,{"children":"说明"}]]}]}],["$","tbody",null,{"children":[["$","tr",null,{"children":[["$","td",null,{"children":["$","code",null,{"children":"url"}]}],["$","td",null,{"children":["与 ",["$","code",null,{"children":"appToken"}]," + ",["$","code",null,{"children":"tableId"}]," 二选一"]}],["$","td",null,{"children":"普通多维表格或知识库链接"}]]}],["$","tr",null,{"children":[["$","td",null,{"children":["$","code",null,{"children":"appToken"}]}],["$","td",null,{"children":["不提供 ",["$","code",null,{"children":"url"}]," 时必填"]}],["$","td",null,{"children":"实际多维表格的 App Token"}]]}],["$","tr",null,{"children":[["$","td",null,{"children":["$","code",null,{"children":"tableId"}]}],["$","td",null,{"children":["不提供 ",["$","code",null,{"children":"url"}]," 时必填"]}],["$","td",null,{"children":["目标数据表 ID；也可补充到不含 ",["$","code",null,{"children":"table"}]," 的链接"]}]]}],["$","tr",null,{"children":[["$","td",null,{"children":["$","code",null,{"children":"appId"}]}],["$","td",null,{"children":"SDK 必填；CLI 可从其他位置读取"}],["$","td",null,{"children":"开放平台应用 App ID"}]]}],["$","tr",null,{"children":[["$","td",null,{"children":["$","code",null,{"children":"appSecret"}]}],["$","td",null,{"children":"SDK 必填；CLI 可从其他位置读取"}],["$","td",null,{"children":"开放平台应用 App Secret"}]]}]]}]]}]}]
+4b:["$","p",null,{"children":["如果同时指定 ",["$","code",null,{"children":"url"}]," 与 ",["$","code",null,{"children":"appToken"}]," / ",["$","code",null,{"children":"tableId"}],"，它们必须指向同一张数据表。"]}]
+4c:["$","p",null,{"children":["CLI 的凭证优先级依次为：",["$","strong",null,{"children":["配置中的 ",["$","code",null,{"children":"appId"}]," + ",["$","code",null,{"children":"appSecret"}]," → 环境变量 → ",["$","code",null,{"children":"~/.ava/feishu.json"}]," → 交互终端绑定"]}],"。前两处若只填一个值会直接报错，不会拼接不同来源的凭证。管道输入、重定向或其他非交互环境不会提示绑定，需要事先配置好凭证。"]}]
+4d:["$","p",null,{"children":"App Secret 和本地绑定文件都属于敏感信息，避免提交到 Git 或输出到日志。更换已保存的应用时，可以修改本地绑定文件中的完整凭证对，或用优先级更高的环境变量覆盖。"}]
+4e:["$","h2",null,{"id":"verify-the-data","children":["$","a",null,{"href":"#verify-the-data","className":"docs-heading-link","children":"5. 验证数据并开始分析"}]}]
+4f:["$","p",null,{"children":["加载成功会返回数据集 ID。将下方的 ",["$","code",null,{"children":"YOUR_DATASET_ID"}]," 替换为实际返回值，再查看结构、样本和记录数："]}]
+50:["$","figure",null,{"data-rehype-pretty-code-figure":"","children":["$","div",null,{"className":"docs-code-block","children":[["$","div",null,{"className":"docs-code-toolbar","children":[["$","span",null,{"children":"bash"}],["$","$L17",null,{}]]}],["$","pre",null,{"tabIndex":"0","data-language":"bash","data-theme":"github-light","children":["$","code",null,{"data-language":"bash","data-theme":"github-light","style":{"display":"grid"},"children":[["$","span",null,{"data-line":"","children":[["$","span",null,{"style":{"color":"#6F42C1"},"children":"ava"}],["$","span",null,{"style":{"color":"#032F62"},"children":" schema"}],["$","span",null,{"style":{"color":"#032F62"},"children":" YOUR_DATASET_ID"}]]}],"\n",["$","span",null,{"data-line":"","children":[["$","span",null,{"style":{"color":"#6F42C1"},"children":"ava"}],["$","span",null,{"style":{"color":"#032F62"},"children":" query"}],["$","span",null,{"style":{"color":"#032F62"},"children":" YOUR_DATASET_ID"}],["$","span",null,{"style":{"color":"#005CC5"},"children":" --dsl"}],["$","span",null,{"style":{"color":"#032F62"},"children":" 'SELECT * FROM data LIMIT 5'"}]]}],"\n",["$","span",null,{"data-line":"","children":[["$","span",null,{"style":{"color":"#6F42C1"},"children":"ava"}],["$","span",null,{"style":{"color":"#032F62"},"children":" query"}],["$","span",null,{"style":{"color":"#032F62"},"children":" YOUR_DATASET_ID"}],["$","span",null,{"style":{"color":"#005CC5"},"children":" --dsl"}],["$","span",null,{"style":{"color":"#032F62"},"children":" 'SELECT COUNT(*) AS row_count FROM data'"}]]}]]}]}]]}]}]
+51:["$","p",null,{"children":["核对表名 ",["$","code",null,{"children":"data"}],"、字段名称和读取范围；记录数应与应用可访问的目标数据表一致。完成后运行 ",["$","code",null,{"children":"ava dispose YOUR_DATASET_ID"}]," 释放会话。飞书数据更新后，重新运行 ",["$","code",null,{"children":"ava source"}]," 加载新数据，再使用新返回的 ID；现有会话不会持续同步远端变更。"]}]
+52:["$","p",null,{"children":"人员、附件、关联记录等复杂字段会转换成便于查询的文本，多个值通常以逗号分隔；附件只读取元信息，不下载文件。公式和查找引用字段按返回值类型转换，不保证全部为文本。不支持的字段类型会跳过；空表仍保留支持的字段结构。"}]
+53:["$","p",null,{"children":["如果希望把后续分析交给 Agent，可以在安装 ",["$","$L10",null,{"href":"/documentation/agent-skill/","children":"AVA Skill"}],"后提出需求："]}]
+54:["$","figure",null,{"data-rehype-pretty-code-figure":"","children":["$","div",null,{"className":"docs-code-block","children":[["$","div",null,{"className":"docs-code-toolbar","children":[["$","span",null,{"children":"text"}],["$","$L17",null,{}]]}],["$","pre",null,{"tabIndex":"0","data-language":"text","data-theme":"github-light","children":["$","code",null,{"data-language":"text","data-theme":"github-light","style":{"display":"grid"},"children":[["$","span",null,{"data-line":"","children":["$","span",null,{"children":"请用 AVA Skill 分析这张飞书多维表格：<替换为完整链接>。"}]}],"\n",["$","span",null,{"data-line":"","children":["$","span",null,{"children":"凭证已在本地配置。先查看结构、核对记录数，再按实际字段统计各部门的记录数。"}]}],"\n",["$","span",null,{"data-line":"","children":["$","span",null,{"children":"请给出查询、结果和图表；如果需要按时间筛选，请明确写入查询条件。"}]}]]}]}]]}]}]
+55:["$","h2",null,{"id":"nodejs-sdk","children":["$","a",null,{"href":"#nodejs-sdk","className":"docs-heading-link","children":"在 Node.js SDK 中使用"}]}]
+56:["$","p",null,{"children":"SDK 需要显式传入凭证，不会自动读取 CLI 的绑定文件或环境变量。下面的示例由应用代码读取环境变量，查询时不调用模型："}]
+57:["$","figure",null,{"data-rehype-pretty-code-figure":"","children":["$","div",null,{"className":"docs-code-block","children":[["$","div",null,{"className":"docs-code-toolbar","children":[["$","span",null,{"children":"javascript"}],["$","$L17",null,{}]]}],["$","pre",null,{"tabIndex":"0","data-language":"javascript","data-theme":"github-light","children":["$","code",null,{"data-language":"javascript","data-theme":"github-light","style":{"display":"grid"},"children":[["$","span",null,{"data-line":"","children":[["$","span",null,{"style":{"color":"#D73A49"},"children":"import"}],["$","span",null,{"style":{"color":"#24292E"},"children":" { AVA } "}],["$","span",null,{"style":{"color":"#D73A49"},"children":"from"}],["$","span",null,{"style":{"color":"#032F62"},"children":" '@antv/ava'"}],["$","span",null,{"style":{"color":"#24292E"},"children":";"}]]}],"\n",["$","span",null,{"data-line":"","children":" "}],"\n",["$","span",null,{"data-line":"","children":[["$","span",null,{"style":{"color":"#D73A49"},"children":"const"}],["$","span",null,{"style":{"color":"#005CC5"},"children":" ava"}],["$","span",null,{"style":{"color":"#D73A49"},"children":" ="}],["$","span",null,{"style":{"color":"#D73A49"},"children":" new"}],["$","span",null,{"style":{"color":"#6F42C1"},"children":" AVA"}],["$","span",null,{"style":{"color":"#24292E"},"children":"({"}]]}],"\n",["$","span",null,{"data-line":"","children":[["$","span",null,{"style":{"color":"#24292E"},"children":"  llm: { model: "}],["$","span",null,{"style":{"color":"#032F62"},"children":"'gpt-4o-mini'"}],["$","span",null,{"style":{"color":"#24292E"},"children":" },"}]]}],"\n",["$","span",null,{"data-line":"","children":[["$","span",null,{"style":{"color":"#24292E"},"children":"  engine: { type: "}],["$","span",null,{"style":{"color":"#032F62"},"children":"'duckdb'"}],["$","span",null,{"style":{"color":"#24292E"},"children":" },"}]]}],"\n",["$","span",null,{"data-line":"","children":["$","span",null,{"style":{"color":"#24292E"},"children":"});"}]}],"\n",["$","span",null,{"data-line":"","children":" "}],"\n",["$","span",null,{"data-line":"","children":[["$","span",null,{"style":{"color":"#D73A49"},"children":"try"}],["$","span",null,{"style":{"color":"#24292E"},"children":" {"}]]}],"\n",["$","span",null,{"data-line":"","children":[["$","span",null,{"style":{"color":"#D73A49"},"children":"  await"}],["$","span",null,{"style":{"color":"#24292E"},"children":" ava."}],["$","span",null,{"style":{"color":"#6F42C1"},"children":"source"}],["$","span",null,{"style":{"color":"#24292E"},"children":"({"}]]}],"\n",["$","span",null,{"data-line":"","children":[["$","span",null,{"style":{"color":"#24292E"},"children":"    type: "}],["$","span",null,{"style":{"color":"#032F62"},"children":"'feishu-bitable'"}],["$","span",null,{"style":{"color":"#24292E"},"children":","}]]}],"\n",["$","span",null,{"data-line":"","children":["$","span",null,{"style":{"color":"#24292E"},"children":"    options: {"}]}],"\n",["$","span",null,{"data-line":"","children":[["$","span",null,{"style":{"color":"#24292E"},"children":"      url: "}],["$","span",null,{"style":{"color":"#032F62"},"children":"'https://my.feishu.cn/base/APP_TOKEN?table=TABLE_ID'"}],["$","span",null,{"style":{"color":"#24292E"},"children":","}]]}],"\n",["$","span",null,{"data-line":"","children":[["$","span",null,{"style":{"color":"#24292E"},"children":"      appId: process.env."}],["$","span",null,{"style":{"color":"#005CC5"},"children":"AVA_FEISHU_APP_ID"}],["$","span",null,{"style":{"color":"#24292E"},"children":","}]]}],"\n",["$","span",null,{"data-line":"","children":[["$","span",null,{"style":{"color":"#24292E"},"children":"      appSecret: process.env."}],["$","span",null,{"style":{"color":"#005CC5"},"children":"AVA_FEISHU_APP_SECRET"}],["$","span",null,{"style":{"color":"#24292E"},"children":","}]]}],"\n",["$","span",null,{"data-line":"","children":["$","span",null,{"style":{"color":"#24292E"},"children":"    },"}]}],"\n",["$","span",null,{"data-line":"","children":["$","span",null,{"style":{"color":"#24292E"},"children":"  });"}]}],"\n",["$","span",null,{"data-line":"","children":[["$","span",null,{"style":{"color":"#24292E"},"children":"  console."}],["$","span",null,{"style":{"color":"#6F42C1"},"children":"log"}],["$","span",null,{"style":{"color":"#24292E"},"children":"("}],["$","span",null,{"style":{"color":"#D73A49"},"children":"await"}],["$","span",null,{"style":{"color":"#24292E"},"children":" ava."}],["$","span",null,{"style":{"color":"#6F42C1"},"children":"schema"}],["$","span",null,{"style":{"color":"#24292E"},"children":"());"}]]}],"\n",["$","span",null,{"data-line":"","children":[["$","span",null,{"style":{"color":"#24292E"},"children":"  console."}],["$","span",null,{"style":{"color":"#6F42C1"},"children":"log"}],["$","span",null,{"style":{"color":"#24292E"},"children":"("}],["$","span",null,{"style":{"color":"#D73A49"},"children":"await"}],["$","span",null,{"style":{"color":"#24292E"},"children":" ava."}],["$","span",null,{"style":{"color":"#6F42C1"},"children":"query"}],["$","span",null,{"style":{"color":"#24292E"},"children":"("}],["$","span",null,{"style":{"color":"#032F62"},"children":"'SELECT COUNT(*) AS row_count FROM data'"}],["$","span",null,{"style":{"color":"#24292E"},"children":"));"}]]}],"\n",["$","span",null,{"data-line":"","children":[["$","span",null,{"style":{"color":"#24292E"},"children":"} "}],"$L5f","$L60"]}],"\n","$L61","\n","$L62"]}]}]]}]}]
+58:["$","h2",null,{"id":"troubleshooting","children":["$","a",null,{"href":"#troubleshooting","className":"docs-heading-link","children":"常见问题"}]}]
+59:["$","div",null,{"className":"docs-table","children":["$","table",null,{"children":[["$","thead",null,{"children":["$","tr",null,{"children":[["$","th",null,{"children":"现象"}],["$","th",null,{"children":"排查与处理"}]]}]}],["$","tbody",null,{"children":[["$","tr",null,{"children":[["$","td",null,{"children":"提示「飞书应用绑定失败」"}],["$","td",null,{"children":"核对 App ID 与 App Secret 是否属于同一个企业自建应用、是否复制完整，以及飞书 / Lark 平台是否对应；错误保留平台返回的 code 和 msg。"}]]}],["$","tr",null,{"children":[["$","td",null,{"children":"绑定成功，加载却提示权限不足"}],["$","td",null,{"children":"检查读取接口权限是否已发布生效，再检查目标文档是否添加了同一个应用；本人有权限不代表应用有权限。"}]]}],["$","tr",null,{"children":[["$","td",null,{"children":[["$","code",null,{"children":"/base/"}]," 能加载，",["$","code",null,{"children":"/wiki/"}]," 失败"]}],["$","td",null,{"children":"检查知识库读取接口权限、知识空间访问权限，以及节点承载的对象是否为多维表格。"}]]}],["$","tr",null,{"children":[["$","td",null,{"children":["提示 ",["$","code",null,{"children":"has … tables"}]]}],["$","td",null,{"children":["指定 ",["$","code",null,{"children":"?table=TABLE_ID"}]," 或配置 ",["$","code",null,{"children":"tableId"}],"，不要把视图 ID 当成数据表 ID。"]}]]}],["$","tr",null,{"children":[["$","td",null,{"children":["提示 ",["$","code",null,{"children":"does not match"}]]}],["$","td",null,{"children":["删除重复配置，或核对 ",["$","code",null,{"children":"url"}],"、",["$","code",null,{"children":"appToken"}]," 与 ",["$","code",null,{"children":"tableId"}]," 是否指向同一张表。"]}]]}],["$","tr",null,{"children":[["$","td",null,{"children":"非交互环境提示缺少凭证"}],["$","td",null,{"children":"预先设置成对的环境变量，或提供完整配置 / 本地绑定文件。"}]]}],["$","tr",null,{"children":[["$","td",null,{"children":["提示 ",["$","code",null,{"children":"~/.ava/feishu.json is not valid JSON"}]]}],["$","td",null,{"children":["修复绑定文件为包含 ",["$","code",null,{"children":"appId"}]," 和 ",["$","code",null,{"children":"appSecret"}]," 的有效 JSON；环境变量可优先覆盖该文件。"]}]]}],["$","tr",null,{"children":[["$","td",null,{"children":"结果多于视图中看到的记录，或远端修改未出现"}],["$","td",null,{"children":[["$","code",null,{"children":"view"}]," 筛选会被忽略；在 SQL 中加筛选。远端更新需要重新加载数据源。"]}]]}],["$","tr",null,{"children":[["$","td",null,{"children":"返回网络错误或非 JSON 响应"}],["$","td",null,{"children":["检查到 ",["$","code",null,{"children":"open.feishu.cn"}]," / ",["$","code",null,{"children":"open.larksuite.com"}]," 的网络连接与代理设置，根据原始错误定位失败请求。"]}]]}]]}]]}]}]
+5a:["$","p",null,{"children":["完整 CLI 用法见",["$","$L10",null,{"href":"/documentation/reference/cli/","children":"命令行工具"}],"，其他数据源见",["$","$L10",null,{"href":"/documentation/data/sources/","children":"接入数据"}],"。"]}]
+5b:["$","p",null,{"children":["截图参考：",["$","$L10",null,{"href":"https://www.feishu.cn/content/817244137021","children":"应用创建与发布"}],"、",["$","$L10",null,{"href":"https://www.feishu.cn/content/137710114294","children":"多维表格权限配置"}],"。"]}]
+5e:null
+9:C
+5f:["$","span",null,{"style":{"color":"#D73A49"},"children":"finally"}]
+60:["$","span",null,{"style":{"color":"#24292E"},"children":" {"}]
+61:["$","span",null,{"data-line":"","children":[["$","span",null,{"style":{"color":"#D73A49"},"children":"  await"}],["$","span",null,{"style":{"color":"#24292E"},"children":" ava."}],["$","span",null,{"style":{"color":"#6F42C1"},"children":"dispose"}],["$","span",null,{"style":{"color":"#24292E"},"children":"();"}]]}]
+62:["$","span",null,{"data-line":"","children":["$","span",null,{"style":{"color":"#24292E"},"children":"}"}]}]
+2a:0
+15:"$undefined"
+13:"$undefined"
+7:"$undefined"
+29:"$undefined"
+22:"$undefined"
