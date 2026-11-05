@@ -6,7 +6,7 @@ import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 
 import { DuckDBSQLDialect } from '../query/duckdb-sql';
-import { executionResult, limitedQuery, maxRows } from '../util/result';
+import { executionResult, maxRows } from '../util/result';
 import { coerceNumbers } from '../util/coerce';
 import { sqlStringLiteral } from '../util/sql';
 import { parseProfileOptions } from '../util/profile';
@@ -159,13 +159,19 @@ export class DuckDBEngine implements AnalysisEngine {
     const conn = this.connection;
     const query = await this.dialect.validateDSL(sql);
     const timeoutMs = this.engineOptions.queryTimeoutMs ?? DEFAULT_QUERY_TIMEOUT_MS;
-    const reader = await runWithTimeout(conn.runAndReadAll(limitedQuery(query, maxRows(options))), timeoutMs, {
-      onTimeout: () => {
-        conn.interrupt();
-        return new QueryTimeoutError(timeoutMs);
-      },
-      unref: true,
-    });
+    // query() parses the original source; a quoted constant keeps its own parameters unbound.
+    // https://duckdb.org/docs/1.5/guides/sql_features/query_and_query_table_functions
+    const reader = await runWithTimeout(
+      conn.runAndReadAll(`SELECT * FROM query(${sqlStringLiteral(query)}) LIMIT ${maxRows(options) + 1}`),
+      timeoutMs,
+      {
+        onTimeout: () => {
+          conn.interrupt();
+          return new QueryTimeoutError(timeoutMs);
+        },
+        unref: true,
+      }
+    );
     const schema = Array.from({ length: reader.columnCount }, (_, index) => ({
       name: reader.columnName(index),
       type: reader.columnType(index).toString(),

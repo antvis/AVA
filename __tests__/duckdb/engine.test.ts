@@ -133,6 +133,25 @@ describe('DuckDBEngine', () => {
     expect(maxRows({ maxRows: 1_000_001 })).toBe(1_000_000);
   });
 
+  it('preserves floating-point types and comparisons in the execution path', async () => {
+    await engine.load({ type: 'json', options: { data: [{ a: 1 }] } });
+    const result = await engine.execute(
+      'SELECT 1e2 AS n, (1e-1 + 1e-1 + 1e-1) = 0.3 AS matches FROM data; -- trailing comment'
+    );
+    expect(result.data).toEqual([{ n: 100, matches: false }]);
+    expect(result.schema).toEqual([
+      { name: 'n', type: 'DOUBLE' },
+      { name: 'matches', type: 'BOOLEAN' },
+    ]);
+  });
+
+  it('leaves user parameters unbound, including inside query()', async () => {
+    await engine.load({ type: 'json', options: { data: [{ a: 1 }] } });
+    for (const sql of ['SELECT $1 AS value', "SELECT * FROM query('SELECT $1 AS value')"]) {
+      await expect(engine.execute(sql)).rejects.toThrow('parameters');
+    }
+  });
+
   it('should apply resource limits and still run normal queries', async () => {
     const limited = new DuckDBEngine(getLLMConfig(), {
       memoryLimit: '256MB',

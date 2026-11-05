@@ -2,7 +2,7 @@ import { afterEach, describe, expect, it, vi } from 'vitest';
 import { generateText } from 'ai';
 
 import { DuckDBSQLDialect } from '../../src/query/duckdb-sql';
-import { limitedQuery } from '../../src/util/result';
+import { sqlStringLiteral } from '../../src/util/sql';
 
 vi.mock('ai', () => ({ generateText: vi.fn() }));
 vi.mock('../../src/util/model', () => ({ languageModel: vi.fn(() => 'test-model') }));
@@ -55,32 +55,40 @@ describe('DuckDB SQL validation', () => {
 
   it('validates CTEs, subqueries and set operations without binding real tables', async () => {
     const sql = 'WITH q AS (SELECT * FROM missing_table) SELECT * FROM (SELECT * FROM q) UNION ALL SELECT 1';
-    const normalized = await dialect.validateDSL(sql);
-    expect(normalized).toContain('missing_table');
-    expect(normalized).toContain('UNION ALL');
+    await expect(dialect.validateDSL(sql)).resolves.toBe(sql);
   });
 
   it.each([
     'SELECT 1 AS n UNION SELECT 1 AS n',
     'SELECT 1 AS n UNION ALL BY NAME SELECT 1 AS n',
     "SELECT 9223372036854775807 AS n, '中文😀; -- literal' AS text",
-    'SELECT [x * 2 FOR x IN [1, 2, 3]] AS values',
-  ])('preserves semantics and produces embeddable SQL: %s', async (sql) => {
+    'SELECT [x * 2 FOR x IN [1, 2, 3]]',
+    'SELECT 1e2 AS n, typeof(1e2) AS kind',
+    'SELECT (1e-1 + 1e-1 + 1e-1) = 0.3 AS matches',
+    String.raw`/* outer ; /* nested ; */ */ SELECT E'it\';s' AS "semi;""column", $中文$; literal$中文$ AS text`,
+  ])('preserves source, result types and semantics under row limits: %s', async (sql) => {
     const { DuckDBInstance } = await import('@duckdb/node-api');
     const instance = await DuckDBInstance.create(':memory:');
     try {
       const connection = await instance.connect();
       try {
-        const expected = (await connection.runAndReadAll(sql)).getRowObjectsJson();
-        const normalized = await dialect.validateDSL(`${sql}; -- trailing comment`);
-        const actual = (await connection.runAndReadAll(limitedQuery(normalized, 10))).getRowObjectsJson();
-        expect(actual).toEqual(expected);
+        const input = `;; ${sql}; ; -- trailing comment`;
+        const expected = await connection.runAndReadAll(sql);
+        const validated = await dialect.validateDSL(input);
+        const actual = await connection.runAndReadAll(`SELECT * FROM query(${sqlStringLiteral(validated)}) LIMIT 11`);
+        expect(actual.getRowObjectsJson()).toEqual(expected.getRowObjectsJson());
+        expect(actual.columnTypes().map(String)).toEqual(expected.columnTypes().map(String));
+        expect(validated).toBe(input);
       } finally {
         connection.closeSync();
       }
     } finally {
       instance.closeSync();
     }
+  });
+
+  it('rejects input truncated by a NUL character', async () => {
+    await expect(dialect.validateDSL('SELECT 1\0; DELETE FROM data')).rejects.toThrow('NUL');
   });
 
   it.each([

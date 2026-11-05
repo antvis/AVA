@@ -47,6 +47,8 @@ export class DuckDBSQLDialect implements QueryDialect {
   }
 
   async validateDSL(sql: string): Promise<string> {
+    // DuckDB's scanner stops at NUL; validate the whole input before returning it for execution.
+    if (sql.includes('\0')) throw new Error('DuckDB query contains a NUL character');
     // Share lazy initialization across validations; each call owns its connection.
     if (!this.parserInstance) {
       const pending = import('@duckdb/node-api').then(({ DuckDBInstance }) =>
@@ -69,7 +71,7 @@ export class DuckDBSQLDialect implements QueryDialect {
     const connection = await instance.connect();
     try {
       // The official serializer accepts SELECTs, including their CTEs and subqueries, without binding tables.
-      // User SQL is a bound value; only the serializer/deserializer queries run in this data-free instance.
+      // User SQL is a bound value; only the serializer runs in this data-free instance.
       // https://duckdb.org/docs/1.5/data/json/sql_to_and_from_json
       const reader = await connection.runAndReadAll('SELECT json_serialize_sql(CAST(? AS VARCHAR)) AS ast', [sql]);
       const serialized = reader.getRowObjectsJson()[0]?.ast;
@@ -83,13 +85,8 @@ export class DuckDBSQLDialect implements QueryDialect {
         );
       }
 
-      // Pass native JSON unchanged to preserve large numeric literals; deserialization removes statement trailers.
-      const normalized = await connection.runAndReadAll('SELECT json_deserialize_sql(CAST(? AS JSON)) AS sql', [
-        serialized,
-      ]);
-      const query = normalized.getRowObjectsJson()[0]?.sql;
-      if (typeof query !== 'string' || !query) throw new Error('Missing normalized DuckDB SQL');
-      return query;
+      // Re-emitting the AST can change float literals and implicit column names; execute the original source.
+      return sql;
     } finally {
       connection.closeSync();
     }
