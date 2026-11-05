@@ -56,8 +56,14 @@ export function withDataset<T>(operation: (instance: AVA) => Promise<T>): Promis
 }
 
 export async function describeDataset(schema?: Schema) {
-  return withDataset(async (instance) => ({
-    ...(await instance.schema(undefined, schema === undefined ? undefined : () => schema)),
-    language: instance.engine!.language,
-  }));
+  return withDataset(async (instance) => {
+    const engine = instance.engine!;
+    const language = engine.dialect.id;
+    if (!language) throw new Error('Query dialect must provide a non-empty id');
+    return {
+      ...(await instance.schema(undefined, schema === undefined ? undefined : () => schema)),
+      language,
+      ...(engine.dialect.rules ? { instructions: engine.dialect.rules } : {}),
+    };
+  });
 }

@@ -7,7 +7,7 @@ const ava = new AVA({
 });
 ```
 
-Local execution requires `python3` and pandas. Additional file readers may need optional pandas dependencies for Excel or Parquet.
+Validation uses Python's official `compile(..., 'exec')` in the selected execution environment without running user code or loading data. Local validation requires `python3`; data execution also requires pandas. Additional file readers may need optional pandas dependencies for Excel or Parquet.
 
 <Callout>
   Local Python execution is not sandboxed. Use the <code>execute</code> callback with your own isolated environment when
@@ -20,8 +20,8 @@ Set `engine.type` to `python`. These are all additional fields accepted on `engi
 
 | Field            | Type                                         | Required | Meaning / default                                                                                                                                                                                                                                                                         |
 | ---------------- | -------------------------------------------- | -------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `execute`        | `(code: string) => Promise<ExecutionResult>` | No       | Override local python3 execution with a custom environment. Local execution is not sandboxed. Run the complete Python script and return its JSON output as ExecutionResult. Source loading and result limits are included in the script; configure remote execution deadlines separately. |
-| `queryTimeoutMs` | `number`                                     | No       | Client wait limit and local process execution deadline. Default 30000 ms.                                                                                                                                                                                                                 |
+| `execute`        | `(code: string) => Promise<ExecutionResult>` | No       | Override local python3 execution with a custom environment. Local execution is not sandboxed. Run the complete Python script and return its JSON output as ExecutionResult. Each query first sends a compile-only validation script, then the data execution script with source loading and result limits. Configure remote execution deadlines separately. |
+| `queryTimeoutMs` | `number`                                     | No       | Wait and local process deadline for each validation or execution call. Default 30000 ms.                                                                                                                                                                                                                 |
 
 ## Supported sources
 
@@ -67,7 +67,7 @@ const ava = new AVA({
 
 | Callback parameter / result | Type                       | Required | Meaning                                                                                   |
 | --------------------------- | -------------------------- | -------- | ----------------------------------------------------------------------------------------- |
-| `code`                      | `string`                   | Yes      | Complete script, including source loading and result limits.                              |
+| `code`                      | `string`                   | Yes      | Complete script for compile-only validation or data execution.                              |
 | Returned promise            | `Promise<ExecutionResult>` | Yes      | Resolve with `schema` and `data`, plus applicable truncation metadata; reject on failure. |
 
 See [engine options](#engine-options) for all engine fields and [execution results](/documentation/reference/api/#executionresult) for the result shape. Enforce deadlines and resource limits in the service itself: aborting the HTTP request only stops the client waiting.

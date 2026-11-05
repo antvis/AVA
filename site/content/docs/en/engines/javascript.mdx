@@ -13,7 +13,7 @@ The JavaScript engine supports inline CSV, JSON, and text. Text loading requires
 
 ## Query bindings
 
-Queries receive `data` and the `stat` helper, and must assign the output to `result`.
+Queries receive `data` and the `stat` helper, and must assign the output to `result`. Input must be non-empty; syntax errors are reported by the selected runtime when it compiles the code for execution.
 
 ```typescript
 await ava.source({

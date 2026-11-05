@@ -3,7 +3,7 @@ import { MockLanguageModelV4 } from 'ai/test';
 import { createOpenAI } from '@ai-sdk/openai';
 
 import { analyze } from '../src/analysis';
-import { DuckDBQueryDialect } from '../src/query/duckdb';
+import { DuckDBSQLDialect } from '../src/query/duckdb-sql';
 
 import type { AnalysisEngine } from '../src/types';
 import type { AnalysisEvent } from '../src/event';
@@ -27,7 +27,7 @@ function setup() {
   const doGenerate = vi.fn<MockLanguageModelV4['doGenerate']>().mockResolvedValue(response(JSON.stringify(narrative)));
   const model = new MockLanguageModelV4({ doGenerate });
   const engine = {
-    language: { name: 'SQL', fence: 'sql' },
+    dialect: new DuckDBSQLDialect({ model }),
     getDSL: vi.fn().mockResolvedValue({ dsl: 'SELECT 1' }),
     execute: vi.fn().mockResolvedValue(execution),
   };
@@ -256,7 +256,7 @@ describe('directAnalysis', () => {
     const model = new MockLanguageModelV4({
       doGenerate: vi.fn().mockResolvedValueOnce(response('BAD SQL')).mockResolvedValueOnce(response('SELECT 1')),
     });
-    const dialect = new DuckDBQueryDialect({ model });
+    const dialect = new DuckDBSQLDialect({ model });
     engine.getDSL.mockImplementation((query, dataModel) => dialect.getDSL(query, dataModel));
     engine.execute.mockRejectedValueOnce(new Error('Invalid SQL'));
 
@@ -289,7 +289,7 @@ describe('directAnalysis', () => {
         return result;
       },
     });
-    const dialect = new DuckDBQueryDialect({ model });
+    const dialect = new DuckDBSQLDialect({ model });
     engine.getDSL.mockImplementation((query, dataModel) => dialect.getDSL(query, dataModel));
     const firstEmit = vi.fn();
     const secondEmit = vi.fn();
@@ -456,14 +456,34 @@ it('wraps loop queries in steps across exploration, refinement, and confirmation
   expectStepContexts(events);
 });
 
-it('links the loop fallback to the previous step', async () => {
-  const { runtime, doGenerate, emit } = setup();
+it.each([
+  ['duckdb-sql', '', 'SELECT 1'],
+  ['clickhouse-sql', 'sql', 'SELECT 1'],
+  ['postgresql', 'postgresql', 'SELECT 1'],
+  ['tsql', 'tsql', 'SELECT 1'],
+  ['custom-sql', '', 'SELECT 1'],
+  ['python', 'python', "result = [{'value': 1}]"],
+  ['javascript', 'js', 'const result = [{value: 1}];'],
+  ['json', 'json', '{"metric":"total_revenue"}'],
+])('uses dialect %s independently of code-block labels in the final attempt', async (language, label, dsl) => {
+  const { runtime, engine, doGenerate, model, emit } = setup();
+  const rules = 'Use the supplied bindings and return the supported result shape.';
+  runtime.engine = {
+    ...runtime.engine,
+    dialect: { id: language, rules, getDSL: engine.getDSL, validateDSL: async (dsl) => dsl },
+  };
   doGenerate
     .mockResolvedValueOnce(response('[REFINE] Need an answer query.'))
-    .mockResolvedValueOnce(response('[SQL]\n```sql\nSELECT 1\n```'));
+    .mockResolvedValueOnce(response(`[SQL]\n\`\`\`${label}\n${dsl}\n\`\`\``));
 
   await analyze('Give me one', { strategy: { type: 'loop', maxSteps: 1 } }, runtime);
 
+  expect(engine.execute).toHaveBeenCalledExactlyOnceWith(dsl, expect.any(Object));
+  expect(engine.getDSL).not.toHaveBeenCalled();
+  for (const call of model.doGenerateCalls) {
+    expect(JSON.stringify(call.prompt)).toContain(`runtime executes ${language}`);
+    expect(JSON.stringify(call.prompt)).toContain(rules);
+  }
   const events = emit.mock.calls.map(([event]) => event);
   expect(events.filter(({ type }) => type === 'stepstart').map(({ data }) => data)).toEqual([
     { step: 0 },
@@ -474,9 +494,38 @@ it('links the loop fallback to the previous step', async () => {
     usage: { inputTokens: 10, outputTokens: 5 },
     finalAttempt: true,
     action: 'SQL',
-    text: '```sql\nSELECT 1\n```',
+    text: `\`\`\`${label}\n${dsl}\n\`\`\``,
   });
   expectStepContexts(events);
+});
+
+it('extracts an unlabeled code block without truncating backticks inside the code', async () => {
+  const { runtime, engine, doGenerate } = setup();
+  const dsl = "SELECT '```' AS value";
+  doGenerate.mockResolvedValueOnce(response(`[SQL]\n\`\`\`\n${dsl}\n\`\`\``));
+
+  await analyze('Give me one', { strategy: { type: 'loop', maxSteps: 1 } }, runtime);
+
+  expect(engine.execute).toHaveBeenCalledExactlyOnceWith(dsl, expect.any(Object));
+});
+
+it.each([0, 1])('rejects multiple answer code blocks regardless of label at maxSteps=%s', async (maxSteps) => {
+  const { runtime, engine, doGenerate } = setup();
+  doGenerate.mockResolvedValueOnce(response('[SQL]\n```sql\nSELECT 1\n```\n```text\nextra\n```'));
+
+  await expect(analyze('Give me one', { strategy: { type: 'loop', maxSteps } }, runtime)).rejects.toThrow(
+    'exactly one code block'
+  );
+  expect(engine.execute).not.toHaveBeenCalled();
+});
+
+it('requires a non-empty dialect id before calling the loop model', async () => {
+  const { runtime, doGenerate } = setup();
+  runtime.engine = { ...runtime.engine, dialect: { ...runtime.engine.dialect, id: '' } };
+  await expect(analyze('Question', { strategy: { type: 'loop' } }, runtime)).rejects.toThrow(
+    'Query dialect must provide a non-empty id'
+  );
+  expect(doGenerate).not.toHaveBeenCalled();
 });
 
 it('closes an early confirmation step before continuing to a query', async () => {

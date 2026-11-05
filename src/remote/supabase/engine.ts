@@ -8,7 +8,7 @@
  * obtains the access token and passes it in the data source config.
  */
 
-import { PostgreSQLQueryDialect } from '../../query/postgresql';
+import { PostgreSQLDialect } from '../../query/postgresql';
 import { executionResult, inferQuerySchema, limitedQuery, maxRows } from '../../util/result';
 import { DEFAULT_METRICS, parseProfileOptions } from '../../util/profile';
 
@@ -43,16 +43,11 @@ export class SupabaseApiError extends Error {
 }
 
 export class SupabaseEngine implements AnalysisEngine {
-  readonly language = {
-    name: 'PostgreSQL SQL dialect',
-    fence: 'sql',
-  };
-
   private connection: { accessToken: string; projectRef: string } | null = null;
-  private readonly queryDialect: PostgreSQLQueryDialect;
+  readonly dialect: PostgreSQLDialect;
 
   constructor(llmConfig: LLMConfig) {
-    this.queryDialect = new PostgreSQLQueryDialect(llmConfig);
+    this.dialect = new PostgreSQLDialect(llmConfig);
   }
 
   async load(config: DataSourceConfig): Promise<void> {
@@ -81,14 +76,14 @@ export class SupabaseEngine implements AnalysisEngine {
     if (!this.connection) {
       throw new Error('No data loaded. Please call source() first.');
     }
-    return this.queryDialect.getDSL(query, dataModel);
+    return this.dialect.getDSL(query, dataModel);
   }
 
   async execute<T = Record<string, unknown>>(sql: string, options?: ExecutionOptions): Promise<ExecutionResult<T>> {
     if (!this.connection) {
       throw new Error('No data loaded. Please call source() first.');
     }
-    const query = await this.queryDialect.validateDSL(sql);
+    const query = await this.dialect.validateDSL(sql);
     const rows = (await this.runQuery(limitedQuery(query, maxRows(options)))) as T[];
     return executionResult(rows, inferQuerySchema(rows), options);
   }

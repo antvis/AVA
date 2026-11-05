@@ -1,10 +1,8 @@
 /** Python engine: pandas analysis through a local or caller-supplied executor. */
 
-import { generateText } from 'ai';
 import { z } from 'zod';
 
-import { languageModel } from '../../util/model';
-import { stringifyDataModel } from '../../util/data-model';
+import { PythonDialect } from '../../query/python';
 import { executionResult, maxRows, maxResultBytes } from '../../util/result';
 import { DEFAULT_METRICS, parseProfileOptions, profileMetadataSchema } from '../../util/profile';
 import { runWithTimeout } from '../../util/timeout';
@@ -31,23 +29,13 @@ import type {
 const DEFAULT_QUERY_TIMEOUT_MS = 30_000;
 
 export class PythonEngine implements AnalysisEngine {
-  readonly language = {
-    name: 'Python (pandas)',
-    fence: 'python',
-    instructions: `pandas is available as pd. Input DataFrames are in tables, keyed by schema table name.
-CSV/JSON use tables['data']; Excel exposes every sheet as tables['SheetName'].
-For a single table, the DataFrame df is also available. For multiple sheets use tables explicitly.
-Assign the final output to result: a DataFrame, Series, list of records, record, or JSON scalar.
-DataFrame and Series indexes are not returned; use reset_index() when index values matter.
-Each execution starts from fresh input data; variables and mutations do not persist between calls.
-Do not read files, access the network, install packages, or print the answer.`,
-  };
+  readonly dialect: PythonDialect;
 
   private source: DataSourceConfig | null = null;
   private readonly timeoutMs: number;
   private readonly executor: ReturnType<typeof createPythonExecutor>;
 
-  constructor(private readonly llmConfig: LLMConfig, engineOptions: PythonEngineOptions = {}) {
+  constructor(llmConfig: LLMConfig, engineOptions: PythonEngineOptions = {}) {
     if (engineOptions.execute !== undefined && typeof engineOptions.execute !== 'function') {
       throw new Error('Python execute must be a function');
     }
@@ -58,6 +46,11 @@ Do not read files, access the network, install packages, or print the answer.`,
       .max(2_147_483_647)
       .parse(engineOptions.queryTimeoutMs ?? DEFAULT_QUERY_TIMEOUT_MS);
     this.executor = engineOptions.execute ?? createPythonExecutor(this.timeoutMs);
+    this.dialect = new PythonDialect(llmConfig, (script) =>
+      runWithTimeout(this.executor(script, 64 * 1024), this.timeoutMs, {
+        onTimeout: () => new Error(`Python validation timed out after ${this.timeoutMs}ms`),
+      })
+    );
   }
 
   async load(config: DataSourceConfig): Promise<void> {
@@ -78,27 +71,7 @@ Do not read files, access the network, install packages, or print the answer.`,
   async getDSL(query: string, dataModel: DataModel): Promise<TranslationResult> {
     if (!this.source) throw new Error('No data loaded. Please call source() first.');
 
-    const dataset = stringifyDataModel(dataModel);
-
-    const response = await generateText({
-      model: languageModel(this.llmConfig),
-      maxRetries: this.llmConfig.maxRetries ?? 3,
-      prompt: `You are a data analysis expert. Generate Python code to answer the question.
-${this.language.instructions}
-
-Dataset information:
-${dataset}
-
-User question: ${query}
-
-Return ONLY executable Python code without explanation.`,
-    });
-
-    const dsl = response.text
-      .trim()
-      .replace(/^```(?:python|py)?\s*|\s*```$/gi, '')
-      .trim();
-    return { dsl, usage: response.usage };
+    return this.dialect.getDSL(query, dataModel);
   }
 
   async profile(schema: Schema, options: ProfileOptions = {}): Promise<Profile> {
@@ -111,6 +84,7 @@ Return ONLY executable Python code without explanation.`,
   async execute<T = Record<string, unknown>>(code: string, options?: ExecutionOptions): Promise<ExecutionResult<T>> {
     if (!this.source) throw new Error('No data loaded. Please call source() first.');
 
+    const validated = await this.dialect.validateDSL(code);
     const limits = {
       maxRows: z.number().int().positive().parse(maxRows(options)),
       maxResultBytes: maxResultBytes(options),
@@ -119,7 +93,7 @@ Return ONLY executable Python code without explanation.`,
     // Bound client waiting; the executor must terminate remote work on timeout.
     const maxBuffer = limits.maxResultBytes + 1024 * 1024;
     const response = await runWithTimeout(
-      this.executor(executionCode(code, this.source, limits), maxBuffer),
+      this.executor(executionCode(validated, this.source, limits), maxBuffer),
       this.timeoutMs,
       {
         onTimeout: () => new Error(`Python execution timed out after ${this.timeoutMs}ms`),

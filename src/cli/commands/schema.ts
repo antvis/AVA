@@ -23,8 +23,8 @@ export const help = `${description}.
 Usage:
   ava schema <dataset-id> [--file <path>]
 
-Returns tables, fields, relations and language (name, fence, optional instructions)
-as JSON, without computing statistics. Use language to write queries for this session.
+Returns the dataset structure, execution language id and optional query instructions as JSON.
+Use this information to write queries for the session.
 Use the datasetId returned by ava source.
 
 Options:
