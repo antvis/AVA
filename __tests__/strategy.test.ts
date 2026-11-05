@@ -467,10 +467,11 @@ it.each([
   ['json', 'json', '{"metric":"total_revenue"}'],
 ])('uses language id %s and links the fallback to the previous step', async (language, fence, dsl) => {
   const { runtime, engine, doGenerate, model, emit } = setup();
-  const instructions = 'Use the supplied bindings and return the supported result shape.';
-  runtime.engine = language !== 'json'
-    ? { ...runtime.engine, dialect: { id: language, rules: instructions, getDSL: engine.getDSL, validateDSL: async (sql) => sql }, instructions: 'Unused interpreter instructions.' }
-    : { ...runtime.engine, dialect: undefined, language, instructions };
+  const rules = 'Use the supplied bindings and return the supported result shape.';
+  runtime.engine = {
+    ...runtime.engine,
+    dialect: { id: language, rules, getDSL: engine.getDSL, validateDSL: async (dsl) => dsl },
+  };
   doGenerate
     .mockResolvedValueOnce(response('[REFINE] Need an answer query.'))
     .mockResolvedValueOnce(response(`[SQL]\n\`\`\`${fence}\n${dsl}\n\`\`\``));
@@ -481,8 +482,7 @@ it.each([
   expect(engine.getDSL).not.toHaveBeenCalled();
   for (const call of model.doGenerateCalls) {
     expect(JSON.stringify(call.prompt)).toContain(`runtime executes ${language}`);
-    expect(JSON.stringify(call.prompt)).toContain(instructions);
-    expect(JSON.stringify(call.prompt)).not.toContain('Unused interpreter instructions.');
+    expect(JSON.stringify(call.prompt)).toContain(rules);
   }
   const events = emit.mock.calls.map(([event]) => event);
   expect(events.filter(({ type }) => type === 'stepstart').map(({ data }) => data)).toEqual([
@@ -499,11 +499,11 @@ it.each([
   expectStepContexts(events);
 });
 
-it('requires an execution language id before calling the loop model', async () => {
+it('requires a non-empty dialect id before calling the loop model', async () => {
   const { runtime, doGenerate } = setup();
-  runtime.engine = { ...runtime.engine, dialect: undefined, language: undefined };
+  runtime.engine = { ...runtime.engine, dialect: { ...runtime.engine.dialect, id: '' } };
   await expect(analyze('Question', { strategy: { type: 'loop' } }, runtime)).rejects.toThrow(
-    'Engine must provide a query dialect or a language id'
+    'Query dialect must provide a non-empty id'
   );
   expect(doGenerate).not.toHaveBeenCalled();
 });

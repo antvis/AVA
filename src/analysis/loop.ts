@@ -29,7 +29,7 @@ function codeBlocks(response: string, language: string): string[] {
   );
 }
 
-function loopPrompt(language: QueryLanguage, fence: string, includeSummary: boolean, instructions?: string): string {
+function loopPrompt(language: QueryLanguage, fence: string, includeSummary: boolean, rules: string): string {
   return `You are a data analysis agent. Answer the user's question by querying the provided data source.
 
 # 1. RESPONSE PROTOCOL
@@ -57,7 +57,7 @@ The runtime executes ${language}. Generate every executable statement directly i
 
 The protocol tag remains [SQL] for compatibility even when the execution dialect is not SQL.
 
-${instructions ?? ''}
+${rules}
 
 # 3. OBJECTIVE
 
@@ -179,11 +179,10 @@ export const loopAnalysis: AnalysisStrategy = async (query, config, { dataModel,
   const emitEvent = (type: AnalysisEventType, data: object, eventId: string) =>
     emit(new AnalysisEvent(type, data, { stepId, parentStepIds, eventId }));
 
-  const language = engine.dialect?.id ?? engine.language;
-  if (!language) throw new Error('Engine must provide a query dialect or a language id');
+  const language = engine.dialect.id;
+  if (!language) throw new Error('Query dialect must provide a non-empty id');
   const fence = language.endsWith('sql') ? 'sql' : language;
-  const instructions = engine.dialect?.rules ?? engine.instructions;
-  const basePrompt = loopPrompt(language, fence, config.includeSummary !== false, instructions);
+  const basePrompt = loopPrompt(language, fence, config.includeSummary !== false, engine.dialect.rules);
   const dataset = stringifyDataModel(dataModel);
   const transcript: string[] = [];
   let sql: string | undefined;

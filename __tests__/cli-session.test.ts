@@ -118,7 +118,7 @@ describe('dataset engine and language', () => {
     expect(instance).toBeInstanceOf(Engine);
     expect(load).toHaveBeenCalledExactlyOnceWith(source);
     expect(discover).not.toHaveBeenCalled();
-    const instructions = instance!.dialect?.rules ?? instance!.instructions;
+    const instructions = instance!.dialect.rules;
     const description = await datasets.describeDataset();
     expect(description).toEqual({
       ...schema,
@@ -131,12 +131,12 @@ describe('dataset engine and language', () => {
     }
     expect(discover).toHaveBeenCalledOnce();
     if (engine === 'python') {
-      expect(instance!.dialect!.rules).toContain('tables');
-      expect(instance!.dialect!.rules).toContain('result');
+      expect(instance!.dialect.rules).toContain('tables');
+      expect(instance!.dialect.rules).toContain('result');
     }
     if (engine === 'javascript') {
-      expect(instance!.dialect!.rules).toContain('data');
-      expect(instance!.dialect!.rules).toContain('stat');
+      expect(instance!.dialect.rules).toContain('data');
+      expect(instance!.dialect.rules).toContain('stat');
     }
   });
 

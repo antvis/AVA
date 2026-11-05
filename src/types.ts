@@ -635,7 +635,7 @@ export interface ParsedProfileOptions {
   metrics: Exclude<MetricConfig, string>[];
 }
 
-/** Execution language id; custom engines can provide their own code-fence language. */
+/** Execution language id exposed by a query dialect. */
 export type QueryLanguage = string;
 
 /** Executable DSL and its model usage, when available. */
@@ -651,12 +651,8 @@ export interface TranslationResult {
  * to allow alternative engines in the future.
  */
 export interface AnalysisEngine {
-  /** Built-in engines expose their selected query language directly. */
-  readonly dialect?: QueryDialect;
-  /** Custom engine language id when no query dialect is provided. */
-  readonly language?: QueryLanguage;
-  /** Environment bindings and result conventions needed when generating code. */
-  readonly instructions?: string;
+  /** Query language, generation rules and validation supplied by every engine. */
+  readonly dialect: QueryDialect;
   /** Load a data source and prepare it for execution. */
   load(config: DataSourceConfig): Promise<void>;
   /** Discover the loaded source structure. */
