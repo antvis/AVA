@@ -52,7 +52,7 @@ const PROJECTS = [
   {
     name: 'mcp-server-ava',
     origin: 'community',
-    description: 'loadADatasetRunSqlAskAvaQuestionsAndGetChartSpecsFromAnyMcpClient',
+    description: 'mcpServerAvaDescription',
     status: 'Community integration',
     href: 'https://github.com/DoubleCore/mcp-server-ava',
     repository: 'DoubleCore/mcp-server-ava',
@@ -61,7 +61,7 @@ const PROJECTS = [
   {
     name: 'ai-sdk-ava',
     origin: 'community',
-    description: 'giveAVercelAiSdkAgentAvaDataLoadingSqlAnalysisAndChartTools',
+    description: 'aiSdkAvaDescription',
     status: 'Community integration',
     href: 'https://github.com/DoubleCore/ai-sdk-ava',
     repository: 'DoubleCore/ai-sdk-ava',
@@ -125,14 +125,14 @@ function ProjectVisual({ kind }: { kind: string }) {
   if (kind === 'mcp' || kind === 'ai-sdk') {
     return (
       <div className={styles.protocolVisual} aria-hidden="true">
-        <strong>{t(kind === 'mcp' ? 'oneDatasetEightTools' : 'avaInsideTheAgentLoop')}</strong>
-        {['loadDataSchema', 'queryRows', 'visualizeChart'].map((key, i) => (
+        <strong>{t(kind === 'mcp' ? 'mcpVisualTitle' : 'aiSdkVisualTitle')}</strong>
+        {['loadDataSchemaLabel', 'queryRowsLabel', 'visualizeChartLabel'].map((key, i) => (
           <div key={key}>
             <span>{t(key)}</span>
             <i style={{ width: `${86 - i * 16}%` }} />
           </div>
         ))}
-        <small className={styles.protocolTag}>{t(kind === 'mcp' ? 'anyMcpClient' : 'aiSdkTools')}</small>
+        <small className={styles.protocolTag}>{t(kind === 'mcp' ? 'mcpProtocolTag' : 'aiSdkProtocolTag')}</small>
       </div>
     );
   }
