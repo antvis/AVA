@@ -18,7 +18,7 @@ DuckDB is the default Node.js engine. JavaScript supports browsers and Node.js; 
 ## Data, analysis, and visualization
 
 - [Data sources](https://ava.antv.vision/documentation/data/sources/): Source types and parameters for inline data, files, and databases.
-- [Feishu Bitable setup](https://ava.antv.vision/documentation/data/feishu-bitable/): Illustrated app creation, permissions, document access, credential binding, CLI / SDK examples, and troubleshooting for Feishu and Lark.
+- [Lark Base setup](https://ava.antv.vision/documentation/data/feishu-bitable/): Illustrated app creation, permissions, document access, credential binding, CLI / SDK examples, and troubleshooting for Lark Base.
 - [Inspect your data](https://ava.antv.vision/documentation/data/schema/): AVA discovers the structural starting point automatically; optionally compute statistics, then supply business meaning through semantic definitions. No schema needs to be authored for ordinary use.
 - [Define data semantics](https://ava.antv.vision/documentation/data/semantic/): Author business context, model and column mappings, relationships, views, and cubes; includes a worked sales example and links to the complete API fields. Definitions guide query generation and do not materialize objects or enforce access policies.
 - [Analyze data](https://ava.antv.vision/documentation/analysis/overview/): Ask questions, get suggestions, and translate or execute queries separately.

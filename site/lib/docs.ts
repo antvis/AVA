@@ -40,9 +40,9 @@ export const docs = [
   },
   {
     slug: 'data/feishu-bitable',
-    title: 'Feishu Bitable setup',
+    title: 'Lark Base setup',
     group: 'Working with data',
-    description: 'Create an app, grant document access, and load a Feishu or Lark Bitable with an illustrated guide.',
+    description: 'Create an app, grant document access, and load data from Lark Base with an illustrated guide.',
   },
   {
     slug: 'analysis/overview',
