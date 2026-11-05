@@ -58,10 +58,24 @@ See the [Lark Base API documentation](https://open.larksuite.com/document/server
 
 <Heading as="h3" id="document-access">Base: allow the app to read the target document</Heading>
 
-1. Open the target Base and find **Add document app** in the top-right **More** menu or document app entry. Labels and placement may vary in the Lark interface.
+1. In the target Base, open the top-right **···** menu and choose **More → Add Applications**. The entry may also appear as **Add Document App**.
 2. Search for and add the app you created, granting read access. If the entry or app is unavailable, ask the document owner to check document permissions, app publication, and availability.
 3. If advanced permissions are enabled, confirm the app can read the tables, records, and fields you want to analyze.
 4. For a `/wiki/` URL, also grant the app access to the corresponding Wiki space through its access settings. Base permissions alone do not allow Wiki node resolution.
+
+<figure>
+  <a href="/screenshots/lark/document-menu.png" target="_blank" rel="noopener noreferrer">
+    <img src="/screenshots/lark/document-menu.png" width="594" height="623" loading="lazy" style={{ maxWidth: '100%', height: 'auto' }} alt="Lark Base menu with More and Add Applications highlighted" />
+  </a>
+  <figcaption>Open <strong>More → Add Applications</strong> in the target Base.</figcaption>
+</figure>
+
+<figure>
+  <a href="/screenshots/lark/document-access.png" target="_blank" rel="noopener noreferrer">
+    <img src="/screenshots/lark/document-access.png" width="634" height="475" loading="lazy" style={{ maxWidth: '100%', height: 'auto' }} alt="Lark Applications dialog showing an added app and its access dropdown" />
+  </a>
+  <figcaption>Use the dropdown next to the added app to check its access. The example shows <strong>Can manage</strong>. Choose read access for AVA.</figcaption>
+</figure>
 
 <Heading as="h2" id="copy-the-link">3. Copy the target table URL</Heading>
 
@@ -214,4 +228,4 @@ try {
 
 See the [CLI guide](/documentation/reference/cli/) for complete commands and [Data sources](/documentation/data/sources/) for other connectors.
 
-Screenshot reference: [LadiPage’s Lark Base setup guide](https://helpv3.ladipage.vn/form-data/cac-buoc-cai-dat-luu-data/luu-data-ve-lark-base/cach-tao-app-va-lay-cac-thong-tin-ket-noi-cua-lark-base).
+Screenshot references include [LadiPage’s Lark Base setup guide](https://helpv3.ladipage.vn/form-data/cac-buoc-cai-dat-luu-data/luu-data-ve-lark-base/cach-tao-app-va-lay-cac-thong-tin-ket-noi-cua-lark-base) and the [Lark AnyCross Base archiving tutorial](https://note.com/hiroshikinoshita/n/ndcf1b853e7f5).
