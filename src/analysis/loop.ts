@@ -12,6 +12,7 @@
 import { generateText } from 'ai';
 
 import { languageModel } from '../util/model';
+import { getLanguageId } from '../util/language';
 import { stringifyDataModel } from '../util/data-model';
 import { AnalysisEvent, AnalysisEventType, eventPair } from '../event';
 import { serializeError } from '../util/error';
@@ -29,7 +30,7 @@ function codeBlocks(response: string, language: string): string[] {
   );
 }
 
-function loopPrompt(language: QueryLanguage, includeSummary: boolean): string {
+function loopPrompt(language: QueryLanguage, fence: string, includeSummary: boolean, instructions?: string): string {
   return `You are a data analysis agent. Answer the user's question by querying the provided data source.
 
 # 1. RESPONSE PROTOCOL
@@ -44,28 +45,24 @@ Every response is one machine-readable action.
 
 Action-specific syntax:
 
-- [EXPLORE] must contain at least one fenced ${language.fence} code block. Multiple blocks are allowed.
+- [EXPLORE] must contain at least one fenced ${fence} code block. Multiple blocks are allowed.
 - [REFINE] must contain reasoning and a next-step plan, but no executable code block.
-- [SQL] must contain exactly one fenced ${language.fence} code block and no other code block.
+- [SQL] must contain exactly one fenced ${fence} code block and no other code block.
 - [CONFIRM] must contain verification${
     includeSummary ? ' and a concise conclusion' : ' only, without a summary or conclusion'
   }, but no executable code block.
 
 # 2. EXECUTION DIALECT
 
-The runtime executes ${
-    language.name
-  }. Generate every executable statement directly in this language. The runtime will validate and execute it without translation.
+The runtime executes ${language}. Generate every executable statement directly in this language. The runtime will validate and execute it without translation.
 
 The protocol tag remains [SQL] for compatibility even when the execution dialect is not SQL.
 
-${language.instructions ?? ''}
+${instructions ?? ''}
 
 # 3. OBJECTIVE
 
-Produce the smallest correct ${
-    language.name
-  } statement that answers the original question. Use database evidence instead of guessing values, formats, relationships, or field meaning.
+Produce the smallest correct ${language} statement that answers the original question. Use database evidence instead of guessing values, formats, relationships, or field meaning.
 
 Execution success alone is not correctness. Verify that the result has the intended filters, granularity, aggregation, joins, and plausible values.
 
@@ -100,7 +97,7 @@ Format:
 
 [EXPLORE]
 -- Purpose: <uncertainty being tested>
-\`\`\`${language.fence}
+\`\`\`${fence}
 <exploration query>
 \`\`\`
 
@@ -134,7 +131,7 @@ Before writing the statement, verify that:
 Format:
 
 [SQL]
-\`\`\`${language.fence}
+\`\`\`${fence}
 <one answer query>
 \`\`\`
 
@@ -183,6 +180,10 @@ export const loopAnalysis: AnalysisStrategy = async (query, config, { dataModel,
   const emitEvent = (type: AnalysisEventType, data: object, eventId: string) =>
     emit(new AnalysisEvent(type, data, { stepId, parentStepIds, eventId }));
 
+  const language = getLanguageId(engine);
+  const fence = language.endsWith('sql') ? 'sql' : language;
+  const instructions = engine.dialect?.rules ?? engine.instructions;
+  const basePrompt = loopPrompt(language, fence, config.includeSummary !== false, instructions);
   const dataset = stringifyDataModel(dataModel);
   const transcript: string[] = [];
   let sql: string | undefined;
@@ -195,7 +196,7 @@ export const loopAnalysis: AnalysisStrategy = async (query, config, { dataModel,
     const stepEvent = eventPair(emitEvent, AnalysisEventType.STEP_START, AnalysisEventType.STEP_END);
     stepId = stepEvent.pairId;
 
-    const prompt = `${loopPrompt(engine.language, config.includeSummary !== false)}
+    const prompt = `${basePrompt}
 
     # DATABASE CONTEXT
 
@@ -225,12 +226,10 @@ export const loopAnalysis: AnalysisStrategy = async (query, config, { dataModel,
       if (!action) throw new Error('Loop response must begin with [EXPLORE], [REFINE], [SQL], or [CONFIRM]');
 
       if (action === 'EXPLORE' || action === 'SQL') {
-        queries = codeBlocks(text, engine.language.fence);
+        queries = codeBlocks(text, fence);
         if (queries.length === 0 || (action === 'SQL' && queries.length !== 1)) {
           throw new Error(
-            `Loop ${action} response must contain ${action === 'SQL' ? 'exactly one' : 'at least one'} ${
-              engine.language.fence
-            } code block`
+            `Loop ${action} response must contain ${action === 'SQL' ? 'exactly one' : 'at least one'} ${fence} code block`
           );
         }
       }
@@ -269,7 +268,7 @@ export const loopAnalysis: AnalysisStrategy = async (query, config, { dataModel,
           if (action === 'SQL') result = undefined;
 
           observations.push(
-            `Proposed statement (${engine.language.name}):
+            `Proposed statement (${language}):
           ${proposal}
           Error:
           ${error instanceof Error ? error.message : String(error)}`
@@ -281,7 +280,7 @@ export const loopAnalysis: AnalysisStrategy = async (query, config, { dataModel,
         queryEvent.end(execution);
 
         observations.push(
-          `Proposed statement (${engine.language.name}):
+          `Proposed statement (${language}):
           ${proposal}
           Result:
           ${JSON.stringify(execution)}`
@@ -332,7 +331,7 @@ export const loopAnalysis: AnalysisStrategy = async (query, config, { dataModel,
     const { text: responseText, usage: responseUsage } = await generateText({
       model: languageModel(llm),
       maxRetries: llm.maxRetries ?? 3,
-      prompt: `${loopPrompt(engine.language, config.includeSummary !== false)}
+      prompt: `${basePrompt}
 
     # DATABASE CONTEXT
 
@@ -345,15 +344,15 @@ export const loopAnalysis: AnalysisStrategy = async (query, config, { dataModel,
     # FINAL ATTEMPT
 
     The loop reached its step limit without a final executable statement. Use the complete history above and respond with exactly one [SQL] action containing one ${
-      engine.language.name
+      language
     } statement.`,
     });
 
     usage = responseUsage;
     finalText = responseText.trim();
-    const proposals = codeBlocks(finalText, engine.language.fence);
+    const proposals = codeBlocks(finalText, fence);
     if (!finalText.startsWith('[SQL]') || proposals.length !== 1) {
-      throw new Error(`Loop final fallback response must contain exactly one ${engine.language.fence} code block`);
+      throw new Error(`Loop final fallback response must contain exactly one ${fence} code block`);
     }
     finalText = finalText.replace(/^\[SQL\]\s*/, '');
 
@@ -370,7 +369,7 @@ export const loopAnalysis: AnalysisStrategy = async (query, config, { dataModel,
 
       throw new Error(
         `Loop final statement failed: ${error instanceof Error ? error.message : String(error)}\nLast attempted ${
-          engine.language.name
+          language
         } statement:\n${statement}`
       );
     }

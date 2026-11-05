@@ -30,10 +30,15 @@ AVA/
 | 引擎 | 选择 SQL 方言，管理连接、数据加载、查询执行及数据库只读权限 |
 | 方言 | SQL 生成、解析与只读校验 |
 
+- SQL 引擎直接暴露只读 `dialect`，使用其 `id`；解释器通过 `language` 提供 `python` 或 `javascript`，环境绑定说明放在引擎的可选 `instructions`。
+- SQL 方言 id 以 `sql` 结尾，分析流程据此使用 `sql` 代码块标记，其他语言使用自身 id；CLI schema 返回语言 id 和可选说明。
+
 ## 方言规范
 
 - 文件组织：按 SQL 语言命名，平铺在 `src/query`；一个方言对应一个文件和一个实现 `QueryDialect` 的类。
+- 方言提供只读字符串 `id`，当前为 `duckdb-sql`、`clickhouse-sql`、`postgresql`、`tsql`。
 - 实现依据：生成与校验遵循对应方言和解析器的官方文档，注释标明依据。
+- 固定方言规则内联在只读 `rules` 字段中，供生成和调用方复用；模型响应格式要求放在 `getDSL` 中。
 - `getDSL(query, dataModel)`
   - 根据问题与数据模型生成单条只读 SELECT，返回纯 SQL 及模型 usage。
 - `validateDSL(sql)`

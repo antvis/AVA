@@ -33,10 +33,7 @@ import type {
 } from '../../types';
 
 export class JavaScriptEngine implements AnalysisEngine {
-  readonly language = {
-    name: 'JavaScript',
-    fence: 'javascript',
-  };
+  readonly language = 'javascript';
 
   private data: any[] | null = null;
 

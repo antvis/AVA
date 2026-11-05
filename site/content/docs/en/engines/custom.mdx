@@ -29,11 +29,13 @@ Implement the exported [AnalysisEngine interface](https://github.com/antvis/AVA/
 | Member                      | Input parameters                                                                                 | Returns / behavior                                                                    |
 | --------------------------- | ------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------- |
 | Constructor                 | `llmConfig: LLMConfig`, `options?: Record<string, unknown>`                                      | Receives model configuration and engine fields except `type`.                         |
-| `language`                  | Readonly property                                                                                | `QueryLanguage`, used by analysis prompts.                                            |
-| `load(config)`              | `DataSourceConfig`                                                                               | `Promise<void>`; prepare data and connections for execution.                          |
-| `schema()`                  | None                                                                                             | `Promise<Schema>`; discover the loaded source structure.                              |
-| `profile(schema, options?)` | Required `Schema`, optional `ProfileOptions`                                                     | Optional method returning `Promise<Profile>`; compute against the supplied structure. |
-| `getDSL(query, dataModel)` | Required query string and `DataModel` | `Promise<TranslationResult>` with `dsl` and optional `usage`.                                           |
+| `dialect` | Readonly property for SQL engines | The selected `QueryDialect`; its `id` identifies the execution language and `rules` supplies dialect rules. |
+| `language` | Readonly property when no dialect is provided | Interpreter or custom language id, used by analysis prompts. |
+| `instructions` | Optional readonly property | Execution bindings and result conventions. |
+| `load(config)` | `DataSourceConfig` | `Promise<void>`; prepare data and connections for execution. |
+| `schema()` | None | `Promise<Schema>`; discover the loaded source structure. |
+| `profile(schema, options?)` | Required `Schema`, optional `ProfileOptions` | Optional method returning `Promise<Profile>`; compute against the supplied structure. |
+| `getDSL(query, dataModel)` | Required query string and `DataModel` | `Promise<TranslationResult>` with `dsl` and optional `usage`. |
 | `execute(dsl, options?)`    | Required DSL string; optional [ExecutionOptions](/documentation/reference/api/#executionoptions) | `Promise<ExecutionResult<T>>`; enforce validation and result bounds.                  |
 | `dispose()`                 | None                                                                                             | `Promise<void>`; release connections, files, and other resources.                     |
 
@@ -41,11 +43,7 @@ AVA owns schema/profile caching. `load()` prepares resources; `schema()` discove
 
 To migrate an older engine, move discovery out of `load()` into `schema()`, change `load()` to return `Promise<void>`, add the required schema/data-model parameters, and return `{ dsl, usage? }` from `getDSL()`. Keep `dispose()` safe after partial loading.
 
-| `QueryLanguage` field | Type     | Required | Meaning                                                  |
-| --------------------- | -------- | -------- | -------------------------------------------------------- |
-| `name`                | `string` | Yes      | Language or dialect name included in prompts.            |
-| `fence`               | `string` | Yes      | Markdown code-fence language, such as `sql` or `python`. |
-| `instructions`        | `string` | No       | Available bindings and result conventions.               |
+Expose `dialect` for a SQL engine or a `language` string id for an interpreter or custom engine. Analysis and CLI read `dialect.id` first, then `language`. Shared SQL rules come from `dialect.rules`; interpreter bindings come from `engine.instructions`. SQL ids end in `sql` and use `sql` code blocks in loop analysis; built-in ids are `duckdb-sql`, `clickhouse-sql`, `postgresql`, and `tsql`. Python and JavaScript use `python` and `javascript`. Other custom languages use their id as the code-block language, such as `json` below. Optional `engine.instructions` describes available bindings and result conventions.
 
 `DataModel` combines structural metadata, optional statistics, and semantic annotations. AVA assembles it from cached `Schema`, `Profile`, and `Semantic` metadata when analysis, translation, or suggestions need it. Engines receive the model directly, without a context wrapper.
 
@@ -83,12 +81,9 @@ import type {
 type Sale = { region: string; revenue: number };
 
 export class SalesEngine implements AnalysisEngine {
-  readonly language = {
-    name: 'Sales metrics JSON',
-    fence: 'json',
-    instructions:
-      'Return exactly {"metric":"total_revenue"} or {"metric":"revenue_by_region"}. No other keys or operations are supported.',
-  };
+  readonly language = 'json';
+  readonly instructions =
+    'Return exactly {"metric":"total_revenue"} or {"metric":"revenue_by_region"}. No other keys or operations are supported.';
   private sales: Sale[] | null = null;
 
   private readonly model: LanguageModel;
@@ -140,7 +135,7 @@ export class SalesEngine implements AnalysisEngine {
     const { text, usage } = await generateText({
       model: this.model,
       maxRetries: this.llm.maxRetries ?? 3,
-      system: `Convert a question into a sales metric. ${this.language.instructions}
+      system: `Convert a question into a sales metric. ${this.instructions}
 Return raw JSON without Markdown. If neither metric answers the question, return {"metric":"unsupported"}.`,
       prompt: query,
     });

@@ -45,12 +45,22 @@ export async function loadTSQLParser() {
 }
 
 export class TSQLDialect implements QueryDialect {
+  readonly id = 'tsql';
+
+  // SELECT syntax, row limits and set operations follow Microsoft's T-SQL reference.
+  // https://learn.microsoft.com/en-us/sql/t-sql/queries/select-transact-sql
+  // https://learn.microsoft.com/en-us/sql/t-sql/queries/top-transact-sql
+  readonly rules = `Use Microsoft SQL Server T-SQL and schema-qualified table names, for example [dbo].[orders].
+  Use read-only SELECT queries (WITH is allowed), without SELECT INTO or GO batches.
+  Use TOP (n), or ORDER BY ... OFFSET ... ROWS FETCH NEXT ... ROWS ONLY, instead of LIMIT.
+  Use SQL Server functions such as CONVERT, DATEPART, DATEADD and ISNULL for dates and missing values.
+  Use UNION to remove duplicates and UNION ALL to preserve them, aligning column order and compatible types.
+  Return tabular rows directly, using registered tables and read-only CTEs rather than remote pass-through queries.
+  Reference exact table and column names from the data model, joining tables when needed. Quote identifier components separately with brackets or double quotes when needed; use single quotes for strings and N-prefixed literals for Unicode text.`;
+
   constructor(private readonly llmConfig: LLMConfig) {}
 
   async getDSL(query: string, dataModel: DataModel): Promise<TranslationResult> {
-    // SELECT syntax, row limits and set operations follow Microsoft's T-SQL reference.
-    // https://learn.microsoft.com/en-us/sql/t-sql/queries/select-transact-sql
-    // https://learn.microsoft.com/en-us/sql/t-sql/queries/top-transact-sql
     const prompt = `You are a SQL Server expert. Generate a query answering the user's question using the supplied data model.
 
     Dataset Context:
@@ -58,14 +68,8 @@ export class TSQLDialect implements QueryDialect {
 
     User Query: ${query}
 
-    Use Microsoft SQL Server T-SQL and schema-qualified table names, for example[dbo].[orders].
-    Generate exactly one read-only SELECT query (WITH is allowed), without SELECTINTO or GO batches.
-    Use TOP (n), or ORDER BY ... OFFSET ... ROWS FETCH NEXT ... ROWS ONLY, insteadof LIMIT.
-    Use SQL Server functions such as CONVERT, DATEPART, DATEADD and ISNULL for datesand missing values.
-    Use UNION to remove duplicates and UNION ALL to preserve them, aligning columnorder and compatible types.
-    Return tabular rows directly, using registered tables and read-only CTEs ratherthan remote pass-through queries.
-    Reference exact table and column names from the data model, joining tables whenneeded. Quote identifier components separately with brackets or double quoteswhen needed; use single quotes for strings and N-prefixed literals for Unicodetext.
-    Return only the SQL, without explanation or Markdown.`;
+    ${this.rules}
+    Generate exactly one query. Return only SQL text, without explanation or Markdown.`;
 
     const { text, usage, finishReason } = await generateText({
       model: languageModel(this.llmConfig),

@@ -6,12 +6,18 @@ import { stringifyDataModel } from '../util/data-model';
 import type { TranslationResult, DataModel, LLMConfig, QueryDialect } from '../types';
 
 export class ClickHouseSQLDialect implements QueryDialect {
+  readonly id = 'clickhouse-sql';
+
+  // Identifier quoting, function casing and UNION scope follow the ClickHouse SQL reference.
+  // https://clickhouse.com/docs/reference/syntax
+  // https://clickhouse.com/docs/reference/statements/select/union
+  readonly rules = `Use read-only SELECT queries (WITH is allowed), without INTO OUTFILE, FORMAT, PARALLEL WITH, or SETTINGS.
+  Use the exact table references and column names from the data model, joining tables when needed. Quote identifier components separately with double quotes or backticks when needed; use single quotes for strings. Preserve function-name casing.
+  For UNION, explicitly choose ALL or DISTINCT and align column order and types. To order or limit the combined UNION result, put the UNION in a subquery and apply ORDER BY or LIMIT to the outer SELECT.`;
+
   constructor(private readonly llmConfig: LLMConfig) {}
 
   async getDSL(query: string, dataModel: DataModel): Promise<TranslationResult> {
-    // Identifier quoting, function casing and UNION scope follow the ClickHouse SQL reference.
-    // https://clickhouse.com/docs/reference/syntax
-    // https://clickhouse.com/docs/reference/statements/select/union
     const prompt = `You are a ClickHouse SQL expert. Given the following data model and user query, generate a SQL query to answer the question.
 
     Dataset Context:
@@ -19,9 +25,8 @@ export class ClickHouseSQLDialect implements QueryDialect {
 
     User Query: ${query}
 
-    Generate exactly one read-only SELECT query (WITH is allowed), without explanation or markdown formatting. Do not use INTO OUTFILE, FORMAT, PARALLEL WITH, or SETTINGS.
-    Use the exact table references and column names from the data model, joining tables when needed. Quote identifier components separately with double quotes or backticks when needed; use single quotes for strings. Preserve function-name casing.
-    For UNION, explicitly choose ALL or DISTINCT and align column order and types. To order or limit the combined UNION result, put the UNION in a subquery and apply ORDER BY or LIMIT to the outer SELECT.`;
+    ${this.rules}
+    Generate exactly one query. Return only SQL text, without explanation or Markdown.`;
 
     const { text, usage, finishReason } = await generateText({
       model: languageModel(this.llmConfig),

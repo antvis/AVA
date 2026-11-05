@@ -7,14 +7,20 @@ import type { DuckDBInstance } from '@duckdb/node-api';
 import type { TranslationResult, LLMConfig, QueryDialect, DataModel } from '../types';
 
 export class DuckDBSQLDialect implements QueryDialect {
+  readonly id = 'duckdb-sql';
+
+  // Identifier quoting and set semantics follow the DuckDB SQL reference.
+  // https://duckdb.org/docs/1.5/sql/dialect/keywords_and_identifiers
+  // https://duckdb.org/docs/1.5/sql/query_syntax/setops
+  readonly rules = `Use read-only SELECT queries (WITH is allowed).
+  Use the exact table references and column names from the data model, joining tables when needed. Use double quotes for identifier components that need quoting and single quotes for strings.
+  Use DuckDB SQL syntax and functions appropriate to the column types. UNION removes duplicates and UNION ALL preserves them; align columns by position, or explicitly choose UNION BY NAME to align them by name.`;
+
   private parserInstance: Promise<DuckDBInstance> | undefined;
 
   constructor(private readonly llmConfig: LLMConfig) {}
 
   async getDSL(query: string, dataModel: DataModel): Promise<TranslationResult> {
-    // Identifier quoting and set semantics follow the DuckDB SQL reference.
-    // https://duckdb.org/docs/1.5/sql/dialect/keywords_and_identifiers
-    // https://duckdb.org/docs/1.5/sql/query_syntax/setops
     const prompt = `You are a DuckDB SQL expert. Given the following data model and user query, generate a SQL query to answer the question.
 
     Dataset Context:
@@ -22,9 +28,8 @@ export class DuckDBSQLDialect implements QueryDialect {
 
     User Query: ${query}
 
-    Generate exactly one read-only SELECT query (WITH is allowed). Return only SQL text.
-    Use the exact table references and column names from the data model, joining tables when needed. Use double quotes for identifier components that need quoting and single quotes for strings.
-    Use DuckDB SQL syntax and functions appropriate to the column types. UNION removes duplicates and UNION ALL preserves them; align columns by position, or explicitly choose UNION BY NAME to align them by name.`;
+    ${this.rules}
+    Generate exactly one query. Return only SQL text, without explanation or Markdown.`;
 
     const { text, usage, finishReason } = await generateText({
       model: languageModel(this.llmConfig),

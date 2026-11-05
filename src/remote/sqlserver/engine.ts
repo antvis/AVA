@@ -49,15 +49,10 @@ function queryColumns(columns: IColumnMetadata[string][]): QueryColumn[] {
 
 /** SQL Server executes native T-SQL remotely; no rows are imported into DuckDB. */
 export class SQLServerEngine implements AnalysisEngine {
-  readonly language = {
-    name: 'Microsoft SQL Server T-SQL',
-    fence: 'sql',
-  };
-
   private pool: ConnectionPool | null = null;
   private sourceSchema: string | undefined;
   private readonly requests = new Set<Request>();
-  private readonly dialect: TSQLDialect;
+  readonly dialect: TSQLDialect;
 
   constructor(llmConfig: LLMConfig) {
     this.dialect = new TSQLDialect(llmConfig);

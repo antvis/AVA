@@ -1,4 +1,5 @@
 import { AVA } from '../../index';
+import { getLanguageId } from '../../util/language';
 
 import type { DataSourceConfig, EngineConfig, LLMConfig, Schema } from '../../types';
 
@@ -56,8 +57,14 @@ export function withDataset<T>(operation: (instance: AVA) => Promise<T>): Promis
 }
 
 export async function describeDataset(schema?: Schema) {
-  return withDataset(async (instance) => ({
-    ...(await instance.schema(undefined, schema === undefined ? undefined : () => schema)),
-    language: instance.engine!.language,
-  }));
+  return withDataset(async (instance) => {
+    const engine = instance.engine!;
+    const language = getLanguageId(engine);
+    const instructions = engine.dialect?.rules ?? engine.instructions;
+    return {
+      ...(await instance.schema(undefined, schema === undefined ? undefined : () => schema)),
+      language,
+      ...(instructions ? { instructions } : {}),
+    };
+  });
 }

@@ -43,13 +43,8 @@ export class SupabaseApiError extends Error {
 }
 
 export class SupabaseEngine implements AnalysisEngine {
-  readonly language = {
-    name: 'PostgreSQL',
-    fence: 'sql',
-  };
-
   private connection: { accessToken: string; projectRef: string } | null = null;
-  private readonly dialect: PostgreSQLDialect;
+  readonly dialect: PostgreSQLDialect;
 
   constructor(llmConfig: LLMConfig) {
     this.dialect = new PostgreSQLDialect(llmConfig);

@@ -31,17 +31,15 @@ import type {
 const DEFAULT_QUERY_TIMEOUT_MS = 30_000;
 
 export class PythonEngine implements AnalysisEngine {
-  readonly language = {
-    name: 'Python (pandas)',
-    fence: 'python',
-    instructions: `pandas is available as pd. Input DataFrames are in tables, keyed by schema table name.
+  readonly language = 'python';
+
+  readonly instructions = `pandas is available as pd. Input DataFrames are in tables, keyed by schema table name.
 CSV/JSON use tables['data']; Excel exposes every sheet as tables['SheetName'].
 For a single table, the DataFrame df is also available. For multiple sheets use tables explicitly.
 Assign the final output to result: a DataFrame, Series, list of records, record, or JSON scalar.
 DataFrame and Series indexes are not returned; use reset_index() when index values matter.
 Each execution starts from fresh input data; variables and mutations do not persist between calls.
-Do not read files, access the network, install packages, or print the answer.`,
-  };
+Do not read files, access the network, install packages, or print the answer.`;
 
   private source: DataSourceConfig | null = null;
   private readonly timeoutMs: number;
@@ -84,7 +82,7 @@ Do not read files, access the network, install packages, or print the answer.`,
       model: languageModel(this.llmConfig),
       maxRetries: this.llmConfig.maxRetries ?? 3,
       prompt: `You are a data analysis expert. Generate Python code to answer the question.
-${this.language.instructions}
+${this.instructions}
 
 Dataset information:
 ${dataset}

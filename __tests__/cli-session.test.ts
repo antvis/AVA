@@ -100,14 +100,14 @@ describe('dataset engine and language', () => {
     vi.restoreAllMocks();
   });
 
-  it.each<{ source: DataSourceConfig; engine: EngineConfig['type']; explicit?: EngineConfig['type'] }>([
-    { source, engine: 'duckdb' },
-    { source, engine: 'python', explicit: 'python' },
-    { source, engine: 'javascript', explicit: 'javascript' },
-    { source: { type: 'supabase', options: { accessToken: 'test', projectRef: 'test' } }, engine: 'supabase' },
-    { source: { type: 'clickhouse', options: { host: 'localhost', database: 'sales' } }, engine: 'clickhouse' },
-    { source: sqlserverSource, engine: 'sqlserver' },
-  ])('selects $engine and exposes its language without changing the schema', async ({ source, engine, explicit }) => {
+  it.each<{ source: DataSourceConfig; engine: EngineConfig['type']; language: string; explicit?: EngineConfig['type'] }>([
+    { source, engine: 'duckdb', language: 'duckdb-sql' },
+    { source, engine: 'python', language: 'python', explicit: 'python' },
+    { source, engine: 'javascript', language: 'javascript', explicit: 'javascript' },
+    { source: { type: 'supabase', options: { accessToken: 'test', projectRef: 'test' } }, engine: 'supabase', language: 'postgresql' },
+    { source: { type: 'clickhouse', options: { host: 'localhost', database: 'sales' } }, engine: 'clickhouse', language: 'clickhouse-sql' },
+    { source: sqlserverSource, engine: 'sqlserver', language: 'tsql' },
+  ])('selects $engine and exposes language id $language', async ({ source, engine, language, explicit }) => {
     const { getEngineClass } = await import('../src/engines');
     const Engine = getEngineClass(engine);
     const load = vi.spyOn(Engine.prototype, 'load').mockResolvedValue(undefined);
@@ -118,18 +118,27 @@ describe('dataset engine and language', () => {
     expect(instance).toBeInstanceOf(Engine);
     expect(load).toHaveBeenCalledExactlyOnceWith(source);
     expect(discover).not.toHaveBeenCalled();
-    expect(await datasets.describeDataset()).toEqual({ ...schema, language: instance!.language });
+    const instructions = instance!.dialect?.rules ?? instance!.instructions;
+    const description = await datasets.describeDataset();
+    expect(description).toEqual({
+      ...schema,
+      language,
+      ...(instructions ? { instructions } : {}),
+    });
+    if (instance!.dialect) {
+      expect(description.instructions).toContain('read-only SELECT');
+      expect(description.instructions).not.toContain('Return only SQL text');
+    }
     expect(discover).toHaveBeenCalledOnce();
     if (engine === 'python') {
-      expect(instance!.language.fence).toBe('python');
-      expect(instance!.language.instructions).toContain('tables');
-      expect(instance!.language.instructions).toContain('result');
+      expect(instance!.instructions).toContain('tables');
+      expect(instance!.instructions).toContain('result');
     }
   });
 
   it('executes JavaScript through the selected session without an API key', async () => {
     await datasets.createDataset(source, llm, 'javascript');
-    expect((await datasets.describeDataset()).language.fence).toBe('javascript');
+    expect((await datasets.describeDataset()).language).toBe('javascript');
     const result = await datasets.withDataset((ava) => ava.query('const result = [{ total: data[0].sales * 2 }];'));
     expect(result.data).toEqual([{ total: 20 }]);
     expect(result.rowCount).toBe(1);

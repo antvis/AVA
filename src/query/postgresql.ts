@@ -23,14 +23,21 @@ function containsWriteOrLock(value: unknown): boolean {
 }
 
 export class PostgreSQLDialect implements QueryDialect {
+  readonly id = 'postgresql';
+
+  // Identifier quoting and set-operation scope follow PostgreSQL 17, matching the parser version.
+  // https://www.postgresql.org/docs/17/sql-syntax-lexical.html
+  // https://www.postgresql.org/docs/17/sql-select.html
+  readonly rules = `Use read-only SELECT queries (WITH is allowed).
+  Use the exact table references and column names from the data model, joining tables when needed. Quote identifier components separately with double quotes when needed, preserving their case; use single quotes for strings.
+  Use PostgreSQL syntax, functions and operators appropriate to the column types. Each CTE must also be read-only, and the query must return rows directly without INTO or row-locking clauses.
+  UNION removes duplicates and UNION ALL preserves them; align columns by position and compatible types. Apply ORDER BY or LIMIT to the intended SELECT or combined set result, using parentheses when needed.`;
+
   private parser: PgParser | undefined;
 
   constructor(private readonly llmConfig: LLMConfig) {}
 
   async getDSL(query: string, dataModel: DataModel): Promise<TranslationResult> {
-    // Identifier quoting and set-operation scope follow PostgreSQL 17, matching the parser version.
-    // https://www.postgresql.org/docs/17/sql-syntax-lexical.html
-    // https://www.postgresql.org/docs/17/sql-select.html
     const prompt = `You are a PostgreSQL expert. Given the following data model and user query, generate a SQL query to answer the question.
 
     Dataset Context:
@@ -38,10 +45,8 @@ export class PostgreSQLDialect implements QueryDialect {
 
     User Query: ${query}
 
-    Generate exactly one read-only SELECT query (WITH is allowed). Return only SQL text.
-    Use the exact table references and column names from the data model, joining tables when needed. Quote identifier components separately with double quotes when needed, preserving their case; use single quotes for strings.
-    Use PostgreSQL syntax, functions and operators appropriate to the column types. Each CTE must also be read-only, and the query must return rows directly without INTO or row-locking clauses.
-    UNION removes duplicates and UNION ALL preserves them; align columns by position and compatible types. Apply ORDER BY or LIMIT to the intended SELECT or combined set result, using parentheses when needed.`;
+    ${this.rules}
+    Generate exactly one query. Return only SQL text, without explanation or Markdown.`;
 
     const { text, usage, finishReason } = await generateText({
       model: languageModel(this.llmConfig),

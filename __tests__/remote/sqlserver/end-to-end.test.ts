@@ -71,7 +71,7 @@ describe.skipIf(!sqlserverEnabled)('SQL Server actual CLI sessions', () => {
   it('automatically routes source, schema, native queries and disposal through the remote engine', async () => {
     const id = await source();
     const schema = await cli(['schema', id]);
-    expect(schema.language.name).toContain('SQL Server');
+    expect(schema.language).toBe('tsql');
     expect(schema.models.map((model: { name: string }) => model.name)).toContain('[dbo].[orders]');
     const profile = await cli(['profile', id, '--metrics', 'row_count,mean']);
     const orders = profile.models.find((model: { name: string }) => model.name === '[dbo].[orders]');

@@ -43,14 +43,9 @@ function clientConfig(options: ClickHouseSourceOptions): ClickHouseClientConfigO
 }
 
 export class ClickHouseEngine implements AnalysisEngine {
-  readonly language = {
-    name: 'ClickHouse SQL dialect',
-    fence: 'sql',
-  };
-
   private client: ClickHouseClient | null = null;
   private database: string | null = null;
-  private readonly dialect: ClickHouseSQLDialect;
+  readonly dialect: ClickHouseSQLDialect;
 
   constructor(llmConfig: LLMConfig) {
     this.dialect = new ClickHouseSQLDialect(llmConfig);

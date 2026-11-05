@@ -27,7 +27,7 @@ function setup() {
   const doGenerate = vi.fn<MockLanguageModelV4['doGenerate']>().mockResolvedValue(response(JSON.stringify(narrative)));
   const model = new MockLanguageModelV4({ doGenerate });
   const engine = {
-    language: { name: 'SQL', fence: 'sql' },
+    dialect: new DuckDBSQLDialect({ model }),
     getDSL: vi.fn().mockResolvedValue({ dsl: 'SELECT 1' }),
     execute: vi.fn().mockResolvedValue(execution),
   };
@@ -456,14 +456,34 @@ it('wraps loop queries in steps across exploration, refinement, and confirmation
   expectStepContexts(events);
 });
 
-it('links the loop fallback to the previous step', async () => {
-  const { runtime, doGenerate, emit } = setup();
+it.each([
+  ['duckdb-sql', 'sql', 'SELECT 1'],
+  ['clickhouse-sql', 'sql', 'SELECT 1'],
+  ['postgresql', 'sql', 'SELECT 1'],
+  ['tsql', 'sql', 'SELECT 1'],
+  ['custom-sql', 'sql', 'SELECT 1'],
+  ['python', 'python', "result = [{'value': 1}]"],
+  ['javascript', 'javascript', 'const result = [{value: 1}];'],
+  ['json', 'json', '{"metric":"total_revenue"}'],
+])('uses language id %s and links the fallback to the previous step', async (language, fence, dsl) => {
+  const { runtime, engine, doGenerate, model, emit } = setup();
+  const instructions = 'Use the supplied bindings and return the supported result shape.';
+  runtime.engine = language.endsWith('sql')
+    ? { ...runtime.engine, dialect: { id: language, rules: instructions, getDSL: engine.getDSL, validateDSL: async (sql) => sql }, instructions: 'Unused interpreter instructions.' }
+    : { ...runtime.engine, dialect: undefined, language, instructions };
   doGenerate
     .mockResolvedValueOnce(response('[REFINE] Need an answer query.'))
-    .mockResolvedValueOnce(response('[SQL]\n```sql\nSELECT 1\n```'));
+    .mockResolvedValueOnce(response(`[SQL]\n\`\`\`${fence}\n${dsl}\n\`\`\``));
 
   await analyze('Give me one', { strategy: { type: 'loop', maxSteps: 1 } }, runtime);
 
+  expect(engine.execute).toHaveBeenCalledExactlyOnceWith(dsl, expect.any(Object));
+  expect(engine.getDSL).not.toHaveBeenCalled();
+  for (const call of model.doGenerateCalls) {
+    expect(JSON.stringify(call.prompt)).toContain(`runtime executes ${language}`);
+    expect(JSON.stringify(call.prompt)).toContain(instructions);
+    expect(JSON.stringify(call.prompt)).not.toContain('Unused interpreter instructions.');
+  }
   const events = emit.mock.calls.map(([event]) => event);
   expect(events.filter(({ type }) => type === 'stepstart').map(({ data }) => data)).toEqual([
     { step: 0 },
@@ -474,9 +494,18 @@ it('links the loop fallback to the previous step', async () => {
     usage: { inputTokens: 10, outputTokens: 5 },
     finalAttempt: true,
     action: 'SQL',
-    text: '```sql\nSELECT 1\n```',
+    text: `\`\`\`${fence}\n${dsl}\n\`\`\``,
   });
   expectStepContexts(events);
+});
+
+it('requires an execution language id before calling the loop model', async () => {
+  const { runtime, doGenerate } = setup();
+  runtime.engine = { ...runtime.engine, dialect: undefined, language: undefined };
+  await expect(analyze('Question', { strategy: { type: 'loop' } }, runtime)).rejects.toThrow(
+    'Engine must provide a SQL dialect or a language id'
+  );
+  expect(doGenerate).not.toHaveBeenCalled();
 });
 
 it('closes an early confirmation step before continuing to a query', async () => {

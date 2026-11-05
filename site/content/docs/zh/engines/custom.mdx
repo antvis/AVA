@@ -31,7 +31,9 @@ const ava = new AVA({
 | 成员 | 输入参数 | 返回值与行为 |
 | --------------------------- | ------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------- |
 | 构造函数 | `llmConfig: LLMConfig`，`options?: Record<string, unknown>` | 接收模型配置，以及 `type` 之外的引擎字段。 |
-| `language` | 只读属性 | `QueryLanguage`，供分析提示词使用。 |
+| `dialect` | SQL 引擎的只读属性 | 所选 `QueryDialect`，其 `id` 标识执行语言，`rules` 提供方言规则。 |
+| `language` | 未提供方言时的只读属性 | 解释器或自定义语言 id，供分析提示词使用。 |
+| `instructions` | 可选只读属性 | 执行环境中的变量和结果约定。 |
 | `load(config)` | `DataSourceConfig` | `Promise<void>`；准备执行所需的数据与连接。 |
 | `schema()` | 无 | `Promise<Schema>`；发现已加载数据源的结构。 |
 | `profile(schema, options?)` | 必填 `Schema`，可选 `ProfileOptions` | 可选方法，返回 `Promise<Profile>`，基于传入结构计算统计信息。 |
@@ -43,11 +45,7 @@ AVA 管理 schema 与 profile 缓存。`load()` 准备资源，`schema()` 按需
 
 迁移旧引擎时，将结构发现从 `load()` 移到 `schema()`，让 `load()` 返回 `Promise<void>`，补齐必填的 schema 与 data-model 参数，并让 `getDSL()` 返回 `{ dsl, usage? }`。即使只完成部分加载，`dispose()` 也应能安全调用。
 
-| `QueryLanguage` 字段 | 类型 | 必填 | 含义 |
-| --------------------- | -------- | -------- | -------------------------------------------------------- |
-| `name` | `string` | 是 | 提示词中使用的语言或方言名称。 |
-| `fence` | `string` | 是 | Markdown 代码块语言，例如 `sql` 或 `python`。 |
-| `instructions` | `string` | 否 | 可用变量及结果约定。 |
+SQL 引擎提供 `dialect`，解释器或自定义引擎提供 `language` 字符串 id。分析流程和 CLI 优先读取 `dialect.id`，其次读取 `language`；共享 SQL 规则读取 `dialect.rules`，解释器绑定说明读取 `engine.instructions`。SQL id 以 `sql` 结尾，循环分析统一使用 `sql` 代码块；内置 id 为 `duckdb-sql`、`clickhouse-sql`、`postgresql`、`tsql`；Python 和 JavaScript 使用 `python`、`javascript`。其他自定义语言使用自身 id 作为代码块语言，例如下文的 `json`。可选的 `engine.instructions` 说明可用变量和结果约定。
 
 `DataModel` 组合结构元数据、可选统计信息和语义注释。分析、翻译或推荐问题需要它时，AVA 会从缓存的 `Schema`、`Profile`、`Semantic` 组装。引擎直接接收模型，不需要额外的上下文包装对象。
 
@@ -85,12 +83,9 @@ import type {
 type Sale = { region: string; revenue: number };
 
 export class SalesEngine implements AnalysisEngine {
-  readonly language = {
-    name: 'Sales metrics JSON',
-    fence: 'json',
-    instructions:
-      'Return exactly {"metric":"total_revenue"} or {"metric":"revenue_by_region"}. No other keys or operations are supported.',
-  };
+  readonly language = 'json';
+  readonly instructions =
+    'Return exactly {"metric":"total_revenue"} or {"metric":"revenue_by_region"}. No other keys or operations are supported.';
   private sales: Sale[] | null = null;
 
   private readonly model: LanguageModel;
@@ -142,7 +137,7 @@ export class SalesEngine implements AnalysisEngine {
     const { text, usage } = await generateText({
       model: this.model,
       maxRetries: this.llm.maxRetries ?? 3,
-      system: `Convert a question into a sales metric. ${this.language.instructions}
+      system: `Convert a question into a sales metric. ${this.instructions}
 Return raw JSON without Markdown. If neither metric answers the question, return {"metric":"unsupported"}.`,
       prompt: query,
     });
