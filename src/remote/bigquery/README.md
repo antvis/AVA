@@ -91,13 +91,15 @@ An in-memory connector requiring no GCP project or network. Seed it with
 `options.tables`:
 
 ```typescript
+import { BIGQUERY_TABLE_SEED } from '@antv/ava';
+
 await ava.source({
   type: 'bigquery',
   options: {
     adapter: 'mock',
     projectId: 'demo-project',
     dataset: 'demo',
-    tables: BIGQUERY_TABLE_SEED, // from '@antv/ava/remote'
+    tables: BIGQUERY_TABLE_SEED,
   },
 });
 ```
