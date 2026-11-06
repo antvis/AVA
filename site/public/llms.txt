@@ -84,3 +84,5 @@ DuckDB is the default Node.js engine. JavaScript supports browsers and Node.js; 
 - [AVA 中文 Blog](https://ava.antv.vision/zh/blog/): 应用实践、技术思考与产品进展。
 - [用 AVA 构建 Mini Data Agent](https://ava.antv.vision/zh/blog/mini-data-agent/): 第一篇中文实践教程，从销售数据出发，搭建支持分析、追问与图表生成的数据助手。
 - [Build a Mini Data Agent with AVA](https://ava.antv.vision/blog/mini-data-agent/): Build a data assistant with AVA and the AI SDK, including business semantics, analysis tools, charts, and follow-up questions.
+- [AVA 4.0 发布](https://ava.antv.vision/zh/blog/ava-4-release/): 面向 AI Agent 的数据分析与可视化框架，介绍统一数据上下文、多源接入、分析执行与图表生成。
+- [AVA 4.0 Release](https://ava.antv.vision/blog/ava-4-release/): Data context, heterogeneous sources, visualization, verifiable analysis, and integration options for AI agents.

@@ -1,0 +1,164 @@
+
+![AVA 4.0](https://mdn.alipayobjects.com/huamei_aphk1k/afts/img/A*Mes5TYpKW94AAAAAgBAAAAgAegfkAQ/original)
+
+今天，让 AI 写一段 SQL、生成一张图表，已经不难。但面对真实的业务问题，挑战才刚刚开始：数据分散在不同系统，指标有各自的计算口径，分析结论需要经得起核对。
+
+**AI 数据分析需要的不只是一个更强的模型，还需要可信的数据上下文、可靠的计算和清晰的可视化。**
+
+这正是 AVA 4.0 想要解决的问题。AVA 是 **<font style={{ color: '#2F4BDA', backgroundColor: '#FBF5CB' }}>一套面向 </font>****<font style={{ color: '#2F4BDA', backgroundColor: '#FBF5CB' }}>JavaScript </font>****<font style={{ color: '#2F4BDA', backgroundColor: '#FBF5CB' }}>应用和 AI Agent 的开源数据分析与可视化框架</font>**。
+
+3.0 基于规则与统计方法，聚焦数据洞察与图表推荐，帮助开发者发现数据中的异常、趋势，并选择合适的图表。4.0 进一步面向 AI Agent，打通数据接入、分析执行与可视化表达。Agent 可以结合业务口径理解问题，调用 AVA 查询和计算数据，再用图表呈现结果。
+
+💡 先看看 AVA 4.0 的几个核心亮点：
+
+| 🔗 多源异构数据，统一接入 | 🔍 可信分析，结论有据可查 | 🕵️ 自动发现洞察 |
+| --- | --- | :---: |
+| ![](https://intranetproxy.alipay.com/skylark/lark/0/2026/svg/95056757/1793770231267-a6408c7a-82e9-4943-a650-ade0a431443d.svg) | ![](https://intranetproxy.alipay.com/skylark/lark/0/2026/svg/95056757/1793770243285-9a094998-766e-4a6e-83a2-f319ab24434d.svg) | ![](https://intranetproxy.alipay.com/skylark/lark/0/2026/svg/95056757/1793770249471-046dc515-9da2-41a3-aa97-697c2d210b8e.svg) |
+| 🔮 数据安全，运行环境自主可控 | 📊 智能可视化，自动推荐合适图表 | 🔗 快速接入现有 AI Agent |
+| ![](https://intranetproxy.alipay.com/skylark/lark/0/2026/svg/95056757/1793770255833-0bd3f12f-4c6a-4b92-99bc-f8231845a549.svg) | ![](https://intranetproxy.alipay.com/skylark/lark/0/2026/svg/95056757/1793770262036-e00be042-4000-460e-9114-ae10eda62f57.svg) | ![](https://intranetproxy.alipay.com/skylark/lark/0/2026/svg/95056757/1793770267936-1f0fdb04-593a-4d24-b06c-08465600fb91.svg) |
+
+> _如果你熟悉 PandasAI，可以把 AVA 理解为 **JavaScript 生态中面向 AI Agent 的数据分析与可视化框架。**_
+
+## 从一个业务问题开始
+
+一次经营复盘，往往从一个问题开始：
+
+**“****<u><font style={{ color: '#117CEE' }}>净销售额</font></u>****<u><font style={{ color: '#D22D8D' }}>下降</font></u>****，****<u><font style={{ color: '#601BDE' }}>要不要加大投放</font></u>？”**
+
+这个问题同时包含对现状的分析和对下一步行动的判断。回答它，需要先确定净销售额的含义、比较周期和退款归属，再检查下降来自哪里，以及现有数据能否支持增加投放的建议。
+
+我们用同一份模拟零售数据，连续提出三个问题：
+
+1. **净销售额下降后的投放判断**
+
+![](https://mdn.alipayobjects.com/huamei_aphk1k/afts/img/A*KbncTbxXSUMAAAAASBAAAAgAegfkAQ/original)
+
+2. **核对净销售额有没有算对**
+
+![](https://mdn.alipayobjects.com/huamei_aphk1k/afts/img/A*lrK4S65xb9YAAAAAROAAAAgAegfkAQ/original)
+
+3. **看清两个部门怎么算销售额**
+
+![](https://mdn.alipayobjects.com/huamei_aphk1k/afts/img/A*BzELS7LSk7EAAAAARdAAAAgAegfkAQ/original)
+
+这个案例的背后，是 AVA 提供的数据理解、分析执行和可视化能力。开发者可以通过 Skill、CLI 或 SDK 将这些能力接入 Agent，让它围绕业务问题开展分析。
+
+![](https://intranetproxy.alipay.com/skylark/lark/0/2026/png/95056757/1793760771954-9ce9f903-a561-41ab-9942-0602de01ac37.png)
+
+## 统一业务口径，建立分析共识
+
+可靠的数据分析，需要一套人和 Agent 都能复用的业务定义：指标怎么算、时间如何归属、数据如何关联。定义明确，渠道拆解、商品分析和跨期比较才有共同依据。
+
+AVA 定义了统一的 **<font style={{ color: '#2F4BDA' }}>数据模型（DataModel）</font>**，为查询生成提供标准化的上下文：
+
+| 上下文 | 职责 | 典型内容 |
+| --- | --- | --- |
+| **结构元数据（Schema）** | 描述数据的组织结构 | 表与视图、字段类型、键约束及关联关系 |
+| **统计画像（Profile）** | 描述数据的实际取值特征 | 行数、空值数、基数、取值范围与高频值 |
+| **业务语义（Semantic）** | 定义业务概念与数据的映射 | 指标表达式、分析维度、时间口径与业务关联 |
+
+---
+
+**大模型很强，但把自然语言准确转成 SQL，仍然是难题。** 我们使用 GLM-5.1，在公开数据分析基准 DataBench 和自然语言转 SQL（NL2SQL）基准 Spider2-Lite 的 SQLite 子集上，比较了模型获得不同数据背景时的表现。
+
+![](https://intranetproxy.alipay.com/skylark/lark/0/2026/png/95056757/1793762051667-80cfafad-8d57-4177-8e77-5679a94a2678.png)
+
+在 Spider2-Lite SQLite 子集中，仅提供表头和数据样例，正确率为 **25.9%**；补充数据结构和统计画像后为 **33.3%**；进一步加入业务定义后为 **80.7%**。当然，更多背景信息也会增加模型的 Token 用量。
+
+**要让模型算对业务问题，还需要语义层。** 数据结构告诉模型有哪些字段，业务定义则告诉它指标怎么算、数据如何关联。把这些知识沉淀下来，人和 Agent 才能复用同一套分析口径。
+
+## 连接多源异构数据，支撑复杂分析
+
+订单在数据库里，广告数据在文件里，经营记录在飞书表格里。一次销售复盘，往往需要串联多个数据源，对大量明细进行筛选、关联和汇总。
+
+面对这些任务，AVA 的分工是：**<font style={{ color: '#2F4BDA' }}>模型组织探索，程序承担计算</font>。** 模型负责拆解问题、生成查询和选择下一步；执行引擎处理数据并返回结果或错误，供模型继续比较和下钻，无需将整张原始表放进模型上下文。
+
+AVA 通过统一接口接入 **<font style={{ color: '#ED740C' }}>10+ 种数据源</font>**，让应用在不同数据来源之间复用分析流程。
+
+{/* 这是一张图片，ocr 内容为：母 飞书多维表格 文本 PARQUET JSON 腾讯文档 CSV EXCEL MYSQL CLICKHOUSE SQLITE MYSQL MONGODB SQL SERVER POSTGRESQL SUPABASE 持续扩展 */}
+
+![](https://intranetproxy.alipay.com/skylark/lark/0/2026/png/95056757/1793762072208-9f3740e4-b2a2-413e-b806-62cb0cf1bb87.png)
+
+接入数据后，AVA 可以根据数据所在位置和分析需求，使用不同的执行引擎完成计算：
+
++ **文件分析**：使用 DuckDB 2.0 完成筛选、聚合与多表关联，能支撑约 **6 亿行** 数据上的文件查询。
++ **数据库分析**：ClickHouse、Supabase 在数据库侧完成计算，利用已有算力返回查询结果。
++ **代码计算**：Python/pandas 承接复杂变换与数值计算，JavaScript 支持浏览器或 Node.js 中的轻量处理。
+
+![](https://intranetproxy.alipay.com/skylark/lark/0/2026/png/95056757/1793761802228-0d083bd3-e047-4075-a9ab-7bc8e72f8e55.png)
+
+## 以可视化驱动探索，深化数据洞察
+
+**整体数字背后，往往藏着不同的变化。** 在开头的销售分析中，渠道对比帮助我们看到整体下降背后的差异；在其他业务问题中，观察分布、比较群体，也可能带来新的发现。
+
+以下两个案例基于模拟经营数据，展示计算与可视化如何共同回答业务问题：
+
+| 业务问题 | 分析思路 | 可视化结果 |
+| --- | --- | --- |
+| **客单价没变，促销还按原来的方案做吗？** | 两期各 2,000 笔订单，客单价均约 800 元，但 600 元以下订单占比从 10.4% 升至 55.5%，高价订单也在增加。金额分布图（核密度估计，KDE）呈现了这种变化，为分层评估促销方案提供线索。 | ![](https://mdn.alipayobjects.com/huamei_aphk1k/afts/img/A*WI7kTb0m5CwAAAAAQTAAAAgAegfkAQ/original) |
+| **120 家门店，都用同一套运营目标吗？** | 根据月订单量和客单价，识别走量型、均衡型和高客单型门店，为分组制定目标、分配资源提供依据。分析使用标准化和 KMeans 聚类。 | ![](https://mdn.alipayobjects.com/huamei_aphk1k/afts/img/A*uxkHQL9Hn30AAAAAQQAAAAgAegfkAQ/original) |
+
+**选对图表，才能看清问题。** AVA 将不同图表的适用场景、数据要求和使用边界组织为**启发式知识**，结合分析意图与数据特征，引导模型推荐合适的可视化形式。
+
+![](https://intranetproxy.alipay.com/skylark/lark/0/2026/png/95056757/1793158987822-9e693ff5-d4e4-4a63-958e-9f86375455bf.png)
+
+推荐结果由 [AntV GPT-Vis](https://gpt-vis.antv.vision/) 渲染，支持 **26+ 可视化类型**。
+
+![](https://intranetproxy.alipay.com/skylark/lark/0/2026/png/95056757/1793695325058-8bb8d039-e844-4df0-940a-d8f80090ce15.png)
+
+## 让结论有据可查，构建可信分析
+
+一次业务分析，往往要经过指标确认、数据比较和逐层拆解。后一步判断建立在前一步结果之上，结论是否可靠，需要沿着这条分析路径核验。
+
+AVA 将每一步分析的执行查询、结果数据与执行状态提供给 Agent，**让多步分析的依据可追溯，存在疑问的环节可定位。**
+
+---
+
+> 例如，自然搜索渠道净销售额下降了 87.72 万元。沿着业务定义、执行查询、返回数据和图表，可以逐项核对：退款是否扣除，代销商品是否只计佣金，查询是否遵循口径，展示单位是否一致。对结论的检查，由此落到具体的分析环节。
+
+![](https://intranetproxy.alipay.com/skylark/lark/0/2026/png/95056757/1793761446924-5a089d3b-9fbb-475a-ac94-24cb699a748b.png)
+
+>
+
+从核实销售变化到寻找下降原因，每一步结果又会成为后续判断的依据。推导图谱展开了这条逐步深入的路径，让使用者既能看清结论如何形成，也能回到支撑它的具体步骤。
+
+{/* 这是一张图片，ocr 内容为：SALES-CASE.NOTEBOOK 导出 语义口径已配置 品图谱 查看结论 探索模式 已完成 NOTEBOOK X 分析结论 {SOL执行 分析结论 已完成 查询1获取数据 步骤14 WITH M AS ( SELECT STRFTIME(DATE,' 净销售额下降,要不要加大投放? 分析结论 旧查询结果 VERIFICATION: 结果1行 已用自然日日均口径核对:日均净销售额由 JAN_DAILY_NET`FEB_DAILY_NET`DAILY_NET_DELT... 353.892.52降至351.849.59,仅减少2.042.93 (-0.58%);但日均广告后经营贡献由140.103.96降 至129,856.05,减少10.247.91(-7.31%). 同期日均广告费由3.679.76升至5.164.71,增加 STEP  5 分析步骤 1个事件 1,484.96;广告费/净销售额由1.04%升至1.47%,经 核验结论 营贡献率由39.59%降至36.91%. VERIFICATION:已用自然日,口径核对:日均净销售额. 贡献桥显示,日均优惠增加16.935.01,退款增加 5.404.74,商品成本增加6.257.64,广告费增加 1.484.96,抵消了日均标价销售额增加20.296.82的 分析结论 影响. 分析结论 先前下钻显示平台店,华东,厨房电器是主要拖累, VERIFICATION:-已用自然日日均口径核对:日均净. 且广告费同步增加,退货率上升;自营商城贡献相对 稳定. CONCLUSION:不建议直接加大整体投放.当前 净销售额只是小幅下降,但广告费已经增加,广告后 经营贡献下降更快,说明投放率和退货/优惠压力更 需要先处理.应先收紧或暂停低贡献,退货率上升且 广告费性加的组合,核杏折加,调款和极放率.芒 */}
+
+![](https://intranetproxy.alipay.com/skylark/lark/0/2026/gif/95056757/1793698571700-11ee05a6-b55e-410f-814d-fe921c0b0664.gif)
+
+**让分析过程可检查，修正才有落点。** 口径有误，可以修正定义；查询有误，可以调整计算；证据不足，则需要继续验证。这让可信分析落实到每一步可核验、可纠偏的过程之中。
+
+{/* 这是一张图片，ocr 内容为：CLAUDE CODE CLAUDE CODE CUSTOM AGENT CUSTOM  AGENT CODEX CODEX CURSOR CURSOR LANGCHAIN AGENT DATA APPS YOUR BI SURFACE INTEMAL COPILOT INTERNAL COPILOT LANGCHAIN AGENT YOUR BI SURFACE DATA APPS SKILL. SDK SHARED CAPABIRIES RAW DATA . AD HOC SCRIPTS FRAGMENTED CONTEXT AVA NO SHARED DEFINITIONS AL-NATIVE VISUAL ANALYTICS NO GROUNDED CONTEXT VISUALIZATION ANALYSIS & EXECUTION DATA CONTEXT NO REUSABLE LOGIC SCHEMA`PROFILE SEMANTIC CHART ADVICE-SPEC-HTML SQL.PYTHON- JAVASCRIPT ANALYZE -TRANSLATE -QUERY STRUCTURE -STATS MEANING INTERACTIVE,REUSABLE CHARTS EVERY AGENT REBUILDS THE ANALYTICS WORKFLOW FROM SCRATCH ENGINES DUCKDB `PYTHON`JAVASCRIPT. CLICKHOUSE SUPABABASE UNIFIED ACCESS FILES SAAS DATA SERVICES SAAS DATABASES DATABASES DATA SERVICES FILES CSVEXCEL.PARQUET POSTGRESQL.MYSQL FEISHU BITABLE POSTGRESQLMYSQL CLICKHOUSE SUPABASE FEISHU BITABLE CSV EXOEL`PARQUET CLICKHOUSE SUPABASE EXECUTABLE ANALYSIS.SHAREABLE CHARTS. REPEATED WORK.FRAQMENTED ANALYTICS. DATA ACCESS.COMPUTATION.AND CHARTS LIVE IN SEPARATE FOOLS. AGENTS REASON AND ORCHESTRATE.AVA CONNECTS, COMPUTES, AND VISUALIZES. */}
+
+![](https://intranetproxy.alipay.com/skylark/lark/0/2026/png/95056757/1793761036835-6bfd2ef3-49ad-42b1-a11f-9d7f87a05597.png)
+
+## 降低构建门槛，加速业务落地
+
+构建数据分析 Agent，需要处理数据接入、结构理解、查询执行和图表生成。AVA 将这些通用能力封装为可组合的工具，<u>减少重复开发，让开发者把更多精力放在业务口径、分析问题和产品体验上</u>。
+
+**已经有 AI Agent？** 用 **<font style={{ color: '#ED740C' }}> 1 条命令 </font>** 安装 AVA Skill，就可以让它使用 AVA 分析数据：
+
+```bash
+npx skills add antvis/AVA
+```
+
+然后开启一个新的 Agent 会话，提出你的问题：
+
+:::color1
+
+> 使用 AVA Skill 分析 `./sales.csv`（[下载示例文件](https://github.com/antvis/AVA/raw/refs/heads/ai/__tests__/datasets/sales.csv)）：比较 2025 年 1 月和 2 月的销售额，找出对销售额下降贡献最大的商品。
+
+:::
+
+这样，就可以把数据查询和计算交给 AVA，让 Agent 专注于理解问题、组织分析。
+
+**正在构建自己的应用或 Agent？** 通过 [SDK 快速开始](https://ava.antv.vision/documentation/quickstart/) 按需组合数据接入、分析和制图能力，**<font style={{ color: '#ED740C' }}>53 行核心代码 </font>** 即可构建最小 Data Agent；也可以使用 [CLI](https://ava.antv.vision/documentation/reference/cli/)，完成安装和模型配置 **<font style={{ color: '#ED740C' }}>2 步 </font>** 后，在终端或脚本中开展分析。
+
+## 立即体验 AVA 4.0
+
+| [**AVA 官网**](https://ava.antv.vision/) | [**Sive**](https://sive.antv.antgroup.com/) | [**GitHub**](https://github.com/antvis/AVA) |
+| --- | --- | --- |
+| **查阅文档与示例，开始集成**[🪄传送门](https://ava.antv.vision/) | **基于 AVA 的免费开放 AI 数据分析平台**[🪄传送门](https://sive.antv.antgroup.com/) | **获取源码、反馈问题与参与共建**[🪄传送门](https://github.com/antvis/AVA) |
+| ![](https://intranetproxy.alipay.com/skylark/lark/0/2026/png/95056757/1793689113562-2d093f32-03e9-4337-8c85-06cb2ae088bd.png) | ![](https://intranetproxy.alipay.com/skylark/lark/0/2026/png/95056757/1793689136177-366e67e2-d10d-48cd-ac37-d215426866c7.png) | ![](https://mdn.alipayobjects.com/huamei_aphk1k/afts/img/A*R42nSYhwvIYAAAAARiAAAAgAegfkAQ/original) |
+
+如果 AVA 对你有帮助，欢迎在 [GitHub](https://github.com/antvis/AVA) 点亮一颗 ⭐️，让更多开发者发现它。
