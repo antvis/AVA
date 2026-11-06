@@ -6,9 +6,9 @@
  */
 import { afterEach, describe, expect, it, vi } from 'vitest';
 
-import { AVA } from '../../src';
+import { AVA, BIGQUERY_TABLE_SEED } from '../../src';
 import { BigQueryEngine, MockQueryConnector, validateReadOnlyBigQuery, limitedBigQuerySql } from '../../src/remote/bigquery';
-import { BIGQUERY_TABLE_SEED } from '../../src/remote/bigquery/examples';
+import { BigQueryQueryConnector } from '../../src/remote/bigquery/bigquery-connector';
 import { BUILTIN_METRICS as BIGQUERY_METRICS, profileTables as bigQueryProfile } from '../../src/remote/bigquery/profile';
 import { getLLMConfig } from '../test-utils';
 
@@ -25,6 +25,7 @@ const MOCK_SOURCE = {
 };
 
 afterEach(() => {
+  vi.useRealTimers();
   vi.restoreAllMocks();
   vi.unstubAllGlobals();
 });
@@ -104,6 +105,37 @@ describe('BigQueryEngine (mock adapter)', () => {
       );
       expect(orders.primaryKey).toBe('order_id');
       expect(orders.tableReference).toEqual({ catalog: 'sales', table: 'orders' });
+    } finally {
+      await engine.dispose();
+    }
+  });
+
+  it('preserves every column and its order in a composite primary key', async () => {
+    const engine = new BigQueryEngine(getLLMConfig());
+    try {
+      await engine.load({
+        type: 'bigquery',
+        options: {
+          projectId: 'demo-project',
+          dataset: 'sales',
+          adapter: 'mock',
+          tables: [
+            {
+              name: 'tenant_orders',
+              columns: [
+                { name: 'tenant_id', type: 'INT64', notNull: true },
+                { name: 'order_id', type: 'INT64', notNull: true },
+                { name: 'revenue', type: 'NUMERIC' },
+              ],
+              primaryKey: ['tenant_id', 'order_id'],
+              rows: [{ tenant_id: 1, order_id: 10, revenue: 100 }],
+            },
+          ],
+        },
+      });
+
+      const schema = await engine.schema();
+      expect(schema.models[0].primaryKey).toEqual(['tenant_id', 'order_id']);
     } finally {
       await engine.dispose();
     }
@@ -201,6 +233,30 @@ describe('BigQueryEngine profile', () => {
     ],
   };
 
+  it('profiles the seeded adapter through engine.profile()', async () => {
+    const engine = new BigQueryEngine(getLLMConfig());
+    try {
+      await engine.load(MOCK_SOURCE);
+      const result = await engine.profile(await engine.schema());
+      const orders = result.models.find((model) => model.name === 'orders')!;
+      const region = orders.columns.find((column) => column.name === 'region')!;
+      const units = orders.columns.find((column) => column.name === 'units')!;
+
+      expect(orders.metrics.row_count).toBe(6);
+      expect(region.metrics).toMatchObject({ null_count: 0, distinct_count: 3 });
+      expect(region.metrics.top_values).toEqual([
+        { value: 'North', count: 2 },
+        { value: 'South', count: 2 },
+        { value: 'West', count: 2 },
+      ]);
+      expect(units.metrics.mean).toBeCloseTo(40 / 6);
+      expect(units.metrics.min).toBe(2);
+      expect(units.metrics.max).toBe(12);
+    } finally {
+      await engine.dispose();
+    }
+  });
+
   it('computes numeric metrics from a single aggregate query', async () => {
     const run = vi
       .fn<(sql: string) => Promise<Record<string, unknown>[]>>()
@@ -240,6 +296,38 @@ describe('BigQueryEngine profile', () => {
   it('exposes an identical metric id set across engines for parity', () => {
     const ids = BIGQUERY_METRICS.map((m) => m.id).sort();
     expect(ids).toEqual(['distinct_count', 'duplicate_count', 'max', 'max_length', 'mean', 'min', 'min_length', 'null_count', 'row_count', 'stddev', 'sum', 'top_values']);
+  });
+});
+
+describe('BigQueryQueryConnector', () => {
+  it.each([
+    { configured: 25, expected: 25 },
+    { configured: undefined, expected: 60000 },
+  ])('enforces the $expected ms query deadline and requests job cancellation', async ({ configured, expected }) => {
+    vi.useFakeTimers();
+    const cancel = vi.fn(async () => undefined);
+    const job = {
+      getQueryResults: vi.fn(() => new Promise<never>(() => undefined)),
+      cancel,
+    };
+    const createQueryJob = vi.fn(async () => [job, {}]);
+    const connector = new BigQueryQueryConnector({
+      projectId: 'demo-project',
+      ...(configured === undefined ? {} : { timeoutMs: configured }),
+    });
+    Reflect.set(connector, 'client', { createQueryJob });
+
+    const pending = connector.query('SELECT 1');
+    const rejection = expect(pending).rejects.toThrow(
+      `BigQuery query timed out after ${expected}ms; job cancellation was requested`
+    );
+    await vi.advanceTimersByTimeAsync(0);
+    await vi.advanceTimersByTimeAsync(expected);
+    await rejection;
+
+    expect(createQueryJob).toHaveBeenCalledTimes(1);
+    expect(job.getQueryResults).toHaveBeenCalledTimes(1);
+    expect(cancel).toHaveBeenCalledTimes(1);
   });
 });
 
