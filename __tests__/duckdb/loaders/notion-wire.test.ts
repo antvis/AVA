@@ -74,6 +74,23 @@ describe('Notion REST client wire integration (offline)', () => {
     expect(fetchMock).toHaveBeenCalledTimes(3);
   });
 
+  it('retries a connection reset while reading a successful response body', async () => {
+    const interruptedBody = new ReadableStream<Uint8Array>({
+      start(controller) {
+        controller.enqueue(new TextEncoder().encode('{"object":"database"'));
+        controller.error(new Error('socket reset'));
+      },
+    });
+    const fetchMock = vi
+      .fn()
+      .mockResolvedValueOnce(new Response(interruptedBody, { status: 200 }))
+      .mockResolvedValueOnce(Response.json({ object: 'database', id: 'db-id', properties: {} }));
+    vi.stubGlobal('fetch', fetchMock);
+    const client = new NotionClient(new AbortController().signal, 'token', '2022-06-28', 1);
+    await expect(client.retrieveDatabase('db-id')).resolves.toMatchObject({ id: 'db-id' });
+    expect(fetchMock).toHaveBeenCalledTimes(2);
+  });
+
   it('aborts a stalled request within the whole-load deadline', async () => {
     vi.stubGlobal(
       'fetch',

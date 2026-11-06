@@ -16,6 +16,7 @@ import { loadSQLite } from './sqlite';
 import { loadText } from './text';
 import { loadFeishuBitable } from './feishu-bitable';
 import { loadNotion } from './notion';
+import { loadTencentDocs } from './tencent-smartsheet';
 
 import type { DataSourceConfig, LLMConfig, LoadedSource } from '../../types';
 
@@ -56,9 +57,13 @@ export async function loadSource(config: DataSourceConfig, llmConfig: LLMConfig)
       // ClickHouse is queried directly through ClickHouseEngine, not through
       // DuckDB ATTACH loaders.
       throw new Error('ClickHouse sources are handled by ClickHouseEngine, not the DuckDB engine');
+    case 'sqlserver':
+      throw new Error("SQL Server sources require engine: { type: 'sqlserver' }");
     case 'feishu-bitable':
-          return loadFeishuBitable(config.options);
-        case 'notion':
-          return loadNotion(config.options);
-      }
-    }
+      return loadFeishuBitable(config.options);
+    case 'notion':
+      return loadNotion(config.options);
+    case 'tencent-smartsheet':
+      return loadTencentDocs(config.options);
+  }
+}

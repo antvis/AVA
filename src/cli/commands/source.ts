@@ -52,6 +52,9 @@ export async function run([dataset]: string[], options: Options): Promise<{ data
   }
 
   const config = sourceConfig.parse(input);
+  if (config.type === 'tencent-smartsheet' && engine !== undefined && engine !== 'duckdb') {
+    throw new Error('Tencent Docs SmartSheet sources require the duckdb engine.');
+  }
 
   if (config.type === 'notion' && engine !== undefined && engine !== 'duckdb') {
     throw new Error('Notion sources require the duckdb engine.');
@@ -93,8 +96,8 @@ Options:
   -t, --type <type>  Override the type inferred from the file extension.
                     Types: csv-file, json-file, parquet, excel, sqlite.
                     Cannot be used with @file, stdin configs, or Feishu URLs.
-  --engine <type>    duckdb, python, javascript, supabase, or clickhouse.
-                    Default: supabase/clickhouse for those sources, otherwise duckdb.
+  --engine <type>    duckdb, python, javascript, supabase, clickhouse, or sqlserver.
+                    Default: supabase/clickhouse/sqlserver for those sources, otherwise duckdb.
                     Fixed for the session; source support depends on the engine.
                     feishu-bitable uses duckdb. The loaded view is named data.
   -h, --help         Show help.
@@ -139,6 +142,12 @@ Examples:
   ava source "https://my.feishu.cn/base/<appToken>?table=<tableId>"
   ava source "https://my.feishu.cn/wiki/<nodeToken>?table=<tableId>"
   ava source @feishu.json
+  ava source @sqlserver.json
+
+SQL Server:
+  Pass a "sqlserver" config via @file or stdin; its engine is selected automatically.
+  Required options: host, database, user, password. Use a read-only SQL login.
+  TLS certificate verification is enabled by default. Queries use T-SQL.
 
 feishu.json:
 {
@@ -152,11 +161,19 @@ feishu.json:
     Provide url or both appToken and tableId; they must name the same table.
     Keep appSecret out of version control and logs.
 
-    Notion (Node.js / DuckDB):
-      notion.json:
-        { "type": "notion", "options": { "databaseId": "<database-id>" } }
-      Set NOTION_TOKEN before loading. Only supported scalar properties are exposed.
-      Reads a complete, bounded snapshot into data; _id preserves source identity.
-      Explicit database ids are required; sharing links are not auto-detected.
-      Dataset sessions require macOS/Linux; on Windows use the SDK or WSL.
-    `;
+Notion (Node.js / DuckDB):
+  notion.json:
+    { "type": "notion", "options": { "databaseId": "<database-id>" } }
+  Set NOTION_TOKEN before loading. Only supported scalar properties are exposed.
+  Reads a complete, bounded snapshot into data; _id preserves source identity.
+  Explicit database ids are required; sharing links are not auto-detected.
+  Dataset sessions require macOS/Linux; on Windows use the SDK or WSL.
+
+Tencent Docs SmartSheet (Node.js / DuckDB):
+  tencent-docs.json:
+    { "type": "tencent-smartsheet", "options": { "fileId": "<file-id>", "sheetId": "<sheet-id>", "clientId": "<client-id>", "openId": "<open-id>", "accessToken": "<access-token>" } }
+  Pass all three OpenAPI credentials explicitly in options; environment variables are not resolved. fileId must be a native API ID.
+  Reads a complete, bounded snapshot into data; _record_id preserves source identity.
+  Explicit IDs are required; document sharing URLs are not auto-detected.
+  Dataset sessions require macOS/Linux; on Windows use the SDK or WSL.
+`;

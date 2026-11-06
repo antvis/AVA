@@ -11,7 +11,7 @@ const field = (name: string, type: string, id = name) => ({
     : type === 'select' || type === 'multi_select' || type === 'status'
     ? { [type]: { options: [] } }
     : type === 'formula'
-    ? { formula: { type: 'string' } }
+    ? { formula: { expression: 'prop("Amount")' } }
     : { [type]: {} }),
 });
 const page = (properties: Record<string, unknown>) => ({ id: 'p1', properties });
@@ -133,12 +133,17 @@ describe('Notion field conversion', () => {
     expect(row['__proto__']).toBe('safe');
   });
 
-  it('resolves formula/rollup result types for numeric aggregates', () => {
+  it('keeps formula/rollup schemas and converts their computed page values', () => {
     const fields = supportedFields([
-      { id: 'tot', name: 'Total', type: 'rollup', rollup: { function: 'sum', type: 'number' } },
+      {
+        id: 'tot',
+        name: 'Total',
+        type: 'rollup',
+        rollup: { function: 'sum', relation_property_id: 'rel', rollup_property_id: 'amount' },
+      },
       field('Formula', 'formula'),
     ]);
-    expect(columnTypes(fields)).toEqual({ _id: 'VARCHAR', Total: 'DOUBLE', Formula: 'VARCHAR' });
+    expect(columnTypes(fields)).toEqual({ _id: 'VARCHAR', Total: 'VARCHAR', Formula: 'VARCHAR' });
     const row = convertPage(fields, {
       id: 'p1',
       properties: {
@@ -149,11 +154,40 @@ describe('Notion field conversion', () => {
     expect(row).toEqual({ _id: 'p1', Total: 8, Formula: 'ok' });
   });
 
+  it('uses user ids or a placeholder when Notion omits user names', () => {
+    const fields = supportedFields([
+      field('Creator', 'created_by'),
+      field('Editor', 'last_edited_by'),
+      field('Owners', 'people'),
+    ]);
+    const row = convertPage(
+      fields,
+      page({
+        Creator: { type: 'created_by', created_by: { object: 'user', id: 'user-1' } },
+        Editor: { type: 'last_edited_by', last_edited_by: { object: 'user', id: 'user-2', name: null } },
+        Owners: {
+          type: 'people',
+          people: [{ object: 'user', id: 'user-3' }, { object: 'user' }],
+        },
+      })
+    );
+    expect(row).toEqual({ _id: 'p1', Creator: 'user-1', Editor: 'user-2', Owners: 'user-3, Unknown user' });
+  });
+
+  it('rejects people values at the 25-user response boundary as potentially partial', () => {
+    const f = field('Owners', 'people');
+    const people = Array.from({ length: 25 }, (_, index) => ({ object: 'user', id: `user-${index}` }));
+    expect(() => convertPage([f], page({ Owners: { type: 'people', people } }))).toThrow('25-user response limit');
+  });
+
   it.each([
     [{ id: 'f', name: 'Amount', type: 'number', number: { format: 'number' } }, 'amount', 'number'],
     [{ id: 'f', name: 'Amount', type: 'number', number: { format: 'number' } }, 'AMOUNT', 'checkbox'],
     [{ id: 'f', name: '_id', type: 'rich_text', rich_text: {} }],
-    [{ id: 'f', name: 'Amount', type: 'number', number: { format: 'number' } }, { id: 'f', name: 'Other', type: 'rich_text', rich_text: {} }],
+    [
+      { id: 'f', name: 'Amount', type: 'number', number: { format: 'number' } },
+      { id: 'f', name: 'Other', type: 'rich_text', rich_text: {} },
+    ],
   ])('rejects ambiguous or duplicate metadata', (...items) => {
     expect(() => supportedFields(items)).toThrow();
   });

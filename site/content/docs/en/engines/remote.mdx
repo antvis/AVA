@@ -36,8 +36,28 @@ await ava.source({
 
 Use `url` or `host`, with a required `database`. `username` takes precedence over the `user` alias. Queries use the official ClickHouse client with read-only settings.
 
+## SQL Server
+
+```typescript
+const ava = new AVA({
+  llm: { model: 'YOUR_MODEL', apiKey: process.env.OPENAI_API_KEY },
+  engine: { type: 'sqlserver' },
+});
+await ava.source({
+  type: 'sqlserver',
+  options: {
+    host: 'localhost',
+    database: 'analytics',
+    user: 'reader',
+    password: process.env.SQLSERVER_PASSWORD!,
+  },
+});
+```
+
+Queries use the Node.js `mssql` driver with read-only T-SQL.
+
 ## Shared workflow
 
-Both engines support `schema()`, `profile()`, `translate()`, `query()`, and `analyze()`. Set the matching source and engine types in the JavaScript API. Release resources with `await ava.dispose()` after use.
+All remote engines support `schema()`, `profile()`, `translate()`, `query()`, and `analyze()`. Set the matching source and engine types in the JavaScript API. Release resources with `await ava.dispose()` after use.
 
-See [Supabase parameters](/documentation/data/sources/#supabase) and [ClickHouse options](/documentation/data/sources/#clickhouse) for complete configuration tables.
+See [Supabase parameters](/documentation/data/sources/#supabase), [ClickHouse options](/documentation/data/sources/#clickhouse), and [SQL Server parameters](/documentation/data/sources/#sql-server) for complete configuration tables.

@@ -12,7 +12,7 @@ import type { AnalysisEvent } from './event';
  * declared here so the shared types never import the Node-only package.
  */
 export interface DuckDBConnection {
-  run(sql: string): Promise<unknown>;
+  run(sql: string, values?: string[]): Promise<unknown>;
   runAndReadAll(sql: string): Promise<{ getRowObjectsJson(): Record<string, unknown>[] }>;
 }
 
@@ -76,6 +76,7 @@ export type EngineConfig =
   | { type: 'javascript' }
   | { type: 'supabase' }
   | { type: 'clickhouse' }
+  | { type: 'sqlserver' }
   | { type: string; [option: string]: unknown };
 
 /**
@@ -118,7 +119,10 @@ export type SourceType =
   | 'mongodb'
   | 'supabase'
   | 'clickhouse'
-  | 'feishu-bitable';
+  | 'feishu-bitable'
+  | 'tencent-smartsheet'
+  | 'sqlserver'
+  | 'notion';
 
 /**
  * DuckDB read_csv reader options.
@@ -509,6 +513,46 @@ export interface NotionSourceOptions {
   version?: string;
 }
 
+/** Read-only snapshot of one Tencent Docs SmartSheet table (Node.js / DuckDB). */
+export interface TencentDocsSourceOptions {
+  /** Native OpenAPI fileID, not an encoded sharing-link ID. */
+  fileId: string;
+  sheetId: string;
+  /** OpenAPI application Client ID, explicitly supplied by the caller. */
+  clientId: string;
+  /** OAuth Open ID, explicitly supplied by the caller. */
+  openId: string;
+  /** OAuth access token, explicitly supplied by the caller. */
+  accessToken: string;
+  /** Field/record items per request, 1–100. Default 100. */
+  pageSize?: number;
+  /** Fail instead of truncating. Default 10,000; max 100,000, also bounded by expanded snapshot budgets. */
+  maxRecords?: number;
+  /** Whole-load deadline, including connection, pagination and retries. Default 60,000 ms. */
+  timeoutMs?: number;
+  /** Retries for transient failures only, 0–5. Default 2. */
+  maxRetries?: number;
+}
+
+/** Microsoft SQL Server, queried remotely through a dedicated connection pool. */
+export interface SQLServerSourceOptions {
+  host: string;
+  port?: number;
+  database: string;
+  user: string;
+  password: string;
+  /** Restrict schema discovery to this schema; otherwise discover all accessible user tables and views. */
+  schema?: string;
+  /** Encrypt the connection. Defaults to true. */
+  encrypt?: boolean;
+  /** Trust a self-signed server certificate. Defaults to false; intended for isolated tests. */
+  trustServerCertificate?: boolean;
+  /** Connection deadline in milliseconds. Defaults to 10000. */
+  connectionTimeoutMs?: number;
+  /** Query deadline in milliseconds. Defaults to 30000. */
+  requestTimeoutMs?: number;
+}
+
 /**
  * External data source configuration for loadSource.
  * - inline types (csv/json/text): data is materialized into JS memory
@@ -531,8 +575,10 @@ export type DataSourceConfig =
   | { type: 'mongodb'; options: MongoDBSourceOptions }
   | { type: 'supabase'; options: SupabaseSourceOptions }
   | { type: 'clickhouse'; options: ClickHouseSourceOptions }
-    | { type: 'feishu-bitable'; options: FeishuBitableSourceOptions }
-    | { type: 'notion'; options: NotionSourceOptions };
+  | { type: 'feishu-bitable'; options: FeishuBitableSourceOptions }
+  | { type: 'tencent-smartsheet'; options: TencentDocsSourceOptions }
+  | { type: 'sqlserver'; options: SQLServerSourceOptions }
+  | { type: 'notion'; options: NotionSourceOptions };
 
 /**
  * File formats readable by DuckDB's readers (csv-file maps to csv, json-file to json).

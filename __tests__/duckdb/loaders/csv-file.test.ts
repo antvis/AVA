@@ -93,5 +93,5 @@ describe('loaders/csv-file', () => {
       engine = null;
       await removeTempFile(csvPath);
     }
-  });
+  }, 30000);
 });

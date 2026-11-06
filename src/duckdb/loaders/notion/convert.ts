@@ -33,19 +33,6 @@ const SQL_TYPES: Record<string, string> = {
   rollup: 'VARCHAR',
 };
 
-/** Resolve the concrete SQL type, following formula/rollup result types. */
-function fieldSQLType(item: Record<string, unknown>): string | null {
-  const type = typeof item.type === 'string' ? item.type : '';
-  if (type === 'formula' || type === 'rollup') {
-    const config = item[type];
-    const resultType = isObject(config) ? config.type : undefined;
-    if (resultType === 'number') return 'DOUBLE';
-    if (resultType === 'boolean') return 'BOOLEAN';
-    return resultType === 'string' ? 'VARCHAR' : null;
-  }
-  return SQL_TYPES[type] ?? null;
-}
-
 /**
  * Validate the database's property schema and return only the properties
  * DuckDB can represent. Complex/unsupported types (files, relation, button,
@@ -64,8 +51,9 @@ export function supportedFields(raw: unknown[]): NotionField[] {
     ids.add(item.id);
     const type = typeof item.type === 'string' ? item.type : '';
     if (!Object.prototype.hasOwnProperty.call(SQL_TYPES, type)) continue;
-    const sqlType = fieldSQLType(item);
-    if (!sqlType) continue;
+    // Formula and rollup schemas contain their expression/configuration, not
+    // the result type found on page values. Keep them using their scalar text mapping.
+    const sqlType = SQL_TYPES[type];
     // DuckDB identifiers are case insensitive; do not let it silently rename columns.
     const name = item.name.toLowerCase();
     if (names.has(name)) throw new NotionError('Duplicate or reserved column name. Rename the source property.');
@@ -102,6 +90,26 @@ function namesList(value: unknown): string | null {
     if (!isObject(entry) || typeof entry.name !== 'string') return invalidCell();
     return entry.name;
   });
+  return names.length ? names.join(', ') : null;
+}
+
+function userName(value: unknown): string {
+  if (!isObject(value)) return invalidCell();
+  if (typeof value.name === 'string') return value.name;
+  if (typeof value.id === 'string' && value.id) return value.id;
+  return 'Unknown user';
+}
+
+function peopleList(value: unknown): string | null {
+  if (!Array.isArray(value)) return invalidCell();
+  // Database query responses include at most 25 users. At that boundary the
+  // value may be incomplete, and page pagination cannot retrieve the remainder.
+  if (value.length >= 25) {
+    throw new NotionError(
+      "People property may be truncated at Notion's 25-user response limit; no partial snapshot was loaded."
+    );
+  }
+  const names = value.map(userName);
   return names.length ? names.join(', ') : null;
 }
 
@@ -143,7 +151,8 @@ function computedCell(value: unknown): NotionCell {
   if (!isObject(value)) return invalidCell();
   const type = typeof value.type === 'string' ? value.type : '';
   const raw = value[type];
-  if (type === 'number') return typeof raw === 'number' && Number.isFinite(raw) ? raw : raw === null ? null : invalidCell();
+  if (type === 'number')
+    return typeof raw === 'number' && Number.isFinite(raw) ? raw : raw === null ? null : invalidCell();
   if (type === 'boolean') return typeof raw === 'boolean' ? raw : invalidCell();
   if (type === 'string') return typeof raw === 'string' ? raw : invalidCell();
   if (type === 'date') return raw === null ? null : computedDate(raw);
@@ -158,11 +167,23 @@ function convertCell(field: NotionField, raw: unknown): NotionCell {
     case 'number':
       return typeof raw === 'number' ? raw : raw === null ? null : invalidCell();
     case 'select':
-      return isObject(raw) ? (typeof raw.name === 'string' ? raw.name : invalidCell()) : raw === null ? null : invalidCell();
+      return isObject(raw)
+        ? typeof raw.name === 'string'
+          ? raw.name
+          : invalidCell()
+        : raw === null
+        ? null
+        : invalidCell();
     case 'multi_select':
       return namesList(raw);
     case 'status':
-      return isObject(raw) ? (typeof raw.name === 'string' ? raw.name : invalidCell()) : raw === null ? null : invalidCell();
+      return isObject(raw)
+        ? typeof raw.name === 'string'
+          ? raw.name
+          : invalidCell()
+        : raw === null
+        ? null
+        : invalidCell();
     case 'date':
       return raw === null ? null : dateValue(raw);
     case 'checkbox':
@@ -176,9 +197,9 @@ function convertCell(field: NotionField, raw: unknown): NotionCell {
       return typeof raw === 'string' ? raw : invalidCell();
     case 'created_by':
     case 'last_edited_by':
-      return isObject(raw) ? (typeof raw.name === 'string' ? raw.name : invalidCell()) : invalidCell();
+      return userName(raw);
     case 'people':
-      return namesList(raw);
+      return peopleList(raw);
     case 'unique_id':
       return raw === null ? null : uniqueId(raw);
     case 'formula':

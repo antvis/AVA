@@ -22,8 +22,19 @@ const schema: Schema = {
   relationships: [],
 };
 
+const sqlserverSource = {
+  type: 'sqlserver' as const,
+  options: { host: 'localhost', database: 'sales', user: 'reader', password: 'test-password' },
+};
+
 describe('session startup protocol', () => {
+  const platform = Object.getOwnPropertyDescriptor(process, 'platform')!;
+  afterEach(() => {
+    Object.defineProperty(process, 'platform', platform);
+    vi.clearAllMocks();
+  });
   it('keeps engine selection through the child-process startup message', async () => {
+    Object.defineProperty(process, 'platform', { ...platform, value: 'linux' });
     const worker = Object.assign(new EventEmitter(), {
       connected: true,
       disconnect: vi.fn(),
@@ -40,6 +51,12 @@ describe('session startup protocol', () => {
     } finally {
       await rm(sessionDirectory(datasetId), { recursive: true, force: true });
     }
+  });
+
+  it('rejects Windows before creating a dataset process', async () => {
+    Object.defineProperty(process, 'platform', { ...platform, value: 'win32' });
+    await expect(createSession(source, llm)).rejects.toThrow('Dataset sessions currently require macOS or Linux.');
+    expect(fork).not.toHaveBeenCalled();
   });
 
   it('accepts legacy startup messages and rejects custom engine configuration', () => {
@@ -64,6 +81,22 @@ describe('session startup protocol', () => {
     ).toThrow();
     expect(() => startupSchema.parse({ source, llm, metadata: { schema } })).toThrow();
   });
+
+  it('preserves SQL Server source fields and engine through the startup protocol', () => {
+    const source = {
+      ...sqlserverSource,
+      options: {
+        ...sqlserverSource.options,
+        port: 11433,
+        schema: 'reporting',
+        encrypt: false,
+        trustServerCertificate: true,
+        connectionTimeoutMs: 5000,
+        requestTimeoutMs: 12000,
+      },
+    };
+    expect(startupSchema.parse({ source, llm, engine: 'sqlserver' })).toEqual({ source, llm, engine: 'sqlserver' });
+  });
 });
 
 describe('dataset engine and language', () => {
@@ -85,6 +118,7 @@ describe('dataset engine and language', () => {
     { source, engine: 'javascript', explicit: 'javascript' },
     { source: { type: 'supabase', options: { accessToken: 'test', projectRef: 'test' } }, engine: 'supabase' },
     { source: { type: 'clickhouse', options: { host: 'localhost', database: 'sales' } }, engine: 'clickhouse' },
+    { source: sqlserverSource, engine: 'sqlserver' },
   ])('selects $engine and exposes its language without changing the schema', async ({ source, engine, explicit }) => {
     const { getEngineClass } = await import('../src/engines');
     const Engine = getEngineClass(engine);

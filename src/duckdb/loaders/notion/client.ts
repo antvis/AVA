@@ -106,10 +106,7 @@ export class NotionClient {
   }
 
   /** Query a database's pages: POST /v1/databases/:id/query (read-only, never writes). */
-  async queryDatabase(
-    databaseId: string,
-    body: Record<string, unknown>
-  ): Promise<Record<string, unknown>> {
+  async queryDatabase(databaseId: string, body: Record<string, unknown>): Promise<Record<string, unknown>> {
     return this.request('POST', `/v1/databases/${encodeURIComponent(databaseId)}/query`, body);
   }
 
@@ -131,38 +128,43 @@ export class NotionClient {
           ...(body === undefined ? {} : { body: JSON.stringify(body) }),
           signal: this.signal,
         });
+
+        if (response.ok) {
+          if (!response.body) return {};
+          let bytes = 0;
+          const stream = response.body.pipeThrough(
+            new TransformStream<Uint8Array, Uint8Array>({
+              transform(chunk, controller) {
+                bytes += chunk.byteLength;
+                if (bytes > MAX_RESPONSE_BYTES) throw new NotionError('Response exceeds the 16 MiB read limit.');
+                controller.enqueue(chunk);
+              },
+            })
+          );
+          const streamed = new Response(stream, {
+            status: response.status,
+            statusText: response.statusText,
+            headers: response.headers,
+          });
+          // Consume the body inside the same retry boundary as fetch: headers
+          // can arrive successfully before a connection reset interrupts JSON.
+          const payload = (await streamed.json()) as unknown;
+          if (!isObject(payload)) throw new NotionError('Invalid JSON response from Notion.');
+          return payload;
+        }
       } catch (error) {
+        if (error instanceof NotionError) throw error;
         if (this.signal.aborted) throw new NotionError('Load deadline exceeded.', undefined, undefined, error);
         if (attempt >= this.maxRetries) throw redactToken(error, this.token);
         await delay(500 * 2 ** attempt, undefined, { signal: this.signal });
         continue;
       }
 
-      if (response.ok) {
-        if (!response.body) return {};
-        let bytes = 0;
-        const stream = response.body.pipeThrough(
-          new TransformStream<Uint8Array, Uint8Array>({
-            transform(chunk, controller) {
-              bytes += chunk.byteLength;
-              if (bytes > MAX_RESPONSE_BYTES) throw new NotionError('Response exceeds the 16 MiB read limit.');
-              controller.enqueue(chunk);
-            },
-          })
-        );
-        const streamed = new Response(stream, {
-          status: response.status,
-          statusText: response.statusText,
-          headers: response.headers,
-        });
-        const payload = (await streamed.json()) as unknown;
-        if (!isObject(payload)) throw new NotionError('Invalid JSON response from Notion.');
-        return payload;
-      }
-
       const status = response.status;
       const retryAfter = response.headers.get('Retry-After');
-      const waitMs = retryAfter ? Math.max(0, /^\d+$/.test(retryAfter) ? Number(retryAfter) * 1000 : 0) : 500 * 2 ** attempt;
+      const waitMs = retryAfter
+        ? Math.max(0, /^\d+$/.test(retryAfter) ? Number(retryAfter) * 1000 : 0)
+        : 500 * 2 ** attempt;
       if ([429, 502, 503, 504].includes(status) && attempt < this.maxRetries && waitMs <= 30000) {
         await response.body?.cancel();
         await delay(waitMs, undefined, { signal: this.signal });
@@ -177,7 +179,12 @@ export class NotionClient {
       }
       const upstream = isObject(payload) ? upstreamCode(payload) : undefined;
       throw redactToken(
-        apiError(status, `HTTP request failed (status ${status} ${response.statusText}).${errorBody ? ` ${errorBody}` : ''}`, { body: payload }, upstream),
+        apiError(
+          status,
+          `HTTP request failed (status ${status} ${response.statusText}).${errorBody ? ` ${errorBody}` : ''}`,
+          { body: payload },
+          upstream
+        ),
         this.token
       );
     }
