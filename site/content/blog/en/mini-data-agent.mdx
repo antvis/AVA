@@ -1,28 +1,26 @@
-Start with a small, concrete task: give an agent some sales data, ask which products account for a drop in sales, and have it produce a short report with a chart.
+To build a Data Agent, start with a small task: give it some sales data, ask which products account for a drop in sales, and have it produce a short report with charts.
 
-To do that well, the agent needs to compare the overall change, break it down by product, and reconcile the totals. When something is unclear, it needs to run follow-up queries based on what it finds.
+At the core of a Data Agent is **an analysis loop driven by execution results**: the model proposes a query, reads and checks the results, then decides whether more analysis is needed. To make conclusions verifiable, queries need consistent metric definitions, and charts should use the actual computed results.
 
-[AVA](https://ava.antv.vision) is an open-source data analysis and visualization framework for JavaScript applications and AI agents. **AVA executes the data operations; the agent uses the results to decide what to do next.**
+[AVA](https://ava.antv.vision) is an open-source data analysis framework for JavaScript applications and AI agents, designed to **connect enterprise data and support business decisions with trustworthy analysis and visualization**. Like [PandasAI](https://docs.pandas-ai.com/v3/introduction) in the Python ecosystem, it supports analyzing data and generating charts through natural language. This tutorial uses AVA for analysis and charting, with the AI SDK coordinating tool calls, to build a Mini Data Agent that supports multi-step analysis and follow-up questions.
 
-In this tutorial, we'll use AVA and the AI SDK to build a Mini Data Agent with **53 lines of core code**.
+![Data Agent runtime architecture](https://mdn.alipayobjects.com/huamei_aphk1k/afts/img/A*Y620RYP00wMAAAAAUXAAAAgAegfkAQ/original)
 
 ## Prepare the data
 
 Start with this [sales order dataset](https://github.com/antvis/AVA/blob/ai/__tests__/datasets/sales.csv), which contains 240 orders and 12 fields. Here are the order date, product, and sales amount for the first three orders:
 
-| order_date | product | sales (after discounts) |
-| ---------- | ------- | ----------------------: |
-| 2025-01-01 | Monitor | 224.10 |
-| 2025-01-02 | Office Chair | 680.20 |
-| 2025-01-04 | Monitor | 2,191.20 |
+| order_date | product      | sales (after discounts) |
+| ---------- | ------------ | ----------------------: |
+| 2025-01-01 | Monitor      |                  224.10 |
+| 2025-01-02 | Office Chair |                  680.20 |
+| 2025-01-04 | Monitor      |                2,191.20 |
 
 `YOUR_DATA` is the array of objects parsed from the full CSV, with `sales` stored as a number.
 
 ## Define the business semantics
 
-Next, tell the agent how to interpret the data: use sales amounts after discounts, assign each order to a month by its order date, and compare the increase or decrease in sales for each product.
-
-AVA uses this semantic configuration when generating queries. It reduces guesswork about what a metric means and keeps follow-up questions consistent with the same business definitions.
+Next, define the rules for the analysis: use sales amounts after discounts, assign each order to a month by its order date, and calculate change as the current period minus the previous period. Put these rules in the semantic configuration for use across queries and follow-up questions.
 
 ```yaml
 models:
@@ -53,19 +51,19 @@ cubes:
         Change rate is change divided by prior-period sales. Return null when prior-period sales are zero, indicating that the rate is not applicable.
 ```
 
-`YOUR_SEMANTIC` is the object parsed from this YAML. See [Business semantics](https://ava.antv.vision/documentation/data/semantic/) for details on the fields.
+`YOUR_SEMANTIC` is the object parsed from this YAML.
 
-## Build the data agent
+## Build the Data Agent
 
-With the data and definitions in place, give the agent two tools: `analyze` queries and computes the data, while `visualize` takes a visualization request and data to generate a chart. `ToolLoopAgent` passes each tool result back to the model, which decides whether to continue the analysis, which results to send to `visualize`, or when to deliver its conclusions.
+With the data and definitions in place, wrap AVA's capabilities in two tools: `analyze` queries and computes the data, while `visualize` **references analysis data by its result ID** to generate a chart.
 
 The example requires **Node.js 22.13.0 or later**. Install these dependencies:
 
 ```bash
-npm install @antv/ava@4.0.0 ai@7.0.112 zod@4.6.7
+npm install @antv/ava@4.0.0 ai@7.0.112 @ai-sdk/openai@4.0.73 zod@4.6.7
 ```
 
-`YOUR_MODEL` is a configured model instance that supports tool calling. Pass it in along with your data and semantic definitions, and the agent can use AVA to analyze the data:
+Before running the code, set the `OPENAI_API_KEY` and `OPENAI_MODEL` environment variables. The model must support tool calling. When using an OpenAI Chat Completions-compatible service, also set `OPENAI_BASE_URL`.
 
 ```javascript
 import { AVA } from '@antv/ava';
@@ -74,74 +72,84 @@ import { z } from 'zod';
 
 async function createDataAgent({ model, data, semantic }) {
   const ava = new AVA({ llm: { model } });
+
   await ava.source({ type: 'json', options: { data } });
   await ava.semantic(undefined, () => semantic);
 
-  const messages = [];
-  let analysis;
-  let chart;
+  let messages = [];
+  const analyses = new Map();
 
   const agent = new ToolLoopAgent({
     model,
     instructions: `Analyze the user's task step by step, using conversation history to make each query self-contained.
-    Use analyze to compute and verify data.
-    For visualize, select relevant rows and fields from analyze results; never invent or change values.
+    Use analyze to compute and verify data, and visualize to chart a saved result.
     Base conclusions on tool results and state what data is missing when evidence is insufficient.`,
     stopWhen: isStepCount(8),
-    providerOptions: { openai: { parallelToolCalls: false } },
     tools: {
       analyze: tool({
         description: 'Query and analyze data using a self-contained question.',
         inputSchema: z.object({ query: z.string() }),
         execute: async ({ query }) => {
-          analysis = chart = undefined;
-          analysis = await ava.analyze(query);
-          return analysis;
+          const analysis = await ava.analyze(query);
+          const resultId = `analysis-${analyses.size + 1}`;
+          analyses.set(resultId, analysis);
+          return { ...analysis, resultId };
         },
       }),
       visualize: tool({
-        description: 'Generate a chart from the visualization request and data returned by analyze.',
-        inputSchema: z.object({ query: z.string(), data: z.array(z.record(z.string(), z.unknown())) }),
-        execute: async ({ query, data }) => {
-          chart = await ava.visualize({ query, data });
-          return { chartType: chart?.chartType };
+        description: 'Generate a chart using an exact resultId returned by analyze and a chart request.',
+        inputSchema: z.object({ resultId: z.string(), query: z.string() }),
+        execute: async ({ resultId, query }) => {
+          const analysis = analyses.get(resultId);
+          if (!analysis) throw new Error(`Unknown resultId: ${resultId}. Call analyze first.`);
+          return ava.visualize({ query, data: analysis.data });
         },
+        toModelOutput: ({ output }) => ({
+          type: 'json',
+          value: { chartType: output?.chartType ?? null },
+        }),
       }),
     },
   });
 
   return {
     async ask(question) {
-      chart = undefined;
-      messages.push({ role: 'user', content: question });
-      const result = await agent.generate({ messages });
-      messages.push(...result.responseMessages);
-      return { text: result.text, analysis, chart };
+      const input = [...messages, { role: 'user', content: question }];
+      const result = await agent.generate({ messages: input });
+      messages = [...input, ...result.responseMessages];
+      return result;
     },
     dispose: () => ava.dispose(),
   };
 }
 ```
 
-The agent keeps the conversation and analysis history so you can ask follow-up questions. When it needs a chart, it selects the relevant rows and columns from the analysis results and passes them to `visualize` through the `data` parameter. It is not limited to the most recent analysis result. Now give it the task we started with:
+With these 53 lines of core code in place, you can run an analysis and ask follow-up questions in the same conversation:
 
 ```javascript
 import { writeFile } from 'node:fs/promises';
+import { createOpenAI } from '@ai-sdk/openai';
+
+const model = createOpenAI({
+  apiKey: process.env.OPENAI_API_KEY,
+  baseURL: process.env.OPENAI_BASE_URL,
+}).chat(process.env.OPENAI_MODEL);
 
 const assistant = await createDataAgent({
-  model: YOUR_MODEL,
+  model,
   data: YOUR_DATA,
   semantic: YOUR_SEMANTIC,
 });
 
 try {
   const task = `Analyze the decline in sales from January to February 2025. List sales for each product in both months and the change,
-sort by the size of the decline, reconcile the totals, and show the changes in a bar chart.`;
+sort from the largest decline to the largest increase, reconcile the totals, and show the changes in a bar chart.`;
   const answer = await assistant.ask(task);
   console.log(answer.text);
-  console.table(answer.analysis?.data);
-  console.log(answer.analysis?.sql);
-  if (answer.chart) await writeFile('chart.html', answer.chart.html);
+  for (const [index, { toolName, output }] of answer.toolResults.entries()) {
+    if (toolName === 'analyze') console.table(output.data);
+    if (toolName === 'visualize' && output) await writeFile(`chart-${index + 1}.html`, output.html);
+  }
 
   console.log((await assistant.ask('Did Laptop sales fall because a promotion ended?')).text);
 } finally {
@@ -151,9 +159,7 @@ sort by the size of the decline, reconcile the totals, and show the changes in a
 
 ## Review the results
 
-For this task, the agent can first use `analyze` to compare the monthly totals, then break the decline down by product. It checks that the product-level changes add up to the overall change, uses `visualize` to draw a chart, and summarizes the findings. If the totals do not reconcile, it needs to query the data again and investigate.
-
-Aggregating this dataset gives total sales of **38,897.18** in January and **21,804.11** in February, a decline of **43.94%**. The changes by product are:
+The following **reference results were aggregated independently from the original CSV** and can be used to check the agent's output. Sales fell from **38,897.18** in January to **21,804.11** in February, a decline of **43.94%**:
 
 | Product | January sales | February sales | Change (February − January) |
 | ------- | ------------: | -------------: | --------------------------: |
@@ -168,10 +174,10 @@ Aggregating this dataset gives total sales of **38,897.18** in January and **21,
 | Office Chair | 1,253.00 | 5,262.60 | +4,009.60 |
 | **Total** | **38,897.18** | **21,804.11** | **−17,093.07** |
 
-The product-level changes sum to **−17,093.07**, matching the overall change. The chart makes the main contributors clear: **Laptop accounts for most of the decline, while growth in Office Chair sales offsets part of it.**
+The product-level changes add up to the overall change. **Laptop accounts for most of the decline, while growth in Office Chair sales offsets part of it.**
 
-![Sales changes by product from January to February 2025: Laptop has the largest decline, while Office Chair has the largest increase.](/blog/images/sales-change.png)
+![Sales changes by product from January to February 2025](https://mdn.alipayobjects.com/huamei_aphk1k/afts/img/A*m_BqSr6ehAkAAAAARMAAAAgAegfkAQ/original)
 
-You might then ask, “Did Laptop sales fall because a promotion ended?” The available data does not include promotion dates or which products were covered, so the agent cannot confirm that explanation. **Identifying where sales declined is one step; explaining the business cause requires further evidence.**
+For the follow-up question about promotions, the data lacks campaign dates and coverage. The agent should explain that **there is not enough evidence to confirm the cause of the decline**.
 
-To use this agent in your own business, replace the sample data and semantic definitions with yours, then give it a new analysis task.
+If you've built your own Data Agent with AVA, share your work in the [AVA project showcase](https://github.com/antvis/AVA/issues/1061) for a chance to receive a SEE Conf 2026 ticket and meet the community in person.
