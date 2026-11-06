@@ -8,6 +8,7 @@ import { excelOptionsSchema } from '../../util/excel';
 import { profileMetadataSchema } from '../../util/profile';
 import { schemaMetadataSchema } from '../../util/schema';
 import { semanticMetadataSchema } from '../../util/data-model';
+import { notionOptionsSchema } from '../../duckdb/loaders/notion/config';
 
 import type { DataSourceConfig } from '../../types';
 
@@ -138,6 +139,7 @@ const sourceSchema = z.discriminatedUnion('type', [
   z.object({ type: z.literal('clickhouse'), options: clickhouse }).strict(),
   z.object({ type: z.literal('sqlserver'), options: sqlserver }).strict(),
   z.object({ type: z.literal('feishu-bitable'), options: feishuBitable }).strict(),
+  z.object({ type: z.literal('notion'), options: notionOptionsSchema }).strict(),
   z.object({ type: z.literal('tencent-smartsheet'), options: tencentDocsOptionsSchema }).strict(),
 ]);
 

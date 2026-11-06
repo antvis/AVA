@@ -46,6 +46,7 @@ export type {
   DuckDBEngineOptions,
   PythonEngineOptions,
   DataSourceConfig,
+  NotionSourceOptions,
   TencentDocsSourceOptions,
   SchemaOptions,
   SemanticOptions,

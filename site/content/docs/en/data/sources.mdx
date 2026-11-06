@@ -54,6 +54,11 @@
     <strong>ClickHouse</strong>
     <span>Analytics database</span>
   </a>
+  <a href="#notion">
+    <img src="/logos/notion.svg" alt="" width="28" height="28" />
+    <strong>Notion</strong>
+    <span>Database</span>
+  </a>
   <a href="/documentation/engines/custom/">
     <img src="/logos/contribute.svg" alt="" width="28" height="28" />
     <strong>Custom extension</strong>
@@ -84,7 +89,7 @@ const schema = await ava.schema();
 
 | Parameter | Type                   | Required | Meaning                                                                                                                                      |
 | --------- | ---------------------- | -------- | -------------------------------------------------------------------------------------------------------------------------------------------- |
-| `type`    | `SourceType`           | Yes      | `csv`, `csv-file`, `json`, `json-file`, `parquet`, `excel`, `text`, `sqlite`, `mysql`, `postgresql`, `mongodb`, `supabase`, `clickhouse`, `sqlserver`, or `feishu-bitable`. |
+| `type`    | `SourceType`           | Yes      | `csv`, `csv-file`, `json`, `json-file`, `parquet`, `excel`, `text`, `sqlite`, `mysql`, `postgresql`, `mongodb`, `supabase`, `clickhouse`, `sqlserver`, `feishu-bitable`, `tencent-smartsheet`, or `notion`. |
 | `options` | Source-specific object | Yes      | Use the matching table below. Field names are relative to `options`.                                                                         |
 
 `source()` returns no value and prepares the data for execution. Schema discovery is deferred until `schema()` or another operation needs it. Calling `source()` again replaces the current source and clears its cached metadata. Use `schema()` to inspect table and field names, and call `await ava.dispose()` when finished.
@@ -590,6 +595,41 @@ All forwarded fields are optional. Server settings are an extensible, server-ver
 | `json.stringify`                           | `<T>(input: T) => string`                        | Optional; serializes a value.                                               |
 
 Zstd compression requires Node.js 22.15 or newer in this client. Response compression may conflict with the engine's enforced read-only server settings; leave it disabled unless the server permits it.
+
+## Notion
+
+Load one authorized Notion database as a read-only snapshot through the official [Notion REST API](https://developers.notion.com/reference/post-database-query), then analyze a complete local snapshot with DuckDB. This source is available in the Node.js SDK, not the browser/Python/JavaScript engines. The existing CLI dataset sessions require macOS/Linux; use the SDK or WSL on Windows.
+
+```typescript
+await ava.source({
+  type: 'notion',
+  options: { databaseId: '<database-id>' },
+});
+```
+
+Set `NOTION_TOKEN` to an integration/bot token from the [Notion integrations page](https://www.notion.so/profile/integrations). The integration must be a member of the database's parent page and hold read access; a token with write access is still read-only through this connector. IDs are explicit; database sharing URLs are not auto-detected.
+
+For the CLI, put the same source configuration in a JSON file and run `ava source @notion.json`. Keep the token in the environment, not in the file.
+
+|| Field | Type | Required / default |
+|| --- | --- | --- |
+|| `databaseId` | `string` | Required; the Notion database UUID. |
+|| `token` | `string` | Optional; overrides `NOTION_TOKEN`. |
+|| `pageSize` | `number` | 1–100; default 100 pages per request. |
+|| `maxRecords` | `number` | 1–100,000; default 10,000. Overflow fails, not truncates. |
+|| `timeoutMs` | `number` | 1–110,000; default 60,000 ms for the whole load. |
+|| `maxRetries` | `number` | 0–5; default 2 for transient failures. |
+|| `version` | `string` | Notion-Version header; default `2022-06-28`. |
+
+Supported Notion property types are `title`, `rich_text`, `number`, `select`, `multi_select`, `status`, `date`, `checkbox`, `url`, `email`, `phone_number`, `created_time`, `last_edited_time`, `created_by`, `last_edited_by`, `people`, `unique_id`, plus numeric/string/boolean `formula` and `rollup`. Other property types (`files`, `relation`, `button`, `place`, `verification`) are omitted. Property names become column names; `_id` preserves the source page id. Duplicate/reserved column names and invalid supported values fail the load. Numbers use `DOUBLE`, dates use UTC `TIMESTAMPTZ`, omitted properties use null, and empty pages are retained. Empty databases keep their declared column types.
+
+Pages are fully cursor-paginated. Missing/repeated page ids and inconsistent cursors fail instead of silently loading partial data. Limits are 2,000 properties and 16 MiB for response streams/paginated reads. Expanded snapshots have independent limits of 16 MiB of UTF-8 JSON and 1,000,000 cells (including `_id`); the effective page limit is also capped by `floor(1000000 / (supported property count + 1))`. Validated pages are converted incrementally; no complete raw page array is retained, and over-budget dense rows are not retained. After loading, data is materialized in memory and its temporary JSON file is deleted. Authentication, permission and rate-limit failures are not retried. Upstream error codes/messages and network causes are preserved; HTTP failures retain status and up to 8 KiB of response diagnostics. The configured token is redacted. The connector calls only the database retrieve and database query endpoints; the model cannot access any page write or create/update/delete operation.
+
+This is a load-time snapshot, not live synchronization. Stop source edits during loading: the provider does not expose a transactional multi-page snapshot, so same-count edits cannot be detected. Model-based analysis uses the configured model provider; use non-sensitive test data for initial validation.
+
+Natural-language examples include aggregating tasks by status (`按状态统计每个状态的任务数和金额总和`) and counting tasks per month from a date property (`按月份统计任务数量`). The example scripts in `examples/notion` reproduce both against a synthetic dataset.
+
+See the [reproducible task example](https://github.com/antvis/AVA/tree/oss-camp2026/examples/notion) for configuration, optional synthetic fixture setup, status aggregation and monthly analysis with numerical assertions.
 
 ## Tencent Docs SmartSheet
 

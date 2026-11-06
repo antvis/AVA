@@ -15,6 +15,7 @@ import { loadPostgreSQL } from './postgresql';
 import { loadSQLite } from './sqlite';
 import { loadText } from './text';
 import { loadFeishuBitable } from './feishu-bitable';
+import { loadNotion } from './notion';
 import { loadTencentDocs } from './tencent-smartsheet';
 
 import type { DataSourceConfig, LLMConfig, LoadedSource } from '../../types';
@@ -60,6 +61,8 @@ export async function loadSource(config: DataSourceConfig, llmConfig: LLMConfig)
       throw new Error("SQL Server sources require engine: { type: 'sqlserver' }");
     case 'feishu-bitable':
       return loadFeishuBitable(config.options);
+    case 'notion':
+      return loadNotion(config.options);
     case 'tencent-smartsheet':
       return loadTencentDocs(config.options);
   }

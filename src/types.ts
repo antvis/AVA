@@ -121,7 +121,8 @@ export type SourceType =
   | 'clickhouse'
   | 'feishu-bitable'
   | 'tencent-smartsheet'
-  | 'sqlserver';
+  | 'sqlserver'
+  | 'notion';
 
 /**
  * DuckDB read_csv reader options.
@@ -494,6 +495,24 @@ export interface FeishuBitableSourceOptions {
   appSecret?: string;
 }
 
+/** Read-only snapshot of one Notion database (Node.js / DuckDB). */
+export interface NotionSourceOptions {
+  /** Notion database id (UUID) whose pages are read as one snapshot table. */
+  databaseId: string;
+  /** Notion integration token; falls back to NOTION_TOKEN. */
+  token?: string;
+  /** Pages per query request, 1–100. Default 100. */
+  pageSize?: number;
+  /** Fail instead of truncating. Default 10,000; max 100,000, also bounded by expanded snapshot budgets. */
+  maxRecords?: number;
+  /** Whole-load deadline, including pagination and retries. Default 60,000 ms. */
+  timeoutMs?: number;
+  /** Retries for transient failures only, 0–5. Default 2. */
+  maxRetries?: number;
+  /** Notion-Version request header value. Default '2022-06-28'. */
+  version?: string;
+}
+
 /** Read-only snapshot of one Tencent Docs SmartSheet table (Node.js / DuckDB). */
 export interface TencentDocsSourceOptions {
   /** Native OpenAPI fileID, not an encoded sharing-link ID. */
@@ -558,7 +577,8 @@ export type DataSourceConfig =
   | { type: 'clickhouse'; options: ClickHouseSourceOptions }
   | { type: 'feishu-bitable'; options: FeishuBitableSourceOptions }
   | { type: 'tencent-smartsheet'; options: TencentDocsSourceOptions }
-  | { type: 'sqlserver'; options: SQLServerSourceOptions };
+  | { type: 'sqlserver'; options: SQLServerSourceOptions }
+  | { type: 'notion'; options: NotionSourceOptions };
 
 /**
  * File formats readable by DuckDB's readers (csv-file maps to csv, json-file to json).
