@@ -1,0 +1,284 @@
+3:"$Sreact.fragment"
+4:"/_next/static/chunks/2qw5ule3nfj6b.js"
+5:"/_next/static/chunks/024mr0my09zgj.js"
+6:"/_next/static/chunks/2i4j0hdfw10dr.js"
+7:"/_next/static/chunks/3po6_tvp2er6a.js"
+8:I[616596,["$4","$5","$6","$7"],"default"]
+9:I[790103,["$4","$5","$6","$7"],"default"]
+a:"/_next/static/chunks/0xpkuc787v-p9.js"
+b:I[936064,["$a"],"default"]
+c:I[481497,["$a"],"default"]
+d:I[368250,["$4","$5","$6","$7"],"default"]
+14:"/_next/static/chunks/3-eovbpkgd131.js"
+15:I[400503,["$4","$5","$6","$7","$14"],"default"]
+16:I[991982,["$4","$5","$6","$7","$14"],"Image"]
+17:I[5138,["$4","$5","$6","$7","$14"],"default"]
+1d:"ViewportBoundary"
+1e:I[675049,["$a"],"$1d"]
+1f:"MetadataBoundary"
+20:I[675049,["$a"],"$1f"]
+21:"$Sreact.suspense"
+22:I[934035,["$a"],"IconMark"]
+:HL["/_next/static/chunks/42oz27_hfzr17.css","style"]
+:HL["/_next/static/chunks/0o-6jlwxqyz8v.css","style"]
+:HL["/_next/static/chunks/0cqj6wx2o_ng4.css","style"]
+f:X
+12:X
+12:C
+18:T3a91,# AVA 4.0 Release
+
+![AVA 4.0](https://mdn.alipayobjects.com/huamei_aphk1k/afts/img/A*Mes5TYpKW94AAAAAgBAAAAgAegfkAQ/original)
+
+Getting AI to write a SQL query or generate a chart is no longer the hard part. Real business questions bring a different set of challenges: data lives in separate systems, metrics follow different definitions, and conclusions need to stand up to scrutiny.
+
+**AI-powered data analysis takes more than a stronger model. It needs trustworthy data context, reliable computation, and clear visualizations.**
+
+That is what AVA 4.0 is designed to address. AVA is **<span style={{ color: '#2F4BDA', backgroundColor: '#FBF5CB' }}>an open-source data analysis and visualization framework for JavaScript applications and AI agents</span>**.
+
+AVA 3.0 focused on automated insights and chart recommendations, using rules and statistical methods to help developers identify anomalies and trends and choose suitable charts. Version 4.0 extends that foundation to AI agents, connecting data access, analysis execution, and visualization. An agent can interpret a question using the relevant business definitions, ask AVA to query and compute the data, and present the results in a chart.
+
+💡 Here are a few highlights of AVA 4.0:
+
+| 🔗 Unified access to heterogeneous data | 🔍 Analysis you can verify | 🕵️ Automated insight discovery |
+| --- | --- | :---: |
+| ![Unified data access](https://intranetproxy.alipay.com/skylark/lark/0/2026/svg/95056757/1793770231267-a6408c7a-82e9-4943-a650-ade0a431443d.svg) | ![Verifiable analysis](https://intranetproxy.alipay.com/skylark/lark/0/2026/svg/95056757/1793770243285-9a094998-766e-4a6e-83a2-f319ab24434d.svg) | ![Automated insights](https://intranetproxy.alipay.com/skylark/lark/0/2026/svg/95056757/1793770249471-046dc515-9da2-41a3-aa97-697c2d210b8e.svg) |
+| 🔮 Control over data and execution environments | 📊 Intelligent chart recommendations | 🔗 Easy integration with existing AI agents |
+| ![Control over execution environments](https://intranetproxy.alipay.com/skylark/lark/0/2026/svg/95056757/1793770255833-0bd3f12f-4c6a-4b92-99bc-f8231845a549.svg) | ![Intelligent visualization](https://intranetproxy.alipay.com/skylark/lark/0/2026/svg/95056757/1793770262036-e00be042-4000-460e-9114-ae10eda62f57.svg) | ![AI agent integration](https://intranetproxy.alipay.com/skylark/lark/0/2026/svg/95056757/1793770267936-1f0fdb04-593a-4d24-b06c-08465600fb91.svg) |
+
+> _If you know PandasAI, think of AVA as **a data analysis and visualization framework for AI agents in the JavaScript ecosystem.**_
+
+## Start with a business question
+
+A business review often begins with a question like this:
+
+**“<u><span style={{ color: '#117CEE' }}>Net sales</span></u> <u><span style={{ color: '#D22D8D' }}>are down</span></u>. <u><span style={{ color: '#601BDE' }}>Should we increase ad spend</span></u>?”**
+
+The question asks both what is happening and what to do next. Answering it means first agreeing on what net sales includes, which periods to compare, and how to attribute refunds. Then you need to find where the decline comes from and assess whether the available data supports a recommendation to spend more on advertising.
+
+Using the same simulated retail dataset, we ask three questions in sequence:
+
+1. **Should we increase ad spend after a decline in net sales?**
+
+![Analyzing whether to increase ad spend after a decline in net sales](https://mdn.alipayobjects.com/huamei_aphk1k/afts/img/A*KbncTbxXSUMAAAAASBAAAAgAegfkAQ/original)
+
+2. **Have we calculated net sales correctly?**
+
+![Verifying the net sales calculation](https://mdn.alipayobjects.com/huamei_aphk1k/afts/img/A*lrK4S65xb9YAAAAAROAAAAgAegfkAQ/original)
+
+3. **How do two departments define and calculate sales differently?**
+
+![Comparing sales definitions across two departments](https://mdn.alipayobjects.com/huamei_aphk1k/afts/img/A*BzELS7LSk7EAAAAARdAAAAgAegfkAQ/original)
+
+These examples draw on AVA's capabilities for understanding data, executing analysis, and visualizing results. Developers can bring those capabilities into an agent through a Skill, the CLI, or the SDK, so it can investigate business questions using data.
+
+![AVA data understanding, analysis execution, and visualization workflow](https://intranetproxy.alipay.com/skylark/lark/0/2026/png/95056757/1793760771954-9ce9f903-a561-41ab-9942-0602de01ac37.png)
+
+## Establish shared business definitions
+
+Reliable analysis depends on business definitions that people and agents can reuse: how metrics are calculated, which time periods records belong to, and how datasets relate to one another. Clear definitions provide a common basis for channel breakdowns, product analysis, and comparisons over time.
+
+AVA defines a unified **<span style={{ color: '#2F4BDA' }}>DataModel</span>** that supplies standardized context for query generation:
+
+| Context | Purpose | Typical contents |
+| --- | --- | --- |
+| **Schema** | Describe how the data is organized | Tables and views, field types, key constraints, and relationships |
+| **Profile** | Describe the values actually present in the data | Row counts, null counts, cardinality, value ranges, and frequent values |
+| **Semantic** | Map business concepts to the underlying data | Metric expressions, analysis dimensions, time definitions, and business relationships |
+
+---
+
+**Large language models are powerful, but translating natural language into accurate SQL is still difficult.** Using GLM-5.1, we compared performance with different levels of data context on the public DataBench analysis benchmark and the SQLite subset of the Spider2-Lite natural language-to-SQL (NL2SQL) benchmark.
+
+![Benchmark accuracy with different levels of data context](https://intranetproxy.alipay.com/skylark/lark/0/2026/png/95056757/1793762051667-80cfafad-8d57-4177-8e77-5679a94a2678.png)
+
+On the Spider2-Lite SQLite subset, accuracy was **25.9%** with only column names and sample data. Adding schema information and statistical profiles brought it to **33.3%**. Including business definitions raised it to **80.7%**. More context also increases token usage, of course.
+
+**Answering business questions correctly requires a semantic layer, too.** The schema tells the model which fields exist; business definitions explain how to calculate metrics and relate the data. Capturing that knowledge lets people and agents work from the same definitions.
+
+## Connect heterogeneous sources for complex analysis
+
+Orders may live in a database, advertising data in files, and operational records in a Feishu spreadsheet. A sales review often requires filtering, joining, and aggregating large volumes of records across these sources.
+
+AVA divides the work accordingly: **<span style={{ color: '#2F4BDA' }}>the model guides the investigation; code does the computation</span>.** The model breaks down the question, generates queries, and chooses the next step. Execution engines process the data and return results or errors so the model can compare findings and drill down. The full raw table does not need to go into the model's context.
+
+AVA provides a unified interface to **<span style={{ color: '#ED740C' }}>more than 10 data sources</span>**, so applications can reuse analysis workflows across different sources.
+
+![Supported data sources](https://intranetproxy.alipay.com/skylark/lark/0/2026/png/95056757/1793762072208-9f3740e4-b2a2-413e-b806-62cb0cf1bb87.png)
+
+Once the data is connected, AVA can use different execution engines according to where the data lives and what the analysis requires:
+
++ **File analysis:** DuckDB 2.0 handles filtering, aggregation, and joins across tables, supporting file queries over roughly **600 million rows**.
++ **Database analysis:** ClickHouse and Supabase run computations in the database, using existing compute resources and returning the query results.
++ **Code-based computation:** Python/pandas handles complex transformations and numerical work, while JavaScript supports lightweight processing in a browser or Node.js.
+
+![Execution engines](https://intranetproxy.alipay.com/skylark/lark/0/2026/png/95056757/1793761802228-0d083bd3-e047-4075-a9ab-7bc8e72f8e55.png)
+
+## Use visualization to guide exploration
+
+**An overall number can hide very different patterns underneath.** In the sales example above, comparing channels reveals differences behind the overall decline. In other business questions, looking at distributions or comparing groups can uncover patterns that aggregates miss.
+
+The following examples use simulated business data to show how computation and visualization work together:
+
+| Business question | Analytical approach | Visualization |
+| --- | --- | --- |
+| **Average order value hasn't changed. Should we keep the same promotion strategy?** | Each period contains 2,000 orders, with an average order value of about CNY 800. Yet the share of orders below CNY 600 rises from 10.4% to 55.5%, while high-value orders also become more common. A distribution plot using kernel density estimation (KDE) reveals the shift and helps assess promotions for different customer segments. | ![Order value distributions across two periods](https://mdn.alipayobjects.com/huamei_aphk1k/afts/img/A*WI7kTb0m5CwAAAAAQTAAAAgAegfkAQ/original) |
+| **Should all 120 stores have the same operating targets?** | Monthly order volume and average order value distinguish volume-driven, balanced, and high-order-value stores, providing a basis for setting targets and allocating resources by group. The analysis uses standardization and KMeans clustering. | ![Store groups based on order volume and average order value](https://mdn.alipayobjects.com/huamei_aphk1k/afts/img/A*uxkHQL9Hn30AAAAAQQAAAAgAegfkAQ/original) |
+
+**Choosing the right chart helps you see the issue clearly.** AVA organizes chart use cases, data requirements, and limitations into **heuristic knowledge**. It combines that knowledge with the analytical intent and the data's characteristics to guide the model toward an appropriate visualization.
+
+![Chart recommendation knowledge](https://intranetproxy.alipay.com/skylark/lark/0/2026/png/95056757/1793158987822-9e693ff5-d4e4-4a63-958e-9f86375455bf.png)
+
+Recommendations are rendered by [AntV GPT-Vis](https://gpt-vis.antv.vision/), which supports **more than 26 visualization types**.
+
+![Visualization types supported by GPT-Vis](https://intranetproxy.alipay.com/skylark/lark/0/2026/png/95056757/1793695325058-8bb8d039-e844-4df0-940a-d8f80090ce15.png)
+
+## Make conclusions traceable and verifiable
+
+Business analysis often involves confirming metric definitions, comparing data, and breaking down the results at several levels. Each judgment builds on earlier findings, so checking a conclusion means following that analytical path.
+
+AVA gives the agent the executed query, result data, and execution status for each step, **making the evidence behind multi-step analysis traceable and helping pinpoint steps that need further investigation.**
+
+---
+
+> For example, net sales from organic search fell by CNY 877,200. You can follow the business definitions, executed query, returned data, and chart to check each assumption: Were refunds deducted? Were consignment sales counted as commission only? Did the query follow the agreed definitions? Were the display units consistent? Verifying the conclusion becomes a matter of checking specific steps in the analysis.
+
+![Verifying business definitions, queries, data, and charts](https://intranetproxy.alipay.com/skylark/lark/0/2026/png/95056757/1793761446924-5a089d3b-9fbb-475a-ac94-24cb699a748b.png)
+
+From verifying a sales change to investigating its causes, each result becomes evidence for the next judgment. A reasoning graph lays out that progression, helping users understand how a conclusion was reached and return to the steps that support it.
+
+![An interactive reasoning graph of the analysis](https://intranetproxy.alipay.com/skylark/lark/0/2026/gif/95056757/1793698571700-11ee05a6-b55e-410f-814d-fe921c0b0664.gif)
+
+**When you can inspect the process, you know where to make corrections.** If a business definition is wrong, revise it. If a query is wrong, adjust the calculation. If the evidence is insufficient, keep investigating. Trustworthy analysis comes from making each step open to verification and correction.
+
+![Reusable data analysis capabilities shared across agents and applications](https://intranetproxy.alipay.com/skylark/lark/0/2026/png/95056757/1793761036835-6bfd2ef3-49ad-42b1-a11f-9d7f87a05597.png)
+
+## Build faster with reusable analysis tools
+
+Building a data analysis agent means handling data access, understanding schemas, executing queries, and generating charts. AVA packages these common capabilities as composable tools, <u>reducing repetitive development so you can focus on business definitions, analytical questions, and the product experience</u>.
+
+**Already using an AI agent?** Install the AVA Skill with **<span style={{ color: '#ED740C' }}>one command</span>** to let it analyze data with AVA:
+
+```bash
+npx skills add antvis/AVA
+```
+
+Then start a new agent session and ask a question:
+
+> Use the AVA Skill to analyze `./sales.csv` ([download the sample file](https://github.com/antvis/AVA/raw/refs/heads/ai/__tests__/datasets/sales.csv)): compare sales in January and February 2025 and identify which products contributed most to the decline.
+
+AVA handles the queries and computations, leaving the agent to interpret the question and organize the analysis.
+
+**Building your own application or agent?** Follow the [SDK quickstart](https://ava.antv.vision/documentation/quickstart/) to combine data access, analysis, and chart generation as needed. You can build a minimal data agent with **<span style={{ color: '#ED740C' }}>53 lines of core code</span>**. Or use the [CLI](https://ava.antv.vision/documentation/reference/cli/) to run analyses from a terminal or script after **<span style={{ color: '#ED740C' }}>two setup steps</span>**: installation and model configuration.
+
+## Try AVA 4.0
+
+| [**AVA website**](https://ava.antv.vision/) | [**Sive**](https://sive.antv.antgroup.com/) | [**GitHub**](https://github.com/antvis/AVA) |
+| --- | --- | --- |
+| **Read the docs and examples to start integrating.** [🪄 Explore](https://ava.antv.vision/) | **A free, publicly available AI data analysis platform built on AVA.** [🪄 Try it](https://sive.antv.antgroup.com/) | **Get the source, report issues, and contribute.** [🪄 Visit](https://github.com/antvis/AVA) |
+| ![AVA website](https://intranetproxy.alipay.com/skylark/lark/0/2026/png/95056757/1793689113562-2d093f32-03e9-4337-8c85-06cb2ae088bd.png) | ![Sive data analysis platform](https://intranetproxy.alipay.com/skylark/lark/0/2026/png/95056757/1793689136177-366e67e2-d10d-48cd-ac37-d215426866c7.png) | ![AVA on GitHub](https://mdn.alipayobjects.com/huamei_aphk1k/afts/img/A*R42nSYhwvIYAAAAARiAAAAgAegfkAQ/original) |
+
+If AVA is useful to you, give it a ⭐️ on [GitHub](https://github.com/antvis/AVA) to help more developers discover it.
+13:[["children",{"s":"__PAGE__","h":160,"d":{"r":["$","$3","c",{"children":[["$","main",null,{"className":"blog-article","id":"blog-content","children":[["$","header",null,{"className":"blog-article-header","children":[["$","$L15",null,{"href":"/blog/","className":"blog-back","children":[["$","span",null,{"aria-hidden":"true","children":"←"}]," ","All articles"]}],["$","h1",null,{"children":"AVA 4.0 Release"}],["$","p",null,{"className":"blog-article-description","children":"AVA 4.0 connects data access, analysis, and visualization for AI agents, grounding conclusions in verifiable results."}],["$","div",null,{"className":"blog-article-meta","children":[["$","div",null,{"className":"blog-meta","children":[["$","span",null,{"className":"blog-author","children":[["$","$L16",null,{"src":"https://avatars.githubusercontent.com/u/55794321?s=64&v=4","width":20,"height":20,"alt":""}],["$","span",null,{"children":"yvonneyx"}]]}],["$","span",null,{"children":"Release"}],["$","time",null,{"dateTime":"2026-11-04","children":"2026.11.04"}]]}],["$","$L17",null,{"label":"Copy Markdown","text":"$18"}]]}]]}],"$L19"]}],["$L1a"],"$L1b"]}],"p":"$@1c","v":null,"s":"$f"}}]]
+10:[["children",{"s":{"n":"slug","t":"d","k":"ava-4-release","s":[]},"h":65632,"d":{"r":["$","$3","c",{"children":[null,["$","$Lb",null,{"parallelRouterKey":"children","template":["$","$Lc",null,{}]}]]}],"p":"$@11","v":"$12","s":"$f"},"c":"$Q13"}]]
+2:[["children",{"s":"blog","h":131136,"d":{"r":["$","$3","c",{"children":[[["$","link","0",{"rel":"stylesheet","href":"/_next/static/chunks/42oz27_hfzr17.css","precedence":"next"}],["$","link","1",{"rel":"stylesheet","href":"/_next/static/chunks/0o-6jlwxqyz8v.css","precedence":"next"}],["$","link","2",{"rel":"stylesheet","href":"/_next/static/chunks/0cqj6wx2o_ng4.css","precedence":"next"}],["$","script","script-0",{"src":"/_next/static/chunks/2i4j0hdfw10dr.js","async":true}],["$","script","script-1",{"src":"/_next/static/chunks/3po6_tvp2er6a.js","async":true}]],["$","$L8",null,{"children":["$","div",null,{"className":"docs-site blog-site","children":[["$","a",null,{"href":"#blog-content","className":"docs-skip","children":"Skip to content"}],["$","$L9",null,{}],["$","$Lb",null,{"parallelRouterKey":"children","template":["$","$Lc",null,{}]}],["$","$Ld",null,{}]]}]}]]}],"p":"$@e","v":null,"s":"$f"},"c":"$Q10"}]]
+1:[["children",{"s":"(en)","h":131120,"c":"$Q2"}]]
+0:{"t":{"t":{"s":"","h":131152,"c":"$Q1"},"h":{"r":["$","$3","h",{"children":[null,["$","$L1e",null,{"children":[["$","meta","0",{"charSet":"utf-8"}],["$","meta","1",{"name":"viewport","content":"width=device-width, initial-scale=1"}]]}],["$","$L20",null,{"children":[["$","div",null,{"hidden":true,"children":["$","$21",null,{"name":"Next.Metadata","children":[["$","title","0",{"children":"AVA 4.0 Release — AVA Blog"}],["$","meta","1",{"name":"description","content":"AVA 4.0 connects data access, analysis, and visualization for AI agents, grounding conclusions in verifiable results."}],["$","meta","2",{"name":"author","content":"yvonneyx"}],["$","meta","3",{"name":"keywords","content":"AVA, visual analytics, AI-native, LLM, data visualization, natural language, data analysis, AntV, chart generation"}],["$","link","4",{"rel":"canonical","href":"https://ava.antv.vision/blog/ava-4-release/"}],["$","link","5",{"rel":"alternate","hrefLang":"en","href":"https://ava.antv.vision/blog/ava-4-release/"}],["$","link","6",{"rel":"alternate","hrefLang":"zh-CN","href":"https://ava.antv.vision/zh/blog/ava-4-release/"}],["$","link","7",{"rel":"alternate","hrefLang":"x-default","href":"https://ava.antv.vision/blog/ava-4-release/"}],["$","meta","8",{"property":"og:title","content":"AVA 4.0 Release — AVA Blog"}],["$","meta","9",{"property":"og:description","content":"AVA 4.0 connects data access, analysis, and visualization for AI agents, grounding conclusions in verifiable results."}],["$","meta","10",{"property":"og:url","content":"https://ava.antv.vision/blog/ava-4-release/"}],["$","meta","11",{"property":"og:type","content":"article"}],["$","meta","12",{"property":"article:published_time","content":"2026-11-04T00:00:00+08:00"}],["$","meta","13",{"name":"twitter:card","content":"summary"}],["$","meta","14",{"name":"twitter:title","content":"AVA 4.0 Release — AVA Blog"}],["$","meta","15",{"name":"twitter:description","content":"AVA 4.0 connects data access, analysis, and visualization for AI agents, grounding conclusions in verifiable results."}],["$","link","16",{"rel":"icon","href":"https://mdn.alipayobjects.com/huamei_qa8qxu/afts/img/A*FBLnQIAzx6cAAAAAQDAAAAgAemJ7AQ/original"}],["$","$L22","17",{}]]}]}],null]}],null]}],"p":"$@23","v":null,"s":"$f"}},"a":"$@24","u":"$@25","b":"30Fr082M8rzn7y5S4zVqd"}
+63:I[675049,["$a"],"OutletBoundary"]
+:HL["https://mdn.alipayobjects.com/huamei_aphk1k/afts/img/A*Mes5TYpKW94AAAAAgBAAAAgAegfkAQ/original","image"]
+:HL["https://intranetproxy.alipay.com/skylark/lark/0/2026/svg/95056757/1793770231267-a6408c7a-82e9-4943-a650-ade0a431443d.svg","image"]
+:HL["https://intranetproxy.alipay.com/skylark/lark/0/2026/svg/95056757/1793770243285-9a094998-766e-4a6e-83a2-f319ab24434d.svg","image"]
+:HL["https://intranetproxy.alipay.com/skylark/lark/0/2026/svg/95056757/1793770249471-046dc515-9da2-41a3-aa97-697c2d210b8e.svg","image"]
+:HL["https://intranetproxy.alipay.com/skylark/lark/0/2026/svg/95056757/1793770255833-0bd3f12f-4c6a-4b92-99bc-f8231845a549.svg","image"]
+:HL["https://intranetproxy.alipay.com/skylark/lark/0/2026/svg/95056757/1793770262036-e00be042-4000-460e-9114-ae10eda62f57.svg","image"]
+:HL["https://intranetproxy.alipay.com/skylark/lark/0/2026/svg/95056757/1793770267936-1f0fdb04-593a-4d24-b06c-08465600fb91.svg","image"]
+19:["$","div",null,{"className":"blog-reading","children":[["$","div",null,{"className":"blog-body","children":[["$","article",null,{"className":"docs-prose","children":[["$","p",null,{"children":["$","img",null,{"src":"https://mdn.alipayobjects.com/huamei_aphk1k/afts/img/A*Mes5TYpKW94AAAAAgBAAAAgAegfkAQ/original","alt":"AVA 4.0"}]}],"\n",["$","p",null,{"children":"Getting AI to write a SQL query or generate a chart is no longer the hard part. Real business questions bring a different set of challenges: data lives in separate systems, metrics follow different definitions, and conclusions need to stand up to scrutiny."}],"\n",["$","p",null,{"children":["$","strong",null,{"children":"AI-powered data analysis takes more than a stronger model. It needs trustworthy data context, reliable computation, and clear visualizations."}]}],"\n",["$","p",null,{"children":["That is what AVA 4.0 is designed to address. AVA is ",["$","strong",null,{"children":["$","span",null,{"style":{"color":"#2F4BDA","backgroundColor":"#FBF5CB"},"children":"an open-source data analysis and visualization framework for JavaScript applications and AI agents"}]}],"."]}],"\n",["$","p",null,{"children":"AVA 3.0 focused on automated insights and chart recommendations, using rules and statistical methods to help developers identify anomalies and trends and choose suitable charts. Version 4.0 extends that foundation to AI agents, connecting data access, analysis execution, and visualization. An agent can interpret a question using the relevant business definitions, ask AVA to query and compute the data, and present the results in a chart."}],"\n",["$","p",null,{"children":"💡 Here are a few highlights of AVA 4.0:"}],"\n",["$","div",null,{"className":"docs-table","children":["$","table",null,{"children":[["$","thead",null,{"children":["$","tr",null,{"children":[["$","th",null,{"children":"🔗 Unified access to heterogeneous data"}],["$","th",null,{"children":"🔍 Analysis you can verify"}],["$","th",null,{"style":{"textAlign":"center"},"children":"🕵️ Automated insight discovery"}]]}]}],["$","tbody",null,{"children":[["$","tr",null,{"children":[["$","td",null,{"children":["$","img",null,{"src":"https://intranetproxy.alipay.com/skylark/lark/0/2026/svg/95056757/1793770231267-a6408c7a-82e9-4943-a650-ade0a431443d.svg","alt":"Unified data access"}]}],["$","td",null,{"children":["$","img",null,{"src":"https://intranetproxy.alipay.com/skylark/lark/0/2026/svg/95056757/1793770243285-9a094998-766e-4a6e-83a2-f319ab24434d.svg","alt":"Verifiable analysis"}]}],["$","td",null,{"style":{"textAlign":"center"},"children":["$","img",null,{"src":"https://intranetproxy.alipay.com/skylark/lark/0/2026/svg/95056757/1793770249471-046dc515-9da2-41a3-aa97-697c2d210b8e.svg","alt":"Automated insights"}]}]]}],["$","tr",null,{"children":[["$","td",null,{"children":"🔮 Control over data and execution environments"}],["$","td",null,{"children":"📊 Intelligent chart recommendations"}],["$","td",null,{"style":{"textAlign":"center"},"children":"🔗 Easy integration with existing AI agents"}]]}],["$","tr",null,{"children":[["$","td",null,{"children":["$","img",null,{"src":"https://intranetproxy.alipay.com/skylark/lark/0/2026/svg/95056757/1793770255833-0bd3f12f-4c6a-4b92-99bc-f8231845a549.svg","alt":"Control over execution environments"}]}],["$","td",null,{"children":["$","img",null,{"src":"https://intranetproxy.alipay.com/skylark/lark/0/2026/svg/95056757/1793770262036-e00be042-4000-460e-9114-ae10eda62f57.svg","alt":"Intelligent visualization"}]}],["$","td",null,{"style":{"textAlign":"center"},"children":["$","img",null,{"src":"https://intranetproxy.alipay.com/skylark/lark/0/2026/svg/95056757/1793770267936-1f0fdb04-593a-4d24-b06c-08465600fb91.svg","alt":"AI agent integration"}]}]]}]]}]]}]}],"\n",["$","blockquote",null,{"children":["\n",["$","p",null,{"children":["$","em",null,{"children":["If you know PandasAI, think of AVA as ",["$","strong",null,{"children":"a data analysis and visualization framework for AI agents in the JavaScript ecosystem."}]]}]}],"\n"]}],"\n","$L26","\n","$L27","\n","$L28","\n","$L29","\n","$L2a","\n","$L2b","\n","$L2c","\n","$L2d","\n","$L2e","\n","$L2f","\n","$L30","\n","$L31","\n","$L32","\n","$L33","\n","$L34","\n","$L35","\n","$L36","\n","$L37","\n","$L38","\n","$L39","\n","$L3a","\n","$L3b","\n","$L3c","\n","$L3d","\n","$L3e","\n","$L3f","\n","$L40","\n","$L41","\n","$L42","\n","$L43","\n","$L44","\n","$L45","\n","$L46","\n","$L47","\n","$L48","\n","$L49","\n","$L4a","\n","$L4b","\n","$L4c","\n","$L4d","\n","$L4e","\n","$L4f","\n","$L50","\n","$L51","\n","$L52","\n","$L53","\n","$L54","\n","$L55","\n","$L56","\n","$L57","\n","$L58","\n","$L59","\n","$L5a","\n","$L5b","\n","$L5c","\n","$L5d","\n","$L5e","\n","$L5f","\n","$L60"]}],"$L61"]}],"$L62"]}]
+1a:["$","script","script-0",{"src":"/_next/static/chunks/3-eovbpkgd131.js","async":true}]
+1b:["$","$L63",null,{"children":["$","$21",null,{"name":"Next.MetadataOutlet","children":"$@64"}]}]
+25:true
+65:I[754170,["$4","$5","$6","$7","$14"],"default"]
+:HL["https://mdn.alipayobjects.com/huamei_aphk1k/afts/img/A*KbncTbxXSUMAAAAASBAAAAgAegfkAQ/original","image"]
+:HL["https://mdn.alipayobjects.com/huamei_aphk1k/afts/img/A*lrK4S65xb9YAAAAAROAAAAgAegfkAQ/original","image"]
+:HL["https://mdn.alipayobjects.com/huamei_aphk1k/afts/img/A*BzELS7LSk7EAAAAARdAAAAgAegfkAQ/original","image"]
+:HL["https://intranetproxy.alipay.com/skylark/lark/0/2026/png/95056757/1793760771954-9ce9f903-a561-41ab-9942-0602de01ac37.png","image"]
+:HL["https://intranetproxy.alipay.com/skylark/lark/0/2026/png/95056757/1793762051667-80cfafad-8d57-4177-8e77-5679a94a2678.png","image"]
+:HL["https://intranetproxy.alipay.com/skylark/lark/0/2026/png/95056757/1793762072208-9f3740e4-b2a2-413e-b806-62cb0cf1bb87.png","image"]
+:HL["https://intranetproxy.alipay.com/skylark/lark/0/2026/png/95056757/1793761802228-0d083bd3-e047-4075-a9ab-7bc8e72f8e55.png","image"]
+:HL["https://mdn.alipayobjects.com/huamei_aphk1k/afts/img/A*WI7kTb0m5CwAAAAAQTAAAAgAegfkAQ/original","image"]
+:HL["https://mdn.alipayobjects.com/huamei_aphk1k/afts/img/A*uxkHQL9Hn30AAAAAQQAAAAgAegfkAQ/original","image"]
+:HL["https://intranetproxy.alipay.com/skylark/lark/0/2026/png/95056757/1793158987822-9e693ff5-d4e4-4a63-958e-9f86375455bf.png","image"]
+:HL["https://intranetproxy.alipay.com/skylark/lark/0/2026/png/95056757/1793695325058-8bb8d039-e844-4df0-940a-d8f80090ce15.png","image"]
+:HL["https://intranetproxy.alipay.com/skylark/lark/0/2026/png/95056757/1793761446924-5a089d3b-9fbb-475a-ac94-24cb699a748b.png","image"]
+:HL["https://intranetproxy.alipay.com/skylark/lark/0/2026/gif/95056757/1793698571700-11ee05a6-b55e-410f-814d-fe921c0b0664.gif","image"]
+:HL["https://intranetproxy.alipay.com/skylark/lark/0/2026/png/95056757/1793761036835-6bfd2ef3-49ad-42b1-a11f-9d7f87a05597.png","image"]
+:HL["https://intranetproxy.alipay.com/skylark/lark/0/2026/png/95056757/1793689113562-2d093f32-03e9-4337-8c85-06cb2ae088bd.png","image"]
+:HL["https://intranetproxy.alipay.com/skylark/lark/0/2026/png/95056757/1793689136177-366e67e2-d10d-48cd-ac37-d215426866c7.png","image"]
+:HL["https://mdn.alipayobjects.com/huamei_aphk1k/afts/img/A*R42nSYhwvIYAAAAARiAAAAgAegfkAQ/original","image"]
+f:300
+26:["$","h2",null,{"id":"start-with-a-business-question","children":["$","a",null,{"href":"#start-with-a-business-question","className":"docs-heading-link","children":"Start with a business question"}]}]
+27:["$","p",null,{"children":"A business review often begins with a question like this:"}]
+28:["$","p",null,{"children":["$","strong",null,{"children":["“",["$","u",null,{"children":["$","span",null,{"style":{"color":"#117CEE"},"children":"Net sales"}]}]," ",["$","u",null,{"children":["$","span",null,{"style":{"color":"#D22D8D"},"children":"are down"}]}],". ",["$","u",null,{"children":["$","span",null,{"style":{"color":"#601BDE"},"children":"Should we increase ad spend"}]}],"?”"]}]}]
+29:["$","p",null,{"children":"The question asks both what is happening and what to do next. Answering it means first agreeing on what net sales includes, which periods to compare, and how to attribute refunds. Then you need to find where the decline comes from and assess whether the available data supports a recommendation to spend more on advertising."}]
+2a:["$","p",null,{"children":"Using the same simulated retail dataset, we ask three questions in sequence:"}]
+2b:["$","ol",null,{"children":["\n",["$","li",null,{"children":["$","strong",null,{"children":"Should we increase ad spend after a decline in net sales?"}]}],"\n"]}]
+2c:["$","p",null,{"children":["$","img",null,{"src":"https://mdn.alipayobjects.com/huamei_aphk1k/afts/img/A*KbncTbxXSUMAAAAASBAAAAgAegfkAQ/original","alt":"Analyzing whether to increase ad spend after a decline in net sales"}]}]
+2d:["$","ol",null,{"start":"2","children":["\n",["$","li",null,{"children":["$","strong",null,{"children":"Have we calculated net sales correctly?"}]}],"\n"]}]
+2e:["$","p",null,{"children":["$","img",null,{"src":"https://mdn.alipayobjects.com/huamei_aphk1k/afts/img/A*lrK4S65xb9YAAAAAROAAAAgAegfkAQ/original","alt":"Verifying the net sales calculation"}]}]
+2f:["$","ol",null,{"start":"3","children":["\n",["$","li",null,{"children":["$","strong",null,{"children":"How do two departments define and calculate sales differently?"}]}],"\n"]}]
+30:["$","p",null,{"children":["$","img",null,{"src":"https://mdn.alipayobjects.com/huamei_aphk1k/afts/img/A*BzELS7LSk7EAAAAARdAAAAgAegfkAQ/original","alt":"Comparing sales definitions across two departments"}]}]
+31:["$","p",null,{"children":"These examples draw on AVA's capabilities for understanding data, executing analysis, and visualizing results. Developers can bring those capabilities into an agent through a Skill, the CLI, or the SDK, so it can investigate business questions using data."}]
+32:["$","p",null,{"children":["$","img",null,{"src":"https://intranetproxy.alipay.com/skylark/lark/0/2026/png/95056757/1793760771954-9ce9f903-a561-41ab-9942-0602de01ac37.png","alt":"AVA data understanding, analysis execution, and visualization workflow"}]}]
+33:["$","h2",null,{"id":"establish-shared-business-definitions","children":["$","a",null,{"href":"#establish-shared-business-definitions","className":"docs-heading-link","children":"Establish shared business definitions"}]}]
+34:["$","p",null,{"children":"Reliable analysis depends on business definitions that people and agents can reuse: how metrics are calculated, which time periods records belong to, and how datasets relate to one another. Clear definitions provide a common basis for channel breakdowns, product analysis, and comparisons over time."}]
+35:["$","p",null,{"children":["AVA defines a unified ",["$","strong",null,{"children":["$","span",null,{"style":{"color":"#2F4BDA"},"children":"DataModel"}]}]," that supplies standardized context for query generation:"]}]
+36:["$","div",null,{"className":"docs-table","children":["$","table",null,{"children":[["$","thead",null,{"children":["$","tr",null,{"children":[["$","th",null,{"children":"Context"}],["$","th",null,{"children":"Purpose"}],["$","th",null,{"children":"Typical contents"}]]}]}],["$","tbody",null,{"children":[["$","tr",null,{"children":[["$","td",null,{"children":["$","strong",null,{"children":"Schema"}]}],["$","td",null,{"children":"Describe how the data is organized"}],["$","td",null,{"children":"Tables and views, field types, key constraints, and relationships"}]]}],["$","tr",null,{"children":[["$","td",null,{"children":["$","strong",null,{"children":"Profile"}]}],["$","td",null,{"children":"Describe the values actually present in the data"}],["$","td",null,{"children":"Row counts, null counts, cardinality, value ranges, and frequent values"}]]}],["$","tr",null,{"children":[["$","td",null,{"children":["$","strong",null,{"children":"Semantic"}]}],["$","td",null,{"children":"Map business concepts to the underlying data"}],["$","td",null,{"children":"Metric expressions, analysis dimensions, time definitions, and business relationships"}]]}]]}]]}]}]
+37:["$","hr",null,{}]
+38:["$","p",null,{"children":[["$","strong",null,{"children":"Large language models are powerful, but translating natural language into accurate SQL is still difficult."}]," Using GLM-5.1, we compared performance with different levels of data context on the public DataBench analysis benchmark and the SQLite subset of the Spider2-Lite natural language-to-SQL (NL2SQL) benchmark."]}]
+39:["$","p",null,{"children":["$","img",null,{"src":"https://intranetproxy.alipay.com/skylark/lark/0/2026/png/95056757/1793762051667-80cfafad-8d57-4177-8e77-5679a94a2678.png","alt":"Benchmark accuracy with different levels of data context"}]}]
+3a:["$","p",null,{"children":["On the Spider2-Lite SQLite subset, accuracy was ",["$","strong",null,{"children":"25.9%"}]," with only column names and sample data. Adding schema information and statistical profiles brought it to ",["$","strong",null,{"children":"33.3%"}],". Including business definitions raised it to ",["$","strong",null,{"children":"80.7%"}],". More context also increases token usage, of course."]}]
+3b:["$","p",null,{"children":[["$","strong",null,{"children":"Answering business questions correctly requires a semantic layer, too."}]," The schema tells the model which fields exist; business definitions explain how to calculate metrics and relate the data. Capturing that knowledge lets people and agents work from the same definitions."]}]
+3c:["$","h2",null,{"id":"connect-heterogeneous-sources-for-complex-analysis","children":["$","a",null,{"href":"#connect-heterogeneous-sources-for-complex-analysis","className":"docs-heading-link","children":"Connect heterogeneous sources for complex analysis"}]}]
+3d:["$","p",null,{"children":"Orders may live in a database, advertising data in files, and operational records in a Feishu spreadsheet. A sales review often requires filtering, joining, and aggregating large volumes of records across these sources."}]
+3e:["$","p",null,{"children":["AVA divides the work accordingly: ",["$","strong",null,{"children":[["$","span",null,{"style":{"color":"#2F4BDA"},"children":"the model guides the investigation; code does the computation"}],"."]}]," The model breaks down the question, generates queries, and chooses the next step. Execution engines process the data and return results or errors so the model can compare findings and drill down. The full raw table does not need to go into the model's context."]}]
+3f:["$","p",null,{"children":["AVA provides a unified interface to ",["$","strong",null,{"children":["$","span",null,{"style":{"color":"#ED740C"},"children":"more than 10 data sources"}]}],", so applications can reuse analysis workflows across different sources."]}]
+40:["$","p",null,{"children":["$","img",null,{"src":"https://intranetproxy.alipay.com/skylark/lark/0/2026/png/95056757/1793762072208-9f3740e4-b2a2-413e-b806-62cb0cf1bb87.png","alt":"Supported data sources"}]}]
+41:["$","p",null,{"children":"Once the data is connected, AVA can use different execution engines according to where the data lives and what the analysis requires:"}]
+42:["$","ul",null,{"children":["\n",["$","li",null,{"children":[["$","strong",null,{"children":"File analysis:"}]," DuckDB 2.0 handles filtering, aggregation, and joins across tables, supporting file queries over roughly ",["$","strong",null,{"children":"600 million rows"}],"."]}],"\n",["$","li",null,{"children":[["$","strong",null,{"children":"Database analysis:"}]," ClickHouse and Supabase run computations in the database, using existing compute resources and returning the query results."]}],"\n",["$","li",null,{"children":[["$","strong",null,{"children":"Code-based computation:"}]," Python/pandas handles complex transformations and numerical work, while JavaScript supports lightweight processing in a browser or Node.js."]}],"\n"]}]
+43:["$","p",null,{"children":["$","img",null,{"src":"https://intranetproxy.alipay.com/skylark/lark/0/2026/png/95056757/1793761802228-0d083bd3-e047-4075-a9ab-7bc8e72f8e55.png","alt":"Execution engines"}]}]
+44:["$","h2",null,{"id":"use-visualization-to-guide-exploration","children":["$","a",null,{"href":"#use-visualization-to-guide-exploration","className":"docs-heading-link","children":"Use visualization to guide exploration"}]}]
+45:["$","p",null,{"children":[["$","strong",null,{"children":"An overall number can hide very different patterns underneath."}]," In the sales example above, comparing channels reveals differences behind the overall decline. In other business questions, looking at distributions or comparing groups can uncover patterns that aggregates miss."]}]
+46:["$","p",null,{"children":"The following examples use simulated business data to show how computation and visualization work together:"}]
+47:["$","div",null,{"className":"docs-table","children":["$","table",null,{"children":[["$","thead",null,{"children":["$","tr",null,{"children":[["$","th",null,{"children":"Business question"}],["$","th",null,{"children":"Analytical approach"}],["$","th",null,{"children":"Visualization"}]]}]}],["$","tbody",null,{"children":[["$","tr",null,{"children":[["$","td",null,{"children":["$","strong",null,{"children":"Average order value hasn't changed. Should we keep the same promotion strategy?"}]}],["$","td",null,{"children":"Each period contains 2,000 orders, with an average order value of about CNY 800. Yet the share of orders below CNY 600 rises from 10.4% to 55.5%, while high-value orders also become more common. A distribution plot using kernel density estimation (KDE) reveals the shift and helps assess promotions for different customer segments."}],["$","td",null,{"children":["$","img",null,{"src":"https://mdn.alipayobjects.com/huamei_aphk1k/afts/img/A*WI7kTb0m5CwAAAAAQTAAAAgAegfkAQ/original","alt":"Order value distributions across two periods"}]}]]}],["$","tr",null,{"children":[["$","td",null,{"children":["$","strong",null,{"children":"Should all 120 stores have the same operating targets?"}]}],["$","td",null,{"children":"Monthly order volume and average order value distinguish volume-driven, balanced, and high-order-value stores, providing a basis for setting targets and allocating resources by group. The analysis uses standardization and KMeans clustering."}],["$","td",null,{"children":["$","img",null,{"src":"https://mdn.alipayobjects.com/huamei_aphk1k/afts/img/A*uxkHQL9Hn30AAAAAQQAAAAgAegfkAQ/original","alt":"Store groups based on order volume and average order value"}]}]]}]]}]]}]}]
+48:["$","p",null,{"children":[["$","strong",null,{"children":"Choosing the right chart helps you see the issue clearly."}]," AVA organizes chart use cases, data requirements, and limitations into ",["$","strong",null,{"children":"heuristic knowledge"}],". It combines that knowledge with the analytical intent and the data's characteristics to guide the model toward an appropriate visualization."]}]
+49:["$","p",null,{"children":["$","img",null,{"src":"https://intranetproxy.alipay.com/skylark/lark/0/2026/png/95056757/1793158987822-9e693ff5-d4e4-4a63-958e-9f86375455bf.png","alt":"Chart recommendation knowledge"}]}]
+4a:["$","p",null,{"children":["Recommendations are rendered by ",["$","$L15",null,{"href":"https://gpt-vis.antv.vision/","children":"AntV GPT-Vis"}],", which supports ",["$","strong",null,{"children":"more than 26 visualization types"}],"."]}]
+4b:["$","p",null,{"children":["$","img",null,{"src":"https://intranetproxy.alipay.com/skylark/lark/0/2026/png/95056757/1793695325058-8bb8d039-e844-4df0-940a-d8f80090ce15.png","alt":"Visualization types supported by GPT-Vis"}]}]
+4c:["$","h2",null,{"id":"make-conclusions-traceable-and-verifiable","children":["$","a",null,{"href":"#make-conclusions-traceable-and-verifiable","className":"docs-heading-link","children":"Make conclusions traceable and verifiable"}]}]
+4d:["$","p",null,{"children":"Business analysis often involves confirming metric definitions, comparing data, and breaking down the results at several levels. Each judgment builds on earlier findings, so checking a conclusion means following that analytical path."}]
+4e:["$","p",null,{"children":["AVA gives the agent the executed query, result data, and execution status for each step, ",["$","strong",null,{"children":"making the evidence behind multi-step analysis traceable and helping pinpoint steps that need further investigation."}]]}]
+4f:["$","hr",null,{}]
+50:["$","blockquote",null,{"children":["\n",["$","p",null,{"children":"For example, net sales from organic search fell by CNY 877,200. You can follow the business definitions, executed query, returned data, and chart to check each assumption: Were refunds deducted? Were consignment sales counted as commission only? Did the query follow the agreed definitions? Were the display units consistent? Verifying the conclusion becomes a matter of checking specific steps in the analysis."}],"\n"]}]
+51:["$","p",null,{"children":["$","img",null,{"src":"https://intranetproxy.alipay.com/skylark/lark/0/2026/png/95056757/1793761446924-5a089d3b-9fbb-475a-ac94-24cb699a748b.png","alt":"Verifying business definitions, queries, data, and charts"}]}]
+52:["$","p",null,{"children":"From verifying a sales change to investigating its causes, each result becomes evidence for the next judgment. A reasoning graph lays out that progression, helping users understand how a conclusion was reached and return to the steps that support it."}]
+53:["$","p",null,{"children":["$","img",null,{"src":"https://intranetproxy.alipay.com/skylark/lark/0/2026/gif/95056757/1793698571700-11ee05a6-b55e-410f-814d-fe921c0b0664.gif","alt":"An interactive reasoning graph of the analysis"}]}]
+54:["$","p",null,{"children":[["$","strong",null,{"children":"When you can inspect the process, you know where to make corrections."}]," If a business definition is wrong, revise it. If a query is wrong, adjust the calculation. If the evidence is insufficient, keep investigating. Trustworthy analysis comes from making each step open to verification and correction."]}]
+55:["$","p",null,{"children":["$","img",null,{"src":"https://intranetproxy.alipay.com/skylark/lark/0/2026/png/95056757/1793761036835-6bfd2ef3-49ad-42b1-a11f-9d7f87a05597.png","alt":"Reusable data analysis capabilities shared across agents and applications"}]}]
+56:["$","h2",null,{"id":"build-faster-with-reusable-analysis-tools","children":["$","a",null,{"href":"#build-faster-with-reusable-analysis-tools","className":"docs-heading-link","children":"Build faster with reusable analysis tools"}]}]
+57:["$","p",null,{"children":["Building a data analysis agent means handling data access, understanding schemas, executing queries, and generating charts. AVA packages these common capabilities as composable tools, ",["$","u",null,{"children":"reducing repetitive development so you can focus on business definitions, analytical questions, and the product experience"}],"."]}]
+58:["$","p",null,{"children":[["$","strong",null,{"children":"Already using an AI agent?"}]," Install the AVA Skill with ",["$","strong",null,{"children":["$","span",null,{"style":{"color":"#ED740C"},"children":"one command"}]}]," to let it analyze data with AVA:"]}]
+59:["$","figure",null,{"data-rehype-pretty-code-figure":"","children":["$","div",null,{"className":"docs-code-block","children":[["$","div",null,{"className":"docs-code-toolbar","children":[["$","span",null,{"children":"bash"}],["$","$L17",null,{}]]}],["$","pre",null,{"tabIndex":"0","data-language":"bash","data-theme":"github-light","children":["$","code",null,{"data-language":"bash","data-theme":"github-light","style":{"display":"grid"},"children":["$","span",null,{"data-line":"","children":[["$","span",null,{"style":{"color":"#6F42C1"},"children":"npx"}],["$","span",null,{"style":{"color":"#032F62"},"children":" skills"}],["$","span",null,{"style":{"color":"#032F62"},"children":" add"}],["$","span",null,{"style":{"color":"#032F62"},"children":" antvis/AVA"}]]}]}]}]]}]}]
+5a:["$","p",null,{"children":"Then start a new agent session and ask a question:"}]
+5b:["$","blockquote",null,{"children":["\n",["$","p",null,{"children":["Use the AVA Skill to analyze ",["$","code",null,{"children":"./sales.csv"}]," (",["$","$L15",null,{"href":"https://github.com/antvis/AVA/raw/refs/heads/ai/__tests__/datasets/sales.csv","children":"download the sample file"}],"): compare sales in January and February 2025 and identify which products contributed most to the decline."]}],"\n"]}]
+5c:["$","p",null,{"children":"AVA handles the queries and computations, leaving the agent to interpret the question and organize the analysis."}]
+5d:["$","p",null,{"children":[["$","strong",null,{"children":"Building your own application or agent?"}]," Follow the ",["$","$L15",null,{"href":"https://ava.antv.vision/documentation/quickstart/","children":"SDK quickstart"}]," to combine data access, analysis, and chart generation as needed. You can build a minimal data agent with ",["$","strong",null,{"children":["$","span",null,{"style":{"color":"#ED740C"},"children":"53 lines of core code"}]}],". Or use the ",["$","$L15",null,{"href":"https://ava.antv.vision/documentation/reference/cli/","children":"CLI"}]," to run analyses from a terminal or script after ",["$","strong",null,{"children":["$","span",null,{"style":{"color":"#ED740C"},"children":"two setup steps"}]}],": installation and model configuration."]}]
+5e:["$","h2",null,{"id":"try-ava-40","children":["$","a",null,{"href":"#try-ava-40","className":"docs-heading-link","children":"Try AVA 4.0"}]}]
+5f:["$","div",null,{"className":"docs-table","children":["$","table",null,{"children":[["$","thead",null,{"children":["$","tr",null,{"children":[["$","th",null,{"children":["$","$L15",null,{"href":"https://ava.antv.vision/","children":["$","strong",null,{"children":"AVA website"}]}]}],["$","th",null,{"children":["$","$L15",null,{"href":"https://sive.antv.antgroup.com/","children":["$","strong",null,{"children":"Sive"}]}]}],["$","th",null,{"children":["$","$L15",null,{"href":"https://github.com/antvis/AVA","children":["$","strong",null,{"children":"GitHub"}]}]}]]}]}],["$","tbody",null,{"children":[["$","tr",null,{"children":[["$","td",null,{"children":[["$","strong",null,{"children":"Read the docs and examples to start integrating."}]," ",["$","$L15",null,{"href":"https://ava.antv.vision/","children":"🪄 Explore"}]]}],["$","td",null,{"children":[["$","strong",null,{"children":"A free, publicly available AI data analysis platform built on AVA."}]," ",["$","$L15",null,{"href":"https://sive.antv.antgroup.com/","children":"🪄 Try it"}]]}],["$","td",null,{"children":[["$","strong",null,{"children":"Get the source, report issues, and contribute."}]," ",["$","$L15",null,{"href":"https://github.com/antvis/AVA","children":"🪄 Visit"}]]}]]}],["$","tr",null,{"children":[["$","td",null,{"children":["$","img",null,{"src":"https://intranetproxy.alipay.com/skylark/lark/0/2026/png/95056757/1793689113562-2d093f32-03e9-4337-8c85-06cb2ae088bd.png","alt":"AVA website"}]}],["$","td",null,{"children":["$","img",null,{"src":"https://intranetproxy.alipay.com/skylark/lark/0/2026/png/95056757/1793689136177-366e67e2-d10d-48cd-ac37-d215426866c7.png","alt":"Sive data analysis platform"}]}],["$","td",null,{"children":["$","img",null,{"src":"https://mdn.alipayobjects.com/huamei_aphk1k/afts/img/A*R42nSYhwvIYAAAAARiAAAAgAegfkAQ/original","alt":"AVA on GitHub"}]}]]}]]}]]}]}]
+60:["$","p",null,{"children":["If AVA is useful to you, give it a ⭐️ on ",["$","$L15",null,{"href":"https://github.com/antvis/AVA","children":"GitHub"}]," to help more developers discover it."]}]
+61:["$","footer",null,{"className":"blog-article-footer","children":[["$","$L15",null,{"href":"/blog/","children":["← ","All articles"]}],["$","a",null,{"href":"https://github.com/antvis/AVA/blob/ai/site/content/blog/en/ava-4-release.mdx","children":["Edit this article on GitHub"," ↗"]}]]}]
+62:["$","$L65","ava-4-release",{}]
+64:null
+f:C
+24:0
+11:"$undefined"
+e:"$undefined"
+23:"$undefined"
+1c:"$undefined"

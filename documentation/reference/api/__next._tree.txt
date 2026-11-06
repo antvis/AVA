@@ -1,8 +1,8 @@
-:HL["/_next/static/chunks/0u0nwhq9tb0ka.css","style"]
+:HL["/_next/static/chunks/22melh_3giz_v.css","style"]
 :HL["/_next/static/chunks/0o-6jlwxqyz8v.css","style"]
 :HL["https://mdn.alipayobjects.com/huamei_qa8qxu/afts/img/A*A-lcQbVTpjwAAAAAAAAAAAAADmJ7AQ/original","image"]
 4:[["children",{"s":"__PAGE__","h":160}]]
 3:[["children",{"s":{"n":"slug","t":"c","k":"reference/api","s":[]},"h":65632,"c":"$Q4"}]]
 2:[["children",{"s":"documentation","h":131136,"c":"$Q3"}]]
 1:[["children",{"s":"(en)","h":131120,"c":"$Q2"}]]
-0:{"b":"oQIdu-od1M3rJQduBWHqo","t":{"t":{"s":"","h":131152,"c":"$Q1"}}}
+0:{"b":"30Fr082M8rzn7y5S4zVqd","t":{"t":{"s":"","h":131152,"c":"$Q1"}}}

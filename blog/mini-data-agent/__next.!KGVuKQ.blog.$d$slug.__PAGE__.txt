@@ -1,0 +1,318 @@
+3:"$Sreact.fragment"
+4:"/_next/static/chunks/2qw5ule3nfj6b.js"
+5:"/_next/static/chunks/024mr0my09zgj.js"
+6:"/_next/static/chunks/2i4j0hdfw10dr.js"
+7:"/_next/static/chunks/3po6_tvp2er6a.js"
+8:I[616596,["$4","$5","$6","$7"],"default"]
+9:I[790103,["$4","$5","$6","$7"],"default"]
+a:"/_next/static/chunks/0xpkuc787v-p9.js"
+b:I[936064,["$a"],"default"]
+c:I[481497,["$a"],"default"]
+d:I[368250,["$4","$5","$6","$7"],"default"]
+14:"/_next/static/chunks/3-eovbpkgd131.js"
+15:I[400503,["$4","$5","$6","$7","$14"],"default"]
+16:I[991982,["$4","$5","$6","$7","$14"],"Image"]
+17:I[5138,["$4","$5","$6","$7","$14"],"default"]
+1d:"ViewportBoundary"
+1e:I[675049,["$a"],"$1d"]
+1f:"MetadataBoundary"
+20:I[675049,["$a"],"$1f"]
+21:"$Sreact.suspense"
+22:I[934035,["$a"],"IconMark"]
+:HL["/_next/static/chunks/42oz27_hfzr17.css","style"]
+:HL["/_next/static/chunks/0o-6jlwxqyz8v.css","style"]
+:HL["/_next/static/chunks/0cqj6wx2o_ng4.css","style"]
+f:X
+12:X
+12:C
+18:T217e,# Build a Mini Data Agent with AVA
+
+Start with a small, concrete task: give an agent some sales data, ask which products account for a drop in sales, and have it produce a short report with a chart.
+
+To do that well, the agent needs to compare the overall change, break it down by product, and reconcile the totals. When something is unclear, it needs to run follow-up queries based on what it finds.
+
+[AVA](https://ava.antv.vision) is an open-source data analysis and visualization framework for JavaScript applications and AI agents. **AVA executes the data operations; the agent uses the results to decide what to do next.**
+
+In this tutorial, we'll use AVA and the AI SDK to build a Mini Data Agent with **53 lines of core code**.
+
+## Prepare the data
+
+Start with this [sales order dataset](https://github.com/antvis/AVA/blob/ai/__tests__/datasets/sales.csv), which contains 240 orders and 12 fields. Here are the order date, product, and sales amount for the first three orders:
+
+| order_date | product | sales (after discounts) |
+| ---------- | ------- | ----------------------: |
+| 2025-01-01 | Monitor | 224.10 |
+| 2025-01-02 | Office Chair | 680.20 |
+| 2025-01-04 | Monitor | 2,191.20 |
+
+`YOUR_DATA` is the array of objects parsed from the full CSV, with `sales` stored as a number.
+
+## Define the business semantics
+
+Next, tell the agent how to interpret the data: use sales amounts after discounts, assign each order to a month by its order date, and compare the increase or decrease in sales for each product.
+
+AVA uses this semantic configuration when generating queries. It reduces guesswork about what a metric means and keeps follow-up questions consistent with the same business definitions.
+
+```yaml
+models:
+  - name: data
+    tableReference:
+      table: data
+    properties:
+      description: Each row represents one order.
+cubes:
+  - name: sales
+    baseObject: data
+    measures:
+      - name: total_sales
+        expression: CAST(SUM(sales) AS DOUBLE)
+        type: DOUBLE
+        description: Sales after discounts, calculated by summing sales.
+    dimensions:
+      - name: product
+        expression: product
+        type: VARCHAR
+    timeDimensions:
+      - name: order_date
+        expression: CAST(order_date AS DATE)
+        type: DATE
+    properties:
+      description: |
+        Compare both periods using the same set of products. Change is current-period sales minus prior-period sales; negative values indicate a decline.
+        Change rate is change divided by prior-period sales. Return null when prior-period sales are zero, indicating that the rate is not applicable.
+```
+
+`YOUR_SEMANTIC` is the object parsed from this YAML. See [Business semantics](https://ava.antv.vision/documentation/data/semantic/) for details on the fields.
+
+## Build the data agent
+
+With the data and definitions in place, give the agent two tools: `analyze` queries and computes the data, while `visualize` takes a visualization request and data to generate a chart. `ToolLoopAgent` passes each tool result back to the model, which decides whether to continue the analysis, which results to send to `visualize`, or when to deliver its conclusions.
+
+The example requires **Node.js 22.13.0 or later**. Install these dependencies:
+
+```bash
+npm install @antv/ava@4.0.0 ai@7.0.112 zod@4.6.7
+```
+
+`YOUR_MODEL` is a configured model instance that supports tool calling. Pass it in along with your data and semantic definitions, and the agent can use AVA to analyze the data:
+
+```javascript
+import { AVA } from '@antv/ava';
+import { ToolLoopAgent, isStepCount, tool } from 'ai';
+import { z } from 'zod';
+
+async function createDataAgent({ model, data, semantic }) {
+  const ava = new AVA({ llm: { model } });
+  await ava.source({ type: 'json', options: { data } });
+  await ava.semantic(undefined, () => semantic);
+
+  const messages = [];
+  let analysis;
+  let chart;
+
+  const agent = new ToolLoopAgent({
+    model,
+    instructions: `Analyze the user's task step by step, using conversation history to make each query self-contained.
+    Use analyze to compute and verify data.
+    For visualize, select relevant rows and fields from analyze results; never invent or change values.
+    Base conclusions on tool results and state what data is missing when evidence is insufficient.`,
+    stopWhen: isStepCount(8),
+    providerOptions: { openai: { parallelToolCalls: false } },
+    tools: {
+      analyze: tool({
+        description: 'Query and analyze data using a self-contained question.',
+        inputSchema: z.object({ query: z.string() }),
+        execute: async ({ query }) => {
+          analysis = chart = undefined;
+          analysis = await ava.analyze(query);
+          return analysis;
+        },
+      }),
+      visualize: tool({
+        description: 'Generate a chart from the visualization request and data returned by analyze.',
+        inputSchema: z.object({ query: z.string(), data: z.array(z.record(z.string(), z.unknown())) }),
+        execute: async ({ query, data }) => {
+          chart = await ava.visualize({ query, data });
+          return { chartType: chart?.chartType };
+        },
+      }),
+    },
+  });
+
+  return {
+    async ask(question) {
+      chart = undefined;
+      messages.push({ role: 'user', content: question });
+      const result = await agent.generate({ messages });
+      messages.push(...result.responseMessages);
+      return { text: result.text, analysis, chart };
+    },
+    dispose: () => ava.dispose(),
+  };
+}
+```
+
+The agent keeps the conversation and analysis history so you can ask follow-up questions. When it needs a chart, it selects the relevant rows and columns from the analysis results and passes them to `visualize` through the `data` parameter. It is not limited to the most recent analysis result. Now give it the task we started with:
+
+```javascript
+import { writeFile } from 'node:fs/promises';
+
+const assistant = await createDataAgent({
+  model: YOUR_MODEL,
+  data: YOUR_DATA,
+  semantic: YOUR_SEMANTIC,
+});
+
+try {
+  const task = `Analyze the decline in sales from January to February 2025. List sales for each product in both months and the change,
+sort by the size of the decline, reconcile the totals, and show the changes in a bar chart.`;
+  const answer = await assistant.ask(task);
+  console.log(answer.text);
+  console.table(answer.analysis?.data);
+  console.log(answer.analysis?.sql);
+  if (answer.chart) await writeFile('chart.html', answer.chart.html);
+
+  console.log((await assistant.ask('Did Laptop sales fall because a promotion ended?')).text);
+} finally {
+  await assistant.dispose();
+}
+```
+
+## Review the results
+
+For this task, the agent can first use `analyze` to compare the monthly totals, then break the decline down by product. It checks that the product-level changes add up to the overall change, uses `visualize` to draw a chart, and summarizes the findings. If the totals do not reconcile, it needs to query the data again and investigate.
+
+Aggregating this dataset gives total sales of **38,897.18** in January and **21,804.11** in February, a decline of **43.94%**. The changes by product are:
+
+| Product | January sales | February sales | Change (February − January) |
+| ------- | ------------: | -------------: | --------------------------: |
+| Laptop | 19,688.10 | 3,596.00 | −16,092.10 |
+| Standing Desk | 9,655.80 | 5,546.10 | −4,109.70 |
+| Monitor | 6,536.25 | 4,731.00 | −1,805.25 |
+| Pen Set | 232.20 | 127.71 | −104.49 |
+| Bookshelf | 1,225.50 | 1,251.30 | +25.80 |
+| Copy Paper | 59.19 | 137.06 | +77.87 |
+| Notebook | 31.50 | 137.03 | +105.53 |
+| Keyboard | 215.64 | 1,015.31 | +799.67 |
+| Office Chair | 1,253.00 | 5,262.60 | +4,009.60 |
+| **Total** | **38,897.18** | **21,804.11** | **−17,093.07** |
+
+The product-level changes sum to **−17,093.07**, matching the overall change. The chart makes the main contributors clear: **Laptop accounts for most of the decline, while growth in Office Chair sales offsets part of it.**
+
+![Sales changes by product from January to February 2025: Laptop has the largest decline, while Office Chair has the largest increase.](/blog/images/sales-change.png)
+
+You might then ask, “Did Laptop sales fall because a promotion ended?” The available data does not include promotion dates or which products were covered, so the agent cannot confirm that explanation. **Identifying where sales declined is one step; explaining the business cause requires further evidence.**
+
+To use this agent in your own business, replace the sample data and semantic definitions with yours, then give it a new analysis task.
+13:[["children",{"s":"__PAGE__","h":160,"d":{"r":["$","$3","c",{"children":[["$","main",null,{"className":"blog-article","id":"blog-content","children":[["$","header",null,{"className":"blog-article-header","children":[["$","$L15",null,{"href":"/blog/","className":"blog-back","children":[["$","span",null,{"aria-hidden":"true","children":"←"}]," ","All articles"]}],["$","h1",null,{"children":"Build a Mini Data Agent with AVA"}],["$","p",null,{"className":"blog-article-description","children":"Start with sales data, then build an agent that investigates changes, verifies its results, and delivers findings with charts."}],["$","div",null,{"className":"blog-article-meta","children":[["$","div",null,{"className":"blog-meta","children":[["$","span",null,{"className":"blog-author","children":[["$","$L16",null,{"src":"https://avatars.githubusercontent.com/u/55794321?s=64&v=4","width":20,"height":20,"alt":""}],["$","span",null,{"children":"yvonneyx"}]]}],["$","span",null,{"children":"Tutorial"}],["$","time",null,{"dateTime":"2026-11-05","children":"2026.11.05"}]]}],["$","$L17",null,{"label":"Copy Markdown","text":"$18"}]]}]]}],"$L19"]}],["$L1a"],"$L1b"]}],"p":"$@1c","v":null,"s":"$f"}}]]
+10:[["children",{"s":{"n":"slug","t":"d","k":"mini-data-agent","s":[]},"h":65632,"d":{"r":["$","$3","c",{"children":[null,["$","$Lb",null,{"parallelRouterKey":"children","template":["$","$Lc",null,{}]}]]}],"p":"$@11","v":"$12","s":"$f"},"c":"$Q13"}]]
+2:[["children",{"s":"blog","h":131136,"d":{"r":["$","$3","c",{"children":[[["$","link","0",{"rel":"stylesheet","href":"/_next/static/chunks/42oz27_hfzr17.css","precedence":"next"}],["$","link","1",{"rel":"stylesheet","href":"/_next/static/chunks/0o-6jlwxqyz8v.css","precedence":"next"}],["$","link","2",{"rel":"stylesheet","href":"/_next/static/chunks/0cqj6wx2o_ng4.css","precedence":"next"}],["$","script","script-0",{"src":"/_next/static/chunks/2i4j0hdfw10dr.js","async":true}],["$","script","script-1",{"src":"/_next/static/chunks/3po6_tvp2er6a.js","async":true}]],["$","$L8",null,{"children":["$","div",null,{"className":"docs-site blog-site","children":[["$","a",null,{"href":"#blog-content","className":"docs-skip","children":"Skip to content"}],["$","$L9",null,{}],["$","$Lb",null,{"parallelRouterKey":"children","template":["$","$Lc",null,{}]}],["$","$Ld",null,{}]]}]}]]}],"p":"$@e","v":null,"s":"$f"},"c":"$Q10"}]]
+1:[["children",{"s":"(en)","h":131120,"c":"$Q2"}]]
+0:{"t":{"t":{"s":"","h":131152,"c":"$Q1"},"h":{"r":["$","$3","h",{"children":[null,["$","$L1e",null,{"children":[["$","meta","0",{"charSet":"utf-8"}],["$","meta","1",{"name":"viewport","content":"width=device-width, initial-scale=1"}]]}],["$","$L20",null,{"children":[["$","div",null,{"hidden":true,"children":["$","$21",null,{"name":"Next.Metadata","children":[["$","title","0",{"children":"Build a Mini Data Agent with AVA — AVA Blog"}],["$","meta","1",{"name":"description","content":"Start with sales data, then build an agent that investigates changes, verifies its results, and delivers findings with charts."}],["$","meta","2",{"name":"author","content":"yvonneyx"}],["$","meta","3",{"name":"keywords","content":"AVA, visual analytics, AI-native, LLM, data visualization, natural language, data analysis, AntV, chart generation"}],["$","link","4",{"rel":"canonical","href":"https://ava.antv.vision/blog/mini-data-agent/"}],["$","link","5",{"rel":"alternate","hrefLang":"en","href":"https://ava.antv.vision/blog/mini-data-agent/"}],["$","link","6",{"rel":"alternate","hrefLang":"zh-CN","href":"https://ava.antv.vision/zh/blog/mini-data-agent/"}],["$","link","7",{"rel":"alternate","hrefLang":"x-default","href":"https://ava.antv.vision/blog/mini-data-agent/"}],["$","meta","8",{"property":"og:title","content":"Build a Mini Data Agent with AVA — AVA Blog"}],["$","meta","9",{"property":"og:description","content":"Start with sales data, then build an agent that investigates changes, verifies its results, and delivers findings with charts."}],["$","meta","10",{"property":"og:url","content":"https://ava.antv.vision/blog/mini-data-agent/"}],["$","meta","11",{"property":"og:type","content":"article"}],["$","meta","12",{"property":"article:published_time","content":"2026-11-05T00:00:00+08:00"}],["$","meta","13",{"name":"twitter:card","content":"summary"}],["$","meta","14",{"name":"twitter:title","content":"Build a Mini Data Agent with AVA — AVA Blog"}],["$","meta","15",{"name":"twitter:description","content":"Start with sales data, then build an agent that investigates changes, verifies its results, and delivers findings with charts."}],["$","link","16",{"rel":"icon","href":"https://mdn.alipayobjects.com/huamei_qa8qxu/afts/img/A*FBLnQIAzx6cAAAAAQDAAAAgAemJ7AQ/original"}],["$","$L22","17",{}]]}]}],null]}],null]}],"p":"$@23","v":null,"s":"$f"}},"a":"$@24","u":"$@25","b":"30Fr082M8rzn7y5S4zVqd"}
+50:I[675049,["$a"],"OutletBoundary"]
+19:["$","div",null,{"className":"blog-reading","children":[["$","div",null,{"className":"blog-body","children":[["$","article",null,{"className":"docs-prose","children":[["$","p",null,{"children":"Start with a small, concrete task: give an agent some sales data, ask which products account for a drop in sales, and have it produce a short report with a chart."}],"\n",["$","p",null,{"children":"To do that well, the agent needs to compare the overall change, break it down by product, and reconcile the totals. When something is unclear, it needs to run follow-up queries based on what it finds."}],"\n",["$","p",null,{"children":[["$","$L15",null,{"href":"https://ava.antv.vision","children":"AVA"}]," is an open-source data analysis and visualization framework for JavaScript applications and AI agents. ",["$","strong",null,{"children":"AVA executes the data operations; the agent uses the results to decide what to do next."}]]}],"\n",["$","p",null,{"children":["In this tutorial, we'll use AVA and the AI SDK to build a Mini Data Agent with ",["$","strong",null,{"children":"53 lines of core code"}],"."]}],"\n",["$","h2",null,{"id":"prepare-the-data","children":["$","a",null,{"href":"#prepare-the-data","className":"docs-heading-link","children":"Prepare the data"}]}],"\n",["$","p",null,{"children":["Start with this ",["$","$L15",null,{"href":"https://github.com/antvis/AVA/blob/ai/__tests__/datasets/sales.csv","children":"sales order dataset"}],", which contains 240 orders and 12 fields. Here are the order date, product, and sales amount for the first three orders:"]}],"\n",["$","div",null,{"className":"docs-table","children":["$","table",null,{"children":[["$","thead",null,{"children":["$","tr",null,{"children":[["$","th",null,{"children":"order_date"}],["$","th",null,{"children":"product"}],["$","th",null,{"style":{"textAlign":"right"},"children":"sales (after discounts)"}]]}]}],["$","tbody",null,{"children":[["$","tr",null,{"children":[["$","td",null,{"children":"2025-01-01"}],["$","td",null,{"children":"Monitor"}],["$","td",null,{"style":{"textAlign":"right"},"children":"224.10"}]]}],["$","tr",null,{"children":[["$","td",null,{"children":"2025-01-02"}],["$","td",null,{"children":"Office Chair"}],["$","td",null,{"style":{"textAlign":"right"},"children":"680.20"}]]}],["$","tr",null,{"children":[["$","td",null,{"children":"2025-01-04"}],["$","td",null,{"children":"Monitor"}],["$","td",null,{"style":{"textAlign":"right"},"children":"2,191.20"}]]}]]}]]}]}],"\n",["$","p",null,{"children":[["$","code",null,{"children":"YOUR_DATA"}]," is the array of objects parsed from the full CSV, with ",["$","code",null,{"children":"sales"}]," stored as a number."]}],"\n",["$","h2",null,{"id":"define-the-business-semantics","children":["$","a",null,{"href":"#define-the-business-semantics","className":"docs-heading-link","children":"Define the business semantics"}]}],"\n",["$","p",null,{"children":"Next, tell the agent how to interpret the data: use sales amounts after discounts, assign each order to a month by its order date, and compare the increase or decrease in sales for each product."}],"\n",["$","p",null,{"children":"AVA uses this semantic configuration when generating queries. It reduces guesswork about what a metric means and keeps follow-up questions consistent with the same business definitions."}],"\n",["$","figure",null,{"data-rehype-pretty-code-figure":"","children":["$","div",null,{"className":"docs-code-block","children":[["$","div",null,{"className":"docs-code-toolbar","children":[["$","span",null,{"children":"yaml"}],["$","$L17",null,{}]]}],["$","pre",null,{"tabIndex":"0","data-language":"yaml","data-theme":"github-light","children":["$","code",null,{"data-language":"yaml","data-theme":"github-light","style":{"display":"grid"},"children":[["$","span",null,{"data-line":"","children":[["$","span",null,{"style":{"color":"#22863A"},"children":"models"}],["$","span",null,{"style":{"color":"#24292E"},"children":":"}]]}],"\n",["$","span",null,{"data-line":"","children":[["$","span",null,{"style":{"color":"#24292E"},"children":"  - "}],["$","span",null,{"style":{"color":"#22863A"},"children":"name"}],["$","span",null,{"style":{"color":"#24292E"},"children":": "}],["$","span",null,{"style":{"color":"#032F62"},"children":"data"}]]}],"\n",["$","span",null,{"data-line":"","children":[["$","span",null,{"style":{"color":"#22863A"},"children":"    tableReference"}],["$","span",null,{"style":{"color":"#24292E"},"children":":"}]]}],"\n","$L26","\n","$L27","\n","$L28","\n","$L29","\n","$L2a","\n","$L2b","\n","$L2c","\n","$L2d","\n","$L2e","\n","$L2f","\n","$L30","\n","$L31","\n","$L32","\n","$L33","\n","$L34","\n","$L35","\n","$L36","\n","$L37","\n","$L38","\n","$L39","\n","$L3a","\n","$L3b","\n","$L3c"]}]}]]}]}],"\n","$L3d","\n","$L3e","\n","$L3f","\n","$L40","\n","$L41","\n","$L42","\n","$L43","\n","$L44","\n","$L45","\n","$L46","\n","$L47","\n","$L48","\n","$L49","\n","$L4a","\n","$L4b","\n","$L4c","\n","$L4d"]}],"$L4e"]}],"$L4f"]}]
+1a:["$","script","script-0",{"src":"/_next/static/chunks/3-eovbpkgd131.js","async":true}]
+1b:["$","$L50",null,{"children":["$","$21",null,{"name":"Next.MetadataOutlet","children":"$@51"}]}]
+25:true
+84:I[754170,["$4","$5","$6","$7","$14"],"default"]
+:HL["/blog/images/sales-change.png","image"]
+f:300
+26:["$","span",null,{"data-line":"","children":[["$","span",null,{"style":{"color":"#22863A"},"children":"      table"}],["$","span",null,{"style":{"color":"#24292E"},"children":": "}],["$","span",null,{"style":{"color":"#032F62"},"children":"data"}]]}]
+27:["$","span",null,{"data-line":"","children":[["$","span",null,{"style":{"color":"#22863A"},"children":"    properties"}],["$","span",null,{"style":{"color":"#24292E"},"children":":"}]]}]
+28:["$","span",null,{"data-line":"","children":[["$","span",null,{"style":{"color":"#22863A"},"children":"      description"}],["$","span",null,{"style":{"color":"#24292E"},"children":": "}],["$","span",null,{"style":{"color":"#032F62"},"children":"Each row represents one order."}]]}]
+29:["$","span",null,{"data-line":"","children":[["$","span",null,{"style":{"color":"#22863A"},"children":"cubes"}],["$","span",null,{"style":{"color":"#24292E"},"children":":"}]]}]
+2a:["$","span",null,{"data-line":"","children":[["$","span",null,{"style":{"color":"#24292E"},"children":"  - "}],["$","span",null,{"style":{"color":"#22863A"},"children":"name"}],["$","span",null,{"style":{"color":"#24292E"},"children":": "}],["$","span",null,{"style":{"color":"#032F62"},"children":"sales"}]]}]
+2b:["$","span",null,{"data-line":"","children":[["$","span",null,{"style":{"color":"#22863A"},"children":"    baseObject"}],["$","span",null,{"style":{"color":"#24292E"},"children":": "}],["$","span",null,{"style":{"color":"#032F62"},"children":"data"}]]}]
+2c:["$","span",null,{"data-line":"","children":[["$","span",null,{"style":{"color":"#22863A"},"children":"    measures"}],["$","span",null,{"style":{"color":"#24292E"},"children":":"}]]}]
+2d:["$","span",null,{"data-line":"","children":[["$","span",null,{"style":{"color":"#24292E"},"children":"      - "}],["$","span",null,{"style":{"color":"#22863A"},"children":"name"}],["$","span",null,{"style":{"color":"#24292E"},"children":": "}],["$","span",null,{"style":{"color":"#032F62"},"children":"total_sales"}]]}]
+2e:["$","span",null,{"data-line":"","children":[["$","span",null,{"style":{"color":"#22863A"},"children":"        expression"}],["$","span",null,{"style":{"color":"#24292E"},"children":": "}],["$","span",null,{"style":{"color":"#032F62"},"children":"CAST(SUM(sales) AS DOUBLE)"}]]}]
+2f:["$","span",null,{"data-line":"","children":[["$","span",null,{"style":{"color":"#22863A"},"children":"        type"}],["$","span",null,{"style":{"color":"#24292E"},"children":": "}],["$","span",null,{"style":{"color":"#032F62"},"children":"DOUBLE"}]]}]
+30:["$","span",null,{"data-line":"","children":[["$","span",null,{"style":{"color":"#22863A"},"children":"        description"}],["$","span",null,{"style":{"color":"#24292E"},"children":": "}],["$","span",null,{"style":{"color":"#032F62"},"children":"Sales after discounts, calculated by summing sales."}]]}]
+31:["$","span",null,{"data-line":"","children":[["$","span",null,{"style":{"color":"#22863A"},"children":"    dimensions"}],["$","span",null,{"style":{"color":"#24292E"},"children":":"}]]}]
+32:["$","span",null,{"data-line":"","children":[["$","span",null,{"style":{"color":"#24292E"},"children":"      - "}],["$","span",null,{"style":{"color":"#22863A"},"children":"name"}],["$","span",null,{"style":{"color":"#24292E"},"children":": "}],["$","span",null,{"style":{"color":"#032F62"},"children":"product"}]]}]
+33:["$","span",null,{"data-line":"","children":[["$","span",null,{"style":{"color":"#22863A"},"children":"        expression"}],["$","span",null,{"style":{"color":"#24292E"},"children":": "}],["$","span",null,{"style":{"color":"#032F62"},"children":"product"}]]}]
+34:["$","span",null,{"data-line":"","children":[["$","span",null,{"style":{"color":"#22863A"},"children":"        type"}],["$","span",null,{"style":{"color":"#24292E"},"children":": "}],["$","span",null,{"style":{"color":"#032F62"},"children":"VARCHAR"}]]}]
+35:["$","span",null,{"data-line":"","children":[["$","span",null,{"style":{"color":"#22863A"},"children":"    timeDimensions"}],["$","span",null,{"style":{"color":"#24292E"},"children":":"}]]}]
+36:["$","span",null,{"data-line":"","children":[["$","span",null,{"style":{"color":"#24292E"},"children":"      - "}],["$","span",null,{"style":{"color":"#22863A"},"children":"name"}],["$","span",null,{"style":{"color":"#24292E"},"children":": "}],["$","span",null,{"style":{"color":"#032F62"},"children":"order_date"}]]}]
+37:["$","span",null,{"data-line":"","children":[["$","span",null,{"style":{"color":"#22863A"},"children":"        expression"}],["$","span",null,{"style":{"color":"#24292E"},"children":": "}],["$","span",null,{"style":{"color":"#032F62"},"children":"CAST(order_date AS DATE)"}]]}]
+38:["$","span",null,{"data-line":"","children":[["$","span",null,{"style":{"color":"#22863A"},"children":"        type"}],["$","span",null,{"style":{"color":"#24292E"},"children":": "}],["$","span",null,{"style":{"color":"#032F62"},"children":"DATE"}]]}]
+39:["$","span",null,{"data-line":"","children":[["$","span",null,{"style":{"color":"#22863A"},"children":"    properties"}],["$","span",null,{"style":{"color":"#24292E"},"children":":"}]]}]
+3a:["$","span",null,{"data-line":"","children":[["$","span",null,{"style":{"color":"#22863A"},"children":"      description"}],["$","span",null,{"style":{"color":"#24292E"},"children":": "}],["$","span",null,{"style":{"color":"#D73A49"},"children":"|"}]]}]
+3b:["$","span",null,{"data-line":"","children":["$","span",null,{"style":{"color":"#032F62"},"children":"        Compare both periods using the same set of products. Change is current-period sales minus prior-period sales; negative values indicate a decline."}]}]
+3c:["$","span",null,{"data-line":"","children":["$","span",null,{"style":{"color":"#032F62"},"children":"        Change rate is change divided by prior-period sales. Return null when prior-period sales are zero, indicating that the rate is not applicable."}]}]
+3d:["$","p",null,{"children":[["$","code",null,{"children":"YOUR_SEMANTIC"}]," is the object parsed from this YAML. See ",["$","$L15",null,{"href":"https://ava.antv.vision/documentation/data/semantic/","children":"Business semantics"}]," for details on the fields."]}]
+3e:["$","h2",null,{"id":"build-the-data-agent","children":["$","a",null,{"href":"#build-the-data-agent","className":"docs-heading-link","children":"Build the data agent"}]}]
+3f:["$","p",null,{"children":["With the data and definitions in place, give the agent two tools: ",["$","code",null,{"children":"analyze"}]," queries and computes the data, while ",["$","code",null,{"children":"visualize"}]," takes a visualization request and data to generate a chart. ",["$","code",null,{"children":"ToolLoopAgent"}]," passes each tool result back to the model, which decides whether to continue the analysis, which results to send to ",["$","code",null,{"children":"visualize"}],", or when to deliver its conclusions."]}]
+40:["$","p",null,{"children":["The example requires ",["$","strong",null,{"children":"Node.js 22.13.0 or later"}],". Install these dependencies:"]}]
+41:["$","figure",null,{"data-rehype-pretty-code-figure":"","children":["$","div",null,{"className":"docs-code-block","children":[["$","div",null,{"className":"docs-code-toolbar","children":[["$","span",null,{"children":"bash"}],["$","$L17",null,{}]]}],["$","pre",null,{"tabIndex":"0","data-language":"bash","data-theme":"github-light","children":["$","code",null,{"data-language":"bash","data-theme":"github-light","style":{"display":"grid"},"children":["$","span",null,{"data-line":"","children":[["$","span",null,{"style":{"color":"#6F42C1"},"children":"npm"}],["$","span",null,{"style":{"color":"#032F62"},"children":" install"}],["$","span",null,{"style":{"color":"#032F62"},"children":" @antv/ava@4.0.0"}],["$","span",null,{"style":{"color":"#032F62"},"children":" ai@7.0.112"}],["$","span",null,{"style":{"color":"#032F62"},"children":" zod@4.6.7"}]]}]}]}]]}]}]
+42:["$","p",null,{"children":[["$","code",null,{"children":"YOUR_MODEL"}]," is a configured model instance that supports tool calling. Pass it in along with your data and semantic definitions, and the agent can use AVA to analyze the data:"]}]
+43:["$","figure",null,{"data-rehype-pretty-code-figure":"","children":["$","div",null,{"className":"docs-code-block","children":[["$","div",null,{"className":"docs-code-toolbar","children":[["$","span",null,{"children":"javascript"}],["$","$L17",null,{}]]}],["$","pre",null,{"tabIndex":"0","data-language":"javascript","data-theme":"github-light","children":["$","code",null,{"data-language":"javascript","data-theme":"github-light","style":{"display":"grid"},"children":[["$","span",null,{"data-line":"","children":[["$","span",null,{"style":{"color":"#D73A49"},"children":"import"}],["$","span",null,{"style":{"color":"#24292E"},"children":" { AVA } "}],["$","span",null,{"style":{"color":"#D73A49"},"children":"from"}],["$","span",null,{"style":{"color":"#032F62"},"children":" '@antv/ava'"}],["$","span",null,{"style":{"color":"#24292E"},"children":";"}]]}],"\n",["$","span",null,{"data-line":"","children":[["$","span",null,{"style":{"color":"#D73A49"},"children":"import"}],["$","span",null,{"style":{"color":"#24292E"},"children":" { ToolLoopAgent, isStepCount, tool } "}],["$","span",null,{"style":{"color":"#D73A49"},"children":"from"}],["$","span",null,{"style":{"color":"#032F62"},"children":" 'ai'"}],["$","span",null,{"style":{"color":"#24292E"},"children":";"}]]}],"\n",["$","span",null,{"data-line":"","children":[["$","span",null,{"style":{"color":"#D73A49"},"children":"import"}],["$","span",null,{"style":{"color":"#24292E"},"children":" { z } "}],["$","span",null,{"style":{"color":"#D73A49"},"children":"from"}],["$","span",null,{"style":{"color":"#032F62"},"children":" 'zod'"}],["$","span",null,{"style":{"color":"#24292E"},"children":";"}]]}],"\n",["$","span",null,{"data-line":"","children":" "}],"\n",["$","span",null,{"data-line":"","children":[["$","span",null,{"style":{"color":"#D73A49"},"children":"async"}],["$","span",null,{"style":{"color":"#D73A49"},"children":" function"}],["$","span",null,{"style":{"color":"#6F42C1"},"children":" createDataAgent"}],["$","span",null,{"style":{"color":"#24292E"},"children":"({ "}],["$","span",null,{"style":{"color":"#E36209"},"children":"model"}],["$","span",null,{"style":{"color":"#24292E"},"children":", "}],["$","span",null,{"style":{"color":"#E36209"},"children":"data"}],["$","span",null,{"style":{"color":"#24292E"},"children":", "}],["$","span",null,{"style":{"color":"#E36209"},"children":"semantic"}],["$","span",null,{"style":{"color":"#24292E"},"children":" }) {"}]]}],"\n",["$","span",null,{"data-line":"","children":[["$","span",null,{"style":{"color":"#D73A49"},"children":"  const"}],["$","span",null,{"style":{"color":"#005CC5"},"children":" ava"}],["$","span",null,{"style":{"color":"#D73A49"},"children":" ="}],["$","span",null,{"style":{"color":"#D73A49"},"children":" new"}],["$","span",null,{"style":{"color":"#6F42C1"},"children":" AVA"}],["$","span",null,{"style":{"color":"#24292E"},"children":"({ llm: { model } });"}]]}],"\n",["$","span",null,{"data-line":"","children":[["$","span",null,{"style":{"color":"#D73A49"},"children":"  await"}],["$","span",null,{"style":{"color":"#24292E"},"children":" ava."}],["$","span",null,{"style":{"color":"#6F42C1"},"children":"source"}],["$","span",null,{"style":{"color":"#24292E"},"children":"({ type: "}],["$","span",null,{"style":{"color":"#032F62"},"children":"'json'"}],["$","span",null,{"style":{"color":"#24292E"},"children":", options: { data } });"}]]}],"\n",["$","span",null,{"data-line":"","children":[["$","span",null,{"style":{"color":"#D73A49"},"children":"  await"}],["$","span",null,{"style":{"color":"#24292E"},"children":" ava."}],["$","span",null,{"style":{"color":"#6F42C1"},"children":"semantic"}],["$","span",null,{"style":{"color":"#24292E"},"children":"("}],["$","span",null,{"style":{"color":"#005CC5"},"children":"undefined"}],["$","span",null,{"style":{"color":"#24292E"},"children":", () "}],["$","span",null,{"style":{"color":"#D73A49"},"children":"=>"}],["$","span",null,{"style":{"color":"#24292E"},"children":" semantic);"}]]}],"\n",["$","span",null,{"data-line":"","children":" "}],"\n",["$","span",null,{"data-line":"","children":[["$","span",null,{"style":{"color":"#D73A49"},"children":"  const"}],["$","span",null,{"style":{"color":"#005CC5"},"children":" messages"}],["$","span",null,{"style":{"color":"#D73A49"},"children":" ="}],["$","span",null,{"style":{"color":"#24292E"},"children":" [];"}]]}],"\n",["$","span",null,{"data-line":"","children":[["$","span",null,{"style":{"color":"#D73A49"},"children":"  let"}],["$","span",null,{"style":{"color":"#24292E"},"children":" analysis;"}]]}],"\n",["$","span",null,{"data-line":"","children":[["$","span",null,{"style":{"color":"#D73A49"},"children":"  let"}],["$","span",null,{"style":{"color":"#24292E"},"children":" chart;"}]]}],"\n",["$","span",null,{"data-line":"","children":" "}],"\n",["$","span",null,{"data-line":"","children":[["$","span",null,{"style":{"color":"#D73A49"},"children":"  const"}],["$","span",null,{"style":{"color":"#005CC5"},"children":" agent"}],["$","span",null,{"style":{"color":"#D73A49"},"children":" ="}],["$","span",null,{"style":{"color":"#D73A49"},"children":" new"}],["$","span",null,{"style":{"color":"#6F42C1"},"children":" ToolLoopAgent"}],["$","span",null,{"style":{"color":"#24292E"},"children":"({"}]]}],"\n",["$","span",null,{"data-line":"","children":["$","span",null,{"style":{"color":"#24292E"},"children":"    model,"}]}],"\n","$L52","\n","$L53","\n","$L54","\n","$L55","\n","$L56","\n","$L57","\n","$L58","\n","$L59","\n","$L5a","\n","$L5b","\n","$L5c","\n","$L5d","\n","$L5e","\n","$L5f","\n","$L60","\n","$L61","\n","$L62","\n","$L63","\n","$L64","\n","$L65","\n","$L66","\n","$L67","\n","$L68","\n","$L69","\n","$L6a","\n","$L6b","\n","$L6c","\n","$L6d","\n","$L6e","\n","$L6f","\n","$L70","\n","$L71","\n","$L72","\n","$L73","\n","$L74","\n","$L75","\n","$L76","\n","$L77"]}]}]]}]}]
+44:["$","p",null,{"children":["The agent keeps the conversation and analysis history so you can ask follow-up questions. When it needs a chart, it selects the relevant rows and columns from the analysis results and passes them to ",["$","code",null,{"children":"visualize"}]," through the ",["$","code",null,{"children":"data"}]," parameter. It is not limited to the most recent analysis result. Now give it the task we started with:"]}]
+45:["$","figure",null,{"data-rehype-pretty-code-figure":"","children":["$","div",null,{"className":"docs-code-block","children":[["$","div",null,{"className":"docs-code-toolbar","children":[["$","span",null,{"children":"javascript"}],["$","$L17",null,{}]]}],["$","pre",null,{"tabIndex":"0","data-language":"javascript","data-theme":"github-light","children":["$","code",null,{"data-language":"javascript","data-theme":"github-light","style":{"display":"grid"},"children":[["$","span",null,{"data-line":"","children":[["$","span",null,{"style":{"color":"#D73A49"},"children":"import"}],["$","span",null,{"style":{"color":"#24292E"},"children":" { writeFile } "}],["$","span",null,{"style":{"color":"#D73A49"},"children":"from"}],["$","span",null,{"style":{"color":"#032F62"},"children":" 'node:fs/promises'"}],["$","span",null,{"style":{"color":"#24292E"},"children":";"}]]}],"\n",["$","span",null,{"data-line":"","children":" "}],"\n",["$","span",null,{"data-line":"","children":[["$","span",null,{"style":{"color":"#D73A49"},"children":"const"}],["$","span",null,{"style":{"color":"#005CC5"},"children":" assistant"}],["$","span",null,{"style":{"color":"#D73A49"},"children":" ="}],["$","span",null,{"style":{"color":"#D73A49"},"children":" await"}],["$","span",null,{"style":{"color":"#6F42C1"},"children":" createDataAgent"}],["$","span",null,{"style":{"color":"#24292E"},"children":"({"}]]}],"\n",["$","span",null,{"data-line":"","children":[["$","span",null,{"style":{"color":"#24292E"},"children":"  model: "}],["$","span",null,{"style":{"color":"#005CC5"},"children":"YOUR_MODEL"}],["$","span",null,{"style":{"color":"#24292E"},"children":","}]]}],"\n",["$","span",null,{"data-line":"","children":[["$","span",null,{"style":{"color":"#24292E"},"children":"  data: "}],["$","span",null,{"style":{"color":"#005CC5"},"children":"YOUR_DATA"}],["$","span",null,{"style":{"color":"#24292E"},"children":","}]]}],"\n",["$","span",null,{"data-line":"","children":[["$","span",null,{"style":{"color":"#24292E"},"children":"  semantic: "}],["$","span",null,{"style":{"color":"#005CC5"},"children":"YOUR_SEMANTIC"}],["$","span",null,{"style":{"color":"#24292E"},"children":","}]]}],"\n",["$","span",null,{"data-line":"","children":["$","span",null,{"style":{"color":"#24292E"},"children":"});"}]}],"\n",["$","span",null,{"data-line":"","children":" "}],"\n",["$","span",null,{"data-line":"","children":[["$","span",null,{"style":{"color":"#D73A49"},"children":"try"}],["$","span",null,{"style":{"color":"#24292E"},"children":" {"}]]}],"\n",["$","span",null,{"data-line":"","children":[["$","span",null,{"style":{"color":"#D73A49"},"children":"  const"}],["$","span",null,{"style":{"color":"#005CC5"},"children":" task"}],["$","span",null,{"style":{"color":"#D73A49"},"children":" ="}],["$","span",null,{"style":{"color":"#032F62"},"children":" `Analyze the decline in sales from January to February 2025. List sales for each product in both months and the change,"}]]}],"\n",["$","span",null,{"data-line":"","children":[["$","span",null,{"style":{"color":"#032F62"},"children":"sort by the size of the decline, reconcile the totals, and show the changes in a bar chart.`"}],["$","span",null,{"style":{"color":"#24292E"},"children":";"}]]}],"\n",["$","span",null,{"data-line":"","children":[["$","span",null,{"style":{"color":"#D73A49"},"children":"  const"}],["$","span",null,{"style":{"color":"#005CC5"},"children":" answer"}],["$","span",null,{"style":{"color":"#D73A49"},"children":" ="}],["$","span",null,{"style":{"color":"#D73A49"},"children":" await"}],["$","span",null,{"style":{"color":"#24292E"},"children":" assistant."}],["$","span",null,{"style":{"color":"#6F42C1"},"children":"ask"}],["$","span",null,{"style":{"color":"#24292E"},"children":"(task);"}]]}],"\n",["$","span",null,{"data-line":"","children":[["$","span",null,{"style":{"color":"#24292E"},"children":"  console."}],["$","span",null,{"style":{"color":"#6F42C1"},"children":"log"}],["$","span",null,{"style":{"color":"#24292E"},"children":"(answer.text);"}]]}],"\n",["$","span",null,{"data-line":"","children":[["$","span",null,{"style":{"color":"#24292E"},"children":"  console."}],["$","span",null,{"style":{"color":"#6F42C1"},"children":"table"}],["$","span",null,{"style":{"color":"#24292E"},"children":"(answer.analysis?.data);"}]]}],"\n",["$","span",null,{"data-line":"","children":[["$","span",null,{"style":{"color":"#24292E"},"children":"  console."}],["$","span",null,{"style":{"color":"#6F42C1"},"children":"log"}],["$","span",null,{"style":{"color":"#24292E"},"children":"(answer.analysis?.sql);"}]]}],"\n",["$","span",null,{"data-line":"","children":[["$","span",null,{"style":{"color":"#D73A49"},"children":"  if"}],["$","span",null,{"style":{"color":"#24292E"},"children":" (answer.chart) "}],["$","span",null,{"style":{"color":"#D73A49"},"children":"await"}],["$","span",null,{"style":{"color":"#6F42C1"},"children":" writeFile"}],["$","span",null,{"style":{"color":"#24292E"},"children":"("}],["$","span",null,{"style":{"color":"#032F62"},"children":"'chart.html'"}],["$","span",null,{"style":{"color":"#24292E"},"children":", answer.chart.html);"}]]}],"\n",["$","span",null,{"data-line":"","children":" "}],"\n",["$","span",null,{"data-line":"","children":["$L78","$L79","$L7a","$L7b","$L7c","$L7d","$L7e","$L7f","$L80"]}],"\n","$L81","\n","$L82","\n","$L83"]}]}]]}]}]
+46:["$","h2",null,{"id":"review-the-results","children":["$","a",null,{"href":"#review-the-results","className":"docs-heading-link","children":"Review the results"}]}]
+47:["$","p",null,{"children":["For this task, the agent can first use ",["$","code",null,{"children":"analyze"}]," to compare the monthly totals, then break the decline down by product. It checks that the product-level changes add up to the overall change, uses ",["$","code",null,{"children":"visualize"}]," to draw a chart, and summarizes the findings. If the totals do not reconcile, it needs to query the data again and investigate."]}]
+48:["$","p",null,{"children":["Aggregating this dataset gives total sales of ",["$","strong",null,{"children":"38,897.18"}]," in January and ",["$","strong",null,{"children":"21,804.11"}]," in February, a decline of ",["$","strong",null,{"children":"43.94%"}],". The changes by product are:"]}]
+49:["$","div",null,{"className":"docs-table","children":["$","table",null,{"children":[["$","thead",null,{"children":["$","tr",null,{"children":[["$","th",null,{"children":"Product"}],["$","th",null,{"style":{"textAlign":"right"},"children":"January sales"}],["$","th",null,{"style":{"textAlign":"right"},"children":"February sales"}],["$","th",null,{"style":{"textAlign":"right"},"children":"Change (February − January)"}]]}]}],["$","tbody",null,{"children":[["$","tr",null,{"children":[["$","td",null,{"children":"Laptop"}],["$","td",null,{"style":{"textAlign":"right"},"children":"19,688.10"}],["$","td",null,{"style":{"textAlign":"right"},"children":"3,596.00"}],["$","td",null,{"style":{"textAlign":"right"},"children":"−16,092.10"}]]}],["$","tr",null,{"children":[["$","td",null,{"children":"Standing Desk"}],["$","td",null,{"style":{"textAlign":"right"},"children":"9,655.80"}],["$","td",null,{"style":{"textAlign":"right"},"children":"5,546.10"}],["$","td",null,{"style":{"textAlign":"right"},"children":"−4,109.70"}]]}],["$","tr",null,{"children":[["$","td",null,{"children":"Monitor"}],["$","td",null,{"style":{"textAlign":"right"},"children":"6,536.25"}],["$","td",null,{"style":{"textAlign":"right"},"children":"4,731.00"}],["$","td",null,{"style":{"textAlign":"right"},"children":"−1,805.25"}]]}],["$","tr",null,{"children":[["$","td",null,{"children":"Pen Set"}],["$","td",null,{"style":{"textAlign":"right"},"children":"232.20"}],["$","td",null,{"style":{"textAlign":"right"},"children":"127.71"}],["$","td",null,{"style":{"textAlign":"right"},"children":"−104.49"}]]}],["$","tr",null,{"children":[["$","td",null,{"children":"Bookshelf"}],["$","td",null,{"style":{"textAlign":"right"},"children":"1,225.50"}],["$","td",null,{"style":{"textAlign":"right"},"children":"1,251.30"}],["$","td",null,{"style":{"textAlign":"right"},"children":"+25.80"}]]}],["$","tr",null,{"children":[["$","td",null,{"children":"Copy Paper"}],["$","td",null,{"style":{"textAlign":"right"},"children":"59.19"}],["$","td",null,{"style":{"textAlign":"right"},"children":"137.06"}],["$","td",null,{"style":{"textAlign":"right"},"children":"+77.87"}]]}],["$","tr",null,{"children":[["$","td",null,{"children":"Notebook"}],["$","td",null,{"style":{"textAlign":"right"},"children":"31.50"}],["$","td",null,{"style":{"textAlign":"right"},"children":"137.03"}],["$","td",null,{"style":{"textAlign":"right"},"children":"+105.53"}]]}],["$","tr",null,{"children":[["$","td",null,{"children":"Keyboard"}],["$","td",null,{"style":{"textAlign":"right"},"children":"215.64"}],["$","td",null,{"style":{"textAlign":"right"},"children":"1,015.31"}],["$","td",null,{"style":{"textAlign":"right"},"children":"+799.67"}]]}],["$","tr",null,{"children":[["$","td",null,{"children":"Office Chair"}],["$","td",null,{"style":{"textAlign":"right"},"children":"1,253.00"}],["$","td",null,{"style":{"textAlign":"right"},"children":"5,262.60"}],["$","td",null,{"style":{"textAlign":"right"},"children":"+4,009.60"}]]}],["$","tr",null,{"children":[["$","td",null,{"children":["$","strong",null,{"children":"Total"}]}],["$","td",null,{"style":{"textAlign":"right"},"children":["$","strong",null,{"children":"38,897.18"}]}],["$","td",null,{"style":{"textAlign":"right"},"children":["$","strong",null,{"children":"21,804.11"}]}],["$","td",null,{"style":{"textAlign":"right"},"children":["$","strong",null,{"children":"−17,093.07"}]}]]}]]}]]}]}]
+4a:["$","p",null,{"children":["The product-level changes sum to ",["$","strong",null,{"children":"−17,093.07"}],", matching the overall change. The chart makes the main contributors clear: ",["$","strong",null,{"children":"Laptop accounts for most of the decline, while growth in Office Chair sales offsets part of it."}]]}]
+4b:["$","p",null,{"children":["$","img",null,{"src":"/blog/images/sales-change.png","alt":"Sales changes by product from January to February 2025: Laptop has the largest decline, while Office Chair has the largest increase."}]}]
+4c:["$","p",null,{"children":["You might then ask, “Did Laptop sales fall because a promotion ended?” The available data does not include promotion dates or which products were covered, so the agent cannot confirm that explanation. ",["$","strong",null,{"children":"Identifying where sales declined is one step; explaining the business cause requires further evidence."}]]}]
+4d:["$","p",null,{"children":"To use this agent in your own business, replace the sample data and semantic definitions with yours, then give it a new analysis task."}]
+4e:["$","footer",null,{"className":"blog-article-footer","children":[["$","$L15",null,{"href":"/blog/","children":["← ","All articles"]}],["$","a",null,{"href":"https://github.com/antvis/AVA/blob/ai/site/content/blog/en/mini-data-agent.mdx","children":["Edit this article on GitHub"," ↗"]}]]}]
+4f:["$","$L84","mini-data-agent",{}]
+51:null
+f:C
+52:["$","span",null,{"data-line":"","children":[["$","span",null,{"style":{"color":"#24292E"},"children":"    instructions: "}],["$","span",null,{"style":{"color":"#032F62"},"children":"`Analyze the user's task step by step, using conversation history to make each query self-contained."}]]}]
+53:["$","span",null,{"data-line":"","children":["$","span",null,{"style":{"color":"#032F62"},"children":"    Use analyze to compute and verify data."}]}]
+54:["$","span",null,{"data-line":"","children":["$","span",null,{"style":{"color":"#032F62"},"children":"    For visualize, select relevant rows and fields from analyze results; never invent or change values."}]}]
+55:["$","span",null,{"data-line":"","children":[["$","span",null,{"style":{"color":"#032F62"},"children":"    Base conclusions on tool results and state what data is missing when evidence is insufficient.`"}],["$","span",null,{"style":{"color":"#24292E"},"children":","}]]}]
+56:["$","span",null,{"data-line":"","children":[["$","span",null,{"style":{"color":"#24292E"},"children":"    stopWhen: "}],["$","span",null,{"style":{"color":"#6F42C1"},"children":"isStepCount"}],["$","span",null,{"style":{"color":"#24292E"},"children":"("}],["$","span",null,{"style":{"color":"#005CC5"},"children":"8"}],["$","span",null,{"style":{"color":"#24292E"},"children":"),"}]]}]
+57:["$","span",null,{"data-line":"","children":[["$","span",null,{"style":{"color":"#24292E"},"children":"    providerOptions: { openai: { parallelToolCalls: "}],["$","span",null,{"style":{"color":"#005CC5"},"children":"false"}],["$","span",null,{"style":{"color":"#24292E"},"children":" } },"}]]}]
+58:["$","span",null,{"data-line":"","children":["$","span",null,{"style":{"color":"#24292E"},"children":"    tools: {"}]}]
+59:["$","span",null,{"data-line":"","children":[["$","span",null,{"style":{"color":"#24292E"},"children":"      analyze: "}],["$","span",null,{"style":{"color":"#6F42C1"},"children":"tool"}],["$","span",null,{"style":{"color":"#24292E"},"children":"({"}]]}]
+5a:["$","span",null,{"data-line":"","children":[["$","span",null,{"style":{"color":"#24292E"},"children":"        description: "}],["$","span",null,{"style":{"color":"#032F62"},"children":"'Query and analyze data using a self-contained question.'"}],["$","span",null,{"style":{"color":"#24292E"},"children":","}]]}]
+5b:["$","span",null,{"data-line":"","children":[["$","span",null,{"style":{"color":"#24292E"},"children":"        inputSchema: z."}],["$","span",null,{"style":{"color":"#6F42C1"},"children":"object"}],["$","span",null,{"style":{"color":"#24292E"},"children":"({ query: z."}],["$","span",null,{"style":{"color":"#6F42C1"},"children":"string"}],["$","span",null,{"style":{"color":"#24292E"},"children":"() }),"}]]}]
+5c:["$","span",null,{"data-line":"","children":[["$","span",null,{"style":{"color":"#6F42C1"},"children":"        execute"}],["$","span",null,{"style":{"color":"#24292E"},"children":": "}],["$","span",null,{"style":{"color":"#D73A49"},"children":"async"}],["$","span",null,{"style":{"color":"#24292E"},"children":" ({ "}],["$","span",null,{"style":{"color":"#E36209"},"children":"query"}],["$","span",null,{"style":{"color":"#24292E"},"children":" }) "}],["$","span",null,{"style":{"color":"#D73A49"},"children":"=>"}],["$","span",null,{"style":{"color":"#24292E"},"children":" {"}]]}]
+5d:["$","span",null,{"data-line":"","children":[["$","span",null,{"style":{"color":"#24292E"},"children":"          analysis "}],["$","span",null,{"style":{"color":"#D73A49"},"children":"="}],["$","span",null,{"style":{"color":"#24292E"},"children":" chart "}],["$","span",null,{"style":{"color":"#D73A49"},"children":"="}],["$","span",null,{"style":{"color":"#005CC5"},"children":" undefined"}],["$","span",null,{"style":{"color":"#24292E"},"children":";"}]]}]
+5e:["$","span",null,{"data-line":"","children":[["$","span",null,{"style":{"color":"#24292E"},"children":"          analysis "}],["$","span",null,{"style":{"color":"#D73A49"},"children":"="}],["$","span",null,{"style":{"color":"#D73A49"},"children":" await"}],["$","span",null,{"style":{"color":"#24292E"},"children":" ava."}],["$","span",null,{"style":{"color":"#6F42C1"},"children":"analyze"}],["$","span",null,{"style":{"color":"#24292E"},"children":"(query);"}]]}]
+5f:["$","span",null,{"data-line":"","children":[["$","span",null,{"style":{"color":"#D73A49"},"children":"          return"}],["$","span",null,{"style":{"color":"#24292E"},"children":" analysis;"}]]}]
+60:["$","span",null,{"data-line":"","children":["$","span",null,{"style":{"color":"#24292E"},"children":"        },"}]}]
+61:["$","span",null,{"data-line":"","children":["$","span",null,{"style":{"color":"#24292E"},"children":"      }),"}]}]
+62:["$","span",null,{"data-line":"","children":[["$","span",null,{"style":{"color":"#24292E"},"children":"      visualize: "}],["$","span",null,{"style":{"color":"#6F42C1"},"children":"tool"}],["$","span",null,{"style":{"color":"#24292E"},"children":"({"}]]}]
+63:["$","span",null,{"data-line":"","children":[["$","span",null,{"style":{"color":"#24292E"},"children":"        description: "}],["$","span",null,{"style":{"color":"#032F62"},"children":"'Generate a chart from the visualization request and data returned by analyze.'"}],["$","span",null,{"style":{"color":"#24292E"},"children":","}]]}]
+64:["$","span",null,{"data-line":"","children":[["$","span",null,{"style":{"color":"#24292E"},"children":"        inputSchema: z."}],["$","span",null,{"style":{"color":"#6F42C1"},"children":"object"}],["$","span",null,{"style":{"color":"#24292E"},"children":"({ query: z."}],["$","span",null,{"style":{"color":"#6F42C1"},"children":"string"}],["$","span",null,{"style":{"color":"#24292E"},"children":"(), data: z."}],["$","span",null,{"style":{"color":"#6F42C1"},"children":"array"}],["$","span",null,{"style":{"color":"#24292E"},"children":"(z."}],["$","span",null,{"style":{"color":"#6F42C1"},"children":"record"}],["$","span",null,{"style":{"color":"#24292E"},"children":"(z."}],["$","span",null,{"style":{"color":"#6F42C1"},"children":"string"}],["$","span",null,{"style":{"color":"#24292E"},"children":"(), z."}],["$","span",null,{"style":{"color":"#6F42C1"},"children":"unknown"}],["$","span",null,{"style":{"color":"#24292E"},"children":"())) }),"}]]}]
+65:["$","span",null,{"data-line":"","children":[["$","span",null,{"style":{"color":"#6F42C1"},"children":"        execute"}],["$","span",null,{"style":{"color":"#24292E"},"children":": "}],["$","span",null,{"style":{"color":"#D73A49"},"children":"async"}],["$","span",null,{"style":{"color":"#24292E"},"children":" ({ "}],["$","span",null,{"style":{"color":"#E36209"},"children":"query"}],["$","span",null,{"style":{"color":"#24292E"},"children":", "}],["$","span",null,{"style":{"color":"#E36209"},"children":"data"}],["$","span",null,{"style":{"color":"#24292E"},"children":" }) "}],["$","span",null,{"style":{"color":"#D73A49"},"children":"=>"}],["$","span",null,{"style":{"color":"#24292E"},"children":" {"}]]}]
+66:["$","span",null,{"data-line":"","children":[["$","span",null,{"style":{"color":"#24292E"},"children":"          chart "}],["$","span",null,{"style":{"color":"#D73A49"},"children":"="}],["$","span",null,{"style":{"color":"#D73A49"},"children":" await"}],["$","span",null,{"style":{"color":"#24292E"},"children":" ava."}],["$","span",null,{"style":{"color":"#6F42C1"},"children":"visualize"}],["$","span",null,{"style":{"color":"#24292E"},"children":"({ query, data });"}]]}]
+67:["$","span",null,{"data-line":"","children":[["$","span",null,{"style":{"color":"#D73A49"},"children":"          return"}],["$","span",null,{"style":{"color":"#24292E"},"children":" { chartType: chart?.chartType };"}]]}]
+68:["$","span",null,{"data-line":"","children":["$","span",null,{"style":{"color":"#24292E"},"children":"        },"}]}]
+69:["$","span",null,{"data-line":"","children":["$","span",null,{"style":{"color":"#24292E"},"children":"      }),"}]}]
+6a:["$","span",null,{"data-line":"","children":["$","span",null,{"style":{"color":"#24292E"},"children":"    },"}]}]
+6b:["$","span",null,{"data-line":"","children":["$","span",null,{"style":{"color":"#24292E"},"children":"  });"}]}]
+6c:["$","span",null,{"data-line":"","children":" "}]
+6d:["$","span",null,{"data-line":"","children":[["$","span",null,{"style":{"color":"#D73A49"},"children":"  return"}],["$","span",null,{"style":{"color":"#24292E"},"children":" {"}]]}]
+6e:["$","span",null,{"data-line":"","children":[["$","span",null,{"style":{"color":"#D73A49"},"children":"    async"}],["$","span",null,{"style":{"color":"#6F42C1"},"children":" ask"}],["$","span",null,{"style":{"color":"#24292E"},"children":"("}],["$","span",null,{"style":{"color":"#E36209"},"children":"question"}],["$","span",null,{"style":{"color":"#24292E"},"children":") {"}]]}]
+6f:["$","span",null,{"data-line":"","children":[["$","span",null,{"style":{"color":"#24292E"},"children":"      chart "}],["$","span",null,{"style":{"color":"#D73A49"},"children":"="}],["$","span",null,{"style":{"color":"#005CC5"},"children":" undefined"}],["$","span",null,{"style":{"color":"#24292E"},"children":";"}]]}]
+70:["$","span",null,{"data-line":"","children":[["$","span",null,{"style":{"color":"#24292E"},"children":"      messages."}],["$","span",null,{"style":{"color":"#6F42C1"},"children":"push"}],["$","span",null,{"style":{"color":"#24292E"},"children":"({ role: "}],["$","span",null,{"style":{"color":"#032F62"},"children":"'user'"}],["$","span",null,{"style":{"color":"#24292E"},"children":", content: question });"}]]}]
+71:["$","span",null,{"data-line":"","children":[["$","span",null,{"style":{"color":"#D73A49"},"children":"      const"}],["$","span",null,{"style":{"color":"#005CC5"},"children":" result"}],["$","span",null,{"style":{"color":"#D73A49"},"children":" ="}],["$","span",null,{"style":{"color":"#D73A49"},"children":" await"}],["$","span",null,{"style":{"color":"#24292E"},"children":" agent."}],["$","span",null,{"style":{"color":"#6F42C1"},"children":"generate"}],["$","span",null,{"style":{"color":"#24292E"},"children":"({ messages });"}]]}]
+72:["$","span",null,{"data-line":"","children":[["$","span",null,{"style":{"color":"#24292E"},"children":"      messages."}],["$","span",null,{"style":{"color":"#6F42C1"},"children":"push"}],["$","span",null,{"style":{"color":"#24292E"},"children":"("}],["$","span",null,{"style":{"color":"#D73A49"},"children":"..."}],["$","span",null,{"style":{"color":"#24292E"},"children":"result.responseMessages);"}]]}]
+73:["$","span",null,{"data-line":"","children":[["$","span",null,{"style":{"color":"#D73A49"},"children":"      return"}],["$","span",null,{"style":{"color":"#24292E"},"children":" { text: result.text, analysis, chart };"}]]}]
+74:["$","span",null,{"data-line":"","children":["$","span",null,{"style":{"color":"#24292E"},"children":"    },"}]}]
+75:["$","span",null,{"data-line":"","children":[["$","span",null,{"style":{"color":"#6F42C1"},"children":"    dispose"}],["$","span",null,{"style":{"color":"#24292E"},"children":": () "}],["$","span",null,{"style":{"color":"#D73A49"},"children":"=>"}],["$","span",null,{"style":{"color":"#24292E"},"children":" ava."}],["$","span",null,{"style":{"color":"#6F42C1"},"children":"dispose"}],["$","span",null,{"style":{"color":"#24292E"},"children":"(),"}]]}]
+76:["$","span",null,{"data-line":"","children":["$","span",null,{"style":{"color":"#24292E"},"children":"  };"}]}]
+77:["$","span",null,{"data-line":"","children":["$","span",null,{"style":{"color":"#24292E"},"children":"}"}]}]
+78:["$","span",null,{"style":{"color":"#24292E"},"children":"  console."}]
+79:["$","span",null,{"style":{"color":"#6F42C1"},"children":"log"}]
+7a:["$","span",null,{"style":{"color":"#24292E"},"children":"(("}]
+7b:["$","span",null,{"style":{"color":"#D73A49"},"children":"await"}]
+7c:["$","span",null,{"style":{"color":"#24292E"},"children":" assistant."}]
+7d:["$","span",null,{"style":{"color":"#6F42C1"},"children":"ask"}]
+7e:["$","span",null,{"style":{"color":"#24292E"},"children":"("}]
+7f:["$","span",null,{"style":{"color":"#032F62"},"children":"'Did Laptop sales fall because a promotion ended?'"}]
+80:["$","span",null,{"style":{"color":"#24292E"},"children":")).text);"}]
+81:["$","span",null,{"data-line":"","children":[["$","span",null,{"style":{"color":"#24292E"},"children":"} "}],["$","span",null,{"style":{"color":"#D73A49"},"children":"finally"}],["$","span",null,{"style":{"color":"#24292E"},"children":" {"}]]}]
+82:["$","span",null,{"data-line":"","children":[["$","span",null,{"style":{"color":"#D73A49"},"children":"  await"}],["$","span",null,{"style":{"color":"#24292E"},"children":" assistant."}],["$","span",null,{"style":{"color":"#6F42C1"},"children":"dispose"}],["$","span",null,{"style":{"color":"#24292E"},"children":"();"}]]}]
+83:["$","span",null,{"data-line":"","children":["$","span",null,{"style":{"color":"#24292E"},"children":"}"}]}]
+24:0
+11:"$undefined"
+e:"$undefined"
+23:"$undefined"
+1c:"$undefined"

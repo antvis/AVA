@@ -1,0 +1,11 @@
+:HL["/_next/static/chunks/22melh_3giz_v.css","style"]
+:HL["/_next/static/chunks/42oz27_hfzr17.css","style"]
+:HL["/_next/static/chunks/0o-6jlwxqyz8v.css","style"]
+:HL["/_next/static/chunks/0cqj6wx2o_ng4.css","style"]
+:HL["/blog/images/sales-change.png","image"]
+5:[["children",{"s":"__PAGE__","h":160}]]
+4:[["children",{"s":{"n":"slug","t":"d","k":"mini-data-agent","s":[]},"h":65632,"c":"$Q5"}]]
+3:[["children",{"s":"blog","h":131168,"c":"$Q4"}]]
+2:[["children",{"s":"zh","h":131136,"c":"$Q3"}]]
+1:[["children",{"s":"(zh)","h":131120,"c":"$Q2"}]]
+0:{"b":"30Fr082M8rzn7y5S4zVqd","t":{"t":{"s":"","h":131152,"c":"$Q1"}}}
