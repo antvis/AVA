@@ -1,3 +1,4 @@
+// TENCENT_DOCS_FILE_ID must be a native OpenAPI fileID, not a sharing-link encoded ID.
 import assert from 'node:assert/strict';
 
 import { AVA } from '../../lib/index.js';
@@ -25,7 +26,17 @@ const questions = [
 ];
 
 try {
-  await ava.source({ type: 'tencent-smartsheet', options: { fileId, sheetId, pageSize: 2 } });
+  await ava.source({
+    type: 'tencent-smartsheet',
+    options: {
+      fileId,
+      sheetId,
+      clientId: process.env.TENCENT_DOCS_CLIENT_ID,
+      openId: process.env.TENCENT_DOCS_OPEN_ID,
+      accessToken: process.env.TENCENT_DOCS_ACCESS_TOKEN,
+      pageSize: 2,
+    },
+  });
   const region = await ava.query(`SELECT "单选" AS region, count(*) AS orders, sum("数字") AS sales
     FROM data WHERE "文本" LIKE 'AVA-DEMO-%' GROUP BY "单选" ORDER BY sales DESC`);
   assert.deepEqual(region.data, [
