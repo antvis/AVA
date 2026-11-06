@@ -9,6 +9,7 @@
 | Unstructured text | DuckDB by default; JavaScript is optional; requires a model | SQL / JavaScript |
 | MySQL, PostgreSQL, SQLite, MongoDB | DuckDB only | DuckDB SQL |
 | ClickHouse | ClickHouse only, selected automatically | ClickHouse SQL |
+| Snowflake | Snowflake is selected automatically | Snowflake SQL |
 | SQL Server | SQL Server only, selected automatically | T-SQL |
 | Supabase | Supabase only, selected automatically | PostgreSQL SQL |
 | Feishu Bitable | DuckDB only | DuckDB SQL |
@@ -75,6 +76,7 @@ Use the configuration format and load command shown above:
 | `sqlite` | `{"path":"/data/sales.sqlite"}` |
 | `mongodb` | `{"connection":"mongodb://localhost:27017","database":"sales"}` |
 | `clickhouse` | `{"url":"http://localhost:8123","database":"sales","username":"reader","password":"REPLACE"}` |
+| `snowflake` | `{"account":"xy12345.us-east-1","database":"sales","schema":"public","username":"reader","password":"REPLACE"}` |
 | `sqlserver` | `{"host":"localhost","database":"sales","user":"reader","password":"REPLACE","schema":"dbo"}` |
 | `supabase` | `{"accessToken":"REPLACE","projectRef":"REPLACE"}` |
 
@@ -85,6 +87,7 @@ Use authorized read-only credentials. Restrict temporary credential files to the
 - MongoDB accepts `connection` or structured `host`, `port`, `user`, `password`, `authSource`, `srv`, `tls`, `ssl`, `tlsCAFile`, and `tlsAllowInvalidCertificates`; `database` is required in either form. `connection` takes precedence; keep its database consistent with `database`.
 - ClickHouse connects over HTTP(S) and requires version 23.10 or later.
 - ClickHouse requires `database` and either `host` or `url`. It accepts `port`, `user`/`username`, `password`, `access_token`, `pathname`, `application`, `session_id`, `role` (string or string array), `http_headers`, `request_timeout`, and other ClickHouse client options.
+- Snowflake connects lazily via `snowflake-sdk`; with `adapter: 'mock'` and `tables` it runs in memory (no account or network).
 - SQL Server uses SQL authentication on port `1433` by default. Grant `SELECT` and `VIEW DEFINITION` permissions. TLS certificate verification is enabled by default.
 - Supabase uses the Management API; `accessToken` must be a token authorized for that API.
 
