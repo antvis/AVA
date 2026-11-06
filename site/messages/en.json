@@ -1,7 +1,6 @@
 {
   "Banner": {
-    "nEW": "NEW",
-    "introducingAVA40": "Introducing AVA 4.0",
+    "latestPost": "LATEST BLOG",
     "anOpenSourceFrameworkForAIAgents": "An open-source framework for AI agents to explore, analyze, and visualize data",
     "tryAVA": "Try AVA",
     "trySive": "Try Sive",
@@ -36,7 +35,8 @@
     "g6": "G6",
     "l7": "L7",
     "gptVis": "GPT-Vis",
-    "infographic": "Infographic"
+    "infographic": "Infographic",
+    "blog": "Blog"
   },
   "Header": {
     "aVAChartGenieLogo": "AVA ChartGenie Logo",
@@ -46,7 +46,8 @@
     "ecosystem": "Ecosystem",
     "docs": "Docs",
     "documentation": "Documentation",
-    "aI": "AI"
+    "aI": "AI",
+    "blog": "Blog"
   },
   "Home": {
     "campaignTitle": "AVA ecosystem showcase — join us at SEE Conf 2026!",
@@ -449,7 +450,8 @@
     "next": "Next →",
     "footer": "AVA · An AntV project",
     "github": "Open source on GitHub ↗",
-    "copy": "Copy Markdown"
+    "copy": "Copy Markdown",
+    "blog": "Blog"
   },
   "Demo": {
     "question": "Is our revenue growth profitable? Compare monthly revenue and gross margin for Jan–Sep 2026, flag the weakest month, and show the trend in a dual-axis chart.",
@@ -557,5 +559,15 @@
       "title": "Architecture & source map",
       "description": "Understand how the public API connects to the implementation."
     }
+  },
+  "Blog": {
+    "description": "Practical guides, engineering ideas, and updates from AVA.",
+    "latest": "Latest articles",
+    "back": "All articles",
+    "skip": "Skip to content",
+    "copy": "Copy Markdown",
+    "readChinese": "Read in Chinese",
+    "pending": "Content coming soon.",
+    "edit": "Edit this article on GitHub"
   }
 }

@@ -3,6 +3,7 @@
 import { useLocale, useTranslations } from 'use-intl';
 import { localeHref, type Locale } from '../lib/i18n';
 import LanguageSwitch from './LanguageSwitch';
+import styles from './Header.module.css';
 
 import React, { useEffect, useState } from 'react';
 import Link from './LocaleLink';
@@ -14,6 +15,7 @@ const Header: React.FC = () => {
   const pathname = usePathname().replace(/^\/zh(?=\/|$)/, '') || '/';
   const isAIPage = pathname === '/ai' || pathname === '/ai/';
   const isHomePage = pathname === '/';
+  const useHomeHeader = isHomePage || pathname === '/blog' || pathname.startsWith('/blog/');
   const [scrolled, setScrolled] = useState(false);
 
   useEffect(() => {
@@ -26,7 +28,7 @@ const Header: React.FC = () => {
   const EASE = 'transition-all duration-500 ease-[cubic-bezier(0.22,1,0.36,1)]';
 
   return (
-    <header data-scrolled={scrolled} className="sticky top-0 z-50 w-full">
+    <header data-scrolled={scrolled} className={`sticky top-0 z-50 w-full ${useHomeHeader ? styles.site : ''}`}>
       <div
         className={`grid grid-cols-[1fr_auto_1fr] origin-top items-center ${EASE}
           ${
@@ -66,7 +68,7 @@ const Header: React.FC = () => {
               {item.label}
             </a>
           ))}
-          {isHomePage && (
+          {useHomeHeader && (
             <Link
               href="/documentation/"
               className="rounded-lg px-3 py-2 text-sm text-gray-600 transition-colors hover:text-[color:var(--color-primary)] hover:bg-[color:var(--color-primary)]/10"
@@ -74,11 +76,21 @@ const Header: React.FC = () => {
               {t('docs')}
             </Link>
           )}
+          <Link
+            href="/blog/"
+            aria-current={pathname.startsWith('/blog') ? 'page' : undefined}
+            className="rounded-lg px-3 py-2 text-sm text-gray-600 transition-colors hover:text-[color:var(--color-primary)] hover:bg-[color:var(--color-primary)]/10"
+          >
+            {t('blog')}
+          </Link>
         </nav>
 
         {/* 右侧操作区 */}
         <div className="col-start-3 flex items-center gap-1 sm:gap-2 justify-self-end">
           <div className="flex items-center">
+            <Link href="/blog/" className="px-2 py-2 text-sm text-gray-600 lg:hidden">
+              {t('blog')}
+            </Link>
             <LanguageSwitch />
             <a
               href="https://github.com/antvis/AVA"
@@ -86,7 +98,7 @@ const Header: React.FC = () => {
               rel="noopener noreferrer"
               aria-label="AVA on GitHub"
               title="GitHub"
-              className="inline-flex size-9 shrink-0 items-center justify-center rounded-lg text-zinc-600 transition-colors hover:bg-zinc-100 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cyan-600"
+              className="hidden size-9 shrink-0 items-center justify-center rounded-lg text-zinc-600 transition-colors hover:bg-zinc-100 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cyan-600 sm:inline-flex"
             >
               <svg width="19" height="19" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
                 <path
@@ -100,7 +112,7 @@ const Header: React.FC = () => {
           <Link
             href="/documentation/"
             className={`${
-              isHomePage ? 'hidden' : 'hidden lg:flex'
+              useHomeHeader ? 'hidden' : 'hidden lg:flex'
             } items-center gap-2 px-2 py-2 text-sm rounded-lg transition-colors ${
               pathname === '/documentation' || pathname.startsWith('/documentation/')
                 ? 'text-[color:var(--color-primary)] bg-[color:var(--color-primary)]/10'

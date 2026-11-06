@@ -1,4 +1,5 @@
 import { getTranslator, type Locale } from '../lib/i18n';
+import { getLatestPost, postHref } from '../lib/blog';
 import Link from './LocaleLink';
 import Header from './Header';
 import Banner from './Banner';
@@ -44,6 +45,7 @@ function Arrow() {
 
 export default function Home({ locale }: { locale: Locale }) {
   const t = getTranslator(locale, 'Home');
+  const latestPost = getLatestPost();
 
   return (
     <PageShell>
@@ -54,7 +56,7 @@ export default function Home({ locale }: { locale: Locale }) {
         <Header />
         <div className={styles.hero}>
           <div className={styles.heroIntro}>
-            <Banner />
+            <Banner latestPost={latestPost && { title: latestPost.title[locale], href: postHref(latestPost, locale) }} />
           </div>
           <div className={styles.demo} aria-label={t('interactiveDemoUsingSampleData')}>
             <DemoChat />

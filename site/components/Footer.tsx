@@ -27,6 +27,7 @@ const NAV: { title: string; links: { label: string; href: string; external?: boo
     title: 'developers',
     links: [
       { label: 'documentation', href: '/documentation/' },
+      { label: 'blog', href: '/blog/' },
       { label: 'ai', href: '/ai' },
       { label: 'sdk', href: '/documentation/quickstart/' },
       { label: 'cli', href: '/documentation/reference/cli/' },
