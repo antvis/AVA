@@ -77,6 +77,7 @@ export type EngineConfig =
   | { type: 'supabase' }
   | { type: 'clickhouse' }
   | { type: 'sqlserver' }
+  | { type: 'bigquery' }
   | { type: string; [option: string]: unknown };
 
 /**
@@ -103,6 +104,7 @@ export interface AnalysisConfig extends ExecutionOptions {
  * - file types: `csv-file`, `json-file`, `parquet` (read through DuckDB's readers)
  * - database types: `mysql`, `postgresql`, `sqlite`, `mongodb` (ATTACH through DuckDB's extension)
  * - direct query types: `clickhouse` (schema discovered and SQL executed through ClickHouse's HTTP API)
+ * - direct query types: `bigquery` (schema discovered and read-only GoogleSQL executed through the BigQuery client)
  * - cloud types: `supabase` (schema discovered and SQL executed through the Supabase Management API — data never leaves the SaaS; handled by SaasDBEngine)
  */
 export type SourceType =
@@ -121,7 +123,8 @@ export type SourceType =
   | 'clickhouse'
   | 'feishu-bitable'
   | 'tencent-smartsheet'
-  | 'sqlserver';
+  | 'sqlserver'
+  | 'bigquery';
 
 /**
  * DuckDB read_csv reader options.
@@ -535,11 +538,73 @@ export interface SQLServerSourceOptions {
 }
 
 /**
+ * A column descriptor used to seed the built-in in-memory mock adapter.
+ * Mirrors the dataset/table rows the engine expects so mock-driven tests and
+ * demos exercise the same contracts as a live BigQuery project.
+ */
+export interface MockTableColumn {
+  name: string;
+  type: string;
+  notNull?: boolean;
+}
+
+/** A table seeded into the built-in in-memory mock adapter. */
+export interface MockTableSeed {
+  name: string;
+  /** Optional BigQuery dataset; defaults to the source's `dataset`. */
+  schema?: string;
+  columns: MockTableColumn[];
+  /** Overrides the primary key discovered from seeded table metadata.
+   * BigQuery has no enforced primary keys; this maps to a `primaryKey` hint
+   * so tooling that expects one can still find it. */
+  primaryKey?: string[] | string;
+  /** Rows matching `columns`. */
+  rows?: Record<string, unknown>[];
+}
+
+/**
+ * Options for Google BigQuery data sources (handled by a BigQueryEngine that
+ * executes read-only GoogleSQL remotely through a query connector, analogous to
+ * ClickHouseEngine). Queries are served by an adapter; `@google-cloud/bigquery`
+ * is the production driver and the built-in `mock` adapter reproduces the same
+ * contract without a live GCP project.
+ */
+export interface BigQuerySourceOptions {
+  /** GCP project ID to discover and query (required). */
+  projectId: string;
+  /** BigQuery dataset name to discover tables from (required for schema()). */
+  dataset?: string;
+  /**
+   * Service account JSON (object or already-serialized string). Enables
+   * application-default credentials when omitted.
+   */
+  credentials?: Record<string, unknown> | string;
+  /** OAuth2 client email for application-default credentials (alternative to `credentials`). */
+  clientEmail?: string;
+  privateKey?: string;
+  /** Location hint for jobs/queries (e.g. `US`, `EU`); empty lets BigQuery infer. */
+  location?: string;
+  /** Maximum bytes billed per query job; undefined lets BigQuery use the project default. */
+  maxBytesBilled?: number;
+  /** BigQuery connection/query timeout in milliseconds (default 60000). */
+  timeoutMs?: number;
+  defaultRowLimit?: number;
+  /**
+   * Connector adapter: `'@google-cloud/bigquery'` (default, production driver)
+   * or `'mock'` (in-memory, no network).
+   */
+  adapter?: '@google-cloud/bigquery' | 'mock';
+  /** Tables seeded into the built-in mock adapter when `adapter: 'mock'`. */
+  tables?: MockTableSeed[];
+}
+
+/**
  * External data source configuration for loadSource.
  * - inline types (csv/json/text): data is materialized into JS memory
  * - file types (csv-file/json-file/parquet): loaded through DuckDB's readers
  * - database types (mysql/postgresql/sqlite/mongodb): ATTACH through DuckDB's extension
  * - direct query types (clickhouse): schema/SQL over ClickHouse's HTTP API
+ * - direct query types (bigquery): schema discovered and read-only GoogleSQL executed through the BigQuery client
  * - cloud types (supabase): schema/SQL over the Management API (SaasDBEngine)
  */
 export type DataSourceConfig =
@@ -558,7 +623,8 @@ export type DataSourceConfig =
   | { type: 'clickhouse'; options: ClickHouseSourceOptions }
   | { type: 'feishu-bitable'; options: FeishuBitableSourceOptions }
   | { type: 'tencent-smartsheet'; options: TencentDocsSourceOptions }
-  | { type: 'sqlserver'; options: SQLServerSourceOptions };
+  | { type: 'sqlserver'; options: SQLServerSourceOptions }
+  | { type: 'bigquery'; options: BigQuerySourceOptions };
 
 /**
  * File formats readable by DuckDB's readers (csv-file maps to csv, json-file to json).

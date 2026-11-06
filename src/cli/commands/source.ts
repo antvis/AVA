@@ -92,8 +92,8 @@ Options:
   -t, --type <type>  Override the type inferred from the file extension.
                     Types: csv-file, json-file, parquet, excel, sqlite.
                     Cannot be used with @file, stdin configs, or Feishu URLs.
-  --engine <type>    duckdb, python, javascript, supabase, clickhouse, or sqlserver.
-                    Default: supabase/clickhouse/sqlserver for those sources, otherwise duckdb.
+  --engine <type>    duckdb, python, javascript, supabase, clickhouse, sqlserver, or bigquery.
+                    Default: supabase/clickhouse/sqlserver/bigquery for those sources, otherwise duckdb.
                     Fixed for the session; source support depends on the engine.
                     feishu-bitable uses duckdb. The loaded view is named data.
   -h, --help         Show help.
@@ -162,4 +162,17 @@ Tencent Docs SmartSheet (Node.js / DuckDB):
   Reads a complete, bounded snapshot into data; _record_id preserves source identity.
   Explicit IDs are required; document sharing URLs are not auto-detected.
   Dataset sessions require macOS/Linux; on Windows use the SDK or WSL.
+
+BigQuery (Node.js / BigQuery API):
+  bigquery.json:
+    {
+      "type": "bigquery",
+      "options": {
+        "projectId": "<project-id>",
+        "dataset": "<dataset>"
+      }
+    }
+  Uses application-default credentials when no credentials field is given,
+  or pass a service-account JSON object/string. For a mock, no credentials or
+  network are needed: set "adapter": "mock" and seed "tables".
 `;

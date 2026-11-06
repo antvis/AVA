@@ -11,6 +11,7 @@
 | ClickHouse | ClickHouse only, selected automatically | ClickHouse SQL |
 | SQL Server | SQL Server only, selected automatically | T-SQL |
 | Supabase | Supabase only, selected automatically | PostgreSQL SQL |
+| Google BigQuery | BigQuery is selected automatically | GoogleSQL (BigQuery SQL) |
 | Feishu Bitable | DuckDB only | DuckDB SQL |
 
 To use Python or JavaScript, add `--engine python` or `--engine javascript` to the `source` command. Python does not connect directly to databases. To post-process database results with pandas, query the database first, then export the complete result as described in [Results and Post-Processing](queries.md#results-and-post-processing).
@@ -76,6 +77,7 @@ Use the configuration format and load command shown above:
 | `mongodb` | `{"connection":"mongodb://localhost:27017","database":"sales"}` |
 | `clickhouse` | `{"url":"http://localhost:8123","database":"sales","username":"reader","password":"REPLACE"}` |
 | `sqlserver` | `{"host":"localhost","database":"sales","user":"reader","password":"REPLACE","schema":"dbo"}` |
+| `bigquery` | `{"projectId":"my-project","dataset":"sales","credentials": { ... }}` |
 | `supabase` | `{"accessToken":"REPLACE","projectRef":"REPLACE"}` |
 
 Use authorized read-only credentials. Restrict temporary credential files to the current user and delete them after loading. Do not put credentials in deliverables or logs.
@@ -106,7 +108,6 @@ When `?table=` is missing, AVA uses the only table of the Bitable and, when ther
 `appId` and `appSecret` are required. They are the internal app credentials used to request a tenant access token, and the app must be added as a collaborator on the table. A `bitable:app:readonly` scope is enough unless the table enables advanced permissions, which require manage rights. Credentials are resolved from the source config first, then `AVA_FEISHU_APP_ID` / `AVA_FEISHU_APP_SECRET`, then `~/.ava/feishu.json`. In a terminal, AVA prompts for the pair, verifies it, and saves it to `~/.ava/feishu.json`.
 
 The app must belong to an account allowed to call the Open Platform. Apps created by signing in to `open.feishu.cn` with a personal account such as a Doubao account are rejected with `Feishu Error 21001` (access denied due to platform policy) when requesting the tenant access token; create the app with a Feishu account bound to a phone number instead.
-
 
 ```json
 {
@@ -174,3 +175,22 @@ Options: `pageSize` 1–100 (default 100 for fields/records), `maxRecords` 1–1
 HTTP status and business `ret` are both checked. Retry only network errors and HTTP 429/500/502/503/504, with valid `Retry-After` up to 30 seconds and the overall deadline. No business error-code retries or MCP quota assumptions. Preserve upstream ret/msg, HTTP status, request IDs and selected network error name/message/code plus one cause level. Do not copy arbitrary response/error objects, stacks or headers. Exact configured credentials are replaced only in selected diagnostic strings; fields over 8 KiB are omitted whole. Non-JSON or incomplete HTTP error bodies are omitted while status/request ID remain available. Redirects are refused.
 
 Incomplete paging, repeated IDs, changed totals/supported metadata and resource overflow fail without partial data. Stop edits during import: it is not a transactionally consistent or continuously synchronized snapshot. Multi-table, discovery, views, field-selection and writes are outside this migration. Model calls are not needed for loading/schema/SQL. See `examples/tencent-docs/README.md` for OAuth/native-ID setup, manually entered synthetic fixtures, two real natural-language sales examples and opt-in live validation.
+
+## Google BigQuery
+
+Use `type: 'bigquery'` through an `@file` or stdin source config:
+
+```json
+{
+  "type": "bigquery",
+  "options": { "projectId": "<project-id>", "dataset": "<dataset>" }
+}
+```
+
+Credentials come from `options.credentials` (service-account JSON object or
+string), `options.clientEmail` + `options.privateKey`, or application-default
+credentials when omitted. BigQuery is selected automatically and runs read-only
+GoogleSQL through the `@google-cloud/bigquery` driver. Without a live GCP
+project, set `"adapter": "mock"` and seed `options.tables` to run the same
+contract in memory. Queries are bounded and any non-SELECT statement is
+rejected before execution.
