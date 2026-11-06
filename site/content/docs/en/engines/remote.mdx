@@ -46,18 +46,18 @@ const ava = new AVA({
 await ava.source({
   type: 'sqlserver',
   options: {
-    host: 'localhost',
-    database: 'analytics',
+    server: 'sql.example.com',
+    database: 'sales',
     user: 'reader',
-    password: process.env.SQLSERVER_PASSWORD!,
+    password: process.env.SQLSERVER_PASSWORD,
   },
 });
 ```
 
-Queries use the Node.js `mssql` driver with read-only T-SQL.
+Serves schema discovery and read-only T-SQL execution through the `tedious` driver, with `ApplicationIntent=ReadOnly` and a local read-only guard on every statement. Without a live server, pass `adapter: 'mock'` (plus `tables`) to run the same contract against an in-memory runner.
 
 ## Shared workflow
 
-All remote engines support `schema()`, `profile()`, `translate()`, `query()`, and `analyze()`. Set the matching source and engine types in the JavaScript API. Release resources with `await ava.dispose()` after use.
+All engines support `schema()`, `profile()`, `translate()`, `query()`, and `analyze()`. Set the matching source and engine types in the JavaScript API. Release resources with `await ava.dispose()` after use.
 
-See [Supabase parameters](/documentation/data/sources/#supabase), [ClickHouse options](/documentation/data/sources/#clickhouse), and [SQL Server parameters](/documentation/data/sources/#sql-server) for complete configuration tables.
+See [Supabase parameters](/documentation/data/sources/#supabase), [ClickHouse options](/documentation/data/sources/#clickhouse), and [SQL Server options](/documentation/data/sources/#sql-server) for complete configuration tables.

@@ -1,4 +1,11 @@
+/**
+ * SQL Server profiling. Each metric compiles to read-only T-SQL that the
+ * engine batches into one aggregate query per table. Numeric results are
+ * trimmed with a bounded float, and `top_values` is packed into a JSON string
+ * (mirroring the ClickHouse engine) that this module parses back.
+ */
 import { column, logicalTypes, table, TOP_VALUES_OPTIONS, resolveMetric } from '../../util/profile';
+import { sqlIdentifier } from '../../util/sql';
 
 import type { MetricField } from '../../util/profile';
 import type { LogicalType, Metric, ParsedProfileOptions, Profile, Schema } from '../../types';
@@ -10,93 +17,139 @@ interface Context {
   metric: ParsedProfileOptions['metrics'][number];
 }
 
-type SQLServerMetric = Metric<(context: Context) => string>;
+type SqlServerMetric = Metric<(context: Context) => string>;
 
 export function logicalType(type: string): LogicalType {
-  const native = type.trim();
+  const base = type.trim().toLowerCase();
   if (
-    /^(?:tinyint|smallint|int|bigint|real|float(?:\(\d+\))?|decimal(?:\(.*\))?|numeric(?:\(.*\))?|money|smallmoney)$/i.test(
-      native
+    /^(tinyint|smallint|int|bigint|decimal(\(.*\))?|numeric(\(.*\))?|money|smallmoney|float(\(.*\))?|real)$/.test(
+      base
     )
   )
     return 'numeric';
-  if (/^(?:n?(?:var)?char(?:\((?:\d+|max)\))?|n?text|uniqueidentifier)$/i.test(native)) return 'string';
-  if (/^bit$/i.test(native)) return 'boolean';
-  if (/^(?:date|smalldatetime|datetime|datetime2(?:\(\d+\))?|datetimeoffset(?:\(\d+\))?)$/i.test(native)) return 'date';
+  if (/^(char(\(.*\))?|varchar(\(.*\))?|nchar(\(.*\))?|nvarchar(\(.*\))?|text|ntext|uniqueidentifier|xml)$/.test(base))
+    return 'string';
+  if (/^bit$/.test(base)) return 'boolean';
+  if (
+    /^(date|datetime|datetime2(\(.*\))?|smalldatetime|datetimeoffset(\(.*\))?|time(\(.*\))?)$/.test(base)
+  )
+    return 'date';
   return 'unknown';
 }
 
-function identifier(name: string): string {
-  return `[${name.replace(/]/g, ']]')}]`;
+/** Epoch-milliseconds expression for a date column, preserving the time component. */
+function epochMs(column: string): string {
+  return `(DATEDIFF_BIG(millisecond, '1970-01-01', ${column}))`;
 }
 
-/** Legacy LOB and spatial types need a comparable representation for DISTINCT. */
-function comparable({ column, field }: Context): string {
-  if (/^(?:text|ntext)$/i.test(field!.type)) return `CONVERT(nvarchar(max), ${column})`;
-  if (/^(?:xml|image|geometry|geography)$/i.test(field!.type)) return `CONVERT(varbinary(max), ${column})`;
-  return column!;
+function numericValue(column: string): string {
+  return `CAST(${column} AS float)`;
 }
 
-function aggregate(fn: string, { column }: Context): string {
-  return `${fn}(CONVERT(float, ${column}))`;
+/**
+ * Legacy `text`/`ntext`/`xml` columns cannot be used directly with
+ * COUNT(DISTINCT ...) or LEN(); converting to nvarchar(max) keeps a single bad
+ * column from breaking the shared metric query for the whole table.
+ */
+function columnExpression(field: MetricField): string {
+  const base = field.type.trim().toLowerCase().replace(/\(.*\)$/, '');
+  if (base === 'text' || base === 'ntext' || base === 'xml') {
+    return `CAST(${sqlIdentifier(field.name)} AS nvarchar(max))`;
+  }
+  return sqlIdentifier(field.name);
 }
 
-function range(fn: string, context: Context): string {
-  return context.field!.logicalType === 'date'
-    ? `DATEDIFF_BIG(millisecond, CONVERT(datetimeoffset, N'1970-01-01T00:00:00+00:00'), ${fn}(${context.column}))`
-    : aggregate(fn, context);
-}
-
-function length(column: string): string {
-  // SC counts surrogate pairs once; the suffix keeps LEN from discarding trailing spaces.
-  return `LEN(CONVERT(nvarchar(max), ${column}) COLLATE Latin1_General_100_CI_AS_SC + N'.') - 1`;
-}
-
-export const BUILTIN_METRICS: SQLServerMetric[] = [
-  { id: 'row_count', enable: table, expression: () => 'COUNT_BIG(*)' },
-  { id: 'null_count', enable: column, expression: ({ column }) => `COUNT_BIG(CASE WHEN ${column} IS NULL THEN 1 END)` },
+export const BUILTIN_METRICS: SqlServerMetric[] = [
+  { id: 'row_count', enable: table, expression: () => 'COUNT(*)' },
+  { id: 'null_count', enable: column, expression: ({ column }) => `COUNT(*) - COUNT(${column!})` },
   {
     id: 'distinct_count',
     enable: logicalTypes('numeric', 'string', 'boolean', 'date'),
-    expression: (context) => `COUNT_BIG(DISTINCT ${comparable(context)})`,
+    expression: ({ column }) => `COUNT(DISTINCT ${column!})`,
   },
   {
     id: 'duplicate_count',
     enable: column,
-    expression: (context) =>
-      `COUNT_BIG(CASE WHEN ${context.column} IS NOT NULL THEN 1 END) - COUNT_BIG(DISTINCT ${comparable(context)})`,
+    expression: ({ column }) => `COUNT(${column!}) - COUNT(DISTINCT ${column!})`,
   },
   {
     id: 'top_values',
     enable: logicalTypes('string', 'boolean'),
     options: TOP_VALUES_OPTIONS,
-    expression: (context) => {
-      const { table, column, metric } = context;
+    expression: ({ table, column, metric }) => {
       const { limit = 3, maxDistinctRatio = 0.5 } = metric;
-      const value = comparable(context);
-      return `CASE WHEN COUNT_BIG(DISTINCT ${value}) > COUNT_BIG(*) * ${maxDistinctRatio}
-        THEN NULL ELSE COALESCE((SELECT TOP (${limit}) ${value} AS [value], COUNT_BIG(*) AS [count]
-          FROM ${table} WHERE ${column} IS NOT NULL
-          GROUP BY ${value} ORDER BY [count] DESC, [value] ASC
-          FOR JSON PATH), N'[]') END`;
+      const value = `CAST(${column!} AS nvarchar(4000))`;
+      return `CASE WHEN COUNT(DISTINCT ${value}) > COUNT(*) * ${maxDistinctRatio}
+        THEN NULL ELSE (
+          SELECT '[' + STRING_AGG(CONCAT('{"value":"', STRING_ESCAPE(CAST(v AS nvarchar(max)), 'json'), '","count":', CAST(n AS nvarchar(20)), '}'), ',') + ']'
+          FROM (
+            SELECT TOP (${limit}) ${value} AS v, COUNT(*) AS n
+            FROM ${table}
+            WHERE ${column!} IS NOT NULL
+            GROUP BY ${value}
+            ORDER BY n DESC, v ASC
+          ) AS ranked
+        ) END`;
     },
   },
-  { id: 'min', enable: logicalTypes('numeric', 'date'), expression: (context) => range('MIN', context) },
-  { id: 'max', enable: logicalTypes('numeric', 'date'), expression: (context) => range('MAX', context) },
-  { id: 'min_length', enable: logicalTypes('string'), expression: ({ column }) => `MIN(${length(column!)})` },
-  { id: 'max_length', enable: logicalTypes('string'), expression: ({ column }) => `MAX(${length(column!)})` },
-  { id: 'mean', enable: logicalTypes('numeric'), expression: (context) => aggregate('AVG', context) },
-  { id: 'sum', enable: logicalTypes('numeric'), expression: (context) => aggregate('SUM', context) },
-  { id: 'stddev', enable: logicalTypes('numeric'), expression: (context) => aggregate('STDEV', context) },
   {
-    id: 'median',
+    id: 'min',
+    enable: logicalTypes('numeric', 'date'),
+    expression: ({ column, field }) =>
+      field!.logicalType === 'date' ? `MIN(${epochMs(column!)})` : `MIN(${numericValue(column!)})`,
+  },
+  {
+    id: 'max',
+    enable: logicalTypes('numeric', 'date'),
+    expression: ({ column, field }) =>
+      field!.logicalType === 'date' ? `MAX(${epochMs(column!)})` : `MAX(${numericValue(column!)})`,
+  },
+  {
+    id: 'min_length',
+    enable: logicalTypes('string'),
+    expression: ({ column }) => `MIN(LEN(${column!}))`,
+  },
+  {
+    id: 'max_length',
+    enable: logicalTypes('string'),
+    expression: ({ column }) => `MAX(LEN(${column!}))`,
+  },
+  {
+    id: 'mean',
     enable: logicalTypes('numeric'),
-    expression: ({ table, column }) =>
-      `(SELECT TOP (1) PERCENTILE_CONT(0.5) WITHIN GROUP (ORDER BY CONVERT(float, ${column})) OVER () FROM ${table})`,
+    expression: ({ column }) => `AVG(${numericValue(column!)})`,
+  },
+  {
+    id: 'sum',
+    enable: logicalTypes('numeric'),
+    expression: ({ column }) => `SUM(${numericValue(column!)})`,
+  },
+  {
+    id: 'stddev',
+    enable: logicalTypes('numeric'),
+    expression: ({ column }) => `STDEV(${numericValue(column!)})`,
   },
 ];
 
-/** Compute requested metrics remotely, batching aggregate expressions per table. */
+/** Parse the JSON string produced by the `top_values` expression. */
+function parseTopValues(raw: unknown): Array<{ value: unknown; count: number }> {
+  if (typeof raw !== 'string') throw new Error('Invalid SQL Server top_values result');
+  let entries: unknown;
+  try {
+    entries = JSON.parse(raw);
+  } catch {
+    throw new Error('Invalid SQL Server top_values result');
+  }
+  if (!Array.isArray(entries)) throw new Error('Invalid SQL Server top_values result');
+  return entries.map((entry) => {
+    if (typeof entry !== 'object' || entry === null) throw new Error('Invalid SQL Server top_values entry');
+    const { value, count } = entry as { value?: unknown; count?: unknown };
+    const n = Number(count);
+    if (!Number.isFinite(n)) throw new Error('Invalid SQL Server top_values entry');
+    return { value, count: n };
+  });
+}
+
 export async function profileTables(
   runQuery: (sql: string) => Promise<Record<string, unknown>[]>,
   schema: Schema,
@@ -104,16 +157,14 @@ export async function profileTables(
 ): Promise<Profile> {
   const metrics = options.metrics.map((metric) => ({ metric, definition: resolveMetric(metric, BUILTIN_METRICS) }));
   const models: Profile['models'] = [];
+
   for (const source of schema.models) {
     const profile: Profile['models'][number] = { name: source.name, metrics: {}, columns: [] };
     models.push(profile);
+
     const pending: { expression: string; id: string; output: Record<string, unknown> }[] = [];
     const reference = source.tableReference;
-    const parts = reference.catalog === undefined ? [] : [identifier(reference.catalog)];
-    if (reference.schema !== undefined) parts.push(identifier(reference.schema));
-    else if (reference.catalog !== undefined) parts.push('');
-    parts.push(identifier(reference.table));
-    const table = parts.join('.');
+    const table = [reference.schema ?? 'dbo', reference.table].map(sqlIdentifier).join('.');
     const add = (output: Record<string, unknown>, field?: MetricField) => {
       for (const { metric, definition } of metrics) {
         if (!definition.enable({ target: field ? 'column' : 'table', field })) continue;
@@ -122,13 +173,14 @@ export async function profileTables(
           output,
           expression: definition.expression({
             table,
-            column: field ? identifier(field.name) : undefined,
+            column: field ? columnExpression(field) : undefined,
             field,
             metric,
           }),
         });
       }
     };
+
     add(profile.metrics);
     profile.columns = source.columns.map((column) => {
       const field = { ...column, logicalType: logicalType(column.type) };
@@ -136,28 +188,165 @@ export async function profileTables(
       add(metrics, field);
       return { name: field.name, properties: { logicalType: field.logicalType }, metrics };
     });
-    // Reserve one of SQL Server's 4096 SELECT columns for the aggregate below,
-    // which guarantees a result row for empty tables and median-only selections.
-    const batchSize = 4095;
-    for (let start = 0; start < pending.length; start += batchSize) {
-      const batch = pending.slice(start, start + batchSize);
-      const [row] = await runQuery(
-        `SELECT COUNT_BIG(*) AS [__ava_count], ${batch
-          .map(({ expression }, i) => `${expression} AS ${identifier(`m${i}`)}`)
-          .join(', ')} FROM ${table}`
-      );
-      if (!row) throw new Error(`Missing profile result for table: ${source.name}`);
-      batch.forEach(({ id, output }, i) => {
-        const raw = row[`m${i}`];
-        delete output[id];
-        if (id === 'top_values') {
-          if (raw != null) output[id] = JSON.parse(raw as string);
-        } else {
-          const value = raw == null ? null : Number(raw);
-          output[id] = value === null || Number.isFinite(value) ? value : null;
-        }
-      });
-    }
+
+    if (!pending.length) continue;
+
+    const [row] = await runQuery(
+      `SELECT ${pending
+        .map(({ expression }, i) => `${expression} AS ${sqlIdentifier(`m${i}`)}`)
+        .join(', ')} FROM ${table}`
+    );
+    if (!row) throw new Error(`Missing profile result for table: ${source.name}`);
+
+    pending.forEach(({ id, output }, i) => {
+      const raw = row[`m${i}`];
+      delete output[id];
+      if (id === 'top_values') {
+        if (raw != null) output[id] = parseTopValues(raw);
+      } else {
+        const value = raw == null ? null : Number(raw);
+        output[id] = value === null || Number.isFinite(value) ? value : null;
+      }
+    });
   }
+
+  return { models };
+}
+
+function valuesFor(rows: Record<string, unknown>[], name: string): unknown[] {
+  return rows.map((row) => {
+    const key = Object.prototype.hasOwnProperty.call(row, name)
+      ? name
+      : Object.keys(row).find((candidate) => candidate.toLowerCase() === name.toLowerCase());
+    return key === undefined ? undefined : row[key];
+  });
+}
+
+function numericValues(values: unknown[]): number[] {
+  return values
+    .filter((value) => value != null)
+    .map(Number)
+    .filter((value) => Number.isFinite(value));
+}
+
+function dateValues(values: unknown[]): number[] {
+  return values
+    .filter((value) => value != null)
+    .map((value) => (value instanceof Date ? value.getTime() : Date.parse(String(value))))
+    .filter((value) => Number.isFinite(value));
+}
+
+/**
+ * Evaluate the same metric contract directly over mock rows. This avoids
+ * pretending that the deliberately small mock SELECT parser supports SQL
+ * Server's DISTINCT/CAST/CASE/arithmetic profiling expressions.
+ */
+export function profileTablesInMemory(
+  rowsFor: (source: Schema['models'][number]) => Record<string, unknown>[],
+  schema: Schema,
+  options: ParsedProfileOptions
+): Profile {
+  const metrics = options.metrics.map((metric) => ({ metric, definition: resolveMetric(metric, BUILTIN_METRICS) }));
+
+  const models = schema.models.map((source): Profile['models'][number] => {
+    const rows = rowsFor(source);
+    const profile: Profile['models'][number] = { name: source.name, metrics: {}, columns: [] };
+
+    const add = (output: Record<string, unknown>, field?: MetricField) => {
+      for (const { metric, definition } of metrics) {
+        if (!definition.enable({ target: field ? 'column' : 'table', field })) continue;
+        const values = field ? valuesFor(rows, field.name) : [];
+        const present = values.filter((value) => value != null);
+        const numbers = numericValues(values);
+        let value: unknown;
+
+        switch (metric.id) {
+          case 'row_count':
+            value = rows.length;
+            break;
+          case 'null_count':
+            value = values.length - present.length;
+            break;
+          case 'distinct_count':
+            value = new Set(present).size;
+            break;
+          case 'duplicate_count':
+            value = present.length - new Set(present).size;
+            break;
+          case 'top_values': {
+            const distinct = new Set(present).size;
+            const ratio = Number(metric.maxDistinctRatio ?? 0.5);
+            if (rows.length === 0 || distinct > rows.length * ratio) break;
+            const counts = new Map<string, number>();
+            for (const entry of present) {
+              const key = String(entry);
+              counts.set(key, (counts.get(key) ?? 0) + 1);
+            }
+            const limit = Number(metric.limit ?? 3);
+            value = [...counts]
+              .map(([entry, count]) => ({ value: entry, count }))
+              .sort((a, b) => b.count - a.count || (a.value < b.value ? -1 : a.value > b.value ? 1 : 0))
+              .slice(0, limit);
+            break;
+          }
+          case 'min':
+          case 'max': {
+            const candidates = field?.logicalType === 'date' ? dateValues(values) : numbers;
+            value = candidates.length
+              ? metric.id === 'min'
+                ? Math.min(...candidates)
+                : Math.max(...candidates)
+              : null;
+            break;
+          }
+          case 'min_length':
+          case 'max_length': {
+            const lengths = present.map((entry) => String(entry).length);
+            value = lengths.length
+              ? metric.id === 'min_length'
+                ? Math.min(...lengths)
+                : Math.max(...lengths)
+              : null;
+            break;
+          }
+          case 'mean':
+            value = numbers.length ? numbers.reduce((sum, entry) => sum + entry, 0) / numbers.length : null;
+            break;
+          case 'sum':
+            value = numbers.length ? numbers.reduce((sum, entry) => sum + entry, 0) : null;
+            break;
+          case 'stddev': {
+            if (numbers.length < 2) {
+              value = null;
+              break;
+            }
+            const mean = numbers.reduce((sum, entry) => sum + entry, 0) / numbers.length;
+            value = Math.sqrt(
+              numbers.reduce((sum, entry) => sum + (entry - mean) ** 2, 0) / (numbers.length - 1)
+            );
+            break;
+          }
+          default:
+            throw new Error(`Unknown in-memory metric: ${metric.id}`);
+        }
+
+        if (value !== undefined) output[metric.id] = value;
+      }
+    };
+
+    add(profile.metrics);
+    profile.columns = source.columns.map((column) => {
+      const field = { ...column, logicalType: logicalType(column.type) };
+      const columnMetrics = {};
+      add(columnMetrics, field);
+      return {
+        name: field.name,
+        properties: { logicalType: field.logicalType },
+        metrics: columnMetrics,
+      };
+    });
+    return profile;
+  });
+
   return { models };
 }

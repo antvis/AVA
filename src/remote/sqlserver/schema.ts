@@ -1,150 +1,128 @@
-import { rowObjects2Schema } from '../../util/schema';
-import { sqlIdentifier, sqlStringLiteral, sqlUnionAll } from '../../util/sql';
-
-import type { CommonTokenStream, ParserRuleContext } from 'antlr4ts';
+/**
+ * SQL Server schema discovery through INFORMATION_SCHEMA catalog views. The
+ * queries are deliberately flat (no JOINs) so they run on both the tedious
+ * adapter and the built-in mock connector; each returns regular rows that the
+ * engine assembles into a Schema.
+ */
 import type { Schema } from '../../types';
 
-function exposedSQL(schema?: string): string {
-  const filter = schema === undefined ? '' : `AND s.name = N${sqlStringLiteral(schema)}`;
-  return `SELECT t.object_id, s.name AS schema_name, t.name AS source_table,
-  t.object_type, QUOTENAME(s.name) + N'.' + QUOTENAME(t.name) AS model_name
-FROM (
-  SELECT object_id, schema_id, name, is_ms_shipped, 'U' AS object_type FROM sys.tables
-  UNION ALL
-  SELECT object_id, schema_id, name, is_ms_shipped, 'V' AS object_type FROM sys.views
-) AS t
-JOIN sys.schemas AS s ON s.schema_id = t.schema_id
-WHERE t.is_ms_shipped = 0
-  ${filter}
-  AND HAS_PERMS_BY_NAME(QUOTENAME(s.name) + N'.' + QUOTENAME(t.name), 'OBJECT', 'SELECT') = 1`;
+interface TableRow {
+  table_schema: string;
+  table_name: string;
 }
 
-const tablesSQL = `SELECT 'table' AS kind, e.model_name AS table_name, e.source_table,
-  (SELECT DB_NAME() AS catalog, e.schema_name AS [schema]
-   FOR JSON PATH, WITHOUT_ARRAY_WRAPPER) AS metadata
-FROM exposed AS e`;
-
-const viewsSQL = `SELECT 'view' AS kind, e.model_name AS table_name, e.source_table,
-  (SELECT m.definition AS sql FOR JSON PATH, WITHOUT_ARRAY_WRAPPER) AS metadata
-FROM exposed AS e
-JOIN sys.sql_modules AS m ON m.object_id = e.object_id
-WHERE e.object_type = 'V'`;
-
-const columnsSQL = `SELECT 'column' AS kind, e.model_name AS table_name, e.source_table,
-  (SELECT c.name AS name, c.column_id AS position,
-    1 - CONVERT(int, c.is_nullable) AS notNull,
-    CASE
-      WHEN ty.name IN ('decimal', 'numeric') THEN CONCAT(ty.name, '(', c.precision, ',', c.scale, ')')
-      WHEN ty.name IN ('datetime2', 'datetimeoffset', 'time') THEN CONCAT(ty.name, '(', c.scale, ')')
-      WHEN ty.name IN ('varchar', 'char', 'nvarchar', 'nchar', 'varbinary', 'binary') THEN
-        CONCAT(ty.name, '(', CASE WHEN c.max_length = -1 THEN 'max'
-          ELSE CONVERT(varchar(10), c.max_length / CASE WHEN ty.name LIKE 'n%' THEN 2 ELSE 1 END) END, ')')
-      ELSE ty.name
-    END AS type
-   FOR JSON PATH, WITHOUT_ARRAY_WRAPPER) AS metadata
-FROM exposed AS e
-JOIN sys.columns AS c ON c.object_id = e.object_id
-JOIN sys.types AS ty ON ty.user_type_id = c.user_type_id`;
-
-const indexesSQL = `SELECT 'index-column' AS kind, e.model_name AS table_name, e.source_table,
-  (SELECT i.name AS name, c.name AS [column], ic.key_ordinal AS position,
-    1 AS [unique], i.is_primary_key AS [primary]
-   FOR JSON PATH, WITHOUT_ARRAY_WRAPPER) AS metadata
-FROM exposed AS e
-JOIN sys.indexes AS i ON i.object_id = e.object_id
-JOIN sys.index_columns AS ic ON ic.object_id = i.object_id AND ic.index_id = i.index_id
-JOIN sys.columns AS c ON c.object_id = ic.object_id AND c.column_id = ic.column_id
-WHERE i.is_unique = 1 AND i.is_disabled = 0 AND i.has_filter = 0
-  AND i.is_hypothetical = 0 AND ic.key_ordinal > 0`;
-
-const foreignKeysSQL = `SELECT 'foreign-key-column' AS kind, e.model_name AS table_name, e.source_table,
-  (SELECT fk.name AS name, c.name AS [column], fkc.constraint_column_id AS position,
-    re.model_name AS referencedTable, rc.name AS referencedColumn
-   FOR JSON PATH, WITHOUT_ARRAY_WRAPPER) AS metadata
-FROM sys.foreign_keys AS fk
-JOIN exposed AS e ON e.object_id = fk.parent_object_id
-JOIN exposed AS re ON re.object_id = fk.referenced_object_id
-JOIN sys.foreign_key_columns AS fkc ON fkc.constraint_object_id = fk.object_id
-JOIN sys.columns AS c ON c.object_id = fkc.parent_object_id AND c.column_id = fkc.parent_column_id
-JOIN sys.columns AS rc ON rc.object_id = fkc.referenced_object_id AND rc.column_id = fkc.referenced_column_id
-WHERE fk.is_disabled = 0 AND fk.is_not_trusted = 0`;
-
-/** Extract a query from SQL Server DDL without treating CREATE/ALTER as executable analysis SQL. */
-async function viewStatement(sql: string): Promise<string | undefined> {
-  try {
-    const { createTSQLParser, CommonToken, CommonTokenStream, ListTokenSource, Token, TSqlParser } =
-      await import('../../query/tsql-parser');
-    const parser = createTSQLParser(sql, () => {
-      throw new Error('Unsupported SQL Server view definition');
-    });
-    const stream = parser.inputStream as CommonTokenStream;
-    stream.fill();
-    let tokens = stream.getTokens();
-    const header = tokens.filter((token) => token.channel === Token.DEFAULT_CHANNEL);
-    const grammar = TSqlParser;
-    // The bundled grammar predates ALTER VIEW and CREATE OR ALTER VIEW. Normalize only DDL tokens.
-    if (header[0]?.type === grammar.ALTER) {
-      const create = CommonToken.fromToken(header[0]);
-      create.type = grammar.CREATE;
-      tokens = tokens.map((token) => (token === header[0] ? create : token));
-    } else if (
-      header[0]?.type === grammar.CREATE &&
-      header[1]?.type === grammar.OR &&
-      header[2]?.type === grammar.ALTER
-    ) {
-      tokens = tokens.filter((token) => token !== header[1] && token !== header[2]);
-    }
-    parser.inputStream = new CommonTokenStream(new ListTokenSource(tokens));
-    const view = parser.create_view();
-    if (parser.currentToken.type !== Token.EOF) return undefined;
-    // CaseChangingStream does not expose token text reliably; preserve the original source slices.
-    const text = (context: ParserRuleContext) =>
-      sql
-        .slice(context.start.startIndex, context.stop!.stopIndex + 1)
-        .trim()
-        .replace(/;$/, '')
-        .trimEnd();
-    const query = view.select_statement_standalone();
-    const aliases = view.column_name_list()?.id();
-    if (!aliases?.length) return text(query);
-    const cte = query.with_expression();
-    return `${cte ? `${text(cte)}\n` : ''}SELECT * FROM (\n${text(
-      query.select_statement()
-    )}\n) AS [__ava_view](${aliases.map(text).join(', ')})`;
-  } catch {
-    // A newer T-SQL construct must not hide a readable view or prevent discovery of other objects.
-    return undefined;
-  }
+interface ColumnRow extends TableRow {
+  name: string;
+  type: string;
+  nullable: boolean | string;
 }
 
-/** Read tables, views, columns and keys through the shared catalog assembler. */
-export async function getSQLServerSchema(
+interface KeyRow extends TableRow {
+  constraint_name: string;
+  name: string;
+  position: number;
+}
+
+interface ConstraintRow extends TableRow {
+  constraint_name: string;
+}
+
+function bool(value: unknown): boolean {
+  return value === true || value === 1 || value === '1' || value === 'YES';
+}
+
+/** Escape a value for a SQL string literal (T-SQL doubles single quotes). */
+function literal(value: string): string {
+  return `'${value.replace(/'/g, "''")}'`;
+}
+
+/** Catalog + schema + table (+ constraint) identity; table names are not unique alone. */
+function identity(row: TableRow, constraint?: string): string {
+  return `${row.table_schema}\u0000${row.table_name}${constraint === undefined ? '' : `\u0000${constraint}`}`;
+}
+
+export async function getSqlServerSchema(
   runQuery: (sql: string) => Promise<Record<string, unknown>[]>,
-  sourceSchema?: string
+  database: string
 ): Promise<Schema> {
-  const rows = await runQuery(
-    `WITH exposed AS (\n${exposedSQL(sourceSchema)}\n)\n${sqlUnionAll([
-      tablesSQL,
-      viewsSQL,
-      columnsSQL,
-      indexesSQL,
-      foreignKeysSQL,
-    ])}`
+  const db = literal(database);
+
+  const tables = (await runQuery(`
+    SELECT t.TABLE_SCHEMA AS table_schema, t.TABLE_NAME AS table_name
+    FROM INFORMATION_SCHEMA.TABLES t
+    WHERE t.TABLE_CATALOG = ${db} AND t.TABLE_TYPE = 'BASE TABLE'
+    ORDER BY t.TABLE_SCHEMA, t.TABLE_NAME
+  `)) as unknown as TableRow[];
+
+  if (tables.length === 0) return { models: [], relationships: [] };
+
+  // A Tedious connection serves one request at a time, so catalog queries are
+  // awaited sequentially instead of being issued concurrently.
+  const columns = (await runQuery(`
+    SELECT
+      c.TABLE_SCHEMA AS table_schema,
+      c.TABLE_NAME AS table_name,
+      c.COLUMN_NAME AS name,
+      c.DATA_TYPE AS type,
+      c.IS_NULLABLE AS nullable
+    FROM INFORMATION_SCHEMA.COLUMNS c
+    WHERE c.TABLE_CATALOG = ${db}
+    ORDER BY c.TABLE_SCHEMA, c.TABLE_NAME, c.ORDINAL_POSITION
+  `)) as unknown as ColumnRow[];
+
+  const keys = (await runQuery(`
+    SELECT
+      k.TABLE_SCHEMA AS table_schema,
+      k.TABLE_NAME AS table_name,
+      k.CONSTRAINT_NAME AS constraint_name,
+      k.COLUMN_NAME AS name,
+      k.ORDINAL_POSITION AS position
+    FROM INFORMATION_SCHEMA.KEY_COLUMN_USAGE k
+    WHERE k.TABLE_CATALOG = ${db}
+    ORDER BY k.TABLE_SCHEMA, k.TABLE_NAME, k.ORDINAL_POSITION
+  `)) as unknown as KeyRow[];
+
+  const primaryConstraints = (await runQuery(`
+    SELECT
+      tc.TABLE_SCHEMA AS table_schema,
+      tc.TABLE_NAME AS table_name,
+      tc.CONSTRAINT_NAME AS constraint_name
+    FROM INFORMATION_SCHEMA.TABLE_CONSTRAINTS tc
+    WHERE tc.TABLE_CATALOG = ${db} AND tc.CONSTRAINT_TYPE = 'PRIMARY KEY'
+  `)) as unknown as ConstraintRow[];
+
+  const primaryKeyNames = new Set(
+    primaryConstraints.map((constraint) => identity(constraint, constraint.constraint_name))
   );
-  for (const row of rows) {
-    if (row.kind !== 'view') continue;
-    const { sql, ...metadata } = typeof row.metadata === 'string' ? JSON.parse(row.metadata) : row.metadata;
-    row.metadata = { ...metadata, statement: typeof sql === 'string' ? await viewStatement(sql) : undefined };
-  }
-  const schema = rowObjects2Schema(rows);
-  for (const model of schema.models) {
-    model.tableReference.table = String(rows.find((row) => row.table_name === model.name)!.source_table);
-  }
-  // The assembler quotes logical names as one identifier; T-SQL needs the schema/table pair.
-  for (const relationship of schema.relationships ?? []) {
-    for (const model of relationship.models) {
-      relationship.condition = relationship.condition.split(`${sqlIdentifier(model)}.`).join(`${model}.`);
-    }
-  }
-  return schema;
+  const keyRows = keys.filter((key) => primaryKeyNames.has(identity(key, key.constraint_name)));
+
+  return {
+    models: tables.map((source) => {
+      const fields = columns
+        .filter((column) => identity(column) === identity(source))
+        .map((column) => ({ name: column.name, type: column.type, notNull: !bool(column.nullable) }));
+
+      const primaryColumns = keyRows
+        .filter((key) => identity(key) === identity(source))
+        .sort((a, b) => Number(a.position) - Number(b.position))
+        .map((key) => key.name);
+      const modelName = `${source.table_schema}.${source.table_name}`;
+
+      return {
+        name: modelName,
+        tableReference: {
+          catalog: database,
+          schema: source.table_schema,
+          table: source.table_name,
+        },
+        columns: fields,
+        ...(primaryColumns.length === 1
+          ? { primaryKey: primaryColumns[0] }
+          : primaryColumns.length > 1
+            ? { primaryKey: primaryColumns as [string, ...string[]] }
+            : {}),
+      };
+    }),
+    relationships: [],
+  };
 }

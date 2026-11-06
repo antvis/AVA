@@ -54,6 +54,11 @@
     <strong>ClickHouse</strong>
     <span>Analytics database</span>
   </a>
+  <a href="#sql-server">
+    <img src="/logos/sql-server.svg" alt="" width="28" height="28" />
+    <strong>SQL Server</strong>
+    <span>Relational database</span>
+  </a>
   <a href="/documentation/engines/custom/">
     <img src="/logos/contribute.svg" alt="" width="28" height="28" />
     <strong>Custom extension</strong>
@@ -648,3 +653,79 @@ Nested under `options.ssh` for MySQL and PostgreSQL.
 | `port`     | `number` | No       | Default: `22`.                                         |
 | `user`     | `string` | Yes      | SSH login user.                                        |
 | `password` | `string` | No       | SSH login password; no password supplied when omitted. |
+
+## SQL Server
+
+Provide a server, database, and optionally a login. Schema discovery and query execution run directly against the database through the `tedious` TDS driver — data is never materialized locally.
+
+```typescript
+const ava = new AVA({
+  llm: { model: 'YOUR_MODEL', apiKey: process.env.OPENAI_API_KEY },
+  engine: { type: 'sqlserver' },
+});
+await ava.source({
+  type: 'sqlserver',
+  options: {
+    server: 'sql.example.com',
+    database: 'sales',
+    user: 'reader',
+    password: process.env.SQLSERVER_PASSWORD,
+  },
+});
+
+const schema = await ava.schema();
+const average = await ava.query('SELECT Region, AVG(CAST(Revenue AS float)) AS avg_revenue FROM orders GROUP BY Region');
+```
+
+### Connection fields
+
+| Field                  | Type      | Required | Meaning / default                                             |
+| ---------------------- | --------- | -------- | ------------------------------------------------------------- |
+| `server`               | `string`  | Yes      | Server hostname or IP.                                        |
+| `database`             | `string`  | Yes      | Database to discover and query.                               |
+| `port`                 | `number`  | No       | Default: `1433`. Mutually exclusive with `instanceName`.      |
+| `user`                 | `string`  | No       | SQL Server login name. Defaults to Windows/Integrated auth.   |
+| `password`             | `string`  | No       | Login password.                                               |
+| `instanceName`         | `string`  | No       | Named instance; overrides `port`.                             |
+| `encrypt`              | `boolean` | No       | Enable TLS. Default: `true`.                                  |
+| `trustServerCertificate` | `boolean` | No     | Skip certificate validation when `encrypt` is set. Default: `false`. |
+| `requestTimeout`       | `number`  | No       | Per-request timeout in ms. Default: `30000`.                  |
+| `connectTimeout`       | `number`  | No       | Connection timeout in ms. Default: `15000`.                   |
+
+### Adapters
+
+`SqlServerSourceOptions.adapter` selects the connector:
+
+- `'tedious'` (default) — production driver. Each statement runs with `ApplicationIntent=ReadOnly` on the configured database, and a local guard rejects anything other than a single read-only SELECT. Real deployments must use a database principal granted only `SELECT`; `ApplicationIntent=ReadOnly` is a routing hint, not a permission boundary.
+- `'mock'` — an in-memory runner seeded from `options.tables`. No network access; schema, `INFORMATION_SCHEMA` catalog views, and a small read-only T-SQL subset (SELECT/TOP/WHERE/GROUP BY/aggregates/ORDER BY) are served against the seeded rows. Use it for demos, CI, and documentation examples without a live SQL Server.
+
+### Mock seed tables
+
+When `adapter: 'mock'`, populate `options.tables` with the tables the engine should find:
+
+| Field | Type | Meaning |
+| ----- | ---- | ------- |
+| `name` | `string` | Table name (kept uppercased). |
+| `schema` | `string` | Default `'dbo'`. |
+| `columns` | `{ name, type, notNull? }[]` | Column descriptors. |
+| `rows` | `Record<string, unknown>[]` | Seed rows keyed by column name (uppercased). |
+
+AVA ships a small sales seed for the two examples below. Import it from the supported package entry point:
+
+```typescript
+import { AVA, SQLSERVER_TABLE_SEED } from '@antv/ava';
+```
+
+### Natural-language examples
+
+The mock adapter lets you answer these queries without a live server:
+
+```typescript
+// 1) Aggregate by region — the LLM produces a read-only T-SQL GROUP BY.
+const result1 = await ava.analyze('Average revenue per order by region, sorted highest first');
+
+// 2) Simple filter + aggregate.
+const result2 = await ava.analyze('Which product sells the most units in the North region?');
+```
+
+Both analyze the seeded `ORDERS`/`CUSTOMERS` tables and return a bounded `ExecutionResult`. Replace the mock config with real `server`/`database` credentials to point the same queries at a production SQL Server. Query results and profiles are readable only (`SELECT`), and results are capped by `maxRows`/`maxResultBytes` (default 200 rows / 1 MiB).

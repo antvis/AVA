@@ -1,129 +1,126 @@
+/**
+ * SQL Server schema-discovery tests that exercise the catalog query logic
+ * directly, without a live database or the in-memory connector.
+ */
 import { describe, expect, it, vi } from 'vitest';
 
-import { SQLServerQueryDialect } from '../../../src/query/sqlserver';
-import { getSQLServerSchema } from '../../../src/remote/sqlserver/schema';
+import { getSqlServerSchema } from '../../../src/remote/sqlserver/schema';
 
-const dialect = new SQLServerQueryDialect({ model: 'unused' });
+type Row = Record<string, unknown>;
 
-function catalogRow(kind: string, name: string, sourceTable: string, metadata: Record<string, unknown>) {
-  return { kind, table_name: name, source_table: sourceTable, metadata: JSON.stringify(metadata) };
+function rowsFor(sql: string): Row[] {
+  if (sql.includes('INFORMATION_SCHEMA.TABLES')) {
+    return [{ table_schema: 'dbo', table_name: 'orders' }];
+  }
+  if (sql.includes('INFORMATION_SCHEMA.COLUMNS')) {
+    return [
+      { table_schema: 'dbo', table_name: 'orders', name: 'OrderID', type: 'int', nullable: 'NO' },
+      { table_schema: 'dbo', table_name: 'orders', name: 'CustomerID', type: 'int', nullable: 'NO' },
+      { table_schema: 'dbo', table_name: 'orders', name: 'Note', type: 'nvarchar', nullable: 'YES' },
+    ];
+  }
+  if (sql.includes('INFORMATION_SCHEMA.KEY_COLUMN_USAGE')) {
+    return [
+      // A real primary key and a foreign key share KEY_COLUMN_USAGE.
+      { table_schema: 'dbo', table_name: 'orders', constraint_name: 'PK_orders', name: 'OrderID', position: 1 },
+      { table_schema: 'dbo', table_name: 'orders', constraint_name: 'FK_orders_customer', name: 'CustomerID', position: 1 },
+      { table_schema: 'dbo', table_name: 'orders', constraint_name: 'UQ_orders_note', name: 'Note', position: 1 },
+    ];
+  }
+  if (sql.includes('INFORMATION_SCHEMA.TABLE_CONSTRAINTS')) {
+    return [{ table_schema: 'dbo', table_name: 'orders', constraint_name: 'PK_orders' }];
+  }
+  return [];
 }
 
-function viewRows(definition: string | null, names = ['value'], table = 'report') {
-  const model = `[dbo].[${table}]`;
-  return [
-    catalogRow('view', model, table, { catalog: 'sales', schema: 'dbo', sql: definition }),
-    ...names.map((name, index) =>
-      catalogRow('column', model, table, {
-        name,
-        type: 'int',
-        position: index + 1,
-        notNull: false,
-      })
-    ),
-  ];
-}
+describe('getSqlServerSchema', () => {
+  it('keeps only primary-key columns from KEY_COLUMN_USAGE', async () => {
+    const run = vi.fn(async (sql: string) => rowsFor(sql));
+    const schema = await getSqlServerSchema(run, 'demo');
 
-async function extractStatement(definition: string, names?: string[]): Promise<string> {
-  const schema = await getSQLServerSchema(vi.fn().mockResolvedValue(viewRows(definition, names)));
-  expect(schema.views).toHaveLength(1);
-  const statement = schema.views![0].statement;
-  await expect(dialect.validateDSL(statement)).resolves.toBe(statement);
-  return statement;
-}
+    expect(schema.models).toHaveLength(1);
+    expect(schema.models[0].primaryKey).toBe('OrderID');
+    expect(run.mock.calls.some(([sql]) => sql.includes('CONSTRAINT_TYPE'))).toBe(true);
+  });
 
-describe('SQL Server view schema', () => {
-  it('discovers tables and views as physical models with ordered catalog columns', async () => {
-    const run = vi.fn().mockResolvedValue([
-      catalogRow('table', '[dbo].[orders]', 'orders', { catalog: 'sales', schema: 'dbo' }),
-      catalogRow('column', '[dbo].[orders]', 'orders', { name: 'id', type: 'int', position: 1, notNull: 1 }),
-      catalogRow('view', '[reporting].[paid orders]', 'paid orders', {
-        catalog: 'sales',
-        schema: 'reporting',
-        sql: 'CREATE VIEW [reporting].[paid orders] AS SELECT id, amount FROM dbo.orders;',
-      }),
-      catalogRow('column', '[reporting].[paid orders]', 'paid orders', {
-        name: 'amount',
-        type: 'decimal(12,2)',
-        position: 2,
-        notNull: 0,
-      }),
-      catalogRow('column', '[reporting].[paid orders]', 'paid orders', {
-        name: 'id',
-        type: 'int',
-        position: 1,
-        notNull: 1,
-      }),
+  it('preserves a composite primary key in key order', async () => {
+    const run = vi.fn(async (sql: string) => {
+      if (sql.includes('INFORMATION_SCHEMA.TABLES')) return [{ table_schema: 'dbo', table_name: 'order_lines' }];
+      if (sql.includes('INFORMATION_SCHEMA.COLUMNS')) {
+        return [
+          { table_schema: 'dbo', table_name: 'order_lines', name: 'OrderID', type: 'int', nullable: 'NO' },
+          { table_schema: 'dbo', table_name: 'order_lines', name: 'LineID', type: 'int', nullable: 'NO' },
+        ];
+      }
+      if (sql.includes('INFORMATION_SCHEMA.KEY_COLUMN_USAGE')) {
+        return [
+          { table_schema: 'dbo', table_name: 'order_lines', constraint_name: 'PK_lines', name: 'LineID', position: 2 },
+          { table_schema: 'dbo', table_name: 'order_lines', constraint_name: 'PK_lines', name: 'OrderID', position: 1 },
+        ];
+      }
+      if (sql.includes('INFORMATION_SCHEMA.TABLE_CONSTRAINTS')) {
+        return [{ table_schema: 'dbo', table_name: 'order_lines', constraint_name: 'PK_lines' }];
+      }
+      return [];
+    });
+
+    const schema = await getSqlServerSchema(run, 'demo');
+    expect(schema.models[0].primaryKey).toEqual(['OrderID', 'LineID']);
+  });
+
+  it('keeps same-named tables in different schemas separate', async () => {
+    const run = vi.fn(async (sql: string) => {
+      if (sql.includes('INFORMATION_SCHEMA.TABLES')) {
+        return [
+          { table_schema: 'dbo', table_name: 'orders' },
+          { table_schema: 'sales', table_name: 'orders' },
+        ];
+      }
+      if (sql.includes('INFORMATION_SCHEMA.COLUMNS')) {
+        return [
+          { table_schema: 'dbo', table_name: 'orders', name: 'OrderID', type: 'int', nullable: 'NO' },
+          { table_schema: 'sales', table_name: 'orders', name: 'Region', type: 'nvarchar', nullable: 'YES' },
+        ];
+      }
+      if (sql.includes('INFORMATION_SCHEMA.KEY_COLUMN_USAGE')) {
+        return [
+          { table_schema: 'dbo', table_name: 'orders', constraint_name: 'PK_orders', name: 'OrderID', position: 1 },
+          { table_schema: 'sales', table_name: 'orders', constraint_name: 'PK_orders', name: 'Region', position: 1 },
+        ];
+      }
+      if (sql.includes('INFORMATION_SCHEMA.TABLE_CONSTRAINTS')) {
+        return [
+          { table_schema: 'dbo', table_name: 'orders', constraint_name: 'PK_orders' },
+          { table_schema: 'sales', table_name: 'orders', constraint_name: 'PK_orders' },
+        ];
+      }
+      return [];
+    });
+
+    const schema = await getSqlServerSchema(run, 'demo');
+    expect(schema.models.map((model) => model.name)).toEqual(['dbo.orders', 'sales.orders']);
+    expect(schema.models.map((model) => model.tableReference)).toEqual([
+      { catalog: 'demo', schema: 'dbo', table: 'orders' },
+      { catalog: 'demo', schema: 'sales', table: 'orders' },
     ]);
-
-    const schema = await getSQLServerSchema(run);
-    expect(schema.models).toEqual([
-      {
-        name: '[dbo].[orders]',
-        tableReference: { catalog: 'sales', schema: 'dbo', table: 'orders' },
-        columns: [{ name: 'id', type: 'int', notNull: true }],
-      },
-      {
-        name: '[reporting].[paid orders]',
-        tableReference: { catalog: 'sales', schema: 'reporting', table: 'paid orders' },
-        columns: [
-          { name: 'id', type: 'int', notNull: true },
-          { name: 'amount', type: 'decimal(12,2)', notNull: false },
-        ],
-      },
-    ]);
-    expect(schema.relationships).toEqual([]);
-    expect(schema.views).toHaveLength(1);
-    expect(schema.views![0].name).toBe('[reporting].[paid orders]');
-    expect(schema.views![0].statement.replace(/;\s*$/, '').trim()).toBe('SELECT id, amount FROM dbo.orders');
-    expect(run).toHaveBeenCalledTimes(1);
+    expect(schema.models[0].columns.map((column) => column.name)).toEqual(['OrderID']);
+    expect(schema.models[1].columns.map((column) => column.name)).toEqual(['Region']);
+    expect(schema.models[0].primaryKey).toBe('OrderID');
+    expect(schema.models[1].primaryKey).toBe('Region');
   });
 
-  it('extracts the query without confusing quoted names, AS literals or comments', async () => {
-    const statement = await extractStatement(`/* header AS 😀 */
-CREATE /* ignored AS */ VIEW [dbo].[sales AS ]] report] AS
-SELECT N'AS ; -- 😀' AS [value] /* body AS comment */ WHERE 1 = 0;`);
-    expect(statement).toContain("N'AS ; -- 😀' AS [value]");
-    expect(statement).toContain('/* body AS comment */');
-    expect(statement).toContain('WHERE 1 = 0');
-    expect(statement).not.toContain('sales AS ]] report');
-  });
+  it('runs catalog queries sequentially for a single Tedious connection', async () => {
+    let active = 0;
+    let maxActive = 0;
+    const run = vi.fn(async (sql: string) => {
+      active += 1;
+      maxActive = Math.max(maxActive, active);
+      await new Promise((resolve) => setTimeout(resolve, 1));
+      active -= 1;
+      return rowsFor(sql);
+    });
 
-  it('preserves explicit view column aliases instead of exposing the query expressions', async () => {
-    const statement = await extractStatement(
-      `CREATE VIEW "dbo"."report AS name" ([customer, name], [total AS ]] net]) AS
-SELECT N'A' AS original_name, 3 AS original_total;`,
-      ['customer, name', 'total AS ] net']
-    );
-    expect(statement).toContain('[customer, name]');
-    expect(statement).toContain('[total AS ]] net]');
-    expect(statement).toContain("N'A' AS original_name");
-    expect(statement).toMatch(/\)\s+AS\s+(?:\[[^\]]+\]|"[^"]+"|\w+)\s*\(/i);
+    await getSqlServerSchema(run, 'demo');
+    expect(maxActive).toBe(1);
   });
-
-  it.each([
-    '-- definition changed\nALTER VIEW dbo.report AS SELECT 2 AS value;',
-    'CREATE /* header */ OR /* header AS */ ALTER VIEW dbo.report AS SELECT 4 AS value;',
-  ])('reads query definitions created or altered through supported DDL: %#', async (definition) => {
-    const statement = await extractStatement(definition);
-    expect(statement).toMatch(/^SELECT\s+[1-4]\s+AS\s+value\s*;?$/i);
-  });
-
-  it.each([null, 'CREATE VIEW "dbo"."report AS ""quoted" AS SELECT 1 AS value;'])(
-    'keeps view metadata when its definition is unavailable or unsupported: %#',
-    async (definition) => {
-      const run = vi.fn().mockResolvedValue([
-        ...viewRows(definition),
-        ...viewRows('CREATE VIEW dbo.valid AS SELECT 2 AS value;', ['value'], 'valid'),
-      ]);
-      const schema = await getSQLServerSchema(run);
-      expect(schema.models).toHaveLength(2);
-      expect(schema.models[0]).toEqual({
-        name: '[dbo].[report]',
-        tableReference: { catalog: 'sales', schema: 'dbo', table: 'report' },
-        columns: [{ name: 'value', type: 'int', notNull: false }],
-      });
-      expect(schema.views).toEqual([{ name: '[dbo].[valid]', statement: 'SELECT 2 AS value' }]);
-    }
-  );
 });

@@ -4,4 +4,4 @@
  */
 export { SupabaseEngine } from './supabase';
 export { ClickHouseEngine } from './clickhouse';
-export { SQLServerEngine } from './sqlserver';
+export { SqlServerEngine, SQLSERVER_TABLE_SEED } from './sqlserver';

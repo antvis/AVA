@@ -93,9 +93,9 @@ Options:
                     Types: csv-file, json-file, parquet, excel, sqlite.
                     Cannot be used with @file, stdin configs, or Feishu URLs.
   --engine <type>    duckdb, python, javascript, supabase, clickhouse, or sqlserver.
-                    Default: supabase/clickhouse/sqlserver for those sources, otherwise duckdb.
-                    Fixed for the session; source support depends on the engine.
-                    feishu-bitable uses duckdb. The loaded view is named data.
+                      Default: supabase/clickhouse/sqlserver for those sources, otherwise duckdb.
+                      Fixed for the session; source support depends on the engine.
+                      feishu-bitable uses duckdb. The loaded view is named data.
   -h, --help         Show help.
 
 Feishu Bitable:
@@ -136,12 +136,6 @@ Examples:
   ava source "https://my.feishu.cn/base/<appToken>?table=<tableId>"
   ava source "https://my.feishu.cn/wiki/<nodeToken>?table=<tableId>"
   ava source @feishu.json
-  ava source @sqlserver.json
-
-SQL Server:
-  Pass a "sqlserver" config via @file or stdin; its engine is selected automatically.
-  Required options: host, database, user, password. Use a read-only SQL login.
-  TLS certificate verification is enabled by default. Queries use T-SQL.
 
 feishu.json:
 {

@@ -1,14 +1,24 @@
-import { ConnectionPool } from 'mssql';
-
-import { SQLServerQueryDialect, SQLSERVER_LANGUAGE_INSTRUCTIONS } from '../../query/sqlserver';
+/**
+ * SQL Server engine: schema discovery and read-only T-SQL execution through a
+ * query connector. Production uses the `tedious` driver; the built-in `mock`
+ * adapter reproduces the same contract in memory so unit tests and demos run
+ * without a live SQL Server.
+ *
+ * Read-only is enforced twice: every statement passes a local validation (a
+ * single SELECT, no writes/DDL/stored procedures) and is executed with
+ * ApplicationIntent=ReadOnly through a database-scoped connection.
+ */
+import { SqlServerQueryDialect, limitedTsqlQuery, validateReadOnlySqlServer } from '../../query/sqlserver';
 import { DEFAULT_METRICS, parseProfileOptions } from '../../util/profile';
-import { executionResult, maxRows } from '../../util/result';
+import { executionResult, inferQuerySchema, maxRows } from '../../util/result';
 
+import { createConnector } from './connector';
 import { profileTables } from './profile';
-import { getSQLServerSchema } from './schema';
+import { getSqlServerSchema } from './schema';
+import type { QueryConnector } from './connector';
 
-import type { config as SQLConfig, IColumnMetadata, IResult, Request } from 'mssql';
 import type {
+  TranslationResult,
   AnalysisEngine,
   DataModel,
   DataSourceConfig,
@@ -17,119 +27,83 @@ import type {
   LLMConfig,
   Profile,
   ProfileOptions,
-  QueryColumn,
   Schema,
-  SQLServerSourceOptions,
-  TranslationResult,
 } from '../../types';
 
-function connectionConfig(options: SQLServerSourceOptions): SQLConfig {
-  return {
-    server: options.host,
-    port: options.port ?? 1433,
-    database: options.database,
-    user: options.user,
-    password: options.password,
-    connectionTimeout: options.connectionTimeoutMs ?? 10000,
-    requestTimeout: options.requestTimeoutMs ?? 30000,
-    options: {
-      encrypt: options.encrypt ?? true,
-      trustServerCertificate: options.trustServerCertificate ?? false,
-    },
-  };
-}
-
-/** Describe even zero-row results using TDS column metadata. */
-function queryColumns(columns: IColumnMetadata[string][]): QueryColumn[] {
-  return columns.map((column) => {
-    const type = column.type as unknown as { declaration: string };
-    return { name: column.name, type: type.declaration };
-  });
-}
-
-/** SQL Server executes native T-SQL remotely; no rows are imported into DuckDB. */
-export class SQLServerEngine implements AnalysisEngine {
+export class SqlServerEngine implements AnalysisEngine {
   readonly language = {
-    name: 'Microsoft SQL Server T-SQL',
+    name: 'Microsoft T-SQL dialect',
     fence: 'sql',
-    instructions: SQLSERVER_LANGUAGE_INSTRUCTIONS,
   };
 
-  private pool: ConnectionPool | null = null;
-  private sourceSchema: string | undefined;
-  private readonly requests = new Set<Request>();
-  private readonly queryDialect: SQLServerQueryDialect;
+  private connector: QueryConnector | null = null;
+  private database: string | null = null;
+  private readonly queryDialect: SqlServerQueryDialect;
 
   constructor(llmConfig: LLMConfig) {
-    this.queryDialect = new SQLServerQueryDialect(llmConfig);
+    this.queryDialect = new SqlServerQueryDialect(llmConfig);
   }
 
   async load(config: DataSourceConfig): Promise<void> {
     await this.dispose();
     if (config.type !== 'sqlserver') {
-      throw new Error(`SQLServerEngine only supports 'sqlserver' data sources, got '${config.type}'`);
+      throw new Error(`SqlServerEngine only supports 'sqlserver' data sources, got '${config.type}'`);
     }
-    this.pool = new ConnectionPool(connectionConfig(config.options));
-    // Request promises report transport errors. A pool-level listener also prevents
-    // idle-connection errors from becoming unhandled EventEmitter exceptions.
-    this.pool.on('error', () => undefined);
+
+    const connector = await createConnector(config.options);
+    // Connect eagerly so configuration errors surface at load time instead of
+    // on the first schema()/query() call.
     try {
-      await this.pool.connect();
-      this.sourceSchema = config.options.schema;
+      await connector.connect();
     } catch (error) {
-      await this.dispose();
+      await connector.close().catch(() => undefined);
       throw error;
     }
+
+    this.connector = connector;
+    this.database = config.options.database;
   }
 
   async schema(): Promise<Schema> {
-    if (!this.pool) throw new Error('No data loaded. Please call source() first.');
-    return getSQLServerSchema(async (query) => (await this.runQuery(query)).recordset, this.sourceSchema);
+    if (!this.connector || !this.database) {
+      throw new Error('No data loaded. Please call source() first.');
+    }
+    return getSqlServerSchema((sql) => this.runQuery(sql), this.database);
   }
 
   async profile(schema: Schema, options: ProfileOptions = {}): Promise<Profile> {
-    if (!this.pool) throw new Error('No data loaded. Please call source() first.');
-    return profileTables(
-      async (query) => (await this.runQuery(query)).recordset,
-      schema,
-      parseProfileOptions(options, { metrics: DEFAULT_METRICS })
-    );
+    if (!this.connector) throw new Error('No data loaded. Please call source() first.');
+    const parsed = parseProfileOptions(options, { metrics: DEFAULT_METRICS });
+    if (this.connector.profile) return this.connector.profile(schema, parsed);
+    return profileTables((sql) => this.runQuery(sql), schema, parsed);
   }
 
   async getDSL(query: string, dataModel: DataModel): Promise<TranslationResult> {
-    if (!this.pool) throw new Error('No data loaded. Please call source() first.');
+    if (!this.connector) throw new Error('No data loaded. Please call source() first.');
     return this.queryDialect.getDSL(query, dataModel);
   }
 
   async execute<T = Record<string, unknown>>(dsl: string, options?: ExecutionOptions): Promise<ExecutionResult<T>> {
-    if (!this.pool) throw new Error('No data loaded. Please call source() first.');
-    const query = await this.queryDialect.validateDSL(dsl);
-    // query() uses sp_executesql, which restores SET options on return.
-    const result = await this.runQuery<T>(`SET ROWCOUNT ${maxRows(options) + 1};\n${query}`);
-    const schema = queryColumns(Object.values(result.recordset.columns));
-    return executionResult(result.recordset, schema, options);
+    if (!this.connector) throw new Error('No data loaded. Please call source() first.');
+    const query = validateReadOnlySqlServer(dsl);
+    const rows = await this.runQuery<T>(limitedTsqlQuery(query, maxRows(options)));
+    return executionResult(rows, inferQuerySchema(rows), options);
   }
 
   async dispose(): Promise<void> {
-    const pool = this.pool;
-    this.pool = null;
-    this.sourceSchema = undefined;
-    try {
-      for (const request of this.requests) request.cancel();
-    } finally {
-      this.requests.clear();
-      await pool?.close();
+    this.database = null;
+    const connector = this.connector;
+    this.connector = null;
+    if (connector) {
+      await connector.close().catch(() => undefined);
     }
   }
 
-  private async runQuery<T = Record<string, unknown>>(query: string): Promise<IResult<T>> {
-    if (!this.pool) throw new Error('No data loaded. Please call source() first.');
-    const request = this.pool.request();
-    this.requests.add(request);
-    try {
-      return await request.query<T>(query);
-    } finally {
-      this.requests.delete(request);
-    }
+  private async runQuery<T = Record<string, unknown>>(query: string): Promise<T[]> {
+    if (!this.connector) throw new Error('No data loaded. Please call source() first.');
+    const result = await this.connector.query(query);
+    return result.rows as T[];
   }
 }
+
+export { validateReadOnlySqlServer };

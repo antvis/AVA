@@ -28,20 +28,37 @@ const database = z
     ssh: z.object({ host: text, user: text, port, password: z.string().optional() }).strict().optional(),
   })
   .strict();
-const sqlserver = z
+const sqlServer = z
   .object({
-    host: text,
-    port,
+    server: text,
     database: text,
-    user: text,
-    password: text,
-    schema: text.optional(),
+    port,
+    user: z.string().optional(),
+    password: z.string().optional(),
+    instanceName: z.string().optional(),
     encrypt: z.boolean().optional(),
     trustServerCertificate: z.boolean().optional(),
-    connectionTimeoutMs: z.number().int().positive().optional(),
-    requestTimeoutMs: z.number().int().positive().optional(),
+    requestTimeout: z.number().int().positive().optional(),
+    connectTimeout: z.number().int().positive().optional(),
+    adapter: z.enum(['tedious', 'mock']).optional(),
+    tables: z
+      .array(
+        z
+          .object({
+            name: text,
+            schema: text.optional(),
+            columns: z.array(z.object({ name: text, type: text, notNull: z.boolean().optional() })),
+            primaryKey: z.union([text, z.array(text)]).optional(),
+            rows: z.array(z.record(z.string(), z.unknown())).optional(),
+          })
+          .strict()
+      )
+      .optional(),
   })
-  .strict();
+  .strict()
+  .refine((value) => !(value.instanceName && value.port), {
+    message: 'instanceName and port are mutually exclusive for SQL Server sources',
+  });
 const clickhouse = z
   .object({
     host: text.optional(),
@@ -136,7 +153,7 @@ const sourceSchema = z.discriminatedUnion('type', [
     .object({ type: z.literal('supabase'), options: z.object({ accessToken: text, projectRef: text }).strict() })
     .strict(),
   z.object({ type: z.literal('clickhouse'), options: clickhouse }).strict(),
-  z.object({ type: z.literal('sqlserver'), options: sqlserver }).strict(),
+  z.object({ type: z.literal('sqlserver'), options: sqlServer }).strict(),
   z.object({ type: z.literal('feishu-bitable'), options: feishuBitable }).strict(),
   z.object({ type: z.literal('tencent-smartsheet'), options: tencentDocsOptionsSchema }).strict(),
 ]);
