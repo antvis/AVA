@@ -1,10 +1,10 @@
 做一个 Data Agent，可以从一个很小的需求开始：给它一份销售数据，让它分析销售额下降主要来自哪些产品，并整理成一份带图表的简短报告。
 
-完成这份报告，需要比较整体变化、按产品定位下降来源，并核对合计。遇到疑点时，再根据结果补充查询。
+Data Agent 的核心是**由执行结果驱动的分析循环**：模型提出查询，读取结果并核对，再决定是否补充分析。要让结论可核查，多次查询需要沿用统一的指标口径，图表也应直接引用实际计算结果。
 
-[AVA](https://ava.antv.vision) 是面向 JavaScript 应用和 AI Agent 的开源数据分析与可视化框架。**AVA 负责执行数据操作，Data Agent 负责根据结果组织下一步。**
+[AVA](https://ava.antv.vision) 是面向 JavaScript 应用和 AI Agent 的开源数据分析框架，旨在**连接企业数据，以可信分析与可视化支撑业务决策**。类似 Python 生态中的 [PandasAI](https://docs.pandas-ai.com/v3/introduction)，它支持用自然语言分析数据、生成图表。本文使用 AVA 执行分析与绘图，通过 AI SDK 组织工具调用，构建支持多轮分析与追问的 Mini Data Agent。
 
-本文用 AVA 和 AI SDK，通过 **53 行核心代码** 搭建一个 Mini Data Agent。
+![Data Agent 运行结构](https://mdn.alipayobjects.com/huamei_aphk1k/afts/img/A*UNyWTbbbTvgAAAAAVcAAAAgAegfkAQ/original)
 
 ## 准备数据
 
@@ -18,11 +18,9 @@
 
 `YOUR_DATA` 表示完整 CSV 解析得到的对象数组，其中 `sales` 为数值。
 
-## 定义语义
+## 约定分析口径
 
-接着，告诉 Agent 这些数据该怎么算：销售额按折后金额统计，月份以下单时间为准，再比较各产品的销售额增加或减少了多少。
-
-语义配置会把这些约定作为 AVA 生成查询的依据，减少模型对指标含义的猜测，也让后续追问沿用同一套口径。
+接着，为 Agent 的分析约定口径：销售额按折后金额统计，月份以下单时间为准，变化额为本期减去上期。把这些约定写入语义配置，供多次查询和后续追问参考。
 
 ```yaml
 models:
@@ -53,19 +51,19 @@ cubes:
         Change rate is change divided by prior-period sales. Return null when prior-period sales are zero, indicating that the rate is not applicable.
 ```
 
-`YOUR_SEMANTIC` 表示这段 YAML 解析后的对象。字段用法见[业务语义](https://ava.antv.vision/zh/documentation/data/semantic/)。
+`YOUR_SEMANTIC` 表示这段 YAML 解析后的对象。
 
 ## 构建 Data Agent
 
-数据和口径准备好后，为 Agent 提供两个工具：`analyze` 查询和计算数据，`visualize` 接收绘图要求和数据，生成图表。`ToolLoopAgent` 把每次执行结果交回模型，让它决定继续分析、选择哪些结果传给 `visualize`，还是交付结论。
+数据和口径准备好后，将 AVA 的能力封装成两个工具：`analyze` 查询和计算数据，`visualize` **通过结果编号引用分析数据**并生成图表。
 
 示例使用 **Node.js 22.13.0 或更高版本**，安装以下依赖：
 
 ```bash
-npm install @antv/ava@4.0.0 ai@7.0.112 zod@4.6.7
+npm install @antv/ava@4.0.0 ai@7.0.112 @ai-sdk/openai@4.0.73 zod@4.6.7
 ```
 
-`YOUR_MODEL` 是已配置好、支持工具调用的模型实例。将它与数据、语义一起传入，Agent 就能调用 AVA 开展分析：
+运行前设置环境变量 `OPENAI_API_KEY` 和 `OPENAI_MODEL`，模型需支持工具调用；使用兼容 OpenAI Chat Completions 的服务时，再设置 `OPENAI_BASE_URL`。
 
 ```javascript
 import { AVA } from '@antv/ava';
@@ -74,62 +72,71 @@ import { z } from 'zod';
 
 async function createDataAgent({ model, data, semantic }) {
   const ava = new AVA({ llm: { model } });
+
   await ava.source({ type: 'json', options: { data } });
   await ava.semantic(undefined, () => semantic);
 
-  const messages = [];
-  let analysis;
-  let chart;
+  let messages = [];
+  const analyses = new Map();
 
   const agent = new ToolLoopAgent({
     model,
     instructions: `Analyze the user's task step by step, using conversation history to make each query self-contained.
-    Use analyze to compute and verify data.
-    For visualize, select relevant rows and fields from analyze results; never invent or change values.
+    Use analyze to compute and verify data, and visualize to chart a saved result.
     Base conclusions on tool results and state what data is missing when evidence is insufficient.`,
     stopWhen: isStepCount(8),
-    providerOptions: { openai: { parallelToolCalls: false } },
     tools: {
       analyze: tool({
         description: 'Query and analyze data using a self-contained question.',
         inputSchema: z.object({ query: z.string() }),
         execute: async ({ query }) => {
-          analysis = chart = undefined;
-          analysis = await ava.analyze(query);
-          return analysis;
+          const analysis = await ava.analyze(query);
+          const resultId = `analysis-${analyses.size + 1}`;
+          analyses.set(resultId, analysis);
+          return { ...analysis, resultId };
         },
       }),
       visualize: tool({
-        description: 'Generate a chart from the visualization request and data returned by analyze.',
-        inputSchema: z.object({ query: z.string(), data: z.array(z.record(z.string(), z.unknown())) }),
-        execute: async ({ query, data }) => {
-          chart = await ava.visualize({ query, data });
-          return { chartType: chart?.chartType };
+        description: 'Generate a chart using an exact resultId returned by analyze and a chart request.',
+        inputSchema: z.object({ resultId: z.string(), query: z.string() }),
+        execute: async ({ resultId, query }) => {
+          const analysis = analyses.get(resultId);
+          if (!analysis) throw new Error(`Unknown resultId: ${resultId}. Call analyze first.`);
+          return ava.visualize({ query, data: analysis.data });
         },
+        toModelOutput: ({ output }) => ({
+          type: 'json',
+          value: { chartType: output?.chartType ?? null },
+        }),
       }),
     },
   });
 
   return {
     async ask(question) {
-      chart = undefined;
-      messages.push({ role: 'user', content: question });
-      const result = await agent.generate({ messages });
-      messages.push(...result.responseMessages);
-      return { text: result.text, analysis, chart };
+      const input = [...messages, { role: 'user', content: question }];
+      const result = await agent.generate({ messages: input });
+      messages = [...input, ...result.responseMessages];
+      return result;
     },
     dispose: () => ava.dispose(),
   };
 }
 ```
 
-Agent 会保留对话和分析记录，方便继续追问。绘图时，它从分析结果中选择需要展示的行和列，通过 `data` 参数传给 `visualize`，不局限于最近一次分析结果。现在把开头的需求交给它：
+用这 53 行核心代码搭建好 Mini Data Agent 后，就可以发起分析，并在同一会话中继续追问：
 
 ```javascript
 import { writeFile } from 'node:fs/promises';
+import { createOpenAI } from '@ai-sdk/openai';
+
+const model = createOpenAI({
+  apiKey: process.env.OPENAI_API_KEY,
+  baseURL: process.env.OPENAI_BASE_URL,
+}).chat(process.env.OPENAI_MODEL);
 
 const assistant = await createDataAgent({
-  model: YOUR_MODEL,
+  model,
   data: YOUR_DATA,
   semantic: YOUR_SEMANTIC,
 });
@@ -139,9 +146,10 @@ try {
 按降幅排序、核对合计，并用条形图展示变化额。`;
   const answer = await assistant.ask(task);
   console.log(answer.text);
-  console.table(answer.analysis?.data);
-  console.log(answer.analysis?.sql);
-  if (answer.chart) await writeFile('chart.html', answer.chart.html);
+  for (const [index, { toolName, output }] of answer.toolResults.entries()) {
+    if (toolName === 'analyze') console.table(output.data);
+    if (toolName === 'visualize' && output) await writeFile(`chart-${index + 1}.html`, output.html);
+  }
 
   console.log((await assistant.ask('Laptop 销售额下降是因为促销结束了吗？')).text);
 } finally {
@@ -151,9 +159,7 @@ try {
 
 ## 查看结果
 
-以这个任务为例，Agent 可以先用 `analyze` 比较两个月的总额，看到下降后再按产品拆解；核对各产品的变化额合计与整体一致，再用 `visualize` 画图并整理结论。如果合计对不上，就需要继续查询核对。
-
-按这份数据汇总，销售额从 1 月的 **38,897.18** 降至 2 月的 **21,804.11**，下降 **43.94%**。各产品的变化如下：
+以下为**从原始 CSV 独立汇总的参考结果**，可用于核对 Agent 的输出。销售额从 1 月的 **38,897.18** 降至 2 月的 **21,804.11**，下降 **43.94%**：
 
 | 产品          |    1 月销售额 |    2 月销售额 | 变化额（2 月 − 1 月） |
 | ------------- | ------------: | ------------: | --------------------: |
@@ -168,10 +174,10 @@ try {
 | Office Chair  |      1,253.00 |      5,262.60 |             +4,009.60 |
 | **合计**      | **38,897.18** | **21,804.11** |        **−17,093.07** |
 
-各产品的变化额合计为 **−17,093.07**，与整体变化一致。画成图后，下降的来源更加清楚：**Laptop 是主要拖累，Office Chair 的增长则抵消了部分下降。**
+各产品的变化额合计与整体变化一致。**Laptop 是主要拖累，Office Chair 的增长抵消了部分下降。**
 
-![2025 年 1 月至 2 月各产品销售额变化，Laptop 下降最多，Office Chair 增长最多](/blog/images/sales-change.png)
+![2025 年 1 月至 2 月各产品销售额变化](https://mdn.alipayobjects.com/huamei_aphk1k/afts/img/A*m_BqSr6ehAkAAAAARMAAAAgAegfkAQ/original)
 
-接下来可以追问：“Laptop 销售额下降是因为促销结束了吗？”现有数据缺少活动时间和参与范围，还不能确认。**定位下降来源之后，解释业务原因还需要证据。**
+对于后续的促销追问，数据缺少活动时间和参与范围，Agent 应说明**证据不足，不能据此确认下降原因**。
 
-接入自己的业务时，换成相应的数据和业务口径，再交给它新的分析任务即可。
+如果你也用 AVA 做出了自己的 Data Agent，欢迎参与 [AVA 生态作品征集](https://github.com/antvis/AVA/issues/1061)，分享实践，还有机会获得 SEE Conf 2026 门票，和社区伙伴线下交流。
