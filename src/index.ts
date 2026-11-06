@@ -46,6 +46,7 @@ export type {
   DuckDBEngineOptions,
   PythonEngineOptions,
   DataSourceConfig,
+  TencentDocsSourceOptions,
   SchemaOptions,
   SemanticOptions,
   JSONReadOptions,

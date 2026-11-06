@@ -28,7 +28,13 @@ const sqlserverSource = {
 };
 
 describe('session startup protocol', () => {
+  const platform = Object.getOwnPropertyDescriptor(process, 'platform')!;
+  afterEach(() => {
+    Object.defineProperty(process, 'platform', platform);
+    vi.clearAllMocks();
+  });
   it('keeps engine selection through the child-process startup message', async () => {
+    Object.defineProperty(process, 'platform', { ...platform, value: 'linux' });
     const worker = Object.assign(new EventEmitter(), {
       connected: true,
       disconnect: vi.fn(),
@@ -45,6 +51,12 @@ describe('session startup protocol', () => {
     } finally {
       await rm(sessionDirectory(datasetId), { recursive: true, force: true });
     }
+  });
+
+  it('rejects Windows before creating a dataset process', async () => {
+    Object.defineProperty(process, 'platform', { ...platform, value: 'win32' });
+    await expect(createSession(source, llm)).rejects.toThrow('Dataset sessions currently require macOS or Linux.');
+    expect(fork).not.toHaveBeenCalled();
   });
 
   it('accepts legacy startup messages and rejects custom engine configuration', () => {

@@ -1,9 +1,10 @@
 import assert from 'node:assert/strict';
 import { readFile, readdir } from 'node:fs/promises';
 import { join, relative } from 'node:path';
+import { fileURLToPath } from 'node:url';
 import ts from 'typescript';
 
-const site = new URL('../', import.meta.url).pathname;
+const site = fileURLToPath(new URL('../', import.meta.url));
 async function files(directory) {
   const entries = await readdir(directory, { withFileTypes: true });
   return (
@@ -16,10 +17,12 @@ async function files(directory) {
   ).flat();
 }
 
-const sources = (await files(join(site, 'content/docs'))).filter((path) => path.endsWith('.mdx'));
+const sources = (await files(join(site, 'content/docs')))
+  .map((path) => path.replace(/\\/g, '/'))
+  .filter((path) => path.endsWith('.mdx'));
 const sourceText = (await Promise.all(sources.map((path) => readFile(path, 'utf8')))).join('\n');
-const semantic = await readFile(join(site, 'content/docs/en/data/semantic.mdx'), 'utf8');
-const schemaGuide = await readFile(join(site, 'content/docs/en/data/schema.mdx'), 'utf8');
+const semantic = (await readFile(join(site, 'content/docs/en/data/semantic.mdx'), 'utf8')).replace(/\r\n/g, '\n');
+const schemaGuide = (await readFile(join(site, 'content/docs/en/data/schema.mdx'), 'utf8')).replace(/\r\n/g, '\n');
 const orderTable = semantic.match(/\| order_id \|[\s\S]*?(?=\n\n)/)?.[0];
 assert.ok(orderTable, 'Semantic guide starts with a concrete order table');
 assert.ok(schemaGuide.includes(orderTable), 'Schema and semantic guides use the same order table');
@@ -52,6 +55,7 @@ const inputTypes = new Set([
   'ParquetSourceOptions',
   'ExcelSourceOptions',
   'TextSourceOptions',
+  'TencentDocsSourceOptions',
   'SSHOptions',
   'MySQLSourceOptions',
   'PostgreSQLSourceOptions',
@@ -76,6 +80,7 @@ for (const declaration of types.statements) {
 const pages = new Map();
 for (const source of sources) {
   const [locale, ...segments] = relative(join(site, 'content/docs'), source)
+    .replace(/\\/g, '/')
     .replace(/\.mdx$/, '')
     .split('/');
   const slug = segments.join('/');

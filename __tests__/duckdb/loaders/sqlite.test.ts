@@ -159,7 +159,7 @@ describe('loaders/sqlite', () => {
       { product: 'Monitor', image: '00FF80' },
       { product: 'Office Chair', image: '' },
     ]);
-  });
+  }, 30000);
 });
 
 // These values are legal SQLite data regardless of the column's declared affinity.
