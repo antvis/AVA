@@ -95,7 +95,7 @@ const schema = await ava.schema();
 
 | Parameter | Type                   | Required | Meaning                                                                                                                                      |
 | --------- | ---------------------- | -------- | -------------------------------------------------------------------------------------------------------------------------------------------- |
-| `type`    | `SourceType`           | Yes      | `csv`, `csv-file`, `json`, `json-file`, `parquet`, `excel`, `text`, `sqlite`, `mysql`, `postgresql`, `mongodb`, `supabase`, `clickhouse`, `sqlserver`, `snowflake`, `feishu-bitable`, or `github`. |
+| `type`    | `SourceType`           | Yes      | `csv`, `csv-file`, `json`, `json-file`, `parquet`, `excel`, `text`, `sqlite`, `mysql`, `postgresql`, `mongodb`, `supabase`, `clickhouse`, `sqlserver`, `snowflake`, `feishu-bitable`, `tencent-smartsheet`, or `github`. |
 | `options` | Source-specific object | Yes      | Use the matching table below. Field names are relative to `options`.                                                                         |
 
 `source()` returns no value and prepares the data for execution. Schema discovery is deferred until `schema()` or another operation needs it. Calling `source()` again replaces the current source and clears its cached metadata. Use `schema()` to inspect table and field names, and call `await ava.dispose()` when finished.
@@ -723,36 +723,50 @@ try {
 
 ## Tencent Docs SmartSheet
 
-Load one authorized SmartSheet table through Tencent Docs' official MCP service, then analyze a complete local snapshot with DuckDB. This source is available in the Node.js SDK, not the browser/Python/JavaScript engines. The existing CLI dataset sessions require macOS/Linux; use the SDK or WSL on Windows.
+Load one explicitly selected, authorized SmartSheet subtable through Tencent Docs' native OpenAPI (`fetch`, no MCP SDK), then analyze a complete local snapshot in DuckDB. Supported by the Node.js SDK and CLI with the DuckDB engine.
 
 ```typescript
 await ava.source({
   type: 'tencent-smartsheet',
-  options: { fileId: '<file-id>', sheetId: '<sheet-id>' },
+  options: {
+    fileId: '<native-openapi-file-id>',
+    sheetId: '<sheet-id>',
+    clientId: '<client-id>',
+    openId: '<open-id>',
+    accessToken: '<access-token>',
+  },
 });
 ```
 
-Set `TENCENT_DOCS_TOKEN` to the exact Authorization value from the [official MCP usage guide](https://docs.qq.com/open/document/mcp/). The account must have access to the document. This version uses an existing user token, not an embedded OAuth flow. IDs are explicit; document sharing URLs are not auto-detected.
+Explicitly supply `options.clientId`, `options.openId`, `options.accessToken` from an approved application's [OAuth authorization](https://docs.qq.com/open/document/app/oauth2/). The user must have access and the application must have the required approved/authorized permissions. Client Secret is needed for token exchange outside AVA, not record reads. There is no embedded OAuth callback or auto-refresh. **Migration:** remove MCP `token` / `TENCENT_DOCS_TOKEN`; old token options are rejected, never treated as OpenAPI credentials.
 
-For the CLI, put the same source configuration in a JSON file and run `ava source @tencent-docs.json`. Keep the token in the environment, not in the file.
+IDs are explicit: `fileId` must be the native OpenAPI fileID, not a sharing URL's encoded ID. The [official ID-conversion endpoint](https://docs.qq.com/open/document/app/openapi/v2/file/util/converter.html) converts an explicitly supplied encoded ID using its own permission requirements. AVA never lists/searches private files or automatically converts IDs during loading. Obtain `sheetID` from the documented [subtable-list endpoint](https://docs.qq.com/open/document/app/openapi/v2/smartsheet/sheet/get_sheet.html) using your own authorized API client.
+
+The loader does not read environment variables. Applications may resolve configuration themselves and pass it through options. For CLI, pass all credentials in a local, untracked source JSON file; environment placeholders are not expanded.
 
 | Field | Type | Required / default |
 | --- | --- | --- |
-| `fileId` | `string` | Required; the document ID accepted by Tencent Docs MCP. |
-| `sheetId` | `string` | Required; obtain it from `smartsheet.list_tables`. |
-| `token` | `string` | Optional; overrides `TENCENT_DOCS_TOKEN`. |
-| `pageSize` | `number` | 1–100; default 100 records per page. |
-| `maxRecords` | `number` | 1–100,000; default 10,000. Overflow fails, not truncates. |
+| `fileId` | `string` | Required; native OpenAPI fileID (not encoded sharing ID). |
+| `sheetId` | `string` | Required; explicit SmartSheet sheetID. |
+| `clientId` | `string` | Required; explicitly supplied in options. |
+| `openId` | `string` | Required; explicitly supplied in options. |
+| `accessToken` | `string` | Required; explicitly supplied in options. |
+| `pageSize` | `number` | 1–100; default 100, field and record pages. |
+| `maxRecords` | `number` | 1–100,000; default 10,000. Overflow fails, never truncates. |
 | `timeoutMs` | `number` | 1–110,000; default 60,000 ms for the whole load. |
-| `maxRetries` | `number` | 0–5; default 2 for transient failures. |
+| `maxRetries` | `number` | 0–5; default 2 for transient HTTP/network failures. |
 
-Supported MCP field types are `text`, `number`, `currency`, `percentage`, `progress`, `checkbox`, `dateTime`, `createdTime`, `modifiedTime`, `singleSelect`, `phoneNumber`, and `email`. Other field types are omitted. Field titles become column names; `_record_id` preserves source identity. Duplicate/reserved column names and invalid supported values fail the load. Numbers use `DOUBLE`, dates use UTC `TIMESTAMPTZ`, omitted cells use null, and empty rows are retained. Empty tables keep their declared column types.
+Supported native numeric `fieldType` values are **1 text, 2 number, 3 checkbox, 4 date/time, 12 created time, 13 modified time, 14 progress, 15 phone, 16 email, 17 single-select, 26 currency, 28 percentage**. These use the [official numeric type/attribute contract](https://docs.qq.com/open/document/app/openapi/v2/smartsheet/field/property.html#fieldtype) and [cell value contract](https://docs.qq.com/open/document/app/openapi/v2/smartsheet/record/value.html#value), not MCP string enums. Rich text is concatenated; numbers/progress/currency/percentage retain finite raw `DOUBLE` values without percentage scaling; booleans preserve false; phone/email preserve strings and leading zeros; dates use millisecond strings normalized to UTC. For native types 12/13 only, omitted cells use the source record createTime/updateTime millisecond metadata: the real v2 response omits these system cells from values. Explicit values and explicit nulls are never overwritten; ordinary dates/titles do not trigger this mapping. A separately approved synthetic fixture has now verified all six restored types against the real API and formal loader on Windows/Linux, including exact comparisons with independently read record timestamps. Single-select 17 becomes text (empty selection is null); type 9 remains unsupported multi-select.
 
-Fields and records are fully paginated. Missing/repeated IDs, inconsistent paging and changing totals/field metadata fail instead of silently loading partial data. Limits are 1,000 fields and 16 MiB for response streams/paginated reads. Expanded snapshots have independent limits of 16 MiB of UTF-8 JSON and 1,000,000 cells (including nulls and `_record_id`); the effective row limit is also capped by `floor(1000000 / (supported field count + 1))`. Validated pages are converted incrementally; no complete raw record array is retained, and over-budget dense rows are not retained. Temporary source files are created exclusively with owner-only `0600` permissions before writing data. Authentication, permission and daily quota failures are not retried. Upstream error codes/messages and SDK/network causes are preserved; HTTP failures retain status, request IDs and up to 8 KiB of response diagnostics. The configured Token is redacted, but provider diagnostics may include document context; review errors before sharing logs. The connector calls only field/record read tools; the model cannot select remote write tools.
+The legacy v2 enum page is incomplete: independent native currency 26 and percentage 28 were identified through official service metadata and verified with native OpenAPI field creation, record reads and the formal loader. Both retain finite raw DOUBLE values (0.125 stays 0.125), without display parsing or automatic percentage scaling. This does not assert every currency/UI rendering format has been tested; do not infer types from titles. See the [field contract and evidence notes](https://github.com/antvis/AVA/blob/oss-camp2026/examples/tencent-docs/README.md). Other types, including images/computed fields, are omitted. Source titles become columns; `_record_id` preserves identity. Duplicate/reserved names and malformed supported values fail the load. Null/omitted cells, empty rows/tables and all-null column types retain their semantics. Numbers are not exact financial decimals.
 
-This is a load-time snapshot, not live synchronization. Stop source edits during loading: the provider does not expose a transactional multi-page snapshot, so same-count edits cannot all be detected. Model-based analysis uses the configured model provider; use non-sensitive test data for initial validation.
+Both HTTP status and OpenAPI `ret` are checked. HTTP 429/500/502/503/504 and network failures have bounded retries; valid `Retry-After` waits up to 30 seconds are honored. HTTP 401/403 and business errors are not retried (no unverified MCP error policy). Preserve upstream `ret`/`msg`, HTTP status/request IDs and selected network error name/message/code plus one cause level. Do not copy arbitrary response/error objects, stacks or headers. Exact credentials are replaced in selected strings; fields over 8 KiB are omitted whole, not truncated. Non-JSON or incomplete HTTP error bodies are omitted while status/request ID remain available. Endpoint and read operations are fixed; redirects are refused. The model cannot choose remote writes.
 
-See the [reproducible sales example](https://github.com/antvis/AVA/tree/oss-camp2026/examples/tencent-docs) for configuration, optional synthetic fixture setup, regional sales and month-over-month analysis with numerical assertions.
+Fields and records are fully paginated; missing/repeated IDs, inconsistent offsets/totals, changing supported metadata and incomplete final pages fail instead of returning partial data. Limits: 1,000 fields, 16 MiB per response/paginated read, independently 16 MiB expanded UTF-8 JSON and 1,000,000 cells including names/nulls/record IDs. Effective rows are additionally capped by `floor(1000000 / (supported field count + 1))`. Conversion is incremental, without retaining all raw records. A parameterized JSON array and explicit schema create the in-memory table directly, without temporary files or a directory whitelist.
+
+Stop editing while loading: same-count changes cannot all be detected, and this is not a transactional remote snapshot or continuous sync. Multi-table JOIN, discovery, views/field selection, ordinary spreadsheet ranges and writes are outside this migration. Model analysis uses your configured provider; start with synthetic data.
+
+See the [reproducible sales example](https://github.com/antvis/AVA/tree/oss-camp2026/examples/tencent-docs) for authorization/configuration, native-ID conversion, manual fixture setup, two natural-language business examples, exact numerical assertions and current validation evidence.
 
 ## GitHub
 

@@ -75,7 +75,6 @@
     "@clickhouse/client": "^1.23.1",
     "@clickhouse/parser": "0.3.0",
     "@duckdb/node-api": "^1.5.5-r.5",
-    "@modelcontextprotocol/client": "^2.4.0",
     "@supabase/pg-parser": "^0.1.7",
     "adm-zip": "^0.6.1",
     "ai": "^7.0.112",

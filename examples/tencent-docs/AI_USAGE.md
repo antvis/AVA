@@ -1,29 +1,28 @@
-# AI usage strategy report
+# AI 使用策略报告
 
-## Scope
+Refs #1015。腾讯文档 OpenAPI 迁移，更新日期：2026-11-04。
 
-AI assistance was used to inspect issue requirements and existing loaders, compare official MCP documentation with live read-tool schemas, draft the connector/tests/docs, and investigate validation failures. A real DeepSeek model was used for the two business questions through both the SDK and the real Linux CLI. A maintainer subsequently gave LGTM and requested naming/diagnostic refinements; this does not imply that maintainer source-availability testing or merge approval is complete.
+## 使用范围
 
-## Guardrails
+使用 Codex 辅助阅读仓库、官方接口及维护者意见，实现 OpenAPI 传输、配置和字段转换，编写测试、示例与文档，并审阅异常和资源边界。没有使用子代理，也没有另建 Agent 框架；实现沿用 AVA 的 loader / DuckDB / 分析架构。
 
-- Ground the implementation in the repository's existing `DataSourceConfig` → loader → DuckDB flow, rather than introducing a new agent framework or remote SQL engine.
-- Discover actual MCP contracts before implementing conversion. Live `field_type` string enums supersede assumptions based on older REST numeric enums.
-- Permit only field/record read tools inside the connector; do not offer arbitrary remote tools to the analysis model.
-- Require explicit owner approval before writing synthetic fixtures. Keep fixture setup separate, require `--seed`, and do not automatically retry writes.
-- Store development credentials only in the ignored local environment file. Do not include credentials, real file IDs or raw private records in tracked artifacts. Following maintainer feedback, retain upstream error diagnostics rather than blanket-suppressing them, redact the configured Token, and review provider-returned context before publishing logs.
+## 约束
 
-## Verification strategy
+- 生产连接器只允许固定官方端点的 getFields/getRecords，模型不接收任意远端工具目录。
+- OAuth 凭证、源 ID 和验证操作记录仅保存在被忽略的本地配置中；公开示例只含虚构数据。
+- 夹具准备需明确许可，限定新增范围，不自动重试写入，不将准备脚本交付为连接器功能。
+- API 类型以官方合约、服务元数据和原生响应交叉确认，不根据列名或旧 MCP 字符串猜测编号。26/28 经真实 OpenAPI 独立验证；开发调研读取过官方 MCP 工具 schema，但生产依赖中没有 MCP SDK。
+- 保留 HTTP/业务诊断和选定网络异常字段，只做精确凭证替换；不复制任意对象或堆栈，超长诊断字段整体省略。
+- 保留全量分页、字段变化检查、整体期限、资源预算及无临时文件的参数化建表，不把本地失败原子性描述为远端事务快照。
 
-- Test field conversion with independent edge cases: zero/false/null, empty strings/rows/tables, timestamps, invalid scalars, duplicate names and hostile object keys.
-- Test pagination completeness and bounds, malformed/error responses, HTTP retries, cancellation, output-size limits and cleanup.
-- Exercise the actual MCP SDK over mocked JSON-RPC wire responses and use a real in-memory DuckDB, in addition to isolated unit tests.
-- Compare both real model-generated query results with fixed expected business totals, not an LLM's assessment of correctness.
-- Report targeted success separately from repository-wide baseline failures. Reproduce identified pre-existing failures against an extracted unmodified base.
+## 验证策略
 
-## Review still required
+使用独立预期值验证转换和业务结果，不依据模型说明或 AI 自评判断正确性。离线 HTTP 模拟经过正式 loader 和真实 DuckDB；真实源验证与默认离线测试分开。
 
-The maintainer-feedback follow-up uses `tencent-smartsheet` consistently and retains upstream error codes/messages, HTTP diagnostics and SDK/network causes, with configured-Token redaction instead of blanket suppression. Added tests include actual SDK wire-level JSON-RPC errors. Full Windows/Linux checks, the documentation-site build and live read-only SDK/Linux CLI source checks were rerun; model analysis was not rerun and no new fixture data was written.
+此前诊断截断边界问题通过模拟响应复现，不是腾讯真实响应回显凭证的证据。本轮按维护者意见删除通用递归脱敏、属性描述符复制和 KMP 前缀处理；改为仅输出选定诊断字段，超长字段整体省略，并验证凭证替换及不完整正文不输出。系统时间的实际省略行为、货币 26 和百分比 28 均通过真实源探测确认后适配，并补充转换与集成测试。
 
-Copilot subsequently identified two valid high-severity issues: shared temporary-file permissions and sparse-to-dense memory amplification. AI-assisted follow-up fixed both and added filesystem/budget regression tests. Verification included real Linux `0600`/symlink checks, full Windows/Linux suites, lint/build, the documentation site, and another live read-only deterministic source check. AI review is treated as evidence to investigate, not automatic approval; the real model/CLI business examples were not rerun for this follow-up.
+两个自然语言业务问题使用真实模型分别经 SDK 和 Linux CLI 验证；追加货币/百分比映射后又验证原生数值及 SQL，没有把之前的模型执行冒充最后一轮重新调用。精确结果、执行范围及运行步骤见 README.md。本轮精简后重新执行 Windows/Linux 离线全量测试及正式示例的真实只读 SQL 核对，未调用模型或写入源表。
 
-The contributor and maintainers should review the code and supporting evidence before merge and confirm the public source/config contract. Real Linux CLI validation, local Windows/Linux root checks, the full documentation-site build and static documentation checks have passed; hosted upstream CI has not run. No performance, universal field-compatibility or transactional-snapshot guarantees are inferred from the small local fixture.
+## 审阅重点
+
+维护者仍需审阅授权与原生 ID 契约、字段语义、重试/取消、诊断和预算边界。12 类标量已有对应真实读取证据，但不据小型夹具推导全部账号、币种显示或模型可靠性。本地通过不等于托管 CI 或维护者批准。

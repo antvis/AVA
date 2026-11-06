@@ -97,7 +97,7 @@ const schema = await ava.schema();
 
 | 参数 | 类型 | 必填 | 含义 |
 | --------- | ---------------------- | -------- | -------------------------------------------------------------------------------------------------------------------------------------------- |
-| `type` | `SourceType` | 是 | 支持 `csv`、`csv-file`、`json`、`json-file`、`parquet`、`excel`、`text`、`sqlite`、`mysql`、`postgresql`、`mongodb`、`supabase`、`clickhouse`、`snowflake`、`feishu-bitable`、`github`。 |
+| `type` | `SourceType` | 是 | 支持 `csv`、`csv-file`、`json`、`json-file`、`parquet`、`excel`、`text`、`sqlite`、`mysql`、`postgresql`、`mongodb`、`supabase`、`clickhouse`、`snowflake`、`feishu-bitable`、`tencent-smartsheet`、`github`。 |
 | `options` | 数据源对应的对象 | 是 | 使用下方对应的数据源参数表，字段名均相对于 `options`。 |
 
 `source()` 没有返回值，负责为执行准备数据。结构发现会推迟到 `schema()` 或其他操作需要时进行。再次调用 `source()` 会替换当前数据源并清空元数据缓存。使用 `schema()` 查看表名与字段名，结束后调用 `await ava.dispose()`。
@@ -687,6 +687,47 @@ try {
 - 使用单条只读 `SELECT`（支持 `WITH`），按 `schema()` 列出的名称为表和列加双引号。存储过程、`SYSTEM$` 函数，以及 `IDENTIFIER(name)(...)` 形式的动态函数调用会被拒绝。
 - `maxRows` 和 `maxResultBytes` 分别限制返回结果的行数和大小。
 - `NUMBER` 在转换不损失数字位数时转为 JavaScript 数字，更大或更精确的值保留为十进制字符串；浮点数的 `NaN` 和无穷大保留为字符串。日期使用 `YYYY-MM-DD`，时间和时间戳带九位小数，时区类型附带偏移量。`VARIANT`、`OBJECT` 和 `ARRAY` 是解析后的 JSON，`BINARY` 是十六进制文本。
+
+## 腾讯文档智能表格
+
+通过腾讯文档原生 OpenAPI 将显式授权的单个智能子表加载到 DuckDB，不依赖 MCP SDK。支持 Node.js SDK 和 CLI，使用 DuckDB 引擎。
+
+```typescript
+await ava.source({
+  type: 'tencent-smartsheet',
+  options: {
+    fileId: '<原生 OpenAPI fileID>',
+    sheetId: '<子表 sheetID>',
+    clientId: '<client-id>',
+    openId: '<open-id>',
+    accessToken: '<access-token>',
+  },
+});
+```
+
+按官方 [OAuth 流程](https://docs.qq.com/open/document/app/oauth2/)取得应用授权，并通过 options 显式传入 clientId、openId、accessToken。调用方可自行读取环境变量，loader 不读取环境变量；CLI 使用本地未跟踪的配置文件，不自动展开环境变量。旧 MCP token 不再接受；不提供 OAuth 回调、自动续期或写入。
+
+fileId 使用原生 ID，分享链接 encoded ID 需通过官方 [ID 转换](https://docs.qq.com/open/document/app/openapi/v2/file/util/converter.html)取得；sheetId 可通过官方[子表接口](https://docs.qq.com/open/document/app/openapi/v2/smartsheet/sheet/get_sheet.html)取得。连接器不搜索私人文件或自动选择子表。
+
+| 参数 | 类型 | 必填与默认 |
+| --- | --- | --- |
+| `fileId` | `string` | 必填，原生 OpenAPI ID。 |
+| `sheetId` | `string` | 必填，显式子表 ID。 |
+| `clientId` | `string` | 必填，通过 options 显式传入。 |
+| `openId` | `string` | 必填，通过 options 显式传入。 |
+| `accessToken` | `string` | 必填，通过 options 显式传入。 |
+| `pageSize` | `number` | 1–100，默认 100，作用于字段/记录分页。 |
+| `maxRecords` | `number` | 1–100,000，默认 10,000，超限失败。 |
+| `timeoutMs` | `number` | 1–110,000 毫秒，默认 60,000，覆盖整次加载。 |
+| `maxRetries` | `number` | 0–5，默认 2，仅瞬态 HTTP/网络错误。 |
+
+支持原生类型 1 文本、2 数字、3 复选框、4 日期、12/13 创建/修改时间、14 进度、15 电话、16 邮箱、17 单选、26 货币、28 百分比。数字保留有限原始 DOUBLE，不按显示格式强转或缩放；布尔保留 false，电话/邮箱保留字符串和前导零。日期为毫秒字符串，规范化 UTC；系统时间仅在对应 12/13 单元格省略时映射记录 createTime/updateTime，不覆盖显式 null。旧公开枚举页未列全，26/28 已由当前官方元数据与真实 OpenAPI 响应交叉验证。复杂字段不暴露，_record_id 保留源记录身份；空表、空行和全空列保持语义。
+
+字段上限 1,000，响应/分页读取 16 MiB；展开后另限 16 MiB UTF-8 JSON、1,000,000 单元格（含 null、列名和记录 ID），宽表有效行数进一步受限。完整分页、唯一 ID、递进偏移、总量和元数据变化检查失败时不返回部分结果。通过参数化 JSON 和显式 schema 直接创建内存表，不写临时文件，不放开临时目录。
+
+分别检查 HTTP 与业务 ret，保留状态、业务 ret/msg、请求 ID，以及网络异常的名称、消息、错误码和一层原因；不复制任意对象、堆栈或请求头。仅对选定字符串精确替换凭证，超过 8 KiB 的字段整体省略；非 JSON 或不完整的 HTTP 错误正文不输出，仍保留状态和请求 ID。只重试网络错误及 HTTP 429/500/502/503/504，遵循有效且不超过 30 秒的 Retry-After；认证和业务错误不自动重试。端点固定，拒绝重定向。
+
+加载时停止编辑源表，这不是远端事务快照或持续同步。两个业务示例、配置迁移和验证结果见[接入说明](https://github.com/antvis/AVA/tree/oss-camp2026/examples/tencent-docs)。
 
 <Heading as="h2" id="github">GitHub</Heading>
 

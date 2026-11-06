@@ -137,7 +137,6 @@ Snowflake:
   are passed through. queryTimeoutMs (default 30000) limits each statement.
 
 Environment:
-  TENCENT_DOCS_TOKEN Tencent Docs MCP Authorization value for tencent-smartsheet.
   OPENAI_API_KEY     Required for text sources and subsequent AI commands.
   OPENAI_MODEL       Model name (default: gpt-4o-mini).
   OPENAI_BASE_URL    Optional API base URL.
@@ -162,7 +161,6 @@ Examples:
   ava source "https://my.feishu.cn/base/<appToken>?table=<tableId>"
   ava source "https://my.feishu.cn/wiki/<nodeToken>?table=<tableId>"
   ava source @feishu.json
-  ava source @tencent-docs.json
   ava source @sqlserver.json
   ava source @snowflake.json
   ava source https://github.com/antvis/AVA
@@ -186,11 +184,10 @@ feishu.json:
 
 Tencent Docs SmartSheet (Node.js / DuckDB):
   tencent-docs.json:
-    { "type": "tencent-smartsheet", "options": { "fileId": "<file-id>", "sheetId": "<sheet-id>" } }
-  Set TENCENT_DOCS_TOKEN before loading. Only supported scalar fields are exposed.
+    { "type": "tencent-smartsheet", "options": { "fileId": "<file-id>", "sheetId": "<sheet-id>", "clientId": "<client-id>", "openId": "<open-id>", "accessToken": "<access-token>" } }
+  Pass all three OpenAPI credentials explicitly in options; environment variables are not resolved. fileId must be a native API ID.
   Reads a complete, bounded snapshot into data; _record_id preserves source identity.
   Explicit IDs are required; document sharing URLs are not auto-detected.
-  Dataset sessions require macOS/Linux; on Windows use the SDK or WSL.
 
 snowflake.json:
 {
