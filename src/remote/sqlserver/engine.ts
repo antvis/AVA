@@ -1,4 +1,6 @@
-import { ConnectionPool } from 'mssql';
+// mssql is CommonJS and Node's ESM loader cannot detect ConnectionPool as a named export, so
+// esm/index.mjs must read it from the default export; a named import breaks `import '@antv/ava'`.
+import mssql from 'mssql';
 
 import { TSQLDialect } from '../../query/tsql';
 import { DEFAULT_METRICS, parseProfileOptions } from '../../util/profile';
@@ -7,7 +9,7 @@ import { executionResult, maxRows } from '../../util/result';
 import { profileTables } from './profile';
 import { getSQLServerSchema } from './schema';
 
-import type { config as SQLConfig, IColumnMetadata, IResult, Request } from 'mssql';
+import type { ConnectionPool, config as SQLConfig, IColumnMetadata, IResult, Request } from 'mssql';
 import type {
   AnalysisEngine,
   DataModel,
@@ -63,7 +65,8 @@ export class SQLServerEngine implements AnalysisEngine {
     if (config.type !== 'sqlserver') {
       throw new Error(`SQLServerEngine only supports 'sqlserver' data sources, got '${config.type}'`);
     }
-    this.pool = new ConnectionPool(connectionConfig(config.options));
+    // eslint-disable-next-line import/no-named-as-default-member -- see the comment on the mssql import
+    this.pool = new mssql.ConnectionPool(connectionConfig(config.options));
     // Request promises report transport errors. A pool-level listener also prevents
     // idle-connection errors from becoming unhandled EventEmitter exceptions.
     this.pool.on('error', () => undefined);
