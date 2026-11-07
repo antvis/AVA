@@ -14,7 +14,7 @@ Structured source loading, schema, profile, semantic, query, and `viz` do not ne
 
 ## Source inputs and engines
 
-`ava source` accepts a file or URL, `@file` containing a source configuration, or `-` for standard input. File extensions infer CSV, JSON, Parquet, Excel, and SQLite sources. Override with `--type` for path inputs; configuration files and stdin already include their type.
+`ava source` accepts a file or URL, `@file` containing a source configuration, or `-` for standard input. File extensions infer CSV, JSON, Parquet, Excel, and SQLite sources, and GitHub repository links are detected. Override with `--type` for path inputs, including `--type github` for `owner/name`; configuration files and stdin already include their type.
 
 Use `--engine` to select an execution engine. The CLI infers Supabase, ClickHouse, and SQL Server for matching source configurations; otherwise it defaults to DuckDB. This inference differs from the JavaScript constructor. The engine is fixed for the session. See [source configurations](/documentation/data/sources/) for connection and reader settings.
 
@@ -71,7 +71,7 @@ All commands accept `-h` / `--help` (boolean; optional). Every positional argume
 
 | Command     | Positional inputs                      | Flags and defaults                                                                                                                                                                                    |
 | ----------- | -------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `source`    | `dataset`: path, URL, `@file`, or `-`  | `-t` / `--type`: `csv-file`, `json-file`, `parquet`, `excel`, `sqlite`; inferred from extension. `--engine`: `duckdb`, `python`, `javascript`, `supabase`, `clickhouse`, `sqlserver`; inferred as described above. |
+| `source`    | `dataset`: path, URL, `@file`, or `-`  | `-t` / `--type`: `csv-file`, `json-file`, `parquet`, `excel`, `sqlite`, `github`; inferred from extension. `--engine`: `duckdb`, `python`, `javascript`, `supabase`, `clickhouse`, `sqlserver`; inferred as described above. |
 | `schema` | `dataset-id` | Optional `--file`: path to an existing schema JSON file. |
 | `profile` | `dataset-id` | Optional `--file`: path to an existing profile JSON file. Otherwise, `--metrics` selects comma-separated metric names; defaults to the [standard metric set](/documentation/reference/api/#profile). An empty string computes no statistics. |
 | `semantic` | `dataset-id` | Optional `--file`: path to a Semantic JSON file that replaces the complete session definition. Without it, reads the current definition. |
@@ -94,6 +94,7 @@ All commands accept `-h` / `--help` (boolean; optional). Every positional argume
 | `OPENAI_API_KEY`     | For AI commands and text extraction | Read before source creation for dataset sessions; read at command time for standalone `recommend` and `visualize`. |
 | `OPENAI_MODEL`       | No                                  | `gpt-4o-mini`.                                                                                                     |
 | `OPENAI_BASE_URL`    | No                                  | Provider default endpoint.                                                                                         |
+| `GH_TOKEN`           | No                                  | GitHub token for `github` sources, read when the source is created; `GITHUB_TOKEN` is read next.                   |
 
 ## Session lifecycle
 

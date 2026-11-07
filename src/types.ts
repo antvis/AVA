@@ -121,6 +121,7 @@ export type SourceType =
   | 'clickhouse'
   | 'feishu-bitable'
   | 'tencent-smartsheet'
+  | 'github'
   | 'sqlserver';
 
 /**
@@ -515,6 +516,20 @@ export interface TencentDocsSourceOptions {
   maxRetries?: number;
 }
 
+/** Read-only issues and pull requests of one GitHub repository (Node.js / DuckDB). */
+export interface GitHubSourceOptions {
+  /** `owner/name` or a github.com repository link. */
+  repository: string;
+  /** Personal access or GitHub App token. Optional for public repositories, which then share 60 requests per hour per IP. */
+  token?: string;
+  /** ISO 8601 date or timestamp, UTC without an offset. Keeps every open item, and closed items updated since then. */
+  since?: string;
+  /** Fail instead of truncating. Default 10,000; max 100,000. */
+  maxRecords?: number;
+  /** Whole-load deadline, including pagination, retries and rate-limit waits. Default 60,000 ms; max 110,000. */
+  timeoutMs?: number;
+}
+
 /** Microsoft SQL Server, queried remotely through a dedicated connection pool. */
 export interface SQLServerSourceOptions {
   host: string;
@@ -558,6 +573,7 @@ export type DataSourceConfig =
   | { type: 'clickhouse'; options: ClickHouseSourceOptions }
   | { type: 'feishu-bitable'; options: FeishuBitableSourceOptions }
   | { type: 'tencent-smartsheet'; options: TencentDocsSourceOptions }
+  | { type: 'github'; options: GitHubSourceOptions }
   | { type: 'sqlserver'; options: SQLServerSourceOptions };
 
 /**

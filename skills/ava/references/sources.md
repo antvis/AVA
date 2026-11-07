@@ -12,6 +12,7 @@
 | SQL Server | SQL Server only, selected automatically | T-SQL |
 | Supabase | Supabase only, selected automatically | PostgreSQL SQL |
 | Feishu Bitable | DuckDB only | DuckDB SQL |
+| GitHub issues and pull requests | DuckDB only | DuckDB SQL |
 
 To use Python or JavaScript, add `--engine python` or `--engine javascript` to the `source` command. Python does not connect directly to databases. To post-process database results with pandas, query the database first, then export the complete result as described in [Results and Post-Processing](queries.md#results-and-post-processing).
 
@@ -174,3 +175,32 @@ Options: `pageSize` 1–100 (default 100 for fields/records), `maxRecords` 1–1
 HTTP status and business `ret` are both checked. Retry only network errors and HTTP 429/500/502/503/504, with valid `Retry-After` up to 30 seconds and the overall deadline. No business error-code retries or MCP quota assumptions. Preserve upstream ret/msg, HTTP status, request IDs and selected network error name/message/code plus one cause level. Do not copy arbitrary response/error objects, stacks or headers. Exact configured credentials are replaced only in selected diagnostic strings; fields over 8 KiB are omitted whole. Non-JSON or incomplete HTTP error bodies are omitted while status/request ID remain available. Redirects are refused.
 
 Incomplete paging, repeated IDs, changed totals/supported metadata and resource overflow fail without partial data. Stop edits during import: it is not a transactionally consistent or continuously synchronized snapshot. Multi-table, discovery, views, field-selection and writes are outside this migration. Model calls are not needed for loading/schema/SQL. See `examples/tencent-docs/README.md` for OAuth/native-ID setup, manually entered synthetic fixtures, two real natural-language sales examples and opt-in live validation.
+
+## GitHub
+
+Load a repository's issues and pull requests to analyze issue backlog and pull request merge times. The CLI detects github.com repository links, including their `/issues` and `/pulls` pages; `owner/name` needs `--type github`:
+
+```sh
+ava source https://github.com/antvis/AVA > session.json
+ava source antvis/AVA --type github > session.json
+```
+
+Public repositories load without a token, but unauthenticated requests share 60 per hour per IP address. The CLI reads `GH_TOKEN`, then `GITHUB_TOKEN`; a token allows 5,000 requests per hour and reads the private repositories it can access (fine-grained, read-only Issues and Pull requests). Never put tokens in deliverables or logs. Use a config for the other options:
+
+```json
+{
+  "type": "github",
+  "options": { "repository": "antvis/AVA", "since": "2026-01-01", "maxRecords": 10000, "timeoutMs": 60000 }
+}
+```
+
+`since` (UTC without an offset) keeps every open item, so backlog counts stay complete, plus closed items updated since then; counts of items closed before it are incomplete. More than `maxRecords` (default 10,000, max 100,000) issues and pull requests fail the load instead of truncating it; `timeoutMs` (default 60,000, max 110,000) bounds the whole load, including retries and rate-limit waits. CLI loads must finish within two minutes.
+
+Tables, both keyed by `number`:
+
+| Table | Columns |
+| --- | --- |
+| `issues` | `title`, `state` (`open`/`closed`), `state_reason` (`completed`, `not_planned`, `duplicate`, `reopened`), `author`, `author_association`, `author_is_bot`, `assignees`, `labels`, `comments`, `created_at`, `updated_at`, `closed_at`, `html_url` |
+| `pull_requests` | The same columns without `state_reason`, plus `is_draft`, `is_merged`, `merged_at` |
+
+Query notes: a merged pull request has `state = 'closed'` and `is_merged`; closed without merging is `state = 'closed' AND NOT is_merged`. `state`, `state_reason` and `author_association` are ENUMs, so `ava schema` lists their values. Times are UTC `TIMESTAMP`s matching GitHub search qualifiers; compute durations with `date_diff('hour', created_at, merged_at)`. `assignees` and `labels` are `VARCHAR[]`: use `len(assignees) = 0`, `list_contains(labels, 'bug')` or `unnest(labels)`. Exclude bots with `NOT author_is_bot`. Bodies, reviews, commits and other repository objects are not loaded. See `examples/github/README.md` for the two business examples checked against GitHub search.

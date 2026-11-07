@@ -3,6 +3,7 @@ import { extname, resolve } from 'path';
 import { createSession } from '../session/client';
 import { engineTypeSchema, sourceConfig } from '../session/protocol';
 import { isFeishuBitableUrl, isFeishuHostUrl, feishuCredentials } from '../feishu';
+import { isGitHubRepositoryUrl } from '../../duckdb/loaders/github/config';
 import { llmConfig } from '../config';
 import { readJSON } from '../io';
 import { option } from '../options';
@@ -44,16 +45,26 @@ export async function run([dataset]: string[], options: Options): Promise<{ data
     throw new Error(
       'Only Feishu Bitable links are supported: /base/<appToken>?table=<tableId> or /wiki/<nodeToken>?table=<tableId>. Docx, Sheets, and other Feishu links cannot be loaded.'
     );
+  } else if (isGitHubRepositoryUrl(dataset)) {
+    if (options.type !== undefined) throw new Error('--type cannot be combined with a GitHub repository link.');
+    input = { type: 'github', options: { repository: dataset } };
+  } else if (/^https?:\/\/(www\.)?github\.com(\/|$)/i.test(dataset)) {
+    throw new Error(
+      'Only GitHub repository links are supported: https://github.com/<owner>/<repo>, or its /issues or /pulls page.'
+    );
   } else {
     const pathname = /^https?:\/\//i.test(dataset) ? new URL(dataset).pathname : dataset;
     const type = option(options, 'type') ?? sourceTypes[extname(pathname).toLowerCase()];
     if (!type) throw new Error('Cannot infer the source type. Pass --type.');
-    input = { type, options: { path: dataset } };
+    input = type === 'github' ? { type, options: { repository: dataset } } : { type, options: { path: dataset } };
   }
 
   const config = sourceConfig.parse(input);
   if (config.type === 'tencent-smartsheet' && engine !== undefined && engine !== 'duckdb') {
     throw new Error('Tencent Docs SmartSheet sources require the duckdb engine.');
+  }
+  if (config.type === 'github' && engine !== undefined && engine !== 'duckdb') {
+    throw new Error('GitHub sources require the duckdb engine.');
   }
 
   if ('path' in config.options && !/^https?:\/\//i.test(config.options.path)) {
@@ -64,6 +75,12 @@ export async function run([dataset]: string[], options: Options): Promise<{ data
     const creds = await feishuCredentials(config.options);
     config.options.appId = creds.appId;
     config.options.appSecret = creds.appSecret;
+  }
+
+  if (config.type === 'github' && config.options.token === undefined) {
+    // Same order as the GitHub CLI: GH_TOKEN, then GITHUB_TOKEN. Public repositories need neither.
+    const token = process.env.GH_TOKEN?.trim() || process.env.GITHUB_TOKEN?.trim();
+    if (token) config.options.token = token;
   }
 
   return createSession(config, llmConfig(config.type === 'text'), engine);
@@ -90,8 +107,9 @@ Arguments:
 
 Options:
   -t, --type <type>  Override the type inferred from the file extension.
-                    Types: csv-file, json-file, parquet, excel, sqlite.
-                    Cannot be used with @file, stdin configs, or Feishu URLs.
+                    Types: csv-file, json-file, parquet, excel, sqlite, github.
+                    With github, dataset is owner/name.
+                    Cannot be used with @file, stdin configs, Feishu or GitHub URLs.
   --engine <type>    duckdb, python, javascript, supabase, clickhouse, or sqlserver.
                     Default: supabase/clickhouse/sqlserver for those sources, otherwise duckdb.
                     Fixed for the session; source support depends on the engine.
@@ -118,6 +136,7 @@ Environment:
   OPENAI_BASE_URL    Optional API base URL.
   AVA_FEISHU_APP_ID      Feishu app credentials for feishu-bitable sources.
   AVA_FEISHU_APP_SECRET
+  GH_TOKEN           GitHub token for github sources; GITHUB_TOKEN is read next.
   Model settings are fixed when the dataset is loaded.
 
 In a terminal, shows the dataset ID and suggested next commands.
@@ -137,6 +156,7 @@ Examples:
   ava source "https://my.feishu.cn/wiki/<nodeToken>?table=<tableId>"
   ava source @feishu.json
   ava source @sqlserver.json
+  ava source https://github.com/antvis/AVA
 
 SQL Server:
   Pass a "sqlserver" config via @file or stdin; its engine is selected automatically.
@@ -162,4 +182,13 @@ Tencent Docs SmartSheet (Node.js / DuckDB):
   Reads a complete, bounded snapshot into data; _record_id preserves source identity.
   Explicit IDs are required; document sharing URLs are not auto-detected.
   Dataset sessions require macOS/Linux; on Windows use the SDK or WSL.
+
+GitHub (Node.js / DuckDB):
+  A github.com repository link, or its /issues or /pulls page, is detected automatically;
+  owner/name works with --type github. Loads the tables issues and pull_requests (read-only).
+  Public repositories need no token, but unauthenticated requests share 60 per hour per IP.
+  github.json:
+    { "type": "github", "options": { "repository": "antvis/AVA", "since": "2026-01-01" } }
+  since keeps every open item and the closed ones updated since then (UTC).
+  Lists over maxRecords (default 10000) fail instead of loading partially.
 `;

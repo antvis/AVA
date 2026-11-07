@@ -84,7 +84,7 @@ const schema = await ava.schema();
 
 | Parameter | Type                   | Required | Meaning                                                                                                                                      |
 | --------- | ---------------------- | -------- | -------------------------------------------------------------------------------------------------------------------------------------------- |
-| `type`    | `SourceType`           | Yes      | `csv`, `csv-file`, `json`, `json-file`, `parquet`, `excel`, `text`, `sqlite`, `mysql`, `postgresql`, `mongodb`, `supabase`, `clickhouse`, `sqlserver`, or `feishu-bitable`. |
+| `type`    | `SourceType`           | Yes      | `csv`, `csv-file`, `json`, `json-file`, `parquet`, `excel`, `text`, `sqlite`, `mysql`, `postgresql`, `mongodb`, `supabase`, `clickhouse`, `sqlserver`, `feishu-bitable`, or `github`. |
 | `options` | Source-specific object | Yes      | Use the matching table below. Field names are relative to `options`.                                                                         |
 
 `source()` returns no value and prepares the data for execution. Schema discovery is deferred until `schema()` or another operation needs it. Calling `source()` again replaces the current source and clears its cached metadata. Use `schema()` to inspect table and field names, and call `await ava.dispose()` when finished.
@@ -637,6 +637,47 @@ Fields and records are fully paginated; missing/repeated IDs, inconsistent offse
 Stop editing while loading: same-count changes cannot all be detected, and this is not a transactional remote snapshot or continuous sync. Multi-table JOIN, discovery, views/field selection, ordinary spreadsheet ranges and writes are outside this migration. Model analysis uses your configured provider; start with synthetic data.
 
 See the [reproducible sales example](https://github.com/antvis/AVA/tree/oss-camp2026/examples/tencent-docs) for authorization/configuration, native-ID conversion, manual fixture setup, two natural-language business examples, exact numerical assertions and current validation evidence.
+
+## GitHub
+
+Analyze a repository's issue backlog and pull request merge times. AVA reads one repository's issues and pull requests through the [GitHub REST API](https://docs.github.com/rest/issues/issues#list-repository-issues), read-only, into two DuckDB tables: `issues` and `pull_requests`. Node.js SDK and CLI with the DuckDB engine only.
+
+```typescript
+await ava.source({
+  type: 'github',
+  options: { repository: 'antvis/AVA', token: process.env.GITHUB_TOKEN },
+});
+
+const backlog = await ava.analyze('How many open issues have no assignee, and how many were opened over 90 days ago?');
+```
+
+| Field | Type | Required / default |
+| --- | --- | --- |
+| `repository` | `string` | Required; `owner/name` or a github.com repository link. |
+| `token` | `string` | Optional for public repositories, which then share 60 requests per hour per IP address. A token allows 5,000 per hour and reads the private repositories it can access. |
+| `since` | `string` | Optional ISO 8601 date or timestamp, UTC without an offset. Every open item is still loaded, so the backlog stays complete; closed items are limited to those updated since then. |
+| `maxRecords` | `number` | 1–100,000; default 10,000 issues and pull requests. Overflow fails, never truncates. |
+| `timeoutMs` | `number` | 1–110,000; default 60,000 ms for the whole load, including retries and rate-limit waits. |
+
+| Table | Columns |
+| --- | --- |
+| `issues` | `number` (primary key), `title`, `state`, `state_reason`, `author`, `author_association`, `author_is_bot`, `assignees`, `labels`, `comments`, `created_at`, `updated_at`, `closed_at`, `html_url` |
+| `pull_requests` | The same columns without `state_reason`, plus `is_draft`, `is_merged`, and `merged_at` |
+
+As on GitHub, a merged pull request is `closed`; `is_merged` tells it apart from one closed without merging. `state`, `state_reason`, and `author_association` are `ENUM`s of GitHub's documented values plus any other value returned, so the schema lists them. Times are UTC `TIMESTAMP`s, the same time zone as GitHub search qualifiers such as `created:2026-10-01..2026-10-31`. `assignees` and `labels` are `VARCHAR[]`: use `list_contains(labels, 'bug')`, `len(assignees) = 0`, or `unnest(labels)`. `comments` counts conversation comments. Bodies, reviews, commits, and other repository objects are not loaded.
+
+For private repositories, create a [fine-grained personal access token](https://github.com/settings/personal-access-tokens/new) for the repository with read-only **Issues** and **Pull requests** permissions; a classic token needs no scope for public repositories and `repo` for private ones. Organizations that enforce SAML single sign-on also require authorizing the token. The loader does not read environment variables; the CLI reads `GH_TOKEN`, then `GITHUB_TOKEN`.
+
+Each request returns up to 100 items, following `Link` pagination on `api.github.com` only. When GitHub reports a rate limit, AVA waits for the reset time, `retry-after`, or one minute for a secondary limit; a wait that would pass `timeoutMs` fails at once with the reset time. Network errors, cut-off responses, and 5xx responses are retried three times. Other errors, such as 401, 403 (including SAML single sign-on) and 404, keep GitHub's message and are not retried. A malformed item fails the load. Rows are bound as a JSON parameter, without temporary files.
+
+The CLI detects repository links, including their `/issues` and `/pulls` pages, and reads `owner/name` with `--type github`. Use an `@file` config for `since` and limits; CLI sessions must finish loading within two minutes.
+
+```sh
+ava source https://github.com/antvis/AVA
+ava analyze <datasetId> "What was the median time to merge, in hours, of pull requests merged in October 2026?"
+```
+
+See the [GitHub example](https://github.com/antvis/AVA/tree/oss-camp2026/examples/github) for two business questions checked against GitHub search.
 
 ## SSH options
 

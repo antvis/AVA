@@ -86,7 +86,7 @@ const schema = await ava.schema();
 
 | 参数 | 类型 | 必填 | 含义 |
 | --------- | ---------------------- | -------- | -------------------------------------------------------------------------------------------------------------------------------------------- |
-| `type` | `SourceType` | 是 | 支持 `csv`、`csv-file`、`json`、`json-file`、`parquet`、`excel`、`text`、`sqlite`、`mysql`、`postgresql`、`mongodb`、`supabase`、`clickhouse`、`feishu-bitable`。 |
+| `type` | `SourceType` | 是 | 支持 `csv`、`csv-file`、`json`、`json-file`、`parquet`、`excel`、`text`、`sqlite`、`mysql`、`postgresql`、`mongodb`、`supabase`、`clickhouse`、`feishu-bitable`、`github`。 |
 | `options` | 数据源对应的对象 | 是 | 使用下方对应的数据源参数表，字段名均相对于 `options`。 |
 
 `source()` 没有返回值，负责为执行准备数据。结构发现会推迟到 `schema()` 或其他操作需要时进行。再次调用 `source()` 会替换当前数据源并清空元数据缓存。使用 `schema()` 查看表名与字段名，结束后调用 `await ava.dispose()`。
@@ -598,6 +598,47 @@ fileId 使用原生 ID，分享链接 encoded ID 需通过官方 [ID 转换](htt
 分别检查 HTTP 与业务 ret，保留状态、业务 ret/msg、请求 ID，以及网络异常的名称、消息、错误码和一层原因；不复制任意对象、堆栈或请求头。仅对选定字符串精确替换凭证，超过 8 KiB 的字段整体省略；非 JSON 或不完整的 HTTP 错误正文不输出，仍保留状态和请求 ID。只重试网络错误及 HTTP 429/500/502/503/504，遵循有效且不超过 30 秒的 Retry-After；认证和业务错误不自动重试。端点固定，拒绝重定向。
 
 加载时停止编辑源表，这不是远端事务快照或持续同步。两个业务示例、配置迁移和验证结果见[接入说明](https://github.com/antvis/AVA/tree/oss-camp2026/examples/tencent-docs)。
+
+<Heading as="h2" id="github">GitHub</Heading>
+
+用于分析仓库的 Issue 积压和 PR 合并耗时。AVA 通过 [GitHub REST API](https://docs.github.com/rest/issues/issues#list-repository-issues) 只读读取一个仓库的 issue 和 PR，载入 DuckDB 的两张表 `issues`、`pull_requests`。仅支持 Node.js SDK 和 CLI，以及 DuckDB 引擎。
+
+```typescript
+await ava.source({
+  type: 'github',
+  options: { repository: 'antvis/AVA', token: process.env.GITHUB_TOKEN },
+});
+
+const backlog = await ava.analyze('未关闭的 issue 中有多少个没有负责人，多少个是 90 天前创建的？');
+```
+
+| 字段 | 类型 | 必填 / 默认值 |
+| --- | --- | --- |
+| `repository` | `string` | 必填；`owner/name` 或 github.com 仓库链接。 |
+| `token` | `string` | 公开仓库可不填，此时按 IP 共享每小时 60 次请求；有 token 时每小时 5,000 次，并可读取 token 有权访问的私有仓库。 |
+| `since` | `string` | 可选，ISO 8601 日期或时间，不带时区时按 UTC。所有未关闭的 issue 和 PR 照常全部读取，保证积压完整；已关闭的只读取此后有更新的。 |
+| `maxRecords` | `number` | 1–100,000，默认 10,000 个 issue 和 PR；超出直接失败，不截断。 |
+| `timeoutMs` | `number` | 1–110,000，默认 60,000 毫秒，覆盖整次加载，包括重试和限流等待。 |
+
+| 表 | 列 |
+| --- | --- |
+| `issues` | `number`（主键）、`title`、`state`、`state_reason`、`author`、`author_association`、`author_is_bot`、`assignees`、`labels`、`comments`、`created_at`、`updated_at`、`closed_at`、`html_url` |
+| `pull_requests` | 同上，但没有 `state_reason`，另有 `is_draft`、`is_merged`、`merged_at` |
+
+与 GitHub 一致，已合并的 PR `state` 为 `closed`，用 `is_merged` 区分合并与关闭未合并。`state`、`state_reason`、`author_association` 是 GitHub 文档取值加上实际返回取值构成的 `ENUM`，schema 中直接列出可用取值。时间统一为 UTC 的 `TIMESTAMP`，与 GitHub 搜索限定词（如 `created:2026-10-01..2026-10-31`）时区一致。`assignees`、`labels` 为 `VARCHAR[]`，可用 `list_contains(labels, 'bug')`、`len(assignees) = 0` 或 `unnest(labels)`。`comments` 为对话评论数。不读取正文、review、commit 和仓库的其他对象。
+
+私有仓库请为该仓库创建只读 **Issues**、**Pull requests** 权限的 [fine-grained token](https://github.com/settings/personal-access-tokens/new)；classic token 读公开仓库无需 scope，读私有仓库需要 `repo`。组织启用 SAML 单点登录时还需为该组织授权 token。loader 不读取环境变量；CLI 依次读取 `GH_TOKEN`、`GITHUB_TOKEN`。
+
+每次请求最多 100 条，只沿 `api.github.com` 上的 `Link` 分页。GitHub 返回限流时，按重置时间、`retry-after` 或次级限流的 1 分钟等待；等待会超过 `timeoutMs` 时立即失败并给出重置时间。网络错误、响应中途断开和 5xx 重试三次；401、403（含 SAML 单点登录）、404 等错误保留 GitHub 的原始信息，不重试。数据异常的条目会使加载失败。行数据以 JSON 参数绑定写入，不写临时文件。
+
+CLI 自动识别仓库链接（包括其 `/issues`、`/pulls` 页面），`owner/name` 需配合 `--type github`。`since` 和各项上限通过 `@file` 配置传入；CLI 会话须在两分钟内加载完成。
+
+```sh
+ava source https://github.com/antvis/AVA
+ava analyze <datasetId> "2026 年 10 月合并的 PR 从创建到合并的中位时长是多少小时？"
+```
+
+两个业务问题及其与 GitHub 搜索结果的核对见 [GitHub 示例](https://github.com/antvis/AVA/tree/oss-camp2026/examples/github)。
 
 <Heading as="h2" id="ssh-options">SSH 选项</Heading>
 

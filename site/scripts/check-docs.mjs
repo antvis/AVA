@@ -56,6 +56,7 @@ const inputTypes = new Set([
   'ExcelSourceOptions',
   'TextSourceOptions',
   'TencentDocsSourceOptions',
+  'GitHubSourceOptions',
   'SSHOptions',
   'MySQLSourceOptions',
   'PostgreSQLSourceOptions',

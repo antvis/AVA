@@ -3,6 +3,7 @@ import { join } from 'path';
 
 import { z } from 'zod';
 
+import { githubOptionsSchema } from '../../duckdb/loaders/github/config';
 import { tencentDocsOptionsSchema } from '../../duckdb/loaders/tencent/config';
 import { excelOptionsSchema } from '../../util/excel';
 import { profileMetadataSchema } from '../../util/profile';
@@ -139,6 +140,7 @@ const sourceSchema = z.discriminatedUnion('type', [
   z.object({ type: z.literal('sqlserver'), options: sqlserver }).strict(),
   z.object({ type: z.literal('feishu-bitable'), options: feishuBitable }).strict(),
   z.object({ type: z.literal('tencent-smartsheet'), options: tencentDocsOptionsSchema }).strict(),
+  z.object({ type: z.literal('github'), options: githubOptionsSchema }).strict(),
 ]);
 
 export const sourceConfig = sourceSchema.transform((value) => value as DataSourceConfig);
