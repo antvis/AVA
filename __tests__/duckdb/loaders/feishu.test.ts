@@ -1,51 +1,35 @@
 /**
- * 通过显式配置的飞书多维表格验证 API 和读取链路。
+ * Live Feishu Open API check, skipped unless AVA_FEISHU_BITABLE_URL, AVA_FEISHU_APP_ID
+ * and AVA_FEISHU_APP_SECRET are configured.
  */
 
-import { describe, it, expect } from 'vitest';
+import { describe, expect, it } from 'vitest';
 
-import { getTenantAccessToken } from '../../../src/duckdb/loaders/feishu/token';
-import { parseBitableUrl } from '../../../src/duckdb/loaders/feishu/url';
-import { readTable } from '../../../src/duckdb/loaders/feishu/read';
+import { AVA } from '../../../src';
+import { sqlIdentifier } from '../../../src/util/sql';
 
-const BITABLE_URL = process.env.AVA_FEISHU_BITABLE_URL!;
-const appId = process.env.AVA_FEISHU_APP_ID!;
-const appSecret = process.env.AVA_FEISHU_APP_SECRET!;
+const url = process.env.AVA_FEISHU_BITABLE_URL;
+const appId = process.env.AVA_FEISHU_APP_ID;
+const appSecret = process.env.AVA_FEISHU_APP_SECRET;
+const credentials = appId && appSecret ? { appId, appSecret } : undefined;
 
-const api = (appToken: string, tableId: string, suffix: string) =>
-  `https://open.feishu.cn/open-apis/bitable/v1/apps/${appToken}/tables/${tableId}${suffix}`;
-
-describe.skipIf(!appId || !BITABLE_URL)('feishu-bitable 连通性', () => {
-  it('能取到 token、字段和记录', async () => {
-    const token = await getTenantAccessToken(appId, appSecret);
-    const { appToken, tableId } = parseBitableUrl(BITABLE_URL);
-    const get = async (suffix: string) => {
-      const res = await fetch(api(appToken, tableId, suffix), { headers: { Authorization: `Bearer ${token}` } });
-      const body = await res.json();
-      expect(body.code, `code=${body.code} msg=${body.msg}`).toBe(0);
-      return body.data;
-    };
-    const fields = await get('/fields');
-    expect(fields.items.length).toBeGreaterThan(0);
-    const records = await get('/records');
-    expect(records.items.length).toBeGreaterThan(0);
-  }, 30000);
-  it('返回成功的 HTTP 状态和记录结构', async () => {
-    const token = await getTenantAccessToken(appId, appSecret);
-    const { appToken, tableId } = parseBitableUrl(BITABLE_URL);
-    const get = async (suffix: string) => {
-      const res = await fetch(api(appToken, tableId, suffix), { headers: { Authorization: `Bearer ${token}` } });
-      return { status: res.status, body: await res.json() };
-    };
-    const { status, body } = await get('/records');
-    expect(status).toBe(200);
-    expect(body.code).toBe(0);
-    expect(body.data.items).toEqual(expect.any(Array));
-  }, 30000);
-  it('readTable 读取的是入参指定的那张表', async () => {
-    const { appToken, tableId } = parseBitableUrl(BITABLE_URL);
-    const rows = await readTable({ appToken, tableId, appId, appSecret });
-    expect(rows.length).toBeGreaterThan(0);
-    expect(Object.keys(rows[0]).length).toBeGreaterThan(0);
-  }, 30000);
+describe.skipIf(!url || !credentials)('feishu-bitable live API', () => {
+  it('loads the configured Bitable with one row per record', async () => {
+    const ava = new AVA({ llm: { model: 'no-model-call' } });
+    try {
+      await ava.source({ type: 'feishu-bitable', options: { url, ...credentials } });
+      const schema = await ava.schema();
+      expect(schema.models.length).toBeGreaterThan(0);
+      for (const model of schema.models) {
+        expect(model.primaryKey).toBeDefined();
+        const key = sqlIdentifier(String(model.primaryKey));
+        const result = await ava.query(
+          `SELECT COUNT(*) AS rows, COUNT(DISTINCT ${key}) AS records FROM ${sqlIdentifier(model.name)}`
+        );
+        expect(result.data[0].rows).toBe(result.data[0].records);
+      }
+    } finally {
+      await ava.dispose();
+    }
+  }, 120_000);
 });
