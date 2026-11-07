@@ -76,6 +76,7 @@ export type EngineConfig =
   | { type: 'javascript' }
   | { type: 'supabase' }
   | { type: 'clickhouse' }
+  | { type: 'snowflake' }
   | { type: 'sqlserver' }
   | { type: string; [option: string]: unknown };
 
@@ -104,6 +105,7 @@ export interface AnalysisConfig extends ExecutionOptions {
  * - database types: `mysql`, `postgresql`, `sqlite`, `mongodb` (ATTACH through DuckDB's extension)
  * - direct query types: `clickhouse` (schema discovered and SQL executed through ClickHouse's HTTP API)
  * - cloud types: `supabase` (schema discovered and SQL executed through the Supabase Management API — data never leaves the SaaS; handled by SaasDBEngine)
+ * - direct query types: `snowflake` (schema discovered and read-only SQL executed through a Snowflake connector)
  */
 export type SourceType =
   | 'csv'
@@ -119,9 +121,10 @@ export type SourceType =
   | 'mongodb'
   | 'supabase'
   | 'clickhouse'
+  | 'snowflake'
+  | 'sqlserver'
   | 'feishu-bitable'
-  | 'tencent-smartsheet'
-  | 'sqlserver';
+  | 'tencent-smartsheet';
 
 /**
  * DuckDB read_csv reader options.
@@ -535,6 +538,83 @@ export interface SQLServerSourceOptions {
 }
 
 /**
+ * A column descriptor used to seed the built-in in-memory mock adapter.
+ * Mirrors the catalog rows the engine expects so mock-driven tests and demos
+ * exercise the same contracts as a live server.
+ */
+export interface MockTableColumn {
+  name: string;
+  type: string;
+  notNull?: boolean;
+}
+
+/** A table seeded into the built-in in-memory mock adapter. */
+export interface MockTableSeed {
+  name: string;
+  /** Optional schema; defaults to `PUBLIC` (Snowflake's default). */
+  schema?: string;
+  columns: MockTableColumn[];
+  /** Overrides the primary key discovered from `keyColumns`. */
+  primaryKey?: string[] | string;
+  /** Rows matching `columns`. */
+  rows?: Record<string, unknown>[];
+}
+
+/** Options shared by the production and in-memory Snowflake adapters. */
+interface SnowflakeBaseSourceOptions {
+  /** Password, or omit when using private-key / OAuth / SSO authenticators. */
+  password?: string;
+  /** Database to discover and query (required). */
+  database: string;
+  /** Schema to discover and query (default `PUBLIC`). */
+  schema?: string;
+  /** Warehouse to run queries in. Omit to let Snowflake pick one. */
+  warehouse?: string;
+  /** Role for the session. */
+  role?: string;
+  /** Region used by major Snowflake deployment regions (e.g. `us-east-1`). */
+  region?: string;
+  /** Custom connection host (overrides the default `<account>.snowflakecomputing.com`). */
+  host?: string;
+  /** Connection establishment time limit in milliseconds (default 30000). */
+  connectionTimeout?: number;
+  /** Authenticator name: `snowflake` (default), `externalbrowser`, `oauth`, or `snowflake_jwt`. */
+  authenticator?: string;
+  /** Private key PEM for key-pair auth; when set, `password`/`authenticator` are ignored. */
+  privateKey?: string;
+  /** OAuth access token forwarded to `snowflake-sdk` when using OAuth authentication. */
+  token?: string;
+  /** Seed data for the `mock` adapter. */
+  tables?: MockTableSeed[];
+}
+
+/** Production Snowflake options; `adapter` defaults to `snowflake`. */
+export interface SnowflakeSDKSourceOptions extends SnowflakeBaseSourceOptions {
+  /** Snowflake account identifier (e.g. `xy12345.us-east-1`). */
+  account: string;
+  /** Login name. */
+  username: string;
+  adapter?: 'snowflake';
+}
+
+/** In-memory Snowflake options. Credentials are optional and ignored by the mock connector. */
+export interface MockSnowflakeSourceOptions extends SnowflakeBaseSourceOptions {
+  /** Retained for compatibility with configs shared between adapters. */
+  account?: string;
+  /** Retained for compatibility with configs shared between adapters. */
+  username?: string;
+  adapter: 'mock';
+}
+
+/**
+ * Options for Snowflake data sources (handled by a SnowflakeEngine that
+ * executes read-only SQL remotely through a connector, analogous to
+ * ClickHouseEngine). The explicit `mock` branch needs no account credentials;
+ * the production branch defaults to `snowflake-sdk` and requires them.
+ */
+export type SnowflakeSourceOptions = SnowflakeSDKSourceOptions | MockSnowflakeSourceOptions;
+
+/**
  * External data source configuration for loadSource.
  * - inline types (csv/json/text): data is materialized into JS memory
  * - file types (csv-file/json-file/parquet): loaded through DuckDB's readers
@@ -556,9 +636,10 @@ export type DataSourceConfig =
   | { type: 'mongodb'; options: MongoDBSourceOptions }
   | { type: 'supabase'; options: SupabaseSourceOptions }
   | { type: 'clickhouse'; options: ClickHouseSourceOptions }
+  | { type: 'snowflake'; options: SnowflakeSourceOptions }
+  | { type: 'sqlserver'; options: SQLServerSourceOptions }
   | { type: 'feishu-bitable'; options: FeishuBitableSourceOptions }
-  | { type: 'tencent-smartsheet'; options: TencentDocsSourceOptions }
-  | { type: 'sqlserver'; options: SQLServerSourceOptions };
+  | { type: 'tencent-smartsheet'; options: TencentDocsSourceOptions };
 
 /**
  * File formats readable by DuckDB's readers (csv-file maps to csv, json-file to json).

@@ -56,6 +56,10 @@ export async function loadSource(config: DataSourceConfig, llmConfig: LLMConfig)
       // ClickHouse is queried directly through ClickHouseEngine, not through
       // DuckDB ATTACH loaders.
       throw new Error('ClickHouse sources are handled by ClickHouseEngine, not the DuckDB engine');
+    case 'snowflake':
+      // Snowflake is queried directly through SnowflakeEngine, not through
+      // DuckDB ATTACH loaders.
+      throw new Error('Snowflake sources are handled by SnowflakeEngine, not the DuckDB engine');
     case 'sqlserver':
       throw new Error("SQL Server sources require engine: { type: 'sqlserver' }");
     case 'feishu-bitable':

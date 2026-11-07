@@ -54,6 +54,11 @@
     <strong>ClickHouse</strong>
     <span>Analytics database</span>
   </a>
+  <a href="#snowflake">
+    <img src="/logos/snowflake.svg" alt="" width="28" height="28" />
+    <strong>Snowflake</strong>
+    <span>Cloud warehouse</span>
+  </a>
   <a href="/documentation/engines/custom/">
     <img src="/logos/contribute.svg" alt="" width="28" height="28" />
     <strong>Custom extension</strong>
@@ -84,12 +89,12 @@ const schema = await ava.schema();
 
 | Parameter | Type                   | Required | Meaning                                                                                                                                      |
 | --------- | ---------------------- | -------- | -------------------------------------------------------------------------------------------------------------------------------------------- |
-| `type`    | `SourceType`           | Yes      | `csv`, `csv-file`, `json`, `json-file`, `parquet`, `excel`, `text`, `sqlite`, `mysql`, `postgresql`, `mongodb`, `supabase`, `clickhouse`, `sqlserver`, or `feishu-bitable`. |
+| `type`    | `SourceType`           | Yes      | `csv`, `csv-file`, `json`, `json-file`, `parquet`, `excel`, `text`, `sqlite`, `mysql`, `postgresql`, `mongodb`, `supabase`, `clickhouse`, `sqlserver`, `snowflake`, or `feishu-bitable`. |
 | `options` | Source-specific object | Yes      | Use the matching table below. Field names are relative to `options`.                                                                         |
 
 `source()` returns no value and prepares the data for execution. Schema discovery is deferred until `schema()` or another operation needs it. Calling `source()` again replaces the current source and clears its cached metadata. Use `schema()` to inspect table and field names, and call `await ava.dispose()` when finished.
 
-The examples use Node.js. Supabase, ClickHouse, and SQL Server include their required constructor settings alongside the source call. For frontend applications, see [browser usage](/documentation/browser/).
+The examples use Node.js. Supabase, ClickHouse, SQL Server, and Snowflake include their required constructor settings alongside the source call. For frontend applications, see [browser usage](/documentation/browser/).
 
 ## CSV
 
@@ -590,6 +595,67 @@ All forwarded fields are optional. Server settings are an extensible, server-ver
 | `json.stringify`                           | `<T>(input: T) => string`                        | Optional; serializes a value.                                               |
 
 Zstd compression requires Node.js 22.15 or newer in this client. Response compression may conflict with the engine's enforced read-only server settings; leave it disabled unless the server permits it.
+
+## Snowflake
+
+Connect AVA to a [Snowflake][snowflake] account and automatically discover its tables (the `PUBLIC` schema by default). Queries run read-only against the remote warehouse; data is never materialized locally.
+
+```typescript
+const ava = new AVA({
+  llm: { model: 'YOUR_MODEL', apiKey: proces..._KEY },
+  engine: { type: 'snowflake' },
+});
+await ava.source({
+  type: 'snowflake',
+  options: {
+    account: 'xy12345.us-east-1',
+    database: 'analytics',
+    schema: 'public',
+    username: 'reader',
+    password: process.env.SNOWFLAKE_PASSWORD,
+  },
+});
+```
+
+### Connection fields
+
+| Field              | Type     | Required | Meaning / default                                                                          |
+| ------------------ | -------- | -------- | ------------------------------------------------------------------------------------------ |
+| `account`          | `string` | Production | Snowflake account identifier (e.g. `xy12345.us-east-1`); unnecessary for `mock`.          |
+| `username`         | `string` | Production | Login name; unnecessary for `mock`.                                                        |
+| `database`         | `string` | Yes      | Database to discover and query.                                                            |
+| `schema`           | `string` | No       | Schema to discover and query (default `PUBLIC`).                                           |
+| `password`         | `string` | No       | Password (omit when using private-key / OAuth / SSO authenticators).                        |
+| `warehouse`        | `string` | No       | Warehouse to run queries in; AVA lets Snowflake pick one when omitted.                      |
+| `role`             | `string` | No       | Role for the session.                                                                      |
+| `region`           | `string` | No       | Region (e.g. `us-east-1`).                                                                |
+| `host`             | `string` | No       | Custom connection host (default `<account>.snowflakecomputing.com`).                        |
+| `connectionTimeout`| `number` | No       | Connection establishment time limit milliseconds (default `30000`).                          |
+| `authenticator`    | `string` | No       | `snowflake` (default), `externalbrowser`, `oauth`, or `snowflake_jwt`.                      |
+| `token`            | `string` | OAuth    | OAuth access token forwarded to the driver.                                                |
+| `privateKey`       | `string` | No       | Private key PEM; selects `SNOWFLAKE_JWT` and omits `password`.                              |
+| `adapter`          | `string` | No       | `snowflake` (default) or `mock`; the mock runs in memory with `tables`.                     |
+| `tables`           | array    | No       | Seed data for the `mock` adapter (`MockTableSeed[]`).                                      |
+
+The production adapter lazily loads `snowflake-sdk` in both ESM and CommonJS builds — install it (`npm install snowflake-sdk`) to connect to a real account. Use a restricted role with only the required read privileges: local query validation is defense-in-depth, not a privilege boundary, and rejects sequence advances such as `NEXTVAL`. With `adapter: 'mock'`, AVA serves the configured `tables` from an in-memory connector without account credentials or network access.
+
+### Analysis examples
+
+With a seeded mock source you can analyze directly:
+
+```typescript
+await ava.source({
+  type: 'snowflake',
+  options: { adapter: 'mock', database: 'demo', tables: SNOWFLAKE_TABLE_SEED },
+});
+// 1) Aggregate by region — the LLM emits a read-only Snowflake GROUP BY.
+const summary = await ava.analyze('Average revenue per order by region, sorted highest first');
+// => e.g. [{ REGION: 'South', AVG_REVENUE: 82.25 }, ...]
+// 2) Filter + aggregate (a two-step read-only query).
+const best = await ava.analyze('Which product sells the most units in the North region?');
+```
+
+[snowflake]: https://www.snowflake.com
 
 ## Tencent Docs SmartSheet
 

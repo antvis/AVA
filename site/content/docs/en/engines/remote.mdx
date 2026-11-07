@@ -36,6 +36,25 @@ await ava.source({
 
 Use `url` or `host`, with a required `database`. `username` takes precedence over the `user` alias. Queries use the official ClickHouse client with read-only settings.
 
+## Snowflake
+
+```typescript
+const ava = new AVA({
+  llm: { model: 'YOUR_MODEL', apiKey: proces..._KEY },
+  engine: { type: 'snowflake' },
+});
+await ava.source({
+  type: 'snowflake',
+  options: {
+    account: 'xy12345.us-east-1',
+    database: 'analytics',
+    schema: 'public',
+    username: 'reader',
+    password: process.env.SNOWFLAKE_PASSWORD,
+  },
+});
+```
+
 ## SQL Server
 
 ```typescript
@@ -54,10 +73,15 @@ await ava.source({
 });
 ```
 
-Queries use the Node.js `mssql` driver with read-only T-SQL.
+For Snowflake, provide an `account`, `username`, and `database`; `schema` defaults to `PUBLIC`.
+Snowflake tables are discovered through Snowflake's catalog interfaces and queried with
+read-only SQL. The production adapter lazily loads `snowflake-sdk`; for demos and
+tests without an account, set `adapter: 'mock'` and seed `tables`.
+
+SQL Server queries use the Node.js `mssql` driver with read-only T-SQL.
 
 ## Shared workflow
 
 All remote engines support `schema()`, `profile()`, `translate()`, `query()`, and `analyze()`. Set the matching source and engine types in the JavaScript API. Release resources with `await ava.dispose()` after use.
 
-See [Supabase parameters](/documentation/data/sources/#supabase), [ClickHouse options](/documentation/data/sources/#clickhouse), and [SQL Server parameters](/documentation/data/sources/#sql-server) for complete configuration tables.
+See [Supabase parameters](/documentation/data/sources/#supabase), [ClickHouse options](/documentation/data/sources/#clickhouse), [SQL Server parameters](/documentation/data/sources/#sql-server), and [Snowflake options](/documentation/data/sources/#snowflake) for complete configuration tables.

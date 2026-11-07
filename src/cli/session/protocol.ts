@@ -62,6 +62,35 @@ const clickhouse = z
   .passthrough()
   .refine((value) => value.host || value.url, { message: "ClickHouse sources require either 'host' or 'url'" });
 
+const snowflakeBase = z.object({
+  password: text.optional(),
+  database: text,
+  schema: text.optional(),
+  warehouse: text.optional(),
+  role: text.optional(),
+  region: text.optional(),
+  host: text.optional(),
+  connectionTimeout: z.number().int().positive().optional(),
+  authenticator: text.optional(),
+  privateKey: text.optional(),
+  token: text.optional(),
+  tables: z
+    .array(
+      z.object({
+        name: text,
+        schema: text.optional(),
+        columns: z.array(z.object({ name: text, type: text, notNull: z.boolean().optional() })),
+        primaryKey: z.union([text, z.array(text)]).optional(),
+        rows: z.array(z.record(z.string(), z.unknown())).optional(),
+      })
+    )
+    .optional(),
+});
+const snowflake = z.discriminatedUnion('adapter', [
+  snowflakeBase.extend({ account: text, username: text, adapter: z.literal('snowflake').optional() }).strict(),
+  snowflakeBase.extend({ account: text.optional(), username: text.optional(), adapter: z.literal('mock') }).strict(),
+]);
+
 const feishuBitable = z
   .object({
     url: text.optional(),
@@ -136,6 +165,7 @@ const sourceSchema = z.discriminatedUnion('type', [
     .object({ type: z.literal('supabase'), options: z.object({ accessToken: text, projectRef: text }).strict() })
     .strict(),
   z.object({ type: z.literal('clickhouse'), options: clickhouse }).strict(),
+  z.object({ type: z.literal('snowflake'), options: snowflake }).strict(),
   z.object({ type: z.literal('sqlserver'), options: sqlserver }).strict(),
   z.object({ type: z.literal('feishu-bitable'), options: feishuBitable }).strict(),
   z.object({ type: z.literal('tencent-smartsheet'), options: tencentDocsOptionsSchema }).strict(),
@@ -143,7 +173,15 @@ const sourceSchema = z.discriminatedUnion('type', [
 
 export const sourceConfig = sourceSchema.transform((value) => value as DataSourceConfig);
 export const modelSchema = z.object({ model: text, apiKey: text.optional(), baseURL: text.optional() }).strict();
-export const engineTypeSchema = z.enum(['duckdb', 'python', 'javascript', 'supabase', 'clickhouse', 'sqlserver']);
+export const engineTypeSchema = z.enum([
+  'duckdb',
+  'python',
+  'javascript',
+  'supabase',
+  'clickhouse',
+  'sqlserver',
+  'snowflake',
+]);
 
 const execution = {
   maxRows: z.number().int().positive().max(10000).optional(),
