@@ -8,17 +8,15 @@ export const dataRowSchema = z
     (row: Record<string, unknown>) => row,
     z
       .unknown()
-      .refine(rowShape.validate, 'Expected an object row')
-      .transform((row) => Object.fromEntries(Object.entries(row)))
+      .refine(rowShape.validate, { message: 'Expected an object row', abort: true })
+      .overwrite((row) => Object.fromEntries(Object.entries(row)))
   )
   .meta({ type: 'object', additionalProperties: {} });
 
-export const jsonValue: z.ZodType<JsonValue> = z.lazy(() =>
-  z.union([z.string(), z.number().finite(), z.boolean(), z.null(), z.array(jsonValue), z.record(z.string(), jsonValue)])
-);
+export const jsonValue = z.json();
 
-/** Serializable metadata values; numeric finiteness must be checked at runtime. */
-export type JsonValue = string | number | boolean | null | JsonValue[] | { [key: string]: JsonValue };
+/** Serializable metadata values; numeric finiteness is checked at runtime. */
+export type JsonValue = z.output<typeof jsonValue>;
 
 /** Extensible metadata whose keys and meanings are agreed on by producers and consumers. */
 export type Properties = Record<string, JsonValue>;

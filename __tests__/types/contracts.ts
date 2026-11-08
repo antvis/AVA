@@ -1,5 +1,6 @@
 // Compile-time regressions: run by test:types, including the expected failures.
 import { sourceConfigSchema, chartSpecSchema } from '../../src';
+import { queryOutputSchema, analyzeOutputSchema } from '../../src/schema';
 import { charts } from '../fixtures/charts';
 
 import type {
@@ -36,6 +37,27 @@ import type {
   DataSourceConfig as ContractSource,
   ExecutionResult as ContractResult,
   ChartSpecInput as ContractChartInput,
+  QueryInput,
+  QueryOutput,
+  AnalyzeInput,
+  AnalyzeOutput,
+  SchemaInput,
+  SchemaOutput,
+  ProfileInput,
+  ProfileOutput,
+  SemanticInput,
+  SemanticOutput,
+  RecommendInput,
+  RecommendOutput,
+  VisualizeInput,
+  VisualizeOutput,
+  VizInput,
+  VizOutput,
+  TranslateInput,
+  TranslateOutput,
+  SuggestInput,
+  SuggestOutput,
+  SourceInput,
 } from '../../src/schema';
 
 const csv: CSVReadOptions = { header: true, types: { amount: 'BIGINT' }, nullstr: ['NA'], sample_size: -1 };
@@ -204,3 +226,70 @@ const mismatchedChart: ChartSpecInput = {
   config: { type: 'line', data: [{ time: 'A', value: 1 }] },
 };
 void mismatchedChart;
+
+// The named contracts retain the existing SDK signatures and result generics.
+export async function callWithAPIContracts(
+  ava: AVA,
+  input: {
+    source: SourceInput;
+    schema: SchemaInput;
+    profile: ProfileInput;
+    semantic: SemanticInput;
+    query: QueryInput;
+    analyze: AnalyzeInput;
+    recommend: RecommendInput;
+    visualize: VisualizeInput;
+    viz: VizInput;
+    translate: TranslateInput;
+    suggest: SuggestInput;
+  }
+) {
+  await ava.source(input.source);
+  const schema: SchemaOutput = await ava.schema(input.schema);
+  const profile: ProfileOutput = await ava.profile(input.profile);
+  const semantic: SemanticOutput = await ava.semantic(input.semantic);
+  const query: QueryOutput = await ava.query(input.query.dsl, input.query.options);
+  const analyze: AnalyzeOutput = await ava.analyze(input.analyze.query, input.analyze.config);
+  const recommend: RecommendOutput = await ava.recommend(input.recommend);
+  const visualize: VisualizeOutput = await ava.visualize(input.visualize);
+  const viz: VizOutput = await ava.viz(input.viz);
+  const translate: TranslateOutput = await ava.translate(input.translate);
+  const suggest: SuggestOutput = await ava.suggest(input.suggest);
+  return { schema, profile, semantic, query, analyze, recommend, visualize, viz, translate, suggest };
+}
+export function genericAPIResults(query: QueryOutput<Row>, analyze: AnalyzeOutput<Row>): number[] {
+  return [query.data[0].amount, analyze.data[0].amount];
+}
+// @ts-expect-error Discovery still requires the catalog's columns.
+const missingCatalogColumns: SchemaOutput = { models: [{ name: 'data', tableReference: { table: 'data' } }] };
+const emptyCatalogKey: SchemaOutput = {
+  // @ts-expect-error Inferred catalog keys remain nonempty.
+  models: [{ name: 'data', tableReference: { table: 'data' }, columns: [], primaryKey: [] }],
+};
+// @ts-expect-error Semantic definitions exclude profiling observations.
+const semanticMetrics: SemanticOutput = { models: [{ name: 'data', baseObject: 'raw', metrics: {} }] };
+// @ts-expect-error Inferred semantic models still require exactly one source.
+const ambiguousSemantic: SemanticOutput = { models: [{ name: 'data', baseObject: 'raw', refSql: 'SELECT 1' }] };
+// @ts-expect-error Visualizations must include generated HTML.
+const missingHTML: VisualizeOutput = { chartType: 'summary', config: '# Sales' };
+const missingOutputType: NonNullable<RecommendOutput> = {
+  chartType: 'column',
+  // @ts-expect-error Normalized chart output retains a required config.type.
+  config: { data: [{ category: 'A', value: 1 }] },
+};
+void [missingCatalogColumns, emptyCatalogKey, semanticMetrics, ambiguousSemantic, missingHTML, missingOutputType];
+
+// @ts-expect-error Schema has no configurable options.
+const invalidSchemaOptions: SchemaInput = { unknownOption: true };
+// @ts-expect-error Semantic has no configurable options.
+const invalidSemanticOptions: SemanticInput = { unknownOption: true };
+void [invalidSchemaOptions, invalidSemanticOptions];
+
+const inferredQueryOutput: QueryOutput = queryOutputSchema.parse({ schema: [], data: [1] });
+const inferredAnalyzeOutput: AnalyzeOutput = analyzeOutputSchema.parse({
+  query: 'Value?',
+  text: '',
+  schema: [],
+  data: [1],
+});
+void [inferredQueryOutput, inferredAnalyzeOutput];

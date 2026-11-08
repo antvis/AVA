@@ -1,15 +1,27 @@
-/** Shared data contracts for SDK, CLI and integration consumers. */
-export { sourceConfigSchema, sourceSchemas } from './source';
+/** Shared contracts; consumers outside this directory import through this entry. */
+export { sourceConfigSchema, sourceSchemas, sourceInputSchema } from './source';
 export { csvReadOptionsSchema } from './source/csv';
 export { jsonReadOptionsSchema } from './source/json';
 export { excelOptionsSchema, excelSheetSchema } from './source/excel';
-export { schemaMetadataSchema, schemaStructure } from './schema';
-export { profileMetadataSchema } from './profile';
-export { semanticMetadataSchema } from './semantic';
+export { schemaMetadataSchema, schemaStructure, schemaInputSchema, schemaOutputSchema } from './schema';
+export { profileMetadataSchema, profileInputSchema, profileOutputSchema } from './profile';
+export { semanticMetadataSchema, semanticInputSchema, semanticOutputSchema } from './semantic';
 export { dataModelMetadataSchema } from './shared/data-model';
-export { executionResultSchema } from './query';
-export { chartSpecSchema, bindingSchema } from './visualize';
+export { executionResultSchema, queryInputSchema, queryOutputSchema } from './query';
+export {
+  chartSpecSchema,
+  bindingSchema,
+  recommendInputSchema,
+  recommendOutputSchema,
+  visualizeInputSchema,
+  visualizeOutputSchema,
+  vizInputSchema,
+  vizOutputSchema,
+} from './visualize';
 export { jsonValue, dataRowSchema } from './shared/json';
+export { analyzeInputSchema, analyzeOutputSchema } from './analyze';
+export { translateInputSchema, translateOutputSchema } from './translate';
+export { suggestInputSchema, suggestOutputSchema } from './suggest';
 
 export type {
   DataSourceConfig,
@@ -33,11 +45,21 @@ export type {
   FeishuBitableSourceOptions,
   SQLServerSourceOptions,
   SnowflakeSourceOptions,
+  SourceInput,
 } from './source';
 export type { ExcelSheetOptions, ExcelReadOptions } from './source/excel';
-export type { Schema, SchemaOptions } from './schema';
-export type { Profile, ProfileOptions, ParsedProfileOptions, MetricConfig, MetricId, LogicalType } from './profile';
-export type { Semantic, SemanticOptions } from './semantic';
+export type { Schema, SchemaOptions, SchemaInput, SchemaOutput } from './schema';
+export type {
+  Profile,
+  ProfileOptions,
+  ParsedProfileOptions,
+  MetricConfig,
+  MetricId,
+  LogicalType,
+  ProfileInput,
+  ProfileOutput,
+} from './profile';
+export type { Semantic, SemanticOptions, SemanticInput, SemanticOutput } from './semantic';
 export type {
   DataModel,
   Model,
@@ -53,7 +75,20 @@ export type {
   TimeDimension,
 } from './shared/data-model';
 export type { JsonValue, Properties } from './shared/json';
-export type { ExecutionResult, ExecutionOptions, QueryColumn } from './query';
-export type { AnalysisConfig, AnalysisResponse, AnalysisStrategyConfig } from './analyze';
-export type { SuggestResult } from './suggest';
-export type { ChartSpec, ChartSpecInput, ChartType, ChartDataBinding, VisualizeResponse } from './visualize';
+export type { ExecutionResult, ExecutionOptions, QueryColumn, QueryInput, QueryOutput } from './query';
+export type { AnalysisConfig, AnalysisResponse, AnalysisStrategyConfig, AnalyzeInput, AnalyzeOutput } from './analyze';
+export type { SuggestResult, SuggestInput, SuggestOutput } from './suggest';
+export type {
+  ChartSpec,
+  ChartSpecInput,
+  ChartType,
+  ChartDataBinding,
+  VisualizeResponse,
+  RecommendInput,
+  RecommendOutput,
+  VisualizeInput,
+  VisualizeOutput,
+  VizInput,
+  VizOutput,
+} from './visualize';
+export type { TranslateInput, TranslateOutput } from './translate';

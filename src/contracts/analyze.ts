@@ -1,32 +1,29 @@
-import type { ExecutionOptions, ExecutionResult } from './query';
+import { z } from 'zod';
 
-/** Per-analysis options. */
-export interface AnalysisConfig extends ExecutionOptions {
-  /** Include a natural-language summary. Defaults to true; false returns empty text. */
-  includeSummary?: boolean;
-  /** Strategy for this analysis (defaults to direct). */
-  strategy?: AnalysisStrategyConfig;
-}
+import { executionOptionsSchema, queryOutputSchema } from './query';
 
-/** Built-in analysis strategies. */
-export type AnalysisStrategyConfig =
-  | {
-      type: 'direct';
-      /** Execution correction retries after the initial attempt. defaults to 2. */
-      maxRetries?: number;
-    }
-  | { type: 'loop'; maxSteps?: number };
+const strategySchema = z.discriminatedUnion('type', [
+  z.object({ type: z.literal('direct'), maxRetries: z.number().optional() }).strict(),
+  z.object({ type: z.literal('loop'), maxSteps: z.number().optional() }).strict(),
+]);
+export const analysisConfigSchema = executionOptionsSchema.extend({
+  /** Defaults to true; false returns empty text. */
+  includeSummary: z.boolean().optional(),
+  /** Defaults to direct, with two correction retries. */
+  strategy: strategySchema.optional(),
+});
+export const analyzeInputSchema = z.object({ query: z.string(), config: analysisConfigSchema.optional() }).strict();
+export const analyzeOutputSchema = queryOutputSchema.safeExtend({
+  query: z.string(),
+  text: z.string(),
+  markdown: z.string().optional(),
+  sql: z.string().optional(),
+});
 
-/**
- * Analysis response — data analysis results only (no visualization)
- */
-export interface AnalysisResponse<T = Record<string, unknown>> extends ExecutionResult<T> {
-  /** The original user query */
-  query: string;
-  /** The analysis result as text; empty when includeSummary is false. */
-  text: string;
-  /** Optional markdown content */
-  markdown?: string;
-  /** The SQL executed for the analysis */
-  sql?: string;
-}
+export type AnalysisConfig = z.input<typeof analysisConfigSchema>;
+export type AnalysisStrategyConfig = z.input<typeof strategySchema>;
+export type AnalyzeInput = z.input<typeof analyzeInputSchema>;
+export type AnalyzeOutput<T = unknown> = Omit<z.output<ReturnType<typeof analyzeOutputSchema.strip>>, 'data'> & {
+  data: T[];
+};
+export type AnalysisResponse<T = Record<string, unknown>> = AnalyzeOutput<T>;

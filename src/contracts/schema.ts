@@ -1,9 +1,7 @@
 import { z } from 'zod';
 
-import type { DataModel, Model, TableReference, Column, Relationship, JoinType, View } from './shared/data-model';
-
 const name = z.string();
-const key = z.union([name, z.array(name).nonempty()]);
+const key = z.union([name, z.tuple([name]).rest(name)]);
 export const schemaStructure = z.object({
   models: z.array(
     z.object({
@@ -26,25 +24,13 @@ export const schemaStructure = z.object({
     .optional(),
   views: z.array(z.object({ name, statement: name })).optional(),
 });
-export const schemaMetadataSchema = schemaStructure as unknown as z.ZodType<Schema>;
+export const schemaInputSchema = z.record(z.string(), z.never());
+export const schemaOutputSchema = schemaStructure;
+export const schemaMetadataSchema = schemaOutputSchema;
 
-/** Schema discovery currently has no configurable options. */
-export type SchemaOptions = Record<string, never>;
-
+/** Discovery options only; SDK setter callbacks are not part of the data contract. */
+export type SchemaInput = z.input<typeof schemaInputSchema>;
+export type SchemaOutput = z.output<typeof schemaOutputSchema>;
+export type SchemaOptions = SchemaInput;
 /** Catalog-discoverable structure; excludes observations and application-defined semantics. */
-export interface Schema extends Pick<DataModel, 'models' | 'relationships' | 'views'> {
-  /** Physical tables and views with their catalog identity, exposed columns and declared unique keys. */
-  models: (Pick<Model, 'name' | 'primaryKey' | 'uniqueKeys'> & {
-    /** Source identity; catalog and schema are included when the engine exposes them. */
-    tableReference: Pick<TableReference, 'catalog' | 'schema' | 'table'>;
-    /** Catalog-reported types and nullability; no inferred business roles or calculation expressions. */
-    columns: Pick<Column, 'name' | 'type' | 'notNull'>[];
-  })[];
-  /** Foreign-key joins; include only when both endpoints are exposed and key constraints establish cardinality. */
-  relationships?: (Pick<Relationship, 'name' | 'models' | 'condition'> & {
-    /** Referencing model first; uniqueness of its foreign-key columns determines one-to-one versus many-to-one. */
-    joinType: Extract<JoinType, 'ONE_TO_ONE' | 'MANY_TO_ONE'>;
-  })[];
-  /** Named view queries; extract the query body from catalog DDL before assigning statement. */
-  views?: Pick<View, 'name' | 'statement'>[];
-}
+export type Schema = SchemaOutput;

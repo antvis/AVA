@@ -1,28 +1,23 @@
 import { z } from 'zod';
 
-import { dataModelStructure, modelStructure, column, hasSingleSource, modelSourceMessage } from './shared/data-model';
+import { dataModelStructure, modelStructure, column, withModelSource } from './shared/data-model';
 
-import type { DataModel, Model, ModelSource, Column } from './shared/data-model';
-
+export const semanticInputSchema = z.record(z.string(), z.never());
 /** Semantic definitions exclude model and column profiling metrics. */
-export const semanticMetadataSchema = dataModelStructure.extend({
+export const semanticOutputSchema = dataModelStructure.extend({
   models: z
     .array(
-      modelStructure
-        .omit({ metrics: true })
-        .extend({ columns: z.array(column.omit({ metrics: true })).optional() })
-        .refine(hasSingleSource, modelSourceMessage)
+      withModelSource(
+        modelStructure.omit({ metrics: true }).extend({ columns: z.array(column.omit({ metrics: true })).optional() })
+      )
     )
     .optional(),
-}) as unknown as z.ZodType<Semantic>;
+});
+export const semanticMetadataSchema = semanticOutputSchema;
 
-/** Semantic metadata currently has no configurable options. */
-export type SemanticOptions = Record<string, never>;
-
+/** Options only; SDK setter callbacks are not part of the data contract. */
+export type SemanticInput = z.input<typeof semanticInputSchema>;
+export type SemanticOutput = z.output<typeof semanticOutputSchema>;
+export type SemanticOptions = SemanticInput;
 /** Business definitions supplied independently of catalog discovery and profiling observations. */
-export interface Semantic extends Pick<DataModel, 'description' | 'properties' | 'relationships' | 'views' | 'cubes'> {
-  models?: (Omit<Model, 'columns' | 'metrics'> &
-    ModelSource & {
-      columns?: Omit<Column, 'metrics'>[];
-    })[];
-}
+export type Semantic = SemanticOutput;

@@ -28,7 +28,7 @@ export const dataModelInputSchema = z.object({
   schema: schemaStructure.strict(),
   profile: profileInputSchema.optional(),
   semantic: semanticMetadataSchema.optional(),
-}) as unknown as z.ZodType<{ schema: Schema; profile?: Profile; semantic?: Semantic }>;
+});
 
 function indexByName<T extends { name: string }>(values: T[], label: string): Map<string, T> {
   const index = new Map<string, T>();

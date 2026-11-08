@@ -4,10 +4,11 @@
 import EventEmitter from '@antv/event-emitter';
 
 import {
-  sourceConfigSchema,
-  schemaMetadataSchema,
-  profileMetadataSchema,
-  semanticMetadataSchema,
+  sourceInputSchema,
+  schemaOutputSchema,
+  profileOutputSchema,
+  semanticOutputSchema,
+  vizInputSchema,
   chartSpecSchema,
 } from './contracts';
 import { getEngineClass } from './engines';
@@ -22,6 +23,8 @@ import { serializeError } from './util/error';
 import type { LanguageModelUsage } from 'ai';
 import type {
   DataModel,
+  RecommendInput,
+  VisualizeInput,
   Semantic,
   SemanticOptions,
   DataSourceConfig,
@@ -133,7 +136,7 @@ export class AVA extends EventEmitter {
    */
   async source(config: DataSourceConfig): Promise<void> {
     // Reject invalid replacements before disposing the current dataset.
-    config = sourceConfigSchema.parse(config);
+    config = sourceInputSchema.parse(config);
     emit(this, new LifecycleEvent(LifecycleEventType.SOURCE_START, { type: config.type }));
 
     try {
@@ -170,7 +173,7 @@ export class AVA extends EventEmitter {
 
     try {
       const f = setter ?? (() => this.engine!.schema());
-      this.dataSchema = schemaMetadataSchema.parse(await f(options));
+      this.dataSchema = schemaOutputSchema.parse(await f(options));
       this.dataProfile = null;
     } catch (error) {
       emit(this, new LifecycleEvent(LifecycleEventType.SCHEMA_END, { error: serializeError(error) }));
@@ -199,7 +202,7 @@ export class AVA extends EventEmitter {
     try {
       this.dataSchema ??= await this.engine!.schema();
       const f = setter ?? (async (options: ProfileOptions) => this.engine!.profile!(this.dataSchema!, options));
-      this.dataProfile = profileMetadataSchema.parse(await f(options));
+      this.dataProfile = profileOutputSchema.parse(await f(options));
     } catch (error) {
       emit(this, new LifecycleEvent(LifecycleEventType.PROFILE_END, { error: serializeError(error) }));
 
@@ -222,7 +225,7 @@ export class AVA extends EventEmitter {
     emit(this, new LifecycleEvent(LifecycleEventType.SEMANTIC_START));
 
     try {
-      this.dataSemantic = semanticMetadataSchema.parse(await setter(options));
+      this.dataSemantic = semanticOutputSchema.parse(await setter(options));
     } catch (error) {
       emit(this, new LifecycleEvent(LifecycleEventType.SEMANTIC_END, { error: serializeError(error) }));
 
@@ -324,7 +327,7 @@ export class AVA extends EventEmitter {
    * @param analysisResult - The result returned from analyze()
    * @returns VisualizeResponse, or null if no chart is needed. Generation errors propagate to the caller.
    */
-  async visualize(analysisResult: Pick<AnalysisResponse, 'query' | 'data'>): Promise<VisualizeResponse | null> {
+  async visualize(analysisResult: VisualizeInput): Promise<VisualizeResponse | null> {
     emit(this, new LifecycleEvent(LifecycleEventType.VISUALIZE_START, { query: analysisResult.query }));
 
     let result: VisualizeResponse | null;
@@ -346,7 +349,7 @@ export class AVA extends EventEmitter {
    * Recommend a chart specification for the analysis result.
    * Combine a suitable chart type with GPT-Vis JSON config for rendering.
    */
-  async recommend(analysisResult: Pick<AnalysisResponse, 'query' | 'data'>): Promise<ChartSpec | null> {
+  async recommend(analysisResult: RecommendInput): Promise<ChartSpec | null> {
     const { data, query } = analysisResult;
     if (!hasData(data)) return null;
 
@@ -362,7 +365,7 @@ export class AVA extends EventEmitter {
    * Render a chart specification as standalone HTML.
    */
   async viz(spec: ChartSpecInput): Promise<string> {
-    const parsed = chartSpecSchema.parse(spec);
+    const parsed = vizInputSchema.parse(spec);
     return wrapConfigInHTML(parsed.config);
   }
 

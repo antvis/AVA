@@ -100,10 +100,7 @@ function defineChart<T extends string, S extends z.ZodRawShape>(type: T, config:
       html: z.string().optional(),
       config: config.extend({
         ...presentation,
-        type: z
-          .literal(type)
-          .optional()
-          .transform((value) => value ?? type),
+        type: z.literal(type).default(() => type),
       }),
     })
     .strict();
@@ -254,6 +251,21 @@ export const chartSpecSchema = z.discriminatedUnion('chartType', chartSchemas).s
   });
 });
 
+/** Input is the query/data subset of an analysis result; full results may be passed directly. */
+export const recommendInputSchema = z.object({ query: z.string(), data: z.array(z.unknown()) });
+export const recommendOutputSchema = chartSpecSchema.nullable();
+export const visualizeInputSchema = recommendInputSchema;
+export const visualizeOutputSchema = chartSpecSchema.and(z.object({ html: z.string() })).nullable();
+export const vizInputSchema = chartSpecSchema;
+export const vizOutputSchema = z.string();
+
+export type RecommendInput = z.input<typeof recommendInputSchema>;
+export type RecommendOutput = z.output<typeof recommendOutputSchema>;
+export type VisualizeInput = z.input<typeof visualizeInputSchema>;
+export type VisualizeOutput = z.output<typeof visualizeOutputSchema>;
+export type VizInput = z.input<typeof vizInputSchema>;
+export type VizOutput = z.output<typeof vizOutputSchema>;
+
 /**
  * Chart specification for rendering.
  */
@@ -263,7 +275,7 @@ export type ChartSpec = z.infer<typeof chartSpecSchema>;
 export type ChartSpecInput = z.input<typeof chartSpecSchema>;
 
 /** Standalone chart generation result. */
-export type VisualizeResponse = ChartSpec & Required<Pick<ChartSpec, 'html'>>;
+export type VisualizeResponse = NonNullable<VisualizeOutput>;
 
 /**
  * Supported chart types from GPT-Vis

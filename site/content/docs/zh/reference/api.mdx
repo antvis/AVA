@@ -357,9 +357,9 @@ Setter 接收选项对象，同步返回 `Semantic`。AVA 验证并复制结果�
 
 | 参数 | 类型 | 必填 | 含义 |
 | ---------------------- | ------------------------------------------- | -------- | ---------------------------------------------------------------- |
-| `analysisResult` | `Pick<AnalysisResponse, 'query' \| 'data'>` | 是 | 分析结果，或包含下面两个字段的对象。 |
+| `analysisResult` | `RecommendInput` / `VisualizeInput` | 是 | 分析结果，或包含下面两个字段的对象。 |
 | `analysisResult.query` | `string` | 是 | 问题或可视化意图。 |
-| `analysisResult.data` | `Record<string, unknown>[]` | 是 | 待可视化的数据行。 |
+| `analysisResult.data` | `unknown[]` | 是 | 待可视化的数据行。 |
 
 两种方法都不要求加载数据源，均调用模型；数据为空或没有推荐出图表时返回 `null`，生成错误则直接抛出。`recommend()` 返回 `ChartSpec`；`visualize()` 还返回 `html: string`，包含独立的图表页面。
 
@@ -390,11 +390,32 @@ Node 和浏览器入口导出共享运行时 schema，以及数据源类型推�
 MCP 等集成可在 Node 或浏览器代码中，从 `@antv/ava/schema` 导入校验器和数据类型。该入口直接复用相同契约，无需注册引擎或加载模型、数据库的运行时代码：
 
 ```typescript
-import { sourceConfigSchema, executionResultSchema, chartSpecSchema } from '@antv/ava/schema';
-import type { DataSourceConfig, ExecutionResult, ChartSpecInput } from '@antv/ava/schema';
+import { queryInputSchema, queryOutputSchema } from '@antv/ava/schema';
+import type { QueryInput, QueryOutput } from '@antv/ava/schema';
+
+const input: QueryInput = queryInputSchema.parse({ dsl: 'SELECT * FROM data', options: { maxRows: 10 } });
+const output: QueryOutput = queryOutputSchema.parse(await ava.query(input.dsl, input.options));
 ```
 
-数据源选项、结果元数据和图表类型均从 schema 推导，运行时校验与 TypeScript 共用一份定义。数据源类型描述规范化之前的输入，例如 Excel 的 `header` 仍可省略。`ExecutionResult<Row>` 保留查询行的泛型；运行时校验结果结构，不推断调用方泛型中的行字段。ClickHouse 选项继续引用官方客户端的原生类型，支持 TLS Buffer、Agent 和回调等，由客户端处理透传的原生选项。
+API 类型统一通过 `z.input<typeof inputSchema>` 与 `z.output<typeof outputSchema>` 推导，结构、画像、语义、分析和建议等类型均与运行时 schema 共用字段定义。数据源类型描述规范化之前的输入，例如 Excel 的 `header` 仍可省略。`ExecutionResult<Row>` 保留查询行的泛型；运行时校验结果结构，不推断调用方泛型中的行字段。ClickHouse 选项继续引用官方客户端的原生类型，支持 TLS Buffer、Agent 和回调等，由客户端处理透传的原生选项。
+
+公开 schema 按 API 的输入、输出命名。多参数方法使用命名参数对象，单参数方法直接使用参数值；省略选项时仍由 SDK 应用默认值。setter 回调保留为 SDK 函数，不放入数据 schema，其返回的元数据可用对应输出 schema 校验。CLI 会话字段和更严格的传输限制由适配层维护。
+
+| API | 输入 schema 与形状 | 输出 schema |
+| --- | --- | --- |
+| `source` | `sourceInputSchema`：数据源配置 | 无返回值（`void`） |
+| `schema` | `schemaInputSchema`：选项 `{}` | `schemaOutputSchema` |
+| `profile` | `profileInputSchema`：`{ metrics? }` | `profileOutputSchema` |
+| `semantic` | `semanticInputSchema`：选项 `{}` | `semanticOutputSchema` |
+| `query` | `queryInputSchema`：`{ dsl, options? }` | `queryOutputSchema` |
+| `analyze` | `analyzeInputSchema`：`{ query, config? }` | `analyzeOutputSchema` |
+| `translate` | `translateInputSchema`：问题字符串 | `translateOutputSchema`：DSL 字符串 |
+| `suggest` | `suggestInputSchema`：数量 | `suggestOutputSchema`：建议数组 |
+| `recommend` | `recommendInputSchema`：`{ query, data }` | `recommendOutputSchema`：图表配置或 `null` |
+| `visualize` | `visualizeInputSchema`：`{ query, data }` | `visualizeOutputSchema`：必含 HTML 的图表配置或 `null` |
+| `viz` | `vizInputSchema`：应用默认值前的图表配置 | `vizOutputSchema`：HTML 字符串 |
+
+每个 schema 同时导出对应类型，例如 `QueryInput` / `QueryOutput`；`QueryOutput<Row>`、`AnalyzeOutput<Row>` 保留行泛型。`dispose()` 没有输入数据或返回值，无需数据 schema。既有校验器与类型名称继续兼容：
 
 | 导出 | 用途 |
 | --- | --- |
@@ -430,7 +451,7 @@ const html = await ava.viz(spec);
 
 `spec.config` 提供展示和原生选项；`data`、`categories`、`series`、`percent` 必须来自查询结果。数值保持原样，数字字符串应在查询中显式转换。渲染前检查 `result.truncated`，由应用决定部分结果是否适合制图。
 
-MCP 等 JSON Schema 工具可用 `z.toJSONSchema(schema, { io: 'input' })`，描述现有 Excel 归一化和图表类型默认值应用之前的输入。
+MCP 等 JSON Schema 工具对输入使用 `z.toJSONSchema(inputSchema, { io: 'input' })`，对输出使用 `z.toJSONSchema(outputSchema, { io: 'output' })`。输入模式描述归一化之前的值；输出模式包含图表 `config.type` 等归一化后的必需字段。
 
 <Heading as="h2" id="cleanup">资源清理</Heading>
 

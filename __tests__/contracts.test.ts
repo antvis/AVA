@@ -193,3 +193,107 @@ describe('source-to-chart contract flow', () => {
     }
   });
 });
+
+describe('API input and output contracts', () => {
+  it('keeps existing runtime exports as aliases', () => {
+    expect(contracts.sourceInputSchema).toBe(contracts.sourceConfigSchema);
+    expect(contracts.schemaOutputSchema).toBe(contracts.schemaMetadataSchema);
+    expect(contracts.profileOutputSchema).toBe(contracts.profileMetadataSchema);
+    expect(contracts.semanticOutputSchema).toBe(contracts.semanticMetadataSchema);
+    expect(contracts.queryOutputSchema).toBe(contracts.executionResultSchema);
+    expect(contracts.vizInputSchema).toBe(contracts.chartSpecSchema);
+  });
+
+  it('describes serializable API arguments without transport-specific fields or limits', () => {
+    expect(contracts.sourceInputSchema.parse(source)).toEqual(source);
+    expect(contracts.schemaInputSchema.parse({})).toEqual({});
+    expect(contracts.semanticInputSchema.parse({})).toEqual({});
+    expect(contracts.profileInputSchema.parse({ metrics: ['row_count', { id: 'top_values', limit: 2 }] })).toEqual({
+      metrics: ['row_count', { id: 'top_values', limit: 2 }],
+    });
+    // SDK execution budgets are normalized by the engines, independently of CLI caps.
+    expect(contracts.queryInputSchema.parse({ dsl: 'SELECT 1', options: { maxRows: 20000.5 } })).toEqual({
+      dsl: 'SELECT 1',
+      options: { maxRows: 20000.5 },
+    });
+    expect(
+      contracts.analyzeInputSchema.parse({
+        query: 'Sales',
+        config: {
+          includeSummary: false,
+          strategy: { type: 'loop', maxSteps: 0 },
+        },
+      })
+    ).toEqual({ query: 'Sales', config: { includeSummary: false, strategy: { type: 'loop', maxSteps: 0 } } });
+    expect(contracts.translateInputSchema.parse('Sales')).toBe('Sales');
+    expect(contracts.suggestInputSchema.parse(3)).toBe(3);
+    const analysis = { query: 'Sales', data: [], schema: [] };
+    expect(contracts.recommendInputSchema.parse(analysis)).toEqual({ query: 'Sales', data: [] });
+    expect(contracts.visualizeInputSchema).toBe(contracts.recommendInputSchema);
+    expect(contracts.queryInputSchema.safeParse({ dsl: 'SELECT 1', dataset: 'session' }).success).toBe(false);
+    expect(contracts.profileInputSchema.safeParse({ metrics: [{ limit: 2 }] }).success).toBe(false);
+    expect(
+      contracts.analyzeInputSchema.safeParse({ query: 'Sales', config: { strategy: { type: 'unknown' } } }).success
+    ).toBe(false);
+  });
+
+  it('validates analysis metadata with the same bounded-result rules as query', () => {
+    const output = { query: 'Sales', text: '', sql: 'SELECT 1', schema: [], data: [1], rowCount: 1 };
+    expect(contracts.analyzeOutputSchema.parse(output)).toEqual(output);
+    for (const invalid of [
+      { ...output, rowCount: 2 },
+      { ...output, truncated: true },
+      { ...output, truncated: true, truncatedBy: 'maxRows' },
+    ])
+      expect(contracts.analyzeOutputSchema.safeParse(invalid).success).toBe(false);
+    expect(
+      contracts.analyzeOutputSchema.parse({ ...output, rowCount: undefined, truncated: true, truncatedBy: 'maxRows' })
+    ).toMatchObject({ truncated: true });
+  });
+
+  it('preserves nullable chart results and requires HTML for visualizations', () => {
+    const spec = { chartType: 'column', config: { data: [{ category: 'A', value: 1 }] } };
+    const normalized = contracts.vizInputSchema.parse(spec);
+    expect(normalized.config).toMatchObject({ type: 'column' });
+    expect(contracts.recommendOutputSchema.parse(null)).toBeNull();
+    expect(contracts.visualizeOutputSchema.parse(null)).toBeNull();
+    expect(contracts.recommendOutputSchema.parse(spec)).toEqual(normalized);
+    expect(contracts.visualizeOutputSchema.safeParse(spec).success).toBe(false);
+    expect(contracts.visualizeOutputSchema.parse({ ...spec, html: '<html></html>' })).toEqual({
+      ...normalized,
+      html: '<html></html>',
+    });
+    expect(
+      contracts.visualizeOutputSchema.parse({ chartType: 'summary', config: '# Sales', html: '<html></html>' })
+    ).toMatchObject({ chartType: 'summary' });
+    expect(
+      contracts.visualizeOutputSchema.safeParse({
+        chartType: 'dual-axes',
+        config: {
+          categories: ['A'],
+          series: [{ type: 'line', data: [1, 2] }],
+        },
+        html: '',
+      }).success
+    ).toBe(false);
+    expect(contracts.vizOutputSchema.parse('<html></html>')).toBe('<html></html>');
+    expect(contracts.translateOutputSchema.parse('SELECT 1')).toBe('SELECT 1');
+    expect(contracts.suggestOutputSchema.parse([{ query: 'Sales?', score: 1, reason: 'Trend' }])).toHaveLength(1);
+    expect(contracts.suggestOutputSchema.safeParse([{ query: 'Sales?', score: 2, reason: 'Trend' }]).success).toBe(
+      false
+    );
+  });
+
+  it('exports JSON Schema in the corresponding input/output mode', () => {
+    for (const [name, schema] of Object.entries(contracts)) {
+      if (!name.endsWith('InputSchema') && !name.endsWith('OutputSchema')) continue;
+      expect(z.toJSONSchema(schema, { io: name.endsWith('InputSchema') ? 'input' : 'output' })).toBeDefined();
+    }
+    const input = z.toJSONSchema(contracts.vizInputSchema, { io: 'input' });
+    const output = z.toJSONSchema(contracts.recommendOutputSchema, { io: 'output' });
+    const inputColumn = input.oneOf!.find((schema) => schema.properties?.chartType.const === 'column');
+    const outputColumn = output.anyOf![0].oneOf!.find((schema) => schema.properties?.chartType.const === 'column');
+    expect(inputColumn?.properties?.config.required).not.toContain('type');
+    expect(outputColumn?.properties?.config.required).toContain('type');
+  });
+});

@@ -62,15 +62,18 @@ export const sourceConfigSchema = z.discriminatedUnion('type', [
 ]);
 
 // Input types keep normalized/defaulted fields (such as Excel header) optional.
-type SourceInput = z.input<typeof sourceConfigSchema>;
+type SourceConfigInput = z.input<typeof sourceConfigSchema>;
 type ClickHouseInput = z.input<typeof sourceSchemas.clickhouse>;
 type SnowflakeInput = z.input<typeof sourceSchemas.snowflake>;
 export type DataSourceConfig =
-  | Exclude<SourceInput, ClickHouseInput | SnowflakeInput>
+  | Exclude<SourceConfigInput, ClickHouseInput | SnowflakeInput>
   | (Omit<ClickHouseInput, 'options'> & {
       options: ClickHouseSourceOptions;
     })
   | (Omit<SnowflakeInput, 'options'> & { options: SnowflakeSourceOptions });
+export const sourceInputSchema = sourceConfigSchema;
+/** Native client option types supplement the fields inferred from the runtime schema. */
+export type SourceInput = DataSourceConfig;
 export type SourceType = DataSourceConfig['type'];
 
 export type { CSVFileSourceOptions } from './csv-file';

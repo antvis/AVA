@@ -355,9 +355,9 @@ Both methods accept the same input:
 
 | Parameter              | Type                                        | Required | Meaning                                                          |
 | ---------------------- | ------------------------------------------- | -------- | ---------------------------------------------------------------- |
-| `analysisResult`       | `Pick<AnalysisResponse, 'query' \| 'data'>` | Yes      | An analysis result or an object containing the two fields below. |
+| `analysisResult`       | `RecommendInput` / `VisualizeInput` | Yes      | An analysis result or an object containing the two fields below. |
 | `analysisResult.query` | `string`                                    | Yes      | Question or visualization intent.                                |
-| `analysisResult.data`  | `Record<string, unknown>[]`                 | Yes      | Rows to visualize.                                               |
+| `analysisResult.data`  | `unknown[]`                 | Yes      | Rows to visualize.                                               |
 
 Neither requires a loaded source. Both use the model and return `null` for empty data or when no chart is recommended. Generation errors propagate. `recommend()` returns a `ChartSpec`; `visualize()` additionally returns `html: string` containing a standalone chart page.
 
@@ -388,11 +388,32 @@ The Node and browser entry points export shared runtime schemas plus pure helper
 MCP and other integrations can import validators and data types from `@antv/ava/schema` in Node or browser code. This entry reuses the same contracts without registering engines or loading model and database runtime dependencies:
 
 ```typescript
-import { sourceConfigSchema, executionResultSchema, chartSpecSchema } from '@antv/ava/schema';
-import type { DataSourceConfig, ExecutionResult, ChartSpecInput } from '@antv/ava/schema';
+import { queryInputSchema, queryOutputSchema } from '@antv/ava/schema';
+import type { QueryInput, QueryOutput } from '@antv/ava/schema';
+
+const input: QueryInput = queryInputSchema.parse({ dsl: 'SELECT * FROM data', options: { maxRows: 10 } });
+const output: QueryOutput = queryOutputSchema.parse(await ava.query(input.dsl, input.options));
 ```
 
-Source options, result metadata and chart types are derived from these schemas, so runtime validation and TypeScript share one definition. Source types describe input before normalization (for example, Excel's `header` remains optional). `ExecutionResult<Row>` preserves your query's row type; runtime validation checks the result envelope, not the caller's generic row fields. ClickHouse options retain the official client's native types, including TLS buffers, agents and callbacks; those native options pass through to the client.
+API types are derived with `z.input<typeof inputSchema>` and `z.output<typeof outputSchema>`, so runtime validation and TypeScript share one field definition, including structure, profile, semantic, analysis and suggestions. Source types describe input before normalization (for example, Excel's `header` remains optional). `ExecutionResult<Row>` preserves your query's row type; runtime validation checks the result envelope, not the caller's generic row fields. ClickHouse options retain the official client's native types, including TLS buffers, agents and callbacks; those native options pass through to the client.
+
+Public schemas follow API input/output names. Multi-argument methods use named argument objects; single-argument methods use the argument directly. Omitted options still use SDK defaults. Setter callbacks remain SDK functions and are excluded from the data schemas; metadata passed to setters can be validated with the corresponding output schema. CLI session fields and stricter transport limits belong to the adapter.
+
+| API | Input schema and shape | Output schema |
+| --- | --- | --- |
+| `source` | `sourceInputSchema`: source config | No result (`void`) |
+| `schema` | `schemaInputSchema`: options `{}` | `schemaOutputSchema` |
+| `profile` | `profileInputSchema`: `{ metrics? }` | `profileOutputSchema` |
+| `semantic` | `semanticInputSchema`: options `{}` | `semanticOutputSchema` |
+| `query` | `queryInputSchema`: `{ dsl, options? }` | `queryOutputSchema` |
+| `analyze` | `analyzeInputSchema`: `{ query, config? }` | `analyzeOutputSchema` |
+| `translate` | `translateInputSchema`: question string | `translateOutputSchema`: DSL string |
+| `suggest` | `suggestInputSchema`: count | `suggestOutputSchema`: suggestion array |
+| `recommend` | `recommendInputSchema`: `{ query, data }` | `recommendOutputSchema`: chart spec or `null` |
+| `visualize` | `visualizeInputSchema`: `{ query, data }` | `visualizeOutputSchema`: chart spec with required HTML, or `null` |
+| `viz` | `vizInputSchema`: chart spec before defaults | `vizOutputSchema`: HTML string |
+
+Each schema exports a corresponding type such as `QueryInput` / `QueryOutput`. `QueryOutput<Row>` and `AnalyzeOutput<Row>` retain row generics. `dispose()` has neither input data nor a return value, so it needs no data schema. Existing validator and type names remain available:
 
 | Export | Purpose |
 | --- | --- |
@@ -428,7 +449,7 @@ const html = await ava.viz(spec);
 
 `spec.config` supplies presentation and native options; `data`, `categories`, `series` and `percent` must come from the result. Numeric values stay numbers; cast numeric strings in the query. Inspect `result.truncated` when deciding whether partial data is suitable for rendering.
 
-For MCP or other JSON Schema tools, use `z.toJSONSchema(schema, { io: 'input' })`. Input mode describes values before the existing Excel normalization and chart-type defaults.
+For MCP or other JSON Schema tools, use `z.toJSONSchema(inputSchema, { io: 'input' })` for inputs and `z.toJSONSchema(outputSchema, { io: 'output' })` for outputs. Input mode describes values before normalization; output mode includes required normalized fields such as chart `config.type`.
 
 ## Cleanup
 
