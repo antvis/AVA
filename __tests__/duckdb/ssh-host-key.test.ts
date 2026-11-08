@@ -52,9 +52,9 @@ describe('SSH host key verification', () => {
     await new Promise<void>((resolve) => server.close(() => resolve()));
   });
 
-  async function connect(hostFingerprint?: string) {
+  async function connect(hostKeyFingerprint?: string) {
     tunnel = await createSshTunnel(
-      { host: '127.0.0.1', port, user: 'reader', password: 'DUMMY-SSH-PASSWORD', hostFingerprint } as SSHOptions,
+      { host: '127.0.0.1', port, user: 'reader', password: 'DUMMY-SSH-PASSWORD', hostKeyFingerprint } as SSHOptions,
       'database',
       3306
     );
@@ -75,7 +75,7 @@ describe('SSH host key verification', () => {
   });
 
   it('rejects a missing host fingerprint before authentication', async () => {
-    await expect(connect()).rejects.toThrow(/hostFingerprint/);
+    await expect(connect()).rejects.toThrow(/hostKeyFingerprint/);
     expect(passwords).toEqual([]);
   });
 });

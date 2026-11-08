@@ -92,7 +92,7 @@ Use authorized read-only credentials. Restrict temporary credential files to the
 
 For MySQL/PostgreSQL behind a bastion, obtain the bastion's OpenSSH SHA-256 host key fingerprint from its administrator over a trusted channel. The administrator can read it on the SSH server with `ssh-keygen -lf /etc/ssh/ssh_host_ed25519_key.pub -E sha256`.
 
-Keep the database `host` and `port` set to the address reachable from the bastion, and add this `ssh` object inside `options`. Replace `hostFingerprint` with the `SHA256:...` value without base64 padding:
+Keep the database `host` and `port` set to the address reachable from the bastion, and add this `ssh` object inside `options`. Replace `hostKeyFingerprint` with the `SHA256:...` value without base64 padding:
 
 ```json
 {
@@ -100,7 +100,7 @@ Keep the database `host` and `port` set to the address reachable from the bastio
     "host": "bastion.example.com",
     "user": "ssh-user",
     "password": "REPLACE",
-    "hostFingerprint": "SHA256:REPLACE_WITH_SERVER_FINGERPRINT"
+    "hostKeyFingerprint": "SHA256:REPLACE_WITH_SERVER_FINGERPRINT"
   }
 }
 ```

@@ -373,7 +373,7 @@ export interface SSHOptions {
   user: string;
   password?: string;
   /** Trusted server host key fingerprint in OpenSSH SHA256:<base64> format (without padding). */
-  hostFingerprint: string;
+  hostKeyFingerprint: string;
 }
 
 /**

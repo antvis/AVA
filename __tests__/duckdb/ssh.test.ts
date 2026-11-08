@@ -70,7 +70,7 @@ afterEach(async () => {
 
 async function acceptConnection() {
   tunnel = await createSshTunnel(
-    { host: 'bastion', user: 'reader', hostFingerprint: `SHA256:${'A'.repeat(43)}` },
+    { host: 'bastion', user: 'reader', hostKeyFingerprint: `SHA256:${'A'.repeat(43)}` },
     'database',
     3306
   );

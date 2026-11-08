@@ -19,7 +19,7 @@ export interface SSHTunnel {
 }
 
 function connectSshClient(ssh: SSHOptions): Promise<Client> {
-  const hostVerifier = createSshHostVerifier(ssh.hostFingerprint);
+  const hostVerifier = createSshHostVerifier(ssh.hostKeyFingerprint);
   const client = new Client();
   return new Promise((resolve, reject) => {
     client

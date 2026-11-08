@@ -423,7 +423,7 @@ await ava.source({
       host: 'bastion.example.com',
       user: 'ssh-user',
       password: process.env.SSH_PASSWORD,
-      hostFingerprint: 'SHA256:REPLACE_WITH_SERVER_FINGERPRINT',
+      hostKeyFingerprint: 'SHA256:REPLACE_WITH_SERVER_FINGERPRINT',
     },
   },
 });
@@ -437,7 +437,7 @@ Fields inside `options.ssh`:
 | `port` | `number` | No | Default: `22`. |
 | `user` | `string` | Yes | SSH login user. |
 | `password` | `string` | No | SSH login password. |
-| `hostFingerprint` | `string` | Yes | Expected host key fingerprint, `SHA256:<base64>` without padding. |
+| `hostKeyFingerprint` | `string` | Yes | Expected host key fingerprint, `SHA256:<base64>` without padding. |
 
 ## MongoDB
 
