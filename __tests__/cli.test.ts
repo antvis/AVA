@@ -1,4 +1,5 @@
 import { mkdtemp, readFile, rm, stat, symlink, writeFile } from 'fs/promises';
+import { Readable } from 'stream';
 import { tmpdir } from 'os';
 import { join, resolve } from 'path';
 
@@ -91,6 +92,23 @@ describe('help and validation', () => {
 });
 
 describe('metadata files', () => {
+  it.each(['schema', 'profile', 'semantic'])('sets %s from stdin and validates before sending', async (kind) => {
+    const value = kind === 'semantic' ? { description: 'Revenue excludes refunds.' } : { models: [] };
+    vi.spyOn(process, 'stdin', 'get').mockReturnValue(Readable.from([JSON.stringify(value)]) as typeof process.stdin);
+    await execute([kind, datasetId, '--file', '-']);
+    expect(request).toHaveBeenCalledExactlyOnceWith(
+      datasetId,
+      kind === 'profile' ? { command: kind, metrics: undefined, profile: value } : { command: kind, [kind]: value }
+    );
+    vi.mocked(request).mockClear();
+    vi.spyOn(process, 'stdin', 'get').mockReturnValue(Readable.from(['{"models":null}']) as typeof process.stdin);
+    await expect(run([kind, datasetId, '--file', '-'])).rejects.toThrow();
+    expect(request).not.toHaveBeenCalled();
+    vi.spyOn(process, 'stdin', 'get').mockReturnValue(Readable.from(['invalid JSON']) as typeof process.stdin);
+    await expect(run([kind, datasetId, '--file', '-'])).rejects.toThrow('Cannot read JSON');
+    expect(request).not.toHaveBeenCalled();
+  });
+
   it.each(['schema', 'profile', 'semantic'])('sets %s from a plain file path', async (kind) => {
     const directory = await mkdtemp(join(tmpdir(), 'ava-cli-test-'));
     try {
