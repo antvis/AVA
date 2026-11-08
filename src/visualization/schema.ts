@@ -1,3 +1,4 @@
+/** Tool schemas should use z.toJSONSchema(schema, { io: 'input' }) to describe input before normalization. */
 import { z } from 'zod';
 
 const label = z.union([z.string(), z.number()]);

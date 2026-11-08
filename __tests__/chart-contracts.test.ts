@@ -1,3 +1,4 @@
+import { z } from 'zod';
 import { describe, expect, it } from 'vitest';
 
 import { AVA, bindChartData, chartSpecSchema } from '../src/index.browser';
@@ -34,6 +35,7 @@ const fixtures = {
 
 describe('native chart contracts', () => {
   it('covers every advisor chart and renders each native data shape through the SDK', async () => {
+    expect(z.toJSONSchema(chartSpecSchema, { io: 'input' }).oneOf).toHaveLength(19);
     expect(Object.keys(fixtures).sort()).toEqual(chartDefinitions.map((chart) => chart.type).sort());
     const ava = new AVA({ llm: { model: 'unused' } });
     for (const [chartType, config] of Object.entries(fixtures)) {
