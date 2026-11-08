@@ -24,7 +24,10 @@ const database = z
     port,
     user: z.string().optional(),
     password: z.string().optional(),
-    ssh: z.object({ host: text, user: text, port, password: z.string().optional() }).strict().optional(),
+    ssh: z
+      .object({ host: text, user: text, port, password: z.string().optional(), hostKeyFingerprint: text })
+      .strict()
+      .optional(),
   })
   .strict();
 const sqlserver = z

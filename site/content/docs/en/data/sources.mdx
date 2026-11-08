@@ -405,6 +405,40 @@ await ava.source({
 | `schema`   | `string`     | No       | Schema the tables live in (defaults to `public`) |
 | `ssh`      | `SSHOptions` | No       | Optional [SSH tunnel](#ssh-options).             |
 
+## SSH options
+
+To reach MySQL or PostgreSQL through a bastion, add `ssh` under `options`. The database `host` and `port` must be reachable from the bastion.
+
+First, obtain the SSH server's host key fingerprint from its administrator over a trusted channel. The administrator can read it on the server with `ssh-keygen -lf /etc/ssh/ssh_host_ed25519_key.pub -E sha256`. Use the `SHA256:...` value in your connection configuration:
+
+```typescript
+await ava.source({
+  type: 'mysql', // PostgreSQL: 'postgresql'
+  options: {
+    host: 'db.internal',
+    database: 'analytics',
+    user: 'reader',
+    password: process.env.DB_PASSWORD,
+    ssh: {
+      host: 'bastion.example.com',
+      user: 'ssh-user',
+      password: process.env.SSH_PASSWORD,
+      hostKeyFingerprint: 'SHA256:REPLACE_WITH_SERVER_FINGERPRINT',
+    },
+  },
+});
+```
+
+Fields inside `options.ssh`:
+
+| Field | Type | Required | Meaning / default |
+| --- | --- | --- | --- |
+| `host` | `string` | Yes | SSH server hostname. |
+| `port` | `number` | No | Default: `22`. |
+| `user` | `string` | Yes | SSH login user. |
+| `password` | `string` | No | SSH login password. |
+| `hostKeyFingerprint` | `string` | Yes | Expected host key fingerprint, `SHA256:<base64>` without padding. |
+
 ## MongoDB
 
 Load collections from the specified database. Use structured connection fields or supply `connection`, which takes precedence over them.
@@ -600,14 +634,3 @@ All forwarded fields are optional. Server settings are an extensible, server-ver
 | `json.stringify`                           | `<T>(input: T) => string`                        | Optional; serializes a value.                                               |
 
 Zstd compression requires Node.js 22.15 or newer in this client. Response compression may conflict with the engine's enforced read-only server settings; leave it disabled unless the server permits it.
-
-## SSH options
-
-Nested under `options.ssh` for MySQL and PostgreSQL.
-
-| Field      | Type     | Required | Meaning / default                                      |
-| ---------- | -------- | -------- | ------------------------------------------------------ |
-| `host`     | `string` | Yes      | SSH server hostname.                                   |
-| `port`     | `number` | No       | Default: `22`.                                         |
-| `user`     | `string` | Yes      | SSH login user.                                        |
-| `password` | `string` | No       | SSH login password; no password supplied when omitted. |

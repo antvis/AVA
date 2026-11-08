@@ -69,7 +69,11 @@ afterEach(async () => {
 });
 
 async function acceptConnection() {
-  tunnel = await createSshTunnel({ host: 'bastion', user: 'reader' }, 'database', 3306);
+  tunnel = await createSshTunnel(
+    { host: 'bastion', user: 'reader', hostKeyFingerprint: `SHA256:${'A'.repeat(43)}` },
+    'database',
+    3306
+  );
   const socket = new PassThrough();
   const stream = new PassThrough();
   mocks.accept!(socket as unknown as Socket);

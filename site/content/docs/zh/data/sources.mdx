@@ -407,6 +407,40 @@ await ava.source({
 | `schema` | `string` | 否 | 表所属的数据库 schema，默认 `public`。 |
 | `ssh` | `SSHOptions` | 否 | 可选的 [SSH 隧道](#ssh-options)。 |
 
+<Heading as="h2" id="ssh-options">SSH 选项</Heading>
+
+通过跳板机访问 MySQL 或 PostgreSQL 时，在 `options` 中添加 `ssh`。数据库的 `host` 和 `port` 应填写跳板机能够访问的地址与端口。
+
+先通过可信渠道向 SSH 服务器管理员获取主机密钥指纹。管理员可在服务器上运行 `ssh-keygen -lf /etc/ssh/ssh_host_ed25519_key.pub -E sha256`，将输出中的 `SHA256:...` 值填入连接配置：
+
+```typescript
+await ava.source({
+  type: 'mysql', // PostgreSQL 使用 'postgresql'
+  options: {
+    host: 'db.internal',
+    database: 'analytics',
+    user: 'reader',
+    password: process.env.DB_PASSWORD,
+    ssh: {
+      host: 'bastion.example.com',
+      user: 'ssh-user',
+      password: process.env.SSH_PASSWORD,
+      hostKeyFingerprint: 'SHA256:REPLACE_WITH_SERVER_FINGERPRINT',
+    },
+  },
+});
+```
+
+`options.ssh` 中的字段：
+
+| 字段 | 类型 | 必填 | 含义与默认值 |
+| --- | --- | --- | --- |
+| `host` | `string` | 是 | SSH 服务器主机名。 |
+| `port` | `number` | 否 | 默认 `22`。 |
+| `user` | `string` | 是 | SSH 登录用户。 |
+| `password` | `string` | 否 | SSH 登录密码。 |
+| `hostKeyFingerprint` | `string` | 是 | 预期的主机密钥指纹，格式为 `SHA256:<base64>`，不带填充字符。 |
+
 <Heading as="h2" id="mongodb">MongoDB</Heading>
 
 加载指定数据库中的集合。可以使用结构化连接字段，也可以提供优先级更高的 `connection`。
@@ -567,14 +601,3 @@ await ava.source({
 | `json.stringify` | `<T>(input: T) => string` | 可选，用于序列化值。 |
 
 此客户端的 Zstd 压缩需要 Node.js 22.15 或更高版本。响应压缩可能与引擎强制的服务端只读设置冲突；除非服务端允许，否则请保持关闭。
-
-<Heading as="h2" id="ssh-options">SSH 选项</Heading>
-
-用于 MySQL 和 PostgreSQL，放在 `options.ssh` 中。
-
-| 字段 | 类型 | 必填 | 含义与默认值 |
-| ---------- | -------- | -------- | ------------------------------------------------------ |
-| `host` | `string` | 是 | SSH 服务器主机名。 |
-| `port` | `number` | 否 | 默认 `22`。 |
-| `user` | `string` | 是 | SSH 登录用户。 |
-| `password` | `string` | 否 | SSH 登录密码，不提供则不传密码。 |
