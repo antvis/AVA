@@ -49,9 +49,12 @@ describe('python/engine', () => {
     await engine.execute('result = df', { maxResultBytes: 200 });
     expect(createExecutor).toHaveBeenCalledTimes(1);
     expect(execute.mock.calls.map((call) => call[1])).toEqual([
-      64 * 1024, 2 * 1024 * 1024,
-      64 * 1024, 1024 * 1024 + 100,
-      64 * 1024, 1024 * 1024 + 200,
+      64 * 1024,
+      2 * 1024 * 1024,
+      64 * 1024,
+      1024 * 1024 + 100,
+      64 * 1024,
+      1024 * 1024 + 200,
     ]);
 
     new PythonEngine({ model: 'unused' }, { execute });
@@ -100,11 +103,15 @@ describe('python/engine', () => {
     await expect(engine.execute('result = 1')).rejects.toBe(failure);
     vi.useFakeTimers();
     execute.mockResolvedValueOnce(compiled).mockReturnValueOnce(new Promise(() => {}));
-    const pending = expect(engine.execute('result = 1')).rejects.toThrow('timed out after 20ms');
+    const execution = engine.execute('result = 1');
+    const pending = expect(execution).rejects.toMatchObject({ code: 'REQUEST_TIMEOUT', outcome: 'unknown' });
     await vi.advanceTimersByTimeAsync(20);
     await pending;
     execute.mockReturnValueOnce(new Promise(() => {}));
-    const validation = expect(engine.execute('result = 1')).rejects.toThrow('validation timed out after 20ms');
+    const validation = expect(engine.execute('result = 1')).rejects.toMatchObject({
+      code: 'REQUEST_TIMEOUT',
+      outcome: 'unknown',
+    });
     await vi.advanceTimersByTimeAsync(20);
     await validation;
   });

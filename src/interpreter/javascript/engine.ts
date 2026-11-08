@@ -8,6 +8,7 @@
 
 import { JavaScriptDialect } from '../../query/javascript';
 import { extractDataSchema } from '../../util/schema';
+import { withQueryErrors } from '../../util/error';
 import { executionResult, inferQuerySchema } from '../../util/result';
 import { DEFAULT_METRICS, parseProfileOptions } from '../../util/profile';
 
@@ -78,7 +79,7 @@ export class JavaScriptEngine implements AnalysisEngine {
       throw new Error('No data loaded. Please call source() first.');
     }
 
-    const validated = await this.dialect.validateDSL(code);
+    const validated = await withQueryErrors(() => this.dialect.validateDSL(code));
     const result = await executeCode(structuredClone(this.data), validated);
     const rows = (Array.isArray(result) ? result : [{ value: result }]) as T[];
     return executionResult(rows, inferQuerySchema(rows), options);

@@ -3,6 +3,8 @@ import { z } from 'zod';
 export const errorCodeSchema = z.enum([
   'OPERATION_FAILED',
   'SOURCE_ERROR',
+  'QUERY_ERROR',
+  'AUTHENTICATION_FAILED',
   'MODEL_ERROR',
   'INVALID_REQUEST',
   'DATASET_UNAVAILABLE',
@@ -48,9 +50,27 @@ export function failureResponse(error: unknown) {
 }
 
 export function safeModelError(error: unknown): AVAError {
-  return error instanceof AVAError
-    ? error
-    : new AVAError('MODEL_ERROR', 'The model request failed. Check the model configuration and service availability.');
+  if (error instanceof AVAError) return error;
+  const status = error && typeof error === 'object' && 'statusCode' in error ? error.statusCode : undefined;
+  const message =
+    error instanceof Error && error.name === 'AI_NoObjectGeneratedError'
+      ? 'The model response did not match the required schema.'
+      : status === 401 || status === 403
+      ? 'The model service rejected authentication. Check the model credentials and permissions.'
+      : status === 429
+      ? 'The model service rate limit was exceeded. Try again later.'
+      : 'The model request failed. Check the model configuration and service availability.';
+  return new AVAError('MODEL_ERROR', message);
+}
+
+/** Validation only sees the submitted DSL, never the source credentials or driver response. */
+export async function withQueryErrors<T>(operation: () => Promise<T>): Promise<T> {
+  try {
+    return await operation();
+  } catch (error) {
+    if (error instanceof AVAError) throw error;
+    throw new AVAError('QUERY_ERROR', error instanceof Error ? error.message : 'The query is invalid.');
+  }
 }
 
 /** Apply the provider error policy without swallowing metadata discovery errors. */
@@ -60,4 +80,9 @@ export async function withModelErrors<T>(operation: () => Promise<T>): Promise<T
   } catch (error) {
     throw safeModelError(error);
   }
+}
+
+/** Typed source/transport failures stop correction; unclassified local errors retain legacy behavior. */
+export function canCorrectQuery(error: unknown): boolean {
+  return !(error instanceof AVAError) || (error.code === 'QUERY_ERROR' && error.outcome === 'failed');
 }

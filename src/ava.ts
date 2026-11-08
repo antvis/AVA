@@ -4,7 +4,7 @@
 import EventEmitter from '@antv/event-emitter';
 
 import { getEngineClass } from './engines';
-import { sourceErrorContext, safeSourceError } from './util/source-error';
+import { engineOperations } from './util/engine';
 import { extractDataSchema, schemaMetadataSchema } from './util/schema';
 import { profileMetadataSchema } from './util/profile';
 import { buildDataModel, semanticMetadataSchema, stringifyDataModel } from './util/data-model';
@@ -12,7 +12,7 @@ import { adviseChartType, generateVisualizationConfig, wrapConfigInHTML } from '
 import { generateSuggestions } from './suggest';
 import { analyze } from './analysis';
 import { LifecycleEventType, LifecycleEvent, AnalysisEventType, AnalysisEvent, emit } from './event';
-import { serializeError, safeModelError, withModelErrors } from './util/error';
+import { serializeError } from './util/error';
 
 import type { LanguageModelUsage } from 'ai';
 import type {
@@ -57,10 +57,10 @@ export class AVA extends EventEmitter {
   private readonly llmConfig: LLMConfig;
   private readonly engineConfig: EngineConfig;
   engine: AnalysisEngine | null = null;
+  private operations: AnalysisEngine | null = null;
   private dataSchema: Schema | null = null;
   private dataProfile: Profile | null = null;
   private dataSemantic: Semantic = {};
-  private sourceErrorContext: string | undefined;
 
   constructor(config: AVAConfig) {
     super();
@@ -70,12 +70,7 @@ export class AVA extends EventEmitter {
 
   /** Assemble the dataset model when a model-facing operation needs it. */
   private async getDataModel(): Promise<DataModel> {
-    const context = this.sourceErrorContext;
-    try {
-      this.dataSchema ??= await this.engine!.schema();
-    } catch (error) {
-      throw safeSourceError(error, context);
-    }
+    this.dataSchema ??= await this.operations!.schema();
 
     return buildDataModel({
       schema: this.dataSchema,
@@ -90,7 +85,7 @@ export class AVA extends EventEmitter {
    * index.browser.ts), so this class never imports any engine implementation
    * directly — Node-only engines stay out of browser bundles.
    */
-  private async createEngine(): Promise<AnalysisEngine> {
+  private async createEngine(source: DataSourceConfig): Promise<AnalysisEngine> {
     const { type, ...options } = this.engineConfig;
 
     emit(this, new LifecycleEvent(LifecycleEventType.CREATE_START));
@@ -99,6 +94,7 @@ export class AVA extends EventEmitter {
     try {
       const EngineClass = getEngineClass(type);
       engine = new EngineClass(this.llmConfig, options);
+      this.operations = engineOperations(engine, source);
     } catch (error) {
       emit(this, new LifecycleEvent(LifecycleEventType.CREATE_END, { error: serializeError(error) }));
 
@@ -114,15 +110,13 @@ export class AVA extends EventEmitter {
    * Release the current engine, including replacement and failed-load cleanup.
    */
   private async disposeEngine(): Promise<void> {
-    const errorContext = this.sourceErrorContext;
     if (!this.engine) return;
 
     emit(this, new LifecycleEvent(LifecycleEventType.DISPOSE_START));
 
     try {
-      await this.engine.dispose();
-    } catch (cause) {
-      const error = safeSourceError(cause, errorContext);
+      await this.operations!.dispose();
+    } catch (error) {
       emit(this, new LifecycleEvent(LifecycleEventType.DISPOSE_END, { error: serializeError(error) }));
 
       throw error;
@@ -141,17 +135,14 @@ export class AVA extends EventEmitter {
     try {
       await this.dispose();
 
-      this.sourceErrorContext = sourceErrorContext(config);
-      this.engine = await this.createEngine();
+      this.engine = await this.createEngine(config);
       try {
-        await this.engine.load(config);
-      } catch (cause) {
-        const error = safeSourceError(cause, this.sourceErrorContext);
+        await this.operations!.load(config);
+      } catch (error) {
         await this.dispose();
         throw error;
       }
-    } catch (cause) {
-      const error = safeSourceError(cause, sourceErrorContext(config));
+    } catch (error) {
       emit(this, new LifecycleEvent(LifecycleEventType.SOURCE_END, { error: serializeError(error) }));
 
       throw error;
@@ -165,7 +156,6 @@ export class AVA extends EventEmitter {
    * Include tables, fields, types, indexes, and relations.
    */
   async schema(options: SchemaOptions = {}, setter?: (options: SchemaOptions) => Schema): Promise<Schema> {
-    const errorContext = this.sourceErrorContext;
     if (!this.engine) {
       throw new Error('No data loaded. Please call source() first.');
     }
@@ -175,11 +165,10 @@ export class AVA extends EventEmitter {
     emit(this, new LifecycleEvent(LifecycleEventType.SCHEMA_START));
 
     try {
-      const f = setter ?? (() => this.engine!.schema());
+      const f = setter ?? (() => this.operations!.schema());
       this.dataSchema = schemaMetadataSchema.parse(await f(options));
       this.dataProfile = null;
-    } catch (cause) {
-      const error = safeSourceError(cause, errorContext);
+    } catch (error) {
       emit(this, new LifecycleEvent(LifecycleEventType.SCHEMA_END, { error: serializeError(error) }));
 
       throw error;
@@ -194,7 +183,6 @@ export class AVA extends EventEmitter {
    * Compute a statistical profile of the data source.
    */
   async profile(options: ProfileOptions = {}, setter?: (options: ProfileOptions) => Profile): Promise<Profile> {
-    const errorContext = this.sourceErrorContext;
     if (!this.engine) {
       throw new Error('No data loaded. Please call source() first.');
     }
@@ -205,11 +193,10 @@ export class AVA extends EventEmitter {
     emit(this, new LifecycleEvent(LifecycleEventType.PROFILE_START));
 
     try {
-      this.dataSchema ??= await this.engine!.schema();
-      const f = setter ?? (async (options: ProfileOptions) => this.engine!.profile!(this.dataSchema!, options));
+      this.dataSchema ??= await this.operations!.schema();
+      const f = setter ?? (async (options: ProfileOptions) => this.operations!.profile!(this.dataSchema!, options));
       this.dataProfile = profileMetadataSchema.parse(await f(options));
-    } catch (cause) {
-      const error = safeSourceError(cause, errorContext);
+    } catch (error) {
       emit(this, new LifecycleEvent(LifecycleEventType.PROFILE_END, { error: serializeError(error) }));
 
       throw error;
@@ -249,7 +236,6 @@ export class AVA extends EventEmitter {
    * Use visualize() separately to generate charts from the analysis result.
    */
   async analyze(query: string, config: AnalysisConfig = {}): Promise<AnalysisResponse> {
-    const errorContext = this.sourceErrorContext;
     if (!this.engine) {
       throw new Error('No data loaded. Please call source() first.');
     }
@@ -261,14 +247,11 @@ export class AVA extends EventEmitter {
       const runtime = {
         emit: (event: AnalysisEvent) => emit(this, event),
         dataModel: await this.getDataModel(),
-        engine: this.engine,
-        sanitizeError: (error: unknown, phase: 'query' | 'model') =>
-          phase === 'model' ? safeModelError(error) : safeSourceError(error, errorContext),
+        engine: this.operations!,
         llm: this.llmConfig,
       };
       result = await analyze(query, config, runtime);
-    } catch (cause) {
-      const error = safeSourceError(cause, errorContext);
+    } catch (error) {
       emit(this, new LifecycleEvent(LifecycleEventType.ANALYZE_END, { error: serializeError(error) }));
 
       throw error;
@@ -293,8 +276,7 @@ export class AVA extends EventEmitter {
     let dsl: string;
     let usage: LanguageModelUsage | undefined;
     try {
-      const model = await this.getDataModel();
-      ({ dsl, usage } = await withModelErrors(() => this.engine!.getDSL(query, model)));
+      ({ dsl, usage } = await this.operations!.getDSL(query, await this.getDataModel()));
     } catch (error) {
       emit(this, new AnalysisEvent(AnalysisEventType.TRANSLATE_END, { error: serializeError(error) }));
 
@@ -311,7 +293,6 @@ export class AVA extends EventEmitter {
    * The DSL must match the current engine's query language.
    */
   async query(dsl: string, options?: ExecutionOptions): Promise<ExecutionResult> {
-    const errorContext = this.sourceErrorContext;
     if (!this.engine) {
       throw new Error('No data loaded. Please call source() first.');
     }
@@ -320,9 +301,8 @@ export class AVA extends EventEmitter {
 
     let result: ExecutionResult;
     try {
-      result = await this.engine.execute(dsl, options);
-    } catch (cause) {
-      const error = safeSourceError(cause, errorContext);
+      result = await this.operations!.execute(dsl, options);
+    } catch (error) {
       emit(this, new AnalysisEvent(AnalysisEventType.QUERY_END, { error: serializeError(error) }));
 
       throw error;
@@ -393,8 +373,7 @@ export class AVA extends EventEmitter {
 
     let result: SuggestResult[];
     try {
-      const model = await this.getDataModel();
-      result = await withModelErrors(() => generateSuggestions(this.llmConfig, model, count));
+      result = await generateSuggestions(this.llmConfig, await this.getDataModel(), count);
     } catch (error) {
       emit(this, new LifecycleEvent(LifecycleEventType.SUGGEST_END, { error: serializeError(error) }));
 
@@ -414,10 +393,10 @@ export class AVA extends EventEmitter {
       await this.disposeEngine();
     } finally {
       this.engine = null;
+      this.operations = null;
       this.dataSchema = null;
       this.dataProfile = null;
       this.dataSemantic = {};
-      this.sourceErrorContext = undefined;
     }
   }
 }

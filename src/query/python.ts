@@ -1,6 +1,7 @@
 import { generateText } from 'ai';
 
 import { languageModel } from '../util/model';
+import { AVAError } from '../util/error';
 import { stringifyDataModel } from '../util/data-model';
 
 import type { DataModel, LLMConfig, PythonEngineOptions, QueryDialect, TranslationResult } from '../types';
@@ -44,8 +45,8 @@ Return only executable Python code, without explanation or Markdown.`,
   }
 
   async validateDSL(code: string): Promise<string> {
-    if (!code.trim()) throw new Error('Python query must contain code');
-    if (code.includes('\0')) throw new Error('Python query contains a NUL character');
+    if (!code.trim()) throw new AVAError('QUERY_ERROR', 'Python query must contain code');
+    if (code.includes('\0')) throw new AVAError('QUERY_ERROR', 'Python query contains a NUL character');
     // Compile in the execution environment without running the user's code or loading source data.
     // https://docs.python.org/3/library/functions.html#compile
     const script = `import json

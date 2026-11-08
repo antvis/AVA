@@ -3,6 +3,7 @@
 import { z } from 'zod';
 
 import { PythonDialect } from '../../query/python';
+import { AVAError } from '../../util/error';
 import { executionResult, maxRows, maxResultBytes } from '../../util/result';
 import { DEFAULT_METRICS, parseProfileOptions, profileMetadataSchema } from '../../util/profile';
 import { runWithTimeout } from '../../util/timeout';
@@ -48,7 +49,8 @@ export class PythonEngine implements AnalysisEngine {
     this.executor = engineOptions.execute ?? createPythonExecutor(this.timeoutMs);
     this.dialect = new PythonDialect(llmConfig, (script) =>
       runWithTimeout(this.executor(script, 64 * 1024), this.timeoutMs, {
-        onTimeout: () => new Error(`Python validation timed out after ${this.timeoutMs}ms`),
+        onTimeout: () =>
+          new AVAError('REQUEST_TIMEOUT', `Python validation timed out after ${this.timeoutMs}ms`, 'unknown'),
       })
     );
   }
@@ -96,7 +98,8 @@ export class PythonEngine implements AnalysisEngine {
       this.executor(executionCode(validated, this.source, limits), maxBuffer),
       this.timeoutMs,
       {
-        onTimeout: () => new Error(`Python execution timed out after ${this.timeoutMs}ms`),
+        onTimeout: () =>
+          new AVAError('REQUEST_TIMEOUT', `Python execution timed out after ${this.timeoutMs}ms`, 'unknown'),
       }
     );
     const result = resultSchema.parse(response) as ExecutionResult<T>;

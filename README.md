@@ -243,6 +243,16 @@ ava analyze '<dataset-id>' 'Compare January and February 2025 sales by product.'
 
 See the [CLI guide](https://ava.antv.vision/documentation/reference/cli/) for setup and commands.
 
+For automation, set `AVA_ERROR_FORMAT=json` to receive `{ ok: false, error, code, outcome }` on stderr.
+SDK integrations can inspect `AVAError.code` and `AVAError.outcome`, or use `serializeError(error)` for events and logs.
+An `unknown` outcome means AVA cannot confirm completion or cancellation; callers must not assume it is safe to repeat the operation.
+
+AVA converts source and model failures at their call boundaries. Known driver codes produce safe diagnostics such as
+an unknown column or failed authentication; unrecognized remote diagnostics use a generic message so credentials are not
+forwarded to callers, events, or model prompts. SQL correction continues for `QUERY_ERROR`; authentication, connection,
+and unclassified remote-source failures stop analysis. Existing unclassified local query errors retain their diagnostics
+and correction behavior.
+
 ## 📚 Resources
 
 - [Documentation](https://ava.antv.vision/documentation/) — Guides and examples

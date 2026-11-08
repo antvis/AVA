@@ -4,6 +4,7 @@
 
 import { generateText } from 'ai';
 
+import { withModelErrors } from '../../../util/error';
 import { languageModel } from '../../../util/model';
 
 import type { LLMConfig, TextSourceOptions } from '../../../types';
@@ -23,11 +24,13 @@ ${options.text}
 
 Return ONLY the JSON array, no additional text or explanation. The response must be valid JSON that can be parsed directly.`;
 
-  const { text: responseText } = await generateText({
-    model: languageModel(llmConfig),
-    maxRetries: llmConfig.maxRetries ?? 3,
-    prompt,
-  });
+  const { text: responseText } = await withModelErrors(() =>
+    generateText({
+      model: languageModel(llmConfig),
+      maxRetries: llmConfig.maxRetries ?? 3,
+      prompt,
+    })
+  );
 
   try {
     const data = JSON.parse(responseText);
@@ -41,7 +44,7 @@ Return ONLY the JSON array, no additional text or explanation. The response must
     throw new Error('Could not extract JSON array from LLM response');
   }
 
-  const data = JSON.parse(jsonMatch[0]);
+  const data = await withModelErrors(async () => JSON.parse(jsonMatch[0]));
   if (!Array.isArray(data)) {
     throw new Error('LLM did not return an array');
   }

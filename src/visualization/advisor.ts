@@ -6,7 +6,7 @@
 import { generateText } from 'ai';
 
 import { languageModel } from '../util/model';
-import { safeModelError } from '../util/error';
+import { withModelErrors } from '../util/error';
 
 import { chartDefinitions } from './vis';
 
@@ -114,13 +114,13 @@ export async function adviseChartType(
 ): Promise<ChartType | null> {
   const prompt = buildAdvisorPrompt(query, dataInfoStr);
 
-  const { text } = await generateText({
-    model: languageModel(llmConfig),
-    maxRetries: llmConfig.maxRetries ?? 3,
-    prompt,
-  }).catch((error) => {
-    throw safeModelError(error);
-  });
+  const { text } = await withModelErrors(() =>
+    generateText({
+      model: languageModel(llmConfig),
+      maxRetries: llmConfig.maxRetries ?? 3,
+      prompt,
+    })
+  );
 
   const raw = text
     .trim()

@@ -5,6 +5,7 @@
 import { generateText } from 'ai';
 
 import { languageModel } from '../util/model';
+import { AVAError, withModelErrors } from '../util/error';
 import { stringifyDataModel } from '../util/data-model';
 
 import type { LLMConfig, DataModel, SuggestResult } from '../types';
@@ -50,11 +51,13 @@ Example format:
 
 Generate the JSON array now.`;
 
-  const { text } = await generateText({
-    model: languageModel(llmConfig),
-    maxRetries: llmConfig.maxRetries ?? 3,
-    prompt,
-  });
+  const { text } = await withModelErrors(() =>
+    generateText({
+      model: languageModel(llmConfig),
+      maxRetries: llmConfig.maxRetries ?? 3,
+      prompt,
+    })
+  );
 
   try {
     const jsonMatch = text.match(/\[[\s\S]*\]/);
@@ -73,7 +76,7 @@ Generate the JSON array now.`;
       }))
       .sort((a, b) => b.score - a.score)
       .slice(0, count);
-  } catch (error) {
-    throw new Error(`Failed to parse suggestions: ${error instanceof Error ? error.message : String(error)}`);
+  } catch {
+    throw new AVAError('MODEL_ERROR', 'The model returned invalid suggestions JSON.');
   }
 }

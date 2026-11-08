@@ -3,6 +3,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { AVA, AVAError, serializeError } from '../src';
 import { ClickHouseEngine } from '../src/remote';
+import { DuckDBEngine } from '../src/duckdb';
 import { failureResponse } from '../src/util/error';
 import { responseSchema } from '../src/cli/session/protocol';
 import { readJSON } from '../src/cli/io';
@@ -93,25 +94,111 @@ describe('safe SDK errors', () => {
 
   it('keeps driver errors out of direct-analysis events and correction prompts', async () => {
     await ava.source(source);
-    vi.mocked(ClickHouseEngine.prototype.execute).mockRejectedValueOnce(new Error(secret));
+    vi.mocked(ClickHouseEngine.prototype.execute).mockRejectedValueOnce(
+      Object.assign(new Error(secret), { code: '47' })
+    );
     const result = await ava.analyze('Total?', { includeSummary: false });
     expect(result.data).toEqual([{ total: 10 }]);
     const correction = vi.mocked(ClickHouseEngine.prototype.getDSL).mock.calls[1][0];
-    expect(correction).toContain('clickhouse operation failed');
+    expect(correction).toContain('unknown column');
     expect(correction).not.toContain(secret);
     expect(JSON.stringify(events)).not.toContain(secret);
   });
 
   it('keeps driver errors out of loop-analysis events and subsequent model prompts', async () => {
     await ava.source(source);
-    vi.mocked(ClickHouseEngine.prototype.execute).mockRejectedValueOnce(new Error(secret));
+    vi.mocked(ClickHouseEngine.prototype.execute).mockRejectedValueOnce(
+      Object.assign(new Error(secret), { code: '47' })
+    );
     vi.mocked(generateText)
       .mockResolvedValueOnce({ text: '[SQL]\n```sql\nSELECT 10 AS total\n```' } as never)
       .mockResolvedValueOnce({ text: '[SQL]\n```sql\nSELECT 10 AS total\n```' } as never);
     const result = await ava.analyze('Total?', { includeSummary: false, strategy: { type: 'loop', maxSteps: 2 } });
     expect(result.data).toEqual([{ total: 10 }]);
+    expect(JSON.stringify(vi.mocked(generateText).mock.calls[1])).toContain('unknown column');
     expect(JSON.stringify(vi.mocked(generateText).mock.calls)).not.toContain(secret);
     expect(JSON.stringify(events)).not.toContain(secret);
+  });
+
+  it.each(['direct', 'loop'] as const)(
+    'stops %s on authentication and unclassified source failures',
+    async (strategy) => {
+      await ava.source(source);
+      for (const [driverCode, expectedCode] of [
+        ['516', 'AUTHENTICATION_FAILED'],
+        [undefined, 'SOURCE_ERROR'],
+      ]) {
+        vi.mocked(ClickHouseEngine.prototype.execute)
+          .mockClear()
+          .mockRejectedValueOnce(Object.assign(new Error(secret), { code: driverCode }));
+        vi.mocked(ClickHouseEngine.prototype.getDSL).mockClear();
+        vi.mocked(generateText).mockResolvedValueOnce({ text: '[SQL]\n```sql\nSELECT 10 AS total\n```' } as never);
+        await expect(
+          ava.analyze('Total?', { includeSummary: false, strategy: { type: strategy } })
+        ).rejects.toMatchObject({
+          code: expectedCode,
+        });
+        expect(ClickHouseEngine.prototype.execute).toHaveBeenCalledOnce();
+        if (strategy === 'direct') expect(ClickHouseEngine.prototype.getDSL).toHaveBeenCalledOnce();
+        expect(JSON.stringify(events)).not.toContain(secret);
+      }
+    }
+  );
+
+  it('retains the source boundary when a pending query fails after loading a local replacement', async () => {
+    const local = new AVA({ llm: { model: 'unused' } });
+    local.on('*', (event: unknown) => events.push(event));
+    try {
+      vi.spyOn(DuckDBEngine.prototype, 'load').mockResolvedValueOnce(undefined);
+      await local.source({ type: 'csv-file', options: { path: 'https://example.test/sales.csv' } });
+      let rejectQuery!: (error: Error) => void;
+      vi.spyOn(local.engine!, 'execute').mockImplementationOnce(
+        () =>
+          new Promise((_, reject) => {
+            rejectQuery = reject;
+          })
+      );
+      const query = local.query('SELECT 10');
+      const check = expect(query).rejects.toMatchObject({ code: 'SOURCE_ERROR' });
+      await local.source({ type: 'json', options: { data: [{ value: 1 }] } });
+      rejectQuery(new Error(secret));
+      await check;
+      expect(JSON.stringify(events)).not.toContain(secret);
+      expect((await local.query('SELECT value FROM data')).data).toEqual([{ value: 1 }]);
+    } finally {
+      await local.dispose();
+    }
+  });
+
+  it('preserves a local SQL failure through the loop final fallback and every end event', async () => {
+    const local = new AVA({ llm: { model: 'unused' } });
+    const localEvents: unknown[] = [];
+    local.on('*', (event: unknown) => localEvents.push(event));
+    try {
+      await local.source({ type: 'json', options: { data: [{ value: 1 }] } });
+      vi.mocked(generateText)
+        .mockResolvedValueOnce({ text: '[REFINE] Need to query.' } as never)
+        .mockResolvedValueOnce({ text: '[SQL]\n```sql\nSELECT missing_field FROM data\n```' } as never);
+      const error = await local
+        .analyze('Rows?', { includeSummary: false, strategy: { type: 'loop', maxSteps: 1 } })
+        .then(
+          () => undefined,
+          (failure) => failure
+        );
+      expect(error).toBeInstanceOf(Error);
+      expect(error.message).toContain('missing_field');
+      expect(error.code).not.toBe('MODEL_ERROR');
+      for (const type of ['queryend', 'stepend', 'analyzeend']) {
+        expect(localEvents).toContainEqual(
+          expect.objectContaining({
+            type,
+            data: expect.objectContaining({ error: serializeError(error) }),
+          })
+        );
+      }
+    } finally {
+      await local.dispose();
+    }
   });
 
   it.each(['direct', 'loop'] as const)('does not retry %s execution after an unknown outcome', async (strategy) => {
@@ -150,6 +237,33 @@ describe('safe SDK errors', () => {
     vi.mocked(ClickHouseEngine.prototype.getDSL).mockRejectedValueOnce(new Error(secret));
     await expect(ava.analyze('Total?')).rejects.toMatchObject({ code: 'MODEL_ERROR' });
     expect(JSON.stringify(events)).not.toContain(secret);
+  });
+
+  it.each(['duckdb', 'javascript'] as const)('protects %s text extraction at the model boundary', async (engine) => {
+    const text = new AVA({ llm: { model: 'unused' }, engine: { type: engine } });
+    text.on('*', (event: unknown) => events.push(event));
+    vi.mocked(generateText).mockRejectedValueOnce(new Error(secret));
+    try {
+      await expect(text.source({ type: 'text', options: { text: 'a: 1' } })).rejects.toMatchObject({
+        code: 'MODEL_ERROR',
+      });
+      expect(JSON.stringify(events)).not.toContain(secret);
+    } finally {
+      await text.dispose();
+    }
+  });
+
+  it('does not expose malformed model output from suggestions or chart configuration parsing', async () => {
+    await ava.source(source);
+    vi.mocked(generateText).mockResolvedValueOnce({ text: `[invalid, "${secret}"]` } as never);
+    await expect(ava.suggest()).rejects.toMatchObject({ code: 'MODEL_ERROR' });
+    expect(JSON.stringify(events)).not.toContain(secret);
+    vi.mocked(generateText)
+      .mockResolvedValueOnce({ text: 'column' } as never)
+      .mockResolvedValueOnce({ text: `{invalid, "${secret}"}` } as never);
+    const result = ava.visualize({ query: 'Chart', data: [{ total: 10 }] });
+    await expect(result).rejects.toMatchObject({ code: 'MODEL_ERROR' });
+    await result.catch((error) => assertSafe(error, 'MODEL_ERROR'));
   });
 });
 

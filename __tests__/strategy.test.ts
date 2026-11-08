@@ -200,32 +200,28 @@ describe('directAnalysis', () => {
   });
 
   it.each([
-    ['empty response', '', 'could not parse the response'],
-    ['non-JSON response', 'The answer is one.', 'did not match schema'],
-    ['incomplete summary', '{queryExplanation: "Return 1."', 'did not match schema'],
-    ['missing field', '{queryExplanation: "Return 1.",}', 'did not match schema'],
-    ['empty conclusion', '{queryExplanation: "Return 1.", conclusion: "   ",}', 'did not match schema'],
-    ['wrong field type', '{queryExplanation: "Return 1.", conclusion: 1,}', 'did not match schema'],
-    [
-      'invalid optional field',
-      '{queryExplanation: "Return 1.", conclusion: "One.", nextStep: [],}',
-      'did not match schema',
-    ],
-  ])('still rejects %s after repair', async (_, text, error) => {
+    ['empty response', ''],
+    ['non-JSON response', 'The answer is one.'],
+    ['incomplete summary', '{queryExplanation: "Return 1."'],
+    ['missing field', '{queryExplanation: "Return 1.",}'],
+    ['empty conclusion', '{queryExplanation: "Return 1.", conclusion: "   ",}'],
+    ['wrong field type', '{queryExplanation: "Return 1.", conclusion: 1,}'],
+    ['invalid optional field', '{queryExplanation: "Return 1.", conclusion: "One.", nextStep: [],}'],
+  ])('still rejects %s after repair', async (_, text) => {
     const { runtime, engine, doGenerate, emit } = setup();
     doGenerate.mockResolvedValue(response(text));
 
-    await expect(analyze('Give me one', {}, runtime)).rejects.toThrow(error);
+    await expect(analyze('Give me one', {}, runtime)).rejects.toMatchObject({ code: 'MODEL_ERROR', outcome: 'failed' });
 
     expect(engine.execute).toHaveBeenCalledOnce();
     expect(doGenerate).toHaveBeenCalledOnce();
     expect(emit.mock.calls.at(-2)[0]).toMatchObject({
       type: 'summarizeend',
-      data: { error: { name: 'AI_NoObjectGeneratedError' } },
+      data: { error: { name: 'AVAError', code: 'MODEL_ERROR' } },
     });
     expect(emit.mock.calls.find(([event]) => event.type === 'stepend')[0]).toMatchObject({
       type: 'stepend',
-      data: { step: 0, error: { name: 'AI_NoObjectGeneratedError' } },
+      data: { step: 0, error: { name: 'AVAError', code: 'MODEL_ERROR' } },
     });
   });
 

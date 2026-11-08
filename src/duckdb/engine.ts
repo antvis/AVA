@@ -12,7 +12,7 @@ import { coerceNumbers } from '../util/coerce';
 import { sqlStringLiteral } from '../util/sql';
 import { parseProfileOptions } from '../util/profile';
 import { runWithTimeout } from '../util/timeout';
-import { AVAError } from '../util/error';
+import { AVAError, withQueryErrors } from '../util/error';
 
 import { DEFAULT_METRICS, profileTables } from './profile';
 import { loadSource } from './loaders';
@@ -151,7 +151,7 @@ export class DuckDBEngine implements AnalysisEngine {
     if (!this.source || !this.connection) throw new Error('No data loaded. Please call source() first.');
 
     const conn = this.connection;
-    const query = await this.dialect.validateDSL(sql);
+    const query = await withQueryErrors(() => this.dialect.validateDSL(sql));
     const timeoutMs = this.engineOptions.queryTimeoutMs ?? DEFAULT_QUERY_TIMEOUT_MS;
     // query() parses the original source; a quoted constant keeps its own parameters unbound.
     // https://duckdb.org/docs/1.5/guides/sql_features/query_and_query_table_functions

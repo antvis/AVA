@@ -5,6 +5,7 @@
 
 import { generateText } from 'ai';
 
+import { withModelErrors } from '../../util/error';
 import { languageModel } from '../../util/model';
 import { fileSource, removeTempFile, writeTempFile } from '../util/file';
 
@@ -56,7 +57,7 @@ Return ONLY the JSON array, no additional text or explanation. The response must
 }
 
 export async function loadText(options: TextSourceOptions, llmConfig: LLMConfig): Promise<LoadedSource> {
-  const data = await extractData(options.text, llmConfig);
+  const data = await withModelErrors(() => extractData(options.text, llmConfig));
   const tmpFile = await writeTempFile(JSON.stringify(data), 'json');
   return fileSource(tmpFile, 'json', () => removeTempFile(tmpFile));
 }

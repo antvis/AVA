@@ -9,7 +9,7 @@
 import { generateText } from 'ai';
 
 import { languageModel } from '../util/model';
-import { safeModelError } from '../util/error';
+import { AVAError, withModelErrors } from '../util/error';
 
 import type { LLMConfig, ChartType, ChartConfig } from '../types';
 
@@ -108,13 +108,13 @@ ${JSON.stringify(data, null, 2)}
 5. 不要生成 width height，图表会按照容器自适应大小
 6. 直接输出 JSON，不要用代码块包裹，不要有任何说明文字`;
 
-  const { text } = await generateText({
-    model: languageModel(llmConfig),
-    maxRetries: llmConfig.maxRetries ?? 3,
-    prompt,
-  }).catch((error) => {
-    throw safeModelError(error);
-  });
+  const { text } = await withModelErrors(() =>
+    generateText({
+      model: languageModel(llmConfig),
+      maxRetries: llmConfig.maxRetries ?? 3,
+      prompt,
+    })
+  );
 
   // Remove possible markdown code block wrappers (LLM may still wrap in ```json ... ```)
   const json = text
@@ -122,10 +122,15 @@ ${JSON.stringify(data, null, 2)}
     .replace(/^```(?:json)?\s*\n?/i, '')
     .replace(/\n?\s*```$/, '')
     .trim();
-  const config = JSON.parse(json) as unknown;
+  let config: unknown;
+  try {
+    config = JSON.parse(json);
+  } catch {
+    throw new AVAError('MODEL_ERROR', 'The model returned invalid chart configuration JSON.');
+  }
 
   if (typeof config !== 'object' || config === null || Array.isArray(config)) {
-    throw new Error('Generated GPT-Vis config must be a JSON object.');
+    throw new AVAError('MODEL_ERROR', 'Generated GPT-Vis config must be a JSON object.');
   }
 
   return { ...(config as ChartConfig), type: chartType };

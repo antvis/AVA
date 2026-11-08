@@ -14,7 +14,7 @@ import { generateText } from 'ai';
 import { languageModel } from '../util/model';
 import { stringifyDataModel } from '../util/data-model';
 import { AnalysisEvent, AnalysisEventType, eventPair } from '../event';
-import { AVAError, serializeError } from '../util/error';
+import { canCorrectQuery, serializeError, withModelErrors } from '../util/error';
 
 import type { LanguageModelUsage } from 'ai';
 import type { AnalysisStrategy, QueryLanguage, ExecutionResult } from '../types';
@@ -172,11 +172,7 @@ const transcriptPrompt = (transcript: string[]) => {
 /**
  * Explore, refine, execute, and verify SQL before returning an answer.
  */
-export const loopAnalysis: AnalysisStrategy = async (
-  query,
-  config,
-  { dataModel, engine, llm, emit, sanitizeError = (error) => error }
-) => {
+export const loopAnalysis: AnalysisStrategy = async (query, config, { dataModel, engine, llm, emit }) => {
   let stepId: string | undefined;
   let parentStepIds: string[] = [];
   const emitEvent = (type: AnalysisEventType, data: object, eventId: string) =>
@@ -215,11 +211,13 @@ export const loopAnalysis: AnalysisStrategy = async (
     let stepError: SerializedError | undefined;
     let queries: string[] = [];
     try {
-      const { text: responseText, usage: responseUsage } = await generateText({
-        model: languageModel(llm),
-        maxRetries: llm.maxRetries ?? 3,
-        prompt,
-      });
+      const { text: responseText, usage: responseUsage } = await withModelErrors(() =>
+        generateText({
+          model: languageModel(llm),
+          maxRetries: llm.maxRetries ?? 3,
+          prompt,
+        })
+      );
 
       usage = responseUsage;
       text = responseText.trim();
@@ -263,11 +261,10 @@ export const loopAnalysis: AnalysisStrategy = async (
         let execution: ExecutionResult;
         try {
           execution = await engine.execute(proposal, config);
-        } catch (cause) {
-          const error = sanitizeError(cause, 'query');
+        } catch (error) {
           queryEvent.end({ error: serializeError(error) });
 
-          if (error instanceof AVAError && error.outcome === 'unknown') throw error;
+          if (!canCorrectQuery(error)) throw error;
 
           if (action === 'SQL') result = undefined;
 
@@ -297,8 +294,7 @@ export const loopAnalysis: AnalysisStrategy = async (
       }
 
       transcript.push(`Runtime:\n${observations.join('\n\n')}`);
-    } catch (cause) {
-      const error = sanitizeError(cause, 'model');
+    } catch (error) {
       stepError = serializeError(error);
       throw error;
     } finally {
@@ -333,10 +329,11 @@ export const loopAnalysis: AnalysisStrategy = async (
   let stepError: SerializedError | undefined;
   let statement: string;
   try {
-    const { text: responseText, usage: responseUsage } = await generateText({
-      model: languageModel(llm),
-      maxRetries: llm.maxRetries ?? 3,
-      prompt: `${basePrompt}
+    const { text: responseText, usage: responseUsage } = await withModelErrors(() =>
+      generateText({
+        model: languageModel(llm),
+        maxRetries: llm.maxRetries ?? 3,
+        prompt: `${basePrompt}
 
     # DATABASE CONTEXT
 
@@ -349,7 +346,8 @@ export const loopAnalysis: AnalysisStrategy = async (
     # FINAL ATTEMPT
 
     The loop reached its step limit without a final executable statement. Use the complete history above and respond with exactly one [SQL] action containing one ${language} statement.`,
-    });
+      })
+    );
 
     usage = responseUsage;
     finalText = responseText.trim();
@@ -367,16 +365,10 @@ export const loopAnalysis: AnalysisStrategy = async (
     let execution: ExecutionResult;
     try {
       execution = await engine.execute(statement, config);
-    } catch (cause) {
-      const error = sanitizeError(cause, 'query');
+    } catch (error) {
       queryEvent.end({ error: serializeError(error) });
 
-      if (error instanceof AVAError) throw error;
-      throw new Error(
-        `Loop final statement failed: ${
-          error instanceof Error ? error.message : String(error)
-        }\nLast attempted ${language} statement:\n${statement}`
-      );
+      throw error;
     }
 
     queryEvent.end(execution);
@@ -387,8 +379,7 @@ export const loopAnalysis: AnalysisStrategy = async (
       sql: statement,
       text: config.includeSummary === false ? '' : lastConfirmation ?? JSON.stringify(execution.data, null, 2),
     };
-  } catch (cause) {
-    const error = sanitizeError(cause, 'model');
+  } catch (error) {
     stepError = serializeError(error);
     throw error;
   } finally {
