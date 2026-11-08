@@ -10,7 +10,7 @@ DATASET_ID=$(node -p 'JSON.parse(require("fs").readFileSync("session.json", "utf
 ava schema "$DATASET_ID" > schema.json
 ```
 
-`source` 准备好数据源后返回会话 ID。结构发现按需进行；`schema` 返回数据源结构，以及 `language` id（`duckdb-sql`、`clickhouse-sql`、`postgresql`、`tsql`、`python` 或 `javascript`），可选的顶层 `instructions` 说明方言规则或执行环境中的变量和结果约定。重复调用 schema 会复用会话缓存。已知的查询不必提前单独调用 schema，也可以直接执行。
+`source` 准备好数据源后返回会话 ID。结构发现按需进行；`schema` 返回数据源结构，以及 `language` id（`duckdb-sql`、`clickhouse-sql`、`postgresql`、`tsql`、`snowflake-sql`、`python` 或 `javascript`），可选的顶层 `instructions` 说明方言规则或执行环境中的变量和结果约定。重复调用 schema 会复用会话缓存。已知的查询不必提前单独调用 schema，也可以直接执行。
 
 加载结构化数据、查看 schema、计算 profile、读写 semantic、执行 query，以及 `viz` 都不需要模型密钥。如果要使用 AI 命令或文本数据源，请在创建会话前设置 `OPENAI_API_KEY`，以及可选的 `OPENAI_MODEL`、`OPENAI_BASE_URL`。会话创建后不能修改其模型配置。
 

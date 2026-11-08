@@ -684,7 +684,7 @@ try {
 }
 ```
 
-- 使用单条只读 `SELECT`（支持 `WITH`），按 `schema()` 列出的名称为表和列加双引号。存储过程和 `SYSTEM$` 函数会被拒绝。
+- 使用单条只读 `SELECT`（支持 `WITH`），按 `schema()` 列出的名称为表和列加双引号。存储过程、`SYSTEM$` 函数，以及 `IDENTIFIER(name)(...)` 形式的动态函数调用会被拒绝。
 - `maxRows` 和 `maxResultBytes` 分别限制返回结果的行数和大小。
 - `NUMBER` 在转换不损失数字位数时转为 JavaScript 数字，更大或更精确的值保留为十进制字符串；浮点数的 `NaN` 和无穷大保留为字符串。日期使用 `YYYY-MM-DD`，时间和时间戳带九位小数，时区类型附带偏移量。`VARIANT`、`OBJECT` 和 `ARRAY` 是解析后的 JSON，`BINARY` 是十六进制文本。
 

@@ -717,7 +717,7 @@ try {
 }
 ```
 
-- Write a single read-only `SELECT` (`WITH` is allowed), quoting table and column names exactly as listed by `schema()`. Procedures and `SYSTEM$` functions are rejected.
+- Write a single read-only `SELECT` (`WITH` is allowed), quoting table and column names exactly as listed by `schema()`. Procedures, `SYSTEM$` functions, and dynamic function calls such as `IDENTIFIER(name)(...)` are rejected.
 - Use `maxRows` and `maxResultBytes` to limit the number of rows and size of returned results.
 - `NUMBER` values become JavaScript numbers when conversion preserves their digits; larger or more precise values stay decimal strings. Float `NaN` and infinities stay strings. Dates use `YYYY-MM-DD`; times and timestamps have nine fractional digits, with an offset for time-zone types. `VARIANT`, `OBJECT` and `ARRAY` are parsed JSON; `BINARY` is hexadecimal text.
 

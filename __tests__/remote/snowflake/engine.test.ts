@@ -352,6 +352,79 @@ describe('SnowflakeEngine execution', () => {
     }
   });
 
+  it.each([
+    { name: 'byte budget', value: '杭州', maxResultBytes: 23, error: false },
+    { name: 'field budget', value: 'x'.repeat(1024 * 1024), maxResultBytes: 4 * 1024 * 1024, error: true },
+  ])('stops reading at the $name and keeps the connection usable', async ({ value, maxResultBytes, error }) => {
+    let emitted = 0;
+    const stream = new Readable({
+      objectMode: true,
+      highWaterMark: 1,
+      read() {
+        this.push({ VALUE: value });
+      },
+    });
+    const { calls } = install((options) => {
+      if (options.sqlText !== 'SELECT VALUE FROM WIDE_TABLE' || options.describeOnly) return undefined;
+      setImmediate(() =>
+        options.complete(undefined, {
+          getColumns: () => [column('VALUE')],
+          streamRows: () => {
+            stream.on('data', () => emitted++);
+            return stream;
+          },
+        })
+      );
+      return 'hang';
+    });
+    const engine = new SnowflakeEngine(getLLMConfig());
+    try {
+      await engine.load(SOURCE);
+      const pending = engine.execute('SELECT VALUE FROM WIDE_TABLE', { maxResultBytes });
+      if (error) {
+        await expect(pending).rejects.toThrow('Result field exceeds the 1 MiB limit');
+      } else {
+        await expect(pending).resolves.toMatchObject({
+          data: [{ VALUE: value }],
+          truncated: true,
+          truncatedBy: 'maxResultBytes',
+          rowCount: undefined,
+        });
+      }
+      // Node may emit one prefetched row after the stream is destroyed.
+      expect(emitted).toBeLessThanOrEqual(error ? 2 : 3);
+      expect(emitted).toBeGreaterThan(0);
+      expect(stream.destroyed).toBe(true);
+      await expect(engine.execute('SELECT 1')).resolves.toMatchObject({ data: [], rowCount: 0 });
+      expect(calls.filter(({ describeOnly }) => describeOnly)).toHaveLength(2);
+    } finally {
+      stream.destroy();
+      await engine.dispose();
+    }
+  });
+
+  it('ignores an oversized sentinel row beyond maxRows', async () => {
+    install((options) =>
+      options.describeOnly
+        ? undefined
+        : options.sqlText === 'SELECT VALUE FROM WIDE_TABLE'
+        ? { columns: [column('VALUE')], rows: [{ VALUE: 'ok' }, { VALUE: 'x'.repeat(1024 * 1024) }] }
+        : undefined
+    );
+    const engine = new SnowflakeEngine(getLLMConfig());
+    try {
+      await engine.load(SOURCE);
+      await expect(engine.execute('SELECT VALUE FROM WIDE_TABLE', { maxRows: 1 })).resolves.toMatchObject({
+        data: [{ VALUE: 'ok' }],
+        truncated: true,
+        truncatedBy: 'maxRows',
+        rowCount: undefined,
+      });
+    } finally {
+      await engine.dispose();
+    }
+  });
+
   it('refuses unsafe statements before running anything', async () => {
     const { calls } = install();
     const engine = new SnowflakeEngine(getLLMConfig());
@@ -439,7 +512,8 @@ describe('SnowflakeEngine execution', () => {
     const ava = new AVA({ llm: getLLMConfig(), engine: { type: 'snowflake' } });
     try {
       await ava.source(SOURCE);
-      expect(ava.engine?.language.name).toBe('Snowflake SQL dialect');
+      expect(ava.engine?.dialect.id).toBe('snowflake-sql');
+      expect(ava.engine?.dialect.rules).toContain('read-only SELECT');
       const result = await ava.query('SELECT "REGION", "REVENUE" FROM "ORDERS" ORDER BY "REVENUE" DESC');
       expect(result.data).toEqual([
         { REGION: 'ASIA', REVENUE: 300.1 },

@@ -19,18 +19,28 @@ const WORD = /[A-Za-z_][A-Za-z0-9_$]*/y;
  * Block comments end at the first `*` + `/` and identifiers have no backslash escapes. Where Snowflake
  * might read either differently, this scan sees more code than Snowflake does, never less.
  */
-export function scanStatement(sql: string): { words: string[]; end: number } {
+export function scanStatement(sql: string): {
+  words: string[];
+  end: number;
+  systemFunction: boolean;
+  dynamicFunction: boolean;
+} {
   const words: string[] = [];
   const after = (marker: string, from: number) => {
     const index = sql.indexOf(marker, from);
     return index === -1 ? sql.length : index + marker.length;
   };
+  const parentheses: boolean[] = [];
+  let identifier: string | undefined;
+  let resolvedIdentifier = false;
+  let systemFunction = false;
+  let dynamicFunction = false;
   let end = 0;
   let i = 0;
   while (i < sql.length) {
     const pair = sql.slice(i, i + 2);
     if (pair === '--' || pair === '//') {
-      i = after('\n', i + 2);
+      while (i < sql.length && !/[\r\n]/.test(sql[i])) i += 1;
       continue;
     }
     if (pair === '/*') {
@@ -38,6 +48,18 @@ export function scanStatement(sql: string): { words: string[]; end: number } {
       continue;
     }
     const char = sql[i];
+    if (/\s/.test(char) || char === ';') {
+      if (char === ';') {
+        identifier = undefined;
+        resolvedIdentifier = false;
+      }
+      i += 1;
+      continue;
+    }
+    const previous = identifier;
+    const resolved = resolvedIdentifier;
+    identifier = undefined;
+    resolvedIdentifier = false;
     if (pair === '$$') {
       i = after('$$', i + 2);
     } else if (char === "'") {
@@ -45,25 +67,51 @@ export function scanStatement(sql: string): { words: string[]; end: number } {
       for (i += 1; i < sql.length && sql[i] !== "'"; i += sql[i] === '\\' ? 2 : 1);
       i += 1;
     } else if (char === '"') {
-      i = after('"', i + 1);
+      const start = i;
+      for (i += 1; i < sql.length; i += 1) {
+        if (sql[i] !== '"') continue;
+        if (sql[i + 1] === '"') {
+          i += 1;
+          continue;
+        }
+        i += 1;
+        break;
+      }
+      identifier = sql
+        .slice(start + 1, i - 1)
+        .replace(/""/g, '"')
+        .toUpperCase();
     } else {
       WORD.lastIndex = i;
       const word = WORD.exec(sql)?.[0];
       if (word) {
-        words.push(word.toUpperCase());
+        identifier = word.toUpperCase();
+        words.push(identifier);
         i += word.length;
       } else {
+        if (char === '(') {
+          systemFunction ||= previous?.startsWith('SYSTEM$') ?? false;
+          // IDENTIFIER(...) can resolve a function name that is absent from the source text.
+          dynamicFunction ||= resolved;
+          parentheses.push(previous === 'IDENTIFIER');
+        } else if (char === ')') {
+          resolvedIdentifier = parentheses.pop() ?? false;
+        }
         i += 1;
-        if (/[\s;]/.test(char)) continue;
       }
     }
     end = Math.min(i, sql.length);
   }
-  return { words, end };
+  return { words, end, systemFunction, dynamicFunction };
 }
 
-export class SnowflakeQueryDialect implements QueryDialect<SnowflakeCompiler> {
-  constructor(private readonly llmConfig: LLMConfig) {}
+export class SnowflakeQueryDialect implements QueryDialect {
+  readonly id = 'snowflake-sql';
+  readonly rules = `Use Snowflake SQL syntax and one read-only SELECT query (WITH is allowed).
+  Reference the exact table and column names from the data model, joining tables when needed. Enclose identifier components in double quotes exactly as shown, because quoted Snowflake identifiers are case-sensitive; use single quotes for strings.
+  Do not call SYSTEM$ functions, procedures, or dynamically resolved functions via IDENTIFIER(...)(...). Apply ORDER BY at the outermost level when result order matters.`;
+
+  constructor(private readonly llmConfig: LLMConfig, private readonly compile: SnowflakeCompiler) {}
 
   async getDSL(query: string, dataModel: DataModel): Promise<TranslationResult> {
     const prompt = `You are a SQL expert. Given the following dataset profile and user query, generate a SQL query to answer the question.
@@ -73,16 +121,21 @@ ${stringifyDataModel(dataModel)}
 
 User Query: ${query}
 
-Generate exactly one read-only SELECT query (WITH is allowed), without explanation or markdown formatting. Reference the tables and fields by their exact names shown above (join tables when the question spans multiple tables). Use Snowflake SQL syntax. Enclose every table and column name in double quotes exactly as shown, because quoted Snowflake identifiers are case-sensitive. Do not call SYSTEM$ functions or procedures.`;
+${this.rules}
+Generate exactly one query. Return only SQL text, without explanation or Markdown.`;
 
-    const { text, usage } = await generateText({
+    const { text, usage, finishReason } = await generateText({
       model: languageModel(this.llmConfig),
       maxRetries: this.llmConfig.maxRetries ?? 3,
       prompt,
     });
 
+    if (finishReason !== 'stop' && finishReason !== 'other') {
+      throw new Error(`Snowflake SQL generation did not complete (${finishReason})`);
+    }
     const trimmed = text.trim();
     const dsl = (trimmed.match(/^```(?:sql)?[ \t]*\r?\n([\s\S]*?)\r?\n```$/i)?.[1] ?? trimmed).trim();
+    if (!dsl) throw new Error('Snowflake SQL generation returned an empty query');
     return { dsl, usage };
   }
 
@@ -99,16 +152,17 @@ Generate exactly one read-only SELECT query (WITH is allowed), without explanati
    * The statement then runs unwrapped, because Snowflake does not keep a subquery's ORDER BY.
    * https://docs.snowflake.com/en/sql-reference/constructs/order-by#usage-notes
    */
-  async validateDSL(sql: string, compile: SnowflakeCompiler): Promise<string> {
-    const { words, end } = scanStatement(sql);
+  async validateDSL(sql: string): Promise<string> {
+    const { words, end, systemFunction, dynamicFunction } = scanStatement(sql);
     const query = sql.slice(0, end).trim();
     if (!query) throw new Error('Snowflake query must be one read-only SELECT statement');
-    if (/SYSTEM\$/i.test(query)) throw new Error('Snowflake SYSTEM$ functions are not allowed in analysis queries');
+    if (systemFunction) throw new Error('Snowflake SYSTEM$ functions are not allowed in analysis queries');
+    if (dynamicFunction) throw new Error('Snowflake dynamic function calls are not allowed in analysis queries');
     if (words.includes('PROCEDURE') || words.includes('CALL')) {
       throw new Error('Snowflake procedures are not allowed in analysis queries');
     }
     // The newline lets a trailing line comment end before the closing parenthesis.
-    await compile(`SELECT * FROM (${query}\n)`);
+    await this.compile(`SELECT * FROM (${query}\n)`);
     return query;
   }
 }

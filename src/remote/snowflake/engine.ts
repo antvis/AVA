@@ -4,7 +4,7 @@
  */
 import { SnowflakeQueryDialect } from '../../query/snowflake';
 import { DEFAULT_METRICS, parseProfileOptions } from '../../util/profile';
-import { executionResult, maxRows } from '../../util/result';
+import { executionResult, maxRows, maxResultBytes, resultRowBytes } from '../../util/result';
 import { runWithTimeout } from '../../util/timeout';
 
 import { profileTables } from './profile';
@@ -30,6 +30,7 @@ import type {
 
 type Driver = typeof import('snowflake-sdk');
 type Rows = Record<string, unknown>[];
+type QueryResult = { rows: Rows; columns: QueryColumn[]; truncatedBy?: ExecutionResult['truncatedBy'] };
 
 const DEFAULT_QUERY_TIMEOUT_MS = 30_000;
 /** Cleanup never waits longer than this for Snowflake to acknowledge a cancel or logout. */
@@ -99,22 +100,19 @@ async function settle(operation: (done: () => void) => void): Promise<void> {
 }
 
 export class SnowflakeEngine implements AnalysisEngine {
-  readonly language = {
-    name: 'Snowflake SQL dialect',
-    fence: 'sql',
-    instructions:
-      'Write one read-only SELECT statement (WITH is allowed). Double-quote table and column names exactly as listed, because quoted Snowflake identifiers are case-sensitive. SYSTEM$ functions and procedures are rejected.',
-  };
+  readonly dialect: SnowflakeQueryDialect;
 
   private connection: Connection | null = null;
   private scope: SnowflakeScope | null = null;
   private timeoutMs = DEFAULT_QUERY_TIMEOUT_MS;
   /** Active statements and callbacks that stop their local result streams. */
   private readonly running = new Map<RowStatement, (error: Error) => void>();
-  private readonly queryDialect: SnowflakeQueryDialect;
 
   constructor(llmConfig: LLMConfig) {
-    this.queryDialect = new SnowflakeQueryDialect(llmConfig);
+    this.dialect = new SnowflakeQueryDialect(llmConfig, async (query) => {
+      this.requireScope();
+      await this.run(query, { describeOnly: true });
+    });
   }
 
   async load(config: DataSourceConfig): Promise<void> {
@@ -183,17 +181,18 @@ export class SnowflakeEngine implements AnalysisEngine {
 
   async getDSL(query: string, dataModel: DataModel): Promise<TranslationResult> {
     this.requireScope();
-    return this.queryDialect.getDSL(query, dataModel);
+    return this.dialect.getDSL(query, dataModel);
   }
 
   async execute<T = Record<string, unknown>>(dsl: string, options?: ExecutionOptions): Promise<ExecutionResult<T>> {
     this.requireScope();
-    const sql = await this.queryDialect.validateDSL(dsl, async (query) => {
-      await this.run(query, { describeOnly: true });
-    });
+    const sql = await this.dialect.validateDSL(dsl);
     // One row beyond the limit reveals truncation without fetching the rest of the result.
-    const { rows, columns } = await this.run(sql, { limit: maxRows(options) + 1 });
-    return executionResult(rows as T[], columns, options);
+    const { rows, columns, truncatedBy } = await this.run(sql, {
+      limit: maxRows(options) + 1,
+      maxBytes: maxResultBytes(options),
+    });
+    return executionResult(rows as T[], columns, options, truncatedBy);
   }
 
   async dispose(): Promise<void> {
@@ -227,8 +226,18 @@ export class SnowflakeEngine implements AnalysisEngine {
    */
   private async run(
     sqlText: string,
-    { binds, limit, describeOnly = false }: { binds?: Binds; limit?: number; describeOnly?: boolean } = {}
-  ): Promise<{ rows: Rows; columns: QueryColumn[] }> {
+    {
+      binds,
+      limit,
+      maxBytes,
+      describeOnly = false,
+    }: {
+      binds?: Binds;
+      limit?: number;
+      maxBytes?: number;
+      describeOnly?: boolean;
+    } = {}
+  ): Promise<QueryResult> {
     const connection = this.connection;
     if (!connection) throw new Error('No data loaded. Please call source() first.');
     const timeoutMs = this.timeoutMs;
@@ -237,7 +246,7 @@ export class SnowflakeEngine implements AnalysisEngine {
     let stream: Readable | undefined;
     let stopped = false;
     let stop: (error: Error) => void;
-    const result = new Promise<{ rows: Rows; columns: QueryColumn[] }>((resolve, reject) => {
+    const result = new Promise<QueryResult>((resolve, reject) => {
       stop = (error) => {
         stopped = true;
         stream?.destroy();
@@ -264,11 +273,39 @@ export class SnowflakeEngine implements AnalysisEngine {
             return;
           }
           const rows: Rows = [];
+          let bytes = 0;
+          const finish = (truncatedBy?: ExecutionResult['truncatedBy']) => {
+            stopped = true;
+            stream?.destroy();
+            resolve({ rows, columns: schema, truncatedBy });
+          };
           stream = completed.streamRows(limit ? { start: 0, end: limit - 1 } : undefined);
           stream
-            .on('data', (row: Record<string, unknown>) => rows.push(convertRow(row, columns)))
+            .on('data', (row: Record<string, unknown>) => {
+              if (stopped) return;
+              // The extra row only detects truncation; its fields are never returned or validated.
+              if (limit && rows.length === limit - 1) {
+                rows.push(row);
+                finish();
+                return;
+              }
+              try {
+                const value = convertRow(row, columns);
+                if (maxBytes !== undefined) {
+                  const rowBytes = resultRowBytes(value);
+                  if (bytes + rowBytes > maxBytes) {
+                    finish('maxResultBytes');
+                    return;
+                  }
+                  bytes += rowBytes;
+                }
+                rows.push(value);
+              } catch (error) {
+                stop(error as Error);
+              }
+            })
             .on('error', reject)
-            .on('end', () => resolve({ rows, columns: schema }));
+            .on('end', () => finish());
         },
       });
     });

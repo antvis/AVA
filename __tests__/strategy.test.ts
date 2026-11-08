@@ -459,6 +459,7 @@ it('wraps loop queries in steps across exploration, refinement, and confirmation
 it.each([
   ['duckdb-sql', '', 'SELECT 1'],
   ['clickhouse-sql', 'sql', 'SELECT 1'],
+  ['snowflake-sql', 'sql', 'SELECT 1'],
   ['postgresql', 'postgresql', 'SELECT 1'],
   ['tsql', 'tsql', 'SELECT 1'],
   ['custom-sql', '', 'SELECT 1'],
