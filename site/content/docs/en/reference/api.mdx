@@ -379,6 +379,8 @@ Returns a standalone HTML string. Does not require a loaded source or call a mod
 
 The Node and browser entry points export shared runtime schemas plus pure helpers for source-type inference and chart binding. SDK `source()`, `recommend()`, `viz()` and the CLI use these contracts at their input boundaries.
 
+Source options, result metadata and chart types are derived from these schemas, so runtime validation and TypeScript share one definition. Source types describe input before normalization (for example, Excel's `header` remains optional). `ExecutionResult<Row>` preserves your query's row type; runtime validation checks the result envelope, not the caller's generic row fields. ClickHouse options retain the official client's native types, including TLS buffers, agents and callbacks; those native options pass through to the client.
+
 | Export | Purpose |
 | --- | --- |
 | `sourceConfigSchema.parse(input)` | Validate built-in source types and their options. |

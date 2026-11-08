@@ -55,7 +55,7 @@ export class PythonEngine implements AnalysisEngine {
 
   async load(config: DataSourceConfig): Promise<void> {
     this.source = null;
-    this.source = sourceSchema.parse(config) as DataSourceConfig;
+    this.source = sourceSchema.parse(config);
   }
 
   async schema(): Promise<Schema> {
@@ -99,8 +99,9 @@ export class PythonEngine implements AnalysisEngine {
         onTimeout: () => new Error(`Python execution timed out after ${this.timeoutMs}ms`),
       }
     );
-    const result = resultSchema.parse(response) as ExecutionResult<T>;
-    return executionResult(result.data, result.schema, limits, result.truncatedBy);
+    const result = resultSchema.parse(response);
+    // Row fields are chosen by the caller's query; the envelope is runtime-validated above.
+    return executionResult(result.data as T[], result.schema, limits, result.truncatedBy);
   }
 
   private async metadata(code: string): Promise<Record<string, unknown>[]> {

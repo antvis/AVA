@@ -5,12 +5,23 @@ import { AVA, executionResultSchema, sourceConfigSchema } from '../src/index.bro
 import * as node from '../src';
 import * as browser from '../src/index.browser';
 import { startupSchema } from '../src/cli/session/protocol';
+import { resultSchema as pythonResultSchema } from '../src/interpreter/python/util/schema';
 
 import type { DataSourceConfig } from '../src/types';
 
 const source = { type: 'json' as const, options: { data: [{ sales: 10 }] } };
 
 describe('public source contracts', () => {
+  it.each([
+    { type: 'csv', options: { csv: 'value\n1', options: { header: 'true' } } },
+    { type: 'csv-file', options: { path: 'sales.csv', options: { types: [1] } } },
+    { type: 'json', options: { data: [], options: { records: true } } },
+    { type: 'json-file', options: { path: 'sales.json', options: { format: 'csv' } } },
+  ])('rejects malformed native reader options before loading: %j', (config) => {
+    expect(() => sourceConfigSchema.parse(config)).toThrow(z.ZodError);
+    expect(() => startupSchema.parse({ source: config, llm: { model: 'unused' } })).toThrow(z.ZodError);
+  });
+
   it('uses the same source contract in SDK and CLI without erasing the discriminant', async () => {
     expect(z.toJSONSchema(sourceConfigSchema, { io: 'input' }).oneOf).toHaveLength(15);
     const parsed = sourceConfigSchema.parse(source);
@@ -58,6 +69,7 @@ describe('public result contract', () => {
     { truncated: true, truncatedBy: 'maxRows', rowCount: 0 },
   ])('rejects inconsistent result limits: %j', (limits) => {
     expect(() => executionResultSchema.parse({ schema: [], data: [], ...limits })).toThrow();
+    expect(() => pythonResultSchema.parse({ schema: [], data: [], ...limits })).toThrow();
   });
 });
 

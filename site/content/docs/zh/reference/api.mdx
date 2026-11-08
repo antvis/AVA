@@ -381,6 +381,8 @@ Setter 接收选项对象，同步返回 `Semantic`。AVA 验证并复制结果�
 
 Node 和浏览器入口导出共享运行时 schema，以及数据源类型推断和图表绑定工具函数。SDK 的 `source()`、`recommend()`、`viz()` 和 CLI 在各自的输入边界使用这些契约。
 
+数据源选项、结果元数据和图表类型均从 schema 推导，运行时校验与 TypeScript 共用一份定义。数据源类型描述规范化之前的输入，例如 Excel 的 `header` 仍可省略。`ExecutionResult<Row>` 保留查询行的泛型；运行时校验结果结构，不推断调用方泛型中的行字段。ClickHouse 选项继续引用官方客户端的原生类型，支持 TLS Buffer、Agent 和回调等，由客户端处理透传的原生选项。
+
 | 导出 | 用途 |
 | --- | --- |
 | `sourceConfigSchema.parse(input)` | 校验内置数据源类型及对应选项。 |
