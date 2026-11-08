@@ -2,6 +2,7 @@
  * DuckDB engine: LLM generates SQL, executed against an in-memory DuckDB instance.
  */
 
+import { mkdtemp, rm } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 
@@ -62,6 +63,7 @@ export class DuckDBEngine implements AnalysisEngine {
   private instance: DuckDBInstance | null = null;
   private connection: DuckDBConnection | null = null;
   private source: LoadedSource | null = null;
+  private tempDirectory: string | null = null;
   readonly dialect: DuckDBSQLDialect;
   private allowCommunityExtensions = false;
 
@@ -86,11 +88,11 @@ export class DuckDBEngine implements AnalysisEngine {
   }
 
   /**
-   * Harden the session after the data view is registered: whitelist the data
-   * file's directories, then disable further external access and lock the
+   * Harden the session after the data view is registered: allow only source
+   * files and private spill storage, then disable external access and lock the
    * configuration so LLM-generated SQL cannot read arbitrary files or undo it.
    */
-  private async restrictAccess(conn: DuckDBConnection, allowedDirectories: string[]): Promise<void> {
+  private async restrictAccess(conn: DuckDBConnection, allowedPaths: string[]): Promise<void> {
     // Resource limits must be set before lock_configuration (which freezes all
     // settings). They bound a runaway LLM-generated query's memory/CPU/disk.
     await conn.run(`SET memory_limit = ${sqlStringLiteral(this.engineOptions.memoryLimit ?? DEFAULT_MEMORY_LIMIT)}`);
@@ -98,20 +100,12 @@ export class DuckDBEngine implements AnalysisEngine {
     if (this.engineOptions.maxTempDirectorySize) {
       await conn.run(`SET max_temp_directory_size = ${sqlStringLiteral(this.engineOptions.maxTempDirectorySize)}`);
     }
-    if (allowedDirectories.length > 0) {
-      await conn.run(`SET allowed_directories = [${allowedDirectories.map(sqlStringLiteral).join(', ')}]`);
-    }
-    // Confine spill files (from out-of-memory sorts/joins) to a known directory
-    // instead of the default `.tmp` in the process working directory.
-    const tempBase = allowedDirectories[0] ?? tmpdir();
-    await conn.run(`SET temp_directory = ${sqlStringLiteral(join(tempBase, '.dbtmp'))}`);
-    // en Postgres catalog, external access must be disabled before disabling the local filesystem; configuration lock must be set last.
-    // The data view is already registered, so external access is no longer needed.
+    await conn.run(`SET allowed_paths = [${allowedPaths.map(sqlStringLiteral).join(', ')}]`);
+    // Spill files need directory access, but must never share it with other sources.
+    this.tempDirectory = await mkdtemp(join(tmpdir(), 'ava-duckdb-'));
+    await conn.run(`SET allowed_directories = [${sqlStringLiteral(this.tempDirectory)}]`);
+    await conn.run(`SET temp_directory = ${sqlStringLiteral(this.tempDirectory)}`);
     await conn.run('SET enable_external_access = false');
-    if (allowedDirectories.length === 0) {
-      // No local data file to read — disable the local filesystem entirely.
-      await conn.run("SET disabled_filesystems = 'LocalFileSystem'");
-    }
     // Lock last so the settings above cannot be changed again.
     await conn.run('SET lock_configuration = true');
   }
@@ -123,7 +117,7 @@ export class DuckDBEngine implements AnalysisEngine {
       this.source = await loadSource(config, this.llmConfig);
       const conn = await this.getConnection();
       await this.source.register(conn);
-      await this.restrictAccess(conn, this.source.allowedDirectories);
+      await this.restrictAccess(conn, this.source.allowedPaths);
     } catch (error) {
       await this.dispose();
       throw error;
@@ -196,12 +190,18 @@ export class DuckDBEngine implements AnalysisEngine {
 
   async dispose(): Promise<void> {
     const source = this.source;
+    const tempDirectory = this.tempDirectory;
     this.source = null;
+    this.tempDirectory = null;
     this.close();
     try {
       await this.dialect.dispose();
     } finally {
-      await source?.cleanup();
+      try {
+        await source?.cleanup();
+      } finally {
+        if (tempDirectory) await rm(tempDirectory, { recursive: true, force: true });
+      }
     }
   }
 }

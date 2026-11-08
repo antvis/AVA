@@ -7,7 +7,7 @@
 
 import * as fs from 'node:fs/promises';
 import * as os from 'node:os';
-import { dirname, join } from 'node:path';
+import { dirname, join, resolve } from 'node:path';
 
 import { READ_FN, escapeSql, serializeOptions } from '../../util/sql';
 
@@ -17,11 +17,17 @@ import type { CSVReadOptions, JSONReadOptions, FileFormat, LoadedSource } from '
 
 const noopCleanup = async (): Promise<void> => {};
 
-/** Write content to a unique temp file and return its path */
+/** Write content inside a private per-source directory and return its path. */
 export async function writeTempFile(content: string | Buffer, ext: string): Promise<string> {
-  const tmpFile = join(os.tmpdir(), `ava-source-${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`);
-  await fs.writeFile(tmpFile, content);
-  return tmpFile;
+  const directory = await fs.mkdtemp(join(os.tmpdir(), 'ava-source-'));
+  try {
+    const tmpFile = join(directory, `data.${ext}`);
+    await fs.writeFile(tmpFile, content);
+    return tmpFile;
+  } catch (error) {
+    await fs.rm(directory, { recursive: true, force: true });
+    throw error;
+  }
 }
 
 /** Caller-supplied headers may contain credentials with arbitrary names. */
@@ -61,9 +67,10 @@ export async function downloadToTempFile(url: string, ext: string, headers?: Rec
   return writeTempFile(Buffer.from(await response.arrayBuffer()), ext);
 }
 
-/** Delete a temp file, ignoring errors */
+/** Delete a temp file and its empty private directory, ignoring errors. */
 export async function removeTempFile(filePath: string): Promise<void> {
   await fs.unlink(filePath).catch(() => {});
+  await fs.rmdir(dirname(filePath)).catch(() => {});
 }
 
 /**
@@ -82,7 +89,7 @@ function isExtendedCSVEncoding(format: FileFormat, encoding?: string): boolean {
 /**
  * Build a LoadedSource that registers a local file as the single `data` view.
  * The view reads the file lazily, so the file must outlive the engine.
- * The file's directory is whitelisted so the engine can still read it after hardening.
+ * Only this file is allowed after the engine's access configuration is locked.
  * `options` carries extra DuckDB reader options (applied to CSV and JSON readers).
  */
 export function fileSource(
@@ -91,6 +98,7 @@ export function fileSource(
   cleanup: () => Promise<void>,
   options?: CSVReadOptions | JSONReadOptions
 ): LoadedSource {
+  path = resolve(path);
   return {
     register: async (conn) => {
       if (isExtendedCSVEncoding(format, options && 'encoding' in options ? options.encoding : undefined)) {
@@ -105,7 +113,7 @@ export function fileSource(
       return ['data'];
     },
     getSchema: (conn) => getDuckDBSchema(conn, ['data']),
-    allowedDirectories: [dirname(path)],
+    allowedPaths: [path],
     cleanup,
   };
 }

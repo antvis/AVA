@@ -3,6 +3,8 @@
  */
 
 import * as fs from 'fs/promises';
+import { tmpdir } from 'node:os';
+import { dirname, join } from 'node:path';
 
 import { describe, it, expect, vi } from 'vitest';
 
@@ -37,9 +39,22 @@ describe('duckdb/util/file', () => {
     }
   });
 
-  it('removeTempFile deletes the file', async () => {
+  it('removeTempFile deletes the file and its private directory', async () => {
     const tmpFile = await writeTempFile('bye', 'txt');
     await removeTempFile(tmpFile);
     await expect(fs.access(tmpFile)).rejects.toThrow();
+    await expect(fs.access(dirname(tmpFile))).rejects.toThrow();
+  });
+
+  it('removes the private directory when writing fails', async () => {
+    const directory = await fs.mkdtemp(join(tmpdir(), 'ava-write-failed-'));
+    vi.stubEnv(process.platform === 'win32' ? 'TEMP' : 'TMPDIR', directory);
+    try {
+      await expect(writeTempFile('data', 'missing/file')).rejects.toThrow();
+      expect(await fs.readdir(directory)).toEqual([]);
+    } finally {
+      vi.unstubAllEnvs();
+      await fs.rm(directory, { recursive: true, force: true });
+    }
   });
 });
