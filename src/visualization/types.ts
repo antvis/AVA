@@ -1,4 +1,4 @@
-import type { ChartType } from '../contracts/chart';
+import type { ChartType } from '../contracts/visualize';
 
 /**
  * GPT-Vis JSON config

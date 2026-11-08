@@ -1,4 +1,4 @@
-import { AVA } from '../../index';
+import { AVA } from '../..';
 
 import type { DataSourceConfig } from '../../contracts/source';
 import type { EngineConfig } from '../../engines';

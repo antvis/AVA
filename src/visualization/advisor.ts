@@ -10,7 +10,7 @@ import { languageModel } from '../util/model';
 import { chartDefinitions } from './vis';
 
 import type { LLMConfig } from '../config';
-import type { ChartType } from '../contracts/chart';
+import type { ChartType } from '../contracts/visualize';
 
 const allChartTypes = chartDefinitions.map((d) => d.type);
 const chartTypeSet = new Set(allChartTypes);

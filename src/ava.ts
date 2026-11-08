@@ -9,25 +9,26 @@ import { extractDataSchema } from './util/schema';
 import { schemaMetadataSchema } from './contracts/schema';
 import { profileMetadataSchema } from './contracts/profile';
 import { buildDataModel, stringifyDataModel } from './util/data-model';
-import { semanticMetadataSchema } from './contracts/data-model';
+import { semanticMetadataSchema } from './contracts/semantic';
 import { adviseChartType, generateVisualizationConfig, wrapConfigInHTML } from './visualization';
 import { generateSuggestions } from './suggest';
 import { analyze } from './analysis';
 import { LifecycleEventType, LifecycleEvent, AnalysisEventType, AnalysisEvent, emit } from './event';
-import { chartSpecSchema } from './contracts/chart';
+import { chartSpecSchema } from './contracts/visualize';
 import { serializeError } from './util/error';
 
 import type { LanguageModelUsage } from 'ai';
-import type { DataModel, Semantic } from './contracts/data-model';
+import type { DataModel } from './contracts/shared/data-model';
+import type { Semantic, SemanticOptions } from './contracts/semantic';
 import type { AVAConfig, LLMConfig } from './config';
 import type { EngineConfig, AnalysisEngine } from './engines';
 import type { DataSourceConfig } from './contracts/source';
-import type { SchemaOptions, SemanticOptions, Schema } from './contracts/schema';
-import type { AnalysisResponse, AnalysisConfig } from './analysis/types';
-import type { VisualizeResponse, ChartSpec } from './contracts/chart';
-import type { SuggestResult } from './suggest/index';
+import type { SchemaOptions, Schema } from './contracts/schema';
+import type { AnalysisResponse, AnalysisConfig } from './contracts/analyze';
+import type { VisualizeResponse, ChartSpec } from './contracts/visualize';
+import type { SuggestResult } from './contracts/suggest';
 import type { Profile, ProfileOptions } from './contracts/profile';
-import type { ExecutionOptions, ExecutionResult } from './contracts/result';
+import type { ExecutionOptions, ExecutionResult } from './contracts/query';
 
 /**
  * Check if analysis result has meaningful data for visualization.

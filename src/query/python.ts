@@ -3,7 +3,7 @@ import { generateText } from 'ai';
 import { languageModel } from '../util/model';
 import { stringifyDataModel } from '../util/data-model';
 
-import type { DataModel } from '../contracts/data-model';
+import type { DataModel } from '../contracts/shared/data-model';
 import type { LLMConfig } from '../config';
 import type { PythonEngineOptions } from '../interpreter/python/types';
 import type { QueryDialect, TranslationResult } from './types';

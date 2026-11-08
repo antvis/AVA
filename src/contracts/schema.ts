@@ -1,6 +1,6 @@
 import { z } from 'zod';
 
-import type { DataModel, Model, TableReference, Column, Relationship, JoinType, View } from './data-model';
+import type { DataModel, Model, TableReference, Column, Relationship, JoinType, View } from './shared/data-model';
 
 const name = z.string();
 const key = z.union([name, z.array(name).nonempty()]);
@@ -30,9 +30,6 @@ export const schemaMetadataSchema = schemaStructure as unknown as z.ZodType<Sche
 
 /** Schema discovery currently has no configurable options. */
 export type SchemaOptions = Record<string, never>;
-
-/** Semantic metadata currently has no configurable options. */
-export type SemanticOptions = Record<string, never>;
 
 /** Catalog-discoverable structure; excludes observations and application-defined semantics. */
 export interface Schema extends Pick<DataModel, 'models' | 'relationships' | 'views'> {

@@ -19,7 +19,7 @@ import { serializeError } from '../util/error';
 import type { LanguageModelUsage } from 'ai';
 import type { AnalysisStrategy } from './types';
 import type { QueryLanguage } from '../query/types';
-import type { ExecutionResult } from '../contracts/result';
+import type { ExecutionResult } from '../contracts/query';
 import type { SerializedError } from '../util/error';
 
 const DEFAULT_MAX_STEPS = 12;

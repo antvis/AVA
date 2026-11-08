@@ -9,7 +9,7 @@
 | [`ava.ts`](https://github.com/antvis/AVA/blob/ai/src/ava.ts)                                   | Public API, source state, and lifecycle               |
 | [`types.ts`](https://github.com/antvis/AVA/blob/ai/src/types.ts) | Type-only compatibility exports; definitions live in their owning modules |
 | [`config.ts`](https://github.com/antvis/AVA/blob/ai/src/config.ts) | AVA and model configuration; native SDK types remain intact |
-| [`contracts/`](https://github.com/antvis/AVA/tree/ai/src/contracts/) | Shared JSON, source, Excel, catalog, data-model, profile, result and chart definitions |
+| [`contracts/`](https://github.com/antvis/AVA/tree/ai/src/contracts/) | API contracts for source, schema, profile, semantic, query, analyze, suggest and visualization |
 | [`engines.ts`](https://github.com/antvis/AVA/blob/ai/src/engines.ts) | Engine interface, selection and registry |
 | [`analysis/`](https://github.com/antvis/AVA/tree/ai/src/analysis/)                             | Direct and loop strategies                   |
 | [`duckdb/`](https://github.com/antvis/AVA/tree/ai/src/duckdb/)                                 | SQL engine, source loaders, and profiling             |
@@ -25,7 +25,9 @@
 | [`cli/`](https://github.com/antvis/AVA/tree/ai/src/cli/)                                       | Commands and local dataset sessions                   |
 | [`util/`](https://github.com/antvis/AVA/tree/ai/src/util/) | Catalog assembly, model formatting, metric execution rules and result bounds |
 
-Shared data definitions and their types are grouped by domain in `contracts/`. Runtime interfaces live with their owners: strategies in `analysis/types.ts`, dialects in `query/types.ts`, rendering metadata in `visualization/types.ts`, DuckDB resources in `duckdb/types.ts`, and Python executors in `interpreter/python/types.ts`. Internal modules import these owners directly; public entry points retain the existing type exports. CLI wire messages, AI stage outputs and engine-specific restrictions stay local to their modules.
+Contracts follow the public API. `source/` owns source configurations and its CSV/JSON/Excel reader options. `schema.ts`, `profile.ts`, `semantic.ts`, `query.ts`, `analyze.ts` and `suggest.ts` define each API's public inputs and outputs. `visualize.ts` holds the chart specification shared by `recommend()`, `viz()` and `visualize()`, plus explicit chart bindings. Cross-API JSON values and data-model building blocks live in `shared/`.
+
+Runtime strategy, dialect and per-engine interfaces stay with their implementations. The data-model builder owns its stricter assembly input validation, derived from the public metadata fields. Internal modules import the defining module directly; public entry points keep the existing exports. CLI wire messages, AI-stage response formats and interpreter-specific restrictions remain local to their modules.
 
 ## Method to module
 

@@ -14,8 +14,8 @@ import type { QueryDialect, TranslationResult } from './query/types';
 import type { DataSourceConfig } from './contracts/source';
 import type { Schema } from './contracts/schema';
 import type { ProfileOptions, Profile } from './contracts/profile';
-import type { DataModel } from './contracts/data-model';
-import type { ExecutionOptions, ExecutionResult } from './contracts/result';
+import type { DataModel } from './contracts/shared/data-model';
+import type { ExecutionOptions, ExecutionResult } from './contracts/query';
 import type { LLMConfig } from './config';
 
 /** Constructor signature every engine class must satisfy. */

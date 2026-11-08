@@ -167,3 +167,12 @@ export type VisualizeResponse = ChartSpec & { html: string };
  * Supported chart types from GPT-Vis
  */
 export type ChartType = ChartSpec['chartType'];
+
+export const bindingSchema = z.union([
+  z
+    .object({ fields: z.record(z.string(), z.string().min(1)).refine((fields) => Object.keys(fields).length > 0) })
+    .strict(),
+  z.object({ configField: z.string().min(1) }).strict(),
+]);
+
+export type ChartDataBinding = z.infer<typeof bindingSchema>;

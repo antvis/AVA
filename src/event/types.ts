@@ -1,5 +1,5 @@
 import type { LanguageModelUsage } from 'ai';
-import type { ExecutionResult } from '../contracts/result';
+import type { ExecutionResult } from '../contracts/query';
 import type { SerializedError } from '../util/error';
 
 export type AnalysisEventContext = {

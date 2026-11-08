@@ -1,11 +1,41 @@
-import { dataModelInputSchema, dataModelMetadataSchema } from '../contracts/data-model';
+import { z } from 'zod';
+
+import { profileMetadataSchema } from '../contracts/profile';
+import { schemaStructure } from '../contracts/schema';
+import { semanticMetadataSchema } from '../contracts/semantic';
+import { dataModelMetadataSchema } from '../contracts/shared/data-model';
 
 import { escapeMarkdown, markdownTable } from './markdown';
 
-import type { DataModel, Model, Semantic } from '../contracts/data-model';
+import type { DataModel, Model } from '../contracts/shared/data-model';
+import type { Semantic } from '../contracts/semantic';
 import type { Profile } from '../contracts/profile';
-import type { Properties } from '../contracts/json';
+import type { Properties } from '../contracts/shared/json';
 import type { Schema } from '../contracts/schema';
+
+const modelSchema = profileMetadataSchema.shape.models.element;
+const columnSchema = modelSchema.shape.columns.element;
+
+// Assembly rejects unsupported nested fields instead of silently discarding them.
+const profileInputSchema = profileMetadataSchema.extend({
+  models: z.array(
+    modelSchema.strict().extend({
+      name: modelSchema.shape.name.min(1),
+      columns: z.array(
+        columnSchema.strict().extend({
+          name: columnSchema.shape.name.min(1),
+          properties: columnSchema.shape.properties.strict(),
+        })
+      ),
+    })
+  ),
+});
+
+export const dataModelInputSchema = z.object({
+  schema: schemaStructure.strict(),
+  profile: profileInputSchema.optional(),
+  semantic: semanticMetadataSchema.optional(),
+}) as unknown as z.ZodType<{ schema: Schema; profile?: Profile; semantic?: Semantic }>;
 
 function indexByName<T extends { name: string }>(values: T[], label: string): Map<string, T> {
   const index = new Map<string, T>();

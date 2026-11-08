@@ -24,7 +24,7 @@ import { serializeError } from '../util/error';
 
 import type { LanguageModelUsage } from 'ai';
 import type { AnalysisStrategy } from './types';
-import type { ExecutionResult } from '../contracts/result';
+import type { ExecutionResult } from '../contracts/query';
 import type { LLMConfig } from '../config';
 import type { SerializedError } from '../util/error';
 

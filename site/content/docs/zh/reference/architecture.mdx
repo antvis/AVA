@@ -11,7 +11,7 @@ import { Heading } from '../../../../mdx-components';
 | [`ava.ts`](https://github.com/antvis/AVA/blob/ai/src/ava.ts) | 公开 API、数据源状态与生命周期 |
 | [`types.ts`](https://github.com/antvis/AVA/blob/ai/src/types.ts) | 仅作兼容类型出口；定义位于所属模块 |
 | [`config.ts`](https://github.com/antvis/AVA/blob/ai/src/config.ts) | AVA 与模型配置，保留原生 SDK 类型 |
-| [`contracts/`](https://github.com/antvis/AVA/tree/ai/src/contracts/) | 共享 JSON、数据源、Excel、结构、数据模型、画像、结果与图表定义 |
+| [`contracts/`](https://github.com/antvis/AVA/tree/ai/src/contracts/) | 按 source、schema、profile、semantic、query、analyze、suggest 与图表 API 组织契约 |
 | [`engines.ts`](https://github.com/antvis/AVA/blob/ai/src/engines.ts) | 引擎接口、选择与注册表 |
 | [`analysis/`](https://github.com/antvis/AVA/tree/ai/src/analysis/) | Direct 与 Loop 分析策略 |
 | [`duckdb/`](https://github.com/antvis/AVA/tree/ai/src/duckdb/) | SQL 引擎、数据源加载器与统计 |
@@ -27,7 +27,9 @@ import { Heading } from '../../../../mdx-components';
 | [`cli/`](https://github.com/antvis/AVA/tree/ai/src/cli/) | 命令与本地数据集会话 |
 | [`util/`](https://github.com/antvis/AVA/tree/ai/src/util/) | 目录组装、模型格式化、指标执行规则与结果限制 |
 
-共享数据定义与类型按领域组织在 `contracts/`。运行接口位于所属模块：策略在 `analysis/types.ts`，方言在 `query/types.ts`，渲染元信息在 `visualization/types.ts`，DuckDB 资源在 `duckdb/types.ts`，Python 执行器在 `interpreter/python/types.ts`。内部直接引用定义所属模块，公开入口保留既有类型导出。CLI 消息协议、AI 阶段输出与引擎专用限制仍由各自模块维护。
+契约按公开 API 组织。`source/` 维护数据源配置及其 CSV/JSON/Excel 读取选项；`schema.ts`、`profile.ts`、`semantic.ts`、`query.ts`、`analyze.ts`、`suggest.ts` 分别维护对应 API 的公开输入与输出。`visualize.ts` 维护 `recommend()`、`viz()`、`visualize()` 共用的图表结构及显式绑定配置。跨 API 的 JSON 值与数据模型基础定义放在 `shared/`。
+
+策略、方言与各引擎的运行接口继续跟随实现。数据模型组装器维护从公共元数据字段派生的严格输入校验。内部直接引用定义所属模块，公开入口保留既有导出；CLI 消息协议、AI 阶段输出与引擎专用限制仍由各自模块维护。
 
 <Heading as="h2" id="method-to-module">方法与模块的对应关系</Heading>
 

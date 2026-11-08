@@ -20,12 +20,12 @@ import type { DuckDBConnection, DuckDBInstance } from '@duckdb/node-api';
 import type { TranslationResult } from '../query/types';
 import type { AnalysisEngine } from '../engines';
 import type { Profile, ProfileOptions } from '../contracts/profile';
-import type { DataModel } from '../contracts/data-model';
+import type { DataModel } from '../contracts/shared/data-model';
 import type { DataSourceConfig } from '../contracts/source';
 import type { LoadedSource, DuckDBEngineOptions } from './types';
 import type { Schema } from '../contracts/schema';
 import type { LLMConfig } from '../config';
-import type { ExecutionOptions, ExecutionResult } from '../contracts/result';
+import type { ExecutionOptions, ExecutionResult } from '../contracts/query';
 
 /**
  * Process-level security baseline: DuckDB extensions run with the same

@@ -4,7 +4,7 @@ import { languageModel } from '../util/model';
 import { stringifyDataModel } from '../util/data-model';
 
 import type { TranslationResult, QueryDialect } from './types';
-import type { DataModel } from '../contracts/data-model';
+import type { DataModel } from '../contracts/shared/data-model';
 import type { LLMConfig } from '../config';
 
 export class ClickHouseSQLDialect implements QueryDialect {

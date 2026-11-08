@@ -1,4 +1,4 @@
-import type { ExecutionResult } from '../../contracts/result';
+import type { ExecutionResult } from '../../contracts/query';
 
 /**
  * Python engine options.

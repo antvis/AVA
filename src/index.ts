@@ -17,11 +17,11 @@ registerEngine('javascript', JavaScriptEngine);
 registerEngine('python', PythonEngine);
 
 export { sourceConfigSchema } from './contracts/source';
-export { executionResultSchema } from './contracts/result';
-export { chartSpecSchema } from './contracts/chart';
+export { executionResultSchema } from './contracts/query';
+export { chartSpecSchema } from './contracts/visualize';
 export { inferFileSourceType } from './util/source';
 export { bindChartData } from './visualization/bind';
-export type { ChartDataBinding } from './visualization/bind';
+export type { ChartDataBinding } from './contracts/visualize';
 
 export { AVA } from './ava';
 export { registerEngine } from './engines';

@@ -15,9 +15,9 @@ import { executionCode } from './util/code';
 
 import type { TranslationResult } from '../../query/types';
 import type { AnalysisEngine } from '../../engines';
-import type { DataModel } from '../../contracts/data-model';
+import type { DataModel } from '../../contracts/shared/data-model';
 import type { DataSourceConfig } from '../../contracts/source';
-import type { ExecutionOptions, ExecutionResult } from '../../contracts/result';
+import type { ExecutionOptions, ExecutionResult } from '../../contracts/query';
 import type { LLMConfig } from '../../config';
 import type { Profile, ProfileOptions } from '../../contracts/profile';
 import type { PythonEngineOptions } from './types';

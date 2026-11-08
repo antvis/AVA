@@ -1,18 +1,14 @@
 import { z } from 'zod';
 
 import { jsonValue } from './json';
-import { schemaStructure } from './schema';
-import { profileInputSchema } from './profile';
 
-import type { Schema } from './schema';
-import type { Profile } from './profile';
 import type { JsonValue, Properties } from './json';
 
 const name = z.string().min(1);
 const properties = z.record(z.string(), jsonValue);
 const key = z.union([name, z.array(name).nonempty()]);
 
-const column = z
+export const column = z
   .object({
     name,
     type: name,
@@ -30,7 +26,7 @@ const tableReference = z
   .object({ catalog: z.string().optional(), schema: z.string().optional(), table: name })
   .catchall(jsonValue);
 
-const modelStructure = z
+export const modelStructure = z
   .object({
     name,
     columns: z.array(column).optional(),
@@ -45,9 +41,9 @@ const modelStructure = z
   })
   .strict();
 
-const hasSingleSource = (value: z.infer<typeof modelStructure>) =>
+export const hasSingleSource = (value: z.infer<typeof modelStructure>) =>
   [value.refSql, value.baseObject, value.tableReference].filter((source) => source !== undefined).length === 1;
-const modelSourceMessage = 'A model must specify exactly one of refSql, baseObject or tableReference';
+export const modelSourceMessage = 'A model must specify exactly one of refSql, baseObject or tableReference';
 const model = modelStructure.refine(hasSingleSource, modelSourceMessage);
 
 const relationship = z
@@ -80,7 +76,7 @@ const cube = z
   })
   .strict();
 
-const dataModelStructure = z
+export const dataModelStructure = z
   .object({
     description: z.string().optional(),
     models: z.array(model).optional(),
@@ -93,24 +89,6 @@ const dataModelStructure = z
 
 /** Validate and copy metadata without stripping semantic extensions or observations. */
 export const dataModelMetadataSchema = dataModelStructure as unknown as z.ZodType<DataModel>;
-
-/** Semantic definitions exclude model and column profiling metrics. */
-export const semanticMetadataSchema = dataModelStructure.extend({
-  models: z
-    .array(
-      modelStructure
-        .omit({ metrics: true })
-        .extend({ columns: z.array(column.omit({ metrics: true })).optional() })
-        .refine(hasSingleSource, modelSourceMessage)
-    )
-    .optional(),
-}) as unknown as z.ZodType<Semantic>;
-
-export const dataModelInputSchema = z.object({
-  schema: schemaStructure.strict(),
-  profile: profileInputSchema.optional(),
-  semantic: semanticMetadataSchema.optional(),
-}) as unknown as z.ZodType<{ schema: Schema; profile?: Profile; semantic?: Semantic }>;
 
 export interface Column {
   /** Name exposed within the model; expressions can map it to a different source field. */
@@ -171,7 +149,7 @@ export type Model = {
   properties?: Properties;
 } & ModelSource;
 
-type ModelSource =
+export type ModelSource =
   | {
       /** SQL defining the model's source rows, before its column mappings and calculations. */
       refSql: string;
@@ -267,12 +245,4 @@ export interface DataModel {
   views?: View[];
   /** Reusable business aggregations, dimensions and drill-down paths. */
   cubes?: Cube[];
-}
-
-/** Business definitions supplied independently of catalog discovery and profiling observations. */
-export interface Semantic extends Pick<DataModel, 'description' | 'properties' | 'relationships' | 'views' | 'cubes'> {
-  models?: (Omit<Model, 'columns' | 'metrics'> &
-    ModelSource & {
-      columns?: Omit<Column, 'metrics'>[];
-    })[];
 }

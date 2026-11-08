@@ -1,6 +1,6 @@
 import { z } from 'zod';
 
-import { excelRange } from '../util/excel';
+import { excelRange } from '../../util/excel';
 
 export const excelSheetSchema = z
   .object({

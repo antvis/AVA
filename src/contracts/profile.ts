@@ -1,6 +1,6 @@
 import { z } from 'zod';
 
-import { jsonValue } from './json';
+import { jsonValue } from './shared/json';
 
 const logicalTypeSchema = z.enum(['numeric', 'string', 'boolean', 'date', 'unknown']);
 const columnSchema = z.object({
@@ -15,21 +15,6 @@ const modelSchema = z.object({
 });
 
 export const profileMetadataSchema = z.object({ models: z.array(modelSchema) }).strict();
-
-// Assembly rejects unsupported nested fields instead of silently discarding them.
-export const profileInputSchema = profileMetadataSchema.extend({
-  models: z.array(
-    modelSchema.strict().extend({
-      name: modelSchema.shape.name.min(1),
-      columns: z.array(
-        columnSchema.strict().extend({
-          name: columnSchema.shape.name.min(1),
-          properties: columnSchema.shape.properties.strict(),
-        })
-      ),
-    })
-  ),
-});
 
 /**
  * A field type shared by all engines.

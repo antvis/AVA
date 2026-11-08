@@ -1,5 +1,5 @@
 /** Value coercion helpers for typed engine query results. */
-import type { QueryColumn } from '../contracts/result';
+import type { QueryColumn } from '../contracts/query';
 
 const NUMERIC_TYPE = /^(U?(TINYINT|SMALLINT|INTEGER|BIGINT|HUGEINT)|FLOAT|DOUBLE|REAL|DECIMAL(?:\(.*\))?)$/i;
 

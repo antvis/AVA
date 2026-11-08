@@ -11,7 +11,7 @@ import { generateText } from 'ai';
 import { languageModel } from '../util/model';
 
 import type { LLMConfig } from '../config';
-import type { ChartType } from '../contracts/chart';
+import type { ChartType } from '../contracts/visualize';
 import type { ChartConfig } from './types';
 
 /**

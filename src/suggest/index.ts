@@ -7,8 +7,9 @@ import { generateText } from 'ai';
 import { languageModel } from '../util/model';
 import { stringifyDataModel } from '../util/data-model';
 
+import type { SuggestResult } from '../contracts/suggest';
 import type { LLMConfig } from '../config';
-import type { DataModel } from '../contracts/data-model';
+import type { DataModel } from '../contracts/shared/data-model';
 
 /**
  * Generate suggested analysis queries based on dataset
@@ -77,16 +78,4 @@ Generate the JSON array now.`;
   } catch (error) {
     throw new Error(`Failed to parse suggestions: ${error instanceof Error ? error.message : String(error)}`);
   }
-}
-
-/**
- * Result of a suggested query
- */
-export interface SuggestResult {
-  /** The suggested query string */
-  query: string;
-  /** Score between 0-1 indicating meaningfulness */
-  score: number;
-  /** Reason for the score */
-  reason: string;
 }

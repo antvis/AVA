@@ -3,7 +3,7 @@
  */
 
 import type { CSVReadOptions, JSONReadOptions } from '../contracts/source';
-import type { ExcelReadOptions } from '../contracts/excel';
+import type { ExcelReadOptions } from '../contracts/source/excel';
 import type { FileFormat } from '../duckdb/types';
 
 /** DuckDB reader function for each file format */

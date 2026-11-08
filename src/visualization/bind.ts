@@ -1,20 +1,12 @@
 import { z } from 'zod';
 
-import { chartSpecSchema } from '../contracts/chart';
-import { executionResultSchema } from '../contracts/result';
+import { chartSpecSchema, bindingSchema } from '../contracts/visualize';
+import { executionResultSchema } from '../contracts/query';
 
-import type { ChartSpec, ChartType } from '../contracts/chart';
-import type { ExecutionResult } from '../contracts/result';
+import type { ChartSpec, ChartType, ChartDataBinding } from '../contracts/visualize';
+import type { ExecutionResult } from '../contracts/query';
 
 const rowSchema = z.record(z.string(), z.unknown());
-const bindingSchema = z.union([
-  z
-    .object({ fields: z.record(z.string(), z.string().min(1)).refine((fields) => Object.keys(fields).length > 0) })
-    .strict(),
-  z.object({ configField: z.string().min(1) }).strict(),
-]);
-
-export type ChartDataBinding = z.infer<typeof bindingSchema>;
 
 /**
  * Validate a query result and project explicit native chart fields without coercion.

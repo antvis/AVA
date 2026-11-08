@@ -11,8 +11,8 @@ import type { ClickHouseClient, ClickHouseClientConfigOptions } from '@clickhous
 import type { TranslationResult } from '../../query/types';
 import type { AnalysisEngine } from '../../engines';
 import type { ClickHouseSourceOptions, DataSourceConfig } from '../../contracts/source';
-import type { DataModel } from '../../contracts/data-model';
-import type { ExecutionOptions, ExecutionResult } from '../../contracts/result';
+import type { DataModel } from '../../contracts/shared/data-model';
+import type { ExecutionOptions, ExecutionResult } from '../../contracts/query';
 import type { LLMConfig } from '../../config';
 import type { Profile, ProfileOptions } from '../../contracts/profile';
 import type { Schema } from '../../contracts/schema';
