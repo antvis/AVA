@@ -1,4 +1,4 @@
-import { mkdtemp, readFile, rm, writeFile } from 'fs/promises';
+import { mkdtemp, readFile, rm, stat, symlink, writeFile } from 'fs/promises';
 import { tmpdir } from 'os';
 import { join, resolve } from 'path';
 
@@ -398,7 +398,12 @@ describe('chart commands', () => {
       expect(JSON.parse(await execute(args))).toEqual({ output });
       expect(viz).toHaveBeenCalledExactlyOnceWith(spec);
       expect(await readFile(output, 'utf8')).toBe(html);
+      expect((await stat(output)).mode & 0o777).toBe(0o600);
       await expect(run(args)).rejects.toThrow('EEXIST');
+      expect(await readFile(output, 'utf8')).toBe(html);
+      const link = join(directory, 'link.html');
+      await symlink(output, link);
+      await expect(run(['viz', '--spec', JSON.stringify(spec), '-o', link])).rejects.toThrow('EEXIST');
       expect(await readFile(output, 'utf8')).toBe(html);
     } finally {
       await rm(directory, { recursive: true, force: true });
