@@ -4,6 +4,7 @@ import { tmpdir } from 'os';
 import { join, resolve } from 'path';
 
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import { ZodError } from 'zod';
 
 import { AVA } from '../src/ava';
 import { run } from '../src/cli';
@@ -91,22 +92,47 @@ describe('help and validation', () => {
   });
 });
 
-describe('metadata files', () => {
-  it.each(['schema', 'profile', 'semantic'])('sets %s from stdin and validates before sending', async (kind) => {
-    const value = kind === 'semantic' ? { description: 'Revenue excludes refunds.' } : { models: [] };
-    vi.spyOn(process, 'stdin', 'get').mockReturnValue(Readable.from([JSON.stringify(value)]) as typeof process.stdin);
-    await execute([kind, datasetId, '--file', '-']);
-    expect(request).toHaveBeenCalledExactlyOnceWith(
-      datasetId,
-      kind === 'profile' ? { command: kind, metrics: undefined, profile: value } : { command: kind, [kind]: value }
-    );
-    vi.mocked(request).mockClear();
-    vi.spyOn(process, 'stdin', 'get').mockReturnValue(Readable.from(['{"models":null}']) as typeof process.stdin);
-    await expect(run([kind, datasetId, '--file', '-'])).rejects.toThrow();
-    expect(request).not.toHaveBeenCalled();
-    vi.spyOn(process, 'stdin', 'get').mockReturnValue(Readable.from(['invalid JSON']) as typeof process.stdin);
-    await expect(run([kind, datasetId, '--file', '-'])).rejects.toThrow('Cannot read JSON');
-    expect(request).not.toHaveBeenCalled();
+describe('metadata input', () => {
+  describe.each(['schema', 'profile', 'semantic'])('%s from stdin', (kind) => {
+    const args = [kind, datasetId, '--file', '-'];
+
+    function mockStdin(input: string): void {
+      const stream = Readable.from([input], { objectMode: false });
+      vi.spyOn(process, 'stdin', 'get').mockReturnValue(stream as typeof process.stdin);
+    }
+
+    it('imports valid metadata', async () => {
+      const value = kind === 'semantic' ? { description: 'Revenue excludes refunds.' } : { models: [] };
+      mockStdin(JSON.stringify(value));
+
+      const output = await execute(args);
+
+      expect(JSON.parse(output)).toEqual({ ok: true });
+      expect(request).toHaveBeenCalledExactlyOnceWith(
+        datasetId,
+        kind === 'profile' ? { command: kind, metrics: undefined, profile: value } : { command: kind, [kind]: value }
+      );
+    });
+
+    it('rejects malformed JSON before sending a request or writing a result', async () => {
+      const write = vi.fn();
+      mockStdin('invalid JSON');
+
+      await expect(run(args, write)).rejects.toThrow('Cannot read JSON');
+
+      expect(request).not.toHaveBeenCalled();
+      expect(write).not.toHaveBeenCalled();
+    });
+
+    it('rejects invalid metadata before sending a request or writing a result', async () => {
+      const write = vi.fn();
+      mockStdin('{"models":null}');
+
+      await expect(run(args, write)).rejects.toThrow(ZodError);
+
+      expect(request).not.toHaveBeenCalled();
+      expect(write).not.toHaveBeenCalled();
+    });
   });
 
   it.each(['schema', 'profile', 'semantic'])('sets %s from a plain file path', async (kind) => {
