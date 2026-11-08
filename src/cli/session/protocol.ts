@@ -17,7 +17,15 @@ const text = z.string().min(1);
 export { sourceConfigSchema as sourceConfig } from '../../contracts/source';
 
 export const modelSchema = z.object({ model: text, apiKey: text.optional(), baseURL: text.optional() }).strict();
-export const engineTypeSchema = z.enum(['duckdb', 'python', 'javascript', 'supabase', 'clickhouse', 'sqlserver']);
+export const engineTypeSchema = z.enum([
+  'duckdb',
+  'python',
+  'javascript',
+  'supabase',
+  'clickhouse',
+  'sqlserver',
+  'snowflake',
+]);
 
 const execution = {
   maxRows: z.number().int().positive().max(10000).optional(),

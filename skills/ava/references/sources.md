@@ -10,6 +10,7 @@
 | MySQL, PostgreSQL, SQLite, MongoDB | DuckDB only | DuckDB SQL |
 | ClickHouse | ClickHouse only, selected automatically | ClickHouse SQL |
 | SQL Server | SQL Server only, selected automatically | T-SQL |
+| Snowflake | Snowflake only, selected automatically | Snowflake SQL |
 | Supabase | Supabase only, selected automatically | PostgreSQL SQL |
 | Feishu Bitable | DuckDB only | DuckDB SQL |
 
@@ -76,6 +77,7 @@ Use the configuration format and load command shown above:
 | `mongodb` | `{"connection":"mongodb://localhost:27017","database":"sales"}` |
 | `clickhouse` | `{"url":"http://localhost:8123","database":"sales","username":"reader","password":"REPLACE"}` |
 | `sqlserver` | `{"host":"localhost","database":"sales","user":"reader","password":"REPLACE","schema":"dbo"}` |
+| `snowflake` | `{"account":"myorg-myaccount","username":"READER","authenticator":"SNOWFLAKE_JWT","privateKeyPath":"/secure/rsa_key.p8","warehouse":"AVA_WH","role":"READER_ROLE","database":"SALES","schema":"PUBLIC"}` |
 | `supabase` | `{"accessToken":"REPLACE","projectRef":"REPLACE"}` |
 
 Use authorized read-only credentials. Restrict temporary credential files to the current user and delete them after loading. Do not put credentials in deliverables or logs.
@@ -86,6 +88,7 @@ Use authorized read-only credentials. Restrict temporary credential files to the
 - ClickHouse connects over HTTP(S) and requires version 23.10 or later.
 - ClickHouse requires `database` and either `host` or `url`. It accepts `port`, `user`/`username`, `password`, `access_token`, `pathname`, `application`, `session_id`, `role` (string or string array), `http_headers`, `request_timeout`, and other ClickHouse client options.
 - SQL Server uses SQL authentication on port `1433` by default. Grant `SELECT` and `VIEW DEFINITION` permissions. TLS certificate verification is enabled by default.
+- Snowflake runs queries on the configured warehouse through the official driver, which uses credits. One source covers one schema (default `PUBLIC`), and discovery lists only the objects the role can read. Prefer key-pair authentication (`privateKeyPath`), so the configuration holds no secret; `queryTimeoutMs` (default 30000) limits each statement.
 - Supabase uses the Management API; `accessToken` must be a token authorized for that API.
 
 ### Connect through SSH

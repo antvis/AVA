@@ -11,14 +11,15 @@ import { Heading } from '../../../../mdx-components';
 | [Python](/documentation/engines/python/) | 内存 CSV / JSON；CSV / JSON / Parquet / Excel 文件 | Node.js + Python 执行器 |
 | [Supabase](/documentation/engines/remote/#supabase) | Supabase 项目 | Node.js，远程 PostgreSQL |
 | [ClickHouse](/documentation/engines/remote/#clickhouse) | ClickHouse 数据库 | Node.js，远程 ClickHouse |
+| [Snowflake](/documentation/engines/remote/#snowflake) | Snowflake schema | Node.js，远程 Snowflake |
 
 <Heading as="h2" id="engine-configuration">引擎配置</Heading>
 
 | 字段 | 类型 | 必填 | 默认值与行为 |
 | ------------- | -------------------------------------------------------------------------------------------- | ------------------------- | --------------------------------- |
-| `engine.type` | `'duckdb'` / `'javascript'` / `'python'` / `'supabase'` / `'clickhouse'` / 已注册的名称 | 提供 `engine` 时必填 | 省略 `engine` 时选择 DuckDB。 |
+| `engine.type` | `'duckdb'` / `'javascript'` / `'python'` / `'supabase'` / `'clickhouse'` / `'snowflake'` / 已注册的名称 | 提供 `engine` 时必填 | 省略 `engine` 时选择 DuckDB。 |
 
-其他字段取决于 `type`，详见 [DuckDB 选项](/documentation/engines/duckdb/#engine-options)和 [Python 选项](/documentation/engines/python/#engine-options)。JavaScript、Supabase、ClickHouse 没有额外的构造函数引擎字段；数据库凭证放在[数据源参数](/documentation/data/sources/#connect-a-source)中。
+其他字段取决于 `type`，详见 [DuckDB 选项](/documentation/engines/duckdb/#engine-options)和 [Python 选项](/documentation/engines/python/#engine-options)。JavaScript、Supabase、ClickHouse、Snowflake 没有额外的构造函数引擎字段；数据库凭证和 Snowflake 的 `queryTimeoutMs` 放在[数据源参数](/documentation/data/sources/#connect-a-source)中。
 
 希望在自己的服务中执行 Python，参见[提供 Python 执行器](/documentation/engines/python/#supply-a-python-executor)。希望在应用中提供自己的引擎，参见[自定义引擎](/documentation/engines/custom/)。
 
@@ -30,6 +31,6 @@ import { Heading } from '../../../../mdx-components';
 
 <Heading as="h2" id="registration">注册</Heading>
 
-Node.js 入口注册全部五种引擎，浏览器入口只注册 JavaScript。注册表让核心 `AVA` 类无需直接依赖各平台专用模块。
+Node.js 入口注册全部七种引擎，浏览器入口只注册 JavaScript。注册表让核心 `AVA` 类无需直接依赖各平台专用模块。
 
 扩展 SDK 时，先调用 `registerEngine('sales', SalesEngine)`，再设置 `engine: { type: 'sales' }`。接口约定和完整示例见[自定义引擎](/documentation/engines/custom/)。CLI 仅接受内置引擎名。

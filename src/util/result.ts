@@ -27,6 +27,15 @@ function serializedBytes(value: unknown): number {
   return utf8ByteLength(JSON.stringify(value) ?? '');
 }
 
+/** Serialized row size, rejecting fields that exceed the shared 1 MiB limit. */
+export function resultRowBytes(row: unknown): number {
+  const fields = row !== null && typeof row === 'object' && !Array.isArray(row) ? Object.values(row) : [row];
+  if (fields.some((field) => serializedBytes(field) > MAX_FIELD_BYTES)) {
+    throw new Error('Result field exceeds the 1 MiB limit');
+  }
+  return serializedBytes(row);
+}
+
 /**
  * Create a SQL query with a row limit.
  */
@@ -53,12 +62,7 @@ export function executionResult<T>(
   let truncatedBy: ExecutionResult<T>['truncatedBy'];
 
   for (const row of limitedRows) {
-    const fields = row !== null && typeof row === 'object' && !Array.isArray(row) ? Object.values(row) : [row];
-    if (fields.some((field) => serializedBytes(field) > MAX_FIELD_BYTES)) {
-      throw new Error('Result field exceeds the 1 MiB limit');
-    }
-
-    const rowBytes = serializedBytes(row);
+    const rowBytes = resultRowBytes(row);
     if (bytes + rowBytes > maxBytes) {
       truncatedBy = 'maxResultBytes';
       break;

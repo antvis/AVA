@@ -5,6 +5,7 @@ import { excelOptionsSchema } from './excel';
 import { csvReadOptionsSchema, jsonReadOptionsSchema } from './read-options';
 
 import type { ClickHouseClientConfigOptions } from '@clickhouse/client';
+import type { ConnectionOptions as SnowflakeConnectionOptions } from 'snowflake-sdk';
 
 /** Shared runtime contract for built-in source configurations; keeps each type correlated with its options. */
 const text = z.string().min(1);
@@ -56,6 +57,26 @@ const clickhouse = z
   })
   .passthrough()
   .refine((value) => value.host || value.url, { message: "ClickHouse sources require either 'host' or 'url'" });
+
+// Other snowflake-sdk connection options pass through to the driver.
+const snowflake = z
+  .object({
+    account: text,
+    database: text,
+    schema: text.optional(),
+    warehouse: text.optional(),
+    role: text.optional(),
+    username: text.optional(),
+    authenticator: text.optional(),
+    password: z.string().optional(),
+    token: z.string().optional(),
+    tokenFilePath: text.optional(),
+    privateKey: z.string().optional(),
+    privateKeyPath: text.optional(),
+    privateKeyPass: z.string().optional(),
+    queryTimeoutMs: z.number().int().positive().optional(),
+  })
+  .passthrough();
 
 const feishuBitable = z
   .object({
@@ -136,6 +157,7 @@ export const sourceSchemas = {
     .strict(),
   clickhouse: z.object({ type: z.literal('clickhouse'), options: clickhouse }).strict(),
   sqlserver: z.object({ type: z.literal('sqlserver'), options: sqlserver }).strict(),
+  snowflake: z.object({ type: z.literal('snowflake'), options: snowflake }).strict(),
   'feishu-bitable': z.object({ type: z.literal('feishu-bitable'), options: feishuBitable }).strict(),
 };
 
@@ -154,6 +176,7 @@ export const sourceConfigSchema = z.discriminatedUnion('type', [
   sourceSchemas.supabase,
   sourceSchemas.clickhouse,
   sourceSchemas.sqlserver,
+  sourceSchemas.snowflake,
   sourceSchemas['feishu-bitable'],
 ]);
 
@@ -161,17 +184,32 @@ export const sourceConfigSchema = z.discriminatedUnion('type', [
 // Input types keep normalized/defaulted fields (such as Excel header) optional.
 type SourceInput = z.input<typeof sourceConfigSchema>;
 type ClickHouseInput = z.input<typeof sourceSchemas.clickhouse>;
+type SnowflakeInput = z.input<typeof sourceSchemas.snowflake>;
+type SnowflakeFields = z.input<ReturnType<typeof snowflake.strip>>;
 type ClickHouseFields = z.input<ReturnType<typeof clickhouse.strip>>;
 
 /** Native client options keep their SDK types, including agents, TLS buffers and callbacks.
  * The runtime schema validates AVA's connection fields and passes native options to the client.
  */
 export type ClickHouseSourceOptions = ClickHouseFields & Omit<ClickHouseClientConfigOptions, keyof ClickHouseFields>;
+/** Native driver options exclude the result/session controls owned by AVA. */
+export type SnowflakeSourceOptions = SnowflakeFields &
+  Omit<
+    SnowflakeConnectionOptions,
+    | keyof SnowflakeFields
+    | 'rowMode'
+    | 'streamResult'
+    | 'fetchAsString'
+    | 'jsTreatIntegerAsBigInt'
+    | 'representNullAsStringNull'
+    | 'serverSessionKeepAlive'
+  >;
 export type DataSourceConfig =
-  | Exclude<SourceInput, ClickHouseInput>
+  | Exclude<SourceInput, ClickHouseInput | SnowflakeInput>
   | (Omit<ClickHouseInput, 'options'> & {
       options: ClickHouseSourceOptions;
-    });
+    })
+  | (Omit<SnowflakeInput, 'options'> & { options: SnowflakeSourceOptions });
 export type SourceType = DataSourceConfig['type'];
 export type CSVReadOptions = z.input<typeof csvReadOptionsSchema>;
 export type JSONReadOptions = z.input<typeof jsonReadOptionsSchema>;

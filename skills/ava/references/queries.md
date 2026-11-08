@@ -31,6 +31,10 @@ GROUP BY region
 ORDER BY total DESC, region;
 ```
 
+For ClickHouse, do not add `FORMAT`, `SETTINGS`, or `INTO OUTFILE`; AVA handles execution.
+
+For Snowflake, double-quote table and column names exactly as the schema lists them, because quoted identifiers are case-sensitive. `SYSTEM$` functions, procedures, and dynamic function calls via `IDENTIFIER(name)(...)` are rejected.
+
 ## Python / pandas
 
 | Binding | Usage |

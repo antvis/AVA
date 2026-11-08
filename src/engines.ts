@@ -43,7 +43,7 @@ export function getEngineClass(type: EngineConfig['type']): EngineClass {
     throw new Error(
       `Engine type "${type}" is not available in this environment. ` +
         'The browser build of @antv/ava only includes the javascript engine; ' +
-        'use the Node.js build for DuckDB, Supabase, ClickHouse, or Python.'
+        'use the Node.js build for DuckDB, Supabase, ClickHouse, Snowflake, or Python.'
     );
   }
 
@@ -63,6 +63,7 @@ export type EngineConfig =
   | { type: 'supabase' }
   | { type: 'clickhouse' }
   | { type: 'sqlserver' }
+  | { type: 'snowflake' }
   | { type: string; [option: string]: unknown };
 
 /**

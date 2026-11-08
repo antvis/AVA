@@ -202,6 +202,7 @@ const chart = await ava.visualize({
     <td align="center"><a href="https://ava.antv.vision/documentation/data/sources/#mongodb"><img src="https://mdn.alipayobjects.com/huamei_aphk1k/afts/img/A*5VYbTakXL7EAAAAAIlAAAAgAegfkAQ/original" width="32" height="32" alt="MongoDB" /><br />MongoDB</a></td>
     <td align="center"><a href="https://ava.antv.vision/documentation/data/sources/#supabase"><img src="https://mdn.alipayobjects.com/huamei_aphk1k/afts/img/A*IWbeTqNDuu4AAAAAFFAAAAgAegfkAQ/original" width="32" height="32" alt="Supabase" /><br />Supabase</a></td>
     <td align="center"><a href="https://ava.antv.vision/documentation/data/sources/#clickhouse"><img src="https://mdn.alipayobjects.com/huamei_aphk1k/afts/img/A*o0VuQ5NvHZ8AAAAAELAAAAgAegfkAQ/original" width="32" height="32" alt="ClickHouse" /><br />ClickHouse</a></td>
+    <td align="center"><a href="https://ava.antv.vision/documentation/data/sources/#snowflake"><img src="site/public/logos/snowflake.svg" width="32" height="32" alt="Snowflake" /><br />Snowflake</a></td>
   </tr>
 </table>
 

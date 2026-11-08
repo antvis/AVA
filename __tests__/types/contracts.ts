@@ -5,6 +5,7 @@ import type { AnalysisResponse, DataSourceConfig, ExecutionResult } from '../../
 import type { DataSourceConfig as BrowserSource, ExecutionResult as BrowserResult } from '../../src/index.browser';
 import type {
   ClickHouseSourceOptions,
+  SnowflakeSourceOptions,
   CSVReadOptions,
   ExcelSourceOptions,
   JSONReadOptions,
@@ -16,6 +17,7 @@ import type {
   PythonEngineOptions,
 } from '../../src/types';
 import type { ClickHouseClientConfigOptions } from '@clickhouse/client';
+import type { ConnectionOptions as SnowflakeConnectionOptions } from 'snowflake-sdk';
 
 const csv: CSVReadOptions = { header: true, types: { amount: 'BIGINT' }, nullstr: ['NA'], sample_size: -1 };
 const csvByPosition: CSVReadOptions = { types: ['VARCHAR', 'BIGINT'] };
@@ -127,3 +129,18 @@ export function pythonExecutor(options: PythonEngineOptions): PythonEngineOption
   return options.execute;
 }
 void [model, ambiguousModel, emptyKey, expression];
+
+export function snowflakeOptions(native: SnowflakeConnectionOptions): SnowflakeSourceOptions {
+  return {
+    account: 'org-account',
+    database: 'sales',
+    proxyHost: native.proxyHost,
+    proxyPort: native.proxyPort,
+    clientSessionKeepAlive: native.clientSessionKeepAlive,
+  };
+}
+// @ts-expect-error Native driver fields retain their official types.
+const invalidSnowflakeProxy: SnowflakeSourceOptions = { account: 'org-account', database: 'sales', proxyPort: '8080' };
+// @ts-expect-error AVA owns the driver's row representation.
+const overriddenRows: SnowflakeSourceOptions = { account: 'org-account', database: 'sales', rowMode: 'array' };
+void [invalidSnowflakeProxy, overriddenRows];

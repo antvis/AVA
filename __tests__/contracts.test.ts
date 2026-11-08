@@ -23,7 +23,7 @@ describe('public source contracts', () => {
   });
 
   it('uses the same source contract in SDK and CLI without erasing the discriminant', async () => {
-    expect(z.toJSONSchema(sourceConfigSchema, { io: 'input' }).oneOf).toHaveLength(15);
+    expect(z.toJSONSchema(sourceConfigSchema, { io: 'input' }).oneOf).toHaveLength(16);
     const parsed = sourceConfigSchema.parse(source);
     if (parsed.type === 'json') expect(parsed.options.data).toEqual(source.options.data);
     expect(startupSchema.parse({ source, llm: { model: 'unused' } }).source).toEqual(parsed);
@@ -39,6 +39,12 @@ describe('public source contracts', () => {
           options: { host: 'db', database: 'sales', ssh: { host: 'bastion', user: 'reader' } },
         } as unknown as DataSourceConfig)
       ).rejects.toThrow(/hostKeyFingerprint/);
+      await expect(
+        ava.source({
+          type: 'snowflake',
+          options: { account: 'org-account', database: 42 },
+        } as unknown as DataSourceConfig)
+      ).rejects.toThrow();
       expect((await ava.query('const result = data;')).data).toEqual(source.options.data);
     } finally {
       await ava.dispose();
