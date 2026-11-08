@@ -219,7 +219,7 @@ describe('source', () => {
     }
   });
 
-  it.each(['duckdb', 'python', 'javascript', 'supabase', 'clickhouse', 'sqlserver'])(
+  it.each(['duckdb', 'python', 'javascript', 'supabase', 'clickhouse', 'sqlserver', 'snowflake'])(
     'passes an explicit %s engine with a source config',
     async (engine) => {
       const directory = await mkdtemp(join(tmpdir(), 'ava-cli-test-'));
@@ -234,6 +234,49 @@ describe('source', () => {
       }
     }
   );
+
+  it('loads a Snowflake config file and forwards driver options unchanged', async () => {
+    const directory = await mkdtemp(join(tmpdir(), 'ava-cli-test-'));
+    try {
+      const file = join(directory, 'snowflake.json');
+      const config = {
+        type: 'snowflake',
+        options: {
+          account: 'myorg-myaccount',
+          username: 'AVA_READER_SVC',
+          authenticator: 'SNOWFLAKE_JWT',
+          privateKeyPath: '/keys/rsa_key.p8',
+          warehouse: 'AVA_WH',
+          role: 'AVA_READER',
+          database: 'SNOWFLAKE_SAMPLE_DATA',
+          schema: 'TPCH_SF1',
+          queryTimeoutMs: 60000,
+          proxyHost: 'proxy.internal',
+        },
+      };
+      await writeFile(file, JSON.stringify(config));
+      await execute(['source', `@${file}`]);
+      expect(createSession).toHaveBeenCalledExactlyOnceWith(config, { model: 'gpt-4o-mini' }, undefined);
+    } finally {
+      await rm(directory, { recursive: true, force: true });
+    }
+  });
+
+  it.each([
+    [{ database: 'ANALYTICS' }, 'account'],
+    [{ account: 'myorg-myaccount' }, 'database'],
+    [{ account: 'myorg-myaccount', database: 'ANALYTICS', queryTimeoutMs: 0 }, 'queryTimeoutMs'],
+  ])('rejects an invalid Snowflake config before creating a session %#', async (options, field) => {
+    const directory = await mkdtemp(join(tmpdir(), 'ava-cli-test-'));
+    try {
+      const file = join(directory, 'snowflake.json');
+      await writeFile(file, JSON.stringify({ type: 'snowflake', options }));
+      await expect(run(['source', `@${file}`])).rejects.toThrow(field);
+      expect(createSession).not.toHaveBeenCalled();
+    } finally {
+      await rm(directory, { recursive: true, force: true });
+    }
+  });
 
   it('selects Python for a file without changing its source type', async () => {
     await execute(['source', 'sales.csv', '--engine', 'python']);

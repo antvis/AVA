@@ -4,6 +4,7 @@
 
 import type { ClickHouseClientConfigOptions } from '@clickhouse/client';
 import type { LanguageModel, LanguageModelUsage } from 'ai';
+import type { ConnectionOptions as SnowflakeConnectionOptions } from 'snowflake-sdk';
 import type { AnalysisEvent } from './event';
 
 /**
@@ -78,6 +79,7 @@ export type EngineConfig =
   | { type: 'supabase' }
   | { type: 'clickhouse' }
   | { type: 'sqlserver' }
+  | { type: 'snowflake' }
   | { type: string; [option: string]: unknown };
 
 /**
@@ -103,7 +105,8 @@ export interface AnalysisConfig extends ExecutionOptions {
  * - inline types: `csv` (content string), `json` (object array), `text`
  * - file types: `csv-file`, `json-file`, `parquet` (read through DuckDB's readers)
  * - database types: `mysql`, `postgresql`, `sqlite`, `mongodb` (ATTACH through DuckDB's extension)
- * - direct query types: `clickhouse` (schema discovered and SQL executed through ClickHouse's HTTP API)
+ * - direct query types: `clickhouse` (schema discovered and SQL executed through ClickHouse's HTTP API),
+ *   `snowflake` (schema discovered and SQL executed in Snowflake through the official Node.js driver)
  * - cloud types: `supabase` (schema discovered and SQL executed through the Supabase Management API — data never leaves the SaaS; handled by SaasDBEngine)
  */
 export type SourceType =
@@ -122,7 +125,8 @@ export type SourceType =
   | 'clickhouse'
   | 'feishu-bitable'
   | 'tencent-smartsheet'
-  | 'sqlserver';
+  | 'sqlserver'
+  | 'snowflake';
 
 /**
  * DuckDB read_csv reader options.
@@ -538,11 +542,40 @@ export interface SQLServerSourceOptions {
 }
 
 /**
+ * Options for Snowflake data sources. Queries run in Snowflake through the official
+ * Node.js driver (snowflake-sdk): the warehouse does the computation and access follows
+ * the role's privileges. Other driver connection options (authenticator, token, proxy,
+ * OAuth settings, ...) are forwarded unchanged.
+ */
+export type SnowflakeSourceOptions = Omit<
+  SnowflakeConnectionOptions,
+  // AVA fixes the row format and ends the server session together with the source.
+  | 'account'
+  | 'database'
+  | 'schema'
+  | 'rowMode'
+  | 'streamResult'
+  | 'fetchAsString'
+  | 'jsTreatIntegerAsBigInt'
+  | 'representNullAsStringNull'
+  | 'serverSessionKeepAlive'
+> & {
+  /** Account identifier, e.g. `myorg-myaccount`. */
+  account: string;
+  /** Database to discover and query. */
+  database: string;
+  /** Schema whose tables and views are exposed; also the session's default schema. Default `PUBLIC`. */
+  schema?: string;
+  /** Statement timeout in milliseconds, enforced by Snowflake and by the client. Default 30000. */
+  queryTimeoutMs?: number;
+};
+
+/**
  * External data source configuration for loadSource.
  * - inline types (csv/json/text): data is materialized into JS memory
  * - file types (csv-file/json-file/parquet): loaded through DuckDB's readers
  * - database types (mysql/postgresql/sqlite/mongodb): ATTACH through DuckDB's extension
- * - direct query types (clickhouse): schema/SQL over ClickHouse's HTTP API
+ * - direct query types (clickhouse, snowflake): schema/SQL over the database's own client
  * - cloud types (supabase): schema/SQL over the Management API (SaasDBEngine)
  */
 export type DataSourceConfig =
@@ -561,7 +594,8 @@ export type DataSourceConfig =
   | { type: 'clickhouse'; options: ClickHouseSourceOptions }
   | { type: 'feishu-bitable'; options: FeishuBitableSourceOptions }
   | { type: 'tencent-smartsheet'; options: TencentDocsSourceOptions }
-  | { type: 'sqlserver'; options: SQLServerSourceOptions };
+  | { type: 'sqlserver'; options: SQLServerSourceOptions }
+  | { type: 'snowflake'; options: SnowflakeSourceOptions };
 
 /**
  * File formats readable by DuckDB's readers (csv-file maps to csv, json-file to json).

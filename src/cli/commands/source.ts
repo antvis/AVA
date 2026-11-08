@@ -92,8 +92,8 @@ Options:
   -t, --type <type>  Override the type inferred from the file extension.
                     Types: csv-file, json-file, parquet, excel, sqlite.
                     Cannot be used with @file, stdin configs, or Feishu URLs.
-  --engine <type>    duckdb, python, javascript, supabase, clickhouse, or sqlserver.
-                    Default: supabase/clickhouse/sqlserver for those sources, otherwise duckdb.
+  --engine <type>    duckdb, python, javascript, supabase, clickhouse, sqlserver, or snowflake.
+                    Default: supabase/clickhouse/sqlserver/snowflake for those sources, otherwise duckdb.
                     Fixed for the session; source support depends on the engine.
                     feishu-bitable uses duckdb. The loaded view is named data.
   -h, --help         Show help.
@@ -111,6 +111,15 @@ Feishu Bitable:
   in a terminal AVA offers to bind and save them.
   The whole table is loaded as one view named data; the view query is ignored.
   Docx and Sheets links are not supported.
+
+Snowflake:
+  Pass a "snowflake" config via @file or stdin (see snowflake.json below).
+  Queries run in Snowflake on the given warehouse. Discovery covers one schema
+  (default PUBLIC) and lists only tables and views the role can access, so
+  connect with a read-only role. Key-pair authentication (SNOWFLAKE_JWT with
+  privateKeyPath) keeps secrets out of the config; other snowflake-sdk
+  connection options, such as PROGRAMMATIC_ACCESS_TOKEN or OAUTH with token,
+  are passed through. queryTimeoutMs (default 30000) limits each statement.
 
 Environment:
   OPENAI_API_KEY     Required for text sources and subsequent AI commands.
@@ -137,6 +146,7 @@ Examples:
   ava source "https://my.feishu.cn/wiki/<nodeToken>?table=<tableId>"
   ava source @feishu.json
   ava source @sqlserver.json
+  ava source @snowflake.json
 
 SQL Server:
   Pass a "sqlserver" config via @file or stdin; its engine is selected automatically.
@@ -162,4 +172,19 @@ Tencent Docs SmartSheet (Node.js / DuckDB):
   Reads a complete, bounded snapshot into data; _record_id preserves source identity.
   Explicit IDs are required; document sharing URLs are not auto-detected.
   Dataset sessions require macOS/Linux; on Windows use the SDK or WSL.
+
+snowflake.json:
+{
+  "type": "snowflake",
+  "options": {
+    "account": "<orgname>-<account_name>",
+    "username": "<user>",
+    "authenticator": "SNOWFLAKE_JWT",
+    "privateKeyPath": "<path-to-rsa_key.p8>",
+    "warehouse": "<warehouse>",
+    "role": "<read-only-role>",
+    "database": "<database>",
+    "schema": "<schema>"
+  }
+}
 `;

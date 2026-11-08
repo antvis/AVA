@@ -124,13 +124,31 @@ describe('dataset engine and language', () => {
     vi.restoreAllMocks();
   });
 
-  it.each<{ source: DataSourceConfig; engine: EngineConfig['type']; language: string; explicit?: EngineConfig['type'] }>([
+  it.each<{
+    source: DataSourceConfig;
+    engine: EngineConfig['type'];
+    language: string;
+    explicit?: EngineConfig['type'];
+  }>([
     { source, engine: 'duckdb', language: 'duckdb-sql' },
     { source, engine: 'python', language: 'python', explicit: 'python' },
     { source, engine: 'javascript', language: 'javascript', explicit: 'javascript' },
-    { source: { type: 'supabase', options: { accessToken: 'test', projectRef: 'test' } }, engine: 'supabase', language: 'postgresql' },
-    { source: { type: 'clickhouse', options: { host: 'localhost', database: 'sales' } }, engine: 'clickhouse', language: 'clickhouse-sql' },
+    {
+      source: { type: 'supabase', options: { accessToken: 'test', projectRef: 'test' } },
+      engine: 'supabase',
+      language: 'postgresql',
+    },
+    {
+      source: { type: 'clickhouse', options: { host: 'localhost', database: 'sales' } },
+      engine: 'clickhouse',
+      language: 'clickhouse-sql',
+    },
     { source: sqlserverSource, engine: 'sqlserver', language: 'tsql' },
+    {
+      source: { type: 'snowflake', options: { account: 'myorg-myaccount', database: 'ANALYTICS' } },
+      engine: 'snowflake',
+      language: 'snowflake-sql',
+    },
   ])('selects $engine and exposes language id $language', async ({ source, engine, language, explicit }) => {
     const { getEngineClass } = await import('../src/engines');
     const Engine = getEngineClass(engine);
