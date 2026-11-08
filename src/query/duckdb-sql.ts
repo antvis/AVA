@@ -1,6 +1,4 @@
-import { generateText } from 'ai';
-
-import { languageModel } from '../util/model';
+import { generateText, languageModel } from '../util/model';
 import { stringifyDataModel } from '../util/data-model';
 
 import type { DuckDBInstance } from '@duckdb/node-api';

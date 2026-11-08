@@ -3,10 +3,7 @@
  * pre-formatted data description string.
  */
 
-import { generateText } from 'ai';
-
-import { languageModel } from '../util/model';
-import { withModelErrors } from '../util/error';
+import { generateText, languageModel } from '../util/model';
 
 import { chartDefinitions } from './vis';
 
@@ -114,13 +111,11 @@ export async function adviseChartType(
 ): Promise<ChartType | null> {
   const prompt = buildAdvisorPrompt(query, dataInfoStr);
 
-  const { text } = await withModelErrors(() =>
-    generateText({
-      model: languageModel(llmConfig),
-      maxRetries: llmConfig.maxRetries ?? 3,
-      prompt,
-    })
-  );
+  const { text } = await generateText({
+    model: languageModel(llmConfig),
+    maxRetries: llmConfig.maxRetries ?? 3,
+    prompt,
+  });
 
   const raw = text
     .trim()

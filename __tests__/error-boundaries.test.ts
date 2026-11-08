@@ -1,10 +1,16 @@
+import { generateText as sdkGenerateText } from 'ai';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 
 import { AVA, AVAError, serializeError } from '../src';
-import { failureResponse, withModelErrors } from '../src/util/error';
+import { failureResponse } from '../src/util/error';
+import { generateText } from '../src/util/model';
 import { safeSourceError } from '../src/util/source-error';
 
-afterEach(() => vi.unstubAllGlobals());
+vi.mock('ai', async (original) => ({ ...(await original<typeof import('ai')>()), generateText: vi.fn() }));
+afterEach(() => {
+  vi.unstubAllGlobals();
+  vi.resetAllMocks();
+});
 
 const secret = 'dummy%2Ftransformed-credential';
 
@@ -39,11 +45,8 @@ describe('error boundaries', () => {
   it('keeps an already classified error unchanged across boundaries and serialization', async () => {
     const error = new AVAError('QUERY_ERROR', 'The query references an unknown column.');
     expect(safeSourceError(error, 'clickhouse')).toBe(error);
-    await expect(
-      withModelErrors(async () => {
-        throw error;
-      })
-    ).rejects.toBe(error);
+    vi.mocked(sdkGenerateText).mockRejectedValueOnce(error);
+    await expect(generateText({ model: 'unused', prompt: 'Test', maxRetries: 0 })).rejects.toBe(error);
     expect(failureResponse(error)).toEqual({ ok: false, error: error.message, code: 'QUERY_ERROR', outcome: 'failed' });
   });
 
@@ -51,9 +54,8 @@ describe('error boundaries', () => {
     [401, 'authentication'],
     [429, 'rate limit'],
   ])('retains a safe model diagnostic for HTTP %s', async (statusCode, diagnostic) => {
-    const result = withModelErrors(async () => {
-      throw Object.assign(new Error(secret), { statusCode });
-    });
+    vi.mocked(sdkGenerateText).mockRejectedValueOnce(Object.assign(new Error(secret), { statusCode }));
+    const result = generateText({ model: 'unused', prompt: 'Test', maxRetries: 0 });
     await expect(result).rejects.toMatchObject({ code: 'MODEL_ERROR', message: expect.stringContaining(diagnostic) });
     await result.catch((error) => expect(JSON.stringify(failureResponse(error))).not.toContain(secret));
   });

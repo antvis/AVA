@@ -4,7 +4,10 @@ import { generateText } from 'ai';
 import { AVA } from '../src/ava';
 
 vi.mock('ai', () => ({ generateText: vi.fn() }));
-vi.mock('../src/util/model', () => ({ languageModel: vi.fn() }));
+vi.mock('../src/util/model', async (original) => ({
+  ...(await original<typeof import('../src/util/model')>()),
+  languageModel: vi.fn(),
+}));
 
 const result = {
   query: 'Compare revenue by city as a chart',

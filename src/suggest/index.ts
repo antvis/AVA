@@ -2,10 +2,8 @@
  * Suggest module for generating recommended analysis queries
  */
 
-import { generateText } from 'ai';
-
-import { languageModel } from '../util/model';
-import { AVAError, withModelErrors } from '../util/error';
+import { generateText, languageModel } from '../util/model';
+import { AVAError } from '../util/error';
 import { stringifyDataModel } from '../util/data-model';
 
 import type { LLMConfig, DataModel, SuggestResult } from '../types';
@@ -51,13 +49,11 @@ Example format:
 
 Generate the JSON array now.`;
 
-  const { text } = await withModelErrors(() =>
-    generateText({
-      model: languageModel(llmConfig),
-      maxRetries: llmConfig.maxRetries ?? 3,
-      prompt,
-    })
-  );
+  const { text } = await generateText({
+    model: languageModel(llmConfig),
+    maxRetries: llmConfig.maxRetries ?? 3,
+    prompt,
+  });
 
   try {
     const jsonMatch = text.match(/\[[\s\S]*\]/);

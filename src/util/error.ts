@@ -73,15 +73,6 @@ export async function withQueryErrors<T>(operation: () => Promise<T>): Promise<T
   }
 }
 
-/** Apply the provider error policy without swallowing metadata discovery errors. */
-export async function withModelErrors<T>(operation: () => Promise<T>): Promise<T> {
-  try {
-    return await operation();
-  } catch (error) {
-    throw safeModelError(error);
-  }
-}
-
 /** Typed source/transport failures stop correction; unclassified local errors retain legacy behavior. */
 export function canCorrectQuery(error: unknown): boolean {
   return !(error instanceof AVAError) || (error.code === 'QUERY_ERROR' && error.outcome === 'failed');

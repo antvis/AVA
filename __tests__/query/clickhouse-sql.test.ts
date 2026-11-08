@@ -5,7 +5,10 @@ import { ClickHouseSQLDialect } from '../../src/query/clickhouse-sql';
 import { limitedQuery } from '../../src/util/result';
 
 vi.mock('ai', () => ({ generateText: vi.fn() }));
-vi.mock('../../src/util/model', () => ({ languageModel: vi.fn(() => 'test-model') }));
+vi.mock('../../src/util/model', async (original) => ({
+  ...(await original<typeof import('../../src/util/model')>()),
+  languageModel: vi.fn(() => 'test-model'),
+}));
 const parserState = vi.hoisted(() => ({ loads: 0 }));
 vi.mock('@clickhouse/parser', async (importOriginal) => {
   parserState.loads += 1;

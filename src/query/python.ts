@@ -1,6 +1,4 @@
-import { generateText } from 'ai';
-
-import { languageModel } from '../util/model';
+import { generateText, languageModel } from '../util/model';
 import { AVAError } from '../util/error';
 import { stringifyDataModel } from '../util/data-model';
 

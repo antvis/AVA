@@ -4,7 +4,10 @@ import { generateText } from 'ai';
 import { loadTSQLParser, TSQLDialect } from '../../src/query/tsql';
 
 vi.mock('ai', () => ({ generateText: vi.fn() }));
-vi.mock('../../src/util/model', () => ({ languageModel: vi.fn(() => 'test-model') }));
+vi.mock('../../src/util/model', async (original) => ({
+  ...(await original<typeof import('../../src/util/model')>()),
+  languageModel: vi.fn(() => 'test-model'),
+}));
 const parserState = vi.hoisted(() => ({ loads: 0 }));
 vi.mock('antlr4ts-sql/dist/src/grammar-output/tsql/TSqlParser.js', async (importOriginal) => {
   parserState.loads += 1;

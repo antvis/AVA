@@ -3,10 +3,8 @@
  * then write it to a temp JSON file for DuckDB to read.
  */
 
-import { generateText } from 'ai';
-
-import { withModelErrors } from '../../util/error';
-import { languageModel } from '../../util/model';
+import { AVAError } from '../../util/error';
+import { generateText, languageModel } from '../../util/model';
 import { fileSource, removeTempFile, writeTempFile } from '../util/file';
 
 import type { LLMConfig, TextSourceOptions, LoadedSource } from '../../types';
@@ -42,22 +40,22 @@ Return ONLY the JSON array, no additional text or explanation. The response must
 
   const jsonMatch = responseText.match(/\[[\s\S]*?\]/);
   if (!jsonMatch) {
-    throw new Error('Could not extract JSON array from LLM response');
+    throw new AVAError('MODEL_ERROR', 'Could not extract JSON array from LLM response');
   }
 
   try {
     const data = JSON.parse(jsonMatch[0]);
     if (!Array.isArray(data)) {
-      throw new Error('LLM did not return an array');
+      throw new AVAError('MODEL_ERROR', 'LLM did not return an array');
     }
     return data;
-  } catch (error) {
-    throw new Error(`Failed to parse extracted JSON: ${error instanceof Error ? error.message : String(error)}`);
+  } catch {
+    throw new AVAError('MODEL_ERROR', 'The model returned invalid extracted data JSON.');
   }
 }
 
 export async function loadText(options: TextSourceOptions, llmConfig: LLMConfig): Promise<LoadedSource> {
-  const data = await withModelErrors(() => extractData(options.text, llmConfig));
+  const data = await extractData(options.text, llmConfig);
   const tmpFile = await writeTempFile(JSON.stringify(data), 'json');
   return fileSource(tmpFile, 'json', () => removeTempFile(tmpFile));
 }

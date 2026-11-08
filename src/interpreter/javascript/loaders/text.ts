@@ -2,10 +2,8 @@
  * Text loader: extract structured data from unstructured text via LLM.
  */
 
-import { generateText } from 'ai';
-
-import { withModelErrors } from '../../../util/error';
-import { languageModel } from '../../../util/model';
+import { AVAError } from '../../../util/error';
+import { generateText, languageModel } from '../../../util/model';
 
 import type { LLMConfig, TextSourceOptions } from '../../../types';
 
@@ -24,13 +22,11 @@ ${options.text}
 
 Return ONLY the JSON array, no additional text or explanation. The response must be valid JSON that can be parsed directly.`;
 
-  const { text: responseText } = await withModelErrors(() =>
-    generateText({
-      model: languageModel(llmConfig),
-      maxRetries: llmConfig.maxRetries ?? 3,
-      prompt,
-    })
-  );
+  const { text: responseText } = await generateText({
+    model: languageModel(llmConfig),
+    maxRetries: llmConfig.maxRetries ?? 3,
+    prompt,
+  });
 
   try {
     const data = JSON.parse(responseText);
@@ -41,12 +37,17 @@ Return ONLY the JSON array, no additional text or explanation. The response must
 
   const jsonMatch = responseText.match(/\[[\s\S]*?\]/);
   if (!jsonMatch) {
-    throw new Error('Could not extract JSON array from LLM response');
+    throw new AVAError('MODEL_ERROR', 'Could not extract JSON array from LLM response');
   }
 
-  const data = await withModelErrors(async () => JSON.parse(jsonMatch[0]));
+  let data: unknown;
+  try {
+    data = JSON.parse(jsonMatch[0]);
+  } catch {
+    throw new AVAError('MODEL_ERROR', 'The model returned invalid extracted data JSON.');
+  }
   if (!Array.isArray(data)) {
-    throw new Error('LLM did not return an array');
+    throw new AVAError('MODEL_ERROR', 'LLM did not return an array');
   }
   return data;
 }

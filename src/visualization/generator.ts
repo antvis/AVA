@@ -6,10 +6,8 @@
  * from LLM-generated HTML and ensures the HTML is always well-formed.
  */
 
-import { generateText } from 'ai';
-
-import { languageModel } from '../util/model';
-import { AVAError, withModelErrors } from '../util/error';
+import { generateText, languageModel } from '../util/model';
+import { AVAError } from '../util/error';
 
 import type { LLMConfig, ChartType, ChartConfig } from '../types';
 
@@ -108,13 +106,11 @@ ${JSON.stringify(data, null, 2)}
 5. 不要生成 width height，图表会按照容器自适应大小
 6. 直接输出 JSON，不要用代码块包裹，不要有任何说明文字`;
 
-  const { text } = await withModelErrors(() =>
-    generateText({
-      model: languageModel(llmConfig),
-      maxRetries: llmConfig.maxRetries ?? 3,
-      prompt,
-    })
-  );
+  const { text } = await generateText({
+    model: languageModel(llmConfig),
+    maxRetries: llmConfig.maxRetries ?? 3,
+    prompt,
+  });
 
   // Remove possible markdown code block wrappers (LLM may still wrap in ```json ... ```)
   const json = text

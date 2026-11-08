@@ -5,7 +5,10 @@ import { JavaScriptDialect } from '../../src/query/javascript';
 import { PythonDialect } from '../../src/query/python';
 
 vi.mock('ai', () => ({ generateText: vi.fn() }));
-vi.mock('../../src/util/model', () => ({ languageModel: vi.fn(() => 'test-model') }));
+vi.mock('../../src/util/model', async (original) => ({
+  ...(await original<typeof import('../../src/util/model')>()),
+  languageModel: vi.fn(() => 'test-model'),
+}));
 const executePython = vi.fn().mockResolvedValue({ data: [], schema: [], rowCount: 0 });
 
 afterEach(() => vi.clearAllMocks());

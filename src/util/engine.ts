@@ -1,4 +1,4 @@
-import { withModelErrors } from './error';
+import { safeModelError } from './error';
 import { sourceErrorContext, safeSourceError } from './source-error';
 
 import type { AnalysisEngine, DataSourceConfig } from '../types';
@@ -19,7 +19,14 @@ export function engineOperations(engine: AnalysisEngine, source: DataSourceConfi
     load: (config) => sourceOperation(() => engine.load(config)),
     schema: () => sourceOperation(() => engine.schema()),
     profile: engine.profile ? (schema, options) => sourceOperation(() => engine.profile!(schema, options)) : undefined,
-    getDSL: (query, model) => withModelErrors(() => engine.getDSL(query, model)),
+    // Registered engines may use providers other than AVA's generateText boundary.
+    getDSL: async (query, model) => {
+      try {
+        return await engine.getDSL(query, model);
+      } catch (error) {
+        throw safeModelError(error);
+      }
+    },
     execute: (dsl, options) => sourceOperation(() => engine.execute(dsl, options)),
     dispose: () => sourceOperation(() => engine.dispose()),
   };

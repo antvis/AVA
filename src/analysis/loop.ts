@@ -9,12 +9,11 @@
  * Every action and runtime observation is fed into the next step; a step limit and one
  * final SQL attempt keep the loop bounded.
  */
-import { generateText } from 'ai';
 
-import { languageModel } from '../util/model';
+import { generateText, languageModel } from '../util/model';
 import { stringifyDataModel } from '../util/data-model';
 import { AnalysisEvent, AnalysisEventType, eventPair } from '../event';
-import { canCorrectQuery, serializeError, withModelErrors } from '../util/error';
+import { canCorrectQuery, serializeError } from '../util/error';
 
 import type { LanguageModelUsage } from 'ai';
 import type { AnalysisStrategy, QueryLanguage, ExecutionResult } from '../types';
@@ -211,13 +210,11 @@ export const loopAnalysis: AnalysisStrategy = async (query, config, { dataModel,
     let stepError: SerializedError | undefined;
     let queries: string[] = [];
     try {
-      const { text: responseText, usage: responseUsage } = await withModelErrors(() =>
-        generateText({
-          model: languageModel(llm),
-          maxRetries: llm.maxRetries ?? 3,
-          prompt,
-        })
-      );
+      const { text: responseText, usage: responseUsage } = await generateText({
+        model: languageModel(llm),
+        maxRetries: llm.maxRetries ?? 3,
+        prompt,
+      });
 
       usage = responseUsage;
       text = responseText.trim();
@@ -329,11 +326,10 @@ export const loopAnalysis: AnalysisStrategy = async (query, config, { dataModel,
   let stepError: SerializedError | undefined;
   let statement: string;
   try {
-    const { text: responseText, usage: responseUsage } = await withModelErrors(() =>
-      generateText({
-        model: languageModel(llm),
-        maxRetries: llm.maxRetries ?? 3,
-        prompt: `${basePrompt}
+    const { text: responseText, usage: responseUsage } = await generateText({
+      model: languageModel(llm),
+      maxRetries: llm.maxRetries ?? 3,
+      prompt: `${basePrompt}
 
     # DATABASE CONTEXT
 
@@ -346,8 +342,7 @@ export const loopAnalysis: AnalysisStrategy = async (query, config, { dataModel,
     # FINAL ATTEMPT
 
     The loop reached its step limit without a final executable statement. Use the complete history above and respond with exactly one [SQL] action containing one ${language} statement.`,
-      })
-    );
+    });
 
     usage = responseUsage;
     finalText = responseText.trim();
