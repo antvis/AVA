@@ -58,11 +58,10 @@ describe('SSH host key verification', () => {
       'database',
       3306
     );
-    return tunnel;
   }
 
   it('authenticates when the server key matches the trusted SHA-256 fingerprint', async () => {
-    tunnel = await connect(fingerprint);
+    await connect(fingerprint);
     expect(passwords).toEqual(['DUMMY-SSH-PASSWORD']);
     expect(tunnel.localPort).toBeGreaterThan(0);
   });
