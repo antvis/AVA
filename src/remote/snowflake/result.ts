@@ -17,6 +17,21 @@ export function queryColumn(column: Column): QueryColumn {
   return { name: column.getName(), type: typeName(column) };
 }
 
+/** The driver returns structured MAPs as Map; normalize them before JSON output and byte limits. */
+function convertMaps(value: unknown): unknown {
+  if (value instanceof Map) {
+    return Object.fromEntries(Array.from(value, ([key, entry]) => [key, convertMaps(entry)]));
+  }
+  if (Array.isArray(value)) return value.map(convertMaps);
+  if (value !== null && typeof value === 'object') {
+    const prototype = Object.getPrototypeOf(value);
+    if (prototype === Object.prototype || prototype === null) {
+      return Object.fromEntries(Object.entries(value).map(([key, entry]) => [key, convertMaps(entry)]));
+    }
+  }
+  return value;
+}
+
 /**
  * Numbers arrive as Snowflake's exact decimal text and become JavaScript numbers only when nothing is
  * lost; larger or more precise values stay strings. Non-finite floats (NaN, inf) also stay strings,
@@ -27,8 +42,9 @@ export function convertRow(row: Record<string, unknown>, columns: Column[]): Rec
   for (const column of columns) {
     const name = column.getName();
     const value = row[name];
-    if (typeof value !== 'string') continue;
-    if (column.getType() === 'fixed') {
+    if (typeof value !== 'string') {
+      row[name] = convertMaps(value);
+    } else if (column.getType() === 'fixed') {
       row[name] = coerceNumericString(value);
     } else if (column.getType() === 'real') {
       const number = Number(value);

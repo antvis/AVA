@@ -425,6 +425,74 @@ describe('SnowflakeEngine execution', () => {
     }
   });
 
+  it('serializes MAP columns and nested MAPs as JSON objects', async () => {
+    const timestamp = new Date('2024-03-01T09:00:00Z');
+    const map = new Map<string | number, unknown>([
+      [1, 'one'],
+      ['__proto__', 'kept'],
+      ['empty', new Map()],
+      ['nested', new Map([['value', null]])],
+    ]);
+    const expectedMap = { '1': 'one', ['__proto__']: 'kept', empty: {}, nested: { value: null } };
+    install((options) =>
+      options.sqlText === 'SELECT MAP_VALUES' && !options.describeOnly
+        ? {
+            columns: [column('MAP', 'map'), column('OBJECT', 'object'), column('ARRAY', 'array')],
+            rows: [{ MAP: map, OBJECT: { map, timestamp }, ARRAY: [map, 0, false, null] }],
+          }
+        : undefined
+    );
+    const engine = new SnowflakeEngine(getLLMConfig());
+    try {
+      await engine.load(SOURCE);
+      const result = await engine.execute('SELECT MAP_VALUES');
+      expect(result.data).toEqual([
+        { MAP: expectedMap, OBJECT: { map: expectedMap, timestamp }, ARRAY: [expectedMap, 0, false, null] },
+      ]);
+      expect((result.data[0].OBJECT as { timestamp: Date }).timestamp).toBe(timestamp);
+      expect(JSON.parse(JSON.stringify(result)).data).toEqual([
+        {
+          MAP: expectedMap,
+          OBJECT: { map: expectedMap, timestamp: timestamp.toISOString() },
+          ARRAY: [expectedMap, 0, false, null],
+        },
+      ]);
+    } finally {
+      await engine.dispose();
+    }
+  });
+
+  it.each([
+    { name: 'result', value: '杭州', maxResultBytes: 45, error: false },
+    { name: 'field', value: 'x'.repeat(1024 * 1024), maxResultBytes: 4 * 1024 * 1024, error: true },
+  ])('enforces the $name byte limit on nested MAP contents', async ({ value, maxResultBytes, error }) => {
+    install((options) =>
+      options.sqlText === 'SELECT MAP_VALUES' && !options.describeOnly
+        ? {
+            columns: [column('VALUE', 'map')],
+            rows: Array.from({ length: 2 }, () => ({ VALUE: new Map([['nested', new Map([['value', value]])]]) })),
+          }
+        : undefined
+    );
+    const engine = new SnowflakeEngine(getLLMConfig());
+    try {
+      await engine.load(SOURCE);
+      const pending = engine.execute('SELECT MAP_VALUES', { maxResultBytes });
+      if (error) {
+        await expect(pending).rejects.toThrow('Result field exceeds the 1 MiB limit');
+      } else {
+        await expect(pending).resolves.toMatchObject({
+          data: [{ VALUE: { nested: { value } } }],
+          truncated: true,
+          truncatedBy: 'maxResultBytes',
+          rowCount: undefined,
+        });
+      }
+    } finally {
+      await engine.dispose();
+    }
+  });
+
   it('refuses unsafe statements before running anything', async () => {
     const { calls } = install();
     const engine = new SnowflakeEngine(getLLMConfig());

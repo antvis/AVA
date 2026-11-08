@@ -120,6 +120,17 @@ describe.skipIf(process.env.AVA_SNOWFLAKE_TEST !== '1')('snowflake/engine', () =
     expect(data[2]).toMatchObject({ RATIO: 'NaN', PAYLOAD: [], RAW: null });
   }, 60000);
 
+  it('serializes structured MAP values without losing their entries', async () => {
+    const engine = await load();
+    const result = await engine.execute(
+      `SELECT {'key123': 'value123'}::MAP(VARCHAR, VARCHAR) AS "payload",
+         {'1': 'one'}::MAP(NUMBER, VARCHAR) AS "labels"`
+    );
+    expect(JSON.parse(JSON.stringify(result)).data).toEqual([
+      { payload: { key123: 'value123' }, labels: { '1': 'one' } },
+    ]);
+  }, 60000);
+
   it.each([
     'CREATE TABLE "AVA_PROBE" (ID INT)',
     'DROP TABLE "ORDERS"',
