@@ -9,6 +9,7 @@
 import { generateText } from 'ai';
 
 import { languageModel } from '../util/model';
+import { safeModelError } from '../util/error';
 
 import type { LLMConfig, ChartType, ChartConfig } from '../types';
 
@@ -111,6 +112,8 @@ ${JSON.stringify(data, null, 2)}
     model: languageModel(llmConfig),
     maxRetries: llmConfig.maxRetries ?? 3,
     prompt,
+  }).catch((error) => {
+    throw safeModelError(error);
   });
 
   // Remove possible markdown code block wrappers (LLM may still wrap in ```json ... ```)

@@ -6,7 +6,7 @@ import * as path from 'path';
 
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 
-import { AVA } from '../src';
+import { AVA, AVAError, serializeError } from '../src';
 import { LifecycleEvent, LifecycleEventType } from '../src/event';
 import { JavaScriptEngine } from '../src/interpreter/javascript';
 import { buildDataModel } from '../src/util/data-model';
@@ -269,11 +269,15 @@ describe('AVA', () => {
 
     const error = new Error('Translation failed');
     getDSL.mockRejectedValueOnce(error);
-    await expect(ava['translate']('Total value')).rejects.toBe(error);
+    const failure = new AVAError(
+      'MODEL_ERROR',
+      'The model request failed. Check the model configuration and service availability.'
+    );
+    await expect(ava['translate']('Total value')).rejects.toMatchObject({ code: 'MODEL_ERROR' });
     expect(onEvent).toHaveBeenNthCalledWith(5, { type: 'translatestart', data: { query: 'Total value' } });
     expect(onEvent).toHaveBeenNthCalledWith(6, {
       type: 'translateend',
-      data: { error: { name: 'Error', message: 'Translation failed' } },
+      data: { error: serializeError(failure) },
     });
     await ava.dispose();
     await expect(ava['translate']('Total value')).rejects.toThrow(message);

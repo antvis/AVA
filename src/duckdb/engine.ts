@@ -12,6 +12,7 @@ import { coerceNumbers } from '../util/coerce';
 import { sqlStringLiteral } from '../util/sql';
 import { parseProfileOptions } from '../util/profile';
 import { runWithTimeout } from '../util/timeout';
+import { AVAError } from '../util/error';
 
 import { DEFAULT_METRICS, profileTables } from './profile';
 import { loadSource } from './loaders';
@@ -52,9 +53,9 @@ const DEFAULT_THREADS = 1;
 const DEFAULT_QUERY_TIMEOUT_MS = 30_000;
 
 /** Thrown when a query exceeds the configured timeout. */
-export class QueryTimeoutError extends Error {
+export class QueryTimeoutError extends AVAError {
   constructor(timeoutMs: number) {
-    super(`DuckDB query timed out after ${timeoutMs}ms`);
+    super('REQUEST_TIMEOUT', `DuckDB query timed out after ${timeoutMs}ms`, 'unknown');
     this.name = 'QueryTimeoutError';
   }
 }

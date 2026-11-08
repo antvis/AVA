@@ -918,6 +918,8 @@ export interface Profile {
 export interface AnalysisRuntime {
   /** Dispatch an analysis stage event. */
   emit: (event: AnalysisEvent) => void;
+  /** Sanitize driver/provider diagnostics before events, retry prompts and propagation. */
+  sanitizeError?: (error: unknown, phase: 'query' | 'model') => unknown;
   dataModel: DataModel;
   engine: AnalysisEngine;
   llm: LLMConfig;

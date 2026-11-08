@@ -1,3 +1,5 @@
+import { failureResponse } from '../util/error';
+
 function colorsEnabled(isTTY: boolean | undefined): boolean {
   return Boolean(isTTY && !('NO_COLOR' in process.env));
 }
@@ -21,6 +23,9 @@ const danger = (value: string, color = colorsEnabled(process.stderr.isTTY)) => (
  * Formats CLI errors for terminals without affecting machine-readable output.
  */
 export function formatError(error: unknown, color = colorsEnabled(process.stderr.isTTY)): string {
+  if (process.env.AVA_ERROR_FORMAT === 'json') {
+    return JSON.stringify(failureResponse(error));
+  }
   const message = error instanceof Error ? error.message : String(error);
   const label = danger('Error:', color);
 

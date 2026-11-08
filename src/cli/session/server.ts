@@ -1,6 +1,8 @@
 import { rm } from 'fs/promises';
 import { createServer } from 'net';
 
+import { AVAError, failureResponse } from '../../util/error';
+
 import { createDataset, describeDataset, disposeDataset, withDataset } from './datasets';
 import {
   IPC_TIMEOUT_MS,
@@ -33,7 +35,7 @@ function close(): Promise<void> {
 }
 
 async function fail(error: unknown): Promise<void> {
-  if (process.connected) process.send?.({ ok: false, error: error instanceof Error ? error.message : String(error) });
+  if (process.connected) process.send?.(failureResponse(error));
   try {
     await close();
   } finally {
@@ -112,15 +114,23 @@ server = createServer({ allowHalfOpen: true }, (socket) => {
       try {
         let response: string;
         try {
-          const result = await dispatch(requestSchema.parse(JSON.parse(body)));
+          let message: Request;
+          try {
+            message = requestSchema.parse(JSON.parse(body));
+          } catch {
+            throw new AVAError('INVALID_REQUEST', 'Invalid dataset request.');
+          }
+          const result = await dispatch(message);
           response = JSON.stringify({ ok: true, result });
         } catch (error) {
-          response = JSON.stringify({ ok: false, error: error instanceof Error ? error.message : String(error) });
+          response = JSON.stringify(failureResponse(error));
         }
 
         if (socket.destroyed) return;
         if (Buffer.byteLength(response) > IPC_MAX_RESPONSE_BYTES)
-          response = JSON.stringify({ ok: false, error: 'Dataset response exceeds 16 MiB.' });
+          response = JSON.stringify(
+            failureResponse(new AVAError('PAYLOAD_TOO_LARGE', 'Dataset response exceeds 16 MiB.', 'unknown'))
+          );
 
         socket.setTimeout(IPC_TIMEOUT_MS);
         socket.end(response);
@@ -138,7 +148,9 @@ server.on('error', (error) => {
 
 process.once('message', (message) => {
   void (async () => {
-    const startup = startupSchema.parse(message);
+    const parsed = startupSchema.safeParse(message);
+    if (!parsed.success) throw new AVAError('INVALID_REQUEST', 'Invalid dataset startup configuration.');
+    const startup = parsed.data;
     hasModel = Boolean(startup.llm.apiKey);
     await createDataset(startup.source, { ...startup.llm, model: startup.llm.model }, startup.engine);
     if (closing) return;

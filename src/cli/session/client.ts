@@ -5,6 +5,8 @@ import { mkdir, rm } from 'fs/promises';
 import { connect } from 'net';
 import { basename, extname, join } from 'path';
 
+import { AVAError } from '../../util/error';
+
 import {
   IPC_TIMEOUT_MS,
   IPC_MAX_REQUEST_BYTES,
@@ -87,11 +89,15 @@ export async function createSession(
         );
       onMessage = (message) => {
         const response = responseSchema.safeParse(message);
-        if (!response.success) finish(new Error('Invalid dataset process response.'));
-        else if (response.data.ok === false) finish(new Error(response.data.error));
+        if (!response.success) finish(new AVAError('INVALID_RESPONSE', 'Invalid dataset process response.'));
+        else if (response.data.ok === false)
+          finish(new AVAError(response.data.code ?? 'OPERATION_FAILED', response.data.error, response.data.outcome));
         else finish();
       };
-      timer = setTimeout(() => finish(new Error('Data source loading timed out.')), IPC_TIMEOUT_MS);
+      timer = setTimeout(
+        () => finish(new AVAError('REQUEST_TIMEOUT', 'Data source loading timed out.', 'unknown')),
+        IPC_TIMEOUT_MS
+      );
 
       worker.once('error', finish);
       worker.once('exit', onExit);
@@ -138,7 +144,8 @@ export async function request(id: string, message: Request): Promise<unknown> {
   const path = socketPath(id);
   const body = JSON.stringify(message);
 
-  if (Buffer.byteLength(body) > IPC_MAX_REQUEST_BYTES) throw new Error('Dataset request exceeds 1 MiB.');
+  if (Buffer.byteLength(body) > IPC_MAX_REQUEST_BYTES)
+    throw new AVAError('PAYLOAD_TOO_LARGE', 'Dataset request exceeds 1 MiB.');
 
   return new Promise((resolve, reject) => {
     const socket = connect(path);
@@ -147,41 +154,49 @@ export async function request(id: string, message: Request): Promise<unknown> {
 
     socket.setEncoding('utf8');
     const timer = setTimeout(
-      () => socket.destroy(new Error('Dataset request timed out; the operation may still be running.')),
+      () =>
+        socket.destroy(
+          new AVAError('REQUEST_TIMEOUT', 'Dataset request timed out; the operation may still be running.', 'unknown')
+        ),
       IPC_TIMEOUT_MS
     );
     socket.once('close', () => {
       clearTimeout(timer);
-      reject(new Error('Dataset connection closed before a complete response was received.'));
+      reject(
+        new AVAError('CONNECTION_LOST', 'Dataset connection closed before a complete response was received.', 'unknown')
+      );
     });
     socket.on('connect', () => socket.end(body));
 
     socket.on('data', (chunk: string) => {
       bytes += Buffer.byteLength(chunk);
-      if (bytes > IPC_MAX_RESPONSE_BYTES) socket.destroy(new Error('Dataset response exceeds 16 MiB.'));
+      if (bytes > IPC_MAX_RESPONSE_BYTES)
+        socket.destroy(new AVAError('PAYLOAD_TOO_LARGE', 'Dataset response exceeds 16 MiB.', 'unknown'));
       else response += chunk;
     });
 
     socket.on('error', (error: Error & { code?: string }) => {
       reject(
         ['ENOENT', 'ECONNREFUSED'].includes(error.code ?? '')
-          ? new Error(`Dataset "${id}" is unavailable. Load it again with ava source.`)
-          : error
+          ? new AVAError('DATASET_UNAVAILABLE', `Dataset "${id}" is unavailable. Load it again with ava source.`)
+          : error instanceof AVAError
+          ? error
+          : new AVAError('CONNECTION_LOST', 'Dataset connection failed; the operation may still be running.', 'unknown')
       );
     });
 
     socket.on('end', () => {
       if (!response) {
-        reject(new Error('Dataset connection ended without a response.'));
+        reject(new AVAError('CONNECTION_LOST', 'Dataset connection ended without a response.', 'unknown'));
         return;
       }
 
       try {
         const parsed = responseSchema.parse(JSON.parse(response));
-        if (parsed.ok === false) reject(new Error(parsed.error));
+        if (parsed.ok === false) reject(new AVAError(parsed.code ?? 'OPERATION_FAILED', parsed.error, parsed.outcome));
         else resolve(parsed.result);
       } catch {
-        reject(new Error('Dataset returned an invalid or incomplete response.'));
+        reject(new AVAError('INVALID_RESPONSE', 'Dataset returned an invalid or incomplete response.', 'unknown'));
       }
     });
   });

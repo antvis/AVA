@@ -20,7 +20,7 @@ import { z } from 'zod/v4';
 import { languageModel } from '../util/model';
 import { repairJson } from '../util/json';
 import { AnalysisEvent, AnalysisEventType, eventPair } from '../event';
-import { serializeError } from '../util/error';
+import { AVAError, serializeError } from '../util/error';
 
 import type { LanguageModelUsage } from 'ai';
 import type { AnalysisStrategy, ExecutionResult, LLMConfig } from '../types';
@@ -69,7 +69,11 @@ async function summarizeResult(query: string, dsl: string, result: ExecutionResu
   return { summary, usage };
 }
 
-export const directAnalysis: AnalysisStrategy = async (query, config, { dataModel, engine, llm, emit }) => {
+export const directAnalysis: AnalysisStrategy = async (
+  query,
+  config,
+  { dataModel, engine, llm, emit, sanitizeError = (error) => error }
+) => {
   const maxRetries = Math.max(config.strategy?.type === 'direct' ? config.strategy.maxRetries ?? 2 : 10, 0);
 
   let stepId: string;
@@ -95,7 +99,8 @@ export const directAnalysis: AnalysisStrategy = async (query, config, { dataMode
       let usage: LanguageModelUsage | undefined;
       try {
         ({ dsl, usage } = await engine.getDSL(translationQuery, dataModel));
-      } catch (error) {
+      } catch (cause) {
+        const error = sanitizeError(cause, 'model');
         translationEvent.end({ error: serializeError(error) });
 
         throw error;
@@ -109,8 +114,11 @@ export const directAnalysis: AnalysisStrategy = async (query, config, { dataMode
 
       try {
         result = await engine.execute(dsl, config);
-      } catch (error) {
+      } catch (cause) {
+        const error = sanitizeError(cause, 'query');
         queryEvent.end({ error: serializeError(error) });
+
+        if (error instanceof AVAError && error.outcome === 'unknown') throw error;
 
         if (attempt >= maxRetries) throw error;
 
@@ -139,7 +147,8 @@ export const directAnalysis: AnalysisStrategy = async (query, config, { dataMode
 
       try {
         ({ summary, usage } = await summarizeResult(query, dsl, result, llm));
-      } catch (error) {
+      } catch (cause) {
+        const error = sanitizeError(cause, 'model');
         summaryEvent.end({ error: serializeError(error) });
 
         throw error;
@@ -154,7 +163,8 @@ export const directAnalysis: AnalysisStrategy = async (query, config, { dataMode
       sql: dsl,
       text: summary?.conclusion ?? '',
     };
-  } catch (error) {
+  } catch (cause) {
+    const error = sanitizeError(cause, 'query');
     stepError = serializeError(error);
     throw error;
   } finally {

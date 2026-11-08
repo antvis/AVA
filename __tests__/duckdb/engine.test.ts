@@ -201,7 +201,9 @@ describe('DuckDBEngine', () => {
       await fast.load({ type: 'json', options: { data: [{ a: 1 }] } });
       // A large cross join is far slower than the 100ms timeout.
       const slowQuery = 'SELECT COUNT(*) FROM range(100000) a, range(100000) b';
-      await expect(fast.execute(slowQuery)).rejects.toThrow(QueryTimeoutError);
+      const result = fast.execute(slowQuery);
+      await expect(result).rejects.toThrow(QueryTimeoutError);
+      await expect(result).rejects.toMatchObject({ code: 'REQUEST_TIMEOUT', outcome: 'unknown' });
     } finally {
       await fast.dispose();
     }
@@ -211,9 +213,7 @@ describe('DuckDBEngine', () => {
     await engine.load({ type: 'json', options: { data: [{ a: 1 }] } });
 
     await expect(engine.execute('SELECT * FROM data; SELECT 1')).rejects.toThrow('exactly one');
-    await expect(engine.execute('CREATE TABLE blocked (a INTEGER)')).rejects.toThrow(
-      'read-only SELECT statement'
-    );
+    await expect(engine.execute('CREATE TABLE blocked (a INTEGER)')).rejects.toThrow('read-only SELECT statement');
     await expect(engine.execute('SELECT * FROM data; CREATE TABLE blocked_too (a INTEGER)')).rejects.toThrow(
       'read-only SELECT statement'
     );

@@ -8,6 +8,9 @@ import { registerEngine } from './engines';
 
 registerEngine('javascript', JavaScriptEngine);
 
+export { AVAError, serializeError } from './util/error';
+export type { ErrorCode, ErrorOutcome, SerializedError } from './util/error';
+
 export { AVA } from './ava';
 export { registerEngine } from './engines';
 export type { JavaScriptEngine } from './interpreter/javascript';

@@ -3,6 +3,7 @@ import { join } from 'path';
 
 import { z } from 'zod';
 
+import { errorCodeSchema, errorOutcomeSchema } from '../../util/error';
 import { excelOptionsSchema } from '../../util/excel';
 import { profileMetadataSchema } from '../../util/profile';
 import { schemaMetadataSchema } from '../../util/schema';
@@ -76,10 +77,16 @@ const feishuBitable = z
 
 const sourceSchema = z.discriminatedUnion('type', [
   z
-    .object({ type: z.literal('csv-file'), options: file.extend({ options: z.record(z.string(), z.unknown()).optional() }) })
+    .object({
+      type: z.literal('csv-file'),
+      options: file.extend({ options: z.record(z.string(), z.unknown()).optional() }),
+    })
     .strict(),
   z
-    .object({ type: z.literal('json-file'), options: file.extend({ options: z.record(z.string(), z.unknown()).optional() }) })
+    .object({
+      type: z.literal('json-file'),
+      options: file.extend({ options: z.record(z.string(), z.unknown()).optional() }),
+    })
     .strict(),
   z.object({ type: z.literal('parquet'), options: file }).strict(),
   z.object({ type: z.literal('excel'), options: excelOptionsSchema }).strict(),
@@ -94,7 +101,10 @@ const sourceSchema = z.discriminatedUnion('type', [
     .object({
       type: z.literal('json'),
       options: z
-        .object({ data: z.array(z.record(z.string(), z.unknown())), options: z.record(z.string(), z.unknown()).optional() })
+        .object({
+          data: z.array(z.record(z.string(), z.unknown())),
+          options: z.record(z.string(), z.unknown()).optional(),
+        })
         .strict(),
     })
     .strict(),
@@ -175,7 +185,14 @@ export const startupSchema = z
 
 export const responseSchema = z.union([
   z.object({ ok: z.literal(true), result: z.unknown() }).strict(),
-  z.object({ ok: z.literal(false), error: z.string() }).strict(),
+  z
+    .object({
+      ok: z.literal(false),
+      error: z.string(),
+      code: errorCodeSchema.optional(),
+      outcome: errorOutcomeSchema.optional(),
+    })
+    .strict(),
 ]);
 
 export function sessionDirectory(id: string): string {

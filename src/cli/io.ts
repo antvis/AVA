@@ -30,7 +30,11 @@ export async function readJSON(value: string): Promise<unknown> {
   try {
     return JSON.parse(await readText(value));
   } catch (error) {
-    throw new Error(`Cannot read JSON: ${error instanceof Error ? error.message : String(error)}`);
+    throw new Error(
+      `Cannot read JSON: ${
+        error instanceof SyntaxError ? 'invalid JSON input.' : error instanceof Error ? error.message : String(error)
+      }`
+    );
   }
 }
 

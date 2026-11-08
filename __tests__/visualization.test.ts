@@ -49,7 +49,7 @@ describe('chart recommendation', () => {
 
   it('propagates recommendation errors', async () => {
     vi.mocked(generateText).mockRejectedValueOnce(new Error('Model unavailable'));
-    await expect(ava['recommend'](result)).rejects.toThrow('Model unavailable');
+    await expect(ava['recommend'](result)).rejects.toMatchObject({ code: 'MODEL_ERROR', outcome: 'failed' });
   });
 
   it('renders the recommended specification through visualize', async () => {

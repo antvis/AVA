@@ -15,6 +15,9 @@ registerEngine('supabase', SupabaseEngine);
 registerEngine('javascript', JavaScriptEngine);
 registerEngine('python', PythonEngine);
 
+export { AVAError, serializeError } from './util/error';
+export type { ErrorCode, ErrorOutcome, SerializedError } from './util/error';
+
 export { AVA } from './ava';
 export { registerEngine } from './engines';
 export type { EngineClass } from './engines';

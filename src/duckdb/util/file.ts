@@ -9,6 +9,7 @@ import * as fs from 'node:fs/promises';
 import * as os from 'node:os';
 import { dirname, join, resolve } from 'node:path';
 
+import { AVAError } from '../../util/error';
 import { READ_FN, escapeSql, serializeOptions } from '../../util/sql';
 
 import { getDuckDBSchema } from './schema';
@@ -49,10 +50,10 @@ async function fetchFile(url: string, headers?: Record<string, string>): Promise
     await response.body?.cancel();
     const next = new URL(location, current);
     if (next.origin !== origin) {
-      throw new Error('Cross-origin redirects are not allowed for remote files with headers');
+      throw new AVAError('SOURCE_ERROR', 'Cross-origin redirects are not allowed for remote files with headers');
     }
     // Match native fetch's limit while retaining credentials on same-origin hops.
-    if (redirects === 20) throw new Error('Remote file redirect limit exceeded (20)');
+    if (redirects === 20) throw new AVAError('SOURCE_ERROR', 'Remote file redirect limit exceeded (20)');
     current = next;
   }
 }

@@ -45,7 +45,8 @@ ${accent('Options:')}
 
 Run "ava <command> --help" for command-specific usage.
 Commands return JSON; source shows a guide in terminals and JSON when piped.
-Errors go to stderr with exit code 1.
+Errors go to stderr with exit code 1. Set AVA_ERROR_FORMAT=json for { ok: false, error, code, outcome }.
+An outcome of unknown means the operation may still be running; do not assume cancellation.
 Sessions expire after 30 idle minutes and require macOS or Linux.`;
 
 type Write = (value: string) => void;

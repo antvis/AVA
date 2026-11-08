@@ -6,6 +6,7 @@
 import { generateText } from 'ai';
 
 import { languageModel } from '../util/model';
+import { safeModelError } from '../util/error';
 
 import { chartDefinitions } from './vis';
 
@@ -117,6 +118,8 @@ export async function adviseChartType(
     model: languageModel(llmConfig),
     maxRetries: llmConfig.maxRetries ?? 3,
     prompt,
+  }).catch((error) => {
+    throw safeModelError(error);
   });
 
   const raw = text
