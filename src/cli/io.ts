@@ -38,7 +38,7 @@ export async function writeHTML(path: string | undefined, html: string): Promise
   if (!path?.trim()) throw new Error('--output is required.');
 
   const output = resolve(path);
-  await writeFile(output, html, { flag: 'wx' });
+  await writeFile(output, html, { flag: 'wx', mode: 0o600 });
 
   return { output };
 }
