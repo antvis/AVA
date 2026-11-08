@@ -1,6 +1,9 @@
 import { AVA } from '../../index';
 
-import type { DataSourceConfig, EngineConfig, LLMConfig, Schema } from '../../types';
+import type { DataSourceConfig } from '../../contracts/source';
+import type { EngineConfig } from '../../engines';
+import type { LLMConfig } from '../../config';
+import type { Schema } from '../../contracts/schema';
 
 // One server process owns one dataset. The socket path supplies its external ID.
 let ava: AVA | undefined;
@@ -28,7 +31,13 @@ export async function createDataset(
 
   ava = new AVA({
     llm,
-    engine: { type: engine ?? (source.type === 'supabase' || source.type === 'clickhouse' || source.type === 'sqlserver' ? source.type : 'duckdb') },
+    engine: {
+      type:
+        engine ??
+        (source.type === 'supabase' || source.type === 'clickhouse' || source.type === 'sqlserver'
+          ? source.type
+          : 'duckdb'),
+    },
   });
   const loading = ava.source(source);
   queue = loading.catch(() => undefined);

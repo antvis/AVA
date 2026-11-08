@@ -1,8 +1,7 @@
 /** Tool schemas should use z.toJSONSchema(schema, { io: 'input' }) to describe input before normalization. */
 import { z } from 'zod';
 
-import { excelOptionsSchema, excelSheetSchema } from '../util/excel';
-
+import { excelOptionsSchema } from './excel';
 import { csvReadOptionsSchema, jsonReadOptionsSchema } from './read-options';
 
 import type { ClickHouseClientConfigOptions } from '@clickhouse/client';
@@ -182,8 +181,6 @@ export type JsonSourceOptions = Extract<DataSourceConfig, { type: 'json' }>['opt
 export type JsonFileSourceOptions = Extract<DataSourceConfig, { type: 'json-file' }>['options'];
 export type ParquetSourceOptions = Extract<DataSourceConfig, { type: 'parquet' }>['options'];
 export type ExcelSourceOptions = Extract<DataSourceConfig, { type: 'excel' }>['options'];
-export type ExcelSheetOptions = z.input<typeof excelSheetSchema>;
-export type ExcelReadOptions = Omit<ExcelSheetOptions, 'sheet'>;
 export type TextSourceOptions = Extract<DataSourceConfig, { type: 'text' }>['options'];
 export type MySQLSourceOptions = Extract<DataSourceConfig, { type: 'mysql' }>['options'];
 export type SSHOptions = NonNullable<MySQLSourceOptions['ssh']>;

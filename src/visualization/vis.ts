@@ -2,7 +2,7 @@
  * Chart definitions metadata
  */
 
-import type { ChartTypeDefinition } from '../types';
+import type { ChartTypeDefinition } from './types';
 
 const chartDefinitions: ChartTypeDefinition[] = [
   {

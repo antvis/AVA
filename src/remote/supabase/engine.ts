@@ -15,18 +15,14 @@ import { DEFAULT_METRICS, parseProfileOptions } from '../../util/profile';
 import { profileTables } from './profile';
 import { getSupabaseSchema } from './schema';
 
-import type {
-  TranslationResult,
-  Profile,
-  ProfileOptions,
-  AnalysisEngine,
-  DataModel,
-  DataSourceConfig,
-  LLMConfig,
-  Schema,
-  ExecutionOptions,
-  ExecutionResult,
-} from '../../types';
+import type { TranslationResult } from '../../query/types';
+import type { Profile, ProfileOptions } from '../../contracts/profile';
+import type { AnalysisEngine } from '../../engines';
+import type { DataModel } from '../../contracts/data-model';
+import type { DataSourceConfig } from '../../contracts/source';
+import type { LLMConfig } from '../../config';
+import type { Schema } from '../../contracts/schema';
+import type { ExecutionOptions, ExecutionResult } from '../../contracts/result';
 
 const SUPABASE_API_BASE = 'https://api.supabase.com';
 const REQUEST_TIMEOUT_MS = 30_000;

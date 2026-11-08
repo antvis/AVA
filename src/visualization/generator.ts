@@ -10,7 +10,9 @@ import { generateText } from 'ai';
 
 import { languageModel } from '../util/model';
 
-import type { LLMConfig, ChartType, ChartConfig } from '../types';
+import type { LLMConfig } from '../config';
+import type { ChartType } from '../contracts/chart';
+import type { ChartConfig } from './types';
 
 /**
  * Wrap a GPT-Vis JSON config into a standalone HTML file that can be opened in any browser

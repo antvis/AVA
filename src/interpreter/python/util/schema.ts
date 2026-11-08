@@ -1,7 +1,7 @@
 import { z } from 'zod';
 
-import { jsonValue } from '../../../util/schema';
-import { excelOptionsSchema, excelSheetSchema } from '../../../util/excel';
+import { jsonValue } from '../../../contracts/json';
+import { excelOptionsSchema, excelSheetSchema } from '../../../contracts/excel';
 import { executionResultSchema } from '../../../contracts/result';
 import { sourceSchemas } from '../../../contracts/source';
 import { csvReadOptionsSchema } from '../../../contracts/read-options';

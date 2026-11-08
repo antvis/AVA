@@ -5,9 +5,11 @@ import EventEmitter from '@antv/event-emitter';
 
 import { sourceConfigSchema } from './contracts/source';
 import { getEngineClass } from './engines';
-import { extractDataSchema, schemaMetadataSchema } from './util/schema';
-import { profileMetadataSchema } from './util/profile';
-import { buildDataModel, semanticMetadataSchema, stringifyDataModel } from './util/data-model';
+import { extractDataSchema } from './util/schema';
+import { schemaMetadataSchema } from './contracts/schema';
+import { profileMetadataSchema } from './contracts/profile';
+import { buildDataModel, stringifyDataModel } from './util/data-model';
+import { semanticMetadataSchema } from './contracts/data-model';
 import { adviseChartType, generateVisualizationConfig, wrapConfigInHTML } from './visualization';
 import { generateSuggestions } from './suggest';
 import { analyze } from './analysis';
@@ -16,27 +18,16 @@ import { chartSpecSchema } from './contracts/chart';
 import { serializeError } from './util/error';
 
 import type { LanguageModelUsage } from 'ai';
-import type {
-  DataModel,
-  AVAConfig,
-  LLMConfig,
-  EngineConfig,
-  DataSourceConfig,
-  SchemaOptions,
-  SemanticOptions,
-  Semantic,
-  Schema,
-  AnalysisEngine,
-  AnalysisResponse,
-  AnalysisConfig,
-  VisualizeResponse,
-  ChartSpec,
-  SuggestResult,
-  Profile,
-  ProfileOptions,
-  ExecutionOptions,
-  ExecutionResult,
-} from './types';
+import type { DataModel, Semantic } from './contracts/data-model';
+import type { AVAConfig, LLMConfig } from './config';
+import type { EngineConfig, AnalysisEngine } from './engines';
+import type { DataSourceConfig } from './contracts/source';
+import type { SchemaOptions, SemanticOptions, Schema } from './contracts/schema';
+import type { AnalysisResponse, AnalysisConfig } from './analysis/types';
+import type { VisualizeResponse, ChartSpec } from './contracts/chart';
+import type { SuggestResult } from './suggest/index';
+import type { Profile, ProfileOptions } from './contracts/profile';
+import type { ExecutionOptions, ExecutionResult } from './contracts/result';
 
 /**
  * Check if analysis result has meaningful data for visualization.

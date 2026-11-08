@@ -154,3 +154,16 @@ export const chartSpecSchema = z.discriminatedUnion('chartType', chartSchemas).s
     }
   });
 });
+
+/**
+ * Chart specification for rendering.
+ */
+export type ChartSpec = z.infer<typeof chartSpecSchema>;
+
+/** Standalone chart generation result. */
+export type VisualizeResponse = ChartSpec & { html: string };
+
+/**
+ * Supported chart types from GPT-Vis
+ */
+export type ChartType = ChartSpec['chartType'];

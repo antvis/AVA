@@ -6,7 +6,8 @@ import { loadCSV } from './csv';
 import { loadJson } from './json';
 import { loadText } from './text';
 
-import type { DataSourceConfig, LLMConfig } from '../../../types';
+import type { DataSourceConfig } from '../../../contracts/source';
+import type { LLMConfig } from '../../../config';
 
 export type InterpreterSourceConfig = Extract<DataSourceConfig, { type: 'csv' | 'json' | 'text' }>;
 

@@ -2,7 +2,7 @@
 import { rowObjects2Schema } from '../../util/schema';
 import { sqlStringLiteral, sqlUnionAll } from '../../util/sql';
 
-import type { Schema } from '../../types';
+import type { Schema } from '../../contracts/schema';
 
 /** Only the public schema is read — Supabase user tables live there by default. */
 export const SUPABASE_SCHEMA = 'public';

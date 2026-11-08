@@ -16,7 +16,9 @@ import {
 } from './protocol';
 
 import type { Request } from './protocol';
-import type { DataSourceConfig, EngineConfig, LLMConfig } from '../../types';
+import type { DataSourceConfig } from '../../contracts/source';
+import type { EngineConfig } from '../../engines';
+import type { LLMConfig } from '../../config';
 
 /**
  * Require a platform where Unix sockets inherit the private directory's access restrictions.

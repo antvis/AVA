@@ -1,6 +1,7 @@
 import { describe, it, expect } from 'vitest';
 
-import { extractDataSchema, schemaMetadataSchema } from '../../src/util/schema';
+import { extractDataSchema } from '../../src/util/schema';
+import { schemaMetadataSchema } from '../../src/contracts/schema';
 
 import type { Profile, Schema } from '../../src/types';
 
@@ -62,7 +63,9 @@ describe('extractDataSchema', () => {
 describe('schemaMetadataSchema', () => {
   it('rejects independent profiles and accepts CLI schema output', () => {
     expect(() => schemaMetadataSchema.parse(profile)).toThrow();
-    expect(schemaMetadataSchema.parse({ ...schema, language: 'javascript', instructions: 'Use data.' })).toEqual(schema);
+    expect(schemaMetadataSchema.parse({ ...schema, language: 'javascript', instructions: 'Use data.' })).toEqual(
+      schema
+    );
     expect(schemaMetadataSchema.parse({ models: [] })).toEqual({ models: [] });
   });
 

@@ -4,7 +4,9 @@ import { languageModel } from '../util/model';
 import { stringifyDataModel } from '../util/data-model';
 
 import type { DuckDBInstance } from '@duckdb/node-api';
-import type { TranslationResult, LLMConfig, QueryDialect, DataModel } from '../types';
+import type { TranslationResult, QueryDialect } from './types';
+import type { LLMConfig } from '../config';
+import type { DataModel } from '../contracts/data-model';
 
 export class DuckDBSQLDialect implements QueryDialect {
   readonly id = 'duckdb-sql';

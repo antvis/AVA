@@ -13,7 +13,8 @@ import { READ_FN, escapeSql, serializeOptions } from '../../util/sql';
 
 import { getDuckDBSchema } from './schema';
 
-import type { CSVReadOptions, JSONReadOptions, FileFormat, LoadedSource } from '../../types';
+import type { CSVReadOptions, JSONReadOptions } from '../../contracts/source';
+import type { FileFormat, LoadedSource } from '../types';
 
 const noopCleanup = async (): Promise<void> => {};
 

@@ -9,8 +9,10 @@ import { Heading } from '../../../../mdx-components';
 | 源码 | 职责 |
 | ---------------------------------------------------------------------------------------------- | ----------------------------------------------------- |
 | [`ava.ts`](https://github.com/antvis/AVA/blob/ai/src/ava.ts) | 公开 API、数据源状态与生命周期 |
-| [`types.ts`](https://github.com/antvis/AVA/blob/ai/src/types.ts) | 配置、引擎与结果接口约定 |
-| [`engines.ts`](https://github.com/antvis/AVA/blob/ai/src/engines.ts) | 内部引擎注册表 |
+| [`types.ts`](https://github.com/antvis/AVA/blob/ai/src/types.ts) | 仅作兼容类型出口；定义位于所属模块 |
+| [`config.ts`](https://github.com/antvis/AVA/blob/ai/src/config.ts) | AVA 与模型配置，保留原生 SDK 类型 |
+| [`contracts/`](https://github.com/antvis/AVA/tree/ai/src/contracts/) | 共享 JSON、数据源、Excel、结构、数据模型、画像、结果与图表定义 |
+| [`engines.ts`](https://github.com/antvis/AVA/blob/ai/src/engines.ts) | 引擎接口、选择与注册表 |
 | [`analysis/`](https://github.com/antvis/AVA/tree/ai/src/analysis/) | Direct 与 Loop 分析策略 |
 | [`duckdb/`](https://github.com/antvis/AVA/tree/ai/src/duckdb/) | SQL 引擎、数据源加载器与统计 |
 | [`interpreter/javascript/`](https://github.com/antvis/AVA/tree/ai/src/interpreter/javascript/) | 内存数据与 JavaScript 执行 |
@@ -22,7 +24,9 @@ import { Heading } from '../../../../mdx-components';
 | [`suggest/`](https://github.com/antvis/AVA/tree/ai/src/suggest/) | 分析问题推荐 |
 | [`event/`](https://github.com/antvis/AVA/tree/ai/src/event/) | 事件类型与载荷 |
 | [`cli/`](https://github.com/antvis/AVA/tree/ai/src/cli/) | 命令与本地数据集会话 |
-| [`util/`](https://github.com/antvis/AVA/tree/ai/src/util/) | 模型解析、结构定义、指标与结果限制 |
+| [`util/`](https://github.com/antvis/AVA/tree/ai/src/util/) | 目录组装、模型格式化、指标执行规则与结果限制 |
+
+共享数据定义与类型按领域组织在 `contracts/`。运行接口位于所属模块：策略在 `analysis/types.ts`，方言在 `query/types.ts`，渲染元信息在 `visualization/types.ts`，DuckDB 资源在 `duckdb/types.ts`，Python 执行器在 `interpreter/python/types.ts`。内部直接引用定义所属模块，公开入口保留既有类型导出。CLI 消息协议、AI 阶段输出与引擎专用限制仍由各自模块维护。
 
 <Heading as="h2" id="method-to-module">方法与模块的对应关系</Heading>
 
@@ -41,7 +45,7 @@ import { Heading } from '../../../../mdx-components';
 
 每个 AVA 实例持有一个活动引擎及其 schema、profile 缓存。`source()` 加载数据，`schema()` 在首次使用时发现结构；`profile()` 重新计算并保存统计信息；需要时再由缓存元数据组装数据模型。重新加载或释放实例会清空两类缓存。
 
-引擎持有数据与连接。`load()` 不返回元数据，`schema()` 发现结构，`profile(schema, options?)` 计算统计信息，`getDSL(query, dataModel)` 使用 AVA 组装的数据模型。共享验证逻辑位于 `util/schema.ts` 与 `util/profile.ts`。
+引擎持有数据与连接。`load()` 不返回元数据，`schema()` 发现结构，`profile(schema, options?)` 计算统计信息，`getDSL(query, dataModel)` 使用 AVA 组装的数据模型。共享数据校验位于 `contracts/`；目录组装与指标执行工具保留在 `util/`。
 
 分析策略共享一个运行时，其中包括引擎、模型配置、数据模型与事件发射器。查询结果限制通过共享工具统一规范化。
 

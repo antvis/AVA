@@ -17,13 +17,17 @@ import { AnalysisEvent, AnalysisEventType, eventPair } from '../event';
 import { serializeError } from '../util/error';
 
 import type { LanguageModelUsage } from 'ai';
-import type { AnalysisStrategy, QueryLanguage, ExecutionResult } from '../types';
+import type { AnalysisStrategy } from './types';
+import type { QueryLanguage } from '../query/types';
+import type { ExecutionResult } from '../contracts/result';
 import type { SerializedError } from '../util/error';
 
 const DEFAULT_MAX_STEPS = 12;
 
 function codeBlocks(response: string): string[] {
-  return [...response.matchAll(/^[ \t]*```[^\r\n`]*\r?\n([\s\S]*?)^[ \t]*```[ \t]*\r?$/gm)].map((match) => match[1].trim());
+  return [...response.matchAll(/^[ \t]*```[^\r\n`]*\r?\n([\s\S]*?)^[ \t]*```[ \t]*\r?$/gm)].map((match) =>
+    match[1].trim()
+  );
 }
 
 function loopPrompt(language: QueryLanguage, includeSummary: boolean, rules: string): string {
@@ -338,9 +342,7 @@ export const loopAnalysis: AnalysisStrategy = async (query, config, { dataModel,
 
     # FINAL ATTEMPT
 
-    The loop reached its step limit without a final executable statement. Use the complete history above and respond with exactly one [SQL] action containing one ${
-      language
-    } statement.`,
+    The loop reached its step limit without a final executable statement. Use the complete history above and respond with exactly one [SQL] action containing one ${language} statement.`,
     });
 
     usage = responseUsage;
@@ -363,9 +365,9 @@ export const loopAnalysis: AnalysisStrategy = async (query, config, { dataModel,
       queryEvent.end({ error: serializeError(error) });
 
       throw new Error(
-        `Loop final statement failed: ${error instanceof Error ? error.message : String(error)}\nLast attempted ${
-          language
-        } statement:\n${statement}`
+        `Loop final statement failed: ${
+          error instanceof Error ? error.message : String(error)
+        }\nLast attempted ${language} statement:\n${statement}`
       );
     }
 

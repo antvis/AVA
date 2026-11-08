@@ -23,3 +23,11 @@ export type QueryColumn = z.output<typeof resultShape>['schema'][number];
 
 /** The wire contract allows any row shape; callers retain their query's row type. */
 export type ExecutionResult<T = Record<string, unknown>> = Omit<z.output<typeof resultShape>, 'data'> & { data: T[] };
+
+/** Controls the maximum size of a bounded execution result. */
+export interface ExecutionOptions {
+  /** Maximum rows returned. Default 200; hard limit 1,000,000. */
+  maxRows?: number;
+  /** Maximum serialized UTF-8 bytes returned. Default 1 MiB. */
+  maxResultBytes?: number;
+}

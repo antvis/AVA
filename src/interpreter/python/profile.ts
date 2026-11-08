@@ -1,6 +1,8 @@
 import { column, logicalTypes, table, TOP_VALUES_OPTIONS, resolveMetric } from '../../util/profile';
 
-import type { LogicalType, Metric, ParsedProfileOptions, Schema } from '../../types';
+import type { LogicalType, ParsedProfileOptions } from '../../contracts/profile';
+import type { Metric } from '../../util/profile';
+import type { Schema } from '../../contracts/schema';
 
 /** Python expressions receive the same per-target context as JavaScript interpreter metrics. */
 export const BUILTIN_METRICS: Metric<string>[] = [

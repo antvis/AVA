@@ -3,9 +3,9 @@ import { z } from 'zod';
 import { chartSpecSchema } from '../contracts/chart';
 import { executionResultSchema } from '../contracts/result';
 
-import type { ChartSpec, ChartType, ExecutionResult } from '../types';
+import type { ChartSpec, ChartType } from '../contracts/chart';
+import type { ExecutionResult } from '../contracts/result';
 
-export type ChartDataBinding = { fields: Record<string, string> } | { configField: string };
 const rowSchema = z.record(z.string(), z.unknown());
 const bindingSchema = z.union([
   z
@@ -13,6 +13,8 @@ const bindingSchema = z.union([
     .strict(),
   z.object({ configField: z.string().min(1) }).strict(),
 ]);
+
+export type ChartDataBinding = z.infer<typeof bindingSchema>;
 
 /**
  * Validate a query result and project explicit native chart fields without coercion.

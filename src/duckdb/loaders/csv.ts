@@ -8,7 +8,8 @@ import { parse } from 'csv-parse/sync';
 
 import { fileSource, removeTempFile, writeTempFile } from '../util/file';
 
-import type { CSVSourceOptions, LoadedSource } from '../../types';
+import type { CSVSourceOptions } from '../../contracts/source';
+import type { LoadedSource } from '../types';
 
 /**
  * Serialize rows back to a CSV string with a header line.

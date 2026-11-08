@@ -5,6 +5,6 @@
 
 import { createFileLoader } from '../util/file';
 
-import type { ParquetSourceOptions } from '../../types';
+import type { ParquetSourceOptions } from '../../contracts/source';
 
 export const loadParquetFile = createFileLoader<ParquetSourceOptions>('parquet');

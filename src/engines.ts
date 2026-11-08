@@ -8,7 +8,15 @@
  * browser bundles.
  */
 
-import type { AnalysisEngine, EngineConfig, LLMConfig } from './types';
+import type { DuckDBEngineOptions } from './duckdb/types';
+import type { PythonEngineOptions } from './interpreter/python/types';
+import type { QueryDialect, TranslationResult } from './query/types';
+import type { DataSourceConfig } from './contracts/source';
+import type { Schema } from './contracts/schema';
+import type { ProfileOptions, Profile } from './contracts/profile';
+import type { DataModel } from './contracts/data-model';
+import type { ExecutionOptions, ExecutionResult } from './contracts/result';
+import type { LLMConfig } from './config';
 
 /** Constructor signature every engine class must satisfy. */
 export type EngineClass = new (llmConfig: LLMConfig, options?: Record<string, unknown>) => AnalysisEngine;
@@ -40,4 +48,42 @@ export function getEngineClass(type: EngineConfig['type']): EngineClass {
   }
 
   return engineClass;
+}
+
+/**
+ * Engine selection and per-engine options. The `type` discriminant picks the
+ * analysis engine; the remaining fields are the options for that engine.
+ * External SDK engines use their registered name and validate their own options.
+ * Python defaults to local python3 execution; callers can supply their own execution environment.
+ */
+export type EngineConfig =
+  | ({ type: 'duckdb' } & DuckDBEngineOptions)
+  | ({ type: 'python' } & PythonEngineOptions)
+  | { type: 'javascript' }
+  | { type: 'supabase' }
+  | { type: 'clickhouse' }
+  | { type: 'sqlserver' }
+  | { type: string; [option: string]: unknown };
+
+/**
+ * An analysis engine: loads a data source, turns natural-language queries
+ * into its executable DSL (SQL) via LLM, and executes it.
+ * Currently implemented by DuckDBEngine (duckdb/); kept as an interface
+ * to allow alternative engines in the future.
+ */
+export interface AnalysisEngine {
+  /** Query language, generation rules and validation supplied by every engine. */
+  readonly dialect: QueryDialect;
+  /** Load a data source and prepare it for execution. */
+  load(config: DataSourceConfig): Promise<void>;
+  /** Discover the loaded source structure. */
+  schema(): Promise<Schema>;
+  /** Compute statistics for the loaded data. */
+  profile?(schema: Schema, options?: ProfileOptions): Promise<Profile>;
+  /** Generate the executable DSL (SQL) for a natural-language query */
+  getDSL(query: string, dataModel: DataModel): Promise<TranslationResult>;
+  /** Execute one DSL statement with a bounded result. */
+  execute<T = Record<string, unknown>>(dsl: string, options?: ExecutionOptions): Promise<ExecutionResult<T>>;
+  /** Release resources (temp files, database connections) */
+  dispose(): Promise<void>;
 }

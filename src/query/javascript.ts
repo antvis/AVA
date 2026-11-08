@@ -3,7 +3,9 @@ import { generateText } from 'ai';
 import { languageModel } from '../util/model';
 import { stringifyDataModel } from '../util/data-model';
 
-import type { DataModel, LLMConfig, QueryDialect, TranslationResult } from '../types';
+import type { DataModel } from '../contracts/data-model';
+import type { LLMConfig } from '../config';
+import type { QueryDialect, TranslationResult } from './types';
 
 export class JavaScriptDialect implements QueryDialect {
   readonly id = 'javascript';

@@ -15,18 +15,14 @@ import { profileTables } from './profile';
 import { executeCode } from './sandbox';
 import { loadSource } from './loaders';
 
-import type {
-  TranslationResult,
-  Profile,
-  ProfileOptions,
-  AnalysisEngine,
-  DataModel,
-  DataSourceConfig,
-  LLMConfig,
-  Schema,
-  ExecutionOptions,
-  ExecutionResult,
-} from '../../types';
+import type { TranslationResult } from '../../query/types';
+import type { Profile, ProfileOptions } from '../../contracts/profile';
+import type { AnalysisEngine } from '../../engines';
+import type { DataModel } from '../../contracts/data-model';
+import type { DataSourceConfig } from '../../contracts/source';
+import type { LLMConfig } from '../../config';
+import type { Schema } from '../../contracts/schema';
+import type { ExecutionOptions, ExecutionResult } from '../../contracts/result';
 
 export class JavaScriptEngine implements AnalysisEngine {
   readonly dialect: JavaScriptDialect;

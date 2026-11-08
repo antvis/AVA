@@ -17,20 +17,15 @@ import { DEFAULT_METRICS, profileTables } from './profile';
 import { loadSource } from './loaders';
 
 import type { DuckDBConnection, DuckDBInstance } from '@duckdb/node-api';
-import type {
-  TranslationResult,
-  AnalysisEngine,
-  Profile,
-  ProfileOptions,
-  DataModel,
-  DataSourceConfig,
-  LoadedSource,
-  DuckDBEngineOptions,
-  Schema,
-  LLMConfig,
-  ExecutionOptions,
-  ExecutionResult,
-} from '../types';
+import type { TranslationResult } from '../query/types';
+import type { AnalysisEngine } from '../engines';
+import type { Profile, ProfileOptions } from '../contracts/profile';
+import type { DataModel } from '../contracts/data-model';
+import type { DataSourceConfig } from '../contracts/source';
+import type { LoadedSource, DuckDBEngineOptions } from './types';
+import type { Schema } from '../contracts/schema';
+import type { LLMConfig } from '../config';
+import type { ExecutionOptions, ExecutionResult } from '../contracts/result';
 
 /**
  * Process-level security baseline: DuckDB extensions run with the same

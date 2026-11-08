@@ -3,7 +3,7 @@ import { rowObjects2Schema } from '../../util/schema';
 import { sqlIdentifier, sqlStringLiteral, sqlUnionAll } from '../../util/sql';
 
 import type { CommonTokenStream, ParserRuleContext } from 'antlr4ts';
-import type { Schema } from '../../types';
+import type { Schema } from '../../contracts/schema';
 
 function exposedSQL(schema?: string): string {
   const filter = schema === undefined ? '' : `AND s.name = N${sqlStringLiteral(schema)}`;

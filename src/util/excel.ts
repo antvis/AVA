@@ -1,5 +1,3 @@
-import { z } from 'zod';
-
 /** Parse a bounded, inclusive A1 rectangle shared by both engines. */
 export function excelRange(range: string) {
   const match = /^([A-Z]{1,3})([1-9]\d*):([A-Z]{1,3})([1-9]\d*)$/i.exec(range);
@@ -21,41 +19,3 @@ export function excelRange(range: string) {
     lastRow: Number(lastRow),
   };
 }
-
-export const excelSheetSchema = z
-  .object({
-    sheet: z.string().min(1),
-    range: z
-      .string()
-      .refine((value) => {
-        try {
-          excelRange(value);
-          return true;
-        } catch {
-          return false;
-        }
-      }, 'Invalid Excel A1 range')
-      .transform((value) => value.toUpperCase())
-      .optional(),
-    header: z.boolean().default(true),
-    all_varchar: z.boolean().optional(),
-    ignore_errors: z.boolean().optional(),
-    stop_at_empty: z.boolean().optional(),
-    empty_as_varchar: z.boolean().optional(),
-  })
-  .strict();
-
-export const excelOptionsSchema = z
-  .object({
-    path: z.string().min(1),
-    headers: z.record(z.string(), z.string()).optional(),
-    sheets: z
-      .array(excelSheetSchema)
-      .nonempty()
-      .refine(
-        (sheets) => new Set(sheets.map((sheet) => sheet.sheet)).size === sheets.length,
-        'Excel sheet names must be unique'
-      )
-      .optional(),
-  })
-  .strict();

@@ -3,7 +3,18 @@ import { sourceConfigSchema } from '../../src';
 
 import type { AnalysisResponse, DataSourceConfig, ExecutionResult } from '../../src';
 import type { DataSourceConfig as BrowserSource, ExecutionResult as BrowserResult } from '../../src/index.browser';
-import type { ClickHouseSourceOptions, CSVReadOptions, ExcelSourceOptions, JSONReadOptions } from '../../src/types';
+import type {
+  ClickHouseSourceOptions,
+  CSVReadOptions,
+  ExcelSourceOptions,
+  JSONReadOptions,
+  Model,
+  PrimaryKey,
+  Metric,
+  QueryDialect,
+  AnalysisEngine,
+  PythonEngineOptions,
+} from '../../src/types';
 import type { ClickHouseClientConfigOptions } from '@clickhouse/client';
 
 const csv: CSVReadOptions = { header: true, types: { amount: 'BIGINT' }, nullstr: ['NA'], sample_size: -1 };
@@ -95,3 +106,24 @@ void [
   missingData,
   badLimit,
 ];
+
+// Compatibility exports keep compound metadata constraints and executable extension types.
+
+const model: Model = { name: 'sales', tableReference: { table: 'sales' }, primaryKey: ['tenant', 'id'] };
+// @ts-expect-error A model must retain exactly one source.
+const ambiguousModel: Model = { name: 'sales', refSql: 'SELECT 1', baseObject: 'raw' };
+// @ts-expect-error A composite key must remain nonempty.
+const emptyKey: PrimaryKey = [];
+const metric: Metric<(column: string) => string> = {
+  id: 'custom',
+  expression: (column) => `SUM(${column})`,
+  enable: ({ target }) => target === 'column',
+};
+const expression: string = metric.expression('amount');
+export function engineDialect(engine: AnalysisEngine): QueryDialect {
+  return engine.dialect;
+}
+export function pythonExecutor(options: PythonEngineOptions): PythonEngineOptions['execute'] {
+  return options.execute;
+}
+void [model, ambiguousModel, emptyKey, expression];

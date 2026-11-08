@@ -1,11 +1,8 @@
 import { describe, expect, it } from 'vitest';
 
-import {
-  buildDataModel,
-  dataModelMetadataSchema,
-  semanticMetadataSchema,
-  stringifyDataModel,
-} from '../../src/util/data-model';
+import { buildDataModel, stringifyDataModel } from '../../src/util/data-model';
+import { dataModelMetadataSchema, semanticMetadataSchema, dataModelInputSchema } from '../../src/contracts/data-model';
+import { profileMetadataSchema } from '../../src/contracts/profile';
 
 import type { DataModel, Profile, Schema, Semantic } from '../../src/types';
 
@@ -687,5 +684,31 @@ describe('buildDataModel', () => {
     Object.assign(input.models[0].columns[0], { type: 'VARCHAR' });
 
     expect(() => buildDataModel({ schema, profile: input })).toThrow();
+  });
+});
+
+describe('profile contract boundaries', () => {
+  const profile = {
+    models: [
+      {
+        name: 'data',
+        metrics: {},
+        columns: [{ name: 'value', metrics: {}, properties: { logicalType: 'numeric' as const } }],
+      },
+    ],
+  };
+  it('preserves the public projection while assembly rejects unsupported nested fields', () => {
+    const input = structuredClone(profile);
+    Object.assign(input.models[0].columns[0].properties, { unsupported: true });
+    expect(profileMetadataSchema.parse(input)).toEqual(profile);
+    expect(() => dataModelInputSchema.parse({ schema: { models: [] }, profile: input })).toThrow();
+  });
+  it('keeps assembly model and column names nonempty', () => {
+    for (const field of [profile.models[0], profile.models[0].columns[0]]) {
+      const original = field.name;
+      field.name = '';
+      expect(() => dataModelInputSchema.parse({ schema: { models: [] }, profile })).toThrow();
+      field.name = original;
+    }
   });
 });

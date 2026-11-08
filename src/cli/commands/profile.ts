@@ -1,7 +1,7 @@
 import { request } from '../session/client';
 import { list, option } from '../options';
 import { readJSONFile } from '../io';
-import { profileMetadataSchema } from '../../util/profile';
+import { profileMetadataSchema } from '../../contracts/profile';
 
 import type { Options } from '../options';
 

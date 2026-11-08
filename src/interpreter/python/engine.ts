@@ -4,7 +4,8 @@ import { z } from 'zod';
 
 import { PythonDialect } from '../../query/python';
 import { executionResult, maxRows, maxResultBytes } from '../../util/result';
-import { DEFAULT_METRICS, parseProfileOptions, profileMetadataSchema } from '../../util/profile';
+import { DEFAULT_METRICS, parseProfileOptions } from '../../util/profile';
+import { profileMetadataSchema } from '../../contracts/profile';
 import { runWithTimeout } from '../../util/timeout';
 
 import { SCHEMA_CODE, sourceSchema, tableSchema, resultSchema } from './util/schema';
@@ -12,19 +13,15 @@ import { profileCode } from './profile';
 import { createPythonExecutor } from './util/execute';
 import { executionCode } from './util/code';
 
-import type {
-  TranslationResult,
-  AnalysisEngine,
-  DataModel,
-  DataSourceConfig,
-  ExecutionOptions,
-  ExecutionResult,
-  LLMConfig,
-  Profile,
-  ProfileOptions,
-  PythonEngineOptions,
-  Schema,
-} from '../../types';
+import type { TranslationResult } from '../../query/types';
+import type { AnalysisEngine } from '../../engines';
+import type { DataModel } from '../../contracts/data-model';
+import type { DataSourceConfig } from '../../contracts/source';
+import type { ExecutionOptions, ExecutionResult } from '../../contracts/result';
+import type { LLMConfig } from '../../config';
+import type { Profile, ProfileOptions } from '../../contracts/profile';
+import type { PythonEngineOptions } from './types';
+import type { Schema } from '../../contracts/schema';
 
 const DEFAULT_QUERY_TIMEOUT_MS = 30_000;
 

@@ -4,9 +4,9 @@ import { join } from 'path';
 import { z } from 'zod';
 
 import { sourceConfigSchema } from '../../contracts/source';
-import { profileMetadataSchema } from '../../util/profile';
-import { schemaMetadataSchema } from '../../util/schema';
-import { semanticMetadataSchema } from '../../util/data-model';
+import { profileMetadataSchema } from '../../contracts/profile';
+import { schemaMetadataSchema } from '../../contracts/schema';
+import { semanticMetadataSchema } from '../../contracts/data-model';
 
 export const IPC_TIMEOUT_MS = 120_000;
 export const IPC_MAX_REQUEST_BYTES = 1024 * 1024;

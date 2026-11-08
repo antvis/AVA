@@ -1,4 +1,4 @@
-import type { LLMConfig } from '../types';
+import type { LLMConfig } from '../config';
 
 export function llmConfig(required = false): LLMConfig {
   const { OPENAI_API_KEY: apiKey, OPENAI_MODEL: model, OPENAI_BASE_URL: baseURL } = process.env;

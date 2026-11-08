@@ -23,7 +23,9 @@ import { AnalysisEvent, AnalysisEventType, eventPair } from '../event';
 import { serializeError } from '../util/error';
 
 import type { LanguageModelUsage } from 'ai';
-import type { AnalysisStrategy, ExecutionResult, LLMConfig } from '../types';
+import type { AnalysisStrategy } from './types';
+import type { ExecutionResult } from '../contracts/result';
+import type { LLMConfig } from '../config';
 import type { SerializedError } from '../util/error';
 
 const summarySchema = z.object({
