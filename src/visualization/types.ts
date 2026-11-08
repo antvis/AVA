@@ -1,9 +1,9 @@
-import type { ChartType } from '../contracts/visualize';
+import type { ChartType, ChartSpec } from '../contracts/visualize';
 
 /**
  * GPT-Vis JSON config
  */
-export type ChartConfig = { type: string; [key: string]: unknown };
+export type ChartConfig = ChartSpec['config'];
 
 /**
  * Chart type definition — structured metadata for prompt generation

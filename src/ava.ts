@@ -352,7 +352,7 @@ export class AVA extends EventEmitter {
    */
   async viz(spec: ChartSpec): Promise<string> {
     const parsed = chartSpecSchema.parse(spec);
-    return wrapConfigInHTML({ ...parsed.config, type: parsed.chartType });
+    return wrapConfigInHTML(parsed.config);
   }
 
   /**

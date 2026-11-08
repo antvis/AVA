@@ -368,14 +368,18 @@ Neither requires a loaded source. Both use the model and return `null` for empty
 | Parameter        | Type        | Required | Meaning                                                                                             |
 | ---------------- | ----------- | -------- | --------------------------------------------------------------------------------------------------- |
 | `spec`           | `ChartSpec` | Yes      | Chart specification.                                                                                |
-| `spec.chartType` | `ChartType` | Yes      | One of the chart types below. Part of the shared spec; the current renderer uses `config` directly. |
-| `spec.config`    | `ChartConfig` | Yes    | GPT-Vis JSON config to embed in HTML; `config.type` matches `chartType`.                            |
+| `spec.chartType` | `ChartType` | Yes      | One of the 19 chart types below; must match `config.type`. |
+| `spec.config`    | `ChartSpec['config']` | Yes    | Native GPT-Vis config; a missing `config.type` is filled from `chartType`.                            |
 
-`ChartType` values: `line`, `column`, `bar`, `pie`, `area`, `scatter`, `dual-axes`, `histogram`, `boxplot`, `radar`, `funnel`, `waterfall`, `liquid`, `word-cloud`, `violin`, `venn`, `treemap`, `sankey`, `table`, `summary`.
+`ChartType` values: `line`, `column`, `bar`, `pie`, `area`, `scatter`, `dual-axes`, `histogram`, `boxplot`, `radar`, `funnel`, `waterfall`, `liquid`, `word-cloud`, `violin`, `venn`, `treemap`, `sankey`, `table`.
+
+`spec.html?: string` accepts the complete result from `visualize()`. Rendering always uses `config` to generate fresh HTML; an existing `html` value is not reused. Other unknown envelope fields are rejected.
 
 Returns a standalone HTML string. Does not require a loaded source or call a model. See [chart specifications](/documentation/visualization/overview/#recommend).
 
 ## Runtime contracts
+
+AVA pins `@antv/gpt-vis` to 1.3.1. The generated HTML loads that exact version from the CDN; its types also check the native chart contracts. Category, name and group labels follow the native string types; time labels can also be numbers. Treemap nodes require `value`. Chart themes accept built-in names and native theme objects, and native options include subtitles, waterfall intermediate totals and Venn string sets.
 
 The Node and browser entry points export shared runtime schemas plus pure helpers for source-type inference and chart binding. SDK `source()`, `recommend()`, `viz()` and the CLI use these contracts at their input boundaries.
 

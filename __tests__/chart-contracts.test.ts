@@ -4,34 +4,9 @@ import { describe, expect, it } from 'vitest';
 import { AVA, bindChartData, chartSpecSchema } from '../src/index.browser';
 import { chartDefinitions } from '../src/visualization/vis';
 
-import type { ChartSpec } from '../src/types';
+import { charts as fixtures } from './fixtures/charts';
 
-const fixtures = {
-  column: { data: [{ category: 'Jan', value: 10 }] },
-  bar: { data: [{ category: 'Jan', value: 10 }] },
-  line: { data: [{ time: 'Jan', value: 10 }] },
-  area: { data: [{ time: 'Jan', value: 10 }] },
-  pie: { data: [{ category: 'Jan', value: 10 }] },
-  scatter: { data: [{ x: 1, y: 2 }] },
-  histogram: { data: [1, 2, 3] },
-  boxplot: { data: [{ category: 'A', value: 10 }] },
-  violin: { data: [{ category: 'A', value: 10 }] },
-  radar: { data: [{ name: 'A', value: 10 }] },
-  funnel: { data: [{ category: 'A', value: 10 }] },
-  waterfall: {
-    data: [
-      { category: 'A', value: -2 },
-      { category: 'Total', isTotal: true },
-    ],
-  },
-  liquid: { percent: 0.5 },
-  'word-cloud': { data: [{ text: 'Hello', value: 10 }] },
-  venn: { data: [{ sets: ['A', 'B'], value: 2 }] },
-  treemap: { data: [{ name: 'Root', children: [{ name: 'Leaf', value: 10 }] }] },
-  sankey: { data: [{ source: 'A', target: 'B', value: 10 }] },
-  table: { data: [{ original: 'value' }] },
-  'dual-axes': { categories: ['Jan'], series: [{ type: 'line', data: [10] }] },
-};
+import type { ChartSpec } from '../src/types';
 
 describe('native chart contracts', () => {
   it('covers every advisor chart and renders each native data shape through the SDK', async () => {
@@ -46,9 +21,30 @@ describe('native chart contracts', () => {
     }
   });
 
+  it('retains native theme and presentation options without weakening the chart envelope', () => {
+    const config = {
+      ...fixtures.column,
+      subtitle: 'Monthly revenue',
+      theme: { id: 'brand', label: 'Brand', tokens: { colorDefault: '#1783FF' } },
+      style: { mark: { interval: { radius: 4 } } },
+    };
+    expect(chartSpecSchema.parse({ chartType: 'column', config }).config).toMatchObject(config);
+    expect(chartSpecSchema.parse({ chartType: 'column', config: { ...config, theme: 'midnight' } }).config.theme).toBe(
+      'midnight'
+    );
+    expect(() => chartSpecSchema.parse({ chartType: 'column', config, hmtl: '' })).toThrow();
+    expect(() => chartSpecSchema.parse({ chartType: 'column', config, html: 1 })).toThrow();
+    expect(() =>
+      chartSpecSchema.parse({ chartType: 'column', config: { ...config, style: { palette: 'blue' } } })
+    ).toThrow();
+  });
+
   it.each([
     { chartType: 'column', config: { data: [{ month: 'Jan', revenue: 10 }] } },
     { chartType: 'column', config: { data: [{ category: 'Jan', value: '10' }] } },
+    { chartType: 'column', config: { data: [{ category: 1, value: 10 }] } },
+    { chartType: 'line', config: { data: [{ time: 'Jan', value: 10, group: 1 }] } },
+    { chartType: 'treemap', config: { data: [{ name: 'Root', children: [{ name: 'Leaf', value: 10 }] }] } },
     { chartType: 'line', config: { type: 'column', data: [{ time: 'Jan', value: 10 }] } },
     { chartType: 'liquid', config: { percent: 50 } },
     { chartType: 'pie', config: { data: [{ category: 'Jan', value: -1 }] } },

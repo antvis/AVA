@@ -370,14 +370,18 @@ Setter 接收选项对象，同步返回 `Semantic`。AVA 验证并复制结果�
 | 参数 | 类型 | 必填 | 含义 |
 | ---------------- | ----------- | -------- | --------------------------------------------------------------------------------------------------- |
 | `spec` | `ChartSpec` | 是 | 图表描述对象。 |
-| `spec.chartType` | `ChartType` | 是 | 下方图表类型之一，属于共享描述对象；当前渲染器直接使用 `config`。 |
-| `spec.config` | `ChartConfig` | 是 | 嵌入 HTML 的 GPT-Vis JSON 配置，`config.type` 与 `chartType` 一致。 |
+| `spec.chartType` | `ChartType` | 是 | 下方 19 种图表类型之一，必须与 `config.type` 一致。 |
+| `spec.config` | `ChartSpec['config']` | 是 | 原生 GPT-Vis 配置；省略 `config.type` 时由 `chartType` 补齐。 |
 
-`ChartType` 可选值：`line`、`column`、`bar`、`pie`、`area`、`scatter`、`dual-axes`、`histogram`、`boxplot`、`radar`、`funnel`、`waterfall`、`liquid`、`word-cloud`、`violin`、`venn`、`treemap`、`sankey`、`table`、`summary`。
+`ChartType` 可选值：`line`、`column`、`bar`、`pie`、`area`、`scatter`、`dual-axes`、`histogram`、`boxplot`、`radar`、`funnel`、`waterfall`、`liquid`、`word-cloud`、`violin`、`venn`、`treemap`、`sankey`、`table`。
+
+`spec.html?: string` 用于接收 `visualize()` 的完整返回值。渲染始终根据 `config` 生成新的 HTML，不复用已有 `html`；外层其他未知字段会被拒绝。
 
 返回独立 HTML 字符串，无需加载数据源，也不会调用模型。参见[图表配置](/documentation/visualization/overview/#recommend)。
 
 <Heading as="h2" id="runtime-contracts">运行时契约</Heading>
+
+AVA 将 `@antv/gpt-vis` 固定为 1.3.1。生成的 HTML 从 CDN 加载同一版本，原生图表契约也通过该包的类型检查。分类、名称和分组标签遵循原生字符串类型，时间标签也可以是数值；Treemap 节点必须提供 `value`。主题支持内置名称和原生主题对象，原生选项包含子标题、瀑布图中间合计和 Venn 字符串集合。
 
 Node 和浏览器入口导出共享运行时 schema，以及数据源类型推断和图表绑定工具函数。SDK 的 `source()`、`recommend()`、`viz()` 和 CLI 在各自的输入边界使用这些契约。
 

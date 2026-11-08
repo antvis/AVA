@@ -1,6 +1,8 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { generateText } from 'ai';
+import { version as gptVisVersion } from '@antv/gpt-vis/package.json';
 
+import { dependencies } from '../package.json';
 import { AVA } from '../src/ava';
 
 vi.mock('ai', () => ({ generateText: vi.fn() }));
@@ -34,6 +36,7 @@ describe('chart recommendation', () => {
     expect(prompt).toContain('- city (string)');
     expect(prompt).toContain('- revenue (number)');
     expect(vi.mocked(generateText).mock.calls[1][0].prompt).toContain('Hangzhou');
+    expect(vi.mocked(generateText).mock.calls[1][0].prompt).toContain('"category"');
   });
 
   it('skips empty data without calling the model', async () => {
@@ -69,6 +72,9 @@ describe('chart recommendation', () => {
     expect(visualization?.html).toContain('<!DOCTYPE html>');
     expect(JSON.parse(visualization!.html.match(/const visConfig = (.+);/)![1])).toEqual(config);
     expect(generateText).toHaveBeenCalledTimes(2);
+    expect(await ava.viz(visualization!)).toBe(visualization!.html);
+    expect(await ava.viz({ ...visualization!, html: 'stale HTML' })).toBe(visualization!.html);
+    expect(generateText).toHaveBeenCalledTimes(2);
   });
 
   it('renders a supplied specification deterministically without calling the model', async () => {
@@ -77,6 +83,8 @@ describe('chart recommendation', () => {
     expect(html).toContain('<!DOCTYPE html>');
     expect(JSON.parse(html.match(/const visConfig = (.+);/)![1])).toEqual(config);
     expect(html).toContain('gptVis.render(visConfig)');
+    expect(dependencies['@antv/gpt-vis']).toBe(gptVisVersion);
+    expect(html).toContain(`https://unpkg.com/@antv/gpt-vis@${gptVisVersion}/dist/umd/index.min.js`);
     expect(await ava['viz'](spec)).toBe(html);
     expect(generateText).not.toHaveBeenCalled();
   });

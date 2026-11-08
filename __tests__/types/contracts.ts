@@ -1,7 +1,8 @@
 // Compile-time regressions: run by test:types, including the expected failures.
 import { sourceConfigSchema } from '../../src';
+import { charts } from '../fixtures/charts';
 
-import type { AnalysisResponse, DataSourceConfig, ExecutionResult } from '../../src';
+import type { AnalysisResponse, DataSourceConfig, ExecutionResult, ChartSpec, VisualizeResponse } from '../../src';
 import type { DataSourceConfig as BrowserSource, ExecutionResult as BrowserResult } from '../../src/index.browser';
 import type {
   ClickHouseSourceOptions,
@@ -18,6 +19,7 @@ import type {
 } from '../../src/types';
 import type { ClickHouseClientConfigOptions } from '@clickhouse/client';
 import type { ConnectionOptions as SnowflakeConnectionOptions } from 'snowflake-sdk';
+import type { GPTVisConfig } from '@antv/gpt-vis';
 
 const csv: CSVReadOptions = { header: true, types: { amount: 'BIGINT' }, nullstr: ['NA'], sample_size: -1 };
 const csvByPosition: CSVReadOptions = { types: ['VARCHAR', 'BIGINT'] };
@@ -144,3 +146,14 @@ const invalidSnowflakeProxy: SnowflakeSourceOptions = { account: 'org-account', 
 // @ts-expect-error AVA owns the driver's row representation.
 const overriddenRows: SnowflakeSourceOptions = { account: 'org-account', database: 'sales', rowMode: 'array' };
 void [invalidSnowflakeProxy, overriddenRows];
+void charts;
+
+// Every schema branch must remain assignable to the installed renderer's native config.
+export function nativeChartConfig(spec: ChartSpec): GPTVisConfig {
+  return spec.config;
+}
+export function renderedChartSpec(response: VisualizeResponse): ChartSpec {
+  const html: string = response.html;
+  void html;
+  return response;
+}

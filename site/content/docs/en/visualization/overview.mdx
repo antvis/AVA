@@ -36,7 +36,7 @@ A successful response contains:
 | `config`    | GPT-Vis chart config as a JSON object.                               | Store or edit the specification, or render it in your application with GPT-Vis. |
 | `html`      | A standalone HTML document containing the config and renderer setup. | Save it as an HTML file and open it in a browser.                               |
 
-The generated HTML loads GPT-Vis from a CDN and calls its renderer. Viewing that HTML requires access to the CDN.
+The generated HTML loads the pinned GPT-Vis 1.3.1 runtime from a CDN and calls its renderer. Viewing that HTML requires access to the CDN.
 
 The result is `null` for empty data or when no chart is recommended. Chart generation errors reject the call instead of being converted to `null`.
 
@@ -83,7 +83,7 @@ if (spec) {
 }
 ```
 
-`viz(spec: ChartSpec): Promise<string>` wraps the config in HTML without an LLM call. The generated document loads the GPT-Vis runtime from a CDN.
+`viz(spec: ChartSpec): Promise<string>` wraps the config in HTML without an LLM call. The generated document loads the same pinned GPT-Vis version as the package dependency from a CDN. A complete `visualize()` result can also be passed to `viz()`; the existing `html` is not reused.
 
 ## Supported chart types
 
@@ -92,8 +92,8 @@ if (spec) {
 | Trends & comparisons         | `line`, `column`, `bar`, `area`, `dual-axes`                |
 | Distribution & relationships | `scatter`, `histogram`, `boxplot`, `violin`                 |
 | Composition & flow           | `pie`, `treemap`, `sankey`, `waterfall`, `funnel`           |
-| Other                        | `radar`, `liquid`, `word-cloud`, `venn`, `table`, `summary` |
+| Other                        | `radar`, `liquid`, `word-cloud`, `venn`, `table` |
 
-A chart's suitability depends on its data requirements and the user's question. The recommendation module supplies these definitions to the model.
+The table lists the 19 JSON chart types defined by AVA's source contracts. A chart's suitability depends on its data requirements and the user's question. The recommendation module supplies these definitions to the model.
 
 See [recommend parameters](/documentation/reference/api/#visualize-and-recommend) and [viz parameters](/documentation/reference/api/#viz) for all fields and chart types.
