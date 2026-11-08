@@ -1,10 +1,11 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
-import { ConnectionPool } from 'mssql';
 
 import { AVA } from '../../../src';
 import { SQLServerEngine } from '../../../src/remote/sqlserver';
 
-vi.mock('mssql', () => ({ ConnectionPool: vi.fn() }));
+// Node's ESM loader exposes mssql's ConnectionPool only on the default export, so the mock does too.
+const { ConnectionPool } = vi.hoisted(() => ({ ConnectionPool: vi.fn() }));
+vi.mock('mssql', () => ({ default: { ConnectionPool } }));
 
 const source = {
   type: 'sqlserver' as const,

@@ -33,6 +33,7 @@ const GitHubStars: React.FC = () => {
 
   return (
     <a
+      data-hero-stars
       href="https://github.com/antvis/AVA"
       target="_blank"
       rel="noopener noreferrer"
@@ -146,19 +147,39 @@ const RotatingVerse: React.FC = () => {
 /* Banner — hero of the AI page                                 */
 /* ------------------------------------------------------------------ */
 
-const Banner: React.FC = () => {
+const Banner: React.FC<{ latestPost?: { title: string; href: string } }> = ({ latestPost }) => {
   const t = useTranslations('Banner');
   return (
     <section className="relative">
       <div className="relative">
         {/* ── hero content ── */}
         <div data-hero-content className="flex flex-col items-center gap-6 pb-11 text-center max-md:gap-5 max-md:pb-8">
-          {/* kicker — quiet monogram plus live GitHub stars */}
-          <span data-hero-badge className="inline-flex items-center gap-2.5 font-mono text-[12px] text-zinc-400">
-            <span data-hero-new>{t('nEW')}</span>
-            <span data-hero-release>{t('introducingAVA40')}</span>
+          <div data-hero-badge className="inline-flex items-center gap-2.5 font-mono text-[12px] text-zinc-400">
+            {latestPost && (
+              <Link data-hero-post href={latestPost.href} title={latestPost.title}>
+                <span data-hero-new>
+                  <span data-hero-dot aria-hidden="true" />
+                  {t('latestPost')}
+                </span>
+                <span data-hero-post-title>{latestPost.title}</span>
+                <svg
+                  data-hero-post-arrow
+                  width="14"
+                  height="14"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="1.8"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  aria-hidden="true"
+                >
+                  <path d="M5 12h14m-6-6 6 6-6 6" />
+                </svg>
+              </Link>
+            )}
             <GitHubStars />
-          </span>
+          </div>
 
           <h1 className="text-[length:clamp(30px,4.5vw,58px)] font-semibold leading-[1.22] max-md:leading-[1.25] tracking-[-0.045em] text-zinc-900 max-md:text-[length:clamp(27px,5vw,38px)]">
             <span lang="en" className="whitespace-nowrap max-md:whitespace-normal">

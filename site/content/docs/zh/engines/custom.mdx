@@ -31,7 +31,7 @@ const ava = new AVA({
 | 成员 | 输入参数 | 返回值与行为 |
 | --------------------------- | ------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------- |
 | 构造函数 | `llmConfig: LLMConfig`，`options?: Record<string, unknown>` | 接收模型配置，以及 `type` 之外的引擎字段。 |
-| `language` | 只读属性 | `QueryLanguage`，供分析提示词使用。 |
+| `dialect` | 所有引擎必填的只读属性 | 所选 `QueryDialect`，其 `id` 标识查询语言，`rules` 提供语法规则与执行绑定。 |
 | `load(config)` | `DataSourceConfig` | `Promise<void>`；准备执行所需的数据与连接。 |
 | `schema()` | 无 | `Promise<Schema>`；发现已加载数据源的结构。 |
 | `profile(schema, options?)` | 必填 `Schema`，可选 `ProfileOptions` | 可选方法，返回 `Promise<Profile>`，基于传入结构计算统计信息。 |
@@ -43,11 +43,7 @@ AVA 管理 schema 与 profile 缓存。`load()` 准备资源，`schema()` 按需
 
 迁移旧引擎时，将结构发现从 `load()` 移到 `schema()`，让 `load()` 返回 `Promise<void>`，补齐必填的 schema 与 data-model 参数，并让 `getDSL()` 返回 `{ dsl, usage? }`。即使只完成部分加载，`dispose()` 也应能安全调用。
 
-| `QueryLanguage` 字段 | 类型 | 必填 | 含义 |
-| --------------------- | -------- | -------- | -------------------------------------------------------- |
-| `name` | `string` | 是 | 提示词中使用的语言或方言名称。 |
-| `fence` | `string` | 是 | Markdown 代码块语言，例如 `sql` 或 `python`。 |
-| `instructions` | `string` | 否 | 可用变量及结果约定。 |
+所有引擎（包括自定义引擎）均提供必填的 `dialect`，实现 `QueryDialect`，包含 `id`、`rules`、`getDSL()` 和 `validateDSL()`。SQL、Python、JavaScript 的分析流程与 CLI 均读取 `dialect.id` 和 `dialect.rules`。迁移时将语言信息移入 `dialect.id` 和 `dialect.rules`，由方言实现生成与校验。内置语言 id 为 `duckdb-sql`、`clickhouse-sql`、`postgresql`、`tsql`、`python`、`javascript`，下文自定义引擎使用 `json`。Loop 提取代码块内容后，始终使用引擎方言执行，代码块可带或不带 Markdown 语言标签。SQL 校验落实只读 SELECT 边界，Python 使用执行环境中的官方编译器校验语法，JavaScript 由运行时在执行前编译并报告语法错误；执行权限和资源限制由引擎负责。
 
 `DataModel` 组合结构元数据、可选统计信息和语义注释。分析、翻译或推荐问题需要它时，AVA 会从缓存的 `Schema`、`Profile`、`Semantic` 组装。引擎直接接收模型，不需要额外的上下文包装对象。
 
@@ -73,6 +69,7 @@ import { generateText, type LanguageModel } from 'ai';
 import { executionResult } from '@antv/ava';
 import type {
   AnalysisEngine,
+  QueryDialect,
   TranslationResult,
   DataModel,
   DataSourceConfig,
@@ -84,22 +81,50 @@ import type {
 
 type Sale = { region: string; revenue: number };
 
-export class SalesEngine implements AnalysisEngine {
-  readonly language = {
-    name: 'Sales metrics JSON',
-    fence: 'json',
-    instructions:
-      'Return exactly {"metric":"total_revenue"} or {"metric":"revenue_by_region"}. No other keys or operations are supported.',
-  };
-  private sales: Sale[] | null = null;
-
+class SalesDialect implements QueryDialect {
+  readonly id = 'json';
+  readonly rules =
+    'Supported commands are {"metric":"total_revenue"} and {"metric":"revenue_by_region"}. Each command has exactly one key, metric.';
   private readonly model: LanguageModel;
 
   constructor(private readonly llm: LLMConfig) {
     if (typeof llm.model === 'string') {
-      throw new Error('SalesEngine expects a configured AI SDK model object.');
+      throw new Error('SalesDialect expects a configured AI SDK model object.');
     }
     this.model = llm.model;
+  }
+
+  async getDSL(query: string, _dataModel: DataModel): Promise<TranslationResult> {
+    const { text, usage } = await generateText({
+      model: this.model,
+      maxRetries: this.llm.maxRetries ?? 3,
+      system: `Convert a question into a sales metric. ${this.rules}
+Return raw JSON without Markdown. If neither metric answers the question, return {"metric":"unsupported"}.`,
+      prompt: query,
+    });
+    return { dsl: text.trim(), usage };
+  }
+
+  async validateDSL(dsl: string): Promise<string> {
+    const command = JSON.parse(dsl);
+    if (
+      !command ||
+      Array.isArray(command) ||
+      Object.keys(command).length !== 1 ||
+      !['total_revenue', 'revenue_by_region'].includes(command.metric)
+    ) {
+      throw new Error('Expected one supported metric and no additional keys.');
+    }
+    return dsl;
+  }
+}
+
+export class SalesEngine implements AnalysisEngine {
+  readonly dialect: SalesDialect;
+  private sales: Sale[] | null = null;
+
+  constructor(llm: LLMConfig) {
+    this.dialect = new SalesDialect(llm);
   }
 
   async load(config: DataSourceConfig): Promise<void> {
@@ -137,29 +162,14 @@ export class SalesEngine implements AnalysisEngine {
     };
   }
 
-  async getDSL(query: string, _dataModel: DataModel): Promise<TranslationResult> {
+  async getDSL(query: string, dataModel: DataModel): Promise<TranslationResult> {
     if (!this.sales) throw new Error('Load a source first.');
-    const { text, usage } = await generateText({
-      model: this.model,
-      maxRetries: this.llm.maxRetries ?? 3,
-      system: `Convert a question into a sales metric. ${this.language.instructions}
-Return raw JSON without Markdown. If neither metric answers the question, return {"metric":"unsupported"}.`,
-      prompt: query,
-    });
-    return { dsl: text.trim(), usage };
+    return this.dialect.getDSL(query, dataModel);
   }
 
   async execute<T = Record<string, unknown>>(dsl: string, options?: ExecutionOptions): Promise<ExecutionResult<T>> {
     if (!this.sales) throw new Error('Load a source first.');
-    const command = JSON.parse(dsl);
-    if (
-      !command ||
-      Array.isArray(command) ||
-      Object.keys(command).length !== 1 ||
-      !['total_revenue', 'revenue_by_region'].includes(command.metric)
-    ) {
-      throw new Error('Expected one supported metric and no additional keys.');
-    }
+    const command = JSON.parse(await this.dialect.validateDSL(dsl));
 
     let rows: Record<string, unknown>[];
     if (command.metric === 'total_revenue') {
@@ -190,7 +200,7 @@ Return raw JSON without Markdown. If neither metric answers the question, return
 }
 ```
 
-即使通过 `query()` 直接调用，`execute()` 也会验证命令。公开导出的 `executionResult(rows, schema, options?)` 辅助函数负责应用 AVA 的行数与字节限制，详见[下方参数](#executionresult-helper)。
+`getDSL()` 委托 `SalesDialect` 生成命令；即使通过 `query()` 直接调用，`execute()` 也会先调用 `dialect.validateDSL()` 校验。公开导出的 `executionResult(rows, schema, options?)` 辅助函数负责应用 AVA 的行数与字节限制，详见[下方参数](#executionresult-helper)。
 
 这个引擎的命令集合固定，因此 `getDSL()` 接收但不使用数据模型。它未实现 `profile()`，`analyze()`、`suggest()`、`query()` 仍可使用，但 `ava.profile()` 会报告不支持统计。示例将所有输入行保留在内存中；结果限制约束的是返回数据，并不限制输入规模或聚合计算量。
 

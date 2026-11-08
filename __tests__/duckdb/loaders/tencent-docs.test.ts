@@ -615,7 +615,7 @@ describe('Tencent Docs HTTP → loader → DuckDB', () => {
         JSON.stringify([{ _record_id: 'VARCHAR', [title]: 'VARCHAR' }]),
       ]
     );
-    expect(source.allowedDirectories).toEqual([]);
+    expect(source.allowedPaths).toEqual([]);
     await source.cleanup();
     await source.cleanup();
     const ava = new AVA({ llm: { model: 'offline' } });

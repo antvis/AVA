@@ -12,7 +12,7 @@ Each profile call recomputes statistics. `--metrics` replaces the defaults and a
 
 ## Run a Query
 
-`ava schema` discovers structure on demand and caches it. Use its `models`, `tableReference`, `columns`, and `language`. Write the query according to `language.name` and, when provided, `language.instructions`. Apply confirmed [business definitions](semantic.md) explicitly; `query` executes the supplied DSL without applying semantic filters or expressions for you. Save the query as UTF-8 and run it with `--dsl`:
+`ava schema` discovers structure on demand and caches it. Use its `models`, `tableReference`, and `columns` to identify the data. Write queries in the returned `language` and follow the optional top-level `instructions` for syntax rules and execution bindings. Apply confirmed [business definitions](semantic.md) explicitly; `query` executes the supplied DSL without applying semantic filters or expressions for you. Save the query as UTF-8 and run it with `--dsl`:
 
 ```sh
 ava query "$DATASET_ID" --dsl @query.sql > result.json
@@ -30,8 +30,6 @@ FROM sales
 GROUP BY region
 ORDER BY total DESC, region;
 ```
-
-For ClickHouse, do not add `FORMAT`, `SETTINGS`, or `INTO OUTFILE`; AVA handles execution.
 
 ## Python / pandas
 

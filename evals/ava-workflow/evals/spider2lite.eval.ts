@@ -237,7 +237,7 @@ export async function main(argv = process.argv.slice(2)) {
         ...[
           'duckdb/engine.js',
           'duckdb/loaders/sqlite.js',
-          'query/duckdb.js',
+          'query/duckdb-sql.js',
           'util/sql.js',
           'analysis/direct.js',
           'analysis/loop.js',

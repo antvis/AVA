@@ -195,7 +195,7 @@ const TrustedAnalytics: React.FC<{ id?: string }> = ({ id = 'benchmarks' }) => {
                 role="tabpanel"
                 aria-labelledby={`${id}-${metric}-tab`}
                 tabIndex={0}
-                className="mt-7 flex flex-1 flex-col justify-end gap-4"
+                className="mt-10 flex flex-1 flex-col justify-end gap-4"
               >
                 {BENCHMARK.contexts.map((s) => {
                   const m = METRICS[metric];

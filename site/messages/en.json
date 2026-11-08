@@ -1,7 +1,6 @@
 {
   "Banner": {
-    "nEW": "NEW",
-    "introducingAVA40": "Introducing AVA 4.0",
+    "latestPost": "LATEST BLOG",
     "anOpenSourceFrameworkForAIAgents": "An open-source framework for AI agents to explore, analyze, and visualize data",
     "tryAVA": "Try AVA",
     "trySive": "Try Sive",
@@ -13,7 +12,7 @@
   "Footer": {
     "aVALogo": "AVA logo",
     "aINativeVisualAnalyticsOpenSourceBuilt": "AI-Native Visual Analytics · Open Source, Built for Agents",
-    "2026AntVReleasedUnderTheMITLicense": "© 2026 AntV · Released under the MIT License.",
+    "antvSlogan": "Visualize Data with Vitality by AI",
     "product": "Product",
     "features": "Features",
     "integrations": "Integrations",
@@ -36,7 +35,8 @@
     "g6": "G6",
     "l7": "L7",
     "gptVis": "GPT-Vis",
-    "infographic": "Infographic"
+    "infographic": "Infographic",
+    "blog": "Blog"
   },
   "Header": {
     "aVAChartGenieLogo": "AVA ChartGenie Logo",
@@ -46,9 +46,13 @@
     "ecosystem": "Ecosystem",
     "docs": "Docs",
     "documentation": "Documentation",
-    "aI": "AI"
+    "aI": "AI",
+    "blog": "Blog"
   },
   "Home": {
+    "campaignTitle": "AVA ecosystem showcase — join us at SEE Conf 2026!",
+    "campaignDescription": "Share your tool integrations, apps, or data analysis projects. Outstanding contributors can receive conference tickets or a Xiaomi Smart Band!",
+    "campaignAction": "Share your work",
     "skipToFeatures": "Skip to features",
     "interactiveDemoUsingSampleData": "Interactive demo using sample data",
     "fromRawDataTo": "From Raw Data to",
@@ -439,14 +443,15 @@
     "website": "Website",
     "docs": "Documentation",
     "ai": "AI",
-    "status": "TypeScript · Open source",
+    "status": "AVA · AI Visual Analytics",
     "edit": "Edit this page on GitHub",
     "chapters": "Chapter navigation",
     "previous": "← Previous",
     "next": "Next →",
     "footer": "AVA · An AntV project",
     "github": "Open source on GitHub ↗",
-    "copy": "Copy Markdown"
+    "copy": "Copy Markdown",
+    "blog": "Blog"
   },
   "Demo": {
     "question": "Is our revenue growth profitable? Compare monthly revenue and gross margin for Jan–Sep 2026, flag the weakest month, and show the trend in a dual-axis chart.",
@@ -481,6 +486,10 @@
     "data_schema": {
       "title": "Inspect your data",
       "description": "Let AVA discover the structure, inspect statistics when useful, then add business meaning."
+    },
+    "data_feishu-bitable": {
+      "title": "Lark Base setup",
+      "description": "Create an app, grant document access, and load data from Lark Base with an illustrated guide."
     },
     "data_semantic": {
       "title": "Define data semantics",
@@ -550,5 +559,15 @@
       "title": "Architecture & source map",
       "description": "Understand how the public API connects to the implementation."
     }
+  },
+  "Blog": {
+    "description": "Practical guides, engineering ideas, and updates from AVA.",
+    "latest": "Latest articles",
+    "back": "All articles",
+    "skip": "Skip to content",
+    "copy": "Copy Markdown",
+    "readChinese": "Read in Chinese",
+    "pending": "Content coming soon.",
+    "edit": "Edit this article on GitHub"
   }
 }
