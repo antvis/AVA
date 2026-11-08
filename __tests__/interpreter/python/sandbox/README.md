@@ -12,6 +12,12 @@ pnpm exec vitest run __tests__/interpreter/python
 AVA_PYTHON_LOCAL_TEST=1 pnpm exec vitest run __tests__/interpreter/python/serialization.test.ts
 ```
 
+官方 `compile` 校验测试（仅需 PATH 中的 `python3`）：
+
+```sh
+AVA_PYTHON_LOCAL_TEST=1 pnpm exec vitest run __tests__/query/interpreters.test.ts
+```
+
 Docker 集成与沙箱测试（默认跳过，需先启动 Docker）：
 
 ```sh

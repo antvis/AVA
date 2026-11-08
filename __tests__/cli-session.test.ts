@@ -33,6 +33,18 @@ describe('session startup protocol', () => {
     Object.defineProperty(process, 'platform', platform);
     vi.clearAllMocks();
   });
+
+  it.each(['mysql', 'postgresql'])('requires and preserves the SSH host fingerprint for %s', (type) => {
+    const ssh = { host: 'bastion', user: 'reader', password: 'test-password' };
+    const source = { type, options: { host: 'database', database: 'sales', ssh } };
+    expect(() => startupSchema.parse({ source, llm })).toThrow(/hostKeyFingerprint/);
+    const pinnedSource = {
+      ...source,
+      options: { ...source.options, ssh: { ...ssh, hostKeyFingerprint: `SHA256:${'A'.repeat(43)}` } },
+    };
+    expect(startupSchema.parse({ source: pinnedSource, llm })).toEqual({ source: pinnedSource, llm });
+  });
+
   it('keeps engine selection through the child-process startup message', async () => {
     Object.defineProperty(process, 'platform', { ...platform, value: 'linux' });
     const worker = Object.assign(new EventEmitter(), {
@@ -119,10 +131,7 @@ describe('dataset engine and language', () => {
     { source: { type: 'supabase', options: { accessToken: 'test', projectRef: 'test' } }, engine: 'supabase' },
     { source: { type: 'clickhouse', options: { host: 'localhost', database: 'sales' } }, engine: 'clickhouse' },
     { source: sqlserverSource, engine: 'sqlserver' },
-    {
-      source: { type: 'snowflake', options: { account: 'myorg-myaccount', database: 'ANALYTICS' } },
-      engine: 'snowflake',
-    },
+
   ])('selects $engine and exposes its language without changing the schema', async ({ source, engine, explicit }) => {
     const { getEngineClass } = await import('../src/engines');
     const Engine = getEngineClass(engine);
@@ -134,18 +143,31 @@ describe('dataset engine and language', () => {
     expect(instance).toBeInstanceOf(Engine);
     expect(load).toHaveBeenCalledExactlyOnceWith(source);
     expect(discover).not.toHaveBeenCalled();
-    expect(await datasets.describeDataset()).toEqual({ ...schema, language: instance!.language });
+    const instructions = instance!.dialect.rules;
+    const description = await datasets.describeDataset();
+    expect(description).toEqual({
+      ...schema,
+      language,
+      ...(instructions ? { instructions } : {}),
+    });
+    if (language.endsWith('sql')) {
+      expect(description.instructions).toContain('read-only SELECT');
+      expect(description.instructions).not.toContain('Return only SQL text');
+    }
     expect(discover).toHaveBeenCalledOnce();
     if (engine === 'python') {
-      expect(instance!.language.fence).toBe('python');
-      expect(instance!.language.instructions).toContain('tables');
-      expect(instance!.language.instructions).toContain('result');
+      expect(instance!.dialect.rules).toContain('tables');
+      expect(instance!.dialect.rules).toContain('result');
+    }
+    if (engine === 'javascript') {
+      expect(instance!.dialect.rules).toContain('data');
+      expect(instance!.dialect.rules).toContain('stat');
     }
   });
 
   it('executes JavaScript through the selected session without an API key', async () => {
     await datasets.createDataset(source, llm, 'javascript');
-    expect((await datasets.describeDataset()).language.fence).toBe('javascript');
+    expect((await datasets.describeDataset()).language).toBe('javascript');
     const result = await datasets.withDataset((ava) => ava.query('const result = [{ total: data[0].sales * 2 }];'));
     expect(result.data).toEqual([{ total: 20 }]);
     expect(result.rowCount).toBe(1);

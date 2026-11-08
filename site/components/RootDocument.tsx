@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import Script from 'next/script';
 import '../app/globals.css';
 import I18nProvider from './I18nProvider';
 import { messages, type Locale } from '../lib/i18n';
@@ -74,6 +75,15 @@ export default function RootDocument({ children, locale }: { children: React.Rea
         <I18nProvider locale={locale} messages={messages[locale]}>
           {children}
         </I18nProvider>
+        <Script src="https://www.googletagmanager.com/gtag/js?id=G-1EBYP5XTTH" strategy="afterInteractive" />
+        <Script id="google-analytics" strategy="afterInteractive">
+          {`
+            window.dataLayer = window.dataLayer || [];
+            function gtag(){dataLayer.push(arguments);}
+            gtag('js', new Date());
+            gtag('config', 'G-1EBYP5XTTH');
+          `}
+        </Script>
       </body>
     </html>
   );

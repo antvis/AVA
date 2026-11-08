@@ -1,0 +1,183 @@
+To build a Data Agent, start with a small task: give it some sales data, ask which products account for a drop in sales, and have it produce a short report with charts.
+
+At the core of a Data Agent is **an analysis loop driven by execution results**: the model proposes a query, reads and checks the results, then decides whether more analysis is needed. To make conclusions verifiable, queries need consistent metric definitions, and charts should use the actual computed results.
+
+[AVA](https://ava.antv.vision) is an open-source data analysis framework for JavaScript applications and AI agents, designed to **connect enterprise data and support business decisions with trustworthy analysis and visualization**. Like [PandasAI](https://docs.pandas-ai.com/v3/introduction) in the Python ecosystem, it supports analyzing data and generating charts through natural language. This tutorial uses AVA for analysis and charting, with the AI SDK coordinating tool calls, to build a Mini Data Agent that supports multi-step analysis and follow-up questions.
+
+![Data Agent runtime architecture](https://mdn.alipayobjects.com/huamei_aphk1k/afts/img/A*Y620RYP00wMAAAAAUXAAAAgAegfkAQ/original)
+
+## Prepare the data
+
+Start with this [sales order dataset](https://github.com/antvis/AVA/blob/ai/__tests__/datasets/sales.csv), which contains 240 orders and 12 fields. Here are the order date, product, and sales amount for the first three orders:
+
+| order_date | product      | sales (after discounts) |
+| ---------- | ------------ | ----------------------: |
+| 2025-01-01 | Monitor      |                  224.10 |
+| 2025-01-02 | Office Chair |                  680.20 |
+| 2025-01-04 | Monitor      |                2,191.20 |
+
+`YOUR_DATA` is the array of objects parsed from the full CSV, with `sales` stored as a number.
+
+## Define the business semantics
+
+Next, define the rules for the analysis: use sales amounts after discounts, assign each order to a month by its order date, and calculate change as the current period minus the previous period. Put these rules in the semantic configuration for use across queries and follow-up questions.
+
+```yaml
+models:
+  - name: data
+    tableReference:
+      table: data
+    properties:
+      description: Each row represents one order.
+cubes:
+  - name: sales
+    baseObject: data
+    measures:
+      - name: total_sales
+        expression: CAST(SUM(sales) AS DOUBLE)
+        type: DOUBLE
+        description: Sales after discounts, calculated by summing sales.
+    dimensions:
+      - name: product
+        expression: product
+        type: VARCHAR
+    timeDimensions:
+      - name: order_date
+        expression: CAST(order_date AS DATE)
+        type: DATE
+    properties:
+      description: |
+        Compare both periods using the same set of products. Change is current-period sales minus prior-period sales; negative values indicate a decline.
+        Change rate is change divided by prior-period sales. Return null when prior-period sales are zero, indicating that the rate is not applicable.
+```
+
+`YOUR_SEMANTIC` is the object parsed from this YAML.
+
+## Build the Data Agent
+
+With the data and definitions in place, wrap AVA's capabilities in two tools: `analyze` queries and computes the data, while `visualize` **references analysis data by its result ID** to generate a chart.
+
+The example requires **Node.js 22.13.0 or later**. Install these dependencies:
+
+```bash
+npm install @antv/ava@4.0.0 ai@7.0.112 @ai-sdk/openai@4.0.73 zod@4.6.7
+```
+
+Before running the code, set the `OPENAI_API_KEY` and `OPENAI_MODEL` environment variables. The model must support tool calling. When using an OpenAI Chat Completions-compatible service, also set `OPENAI_BASE_URL`.
+
+```javascript
+import { AVA } from '@antv/ava';
+import { ToolLoopAgent, isStepCount, tool } from 'ai';
+import { z } from 'zod';
+
+async function createDataAgent({ model, data, semantic }) {
+  const ava = new AVA({ llm: { model } });
+
+  await ava.source({ type: 'json', options: { data } });
+  await ava.semantic(undefined, () => semantic);
+
+  let messages = [];
+  const analyses = new Map();
+
+  const agent = new ToolLoopAgent({
+    model,
+    instructions: `Analyze the user's task step by step, using conversation history to make each query self-contained.
+    Use analyze to compute and verify data, and visualize to chart a saved result.
+    Base conclusions on tool results and state what data is missing when evidence is insufficient.`,
+    stopWhen: isStepCount(8),
+    tools: {
+      analyze: tool({
+        description: 'Query and analyze data using a self-contained question.',
+        inputSchema: z.object({ query: z.string() }),
+        execute: async ({ query }) => {
+          const analysis = await ava.analyze(query);
+          const resultId = `analysis-${analyses.size + 1}`;
+          analyses.set(resultId, analysis);
+          return { ...analysis, resultId };
+        },
+      }),
+      visualize: tool({
+        description: 'Generate a chart using an exact resultId returned by analyze and a chart request.',
+        inputSchema: z.object({ resultId: z.string(), query: z.string() }),
+        execute: async ({ resultId, query }) => {
+          const analysis = analyses.get(resultId);
+          if (!analysis) throw new Error(`Unknown resultId: ${resultId}. Call analyze first.`);
+          return ava.visualize({ query, data: analysis.data });
+        },
+        toModelOutput: ({ output }) => ({
+          type: 'json',
+          value: { chartType: output?.chartType ?? null },
+        }),
+      }),
+    },
+  });
+
+  return {
+    async ask(question) {
+      const input = [...messages, { role: 'user', content: question }];
+      const result = await agent.generate({ messages: input });
+      messages = [...input, ...result.responseMessages];
+      return result;
+    },
+    dispose: () => ava.dispose(),
+  };
+}
+```
+
+With these 53 lines of core code in place, you can run an analysis and ask follow-up questions in the same conversation:
+
+```javascript
+import { writeFile } from 'node:fs/promises';
+import { createOpenAI } from '@ai-sdk/openai';
+
+const model = createOpenAI({
+  apiKey: process.env.OPENAI_API_KEY,
+  baseURL: process.env.OPENAI_BASE_URL,
+}).chat(process.env.OPENAI_MODEL);
+
+const assistant = await createDataAgent({
+  model,
+  data: YOUR_DATA,
+  semantic: YOUR_SEMANTIC,
+});
+
+try {
+  const task = `Analyze the decline in sales from January to February 2025. List sales for each product in both months and the change,
+sort from the largest decline to the largest increase, reconcile the totals, and show the changes in a bar chart.`;
+  const answer = await assistant.ask(task);
+  console.log(answer.text);
+  for (const [index, { toolName, output }] of answer.toolResults.entries()) {
+    if (toolName === 'analyze') console.table(output.data);
+    if (toolName === 'visualize' && output) await writeFile(`chart-${index + 1}.html`, output.html);
+  }
+
+  console.log((await assistant.ask('Did Laptop sales fall because a promotion ended?')).text);
+} finally {
+  await assistant.dispose();
+}
+```
+
+## Review the results
+
+The following **reference results were aggregated independently from the original CSV** and can be used to check the agent's output. Sales fell from **38,897.18** in January to **21,804.11** in February, a decline of **43.94%**:
+
+| Product | January sales | February sales | Change (February − January) |
+| ------- | ------------: | -------------: | --------------------------: |
+| Laptop | 19,688.10 | 3,596.00 | −16,092.10 |
+| Standing Desk | 9,655.80 | 5,546.10 | −4,109.70 |
+| Monitor | 6,536.25 | 4,731.00 | −1,805.25 |
+| Pen Set | 232.20 | 127.71 | −104.49 |
+| Bookshelf | 1,225.50 | 1,251.30 | +25.80 |
+| Copy Paper | 59.19 | 137.06 | +77.87 |
+| Notebook | 31.50 | 137.03 | +105.53 |
+| Keyboard | 215.64 | 1,015.31 | +799.67 |
+| Office Chair | 1,253.00 | 5,262.60 | +4,009.60 |
+| **Total** | **38,897.18** | **21,804.11** | **−17,093.07** |
+
+The product-level changes add up to the overall change. **Laptop accounts for most of the decline, while growth in Office Chair sales offsets part of it.**
+
+![Sales changes by product from January to February 2025](https://mdn.alipayobjects.com/huamei_aphk1k/afts/img/A*m_BqSr6ehAkAAAAARMAAAAgAegfkAQ/original)
+
+For the follow-up question about promotions, the data lacks campaign dates and coverage. The agent should explain that **there is not enough evidence to confirm the cause of the decline**.
+
+If you've built your own Data Agent with AVA, share your work in the [AVA project showcase](https://github.com/antvis/AVA/issues/1061) for a chance to receive a SEE Conf 2026 ticket and meet the community in person.

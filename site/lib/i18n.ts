@@ -10,7 +10,7 @@ export function localeHref(href: string, locale: Locale): string {
   if (!href.startsWith('/') || href.startsWith('//')) return href;
   const bare = href.replace(/^\/zh(?=\/|[?#]|$)/, '');
   const path = bare.startsWith('/') ? bare : `/${bare}`;
-  if (!/^\/(?:[?#]|$|(?:ai|documentation)(?:[/?#]|$))/.test(path)) return href;
+  if (!/^\/(?:[?#]|$|(?:ai|documentation|blog)(?:[/?#]|$))/.test(path)) return href;
   return locale === 'zh' ? `/zh${path}` : path;
 }
 

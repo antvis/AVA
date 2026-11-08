@@ -1,9 +1,9 @@
 import { describe, expect, it, vi } from 'vitest';
 
-import { SQLServerQueryDialect } from '../../../src/query/sqlserver';
+import { TSQLDialect } from '../../../src/query/tsql';
 import { getSQLServerSchema } from '../../../src/remote/sqlserver/schema';
 
-const dialect = new SQLServerQueryDialect({ model: 'unused' });
+const dialect = new TSQLDialect({ model: 'unused' });
 
 function catalogRow(kind: string, name: string, sourceTable: string, metadata: Record<string, unknown>) {
   return { kind, table_name: name, source_table: sourceTable, metadata: JSON.stringify(metadata) };

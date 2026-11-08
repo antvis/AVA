@@ -24,6 +24,7 @@ export default function DocumentationLayout({ children, locale }: { children: Re
             <span>{t('docs')}</span>
           </Link>
           <nav aria-label={t('navigation')} className="docs-header-links">
+            <Link href="/blog/">{t('blog')}</Link>
             <Link href="/" className="docs-website">
               {t('website')} <span aria-hidden="true">↗</span>
             </Link>

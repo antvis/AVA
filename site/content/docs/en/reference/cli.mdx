@@ -8,7 +8,7 @@ DATASET_ID=$(node -p 'JSON.parse(require("fs").readFileSync("session.json", "utf
 ava schema "$DATASET_ID" > schema.json
 ```
 
-`source` returns a session ID after preparing the source. Schema discovery happens on demand; `schema` returns the source structure plus `language` (`name`, `fence`, and optional `instructions`) for writing queries. Repeated schema calls use the session's cached structure. Known queries can run without a separate schema call.
+`source` returns a session ID after preparing the source. Schema discovery happens on demand; `schema` returns the source structure plus a `language` id (`duckdb-sql`, `clickhouse-sql`, `postgresql`, `tsql`, `python`, or `javascript`) and optional top-level `instructions` for dialect rules or execution bindings. Repeated schema calls use the session's cached structure. Known queries can run without a separate schema call.
 
 Structured source loading, schema, profile, semantic, query, and `viz` do not need a model key. Set `OPENAI_API_KEY` and optional `OPENAI_MODEL` / `OPENAI_BASE_URL` before creating a session if you plan to use AI commands or a text source. Session model settings cannot be changed afterward.
 

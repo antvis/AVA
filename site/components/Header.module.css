@@ -1,0 +1,44 @@
+.site {
+  --site-header-height: clamp(68px, 5.83vw, 84px);
+  /* Reserve the header's height so collapsing it cannot change the scroll threshold. */
+  height: var(--site-header-height);
+  background: transparent;
+}
+.site > div {
+  max-width: 1440px;
+  height: var(--site-header-height);
+  margin-inline: auto;
+  padding-inline: 36px;
+  backdrop-filter: none;
+}
+.site[data-scrolled='true'] > div {
+  height: 64px;
+  max-width: min(1200px, calc(100% - 24px));
+  padding-inline: 24px;
+  backdrop-filter: blur(14px);
+}
+.site nav a {
+  font-size: 13px;
+  font-weight: 400;
+  color: #243d4b;
+}
+.site img {
+  width: 58px;
+  height: 34px;
+  object-fit: contain;
+}
+.site :is(a, button):focus-visible {
+  outline: 2px solid #22799b;
+  outline-offset: 5px;
+}
+:global(html[lang='zh-CN']) .site :is(a, button) {
+  font-weight: 400;
+}
+@media (max-width: 767px) {
+  .site {
+    --site-header-height: 68px;
+  }
+  .site > div {
+    padding-inline: 20px;
+  }
+}

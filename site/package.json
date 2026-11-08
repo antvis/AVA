@@ -4,8 +4,7 @@
   "version": "0.0.0",
   "scripts": {
     "dev": "next dev",
-    "build": "next build",
-    "check:docs": "node scripts/check-docs.mjs"
+    "build": "next build"
   },
   "dependencies": {
     "@ai-sdk/openai": "^4.0.73",

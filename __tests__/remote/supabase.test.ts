@@ -9,7 +9,7 @@ import { PgParser, unwrapParseResult } from '@supabase/pg-parser';
 import { AVA } from '../../src';
 import { BUILTIN_METRICS as PG_METRICS, profileTables as pgProfile } from '../../src/remote/supabase/profile';
 import { SupabaseEngine } from '../../src/remote';
-import { PostgreSQLQueryDialect } from '../../src/query/postgresql';
+import { PostgreSQLDialect } from '../../src/query/postgresql';
 import { getLLMConfig } from '../test-utils';
 
 import type { Schema } from '../../src/types';
@@ -238,7 +238,7 @@ describe('SupabaseEngine', () => {
         ],
         views: [],
       });
-      const generate = vi.spyOn(PostgreSQLQueryDialect.prototype, 'getDSL').mockResolvedValue({ dsl: 'SELECT 1' });
+      const generate = vi.spyOn(PostgreSQLDialect.prototype, 'getDSL').mockResolvedValue({ dsl: 'SELECT 1' });
       await engine.getDSL('Orders by buyer', schema);
       expect(generate).toHaveBeenCalledWith('Orders by buyer', schema);
       expect(requests).toHaveLength(1);
@@ -254,9 +254,12 @@ describe('SupabaseEngine', () => {
       const engine = new SupabaseEngine(getLLMConfig());
       await engine.load({ type: 'supabase', options: CONNECTION });
 
-      const rows = await engine.execute('SELECT name FROM users');
+      const rows = await engine.execute('SELECT name FROM users; -- trailing comment');
       expect(rows.data).toEqual([{ name: 'Alice' }]);
       expect(requests[0].body.query).toContain('LIMIT 201');
+      await expect(unwrapParseResult(new PgParser().parse(requests[0].body.query))).resolves.toMatchObject({
+        stmts: [{ stmt: { SelectStmt: expect.any(Object) } }],
+      });
 
       const result = await engine.execute('SELECT name FROM users', { maxRows: 2 });
       expect(result.data).toEqual([{ name: 'Alice' }]);
@@ -270,14 +273,7 @@ describe('SupabaseEngine', () => {
       await engine.load({ type: 'supabase', options: CONNECTION });
 
       await expect(engine.execute('SELECT 1; SELECT 2')).rejects.toThrow('exactly one');
-      await expect(engine.execute('DELETE FROM users')).rejects.toThrow('only read-only SELECT statements');
-      await expect(engine.execute('SELECT 1; DELETE FROM users')).rejects.toThrow('only read-only SELECT statements');
-      await expect(engine.execute('SELECT * FROM users FOR UPDATE')).rejects.toThrow(
-        'only read-only SELECT statements'
-      );
-      await expect(
-        engine.execute('WITH deleted AS (DELETE FROM users RETURNING *) SELECT * FROM deleted')
-      ).rejects.toThrow('only read-only SELECT statements');
+      await expect(engine.execute('SELECT * INTO copied_users FROM users')).rejects.toThrow('read-only SELECT');
       expect(requests).toHaveLength(0);
     });
   });

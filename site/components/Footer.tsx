@@ -27,6 +27,7 @@ const NAV: { title: string; links: { label: string; href: string; external?: boo
     title: 'developers',
     links: [
       { label: 'documentation', href: '/documentation/' },
+      { label: 'blog', href: '/blog/' },
       { label: 'ai', href: '/ai' },
       { label: 'sdk', href: '/documentation/quickstart/' },
       { label: 'cli', href: '/documentation/reference/cli/' },
@@ -107,7 +108,7 @@ const Footer: React.FC = () => {
         </div>
 
         <div className="mt-12 flex flex-col items-start justify-between gap-4 border-t border-zinc-200/70 pt-6 sm:flex-row sm:items-center">
-          <p className="text-[12px] text-zinc-400">{t('2026AntVReleasedUnderTheMITLicense')}</p>
+          <p className="text-[12px] text-zinc-400">{t('antvSlogan')}</p>
           <a
             href={GITHUB}
             target="_blank"

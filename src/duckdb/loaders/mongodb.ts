@@ -92,7 +92,7 @@ export async function loadMongoDB(options: MongoDBSourceOptions): Promise<Loaded
       return tableNames;
     },
     getSchema: (conn) => getDuckDBSchema(conn, tableNames),
-    allowedDirectories: [],
+    allowedPaths: [],
     cleanup: noopCleanup,
   };
 }

@@ -25,7 +25,10 @@ const database = z
     port,
     user: z.string().optional(),
     password: z.string().optional(),
-    ssh: z.object({ host: text, user: text, port, password: z.string().optional() }).strict().optional(),
+    ssh: z
+      .object({ host: text, user: text, port, password: z.string().optional(), hostKeyFingerprint: text })
+      .strict()
+      .optional(),
   })
   .strict();
 const sqlserver = z
@@ -96,16 +99,10 @@ const feishuBitable = z
 
 const sourceSchema = z.discriminatedUnion('type', [
   z
-    .object({
-      type: z.literal('csv-file'),
-      options: file.extend({ options: z.record(z.string(), z.unknown()).optional() }),
-    })
+    .object({ type: z.literal('csv-file'), options: file.extend({ options: z.record(z.string(), z.unknown()).optional() }) })
     .strict(),
   z
-    .object({
-      type: z.literal('json-file'),
-      options: file.extend({ options: z.record(z.string(), z.unknown()).optional() }),
-    })
+    .object({ type: z.literal('json-file'), options: file.extend({ options: z.record(z.string(), z.unknown()).optional() }) })
     .strict(),
   z.object({ type: z.literal('parquet'), options: file }).strict(),
   z.object({ type: z.literal('excel'), options: excelOptionsSchema }).strict(),
@@ -120,10 +117,7 @@ const sourceSchema = z.discriminatedUnion('type', [
     .object({
       type: z.literal('json'),
       options: z
-        .object({
-          data: z.array(z.record(z.string(), z.unknown())),
-          options: z.record(z.string(), z.unknown()).optional(),
-        })
+        .object({ data: z.array(z.record(z.string(), z.unknown())), options: z.record(z.string(), z.unknown()).optional() })
         .strict(),
     })
     .strict(),

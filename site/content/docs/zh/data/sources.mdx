@@ -83,7 +83,13 @@ const ava = new AVA({
 
 await ava.source({
   type: 'json',
-  options: { data: [{ city: 'Hangzhou', revenue: 120 }] },
+  options: {
+    data: [
+      { city: 'Hangzhou', revenue: 120 },
+      { city: 'Shanghai', revenue: 200 },
+      { city: 'Beijing', revenue: 160 },
+    ],
+  },
 });
 
 const schema = await ava.schema();
@@ -107,7 +113,7 @@ const schema = await ava.schema();
 ```typescript
 await ava.source({
   type: 'csv',
-  options: { csv: 'city,revenue\nHangzhou,120\nShanghai,200' },
+  options: { csv: 'city,revenue\nHangzhou,120\nShanghai,200\nBeijing,160' },
 });
 ```
 
@@ -119,6 +125,8 @@ await ava.source({
 <Heading as="h3" id="csv-files">读取 CSV 文件</Heading>
 
 设置 `type: 'csv-file'`，传入本地路径或 HTTP(S) URL。URL 需要鉴权时，可在 `options.headers` 中提供请求头。
+
+远程 CSV、JSON、Parquet 和 Excel 文件只要传入非空 `headers`，就仅允许同来源跳转（协议、主机名和有效端口均相同），最多跳转 20 次。此规则同时适用于 DuckDB 和 Python，包括自定义 Python 执行器。跨来源跳转会在发送下一次请求前报错，即使请求头只有 `Accept`，或跳转是从 HTTP 升级到 HTTPS。未传请求头或传入 `headers: {}` 时，保留底层下载器原有的跳转行为。需要从其他来源下载受保护文件时，请直接使用已确认可信的最终地址。
 
 ```typescript
 await ava.source({
@@ -404,6 +412,40 @@ await ava.source({
 | `schema` | `string` | 否 | 表所属的数据库 schema，默认 `public`。 |
 | `ssh` | `SSHOptions` | 否 | 可选的 [SSH 隧道](#ssh-options)。 |
 
+<Heading as="h2" id="ssh-options">SSH 选项</Heading>
+
+通过跳板机访问 MySQL 或 PostgreSQL 时，在 `options` 中添加 `ssh`。数据库的 `host` 和 `port` 应填写跳板机能够访问的地址与端口。
+
+先通过可信渠道向 SSH 服务器管理员获取主机密钥指纹。管理员可在服务器上运行 `ssh-keygen -lf /etc/ssh/ssh_host_ed25519_key.pub -E sha256`，将输出中的 `SHA256:...` 值填入连接配置：
+
+```typescript
+await ava.source({
+  type: 'mysql', // PostgreSQL 使用 'postgresql'
+  options: {
+    host: 'db.internal',
+    database: 'analytics',
+    user: 'reader',
+    password: process.env.DB_PASSWORD,
+    ssh: {
+      host: 'bastion.example.com',
+      user: 'ssh-user',
+      password: process.env.SSH_PASSWORD,
+      hostKeyFingerprint: 'SHA256:REPLACE_WITH_SERVER_FINGERPRINT',
+    },
+  },
+});
+```
+
+`options.ssh` 中的字段：
+
+| 字段 | 类型 | 必填 | 含义与默认值 |
+| --- | --- | --- | --- |
+| `host` | `string` | 是 | SSH 服务器主机名。 |
+| `port` | `number` | 否 | 默认 `22`。 |
+| `user` | `string` | 是 | SSH 登录用户。 |
+| `password` | `string` | 否 | SSH 登录密码。 |
+| `hostKeyFingerprint` | `string` | 是 | 预期的主机密钥指纹，格式为 `SHA256:<base64>`，不带填充字符。 |
+
 <Heading as="h2" id="mongodb">MongoDB</Heading>
 
 加载指定数据库中的集合。可以使用结构化连接字段，也可以提供优先级更高的 `connection`。
@@ -437,6 +479,8 @@ await ava.source({
 
 在 Node.js 的 DuckDB 引擎中使用 `type: 'feishu-bitable'`。记录会暴露为名为 `data` 的只读视图。
 
+首次接入请按[飞书多维表格配置指南](/documentation/data/feishu-bitable/)完成应用创建、权限授权和凭证绑定，指南包含流程示意图、CLI / SDK 示例与常见问题。
+
 ```typescript
 await ava.source({
   type: 'feishu-bitable',
@@ -450,7 +494,7 @@ await ava.source({
 
 提供 `url`，或同时提供 `appToken` 与 `tableId`，并设置 `appId`、`appSecret`。CLI 也会从 `AVA_FEISHU_APP_ID`、`AVA_FEISHU_APP_SECRET` 或 `~/.ava/feishu.json` 读取凭证。
 
-支持 `/base/` 链接和知识库中的 `/wiki/` 链接。Wiki 链接要求应用具备知识库读取权限并加入相应知识空间，才能解析多维表格。URL 中的 `view` 参数会被忽略。人员、附件、链接、公式、位置、群组等复杂单元格会展开为逗号分隔的文本。
+支持 `/base/` 链接和知识库中的 `/wiki/` 链接。Wiki 链接要求应用具备知识库读取权限并加入相应知识空间，才能解析多维表格。URL 中的 `view` 参数会被忽略。人员、附件、链接、位置、群组等复杂单元格会转换为文本，多个值通常以逗号分隔；公式和查找引用字段按返回值类型转换。
 
 <Heading as="h2" id="supabase">Supabase</Heading>
 
@@ -684,14 +728,3 @@ fileId 使用原生 ID，分享链接 encoded ID 需通过官方 [ID 转换](htt
 分别检查 HTTP 与业务 ret，保留状态、业务 ret/msg、请求 ID，以及网络异常的名称、消息、错误码和一层原因；不复制任意对象、堆栈或请求头。仅对选定字符串精确替换凭证，超过 8 KiB 的字段整体省略；非 JSON 或不完整的 HTTP 错误正文不输出，仍保留状态和请求 ID。只重试网络错误及 HTTP 429/500/502/503/504，遵循有效且不超过 30 秒的 Retry-After；认证和业务错误不自动重试。端点固定，拒绝重定向。
 
 加载时停止编辑源表，这不是远端事务快照或持续同步。两个业务示例、配置迁移和验证结果见[接入说明](https://github.com/antvis/AVA/tree/oss-camp2026/examples/tencent-docs)。
-
-<Heading as="h2" id="ssh-options">SSH 选项</Heading>
-
-用于 MySQL 和 PostgreSQL，放在 `options.ssh` 中。
-
-| 字段 | 类型 | 必填 | 含义与默认值 |
-| ---------- | -------- | -------- | ------------------------------------------------------ |
-| `host` | `string` | 是 | SSH 服务器主机名。 |
-| `port` | `number` | 否 | 默认 `22`。 |
-| `user` | `string` | 是 | SSH 登录用户。 |
-| `password` | `string` | 否 | SSH 登录密码，不提供则不传密码。 |

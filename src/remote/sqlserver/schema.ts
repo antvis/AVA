@@ -1,3 +1,4 @@
+import { loadTSQLParser } from '../../query/tsql';
 import { rowObjects2Schema } from '../../util/schema';
 import { sqlIdentifier, sqlStringLiteral, sqlUnionAll } from '../../util/sql';
 
@@ -73,7 +74,7 @@ WHERE fk.is_disabled = 0 AND fk.is_not_trusted = 0`;
 async function viewStatement(sql: string): Promise<string | undefined> {
   try {
     const { createTSQLParser, CommonToken, CommonTokenStream, ListTokenSource, Token, TSqlParser } =
-      await import('../../query/tsql-parser');
+      await loadTSQLParser();
     const parser = createTSQLParser(sql, () => {
       throw new Error('Unsupported SQL Server view definition');
     });

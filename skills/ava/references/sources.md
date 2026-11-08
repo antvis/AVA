@@ -83,13 +83,30 @@ Use the configuration format and load command shown above:
 Use authorized read-only credentials. Restrict temporary credential files to the current user and delete them after loading. Do not put credentials in deliverables or logs.
 
 - MySQL, PostgreSQL, SQLite, and MongoDB require the corresponding DuckDB extensions. MongoDB uses the `mongo` community extension. Each collection becomes a table, and its schema is inferred from samples, so rare fields may be missed.
-- MySQL/PostgreSQL accept `port` and `ssh: {"host":"bastion","user":"reader","port":22,"password":"REPLACE"}`. PostgreSQL defaults to schema `public`.
+- MySQL/PostgreSQL accept `port` and an optional [SSH tunnel](#connect-through-ssh). PostgreSQL defaults to schema `public`.
 - MongoDB accepts `connection` or structured `host`, `port`, `user`, `password`, `authSource`, `srv`, `tls`, `ssl`, `tlsCAFile`, and `tlsAllowInvalidCertificates`; `database` is required in either form. `connection` takes precedence; keep its database consistent with `database`.
 - ClickHouse connects over HTTP(S) and requires version 23.10 or later.
 - ClickHouse requires `database` and either `host` or `url`. It accepts `port`, `user`/`username`, `password`, `access_token`, `pathname`, `application`, `session_id`, `role` (string or string array), `http_headers`, `request_timeout`, and other ClickHouse client options.
 - SQL Server uses SQL authentication on port `1433` by default. Grant `SELECT` and `VIEW DEFINITION` permissions. TLS certificate verification is enabled by default.
 - Snowflake runs queries on the configured warehouse through the official driver, which uses credits. One source covers one schema (default `PUBLIC`), and discovery lists only the objects the role can read. Prefer key-pair authentication (`privateKeyPath`), so the configuration holds no secret; `queryTimeoutMs` (default 30000) limits each statement.
 - Supabase uses the Management API; `accessToken` must be a token authorized for that API.
+
+### Connect through SSH
+
+For MySQL/PostgreSQL behind a bastion, obtain the bastion's OpenSSH SHA-256 host key fingerprint from its administrator over a trusted channel. The administrator can read it on the SSH server with `ssh-keygen -lf /etc/ssh/ssh_host_ed25519_key.pub -E sha256`.
+
+Keep the database `host` and `port` set to the address reachable from the bastion, and add this `ssh` object inside `options`. Replace `hostKeyFingerprint` with the `SHA256:...` value without base64 padding:
+
+```json
+{
+  "ssh": {
+    "host": "bastion.example.com",
+    "user": "ssh-user",
+    "password": "REPLACE",
+    "hostKeyFingerprint": "SHA256:REPLACE_WITH_SERVER_FINGERPRINT"
+  }
+}
+```
 
 ## Feishu Bitable
 
