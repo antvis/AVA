@@ -47,13 +47,13 @@ describe.skipIf(!sqlserverEnabled)('SQL Server actual CLI sessions', () => {
   it.each(['query', 'schema'])('loads only T-SQL parsers on demand for %s', async (operation) => {
     const { stdout } = await execute(process.execPath, ['-e', `
       require('./lib');
-      const { SQLServerQueryDialect } = require('./lib/query/sqlserver');
+      const { TSQLDialect } = require('./lib/query/tsql');
       const { getSQLServerSchema } = require('./lib/remote/sqlserver/schema');
       const grammars = () => Object.keys(require.cache).filter(file => file.includes('grammar-output'));
       const before = grammars().length;
       (async () => {
         if (process.argv[1] === 'query') {
-          await new SQLServerQueryDialect({ model: 'unused' }).validateDSL('SELECT 1');
+          await new TSQLDialect({ model: 'unused' }).validateDSL('SELECT 1');
         } else {
           await getSQLServerSchema(async () => [{
             kind: 'view', table_name: '[dbo].[example]', source_table: 'example',
@@ -71,7 +71,7 @@ describe.skipIf(!sqlserverEnabled)('SQL Server actual CLI sessions', () => {
   it('automatically routes source, schema, native queries and disposal through the remote engine', async () => {
     const id = await source();
     const schema = await cli(['schema', id]);
-    expect(schema.language.name).toContain('SQL Server');
+    expect(schema.language).toBe('tsql');
     expect(schema.models.map((model: { name: string }) => model.name)).toContain('[dbo].[orders]');
     const profile = await cli(['profile', id, '--metrics', 'row_count,mean']);
     const orders = profile.models.find((model: { name: string }) => model.name === '[dbo].[orders]');

@@ -139,7 +139,7 @@ export async function loadMySQL(options: MySQLSourceOptions): Promise<LoadedSour
       return rowObjects2Schema(reader.getRowObjectsJson());
     },
     // Pure remote source — no local file access needed after ATTACH
-    allowedDirectories: [],
+    allowedPaths: [],
     cleanup: async () => {
       await tunnel?.close();
     },

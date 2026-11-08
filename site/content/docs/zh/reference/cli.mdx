@@ -10,7 +10,7 @@ DATASET_ID=$(node -p 'JSON.parse(require("fs").readFileSync("session.json", "utf
 ava schema "$DATASET_ID" > schema.json
 ```
 
-`source` 准备好数据源后返回会话 ID。结构发现按需进行；`schema` 返回数据源结构，以及用于编写查询的 `language`（包含 `name`、`fence` 和可选的 `instructions`）。重复调用 schema 会复用会话缓存。已知的查询不必提前单独调用 schema，也可以直接执行。
+`source` 准备好数据源后返回会话 ID。结构发现按需进行；`schema` 返回数据源结构，以及 `language` id（`duckdb-sql`、`clickhouse-sql`、`postgresql`、`tsql`、`snowflake-sql`、`python` 或 `javascript`），可选的顶层 `instructions` 说明方言规则或执行环境中的变量和结果约定。重复调用 schema 会复用会话缓存。已知的查询不必提前单独调用 schema，也可以直接执行。
 
 加载结构化数据、查看 schema、计算 profile、读写 semantic、执行 query，以及 `viz` 都不需要模型密钥。如果要使用 AI 命令或文本数据源，请在创建会话前设置 `OPENAI_API_KEY`，以及可选的 `OPENAI_MODEL`、`OPENAI_BASE_URL`。会话创建后不能修改其模型配置。
 
@@ -18,7 +18,7 @@ ava schema "$DATASET_ID" > schema.json
 
 `ava source` 接受文件或 URL、包含数据源配置的 `@file`，或用 `-` 读取标准输入。CSV、JSON、Parquet、Excel、SQLite 可根据扩展名推断类型；路径输入可用 `--type` 覆盖类型。配置文件和标准输入本身已包含类型。
 
-使用 `--engine` 选择执行引擎。CLI 会为匹配的数据源配置推断 Supabase、ClickHouse，其余情况默认 DuckDB；这与 JavaScript 构造函数的行为不同。引擎在会话期间固定。连接和读取配置见[数据源配置](/documentation/data/sources/)。
+使用 `--engine` 选择执行引擎。CLI 会为匹配的数据源配置推断 Supabase、ClickHouse、Snowflake，其余情况默认 DuckDB；这与 JavaScript 构造函数的行为不同。引擎在会话期间固定。连接和读取配置见[数据源配置](/documentation/data/sources/)。
 
 <Heading as="h2" id="reuse-saved-metadata">复用已有元数据</Heading>
 
@@ -73,7 +73,7 @@ ava visualize --query "Plot revenue by region" --data @rows.json
 
 | 命令 | 位置参数 | 标志与默认值 |
 | ----------- | -------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `source` | `dataset`：路径、URL、`@file` 或 `-` | `-t` / `--type`：`csv-file`、`json-file`、`parquet`、`excel`、`sqlite`，默认按扩展名推断。`--engine`：`duckdb`、`python`、`javascript`、`supabase`、`clickhouse`，推断规则见上文。 |
+| `source` | `dataset`：路径、URL、`@file` 或 `-` | `-t` / `--type`：`csv-file`、`json-file`、`parquet`、`excel`、`sqlite`，默认按扩展名推断。`--engine`：`duckdb`、`python`、`javascript`、`supabase`、`clickhouse`、`snowflake`，推断规则见上文。 |
 | `schema` | `dataset-id` | 可选 `--file`：已有 schema JSON 文件的路径。 |
 | `profile` | `dataset-id` | 可选 `--file`：已有 profile JSON 文件的路径；否则可用 `--metrics` 指定逗号分隔的指标名，默认[标准指标集](/documentation/reference/api/#profile)。传入空字符串则不计算统计项。 |
 | `semantic` | `dataset-id` | 可选 `--file`：Semantic JSON 文件的路径，用于替换会话中的完整定义；不提供时读取当前定义。 |

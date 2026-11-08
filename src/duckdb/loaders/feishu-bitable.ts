@@ -61,7 +61,7 @@ function emptyTable(fields: FeishuField[]): LoadedSource {
       return ['data'];
     },
     getSchema: (conn) => getDuckDBSchema(conn, ['data']),
-    allowedDirectories: [],
+    allowedPaths: [],
     cleanup: async () => {},
   };
 }

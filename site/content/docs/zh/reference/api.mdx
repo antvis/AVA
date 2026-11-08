@@ -65,7 +65,7 @@ import { Heading } from '../../../../mdx-components';
 
 <h4 id="engine-options">引擎选项</h4>
 
-提供 `engine` 时，`config.engine.type` 必填。支持 `duckdb`、`python`、`javascript`、`supabase`、`clickhouse`，以及通过 `registerEngine()` 注册的名称。省略 `engine` 时选择 DuckDB。JavaScript、Supabase、ClickHouse 没有其他引擎字段，连接凭证放在 `source()` 中。
+提供 `engine` 时，`config.engine.type` 必填。支持 `duckdb`、`python`、`javascript`、`supabase`、`clickhouse`、`snowflake`，以及通过 `registerEngine()` 注册的名称。省略 `engine` 时选择 DuckDB。JavaScript、Supabase、ClickHouse、Snowflake 没有其他引擎字段，连接凭证放在 `source()` 中。
 
 <h5 id="duckdb">DuckDB</h5>
 
@@ -85,8 +85,8 @@ import { Heading } from '../../../../mdx-components';
 
 | 字段 | 类型 | 必填 | 含义与默认值 |
 | ---------------- | -------------------------------------------- | -------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `execute` | `(code: string) => Promise<ExecutionResult>` | 否 | 用自定义环境替换本地 python3 执行。本地执行没有沙箱；请运行完整 Python 脚本，将其 JSON 输出作为 ExecutionResult 返回。脚本包含数据加载和结果限制，远程执行时限需另行配置。 |
-| `queryTimeoutMs` | `number` | 否 | 客户端等待上限及本地进程执行时限，默认 30000 毫秒。 |
+| `execute` | `(code: string) => Promise<ExecutionResult>` | 否 | 用自定义环境替换本地 python3 执行。本地执行没有沙箱；请运行完整 Python 脚本，将其 JSON 输出作为 ExecutionResult 返回。每次查询先发送只编译的校验脚本，再发送包含数据加载和结果限制的执行脚本；远程执行时限需另行配置。 |
+| `queryTimeoutMs` | `number` | 否 | 每次校验或执行调用的等待上限及本地进程时限，默认 30000 毫秒。 |
 
 <h5 id="registered-engines">已注册的引擎</h5>
 

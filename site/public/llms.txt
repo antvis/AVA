@@ -6,7 +6,7 @@ This documentation covers AVA 4.0. Install `@antv/ava@4` with Node.js 22.13.0 or
 
 The core workflow is `source()` → `analyze()` → `visualize()`. `source()` replaces the current dataset and returns no value; use `schema()` to inspect it and `profile()` for statistics. Use `suggest()` to discover questions, `translate()` and `query()` to control query execution, or `recommend()` and `viz()` to control chart generation. Always await `dispose()` when finished.
 
-DuckDB is the default Node.js engine. JavaScript supports browsers and Node.js; Python, Supabase, and ClickHouse provide additional Node.js execution options. Follow the linked guides for source support, configuration, and complete API signatures.
+DuckDB is the default Node.js engine. JavaScript supports browsers and Node.js; Python, Supabase, ClickHouse, and Snowflake provide additional Node.js execution options. Follow the linked guides for source support, configuration, and complete API signatures.
 
 ## Get started
 
@@ -18,6 +18,7 @@ DuckDB is the default Node.js engine. JavaScript supports browsers and Node.js; 
 ## Data, analysis, and visualization
 
 - [Data sources](https://ava.antv.vision/documentation/data/sources/): Source types and parameters for inline data, files, and databases.
+- [Lark Base setup](https://ava.antv.vision/documentation/data/feishu-bitable/): Illustrated app creation, permissions, document access, credential binding, CLI / SDK examples, and troubleshooting for Lark Base.
 - [Inspect your data](https://ava.antv.vision/documentation/data/schema/): AVA discovers the structural starting point automatically; optionally compute statistics, then supply business meaning through semantic definitions. No schema needs to be authored for ordinary use.
 - [Define data semantics](https://ava.antv.vision/documentation/data/semantic/): Author business context, model and column mappings, relationships, views, and cubes; includes a worked sales example and links to the complete API fields. Definitions guide query generation and do not materialize objects or enforce access policies.
 - [Analyze data](https://ava.antv.vision/documentation/analysis/overview/): Ask questions, get suggestions, and translate or execute queries separately.
@@ -32,7 +33,7 @@ DuckDB is the default Node.js engine. JavaScript supports browsers and Node.js; 
 - [DuckDB](https://ava.antv.vision/documentation/engines/duckdb/): Run SQL against inline data, files, and attached databases.
 - [JavaScript](https://ava.antv.vision/documentation/engines/javascript/): Execute JavaScript against an in-memory dataset.
 - [Python](https://ava.antv.vision/documentation/engines/python/): Analyze with pandas using local Python or an application-provided executor.
-- [Supabase and ClickHouse](https://ava.antv.vision/documentation/engines/remote/): Discover schemas and execute queries in remote databases.
+- [Supabase, ClickHouse, and Snowflake](https://ava.antv.vision/documentation/engines/remote/): Discover schemas and execute queries in remote databases.
 - [Custom engines](https://ava.antv.vision/documentation/engines/custom/): Implement and register a custom analysis engine.
 
 ## API reference
@@ -56,6 +57,7 @@ DuckDB is the default Node.js engine. JavaScript supports browsers and Node.js; 
 - [Agent Skill](https://ava.antv.vision/zh/documentation/agent-skill/): 让现有 AI Agent 用上 AVA，完成从数据探索到图表交付的完整流程。
 - [安装与快速开始](https://ava.antv.vision/zh/documentation/quickstart/): 安装 AVA，接入第一份数据，跑通分析与图表生成。
 - [接入数据](https://ava.antv.vision/zh/documentation/data/sources/): 连接内存数据、文件、数据库和飞书多维表格。
+- [飞书多维表格配置](https://ava.antv.vision/zh/documentation/data/feishu-bitable/): 图文介绍应用创建、权限授权、凭证绑定、CLI / SDK 加载验证与常见问题。
 - [了解你的数据](https://ava.antv.vision/zh/documentation/data/schema/): 自动发现表结构，按需查看统计信息，再补充业务背景。
 - [补充业务语义](https://ava.antv.vision/zh/documentation/data/semantic/): 说明业务口径、字段映射与可复用指标，让分析更贴近实际业务。
 - [分析数据](https://ava.antv.vision/zh/documentation/analysis/overview/): 用自然语言提问，获得可检查的查询结果与分析结论。
@@ -74,3 +76,13 @@ DuckDB is the default Node.js engine. JavaScript supports browsers and Node.js; 
 - [命令行工具](https://ava.antv.vision/zh/documentation/reference/cli/): 在终端中加载数据、查询分析、生成图表，并复用本地会话。
 - [评测结果](https://ava.antv.vision/zh/documentation/reference/benchmarks/): 了解数据上下文与分析策略的评测方法、结果及复现方式。
 - [架构与源码导航](https://ava.antv.vision/zh/documentation/reference/architecture/): 从公开 API 出发，找到对应的实现与扩展位置。
+
+
+## Blog
+
+- [AVA Blog](https://ava.antv.vision/blog/): Practical guides, engineering ideas, and product updates.
+- [AVA 中文 Blog](https://ava.antv.vision/zh/blog/): 应用实践、技术思考与产品进展。
+- [用 AVA 构建 Mini Data Agent](https://ava.antv.vision/zh/blog/mini-data-agent/): 第一篇中文实践教程，从销售数据出发，搭建支持分析、追问与图表生成的数据助手。
+- [Build a Mini Data Agent with AVA](https://ava.antv.vision/blog/mini-data-agent/): Build a data assistant with AVA and the AI SDK, including business semantics, analysis tools, charts, and follow-up questions.
+- [AVA 4.0 发布](https://ava.antv.vision/zh/blog/ava-4-release/): 面向 AI Agent 的数据分析与可视化框架，介绍统一数据上下文、多源接入、分析执行与图表生成。
+- [AVA 4.0 Release](https://ava.antv.vision/blog/ava-4-release/): Data context, heterogeneous sources, visualization, verifiable analysis, and integration options for AI agents.

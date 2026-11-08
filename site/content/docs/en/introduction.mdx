@@ -56,6 +56,8 @@ Connect a data source, inspect its structure, ask a question, and optionally gen
 - **Analyze in natural language.** `analyze()` translates, executes, and summarizes a question using the selected strategy.
 - **Control individual steps.** Use `translate()` and `query()` separately, or `recommend()` and `viz()` for chart generation.
 
+See the [API Reference](/documentation/reference/api/) for complete method signatures, parameters, and return values.
+
 ## Choose an execution engine
 
 | Engine     | Query language  | Environment                    |
@@ -65,6 +67,7 @@ Connect a data source, inspect its structure, ask a question, and optionally gen
 | Python     | Python / pandas | Node.js with a Python executor |
 | Supabase   | PostgreSQL SQL  | Node.js; remote execution      |
 | ClickHouse | ClickHouse SQL  | Node.js; remote execution      |
+| Snowflake  | Snowflake SQL   | Node.js; remote execution      |
 
 The [engine guide](/documentation/engines/overview/) explains supported sources and configuration.
 

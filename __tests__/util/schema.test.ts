@@ -62,7 +62,7 @@ describe('extractDataSchema', () => {
 describe('schemaMetadataSchema', () => {
   it('rejects independent profiles and accepts CLI schema output', () => {
     expect(() => schemaMetadataSchema.parse(profile)).toThrow();
-    expect(schemaMetadataSchema.parse({ ...schema, language: { name: 'JavaScript', fence: 'js' } })).toEqual(schema);
+    expect(schemaMetadataSchema.parse({ ...schema, language: 'javascript', instructions: 'Use data.' })).toEqual(schema);
     expect(schemaMetadataSchema.parse({ models: [] })).toEqual({ models: [] });
   });
 

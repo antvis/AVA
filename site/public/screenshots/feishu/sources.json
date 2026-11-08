@@ -1,0 +1,39 @@
+{
+  "description": "Real Feishu UI images from official Feishu tutorials; converted to lossless WebP. GIF frame indices are zero-based. UI and example app names are preserved from the source.",
+  "retrievedOn": "2026-11-05",
+  "images": [
+    {
+      "file": "create-app.webp",
+      "sourcePage": "https://www.feishu.cn/content/817244137021",
+      "sourceImage": "https://p1-hera.feishucdn.com/tos-cn-i-jbbdkfciu3/331a4b1cdb7a49aca53464cadbf6a09d~tplv-jbbdkfciu3-image%3A0%3A0.image"
+    },
+    {
+      "file": "credentials.webp",
+      "sourcePage": "https://www.feishu.cn/content/817244137021",
+      "sourceImage": "https://p1-hera.feishucdn.com/tos-cn-i-jbbdkfciu3/cc7069f482f748d38a314f846ec1b05c~tplv-jbbdkfciu3-image%3A0%3A0.image"
+    },
+    {
+      "file": "publish-version.webp",
+      "sourcePage": "https://www.feishu.cn/content/817244137021",
+      "sourceImage": "https://p1-hera.feishucdn.com/tos-cn-i-jbbdkfciu3/0b609f62f39e45838ded301d13487de4~tplv-jbbdkfciu3-image%3A0%3A0.image"
+    },
+    {
+      "file": "api-permissions.webp",
+      "sourcePage": "https://www.feishu.cn/content/137710114294",
+      "sourceImage": "https://p1-hera.feishucdn.com/tos-cn-i-jbbdkfciu3/2a51473aaecb4e07b9ed2b1998e8992c~tplv-jbbdkfciu3-image%3A0%3A0.image",
+      "frameIndex": 135
+    },
+    {
+      "file": "document-menu.webp",
+      "sourcePage": "https://www.feishu.cn/content/137710114294",
+      "sourceImage": "https://p1-hera.feishucdn.com/tos-cn-i-jbbdkfciu3/979ec1be79b54a98aa30457789c7764d~tplv-jbbdkfciu3-image%3A0%3A0.image",
+      "frameIndex": 35
+    },
+    {
+      "file": "document-access.webp",
+      "sourcePage": "https://www.feishu.cn/content/137710114294",
+      "sourceImage": "https://p1-hera.feishucdn.com/tos-cn-i-jbbdkfciu3/979ec1be79b54a98aa30457789c7764d~tplv-jbbdkfciu3-image%3A0%3A0.image",
+      "frameIndex": 120
+    }
+  ]
+}

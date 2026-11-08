@@ -3,6 +3,7 @@
 import { useLocale, useTranslations } from 'use-intl';
 import { localeHref, type Locale } from '../lib/i18n';
 import LanguageSwitch from './LanguageSwitch';
+import styles from './Header.module.css';
 
 import React, { useEffect, useState } from 'react';
 import Link from './LocaleLink';
@@ -14,6 +15,7 @@ const Header: React.FC = () => {
   const pathname = usePathname().replace(/^\/zh(?=\/|$)/, '') || '/';
   const isAIPage = pathname === '/ai' || pathname === '/ai/';
   const isHomePage = pathname === '/';
+  const useHomeHeader = isHomePage || pathname === '/blog' || pathname.startsWith('/blog/');
   const [scrolled, setScrolled] = useState(false);
 
   useEffect(() => {
@@ -26,7 +28,7 @@ const Header: React.FC = () => {
   const EASE = 'transition-all duration-500 ease-[cubic-bezier(0.22,1,0.36,1)]';
 
   return (
-    <header data-scrolled={scrolled} className="sticky top-0 z-50 w-full">
+    <header data-scrolled={scrolled} className={`sticky top-0 z-50 w-full ${useHomeHeader ? styles.site : ''}`}>
       <div
         className={`grid grid-cols-[1fr_auto_1fr] origin-top items-center ${EASE}
           ${
@@ -34,13 +36,13 @@ const Header: React.FC = () => {
               ? // 滚动后：胶囊吸顶，增加上下留白
                 'h-14 mx-[max(12px,calc((100%-1280px)/2))] translate-y-[14px] scale-95 rounded-[100px] border border-[rgba(0,0,0,0.06)] bg-[rgba(255,255,255,0.72)] px-[18px] py-0 shadow-[4px_4px_10px_0px_rgba(0,0,0,0.1)] backdrop-blur-md overflow-hidden'
               : // 默认：宽屏通栏（保持原始高度 h-16）
-                'h-16 w-full translate-y-0 scale-100 backdrop-blur-sm border-none border-gray-100 px-12'
+                'h-16 w-full translate-y-0 scale-100 backdrop-blur-sm border-none border-gray-100 px-4 sm:px-6 lg:px-12'
           }`}
       >
         {/* Logo */}
         <Link
           href="/"
-          className="col-start-1 flex items-center gap-2 hover:opacity-80 transition-opacity min-w-0 justify-self-start"
+          className="col-start-1 flex items-center gap-2 hover:opacity-80 transition-opacity min-w-0 max-w-full justify-self-start"
         >
           <img
             src="https://mdn.alipayobjects.com/huamei_qa8qxu/afts/img/A*A-lcQbVTpjwAAAAAAAAAAAAADmJ7AQ/original"
@@ -51,7 +53,7 @@ const Header: React.FC = () => {
         </Link>
 
         {/* homepage section navigation */}
-        <nav className="col-start-2 hidden items-center gap-1 justify-self-center md:flex">
+        <nav className="col-start-2 hidden items-center gap-1 justify-self-center lg:flex">
           {[
             { href: '/#analytics', label: t('features'), pathnamePrefix: null },
             { href: '/#integrate', label: t('integrations'), pathnamePrefix: null },
@@ -66,7 +68,7 @@ const Header: React.FC = () => {
               {item.label}
             </a>
           ))}
-          {isHomePage && (
+          {useHomeHeader && (
             <Link
               href="/documentation/"
               className="rounded-lg px-3 py-2 text-sm text-gray-600 transition-colors hover:text-[color:var(--color-primary)] hover:bg-[color:var(--color-primary)]/10"
@@ -74,15 +76,43 @@ const Header: React.FC = () => {
               {t('docs')}
             </Link>
           )}
+          <Link
+            href="/blog/"
+            aria-current={pathname.startsWith('/blog') ? 'page' : undefined}
+            className="rounded-lg px-3 py-2 text-sm text-gray-600 transition-colors hover:text-[color:var(--color-primary)] hover:bg-[color:var(--color-primary)]/10"
+          >
+            {t('blog')}
+          </Link>
         </nav>
 
         {/* 右侧操作区 */}
-        <div className="col-start-3 flex items-center gap-2 justify-self-end">
-          <LanguageSwitch />
+        <div className="col-start-3 flex items-center gap-1 sm:gap-2 justify-self-end">
+          <div className="flex items-center">
+            <Link href="/blog/" className="px-2 py-2 text-sm text-gray-600 lg:hidden">
+              {t('blog')}
+            </Link>
+            <LanguageSwitch />
+            <a
+              href="https://github.com/antvis/AVA"
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label="AVA on GitHub"
+              title="GitHub"
+              className="hidden size-9 shrink-0 items-center justify-center rounded-lg text-zinc-600 transition-colors hover:bg-zinc-100 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cyan-600 sm:inline-flex"
+            >
+              <svg width="19" height="19" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                <path
+                  fillRule="evenodd"
+                  clipRule="evenodd"
+                  d="M12 2C6.477 2 2 6.477 2 12c0 4.42 2.865 8.17 6.839 9.49.5.092.682-.217.682-.482 0-.237-.008-.866-.013-1.7-2.782.604-3.369-1.34-3.369-1.34-.454-1.156-1.11-1.463-1.11-1.463-.908-.62.069-.608.069-.608 1.003.07 1.531 1.03 1.531 1.03.892 1.529 2.341 1.087 2.91.831.092-.646.35-1.086.636-1.336-2.22-.253-4.555-1.11-4.555-4.943 0-1.091.39-1.984 1.029-2.683-.103-.253-.446-1.27.098-2.647 0 0 .84-.269 2.75 1.025A9.578 9.578 0 0112 6.836c.85.004 1.705.114 2.504.336 1.909-1.294 2.747-1.025 2.747-1.025.546 1.377.203 2.394.1 2.647.64.699 1.028 1.592 1.028 2.683 0 3.842-2.339 4.687-4.566 4.935.359.309.678.919.678 1.852 0 1.336-.012 2.415-.012 2.743 0 .267.18.578.688.48C19.138 20.167 22 16.418 22 12c0-5.523-4.477-10-10-10z"
+                />
+              </svg>
+            </a>
+          </div>
           <Link
             href="/documentation/"
             className={`${
-              isHomePage ? 'hidden' : 'hidden md:flex'
+              useHomeHeader ? 'hidden' : 'hidden lg:flex'
             } items-center gap-2 px-2 py-2 text-sm rounded-lg transition-colors ${
               pathname === '/documentation' || pathname.startsWith('/documentation/')
                 ? 'text-[color:var(--color-primary)] bg-[color:var(--color-primary)]/10'
@@ -102,7 +132,7 @@ const Header: React.FC = () => {
           <Link
             href="/ai/"
             aria-current={isAIPage ? 'page' : undefined}
-            className="inline-flex min-h-10 min-w-[88px] items-center justify-center gap-3 rounded-[9px] border border-white/20 bg-[#202226] px-[18px] text-[13px] font-medium text-white! shadow-[inset_0_1px_0_#ffffff1a,0_2px_6px_#1a283514] transition-colors hover:bg-[#30363b]"
+            className="inline-flex min-h-10 min-w-[88px] items-center justify-center gap-3 whitespace-nowrap rounded-[9px] border border-white/20 bg-[#202226] px-[18px] text-[13px] font-medium text-white! shadow-[inset_0_1px_0_#ffffff1a,0_2px_6px_#1a283514] transition-colors hover:bg-[#30363b]"
           >
             {t('aI')}
             <svg
@@ -119,20 +149,6 @@ const Header: React.FC = () => {
               <path d="M5 12h14m-6-6 6 6-6 6" />
             </svg>
           </Link>
-          <a
-            href="https://github.com/antvis/AVA"
-            target="_blank"
-            rel="noopener noreferrer"
-            className={isHomePage ? 'hidden' : 'hidden md:block text-gray-400 hover:text-gray-600 transition-colors'}
-          >
-            <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
-              <path
-                fillRule="evenodd"
-                clipRule="evenodd"
-                d="M12 2C6.477 2 2 6.477 2 12c0 4.42 2.865 8.17 6.839 9.49.5.092.682-.217.682-.482 0-.237-.008-.866-.013-1.7-2.782.604-3.369-1.34-3.369-1.34-.454-1.156-1.11-1.463-1.11-1.463-.908-.62.069-.608.069-.608 1.003.07 1.531 1.03 1.531 1.03.892 1.529 2.341 1.087 2.91.831.092-.646.35-1.086.636-1.336-2.22-.253-4.555-1.11-4.555-4.943 0-1.091.39-1.984 1.029-2.683-.103-.253-.446-1.27.098-2.647 0 0 .84-.269 2.75 1.025A9.578 9.578 0 0112 6.836c.85.004 1.705.114 2.504.336 1.909-1.294 2.747-1.025 2.747-1.025.546 1.377.203 2.394.1 2.647.64.699 1.028 1.592 1.028 2.683 0 3.842-2.339 4.687-4.566 4.935.359.309.678.919.678 1.852 0 1.336-.012 2.415-.012 2.743 0 .267.18.578.688.48C19.138 20.167 22 16.418 22 12c0-5.523-4.477-10-10-10z"
-              />
-            </svg>
-          </a>
         </div>
       </div>
     </header>

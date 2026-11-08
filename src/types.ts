@@ -4,6 +4,7 @@
 
 import type { ClickHouseClientConfigOptions } from '@clickhouse/client';
 import type { LanguageModel, LanguageModelUsage } from 'ai';
+import type { ConnectionOptions as SnowflakeConnectionOptions } from 'snowflake-sdk';
 import type { AnalysisEvent } from './event';
 
 /**
@@ -57,10 +58,11 @@ export interface PythonEngineOptions {
   /**
    * Override local python3 execution with a custom environment. Local execution is not sandboxed.
    * Run the complete Python script and return its JSON output as ExecutionResult.
-   * Source loading and result limits are included in the script; configure remote execution deadlines separately.
+   * Each query first sends a compile-only validation script, then the source-loading and result script.
+   * Configure remote execution deadlines separately.
    */
   execute?: (code: string) => Promise<ExecutionResult>;
-  /** Client wait limit and local process execution deadline. Default 30000 ms. */
+  /** Wait and local process deadline for each validation or execution call. Default 30000 ms. */
   queryTimeoutMs?: number;
 }
 
@@ -77,6 +79,7 @@ export type EngineConfig =
   | { type: 'supabase' }
   | { type: 'clickhouse' }
   | { type: 'sqlserver' }
+  | { type: 'snowflake' }
   | { type: string; [option: string]: unknown };
 
 /**
@@ -102,7 +105,8 @@ export interface AnalysisConfig extends ExecutionOptions {
  * - inline types: `csv` (content string), `json` (object array), `text`
  * - file types: `csv-file`, `json-file`, `parquet` (read through DuckDB's readers)
  * - database types: `mysql`, `postgresql`, `sqlite`, `mongodb` (ATTACH through DuckDB's extension)
- * - direct query types: `clickhouse` (schema discovered and SQL executed through ClickHouse's HTTP API)
+ * - direct query types: `clickhouse` (schema discovered and SQL executed through ClickHouse's HTTP API),
+ *   `snowflake` (schema discovered and SQL executed in Snowflake through the official Node.js driver)
  * - cloud types: `supabase` (schema discovered and SQL executed through the Supabase Management API — data never leaves the SaaS; handled by SaasDBEngine)
  */
 export type SourceType =
@@ -122,7 +126,8 @@ export type SourceType =
   | 'feishu-bitable'
   | 'tencent-smartsheet'
   | 'sqlserver'
-  | 'notion';
+  | 'notion'
+  | 'snowflake';
 
 /**
  * DuckDB read_csv reader options.
@@ -373,6 +378,8 @@ export interface SSHOptions {
   port?: number;
   user: string;
   password?: string;
+  /** Trusted server host key fingerprint in OpenSSH SHA256:<base64> format (without padding). */
+  hostKeyFingerprint: string;
 }
 
 /**
@@ -554,11 +561,40 @@ export interface SQLServerSourceOptions {
 }
 
 /**
+ * Options for Snowflake data sources. Queries run in Snowflake through the official
+ * Node.js driver (snowflake-sdk): the warehouse does the computation and access follows
+ * the role's privileges. Other driver connection options (authenticator, token, proxy,
+ * OAuth settings, ...) are forwarded unchanged.
+ */
+export type SnowflakeSourceOptions = Omit<
+  SnowflakeConnectionOptions,
+  // AVA fixes the row format and ends the server session together with the source.
+  | 'account'
+  | 'database'
+  | 'schema'
+  | 'rowMode'
+  | 'streamResult'
+  | 'fetchAsString'
+  | 'jsTreatIntegerAsBigInt'
+  | 'representNullAsStringNull'
+  | 'serverSessionKeepAlive'
+> & {
+  /** Account identifier, e.g. `myorg-myaccount`. */
+  account: string;
+  /** Database to discover and query. */
+  database: string;
+  /** Schema whose tables and views are exposed; also the session's default schema. Default `PUBLIC`. */
+  schema?: string;
+  /** Statement timeout in milliseconds, enforced by Snowflake and by the client. Default 30000. */
+  queryTimeoutMs?: number;
+};
+
+/**
  * External data source configuration for loadSource.
  * - inline types (csv/json/text): data is materialized into JS memory
  * - file types (csv-file/json-file/parquet): loaded through DuckDB's readers
  * - database types (mysql/postgresql/sqlite/mongodb): ATTACH through DuckDB's extension
- * - direct query types (clickhouse): schema/SQL over ClickHouse's HTTP API
+ * - direct query types (clickhouse, snowflake): schema/SQL over the database's own client
  * - cloud types (supabase): schema/SQL over the Management API (SaasDBEngine)
  */
 export type DataSourceConfig =
@@ -578,7 +614,8 @@ export type DataSourceConfig =
   | { type: 'feishu-bitable'; options: FeishuBitableSourceOptions }
   | { type: 'tencent-smartsheet'; options: TencentDocsSourceOptions }
   | { type: 'sqlserver'; options: SQLServerSourceOptions }
-  | { type: 'notion'; options: NotionSourceOptions };
+  | { type: 'notion'; options: NotionSourceOptions }
+  | { type: 'snowflake'; options: SnowflakeSourceOptions };
 
 /**
  * File formats readable by DuckDB's readers (csv-file maps to csv, json-file to json).
@@ -596,10 +633,9 @@ export interface LoadedSource {
   /** */
   getSchema: (conn: DuckDBConnection) => Promise<Schema>;
   /**
-   * Directories the engine whitelists for file access after registering
-   * (the data file's directory for file sources; empty for in-memory/remote sources).
+   * Exact files the engine allows after registering (empty for sources without local files).
    */
-  allowedDirectories: string[];
+  allowedPaths: string[];
   /** Release resources (temp files, attached databases, tunnels) */
   cleanup: () => Promise<void>;
 }
@@ -678,17 +714,8 @@ export interface ParsedProfileOptions {
   metrics: Exclude<MetricConfig, string>[];
 }
 
-/** Executable language expected by an analysis engine. */
-export interface QueryLanguage {
-  /** Human-readable language or dialect name included in analysis prompts. */
-  name: string;
-
-  /** Markdown code-fence language used for executable statements. */
-  fence: string;
-
-  /** Environment bindings and result conventions needed when generating code. */
-  instructions?: string;
-}
+/** Execution language id exposed by a query dialect. */
+export type QueryLanguage = string;
 
 /** Executable DSL and its model usage, when available. */
 export interface TranslationResult {
@@ -703,8 +730,8 @@ export interface TranslationResult {
  * to allow alternative engines in the future.
  */
 export interface AnalysisEngine {
-  /** Executable language generated by analysis strategies. */
-  readonly language: QueryLanguage;
+  /** Query language, generation rules and validation supplied by every engine. */
+  readonly dialect: QueryDialect;
   /** Load a data source and prepare it for execution. */
   load(config: DataSourceConfig): Promise<void>;
   /** Discover the loaded source structure. */
@@ -983,13 +1010,16 @@ export type AnalysisStrategy = (
 ) => Promise<AnalysisResponse>;
 
 /**
- * Turns a natural-language query into a database-specific DSL.
+ * Generates and validates code for one query language.
  */
-export interface QueryDialect<TContext = void> {
-  /** Generate the executable DSL (SQL) for a natural-language query. */
+export interface QueryDialect {
+  readonly id: string;
+  /** Language rules and execution bindings, independent of the model response format. */
+  readonly rules: string;
+  /** Generate executable code for a natural-language query. */
   getDSL(query: string, dataModel: DataModel): Promise<TranslationResult>;
-  /** Validate one read-only statement and return the DSL to execute, normalized if needed. */
-  validateDSL(dsl: string, context: TContext): Promise<string>;
+  /** Validate the DSL without executing it, preserving its source semantics. */
+  validateDSL(dsl: string): Promise<string>;
 }
 
 /**

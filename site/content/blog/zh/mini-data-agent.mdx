@@ -1,0 +1,183 @@
+做一个 Data Agent，可以从一个很小的需求开始：给它一份销售数据，让它分析销售额下降主要来自哪些产品，并整理成一份带图表的简短报告。
+
+Data Agent 的核心是**由执行结果驱动的分析循环**：模型提出查询，读取结果并核对，再决定是否补充分析。要让结论可核查，多次查询需要沿用统一的指标口径，图表也应直接引用实际计算结果。
+
+[AVA](https://ava.antv.vision) 是面向 JavaScript 应用和 AI Agent 的开源数据分析框架，旨在**连接企业数据，以可信分析与可视化支撑业务决策**。类似 Python 生态中的 [PandasAI](https://docs.pandas-ai.com/v3/introduction)，它支持用自然语言分析数据、生成图表。本文使用 AVA 执行分析与绘图，通过 AI SDK 组织工具调用，构建支持多轮分析与追问的 Mini Data Agent。
+
+![Data Agent 运行结构](https://mdn.alipayobjects.com/huamei_aphk1k/afts/img/A*UNyWTbbbTvgAAAAAVcAAAAgAegfkAQ/original)
+
+## 准备数据
+
+先准备一份[销售订单数据](https://github.com/antvis/AVA/blob/ai/__tests__/datasets/sales.csv)，共 240 笔订单、12 个字段。下面列出前 3 笔订单的日期、产品和销售额：
+
+| order_date（订单日期） | product（产品） | sales（折后销售额） |
+| ---------------------- | --------------- | ------------------: |
+| 2025-01-01             | Monitor         |              224.10 |
+| 2025-01-02             | Office Chair    |              680.20 |
+| 2025-01-04             | Monitor         |            2,191.20 |
+
+`YOUR_DATA` 表示完整 CSV 解析得到的对象数组，其中 `sales` 为数值。
+
+## 约定分析口径
+
+接着，为 Agent 的分析约定口径：销售额按折后金额统计，月份以下单时间为准，变化额为本期减去上期。把这些约定写入语义配置，供多次查询和后续追问参考。
+
+```yaml
+models:
+  - name: data
+    tableReference:
+      table: data
+    properties:
+      description: Each row represents one order.
+cubes:
+  - name: sales
+    baseObject: data
+    measures:
+      - name: total_sales
+        expression: CAST(SUM(sales) AS DOUBLE)
+        type: DOUBLE
+        description: Sales after discounts, calculated by summing sales.
+    dimensions:
+      - name: product
+        expression: product
+        type: VARCHAR
+    timeDimensions:
+      - name: order_date
+        expression: CAST(order_date AS DATE)
+        type: DATE
+    properties:
+      description: |
+        Compare both periods using the same set of products. Change is current-period sales minus prior-period sales; negative values indicate a decline.
+        Change rate is change divided by prior-period sales. Return null when prior-period sales are zero, indicating that the rate is not applicable.
+```
+
+`YOUR_SEMANTIC` 表示这段 YAML 解析后的对象。
+
+## 构建 Data Agent
+
+数据和口径准备好后，将 AVA 的能力封装成两个工具：`analyze` 查询和计算数据，`visualize` **通过结果编号引用分析数据**并生成图表。
+
+示例使用 **Node.js 22.13.0 或更高版本**，安装以下依赖：
+
+```bash
+npm install @antv/ava@4.0.0 ai@7.0.112 @ai-sdk/openai@4.0.73 zod@4.6.7
+```
+
+运行前设置环境变量 `OPENAI_API_KEY` 和 `OPENAI_MODEL`，模型需支持工具调用；使用兼容 OpenAI Chat Completions 的服务时，再设置 `OPENAI_BASE_URL`。
+
+```javascript
+import { AVA } from '@antv/ava';
+import { ToolLoopAgent, isStepCount, tool } from 'ai';
+import { z } from 'zod';
+
+async function createDataAgent({ model, data, semantic }) {
+  const ava = new AVA({ llm: { model } });
+
+  await ava.source({ type: 'json', options: { data } });
+  await ava.semantic(undefined, () => semantic);
+
+  let messages = [];
+  const analyses = new Map();
+
+  const agent = new ToolLoopAgent({
+    model,
+    instructions: `Analyze the user's task step by step, using conversation history to make each query self-contained.
+    Use analyze to compute and verify data, and visualize to chart a saved result.
+    Base conclusions on tool results and state what data is missing when evidence is insufficient.`,
+    stopWhen: isStepCount(8),
+    tools: {
+      analyze: tool({
+        description: 'Query and analyze data using a self-contained question.',
+        inputSchema: z.object({ query: z.string() }),
+        execute: async ({ query }) => {
+          const analysis = await ava.analyze(query);
+          const resultId = `analysis-${analyses.size + 1}`;
+          analyses.set(resultId, analysis);
+          return { ...analysis, resultId };
+        },
+      }),
+      visualize: tool({
+        description: 'Generate a chart using an exact resultId returned by analyze and a chart request.',
+        inputSchema: z.object({ resultId: z.string(), query: z.string() }),
+        execute: async ({ resultId, query }) => {
+          const analysis = analyses.get(resultId);
+          if (!analysis) throw new Error(`Unknown resultId: ${resultId}. Call analyze first.`);
+          return ava.visualize({ query, data: analysis.data });
+        },
+        toModelOutput: ({ output }) => ({
+          type: 'json',
+          value: { chartType: output?.chartType ?? null },
+        }),
+      }),
+    },
+  });
+
+  return {
+    async ask(question) {
+      const input = [...messages, { role: 'user', content: question }];
+      const result = await agent.generate({ messages: input });
+      messages = [...input, ...result.responseMessages];
+      return result;
+    },
+    dispose: () => ava.dispose(),
+  };
+}
+```
+
+用这 53 行核心代码搭建好 Mini Data Agent 后，就可以发起分析，并在同一会话中继续追问：
+
+```javascript
+import { writeFile } from 'node:fs/promises';
+import { createOpenAI } from '@ai-sdk/openai';
+
+const model = createOpenAI({
+  apiKey: process.env.OPENAI_API_KEY,
+  baseURL: process.env.OPENAI_BASE_URL,
+}).chat(process.env.OPENAI_MODEL);
+
+const assistant = await createDataAgent({
+  model,
+  data: YOUR_DATA,
+  semantic: YOUR_SEMANTIC,
+});
+
+try {
+  const task = `分析 2025 年 2 月较 1 月的销售额下降来源，列出各产品两个月的销售额和变化额，
+按降幅排序、核对合计，并用条形图展示变化额。`;
+  const answer = await assistant.ask(task);
+  console.log(answer.text);
+  for (const [index, { toolName, output }] of answer.toolResults.entries()) {
+    if (toolName === 'analyze') console.table(output.data);
+    if (toolName === 'visualize' && output) await writeFile(`chart-${index + 1}.html`, output.html);
+  }
+
+  console.log((await assistant.ask('Laptop 销售额下降是因为促销结束了吗？')).text);
+} finally {
+  await assistant.dispose();
+}
+```
+
+## 查看结果
+
+以下为**从原始 CSV 独立汇总的参考结果**，可用于核对 Agent 的输出。销售额从 1 月的 **38,897.18** 降至 2 月的 **21,804.11**，下降 **43.94%**：
+
+| 产品          |    1 月销售额 |    2 月销售额 | 变化额（2 月 − 1 月） |
+| ------------- | ------------: | ------------: | --------------------: |
+| Laptop        |     19,688.10 |      3,596.00 |            −16,092.10 |
+| Standing Desk |      9,655.80 |      5,546.10 |             −4,109.70 |
+| Monitor       |      6,536.25 |      4,731.00 |             −1,805.25 |
+| Pen Set       |        232.20 |        127.71 |               −104.49 |
+| Bookshelf     |      1,225.50 |      1,251.30 |                +25.80 |
+| Copy Paper    |         59.19 |        137.06 |                +77.87 |
+| Notebook      |         31.50 |        137.03 |               +105.53 |
+| Keyboard      |        215.64 |      1,015.31 |               +799.67 |
+| Office Chair  |      1,253.00 |      5,262.60 |             +4,009.60 |
+| **合计**      | **38,897.18** | **21,804.11** |        **−17,093.07** |
+
+各产品的变化额合计与整体变化一致。**Laptop 是主要拖累，Office Chair 的增长抵消了部分下降。**
+
+![2025 年 1 月至 2 月各产品销售额变化](https://mdn.alipayobjects.com/huamei_aphk1k/afts/img/A*m_BqSr6ehAkAAAAARMAAAAgAegfkAQ/original)
+
+对于后续的促销追问，数据缺少活动时间和参与范围，Agent 应说明**证据不足，不能据此确认下降原因**。
+
+如果你也用 AVA 做出了自己的 Data Agent，欢迎参与 [AVA 生态作品征集](https://github.com/antvis/AVA/issues/1061)，分享实践，还有机会获得 SEE Conf 2026 门票，和社区伙伴线下交流。

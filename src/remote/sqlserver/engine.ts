@@ -1,13 +1,15 @@
-import { ConnectionPool } from 'mssql';
+// mssql is CommonJS and Node's ESM loader cannot detect ConnectionPool as a named export, so
+// esm/index.mjs must read it from the default export; a named import breaks `import '@antv/ava'`.
+import mssql from 'mssql';
 
-import { SQLServerQueryDialect, SQLSERVER_LANGUAGE_INSTRUCTIONS } from '../../query/sqlserver';
+import { TSQLDialect } from '../../query/tsql';
 import { DEFAULT_METRICS, parseProfileOptions } from '../../util/profile';
 import { executionResult, maxRows } from '../../util/result';
 
 import { profileTables } from './profile';
 import { getSQLServerSchema } from './schema';
 
-import type { config as SQLConfig, IColumnMetadata, IResult, Request } from 'mssql';
+import type { ConnectionPool, config as SQLConfig, IColumnMetadata, IResult, Request } from 'mssql';
 import type {
   AnalysisEngine,
   DataModel,
@@ -49,19 +51,13 @@ function queryColumns(columns: IColumnMetadata[string][]): QueryColumn[] {
 
 /** SQL Server executes native T-SQL remotely; no rows are imported into DuckDB. */
 export class SQLServerEngine implements AnalysisEngine {
-  readonly language = {
-    name: 'Microsoft SQL Server T-SQL',
-    fence: 'sql',
-    instructions: SQLSERVER_LANGUAGE_INSTRUCTIONS,
-  };
-
   private pool: ConnectionPool | null = null;
   private sourceSchema: string | undefined;
   private readonly requests = new Set<Request>();
-  private readonly queryDialect: SQLServerQueryDialect;
+  readonly dialect: TSQLDialect;
 
   constructor(llmConfig: LLMConfig) {
-    this.queryDialect = new SQLServerQueryDialect(llmConfig);
+    this.dialect = new TSQLDialect(llmConfig);
   }
 
   async load(config: DataSourceConfig): Promise<void> {
@@ -69,7 +65,8 @@ export class SQLServerEngine implements AnalysisEngine {
     if (config.type !== 'sqlserver') {
       throw new Error(`SQLServerEngine only supports 'sqlserver' data sources, got '${config.type}'`);
     }
-    this.pool = new ConnectionPool(connectionConfig(config.options));
+    // eslint-disable-next-line import/no-named-as-default-member -- see the comment on the mssql import
+    this.pool = new mssql.ConnectionPool(connectionConfig(config.options));
     // Request promises report transport errors. A pool-level listener also prevents
     // idle-connection errors from becoming unhandled EventEmitter exceptions.
     this.pool.on('error', () => undefined);
@@ -98,12 +95,12 @@ export class SQLServerEngine implements AnalysisEngine {
 
   async getDSL(query: string, dataModel: DataModel): Promise<TranslationResult> {
     if (!this.pool) throw new Error('No data loaded. Please call source() first.');
-    return this.queryDialect.getDSL(query, dataModel);
+    return this.dialect.getDSL(query, dataModel);
   }
 
   async execute<T = Record<string, unknown>>(dsl: string, options?: ExecutionOptions): Promise<ExecutionResult<T>> {
     if (!this.pool) throw new Error('No data loaded. Please call source() first.');
-    const query = await this.queryDialect.validateDSL(dsl);
+    const query = await this.dialect.validateDSL(dsl);
     // query() uses sp_executesql, which restores SET options on return.
     const result = await this.runQuery<T>(`SET ROWCOUNT ${maxRows(options) + 1};\n${query}`);
     const schema = queryColumns(Object.values(result.recordset.columns));

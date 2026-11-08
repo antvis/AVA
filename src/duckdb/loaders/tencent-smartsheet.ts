@@ -19,7 +19,7 @@ export async function loadTencentDocs(options: TencentDocsSourceOptions): Promis
       return ['data'];
     },
     getSchema: (conn) => getDuckDBSchema(conn, ['data']),
-    allowedDirectories: [],
+    allowedPaths: [],
     cleanup: async () => {},
   };
 }

@@ -26,10 +26,8 @@ export async function createDataset(
 ): Promise<void> {
   if (ava || disposal) throw new Error('Dataset process has already been initialized.');
 
-  ava = new AVA({
-    llm,
-    engine: { type: engine ?? (source.type === 'supabase' || source.type === 'clickhouse' || source.type === 'sqlserver' ? source.type : 'duckdb') },
-  });
+  const remote = ['supabase', 'clickhouse', 'sqlserver', 'snowflake'].includes(source.type);
+  ava = new AVA({ llm, engine: { type: engine ?? (remote ? source.type : 'duckdb') } });
   const loading = ava.source(source);
   queue = loading.catch(() => undefined);
   try {
@@ -56,8 +54,14 @@ export function withDataset<T>(operation: (instance: AVA) => Promise<T>): Promis
 }
 
 export async function describeDataset(schema?: Schema) {
-  return withDataset(async (instance) => ({
-    ...(await instance.schema(undefined, schema === undefined ? undefined : () => schema)),
-    language: instance.engine!.language,
-  }));
+  return withDataset(async (instance) => {
+    const engine = instance.engine!;
+    const language = engine.dialect.id;
+    if (!language) throw new Error('Query dialect must provide a non-empty id');
+    return {
+      ...(await instance.schema(undefined, schema === undefined ? undefined : () => schema)),
+      language,
+      ...(engine.dialect.rules ? { instructions: engine.dialect.rules } : {}),
+    };
+  });
 }
