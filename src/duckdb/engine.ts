@@ -103,7 +103,6 @@ export class DuckDBEngine implements AnalysisEngine {
     await conn.run(`SET allowed_paths = [${allowedPaths.map(sqlStringLiteral).join(', ')}]`);
     // Spill files need directory access, but must never share it with other sources.
     this.tempDirectory = await mkdtemp(join(tmpdir(), 'ava-duckdb-'));
-    await conn.run(`SET allowed_directories = [${sqlStringLiteral(this.tempDirectory)}]`);
     await conn.run(`SET temp_directory = ${sqlStringLiteral(this.tempDirectory)}`);
     await conn.run('SET enable_external_access = false');
     // Lock last so the settings above cannot be changed again.
