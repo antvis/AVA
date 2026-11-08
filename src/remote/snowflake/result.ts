@@ -1,7 +1,7 @@
 import { coerceNumericString } from '../../util/coerce';
 
 import type { Column } from 'snowflake-sdk';
-import type { QueryColumn } from '../../contracts/query';
+import type { QueryColumn } from '../../contracts';
 
 /** Snowflake type name of a result column, as written in DDL. */
 function typeName(column: Column): string {

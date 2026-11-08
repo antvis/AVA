@@ -4,8 +4,7 @@ import { sqlIdentifier } from '../../util/sql';
 import { SUPABASE_SCHEMA } from './schema';
 
 import type { MetricField, Metric } from '../../util/profile';
-import type { LogicalType, ParsedProfileOptions, Profile } from '../../contracts/profile';
-import type { Schema } from '../../contracts/schema';
+import type { LogicalType, ParsedProfileOptions, Profile, Schema } from '../../contracts';
 
 interface Context {
   table: string;

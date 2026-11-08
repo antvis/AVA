@@ -1,10 +1,13 @@
 import { z } from 'zod';
 
-import { jsonValue } from '../../../contracts/shared/json';
-import { excelOptionsSchema, excelSheetSchema } from '../../../contracts/source/excel';
-import { executionResultSchema } from '../../../contracts/query';
-import { sourceSchemas } from '../../../contracts/source';
-import { csvReadOptionsSchema } from '../../../contracts/source/read-options';
+import {
+  jsonValue,
+  excelOptionsSchema,
+  excelSheetSchema,
+  executionResultSchema,
+  sourceSchemas,
+  csvReadOptionsSchema,
+} from '../../../contracts';
 
 /** Validate the JSON output of the generated Python script. */
 export const resultSchema = executionResultSchema

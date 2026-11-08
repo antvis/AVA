@@ -21,7 +21,7 @@ import { getDuckDBSchema } from '../util/schema';
 import { sqlIdentifier, sqlStringLiteral } from '../../util/sql';
 
 import type { LoadedSource } from '../types';
-import type { MongoDBSourceOptions } from '../../contracts/source';
+import type { MongoDBSourceOptions } from '../../contracts';
 
 const ATTACH_ALIAS = 'mongo_source';
 const noopCleanup = async (): Promise<void> => {};

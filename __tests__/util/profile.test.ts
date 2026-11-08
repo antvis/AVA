@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest';
 
 import { BUILTIN_METRICS } from '../../src/duckdb/profile';
 import { resolveMetric } from '../../src/util/profile';
-import { profileMetadataSchema } from '../../src/contracts/profile';
+import { profileMetadataSchema } from '../../src/contracts';
 
 import type { Profile, Schema } from '../../src/types';
 

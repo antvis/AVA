@@ -1,8 +1,7 @@
 import { column, logicalTypes, table, TOP_VALUES_OPTIONS, resolveMetric } from '../../util/profile';
 
 import type { MetricField, Metric } from '../../util/profile';
-import type { LogicalType, ParsedProfileOptions, Profile } from '../../contracts/profile';
-import type { Schema } from '../../contracts/schema';
+import type { LogicalType, ParsedProfileOptions, Profile, Schema } from '../../contracts';
 
 interface Context {
   table: string;

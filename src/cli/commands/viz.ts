@@ -1,5 +1,5 @@
 import { AVA } from '../../ava';
-import { chartSpecSchema } from '../../contracts/visualize';
+import { chartSpecSchema } from '../../contracts';
 import { readJSON, writeHTML } from '../io';
 import { option } from '../options';
 

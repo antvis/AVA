@@ -1,9 +1,8 @@
 import { AVA } from '../..';
 
-import type { DataSourceConfig } from '../../contracts/source';
+import type { DataSourceConfig, Schema } from '../../contracts';
 import type { EngineConfig } from '../../engines';
 import type { LLMConfig } from '../../config';
-import type { Schema } from '../../contracts/schema';
 
 // One server process owns one dataset. The socket path supplies its external ID.
 let ava: AVA | undefined;

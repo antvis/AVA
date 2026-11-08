@@ -8,12 +8,11 @@ import { registerEngine } from './engines';
 
 registerEngine('javascript', JavaScriptEngine);
 
-export { sourceConfigSchema } from './contracts/source';
-export { executionResultSchema } from './contracts/query';
-export { chartSpecSchema } from './contracts/visualize';
+export { sourceConfigSchema, executionResultSchema, chartSpecSchema } from './contracts';
+
 export { inferFileSourceType } from './util/source';
 export { bindChartData } from './visualization/bind';
-export type { ChartDataBinding } from './contracts/visualize';
+export type { ChartDataBinding } from './contracts';
 
 export { AVA } from './ava';
 export { registerEngine } from './engines';

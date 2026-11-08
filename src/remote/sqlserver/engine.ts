@@ -11,12 +11,18 @@ import { getSQLServerSchema } from './schema';
 
 import type { ConnectionPool, config as SQLConfig, IColumnMetadata, IResult, Request } from 'mssql';
 import type { AnalysisEngine } from '../../engines';
-import type { DataModel } from '../../contracts/shared/data-model';
-import type { DataSourceConfig, SQLServerSourceOptions } from '../../contracts/source';
-import type { ExecutionOptions, ExecutionResult, QueryColumn } from '../../contracts/query';
+import type {
+  DataModel,
+  DataSourceConfig,
+  SQLServerSourceOptions,
+  ExecutionOptions,
+  ExecutionResult,
+  QueryColumn,
+  Profile,
+  ProfileOptions,
+  Schema,
+} from '../../contracts';
 import type { LLMConfig } from '../../config';
-import type { Profile, ProfileOptions } from '../../contracts/profile';
-import type { Schema } from '../../contracts/schema';
 import type { TranslationResult } from '../../query/types';
 
 function connectionConfig(options: SQLServerSourceOptions): SQLConfig {

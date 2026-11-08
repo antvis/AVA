@@ -1,5 +1,4 @@
-import type { MetricId, MetricConfig, ProfileOptions, ParsedProfileOptions, LogicalType } from '../contracts/profile';
-import type { Schema } from '../contracts/schema';
+import type { MetricId, MetricConfig, ProfileOptions, ParsedProfileOptions, LogicalType, Schema } from '../contracts';
 
 export type MetricField = Schema['models'][number]['columns'][number] & { logicalType: LogicalType };
 

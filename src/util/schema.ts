@@ -1,9 +1,9 @@
 /** Catalog discovery and structural assembly. */
-import { schemaMetadataSchema } from '../contracts/schema';
+import { schemaMetadataSchema } from '../contracts';
 
 import { sqlIdentifier } from './sql';
 
-import type { Schema } from '../contracts/schema';
+import type { Schema } from '../contracts';
 
 function inferType(values: any[]): 'number' | 'string' | 'date' | 'boolean' | 'unknown' {
   const nonNullValues = values.filter((v) => v != null && v !== '');

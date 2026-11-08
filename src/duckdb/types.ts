@@ -1,4 +1,4 @@
-import type { Schema } from '../contracts/schema';
+import type { Schema } from '../contracts';
 
 /**
  * Minimal structural type for a database connection used by LoadedSource.

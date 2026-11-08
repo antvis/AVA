@@ -1,6 +1,6 @@
 import { utf8ByteLength } from './bytes';
 
-import type { ExecutionOptions, ExecutionResult, QueryColumn } from '../contracts/query';
+import type { ExecutionOptions, ExecutionResult, QueryColumn } from '../contracts';
 
 const DEFAULT_MAX_ROWS = 200;
 const MAX_ROWS = 1_000_000;

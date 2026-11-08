@@ -11,11 +11,15 @@
 import type { DuckDBEngineOptions } from './duckdb/types';
 import type { PythonEngineOptions } from './interpreter/python/types';
 import type { QueryDialect, TranslationResult } from './query/types';
-import type { DataSourceConfig } from './contracts/source';
-import type { Schema } from './contracts/schema';
-import type { ProfileOptions, Profile } from './contracts/profile';
-import type { DataModel } from './contracts/shared/data-model';
-import type { ExecutionOptions, ExecutionResult } from './contracts/query';
+import type {
+  DataSourceConfig,
+  Schema,
+  ProfileOptions,
+  Profile,
+  DataModel,
+  ExecutionOptions,
+  ExecutionResult,
+} from './contracts';
 import type { LLMConfig } from './config';
 
 /** Constructor signature every engine class must satisfy. */

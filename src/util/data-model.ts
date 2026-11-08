@@ -1,17 +1,10 @@
 import { z } from 'zod';
 
-import { profileMetadataSchema } from '../contracts/profile';
-import { schemaStructure } from '../contracts/schema';
-import { semanticMetadataSchema } from '../contracts/semantic';
-import { dataModelMetadataSchema } from '../contracts/shared/data-model';
+import { profileMetadataSchema, schemaStructure, semanticMetadataSchema, dataModelMetadataSchema } from '../contracts';
 
 import { escapeMarkdown, markdownTable } from './markdown';
 
-import type { DataModel, Model } from '../contracts/shared/data-model';
-import type { Semantic } from '../contracts/semantic';
-import type { Profile } from '../contracts/profile';
-import type { Properties } from '../contracts/shared/json';
-import type { Schema } from '../contracts/schema';
+import type { DataModel, Model, Semantic, Profile, Properties, Schema } from '../contracts';
 
 const modelSchema = profileMetadataSchema.shape.models.element;
 const columnSchema = modelSchema.shape.columns.element;

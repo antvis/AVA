@@ -3,8 +3,7 @@ import { resolveMetric, table, column, logicalTypes, TOP_VALUES_OPTIONS } from '
 
 import type { MetricField, Metric } from '../util/profile';
 import type { DuckDBConnection } from './types';
-import type { Schema } from '../contracts/schema';
-import type { ParsedProfileOptions, LogicalType, MetricId, Profile } from '../contracts/profile';
+import type { Schema, ParsedProfileOptions, LogicalType, MetricId, Profile } from '../contracts';
 
 /** Map a database type to a profile type. */
 export function logicalType(nativeType: string): LogicalType {

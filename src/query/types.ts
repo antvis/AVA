@@ -1,5 +1,5 @@
 import type { LanguageModelUsage } from 'ai';
-import type { DataModel } from '../contracts/shared/data-model';
+import type { DataModel } from '../contracts';
 
 /** Execution language id exposed by a query dialect. */
 export type QueryLanguage = string;

@@ -6,7 +6,7 @@ import { readFeishuTable } from './feishu/read';
 import { loadJson } from './json';
 
 import type { FeishuField } from './feishu/convert';
-import type { FeishuBitableSourceOptions } from '../../contracts/source';
+import type { FeishuBitableSourceOptions } from '../../contracts';
 import type { LoadedSource } from '../types';
 
 function sqlType(type: number): string {

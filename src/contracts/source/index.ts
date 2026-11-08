@@ -1,168 +1,47 @@
 /** Tool schemas should use z.toJSONSchema(schema, { io: 'input' }) to describe input before normalization. */
 import { z } from 'zod';
 
-import { dataRowSchema } from '../shared/json';
+import { csvFileSourceSchema } from './csv-file';
+import { jsonFileSourceSchema } from './json-file';
+import { parquetSourceSchema } from './parquet';
+import { excelSourceSchema } from './excel';
+import { sqliteSourceSchema } from './sqlite';
+import { csvSourceSchema } from './csv';
+import { jsonSourceSchema } from './json';
+import { textSourceSchema } from './text';
+import { mysqlSourceSchema } from './mysql';
+import { mongodbSourceSchema } from './mongodb';
+import { postgresqlSourceSchema } from './postgresql';
+import { supabaseSourceSchema } from './supabase';
+import { clickhouseSourceSchema } from './clickhouse';
+import { sqlserverSourceSchema } from './sqlserver';
+import { snowflakeSourceSchema } from './snowflake';
+import { feishuBitableSourceSchema } from './feishu-bitable';
 
-import { excelOptionsSchema } from './excel';
-import { csvReadOptionsSchema, jsonReadOptionsSchema } from './read-options';
+import type { ClickHouseSourceOptions } from './clickhouse';
+import type { SnowflakeSourceOptions } from './snowflake';
 
-import type { ClickHouseClientConfigOptions } from '@clickhouse/client';
-import type { ConnectionOptions as SnowflakeConnectionOptions } from 'snowflake-sdk';
-
-/** Shared runtime contract for built-in source configurations; keeps each type correlated with its options. */
-const text = z.string().min(1);
-const port = z.number().int().min(1).max(65535).optional();
-const file = z.object({ path: text, headers: z.record(z.string(), z.string()).optional() }).strict();
-const database = z
-  .object({
-    host: text,
-    database: text,
-    port,
-    user: z.string().optional(),
-    password: z.string().optional(),
-    ssh: z
-      .object({ host: text, user: text, port, password: z.string().optional(), hostKeyFingerprint: text })
-      .strict()
-      .optional(),
-  })
-  .strict();
-const sqlserver = z
-  .object({
-    host: text,
-    port,
-    database: text,
-    user: text,
-    password: text,
-    schema: text.optional(),
-    encrypt: z.boolean().optional(),
-    trustServerCertificate: z.boolean().optional(),
-    connectionTimeoutMs: z.number().int().positive().optional(),
-    requestTimeoutMs: z.number().int().positive().optional(),
-  })
-  .strict();
-const clickhouse = z
-  .object({
-    host: text.optional(),
-    url: text.optional(),
-    database: text,
-    port,
-    user: z.string().optional(),
-    username: z.string().optional(),
-    password: z.string().optional(),
-    access_token: z.string().optional(),
-    pathname: text.optional(),
-    application: z.string().optional(),
-    session_id: z.string().optional(),
-    role: z.union([text, z.array(text)]).optional(),
-    http_headers: z.record(z.string(), z.string()).optional(),
-    request_timeout: z.number().int().positive().optional(),
-  })
-  .passthrough()
-  .refine((value) => value.host || value.url, { message: "ClickHouse sources require either 'host' or 'url'" });
-
-// Other snowflake-sdk connection options pass through to the driver.
-const snowflake = z
-  .object({
-    account: text,
-    database: text,
-    schema: text.optional(),
-    warehouse: text.optional(),
-    role: text.optional(),
-    username: text.optional(),
-    authenticator: text.optional(),
-    password: z.string().optional(),
-    token: z.string().optional(),
-    tokenFilePath: text.optional(),
-    privateKey: z.string().optional(),
-    privateKeyPath: text.optional(),
-    privateKeyPass: z.string().optional(),
-    queryTimeoutMs: z.number().int().positive().optional(),
-  })
-  .passthrough();
-
-const feishuBitable = z
-  .object({
-    url: text.optional(),
-    appToken: text.optional(),
-    tableId: text.optional(),
-    appSecret: text.optional(),
-    appId: text.optional(),
-  })
-  .strict()
-  .refine((value) => Boolean(value.url || (value.appToken && value.tableId)), {
-    message: "Feishu Bitable sources require either 'url' or both 'appToken' and 'tableId'",
-  });
-
-// ── Source variants ───────────────────────────────────────────────────────────
-// Engines reuse these shapes and narrow only the options they can execute.
+/** Engines reuse these shapes and narrow only the options they can execute. */
 export const sourceSchemas = {
-  'csv-file': z
-    .object({
-      type: z.literal('csv-file'),
-      options: file.extend({ options: csvReadOptionsSchema.optional() }),
-    })
-    .strict(),
-  'json-file': z
-    .object({
-      type: z.literal('json-file'),
-      options: file.extend({ options: jsonReadOptionsSchema.optional() }),
-    })
-    .strict(),
-  parquet: z.object({ type: z.literal('parquet'), options: file }).strict(),
-  excel: z.object({ type: z.literal('excel'), options: excelOptionsSchema }).strict(),
-  sqlite: z.object({ type: z.literal('sqlite'), options: z.object({ path: text }).strict() }).strict(),
-  csv: z
-    .object({
-      type: z.literal('csv'),
-      options: z.object({ csv: text, options: csvReadOptionsSchema.optional() }).strict(),
-    })
-    .strict(),
-  json: z
-    .object({
-      type: z.literal('json'),
-      options: z
-        .object({
-          data: z.array(dataRowSchema),
-          options: jsonReadOptionsSchema.optional(),
-        })
-        .strict(),
-    })
-    .strict(),
-  text: z.object({ type: z.literal('text'), options: z.object({ text }).strict() }).strict(),
-  mysql: z.object({ type: z.literal('mysql'), options: database }).strict(),
-  mongodb: z
-    .object({
-      type: z.literal('mongodb'),
-      options: z
-        .object({
-          connection: text.optional(),
-          host: text.optional(),
-          database: text,
-          port,
-          user: z.string().optional(),
-          password: z.string().optional(),
-          authSource: z.string().optional(),
-          srv: z.boolean().optional(),
-          tls: z.boolean().optional(),
-          ssl: z.boolean().optional(),
-          tlsCAFile: z.string().optional(),
-          tlsAllowInvalidCertificates: z.boolean().optional(),
-        })
-        .strict(),
-    })
-    .strict(),
-  postgresql: z
-    .object({ type: z.literal('postgresql'), options: database.extend({ schema: text.optional() }) })
-    .strict(),
-  supabase: z
-    .object({ type: z.literal('supabase'), options: z.object({ accessToken: text, projectRef: text }).strict() })
-    .strict(),
-  clickhouse: z.object({ type: z.literal('clickhouse'), options: clickhouse }).strict(),
-  sqlserver: z.object({ type: z.literal('sqlserver'), options: sqlserver }).strict(),
-  snowflake: z.object({ type: z.literal('snowflake'), options: snowflake }).strict(),
-  'feishu-bitable': z.object({ type: z.literal('feishu-bitable'), options: feishuBitable }).strict(),
+  'csv-file': csvFileSourceSchema,
+  'json-file': jsonFileSourceSchema,
+  parquet: parquetSourceSchema,
+  excel: excelSourceSchema,
+  sqlite: sqliteSourceSchema,
+  csv: csvSourceSchema,
+  json: jsonSourceSchema,
+  text: textSourceSchema,
+  mysql: mysqlSourceSchema,
+  mongodb: mongodbSourceSchema,
+  postgresql: postgresqlSourceSchema,
+  supabase: supabaseSourceSchema,
+  clickhouse: clickhouseSourceSchema,
+  sqlserver: sqlserverSourceSchema,
+  snowflake: snowflakeSourceSchema,
+  'feishu-bitable': feishuBitableSourceSchema,
 };
 
+/** Shared runtime contract for built-in source configurations. */
 export const sourceConfigSchema = z.discriminatedUnion('type', [
   sourceSchemas['csv-file'],
   sourceSchemas['json-file'],
@@ -182,30 +61,10 @@ export const sourceConfigSchema = z.discriminatedUnion('type', [
   sourceSchemas['feishu-bitable'],
 ]);
 
-// ── Public types ──────────────────────────────────────────────────────────────
 // Input types keep normalized/defaulted fields (such as Excel header) optional.
 type SourceInput = z.input<typeof sourceConfigSchema>;
 type ClickHouseInput = z.input<typeof sourceSchemas.clickhouse>;
 type SnowflakeInput = z.input<typeof sourceSchemas.snowflake>;
-type SnowflakeFields = z.input<ReturnType<typeof snowflake.strip>>;
-type ClickHouseFields = z.input<ReturnType<typeof clickhouse.strip>>;
-
-/** Native client options keep their SDK types, including agents, TLS buffers and callbacks.
- * The runtime schema validates AVA's connection fields and passes native options to the client.
- */
-export type ClickHouseSourceOptions = ClickHouseFields & Omit<ClickHouseClientConfigOptions, keyof ClickHouseFields>;
-/** Native driver options exclude the result/session controls owned by AVA. */
-export type SnowflakeSourceOptions = SnowflakeFields &
-  Omit<
-    SnowflakeConnectionOptions,
-    | keyof SnowflakeFields
-    | 'rowMode'
-    | 'streamResult'
-    | 'fetchAsString'
-    | 'jsTreatIntegerAsBigInt'
-    | 'representNullAsStringNull'
-    | 'serverSessionKeepAlive'
-  >;
 export type DataSourceConfig =
   | Exclude<SourceInput, ClickHouseInput | SnowflakeInput>
   | (Omit<ClickHouseInput, 'options'> & {
@@ -213,20 +72,21 @@ export type DataSourceConfig =
     })
   | (Omit<SnowflakeInput, 'options'> & { options: SnowflakeSourceOptions });
 export type SourceType = DataSourceConfig['type'];
-export type CSVReadOptions = z.input<typeof csvReadOptionsSchema>;
-export type JSONReadOptions = z.input<typeof jsonReadOptionsSchema>;
-export type CSVSourceOptions = Extract<DataSourceConfig, { type: 'csv' }>['options'];
-export type CSVFileSourceOptions = Extract<DataSourceConfig, { type: 'csv-file' }>['options'];
-export type JsonSourceOptions = Extract<DataSourceConfig, { type: 'json' }>['options'];
-export type JsonFileSourceOptions = Extract<DataSourceConfig, { type: 'json-file' }>['options'];
-export type ParquetSourceOptions = Extract<DataSourceConfig, { type: 'parquet' }>['options'];
-export type ExcelSourceOptions = Extract<DataSourceConfig, { type: 'excel' }>['options'];
-export type TextSourceOptions = Extract<DataSourceConfig, { type: 'text' }>['options'];
-export type MySQLSourceOptions = Extract<DataSourceConfig, { type: 'mysql' }>['options'];
-export type SSHOptions = NonNullable<MySQLSourceOptions['ssh']>;
-export type SQLiteSourceOptions = Extract<DataSourceConfig, { type: 'sqlite' }>['options'];
-export type PostgreSQLSourceOptions = Extract<DataSourceConfig, { type: 'postgresql' }>['options'];
-export type MongoDBSourceOptions = Extract<DataSourceConfig, { type: 'mongodb' }>['options'];
-export type SupabaseSourceOptions = Extract<DataSourceConfig, { type: 'supabase' }>['options'];
-export type FeishuBitableSourceOptions = Extract<DataSourceConfig, { type: 'feishu-bitable' }>['options'];
-export type SQLServerSourceOptions = Extract<DataSourceConfig, { type: 'sqlserver' }>['options'];
+
+export type { CSVFileSourceOptions } from './csv-file';
+export type { JsonFileSourceOptions } from './json-file';
+export type { ParquetSourceOptions } from './parquet';
+export type { ExcelSourceOptions } from './excel';
+export type { SQLiteSourceOptions } from './sqlite';
+export type { CSVSourceOptions, CSVReadOptions } from './csv';
+export type { JsonSourceOptions, JSONReadOptions } from './json';
+export type { TextSourceOptions } from './text';
+export type { MySQLSourceOptions } from './mysql';
+export type { MongoDBSourceOptions } from './mongodb';
+export type { PostgreSQLSourceOptions } from './postgresql';
+export type { SupabaseSourceOptions } from './supabase';
+export type { ClickHouseSourceOptions } from './clickhouse';
+export type { SQLServerSourceOptions } from './sqlserver';
+export type { SnowflakeSourceOptions } from './snowflake';
+export type { FeishuBitableSourceOptions } from './feishu-bitable';
+export type { SSHOptions } from './shared';

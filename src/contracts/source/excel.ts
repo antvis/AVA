@@ -42,3 +42,7 @@ export const excelOptionsSchema = z
 
 export type ExcelSheetOptions = z.input<typeof excelSheetSchema>;
 export type ExcelReadOptions = Omit<ExcelSheetOptions, 'sheet'>;
+
+export const excelSourceSchema = z.object({ type: z.literal('excel'), options: excelOptionsSchema }).strict();
+
+export type ExcelSourceOptions = z.input<typeof excelSourceSchema>['options'];

@@ -1,11 +1,14 @@
 /** Runtime contracts and data types without engine registration or model dependencies. */
-export { sourceConfigSchema } from './contracts/source';
-export { schemaMetadataSchema } from './contracts/schema';
-export { profileMetadataSchema } from './contracts/profile';
-export { semanticMetadataSchema } from './contracts/semantic';
-export { dataModelMetadataSchema } from './contracts/shared/data-model';
-export { executionResultSchema } from './contracts/query';
-export { chartSpecSchema, bindingSchema } from './contracts/visualize';
+export {
+  sourceConfigSchema,
+  schemaMetadataSchema,
+  profileMetadataSchema,
+  semanticMetadataSchema,
+  dataModelMetadataSchema,
+  executionResultSchema,
+  chartSpecSchema,
+  bindingSchema,
+} from './contracts';
 
 export type {
   DataSourceConfig,
@@ -29,19 +32,18 @@ export type {
   FeishuBitableSourceOptions,
   SQLServerSourceOptions,
   SnowflakeSourceOptions,
-} from './contracts/source';
-export type { ExcelSheetOptions, ExcelReadOptions } from './contracts/source/excel';
-export type { Schema, SchemaOptions } from './contracts/schema';
-export type {
+  ExcelSheetOptions,
+  ExcelReadOptions,
+  Schema,
+  SchemaOptions,
   Profile,
   ProfileOptions,
   ParsedProfileOptions,
   MetricConfig,
   MetricId,
   LogicalType,
-} from './contracts/profile';
-export type { Semantic, SemanticOptions } from './contracts/semantic';
-export type {
+  Semantic,
+  SemanticOptions,
   DataModel,
   Model,
   Column,
@@ -54,9 +56,18 @@ export type {
   Measure,
   CubeDimension,
   TimeDimension,
-} from './contracts/shared/data-model';
-export type { JsonValue, Properties } from './contracts/shared/json';
-export type { ExecutionResult, ExecutionOptions, QueryColumn } from './contracts/query';
-export type { AnalysisConfig, AnalysisResponse, AnalysisStrategyConfig } from './contracts/analyze';
-export type { SuggestResult } from './contracts/suggest';
-export type { ChartSpec, ChartSpecInput, ChartType, ChartDataBinding, VisualizeResponse } from './contracts/visualize';
+  JsonValue,
+  Properties,
+  ExecutionResult,
+  ExecutionOptions,
+  QueryColumn,
+  AnalysisConfig,
+  AnalysisResponse,
+  AnalysisStrategyConfig,
+  SuggestResult,
+  ChartSpec,
+  ChartSpecInput,
+  ChartType,
+  ChartDataBinding,
+  VisualizeResponse,
+} from './contracts';

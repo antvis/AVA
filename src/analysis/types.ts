@@ -1,6 +1,5 @@
-import type { AnalysisConfig, AnalysisResponse } from '../contracts/analyze';
+import type { AnalysisConfig, AnalysisResponse, DataModel } from '../contracts';
 import type { AnalysisEvent } from '../event';
-import type { DataModel } from '../contracts/shared/data-model';
 import type { AnalysisEngine } from '../engines';
 import type { LLMConfig } from '../config';
 

@@ -6,6 +6,6 @@
 
 import { createFileLoader } from '../util/file';
 
-import type { CSVFileSourceOptions } from '../../contracts/source';
+import type { CSVFileSourceOptions } from '../../contracts';
 
 export const loadCSVFile = createFileLoader<CSVFileSourceOptions>('csv');

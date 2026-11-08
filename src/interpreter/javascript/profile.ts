@@ -1,9 +1,7 @@
 import { column, logicalTypes, table, TOP_VALUES_OPTIONS, resolveMetric } from '../../util/profile';
 
 import type { MetricField, Metric } from '../../util/profile';
-import type { JsonValue } from '../../contracts/shared/json';
-import type { LogicalType, ParsedProfileOptions, Profile } from '../../contracts/profile';
-import type { Schema } from '../../contracts/schema';
+import type { JsonValue, LogicalType, ParsedProfileOptions, Profile, Schema } from '../../contracts';
 
 interface Context {
   rowCount: number;

@@ -3,32 +3,43 @@
  */
 import EventEmitter from '@antv/event-emitter';
 
-import { sourceConfigSchema } from './contracts/source';
+import {
+  sourceConfigSchema,
+  schemaMetadataSchema,
+  profileMetadataSchema,
+  semanticMetadataSchema,
+  chartSpecSchema,
+} from './contracts';
 import { getEngineClass } from './engines';
 import { extractDataSchema } from './util/schema';
-import { schemaMetadataSchema } from './contracts/schema';
-import { profileMetadataSchema } from './contracts/profile';
 import { buildDataModel, stringifyDataModel } from './util/data-model';
-import { semanticMetadataSchema } from './contracts/semantic';
 import { adviseChartType, generateVisualizationConfig, wrapConfigInHTML } from './visualization';
 import { generateSuggestions } from './suggest';
 import { analyze } from './analysis';
 import { LifecycleEventType, LifecycleEvent, AnalysisEventType, AnalysisEvent, emit } from './event';
-import { chartSpecSchema } from './contracts/visualize';
 import { serializeError } from './util/error';
 
 import type { LanguageModelUsage } from 'ai';
-import type { DataModel } from './contracts/shared/data-model';
-import type { Semantic, SemanticOptions } from './contracts/semantic';
+import type {
+  DataModel,
+  Semantic,
+  SemanticOptions,
+  DataSourceConfig,
+  SchemaOptions,
+  Schema,
+  AnalysisResponse,
+  AnalysisConfig,
+  VisualizeResponse,
+  ChartSpec,
+  ChartSpecInput,
+  SuggestResult,
+  Profile,
+  ProfileOptions,
+  ExecutionOptions,
+  ExecutionResult,
+} from './contracts';
 import type { AVAConfig, LLMConfig } from './config';
 import type { EngineConfig, AnalysisEngine } from './engines';
-import type { DataSourceConfig } from './contracts/source';
-import type { SchemaOptions, Schema } from './contracts/schema';
-import type { AnalysisResponse, AnalysisConfig } from './contracts/analyze';
-import type { VisualizeResponse, ChartSpec, ChartSpecInput } from './contracts/visualize';
-import type { SuggestResult } from './contracts/suggest';
-import type { Profile, ProfileOptions } from './contracts/profile';
-import type { ExecutionOptions, ExecutionResult } from './contracts/query';
 
 /**
  * Check if analysis result has meaningful data for visualization.

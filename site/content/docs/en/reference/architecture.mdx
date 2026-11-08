@@ -25,9 +25,9 @@
 | [`cli/`](https://github.com/antvis/AVA/tree/ai/src/cli/)                                       | Commands and local dataset sessions                   |
 | [`util/`](https://github.com/antvis/AVA/tree/ai/src/util/) | Catalog assembly, model formatting, metric execution rules and result bounds |
 
-Contracts follow the public API. `source/` owns source configurations and its CSV/JSON/Excel reader options. `schema.ts`, `profile.ts`, `semantic.ts`, `query.ts`, `analyze.ts` and `suggest.ts` define each API's public inputs and outputs. `visualize.ts` holds the chart specification shared by `recommend()`, `viz()` and `visualize()`, plus explicit chart bindings. Cross-API JSON values and data-model building blocks live in `shared/`.
+Contracts follow the public API. `source/` keeps each source type's schema, options and types in its own file, including CSV/JSON/Excel reader options; `source/index.ts` assembles the source union and `source/shared.ts` holds common file and connection fields. `schema.ts`, `profile.ts`, `semantic.ts`, `query.ts`, `analyze.ts` and `suggest.ts` define each API's public inputs and outputs. `visualize.ts` holds the chart specification shared by `recommend()`, `viz()` and `visualize()`, plus explicit chart bindings. Cross-API JSON values and data-model building blocks live in `shared/`.
 
-Runtime strategy, dialect and per-engine interfaces stay with their implementations. The data-model builder owns its stricter assembly input validation, derived from the public metadata fields. Internal modules import the defining module directly; public entry points keep the existing exports. CLI wire messages, AI-stage response formats and interpreter-specific restrictions remain local to their modules.
+Runtime strategy, dialect and per-engine interfaces stay with their implementations. The data-model builder owns its stricter assembly input validation, derived from the public metadata fields. Modules outside `contracts/` import shared contracts through `contracts/index.ts`; contract definitions reference each other directly to avoid circular dependencies. Public entry points keep the existing exports. CLI wire messages, AI-stage response formats and interpreter-specific restrictions remain local to their modules.
 
 ## Method to module
 

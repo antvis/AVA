@@ -2,8 +2,7 @@
  * Shared SQL quoting/composition helpers and DuckDB reader options.
  */
 
-import type { CSVReadOptions, JSONReadOptions } from '../contracts/source';
-import type { ExcelReadOptions } from '../contracts/source/excel';
+import type { CSVReadOptions, JSONReadOptions, ExcelReadOptions } from '../contracts';
 import type { FileFormat } from '../duckdb/types';
 
 /** DuckDB reader function for each file format */

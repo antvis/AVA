@@ -8,7 +8,7 @@ import { parse } from 'csv-parse/sync';
 
 import { fileSource, removeTempFile, writeTempFile } from '../util/file';
 
-import type { CSVSourceOptions } from '../../contracts/source';
+import type { CSVSourceOptions } from '../../contracts';
 import type { LoadedSource } from '../types';
 
 /**

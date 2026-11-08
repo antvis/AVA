@@ -9,12 +9,12 @@ import { resolve } from 'node:path';
 import AdmZip from 'adm-zip';
 import { SaxesParser } from 'saxes';
 
-import { excelOptionsSchema } from '../../contracts/source/excel';
+import { excelOptionsSchema } from '../../contracts';
 import { downloadToTempFile, removeTempFile } from '../util/file';
 import { getDuckDBSchema } from '../util/schema';
 import { escapeSql, serializeOptions, sqlIdentifier, sqlStringLiteral } from '../../util/sql';
 
-import type { ExcelSourceOptions } from '../../contracts/source';
+import type { ExcelSourceOptions } from '../../contracts';
 import type { LoadedSource } from '../types';
 
 const noopCleanup = async (): Promise<void> => {};

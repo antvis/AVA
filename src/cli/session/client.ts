@@ -16,7 +16,7 @@ import {
 } from './protocol';
 
 import type { Request } from './protocol';
-import type { DataSourceConfig } from '../../contracts/source';
+import type { DataSourceConfig } from '../../contracts';
 import type { EngineConfig } from '../../engines';
 import type { LLMConfig } from '../../config';
 

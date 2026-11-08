@@ -10,12 +10,17 @@ import { getClickHouseSchema } from './schema';
 import type { ClickHouseClient, ClickHouseClientConfigOptions } from '@clickhouse/client';
 import type { TranslationResult } from '../../query/types';
 import type { AnalysisEngine } from '../../engines';
-import type { ClickHouseSourceOptions, DataSourceConfig } from '../../contracts/source';
-import type { DataModel } from '../../contracts/shared/data-model';
-import type { ExecutionOptions, ExecutionResult } from '../../contracts/query';
+import type {
+  ClickHouseSourceOptions,
+  DataSourceConfig,
+  DataModel,
+  ExecutionOptions,
+  ExecutionResult,
+  Profile,
+  ProfileOptions,
+  Schema,
+} from '../../contracts';
 import type { LLMConfig } from '../../config';
-import type { Profile, ProfileOptions } from '../../contracts/profile';
-import type { Schema } from '../../contracts/schema';
 
 function normalizeUrl(hostOrUrl: string, port?: number): string {
   const base = /^[a-z]+:\/\//i.test(hostOrUrl) ? hostOrUrl : `http://${hostOrUrl}`;

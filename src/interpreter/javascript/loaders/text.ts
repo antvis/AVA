@@ -7,7 +7,7 @@ import { generateText } from 'ai';
 import { languageModel } from '../../../util/model';
 
 import type { LLMConfig } from '../../../config';
-import type { TextSourceOptions } from '../../../contracts/source';
+import type { TextSourceOptions } from '../../../contracts';
 
 export async function loadText(options: TextSourceOptions, llmConfig: LLMConfig): Promise<any[]> {
   const prompt = `You are a data extraction assistant. Extract structured data from the following text and return it as a JSON array of objects.

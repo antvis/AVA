@@ -5,7 +5,7 @@ import { z } from 'zod';
 import { PythonDialect } from '../../query/python';
 import { executionResult, maxRows, maxResultBytes } from '../../util/result';
 import { DEFAULT_METRICS, parseProfileOptions } from '../../util/profile';
-import { profileMetadataSchema } from '../../contracts/profile';
+import { profileMetadataSchema } from '../../contracts';
 import { runWithTimeout } from '../../util/timeout';
 
 import { SCHEMA_CODE, sourceSchema, tableSchema, resultSchema } from './util/schema';
@@ -15,13 +15,17 @@ import { executionCode } from './util/code';
 
 import type { TranslationResult } from '../../query/types';
 import type { AnalysisEngine } from '../../engines';
-import type { DataModel } from '../../contracts/shared/data-model';
-import type { DataSourceConfig } from '../../contracts/source';
-import type { ExecutionOptions, ExecutionResult } from '../../contracts/query';
+import type {
+  DataModel,
+  DataSourceConfig,
+  ExecutionOptions,
+  ExecutionResult,
+  Profile,
+  ProfileOptions,
+  Schema,
+} from '../../contracts';
 import type { LLMConfig } from '../../config';
-import type { Profile, ProfileOptions } from '../../contracts/profile';
 import type { PythonEngineOptions } from './types';
-import type { Schema } from '../../contracts/schema';
 
 const DEFAULT_QUERY_TIMEOUT_MS = 30_000;
 

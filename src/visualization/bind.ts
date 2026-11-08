@@ -1,11 +1,8 @@
 import { z } from 'zod';
 
-import { chartSpecSchema, bindingSchema } from '../contracts/visualize';
-import { executionResultSchema } from '../contracts/query';
-import { dataRowSchema } from '../contracts/shared/json';
+import { chartSpecSchema, bindingSchema, executionResultSchema, dataRowSchema } from '../contracts';
 
-import type { ChartSpec, ChartType, ChartDataBinding } from '../contracts/visualize';
-import type { ExecutionResult } from '../contracts/query';
+import type { ChartSpec, ChartType, ChartDataBinding, ExecutionResult } from '../contracts';
 
 /**
  * Validate a query result and project explicit native chart fields without coercion.

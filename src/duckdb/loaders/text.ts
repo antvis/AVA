@@ -9,7 +9,7 @@ import { languageModel } from '../../util/model';
 import { fileSource, removeTempFile, writeTempFile } from '../util/file';
 
 import type { LLMConfig } from '../../config';
-import type { TextSourceOptions } from '../../contracts/source';
+import type { TextSourceOptions } from '../../contracts';
 import type { LoadedSource } from '../types';
 
 async function extractData(text: string, llmConfig: LLMConfig): Promise<any[]> {

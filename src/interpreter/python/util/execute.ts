@@ -1,6 +1,6 @@
 import { execFile } from 'node:child_process';
 
-import type { ExecutionResult } from '../../../contracts/query';
+import type { ExecutionResult } from '../../../contracts';
 
 /** Local subprocess execution, not a security sandbox. Requires python3 and pandas. */
 export const createPythonExecutor =
