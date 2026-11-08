@@ -1,8 +1,10 @@
 import { mkdtemp, readFile, rm, stat, symlink, writeFile } from 'fs/promises';
+import { Readable } from 'stream';
 import { tmpdir } from 'os';
 import { join, resolve } from 'path';
 
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import { ZodError } from 'zod';
 
 import { AVA } from '../src/ava';
 import { run } from '../src/cli';
@@ -90,7 +92,49 @@ describe('help and validation', () => {
   });
 });
 
-describe('metadata files', () => {
+describe('metadata input', () => {
+  describe.each(['schema', 'profile', 'semantic'])('%s from stdin', (kind) => {
+    const args = [kind, datasetId, '--file', '-'];
+
+    function mockStdin(input: string): void {
+      const stream = Readable.from([input], { objectMode: false });
+      vi.spyOn(process, 'stdin', 'get').mockReturnValue(stream as typeof process.stdin);
+    }
+
+    it('imports valid metadata', async () => {
+      const value = kind === 'semantic' ? { description: 'Revenue excludes refunds.' } : { models: [] };
+      mockStdin(JSON.stringify(value));
+
+      const output = await execute(args);
+
+      expect(JSON.parse(output)).toEqual({ ok: true });
+      expect(request).toHaveBeenCalledExactlyOnceWith(
+        datasetId,
+        kind === 'profile' ? { command: kind, metrics: undefined, profile: value } : { command: kind, [kind]: value }
+      );
+    });
+
+    it('rejects malformed JSON before sending a request or writing a result', async () => {
+      const write = vi.fn();
+      mockStdin('invalid JSON');
+
+      await expect(run(args, write)).rejects.toThrow('Cannot read JSON');
+
+      expect(request).not.toHaveBeenCalled();
+      expect(write).not.toHaveBeenCalled();
+    });
+
+    it('rejects invalid metadata before sending a request or writing a result', async () => {
+      const write = vi.fn();
+      mockStdin('{"models":null}');
+
+      await expect(run(args, write)).rejects.toThrow(ZodError);
+
+      expect(request).not.toHaveBeenCalled();
+      expect(write).not.toHaveBeenCalled();
+    });
+  });
+
   it.each(['schema', 'profile', 'semantic'])('sets %s from a plain file path', async (kind) => {
     const directory = await mkdtemp(join(tmpdir(), 'ava-cli-test-'));
     try {

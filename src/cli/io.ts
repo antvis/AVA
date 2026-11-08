@@ -34,6 +34,11 @@ export async function readJSON(value: string): Promise<unknown> {
   }
 }
 
+/** Accept a plain file path or stdin while retaining the shared input limits. */
+export function readJSONFile(path: string): Promise<unknown> {
+  return readJSON(path === '-' ? '-' : `@${path}`);
+}
+
 export async function writeHTML(path: string | undefined, html: string): Promise<{ output: string }> {
   if (!path?.trim()) throw new Error('--output is required.');
 

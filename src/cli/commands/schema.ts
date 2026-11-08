@@ -1,5 +1,5 @@
 import { request } from '../session/client';
-import { readJSON } from '../io';
+import { readJSONFile } from '../io';
 import { option } from '../options';
 import { schemaMetadataSchema } from '../../util/schema';
 
@@ -14,21 +14,21 @@ export const definition = {
 
 export async function run([datasetId]: string[], options: Options): Promise<unknown> {
   const file = option(options, 'file');
-  const schema = file === undefined ? undefined : schemaMetadataSchema.parse(await readJSON(`@${file}`));
+  const schema = file === undefined ? undefined : schemaMetadataSchema.parse(await readJSONFile(file));
   return request(datasetId, { command: 'schema', schema });
 }
 
 export const help = `${description}.
 
 Usage:
-  ava schema <dataset-id> [--file <path>]
+  ava schema <dataset-id> [--file <path|->]
 
 Returns the dataset structure, execution language id and optional query instructions as JSON.
 Use this information to write queries for the session.
 Use the datasetId returned by ava source.
 
 Options:
-  --file <path>  Set the schema from a JSON file instead of discovering it.
+  --file <path|->  Set the schema from a JSON file (or - for stdin) instead of discovering it.
                  Replaces the saved schema and clears the saved profile.
   -h, --help     Show help.
 
