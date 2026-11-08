@@ -131,19 +131,3 @@ export const sourceConfigSchema = z.discriminatedUnion('type', [
   z.object({ type: z.literal('sqlserver'), options: sqlserver }).strict(),
   z.object({ type: z.literal('feishu-bitable'), options: feishuBitable }).strict(),
 ]);
-
-/** Infer file formats without pulling Node's path module into integrations or browser bundles. */
-export function inferFileSourceType(path: string) {
-  const pathname = /^https?:\/\//i.test(path) ? new URL(path).pathname : path;
-  const extension = /\.([^./\\]+)$/.exec(pathname)?.[1].toLowerCase();
-  const types = {
-    csv: 'csv-file',
-    json: 'json-file',
-    parquet: 'parquet',
-    xlsx: 'excel',
-    sqlite: 'sqlite',
-    sqlite3: 'sqlite',
-    db: 'sqlite',
-  } as const;
-  return types[extension as keyof typeof types];
-}

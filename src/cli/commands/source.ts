@@ -1,6 +1,6 @@
 import { resolve } from 'path';
 
-import { inferFileSourceType } from '../../contracts/source';
+import { inferFileSourceType } from '../../util/source';
 import { createSession } from '../session/client';
 import { engineTypeSchema, sourceConfig } from '../session/protocol';
 import { isFeishuBitableUrl, isFeishuHostUrl, feishuCredentials } from '../feishu';

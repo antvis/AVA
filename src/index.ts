@@ -15,9 +15,10 @@ registerEngine('supabase', SupabaseEngine);
 registerEngine('javascript', JavaScriptEngine);
 registerEngine('python', PythonEngine);
 
-export { sourceConfigSchema, inferFileSourceType } from './contracts/source';
+export { sourceConfigSchema } from './contracts/source';
 export { executionResultSchema } from './contracts/result';
 export { chartSpecSchema } from './contracts/chart';
+export { inferFileSourceType } from './util/source';
 export { bindChartData } from './visualization/bind';
 export type { ChartDataBinding } from './visualization/bind';
 

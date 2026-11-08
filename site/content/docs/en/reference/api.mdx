@@ -377,7 +377,7 @@ Returns a standalone HTML string. Does not require a loaded source or call a mod
 
 ## Runtime contracts
 
-The Node and browser entry points export the same pure runtime contracts for SDK integrations and tool inputs. SDK `source()`, `recommend()`, `viz()` and the CLI use these contracts at their input boundaries.
+The Node and browser entry points export shared runtime schemas plus pure helpers for source-type inference and chart binding. SDK `source()`, `recommend()`, `viz()` and the CLI use these contracts at their input boundaries.
 
 | Export | Purpose |
 | --- | --- |

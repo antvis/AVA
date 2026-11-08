@@ -379,7 +379,7 @@ Setter 接收选项对象，同步返回 `Semantic`。AVA 验证并复制结果�
 
 <Heading as="h2" id="runtime-contracts">运行时契约</Heading>
 
-Node 和浏览器入口导出同一组纯运行时契约，供 SDK 集成和工具输入复用。SDK 的 `source()`、`recommend()`、`viz()` 和 CLI 在各自的输入边界使用这些契约。
+Node 和浏览器入口导出共享运行时 schema，以及数据源类型推断和图表绑定工具函数。SDK 的 `source()`、`recommend()`、`viz()` 和 CLI 在各自的输入边界使用这些契约。
 
 | 导出 | 用途 |
 | --- | --- |

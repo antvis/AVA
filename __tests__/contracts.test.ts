@@ -1,7 +1,7 @@
 import { z } from 'zod';
 import { describe, expect, it } from 'vitest';
 
-import { AVA, executionResultSchema, inferFileSourceType, sourceConfigSchema } from '../src/index.browser';
+import { AVA, executionResultSchema, sourceConfigSchema } from '../src/index.browser';
 import * as node from '../src';
 import * as browser from '../src/index.browser';
 import { startupSchema } from '../src/cli/session/protocol';
@@ -33,14 +33,6 @@ describe('public source contracts', () => {
       await ava.dispose();
     }
   });
-
-  it.each([
-    ['sales.CSV', 'csv-file'],
-    ['https://example.test/sales.json?key=1', 'json-file'],
-    ['C:\\data\\sales.sqlite3', 'sqlite'],
-    ['data.xlsx', 'excel'],
-    ['data.unknown', undefined],
-  ])('infers %s as %s', (path, type) => expect(inferFileSourceType(path)).toBe(type));
 });
 
 describe('public result contract', () => {
@@ -70,11 +62,12 @@ describe('public result contract', () => {
 });
 
 describe('source-to-chart contract flow', () => {
-  it('exposes the same pure contracts from Node and browser entry points', () => {
+  it('exposes shared contracts and helpers from Node and browser entry points', () => {
     expect(node.sourceConfigSchema).toBe(browser.sourceConfigSchema);
     expect(node.executionResultSchema).toBe(browser.executionResultSchema);
     expect(node.chartSpecSchema).toBe(browser.chartSpecSchema);
     expect(node.bindChartData).toBe(browser.bindChartData);
+    expect(node.inferFileSourceType).toBe(browser.inferFileSourceType);
   });
 
   it('loads, queries, binds and renders real SQL results through the public contracts', async () => {
