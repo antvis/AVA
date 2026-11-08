@@ -40,6 +40,12 @@ describe('session startup protocol', () => {
     const { datasetId } = await createSession(source, llm, 'python');
     try {
       expect(startupSchema.parse(worker.send.mock.calls[0][0])).toEqual({ source, llm, engine: 'python' });
+      expect(vi.mocked(fork).mock.calls[0][1]).toEqual([datasetId, sessionDirectory(datasetId)]);
+      expect(vi.mocked(fork).mock.calls[0][2]?.env).toMatchObject({
+        TMPDIR: sessionDirectory(datasetId),
+        TMP: sessionDirectory(datasetId),
+        TEMP: sessionDirectory(datasetId),
+      });
       expect(worker.disconnect).toHaveBeenCalledOnce();
       expect(worker.unref).toHaveBeenCalledOnce();
     } finally {
@@ -100,12 +106,25 @@ describe('dataset engine and language', () => {
     vi.restoreAllMocks();
   });
 
-  it.each<{ source: DataSourceConfig; engine: EngineConfig['type']; language: string; explicit?: EngineConfig['type'] }>([
+  it.each<{
+    source: DataSourceConfig;
+    engine: EngineConfig['type'];
+    language: string;
+    explicit?: EngineConfig['type'];
+  }>([
     { source, engine: 'duckdb', language: 'duckdb-sql' },
     { source, engine: 'python', language: 'python', explicit: 'python' },
     { source, engine: 'javascript', language: 'javascript', explicit: 'javascript' },
-    { source: { type: 'supabase', options: { accessToken: 'test', projectRef: 'test' } }, engine: 'supabase', language: 'postgresql' },
-    { source: { type: 'clickhouse', options: { host: 'localhost', database: 'sales' } }, engine: 'clickhouse', language: 'clickhouse-sql' },
+    {
+      source: { type: 'supabase', options: { accessToken: 'test', projectRef: 'test' } },
+      engine: 'supabase',
+      language: 'postgresql',
+    },
+    {
+      source: { type: 'clickhouse', options: { host: 'localhost', database: 'sales' } },
+      engine: 'clickhouse',
+      language: 'clickhouse-sql',
+    },
     { source: sqlserverSource, engine: 'sqlserver', language: 'tsql' },
   ])('selects $engine and exposes language id $language', async ({ source, engine, language, explicit }) => {
     const { getEngineClass } = await import('../src/engines');

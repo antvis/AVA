@@ -55,10 +55,12 @@ export async function createSession(
   let child: ReturnType<typeof fork> | undefined;
 
   try {
-    child = fork(join(__dirname, 'server.js'), [datasetId], {
+    child = fork(join(__dirname, 'server.js'), [datasetId, directory], {
       detached: true,
       stdio: ['ignore', 'ignore', 'ignore', 'ipc'],
       execArgv: [],
+      // Keep every worker-owned scratch file under the same disposable workspace.
+      env: { ...process.env, TMPDIR: directory, TMP: directory, TEMP: directory },
     });
     const worker = child;
 

@@ -1,6 +1,8 @@
 import { rm } from 'fs/promises';
 import { createServer } from 'net';
+import { join } from 'path';
 
+import { snapshotSource } from './snapshot';
 import { createDataset, describeDataset, disposeDataset, withDataset } from './datasets';
 import {
   IPC_TIMEOUT_MS,
@@ -8,13 +10,14 @@ import {
   IPC_MAX_RESPONSE_BYTES,
   requestSchema,
   sessionDirectory,
-  socketPath,
   startupSchema,
 } from './protocol';
 
 import type { Request } from './protocol';
 
 const id = process.argv[2];
+// The parent resolves this before setting the worker's temporary directory.
+const directory = process.argv[3] ?? sessionDirectory(id);
 let server: ReturnType<typeof createServer>;
 let closing: Promise<void> | undefined;
 let hasModel = false;
@@ -26,7 +29,7 @@ function close(): Promise<void> {
   if (!closing) {
     clearTimeout(idle);
     server.close();
-    closing = disposeDataset().finally(() => rm(sessionDirectory(id), { recursive: true, force: true }));
+    closing = disposeDataset().finally(() => rm(directory, { recursive: true, force: true }));
   }
 
   return closing;
@@ -140,10 +143,12 @@ process.once('message', (message) => {
   void (async () => {
     const startup = startupSchema.parse(message);
     hasModel = Boolean(startup.llm.apiKey);
-    await createDataset(startup.source, { ...startup.llm, model: startup.llm.model }, startup.engine);
+    const source = await snapshotSource(startup.source, directory);
+    if (closing) return;
+    await createDataset(source, { ...startup.llm, model: startup.llm.model }, startup.engine);
     if (closing) return;
 
-    server.listen(socketPath(id), () => {
+    server.listen(join(directory, 'ipc'), () => {
       if (closing) return;
       ready = true;
       resetIdle();
@@ -159,7 +164,7 @@ process.once('disconnect', () => {
 
   // Loading may be blocked on a remote source; bound orphan cleanup.
   const timer = setTimeout(() => {
-    void rm(sessionDirectory(id), { recursive: true, force: true }).finally(() => process.exit(1));
+    void rm(directory, { recursive: true, force: true }).finally(() => process.exit(1));
   }, 5_000);
   void close().finally(() => {
     clearTimeout(timer);

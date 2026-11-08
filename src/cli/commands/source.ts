@@ -121,7 +121,9 @@ In a terminal, shows the dataset ID and suggested next commands.
 When piped or redirected, returns JSON containing datasetId.
 IDs use a sanitized source name plus a random suffix.
 Requires Node.js 22.13+ on macOS or Linux.
-Sessions expire after 30 idle minutes; dispose releases them immediately.
+Local files are snapshotted when loaded; later edits do not change this session.
+SQLite snapshots include committed WAL transactions. The original file is never modified.
+Sessions expire after 30 idle minutes; dispose releases them and their private workspace immediately.
 Python requires python3 and pandas; local Python execution is not sandboxed.
 JavaScript accepts inline csv/json/text configs. Use ava schema to inspect the query language.
 
