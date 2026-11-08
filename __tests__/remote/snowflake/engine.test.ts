@@ -1,3 +1,5 @@
+import { Readable } from 'node:stream';
+
 import { afterEach, describe, expect, it, vi } from 'vitest';
 
 import { AVA } from '../../../src';
@@ -385,9 +387,12 @@ describe('SnowflakeEngine execution', () => {
   });
 
   it('cancels a statement in Snowflake when it outlives queryTimeoutMs', async () => {
-    const { statements } = install((options) =>
-      options.sqlText.includes('GENERATOR') && !options.describeOnly ? 'hang' : undefined
-    );
+    const stream = new Readable({ objectMode: true, read() {} });
+    const { statements } = install((options) => {
+      if (!options.sqlText.includes('GENERATOR') || options.describeOnly) return undefined;
+      options.complete(undefined, { getColumns: () => [], streamRows: () => stream });
+      return 'hang';
+    });
     const engine = new SnowflakeEngine(getLLMConfig());
     try {
       await engine.load({ type: 'snowflake', options: { ...SOURCE.options, queryTimeoutMs: 30 } });
@@ -395,15 +400,21 @@ describe('SnowflakeEngine execution', () => {
       expect(error).toBeInstanceOf(SnowflakeQueryTimeoutError);
       expect(error.message).toBe('Snowflake query timed out after 30ms and was cancelled');
       expect(statements[statements.length - 1].cancel).toHaveBeenCalledOnce();
+      expect(stream.destroyed).toBe(true);
     } finally {
+      stream.destroy();
       await engine.dispose();
     }
   });
 
   it('cancels running statements before closing the session', async () => {
-    const { connection, statements } = install((options) =>
-      options.sqlText.includes('GENERATOR') && !options.describeOnly ? 'hang' : undefined
-    );
+    let complete: ExecuteOptions['complete'];
+    const streamRows = vi.fn(() => Readable.from([]));
+    const { connection, statements } = install((options) => {
+      if (!options.sqlText.includes('GENERATOR') || options.describeOnly) return undefined;
+      complete = options.complete;
+      return 'hang';
+    });
     const engine = new SnowflakeEngine(getLLMConfig());
     await engine.load(SOURCE);
     const pending = engine.execute('SELECT COUNT(*) FROM TABLE(GENERATOR(TIMELIMIT => 60))').catch((e) => e);
@@ -414,7 +425,9 @@ describe('SnowflakeEngine execution', () => {
     expect(statements[3].cancel.mock.invocationCallOrder[0]).toBeLessThan(
       connection.destroy.mock.invocationCallOrder[0]
     );
-    void pending;
+    complete(undefined, { getColumns: () => [], streamRows });
+    expect(streamRows).not.toHaveBeenCalled();
+    expect(await pending).toBeInstanceOf(Error);
   });
 
   it('integrates with AVA through the engine registry', async () => {

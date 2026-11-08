@@ -12,6 +12,7 @@ import { profileTables } from './profile';
 import { convertRow, queryColumn } from './result';
 import { getSnowflakeSchema } from './schema';
 
+import type { Readable } from 'node:stream';
 import type { Binds, Connection, RowStatement } from 'snowflake-sdk';
 import type { SnowflakeScope } from './schema';
 import type {
@@ -109,8 +110,8 @@ export class SnowflakeEngine implements AnalysisEngine {
   private connection: Connection | null = null;
   private scope: SnowflakeScope | null = null;
   private timeoutMs = DEFAULT_QUERY_TIMEOUT_MS;
-  /** Statements that have not finished yet; dispose() cancels them. */
-  private readonly running = new Set<RowStatement>();
+  /** Active statements and callbacks that stop their local result streams. */
+  private readonly running = new Map<RowStatement, (error: Error) => void>();
   private readonly queryDialect: SnowflakeQueryDialect;
 
   constructor(llmConfig: LLMConfig) {
@@ -203,7 +204,12 @@ export class SnowflakeEngine implements AnalysisEngine {
     this.scope = null;
     this.running.clear();
     // Closing a Snowflake session does not stop the statements it started, so cancel them first.
-    await Promise.all(running.map((statement) => settle((done) => statement.cancel(() => done()))));
+    await Promise.all(
+      running.map(([statement, stop]) => {
+        stop(new Error('Snowflake source was disposed'));
+        return settle((done) => statement.cancel(() => done()));
+      })
+    );
     if (connection) await settle((done) => connection.destroy(() => done()));
   }
 
@@ -229,7 +235,15 @@ export class SnowflakeEngine implements AnalysisEngine {
     const timeoutMs = this.timeoutMs;
 
     let statement: RowStatement | undefined;
+    let stream: Readable | undefined;
+    let stopped = false;
+    let stop: (error: Error) => void;
     const result = new Promise<{ rows: Rows; columns: QueryColumn[] }>((resolve, reject) => {
+      stop = (error) => {
+        stopped = true;
+        stream?.destroy();
+        reject(error);
+      };
       statement = connection.execute({
         sqlText,
         binds,
@@ -239,6 +253,7 @@ export class SnowflakeEngine implements AnalysisEngine {
         fetchAsString: ['Number', 'Date', 'Buffer'],
         parameters: { MULTI_STATEMENT_COUNT: 1, ...(limit ? { ROWS_PER_RESULTSET: limit } : {}) },
         complete: (error, completed) => {
+          if (stopped) return;
           if (error) {
             reject(error);
             return;
@@ -250,8 +265,8 @@ export class SnowflakeEngine implements AnalysisEngine {
             return;
           }
           const rows: Rows = [];
-          completed
-            .streamRows(limit ? { start: 0, end: limit - 1 } : undefined)
+          stream = completed.streamRows(limit ? { start: 0, end: limit - 1 } : undefined);
+          stream
             .on('data', (row: Record<string, unknown>) => rows.push(convertRow(row, columns)))
             .on('error', reject)
             .on('end', () => resolve({ rows, columns: schema }));
@@ -260,16 +275,20 @@ export class SnowflakeEngine implements AnalysisEngine {
     });
 
     const current = statement;
-    if (current) this.running.add(current);
+    if (current) this.running.set(current, stop);
     try {
       return await runWithTimeout(result, timeoutMs, {
         onTimeout: () => {
+          const error = new SnowflakeQueryTimeoutError(timeoutMs);
+          stop(error);
           current?.cancel(() => undefined);
-          return new SnowflakeQueryTimeoutError(timeoutMs);
+          return error;
         },
         unref: true,
       });
     } finally {
+      stopped = true;
+      stream?.destroy();
       if (current) this.running.delete(current);
     }
   }
