@@ -967,45 +967,15 @@ export type ChartConfig = { type: string; [key: string]: unknown };
 /**
  * Chart specification for rendering.
  */
-export interface ChartSpec {
-  /** Recommended chart type */
-  chartType: ChartType;
-  /** GPT-Vis JSON config; its `type` matches chartType */
-  config: ChartConfig;
-}
+export type ChartSpec = import('zod').infer<typeof import('./contracts/chart').chartSpecSchema>;
 
-/**
- * Visualization response — chart generation results
- */
-export interface VisualizeResponse extends ChartSpec {
-  /** Standalone HTML that renders the chart */
-  html: string;
-}
+/** Standalone chart generation result. */
+export type VisualizeResponse = ChartSpec & { html: string };
 
 /**
  * Supported chart types from GPT-Vis
  */
-export type ChartType =
-  | 'line'
-  | 'column'
-  | 'bar'
-  | 'pie'
-  | 'area'
-  | 'scatter'
-  | 'dual-axes'
-  | 'histogram'
-  | 'boxplot'
-  | 'radar'
-  | 'funnel'
-  | 'waterfall'
-  | 'liquid'
-  | 'word-cloud'
-  | 'violin'
-  | 'venn'
-  | 'treemap'
-  | 'sankey'
-  | 'table'
-  | 'summary';
+export type ChartType = ChartSpec['chartType'];
 
 /**
  * Chart type definition — structured metadata for prompt generation

@@ -3,6 +3,7 @@
  */
 import EventEmitter from '@antv/event-emitter';
 
+import { sourceConfigSchema } from './contracts/source';
 import { getEngineClass } from './engines';
 import { extractDataSchema, schemaMetadataSchema } from './util/schema';
 import { profileMetadataSchema } from './util/profile';
@@ -11,6 +12,7 @@ import { adviseChartType, generateVisualizationConfig, wrapConfigInHTML } from '
 import { generateSuggestions } from './suggest';
 import { analyze } from './analysis';
 import { LifecycleEventType, LifecycleEvent, AnalysisEventType, AnalysisEvent, emit } from './event';
+import { chartSpecSchema } from './contracts/chart';
 import { serializeError } from './util/error';
 
 import type { LanguageModelUsage } from 'ai';
@@ -127,6 +129,8 @@ export class AVA extends EventEmitter {
    * Reloading disposes the previous engine and its resources.
    */
   async source(config: DataSourceConfig): Promise<void> {
+    // Reject invalid replacements before disposing the current dataset.
+    config = sourceConfigSchema.parse(config);
     emit(this, new LifecycleEvent(LifecycleEventType.SOURCE_START, { type: config.type }));
 
     try {
@@ -348,14 +352,15 @@ export class AVA extends EventEmitter {
     if (!chartType) return null;
 
     const config = await generateVisualizationConfig(chartType, data, query, this.llmConfig);
-    return { chartType, config };
+    return chartSpecSchema.parse({ chartType, config });
   }
 
   /**
    * Render a chart specification as standalone HTML.
    */
   async viz(spec: ChartSpec): Promise<string> {
-    return wrapConfigInHTML(spec.config);
+    const parsed = chartSpecSchema.parse(spec);
+    return wrapConfigInHTML({ ...parsed.config, type: parsed.chartType });
   }
 
   /**

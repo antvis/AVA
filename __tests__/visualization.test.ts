@@ -67,7 +67,7 @@ describe('chart recommendation', () => {
     ]);
     expect(visualization).toMatchObject({ chartType: 'column', config });
     expect(visualization?.html).toContain('<!DOCTYPE html>');
-    expect(visualization?.html).toContain(json);
+    expect(JSON.parse(visualization!.html.match(/const visConfig = (.+);/)![1])).toEqual(config);
     expect(generateText).toHaveBeenCalledTimes(2);
   });
 
@@ -75,7 +75,7 @@ describe('chart recommendation', () => {
     const spec = { chartType: 'column' as const, config };
     const html = await ava['viz'](spec);
     expect(html).toContain('<!DOCTYPE html>');
-    expect(html).toContain(json);
+    expect(JSON.parse(html.match(/const visConfig = (.+);/)![1])).toEqual(config);
     expect(html).toContain('gptVis.render(visConfig)');
     expect(await ava['viz'](spec)).toBe(html);
     expect(generateText).not.toHaveBeenCalled();

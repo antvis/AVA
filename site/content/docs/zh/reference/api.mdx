@@ -117,7 +117,7 @@ await ava.source({ type: 'json', options: { data: [{ revenue: 120 }] } });
 | `config.type` | `SourceType` | 是 | [数据源类型](/documentation/data/sources/#connect-a-source)，例如 `json` 或 `csv-file`。 |
 | `config.options` | 数据源对应的对象 | 是 | 该类型的[读取或连接设置](/documentation/data/sources/#connect-a-source)。 |
 
-加载数据源会释放旧引擎，清除保存的 schema、profile 和业务语义。加载失败后没有活动数据源。替换数据源前，请等待正在进行的操作完成。
+数据源配置在替换前校验；无效配置会保留当前数据源和元数据。配置通过校验后，加载会释放旧引擎，清除保存的 schema、profile 和业务语义；此后加载失败则没有活动数据源。替换数据源前，请等待正在进行的操作完成。
 
 <Heading as="h3" id="schema">schema</Heading>
 
@@ -377,6 +377,43 @@ Setter 接收选项对象，同步返回 `Semantic`。AVA 验证并复制结果�
 
 返回独立 HTML 字符串，无需加载数据源，也不会调用模型。参见[图表配置](/documentation/visualization/overview/#recommend)。
 
+<Heading as="h2" id="runtime-contracts">运行时契约</Heading>
+
+Node 和浏览器入口导出同一组纯运行时契约，供 SDK 集成和工具输入复用。SDK 的 `source()`、`recommend()`、`viz()` 和 CLI 在各自的输入边界使用这些契约。
+
+| 导出 | 用途 |
+| --- | --- |
+| `sourceConfigSchema.parse(input)` | 校验内置数据源类型及对应选项。 |
+| `executionResultSchema.parse(input)` | 校验结果列、数据及截断标记、已知行数的一致性。 |
+| `chartSpecSchema.parse(input)` | 校验[可视化指南](/documentation/visualization/overview/)中的 19 种原生图表形状。 |
+| `inferFileSourceType(path)` | 根据本地路径或 HTTP(S) URL 推断文件数据源类型；未知扩展名返回 `undefined`。 |
+| `bindChartData(result, spec, binding?)` | 校验查询结果并绑定原生图表数据，无需调用模型。 |
+
+例如，使用 Node SDK 实例：
+
+```typescript
+import { bindChartData, sourceConfigSchema } from '@antv/ava';
+
+const source = sourceConfigSchema.parse({
+  type: 'json',
+  options: { data: [{ month: 'Jan', revenue: 10 }] },
+});
+await ava.source(source);
+const result = await ava.query('SELECT month, revenue FROM data');
+const spec = bindChartData(
+  result,
+  { chartType: 'column', config: { title: 'Revenue' } },
+  { fields: { category: 'month', value: 'revenue' } }
+);
+const html = await ava.viz(spec);
+```
+
+`binding.fields` 将原生图表字段映射到已有结果列。省略 `binding` 时，直接将 `result.data` 用作原生图表数据，包括直方图需要的数值数组。水波图、双轴图等非行式数据可用 `{ configField: 'chart' }`，从单行结果的一个单元格读取原生配置对象。两种绑定形式互斥，JSON 字符串不会自动解析。
+
+`spec.config` 提供展示和原生选项；`data`、`categories`、`series`、`percent` 必须来自查询结果。数值保持原样，数字字符串应在查询中显式转换。渲染前检查 `result.truncated`，由应用决定部分结果是否适合制图。
+
+MCP 等 JSON Schema 工具可用 `z.toJSONSchema(schema, { io: 'input' })`，描述现有 Excel 归一化和图表类型默认值应用之前的输入。
+
 <Heading as="h2" id="cleanup">资源清理</Heading>
 
 <Heading as="h3" id="dispose">dispose</Heading>
@@ -566,7 +603,7 @@ JSON 文件只包含定义对象，不带 JavaScript 变量声明或 setter。AV
 
 省略某部分会保留对应的 schema 上下文。需要在已发现的外键之外新增关系时，应在传入列表中包含仍要保留的关系。读取 `schema()`、`profile()`、`semantic()` 返回的仍是各自输入，不是组合模型；目前没有公开方法读取合并后的 `DataModel`。
 
-更新 schema 会清空 profile、保留语义；计算 profile 会替换统计信息、保留语义；加载新数据源或调用 `dispose()` 会清空三者。加载新数据源后应重新应用保存的定义，并在结构变化时复核映射。这些调用都需要活动数据源，替换数据源失败后则没有活动数据源。
+更新 schema 会清空 profile、保留语义；计算 profile 会替换统计信息、保留语义；加载新数据源或调用 `dispose()` 会清空三者。加载新数据源后应重新应用保存的定义，并在结构变化时复核映射。这些调用都需要活动数据源，无效数据源配置会保留当前数据集；配置通过校验后，实际替换过程失败则没有活动数据源。
 
 Setter 验证并复制返回对象。验证失败或 setter 抛错时，之前的语义定义保持不变。
 

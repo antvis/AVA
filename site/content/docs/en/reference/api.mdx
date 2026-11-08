@@ -115,7 +115,7 @@ await ava.source({ type: 'json', options: { data: [{ revenue: 120 }] } });
 | `config.type` | `SourceType` | Yes | [Source type](/documentation/data/sources/#connect-a-source), such as `json` or `csv-file`. |
 | `config.options` | Source-specific object | Yes | [Reader or connection settings](/documentation/data/sources/#connect-a-source) for that type. |
 
-Loading a source disposes the previous engine and clears the saved schema, profile, and semantic definitions. A failed load leaves no active source. Await pending operations before replacing a source.
+Source configuration is validated before replacing the active dataset; an invalid configuration preserves the current source and metadata. Once validation succeeds, loading disposes the previous engine and clears the saved schema, profile, and semantic definitions. A later loading failure leaves no active source. Await pending operations before replacing a source.
 
 ### schema
 
@@ -375,6 +375,43 @@ Neither requires a loaded source. Both use the model and return `null` for empty
 
 Returns a standalone HTML string. Does not require a loaded source or call a model. See [chart specifications](/documentation/visualization/overview/#recommend).
 
+## Runtime contracts
+
+The Node and browser entry points export the same pure runtime contracts for SDK integrations and tool inputs. SDK `source()`, `recommend()`, `viz()` and the CLI use these contracts at their input boundaries.
+
+| Export | Purpose |
+| --- | --- |
+| `sourceConfigSchema.parse(input)` | Validate built-in source types and their options. |
+| `executionResultSchema.parse(input)` | Validate result columns, data and consistent truncation/row-count metadata. |
+| `chartSpecSchema.parse(input)` | Validate the 19 native chart shapes in the [visualization guide](/documentation/visualization/overview/). |
+| `inferFileSourceType(path)` | Infer a file source type from a file path or HTTP(S) URL; return `undefined` for unknown extensions. |
+| `bindChartData(result, spec, binding?)` | Validate the result and bind native chart data without a model call. |
+
+For example, with a Node SDK instance:
+
+```typescript
+import { bindChartData, sourceConfigSchema } from '@antv/ava';
+
+const source = sourceConfigSchema.parse({
+  type: 'json',
+  options: { data: [{ month: 'Jan', revenue: 10 }] },
+});
+await ava.source(source);
+const result = await ava.query('SELECT month, revenue FROM data');
+const spec = bindChartData(
+  result,
+  { chartType: 'column', config: { title: 'Revenue' } },
+  { fields: { category: 'month', value: 'revenue' } }
+);
+const html = await ava.viz(spec);
+```
+
+`binding.fields` maps native chart field names to existing result columns. Omitting `binding` uses `result.data` as native chart data, including numeric arrays for histograms. For non-row shapes such as liquid and dual-axes charts, use `{ configField: 'chart' }` to read a native config object from one cell of a single result row. These two binding forms are mutually exclusive; JSON strings are not parsed.
+
+`spec.config` supplies presentation and native options; `data`, `categories`, `series` and `percent` must come from the result. Numeric values stay numbers; cast numeric strings in the query. Inspect `result.truncated` when deciding whether partial data is suitable for rendering.
+
+For MCP or other JSON Schema tools, use `z.toJSONSchema(schema, { io: 'input' })`. Input mode describes values before the existing Excel normalization and chart-type defaults.
+
 ## Cleanup
 
 ### dispose
@@ -564,7 +601,7 @@ When an operation needs its data model, AVA combines the inputs in this order:
 
 Omitting a section retains the corresponding schema context. If adding a relationship alongside discovered foreign keys, include the discovered relationships you want to keep in the supplied list. Reading `schema()`, `profile()`, or `semantic()` still returns that input, not the combined model; there is no public method to read the merged `DataModel`.
 
-Changing the schema clears the saved profile and retains semantic definitions. Profiling replaces observations and retains semantic definitions. Loading another source or calling `dispose()` clears all three. Reapply your saved definition after loading a new source, and review mappings if its structure changed. Calls require a loaded source; a failed source replacement leaves no active source.
+Changing the schema clears the saved profile and retains semantic definitions. Profiling replaces observations and retains semantic definitions. Loading another source or calling `dispose()` clears all three. Reapply your saved definition after loading a new source, and review mappings if its structure changed. Calls require a loaded source; invalid source configurations preserve the current dataset, while failures after replacement starts leave no active source.
 
 The setter validates and copies its returned object. A validation failure or thrown error leaves the previous semantic definition in place.
 

@@ -1,5 +1,6 @@
-import { extname, resolve } from 'path';
+import { resolve } from 'path';
 
+import { inferFileSourceType } from '../../contracts/source';
 import { createSession } from '../session/client';
 import { engineTypeSchema, sourceConfig } from '../session/protocol';
 import { isFeishuBitableUrl, isFeishuHostUrl, feishuCredentials } from '../feishu';
@@ -9,16 +10,6 @@ import { option } from '../options';
 import { accent, badge, muted } from '../util';
 
 import type { Options } from '../options';
-
-const sourceTypes: Record<string, string> = {
-  '.csv': 'csv-file',
-  '.json': 'json-file',
-  '.parquet': 'parquet',
-  '.xlsx': 'excel',
-  '.sqlite': 'sqlite',
-  '.sqlite3': 'sqlite',
-  '.db': 'sqlite',
-};
 
 export const description = 'Load a source and return a dataset ID';
 
@@ -45,15 +36,18 @@ export async function run([dataset]: string[], options: Options): Promise<{ data
       'Only Feishu Bitable links are supported: /base/<appToken>?table=<tableId> or /wiki/<nodeToken>?table=<tableId>. Docx, Sheets, and other Feishu links cannot be loaded.'
     );
   } else {
-    const pathname = /^https?:\/\//i.test(dataset) ? new URL(dataset).pathname : dataset;
-    const type = option(options, 'type') ?? sourceTypes[extname(pathname).toLowerCase()];
+    const type = option(options, 'type') ?? inferFileSourceType(dataset);
     if (!type) throw new Error('Cannot infer the source type. Pass --type.');
     input = { type, options: { path: dataset } };
   }
 
   const config = sourceConfig.parse(input);
 
-  if ('path' in config.options && !/^https?:\/\//i.test(config.options.path)) {
+  if (
+    'path' in config.options &&
+    typeof config.options.path === 'string' &&
+    !/^https?:\/\//i.test(config.options.path)
+  ) {
     config.options.path = resolve(config.options.path);
   }
 

@@ -430,6 +430,23 @@ describe('chart commands', () => {
     expect(AVA).not.toHaveBeenCalled();
   });
 
+  it.each([{ data: [{ month: 'Jan', revenue: 10 }] }, { data: [{ category: 'Jan', value: '10' }] }])(
+    'rejects invalid native chart data before creating output: %j',
+    async (config) => {
+      const directory = await mkdtemp(join(tmpdir(), 'ava-cli-test-'));
+      const output = join(directory, 'invalid.html');
+      try {
+        await expect(
+          run(['viz', '--spec', JSON.stringify({ chartType: 'column', config }), '-o', output])
+        ).rejects.toThrow();
+        expect(AVA).not.toHaveBeenCalled();
+        await expect(stat(output)).rejects.toMatchObject({ code: 'ENOENT' });
+      } finally {
+        await rm(directory, { recursive: true, force: true });
+      }
+    }
+  );
+
   it('renders a spec without an API key and never overwrites an existing output file', async () => {
     const directory = await mkdtemp(join(tmpdir(), 'ava-cli-test-'));
     const viz = vi.fn().mockResolvedValue(html);
