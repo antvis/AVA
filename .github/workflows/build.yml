@@ -40,3 +40,5 @@ jobs:
         run: |
           node --input-type=module -e "await import('@antv/ava')"
           node -e "require('@antv/ava')"
+          node --input-type=module -e "const { sourceConfigSchema } = await import('@antv/ava/schema'); sourceConfigSchema.parse({ type: 'json', options: { data: [] } })"
+          node -e "require('@antv/ava/schema').sourceConfigSchema.parse({ type: 'json', options: { data: [] } })"

@@ -6,6 +6,7 @@ import { describe, expect, it } from 'vitest';
 import { AVA, executionResultSchema, sourceConfigSchema } from '../src/index.browser';
 import * as node from '../src';
 import * as browser from '../src/index.browser';
+import * as contracts from '../src/schema';
 import { startupSchema } from '../src/cli/session/protocol';
 import { resultSchema as pythonResultSchema } from '../src/interpreter/python/util/schema';
 
@@ -133,6 +134,14 @@ describe('source-to-chart contract flow', () => {
     expect(node.sourceConfigSchema).toBe(browser.sourceConfigSchema);
     expect(node.executionResultSchema).toBe(browser.executionResultSchema);
     expect(node.chartSpecSchema).toBe(browser.chartSpecSchema);
+    expect(contracts.sourceConfigSchema).toBe(node.sourceConfigSchema);
+    expect(contracts.executionResultSchema).toBe(node.executionResultSchema);
+    expect(contracts.chartSpecSchema).toBe(node.chartSpecSchema);
+    expect(contracts.schemaMetadataSchema.parse({ models: [] })).toEqual({ models: [] });
+    expect(contracts.profileMetadataSchema.parse({ models: [] })).toEqual({ models: [] });
+    expect(contracts.semanticMetadataSchema.parse({ description: 'Sales' })).toEqual({ description: 'Sales' });
+    expect(contracts.dataModelMetadataSchema.parse({ description: 'Sales' })).toEqual({ description: 'Sales' });
+    expect(contracts.bindingSchema.parse({ fields: { value: 'sales' } })).toEqual({ fields: { value: 'sales' } });
     expect(node.bindChartData).toBe(browser.bindChartData);
     expect(node.inferFileSourceType).toBe(browser.inferFileSourceType);
   });

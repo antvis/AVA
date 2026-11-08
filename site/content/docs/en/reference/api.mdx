@@ -385,6 +385,13 @@ AVA pins `@antv/gpt-vis` to 1.3.1. The generated HTML loads that exact version f
 
 The Node and browser entry points export shared runtime schemas plus pure helpers for source-type inference and chart binding. SDK `source()`, `recommend()`, `viz()` and the CLI use these contracts at their input boundaries.
 
+MCP and other integrations can import validators and data types from `@antv/ava/schema` in Node or browser code. This entry reuses the same contracts without registering engines or loading model and database runtime dependencies:
+
+```typescript
+import { sourceConfigSchema, executionResultSchema, chartSpecSchema } from '@antv/ava/schema';
+import type { DataSourceConfig, ExecutionResult, ChartSpecInput } from '@antv/ava/schema';
+```
+
 Source options, result metadata and chart types are derived from these schemas, so runtime validation and TypeScript share one definition. Source types describe input before normalization (for example, Excel's `header` remains optional). `ExecutionResult<Row>` preserves your query's row type; runtime validation checks the result envelope, not the caller's generic row fields. ClickHouse options retain the official client's native types, including TLS buffers, agents and callbacks; those native options pass through to the client.
 
 | Export | Purpose |
@@ -392,6 +399,9 @@ Source options, result metadata and chart types are derived from these schemas, 
 | `sourceConfigSchema.parse(input)` | Validate built-in source types and their options. |
 | `executionResultSchema.parse(input)` | Validate result columns, data and consistent truncation/row-count metadata. |
 | `chartSpecSchema.parse(input)` | Validate 19 native JSON chart shapes and summary strings in the [visualization guide](/documentation/visualization/overview/). |
+| `schemaMetadataSchema`, `profileMetadataSchema`, `semanticMetadataSchema` | Validate structure, profile and semantic metadata; exported by `@antv/ava/schema`. |
+| `dataModelMetadataSchema` | Validate a combined data model; exported by `@antv/ava/schema`. |
+| `bindingSchema` | Validate explicit chart field/config bindings; exported by `@antv/ava/schema`. |
 | `inferFileSourceType(path)` | Infer a file source type from a file path or HTTP(S) URL; return `undefined` for unknown extensions. |
 | `bindChartData(result, spec, binding?)` | Validate the result and bind native chart data without a model call. |
 

@@ -46,6 +46,16 @@
       "import": "./esm/index.browser.mjs",
       "require": "./lib/index.browser.js"
     },
+    "./schema": {
+      "import": {
+        "types": "./esm/schema.d.mts",
+        "default": "./esm/schema.mjs"
+      },
+      "require": {
+        "types": "./lib/schema.d.ts",
+        "default": "./lib/schema.js"
+      }
+    },
     "./package.json": "./package.json"
   },
   "files": [
