@@ -1,8 +1,9 @@
-MongoDB and Supabase icons from Simple Icons v16.0.0.
+MongoDB, Snowflake and Supabase icons from Simple Icons v16.0.0.
 https://github.com/simple-icons/simple-icons/tree/16.0.0
 
 Upstream sources:
 MongoDB: https://www.mongodb.com/pressroom
+Snowflake: https://www.snowflake.com/brand-guidelines/
 Supabase: https://github.com/supabase/supabase/blob/4031a7549f5d46da7bc79c01d56be4177dc7c114/packages/common/assets/images/supabase-logo-wordmark--light.svg
 
 Brand trademarks remain the property of their respective owners.

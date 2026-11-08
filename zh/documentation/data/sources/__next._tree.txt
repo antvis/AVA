@@ -12,10 +12,11 @@
 :HL["/logos/mongodb.svg","image"]
 :HL["/logos/supabase.svg","image"]
 :HL["/logos/clickhouse.svg","image"]
+:HL["/logos/snowflake.svg","image"]
 :HL["/logos/contribute.svg","image"]
 5:[["children",{"s":"__PAGE__","h":160}]]
 4:[["children",{"s":{"n":"slug","t":"c","k":"data/sources","s":[]},"h":65632,"c":"$Q5"}]]
 3:[["children",{"s":"documentation","h":131168,"c":"$Q4"}]]
 2:[["children",{"s":"zh","h":131136,"c":"$Q3"}]]
 1:[["children",{"s":"(zh)","h":131120,"c":"$Q2"}]]
-0:{"b":"IIuLcQfsywAF7kW9RuhmJ","t":{"t":{"s":"","h":131152,"c":"$Q1"}}}
+0:{"b":"IT2boGCbyz8ZTjnWGnYTU","t":{"t":{"s":"","h":131152,"c":"$Q1"}}}
