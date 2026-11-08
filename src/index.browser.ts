@@ -8,6 +8,10 @@ import { registerEngine } from './engines';
 
 registerEngine('javascript', JavaScriptEngine);
 
+export { chartSpecSchema } from './visualization/schema';
+export { bindChartData } from './visualization/bind';
+export type { ChartDataBinding } from './visualization/bind';
+
 export { AVA } from './ava';
 export { registerEngine } from './engines';
 export type { JavaScriptEngine } from './interpreter/javascript';

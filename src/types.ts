@@ -965,20 +965,10 @@ export type ChartConfig = { type: string; [key: string]: unknown };
 /**
  * Chart specification for rendering.
  */
-export interface ChartSpec {
-  /** Recommended chart type */
-  chartType: ChartType;
-  /** GPT-Vis JSON config; its `type` matches chartType */
-  config: ChartConfig;
-}
+export type ChartSpec = import('zod').infer<typeof import('./visualization/schema').chartSpecSchema>;
 
-/**
- * Visualization response — chart generation results
- */
-export interface VisualizeResponse extends ChartSpec {
-  /** Standalone HTML that renders the chart */
-  html: string;
-}
+/** Standalone chart generation result. */
+export type VisualizeResponse = ChartSpec & { html: string };
 
 /**
  * Supported chart types from GPT-Vis

@@ -1,11 +1,8 @@
-import { z } from 'zod';
-
 import { AVA } from '../../ava';
-import { chartDefinitions } from '../../visualization/vis';
+import { chartSpecSchema } from '../../visualization/schema';
 import { readJSON, writeHTML } from '../io';
 import { option } from '../options';
 
-import type { ChartSpec } from '../../types';
 import type { Options } from '../options';
 
 export const description = 'Render a chart specification to HTML';
@@ -27,19 +24,11 @@ export async function run(_args: string[], options: Options): Promise<unknown> {
 
   if (raw === undefined) throw new Error('--spec is required.');
 
-  const spec = z
-    .object({ chartType: z.string(), config: z.record(z.string(), z.unknown()) })
-    .strict()
-    .parse(await readJSON(raw));
-
-  if (!chartDefinitions.some((chart) => chart.type === spec.chartType)) throw new Error('Unknown chartType.');
+  const spec = chartSpecSchema.parse(await readJSON(raw));
 
   const ava = new AVA({ llm: { model: 'unused' } });
 
-  return await writeHTML(
-    output,
-    await ava.viz({ ...spec, config: { ...spec.config, type: spec.chartType } } as ChartSpec)
-  );
+  return writeHTML(output, await ava.viz(spec));
 }
 
 export const help = `${description}.
