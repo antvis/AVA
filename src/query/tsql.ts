@@ -1,3 +1,4 @@
+import { queryError } from '../util/error';
 import { generateText, languageModel } from '../util/model';
 import { stringifyDataModel } from '../util/data-model';
 
@@ -85,26 +86,30 @@ export class TSQLDialect implements QueryDialect {
   }
 
   async validateDSL(sql: string): Promise<string> {
-    const { createTSQLParser, TSqlParser, Token, Trees } = await loadTSQLParser();
-    const invalid = () => {
-      throw new Error('T-SQL query must contain exactly one read-only SELECT statement');
-    };
-    const parser = createTSQLParser(sql, invalid);
-    const statement = parser.select_statement_standalone();
-    // The SELECT entry rule plus EOF excludes writes and batches; tree traversal includes CTEs and subqueries.
-    // INTO creates a table, and remote pass-through queries can execute commands outside this connection.
-    // https://learn.microsoft.com/en-us/sql/t-sql/queries/select-into-clause-transact-sql
-    // https://learn.microsoft.com/en-us/sql/t-sql/functions/openquery-transact-sql
-    if (
-      parser.currentToken.type !== Token.EOF ||
-      [TSqlParser.INTO, TSqlParser.OPENQUERY, TSqlParser.OPENROWSET].some(
-        (type) => Trees.findAllTokenNodes(statement, type).length > 0
-      )
-    ) {
-      invalid();
+    try {
+      const { createTSQLParser, TSqlParser, Token, Trees } = await loadTSQLParser();
+      const invalid = () => {
+        throw new Error('T-SQL query must contain exactly one read-only SELECT statement');
+      };
+      const parser = createTSQLParser(sql, invalid);
+      const statement = parser.select_statement_standalone();
+      // The SELECT entry rule plus EOF excludes writes and batches; tree traversal includes CTEs and subqueries.
+      // INTO creates a table, and remote pass-through queries can execute commands outside this connection.
+      // https://learn.microsoft.com/en-us/sql/t-sql/queries/select-into-clause-transact-sql
+      // https://learn.microsoft.com/en-us/sql/t-sql/functions/openquery-transact-sql
+      if (
+        parser.currentToken.type !== Token.EOF ||
+        [TSqlParser.INTO, TSqlParser.OPENQUERY, TSqlParser.OPENROWSET].some(
+          (type) => Trees.findAllTokenNodes(statement, type).length > 0
+        )
+      ) {
+        invalid();
+      }
+      // ANTLRInputStream offsets match JS string indices, including Unicode. Keep source semantics and comments.
+      const terminator = statement.select_statement().SEMI();
+      return sql.slice(0, terminator?.symbol.startIndex ?? sql.length).trim();
+    } catch (error) {
+      throw queryError(error);
     }
-    // ANTLRInputStream offsets match JS string indices, including Unicode. Keep source semantics and comments.
-    const terminator = statement.select_statement().SEMI();
-    return sql.slice(0, terminator?.symbol.startIndex ?? sql.length).trim();
   }
 }

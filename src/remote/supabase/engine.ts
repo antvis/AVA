@@ -9,7 +9,6 @@
  */
 
 import { PostgreSQLDialect } from '../../query/postgresql';
-import { withQueryErrors } from '../../util/error';
 import { executionResult, inferQuerySchema, limitedQuery, maxRows } from '../../util/result';
 import { DEFAULT_METRICS, parseProfileOptions } from '../../util/profile';
 
@@ -84,7 +83,7 @@ export class SupabaseEngine implements AnalysisEngine {
     if (!this.connection) {
       throw new Error('No data loaded. Please call source() first.');
     }
-    const query = await withQueryErrors(() => this.dialect.validateDSL(sql));
+    const query = await this.dialect.validateDSL(sql);
     const rows = (await this.runQuery(limitedQuery(query, maxRows(options)))) as T[];
     return executionResult(rows, inferQuerySchema(rows), options);
   }

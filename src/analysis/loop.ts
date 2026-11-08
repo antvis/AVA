@@ -14,6 +14,7 @@ import { generateText, languageModel } from '../util/model';
 import { stringifyDataModel } from '../util/data-model';
 import { AnalysisEvent, AnalysisEventType, eventPair } from '../event';
 import { canCorrectQuery, serializeError } from '../util/error';
+import { safeSourceError } from '../util/source-error';
 
 import type { LanguageModelUsage } from 'ai';
 import type { AnalysisStrategy, QueryLanguage, ExecutionResult } from '../types';
@@ -171,7 +172,11 @@ const transcriptPrompt = (transcript: string[]) => {
 /**
  * Explore, refine, execute, and verify SQL before returning an answer.
  */
-export const loopAnalysis: AnalysisStrategy = async (query, config, { dataModel, engine, llm, emit }) => {
+export const loopAnalysis: AnalysisStrategy = async (
+  query,
+  config,
+  { dataModel, engine, llm, emit, sourceErrorContext }
+) => {
   let stepId: string | undefined;
   let parentStepIds: string[] = [];
   const emitEvent = (type: AnalysisEventType, data: object, eventId: string) =>
@@ -258,7 +263,8 @@ export const loopAnalysis: AnalysisStrategy = async (query, config, { dataModel,
         let execution: ExecutionResult;
         try {
           execution = await engine.execute(proposal, config);
-        } catch (error) {
+        } catch (cause) {
+          const error = safeSourceError(cause, sourceErrorContext);
           queryEvent.end({ error: serializeError(error) });
 
           if (!canCorrectQuery(error)) throw error;
@@ -360,7 +366,8 @@ export const loopAnalysis: AnalysisStrategy = async (query, config, { dataModel,
     let execution: ExecutionResult;
     try {
       execution = await engine.execute(statement, config);
-    } catch (error) {
+    } catch (cause) {
+      const error = safeSourceError(cause, sourceErrorContext);
       queryEvent.end({ error: serializeError(error) });
 
       throw error;

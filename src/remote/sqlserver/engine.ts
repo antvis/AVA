@@ -4,7 +4,6 @@ import mssql from 'mssql';
 
 import { TSQLDialect } from '../../query/tsql';
 import { DEFAULT_METRICS, parseProfileOptions } from '../../util/profile';
-import { withQueryErrors } from '../../util/error';
 import { executionResult, maxRows } from '../../util/result';
 
 import { profileTables } from './profile';
@@ -101,7 +100,7 @@ export class SQLServerEngine implements AnalysisEngine {
 
   async execute<T = Record<string, unknown>>(dsl: string, options?: ExecutionOptions): Promise<ExecutionResult<T>> {
     if (!this.pool) throw new Error('No data loaded. Please call source() first.');
-    const query = await withQueryErrors(() => this.dialect.validateDSL(dsl));
+    const query = await this.dialect.validateDSL(dsl);
     // query() uses sp_executesql, which restores SET options on return.
     const result = await this.runQuery<T>(`SET ROWCOUNT ${maxRows(options) + 1};\n${query}`);
     const schema = queryColumns(Object.values(result.recordset.columns));

@@ -63,14 +63,11 @@ export function safeModelError(error: unknown): AVAError {
   return new AVAError('MODEL_ERROR', message);
 }
 
-/** Validation only sees the submitted DSL, never the source credentials or driver response. */
-export async function withQueryErrors<T>(operation: () => Promise<T>): Promise<T> {
-  try {
-    return await operation();
-  } catch (error) {
-    if (error instanceof AVAError) throw error;
-    throw new AVAError('QUERY_ERROR', error instanceof Error ? error.message : 'The query is invalid.');
-  }
+/** Parser diagnostics only describe the submitted DSL, never source credentials or driver responses. */
+export function queryError(error: unknown): AVAError {
+  return error instanceof AVAError
+    ? error
+    : new AVAError('QUERY_ERROR', error instanceof Error ? error.message : 'The query is invalid.');
 }
 
 /** Typed source/transport failures stop correction; unclassified local errors retain legacy behavior. */

@@ -20,7 +20,8 @@ import { z } from 'zod/v4';
 import { generateText, languageModel } from '../util/model';
 import { repairJson } from '../util/json';
 import { AnalysisEvent, AnalysisEventType, eventPair } from '../event';
-import { canCorrectQuery, serializeError } from '../util/error';
+import { canCorrectQuery, serializeError, safeModelError } from '../util/error';
+import { safeSourceError } from '../util/source-error';
 
 import type { LanguageModelUsage } from 'ai';
 import type { AnalysisStrategy, ExecutionResult, LLMConfig } from '../types';
@@ -69,7 +70,11 @@ async function summarizeResult(query: string, dsl: string, result: ExecutionResu
   return { summary, usage };
 }
 
-export const directAnalysis: AnalysisStrategy = async (query, config, { dataModel, engine, llm, emit }) => {
+export const directAnalysis: AnalysisStrategy = async (
+  query,
+  config,
+  { dataModel, engine, llm, emit, sourceErrorContext }
+) => {
   const maxRetries = Math.max(config.strategy?.type === 'direct' ? config.strategy.maxRetries ?? 2 : 10, 0);
 
   let stepId: string;
@@ -95,7 +100,8 @@ export const directAnalysis: AnalysisStrategy = async (query, config, { dataMode
       let usage: LanguageModelUsage | undefined;
       try {
         ({ dsl, usage } = await engine.getDSL(translationQuery, dataModel));
-      } catch (error) {
+      } catch (cause) {
+        const error = safeModelError(cause);
         translationEvent.end({ error: serializeError(error) });
 
         throw error;
@@ -109,7 +115,8 @@ export const directAnalysis: AnalysisStrategy = async (query, config, { dataMode
 
       try {
         result = await engine.execute(dsl, config);
-      } catch (error) {
+      } catch (cause) {
+        const error = safeSourceError(cause, sourceErrorContext);
         queryEvent.end({ error: serializeError(error) });
 
         if (!canCorrectQuery(error) || attempt >= maxRetries) throw error;

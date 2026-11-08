@@ -201,6 +201,38 @@ describe('safe SDK errors', () => {
     }
   });
 
+  it('keeps pending analysis on its original engine when schema discovery overlaps a reload', async () => {
+    const local = new AVA({ llm: { model: 'unused' } });
+    local.on('*', (event: unknown) => events.push(event));
+    try {
+      await local.source({ type: 'json', options: { data: [{ total: 1 }] } });
+      let resolveSchema!: (value: typeof schema) => void;
+      vi.spyOn(local.engine!, 'schema').mockImplementationOnce(
+        () =>
+          new Promise((resolve) => {
+            resolveSchema = resolve;
+          })
+      );
+      vi.spyOn(local.engine!, 'getDSL').mockResolvedValueOnce({ dsl: 'SELECT total FROM data' });
+      const originalFailure = new Error('Original dataset was disposed.');
+      vi.spyOn(local.engine!, 'execute').mockRejectedValueOnce(originalFailure);
+      const pending = local.analyze('Total?', { includeSummary: false, strategy: { type: 'direct', maxRetries: 0 } });
+      const check = expect(pending).rejects.toBe(originalFailure);
+
+      vi.spyOn(DuckDBEngine.prototype, 'load').mockResolvedValueOnce(undefined);
+      await local.source({ type: 'csv-file', options: { path: 'https://example.test/sales.csv' } });
+      const translate = vi.spyOn(local.engine!, 'getDSL').mockResolvedValue({ dsl: 'SELECT total FROM data' });
+      const execute = vi.spyOn(local.engine!, 'execute').mockRejectedValue(new Error(secret));
+      resolveSchema(schema);
+      await check;
+      expect(translate).not.toHaveBeenCalled();
+      expect(execute).not.toHaveBeenCalled();
+      expect(JSON.stringify(events)).not.toContain(secret);
+    } finally {
+      await local.dispose();
+    }
+  });
+
   it.each(['direct', 'loop'] as const)('does not retry %s execution after an unknown outcome', async (strategy) => {
     await ava.source(source);
     vi.mocked(ClickHouseEngine.prototype.execute).mockRejectedValueOnce(

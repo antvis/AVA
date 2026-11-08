@@ -920,6 +920,8 @@ export interface AnalysisRuntime {
   emit: (event: AnalysisEvent) => void;
   dataModel: DataModel;
   engine: AnalysisEngine;
+  /** Remote source type used to classify execution errors; unset for local sources. Never contains credentials. */
+  sourceErrorContext?: string;
   llm: LLMConfig;
 }
 

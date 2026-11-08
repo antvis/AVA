@@ -2,7 +2,6 @@ import { createClient } from '@clickhouse/client';
 
 import { ClickHouseSQLDialect } from '../../query/clickhouse-sql';
 import { DEFAULT_METRICS, parseProfileOptions } from '../../util/profile';
-import { withQueryErrors } from '../../util/error';
 import { executionResult, inferQuerySchema, limitedQuery, maxRows } from '../../util/result';
 
 import { profileTables } from './profile';
@@ -84,7 +83,7 @@ export class ClickHouseEngine implements AnalysisEngine {
 
   async execute<T = Record<string, unknown>>(dsl: string, options?: ExecutionOptions): Promise<ExecutionResult<T>> {
     if (!this.client) throw new Error('No data loaded. Please call source() first.');
-    const query = await withQueryErrors(() => this.dialect.validateDSL(dsl));
+    const query = await this.dialect.validateDSL(dsl);
     const rows = await this.runQuery<T>(limitedQuery(query, maxRows(options)));
     return executionResult(rows, inferQuerySchema(rows), options);
   }

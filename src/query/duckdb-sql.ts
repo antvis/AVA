@@ -1,3 +1,4 @@
+import { queryError } from '../util/error';
 import { generateText, languageModel } from '../util/model';
 import { stringifyDataModel } from '../util/data-model';
 
@@ -45,48 +46,52 @@ export class DuckDBSQLDialect implements QueryDialect {
   }
 
   async validateDSL(sql: string): Promise<string> {
-    // DuckDB's scanner stops at NUL; validate the whole input before returning it for execution.
-    if (sql.includes('\0')) throw new Error('DuckDB query contains a NUL character');
-    // Share lazy initialization across validations; each call owns its connection.
-    if (!this.parserInstance) {
-      const pending = import('@duckdb/node-api').then(({ DuckDBInstance }) =>
-        DuckDBInstance.create(':memory:', {
-          threads: '1',
-          memory_limit: '64MB',
-          enable_external_access: 'false',
-          allow_unsigned_extensions: 'false',
-          allow_community_extensions: 'false',
-          autoinstall_known_extensions: 'false',
-          autoload_known_extensions: 'false',
-        })
-      );
-      this.parserInstance = pending;
-      void pending.catch(() => {
-        if (this.parserInstance === pending) this.parserInstance = undefined;
-      });
-    }
-    const instance = await this.parserInstance;
-    const connection = await instance.connect();
     try {
-      // The official serializer accepts SELECTs, including their CTEs and subqueries, without binding tables.
-      // User SQL is a bound value; only the serializer runs in this data-free instance.
-      // https://duckdb.org/docs/1.5/data/json/sql_to_and_from_json
-      const reader = await connection.runAndReadAll('SELECT json_serialize_sql(CAST(? AS VARCHAR)) AS ast', [sql]);
-      const serialized = reader.getRowObjectsJson()[0]?.ast;
-      if (typeof serialized !== 'string') throw new Error('Missing DuckDB SQL validation result');
-      const ast = JSON.parse(serialized) as { error: boolean; error_message?: string; statements?: unknown[] };
-      if (ast.error !== false || ast.statements?.length !== 1) {
-        throw new Error(
-          `DuckDB query must contain exactly one read-only SELECT statement${
-            ast.error_message ? `: ${ast.error_message}` : ''
-          }`
+      // DuckDB's scanner stops at NUL; validate the whole input before returning it for execution.
+      if (sql.includes('\0')) throw new Error('DuckDB query contains a NUL character');
+      // Share lazy initialization across validations; each call owns its connection.
+      if (!this.parserInstance) {
+        const pending = import('@duckdb/node-api').then(({ DuckDBInstance }) =>
+          DuckDBInstance.create(':memory:', {
+            threads: '1',
+            memory_limit: '64MB',
+            enable_external_access: 'false',
+            allow_unsigned_extensions: 'false',
+            allow_community_extensions: 'false',
+            autoinstall_known_extensions: 'false',
+            autoload_known_extensions: 'false',
+          })
         );
+        this.parserInstance = pending;
+        void pending.catch(() => {
+          if (this.parserInstance === pending) this.parserInstance = undefined;
+        });
       }
+      const instance = await this.parserInstance;
+      const connection = await instance.connect();
+      try {
+        // The official serializer accepts SELECTs, including their CTEs and subqueries, without binding tables.
+        // User SQL is a bound value; only the serializer runs in this data-free instance.
+        // https://duckdb.org/docs/1.5/data/json/sql_to_and_from_json
+        const reader = await connection.runAndReadAll('SELECT json_serialize_sql(CAST(? AS VARCHAR)) AS ast', [sql]);
+        const serialized = reader.getRowObjectsJson()[0]?.ast;
+        if (typeof serialized !== 'string') throw new Error('Missing DuckDB SQL validation result');
+        const ast = JSON.parse(serialized) as { error: boolean; error_message?: string; statements?: unknown[] };
+        if (ast.error !== false || ast.statements?.length !== 1) {
+          throw new Error(
+            `DuckDB query must contain exactly one read-only SELECT statement${
+              ast.error_message ? `: ${ast.error_message}` : ''
+            }`
+          );
+        }
 
-      // Re-emitting the AST can change float literals and implicit column names; execute the original source.
-      return sql;
-    } finally {
-      connection.closeSync();
+        // Re-emitting the AST can change float literals and implicit column names; execute the original source.
+        return sql;
+      } finally {
+        connection.closeSync();
+      }
+    } catch (error) {
+      throw queryError(error);
     }
   }
 

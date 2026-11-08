@@ -1,3 +1,4 @@
+import { queryError } from '../util/error';
 import { generateText, languageModel } from '../util/model';
 import { stringifyDataModel } from '../util/data-model';
 
@@ -42,24 +43,30 @@ export class ClickHouseSQLDialect implements QueryDialect {
   }
 
   async validateDSL(sql: string): Promise<string> {
-    // Keep the parser out of startup and SQL generation; load it on first validation.
-    // AST node types and traversal: https://github.com/ClickHouse/clickhouse-js-parser
-    const { parse, findNodes } = await import('@clickhouse/parser');
-    const statements = parse(sql);
-    // Include execution settings and output clauses inside nested queries and set operations.
-    if (
-      statements.length !== 1 ||
-      statements[0].type !== 'SelectWithUnionQuery' ||
-      findNodes(statements, 'Settings').length > 0 ||
-      [...findNodes(statements, 'SelectWithUnionQuery'), ...findNodes(statements, 'SelectIntersectExceptQuery')].some(
-        (node) => node.out_file !== undefined || node.format !== undefined
-      )
-    ) {
-      throw new Error('ClickHouse query must contain exactly one read-only SELECT without SETTINGS or output clauses');
+    try {
+      // Keep the parser out of startup and SQL generation; load it on first validation.
+      // AST node types and traversal: https://github.com/ClickHouse/clickhouse-js-parser
+      const { parse, findNodes } = await import('@clickhouse/parser');
+      const statements = parse(sql);
+      // Include execution settings and output clauses inside nested queries and set operations.
+      if (
+        statements.length !== 1 ||
+        statements[0].type !== 'SelectWithUnionQuery' ||
+        findNodes(statements, 'Settings').length > 0 ||
+        [...findNodes(statements, 'SelectWithUnionQuery'), ...findNodes(statements, 'SelectIntersectExceptQuery')].some(
+          (node) => node.out_file !== undefined || node.format !== undefined
+        )
+      ) {
+        throw new Error(
+          'ClickHouse query must contain exactly one read-only SELECT without SETTINGS or output clauses'
+        );
+      }
+      // Preserve source semantics: formatting can change UNION defaults or omit INTERSECT ALL.
+      // The parser's statement span excludes the terminator, keeping row-limit wrapping valid.
+      const { start, end } = statements[0].location;
+      return sql.slice(start.offset, end.offset).trim();
+    } catch (error) {
+      throw queryError(error);
     }
-    // Preserve source semantics: formatting can change UNION defaults or omit INTERSECT ALL.
-    // The parser's statement span excludes the terminator, keeping row-limit wrapping valid.
-    const { start, end } = statements[0].location;
-    return sql.slice(start.offset, end.offset).trim();
   }
 }

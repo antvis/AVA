@@ -1,3 +1,4 @@
+import { AVAError } from '../util/error';
 import { generateText, languageModel } from '../util/model';
 import { stringifyDataModel } from '../util/data-model';
 
@@ -85,7 +86,7 @@ Return only executable JavaScript code, without explanation or Markdown.`,
   }
 
   async validateDSL(code: string): Promise<string> {
-    if (!code.trim()) throw new Error('JavaScript query must contain code');
+    if (!code.trim()) throw new AVAError('QUERY_ERROR', 'JavaScript query must contain code');
     return code;
   }
 }

@@ -1,3 +1,4 @@
+import { queryError } from '../util/error';
 import { generateText, languageModel } from '../util/model';
 import { stringifyDataModel } from '../util/data-model';
 
@@ -62,23 +63,29 @@ export class PostgreSQLDialect implements QueryDialect {
   }
 
   async validateDSL(sql: string): Promise<string> {
-    // The underlying C parser stops at NUL; reject it so the entire input is validated.
-    if (sql.includes('\0')) throw new Error('PostgreSQL query contains a NUL character');
-    // Load and reuse the WASM parser only when SQL validation is needed.
-    // https://github.com/supabase-community/pg-parser
-    const { PgParser, unwrapParseResult } = await import('@supabase/pg-parser');
-    this.parser ??= new PgParser({ version: 17 });
-    const { stmts: statements = [] } = await unwrapParseResult(this.parser.parse(sql));
-    const statement = statements[0]?.stmt;
-    if (statements.length !== 1 || !statement || !('SelectStmt' in statement) || containsWriteOrLock(statement)) {
-      throw new Error('PostgreSQL query must contain exactly one read-only SELECT statement without INTO or row locks');
-    }
+    try {
+      // The underlying C parser stops at NUL; reject it so the entire input is validated.
+      if (sql.includes('\0')) throw new Error('PostgreSQL query contains a NUL character');
+      // Load and reuse the WASM parser only when SQL validation is needed.
+      // https://github.com/supabase-community/pg-parser
+      const { PgParser, unwrapParseResult } = await import('@supabase/pg-parser');
+      this.parser ??= new PgParser({ version: 17 });
+      const { stmts: statements = [] } = await unwrapParseResult(this.parser.parse(sql));
+      const statement = statements[0]?.stmt;
+      if (statements.length !== 1 || !statement || !('SelectStmt' in statement) || containsWriteOrLock(statement)) {
+        throw new Error(
+          'PostgreSQL query must contain exactly one read-only SELECT statement without INTO or row locks'
+        );
+      }
 
-    // RawStmt ranges use UTF-8 bytes; length 0 means the rest of the input.
-    // Preserve source text and comments while excluding empty statements and the terminator.
-    // https://github.com/postgres/postgres/blob/REL_17_STABLE/src/include/nodes/parsenodes.h
-    const { stmt_location: start = 0, stmt_len: length = 0 } = statements[0];
-    const source = new TextEncoder().encode(sql);
-    return new TextDecoder().decode(source.subarray(start, length ? start + length : undefined)).trim();
+      // RawStmt ranges use UTF-8 bytes; length 0 means the rest of the input.
+      // Preserve source text and comments while excluding empty statements and the terminator.
+      // https://github.com/postgres/postgres/blob/REL_17_STABLE/src/include/nodes/parsenodes.h
+      const { stmt_location: start = 0, stmt_len: length = 0 } = statements[0];
+      const source = new TextEncoder().encode(sql);
+      return new TextDecoder().decode(source.subarray(start, length ? start + length : undefined)).trim();
+    } catch (error) {
+      throw queryError(error);
+    }
   }
 }
