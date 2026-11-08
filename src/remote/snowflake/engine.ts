@@ -1,7 +1,6 @@
 /**
  * Snowflake engine: the LLM generates Snowflake SQL that runs in Snowflake through the official
- * Node.js driver (snowflake-sdk). Data is not copied into AVA: the warehouse does the computation and
- * the session's role decides which objects are visible and readable.
+ * Node.js driver (snowflake-sdk). The session's role controls access; query results return to AVA.
  */
 import { SnowflakeQueryDialect } from '../../query/snowflake';
 import { DEFAULT_METRICS, parseProfileOptions } from '../../util/profile';
