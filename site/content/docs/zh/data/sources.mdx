@@ -578,3 +578,8 @@ await ava.source({
 | `port` | `number` | 否 | 默认 `22`。 |
 | `user` | `string` | 是 | SSH 登录用户。 |
 | `password` | `string` | 否 | SSH 登录密码，不提供则不传密码。 |
+| `hostFingerprint` | `string` | 是 | 可信的服务器主机密钥指纹，格式为 OpenSSH `SHA256:<base64>`，不带填充字符。 |
+
+SSH 在认证前验证服务器主机密钥。缺少指纹或格式无效时，不会发起连接；密钥不匹配时，在发送密码前终止握手。已有 SSH 配置需要补充 `hostFingerprint`。
+
+请通过可信渠道向服务器管理员获取指纹。例如，管理员可在 SSH 服务器上运行 `ssh-keygen -lf /etc/ssh/ssh_host_ed25519_key.pub -E sha256`，提供输出中的 `SHA256:...` 值。不要直接信任从未经验证的网络连接收集的密钥。AVA 使用配置中的指纹，不会自动信任新密钥或读取 `known_hosts`。

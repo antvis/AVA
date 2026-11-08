@@ -28,6 +28,17 @@ const sqlserverSource = {
 };
 
 describe('session startup protocol', () => {
+  it.each(['mysql', 'postgresql'])('requires and preserves the SSH host fingerprint for %s', (type) => {
+    const ssh = { host: 'bastion', user: 'reader', password: 'test-password' };
+    const source = { type, options: { host: 'database', database: 'sales', ssh } };
+    expect(() => startupSchema.parse({ source, llm })).toThrow(/hostFingerprint/);
+    const pinnedSource = {
+      ...source,
+      options: { ...source.options, ssh: { ...ssh, hostFingerprint: `SHA256:${'A'.repeat(43)}` } },
+    };
+    expect(startupSchema.parse({ source: pinnedSource, llm })).toEqual({ source: pinnedSource, llm });
+  });
+
   it('keeps engine selection through the child-process startup message', async () => {
     const worker = Object.assign(new EventEmitter(), {
       connected: true,

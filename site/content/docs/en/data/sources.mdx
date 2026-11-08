@@ -611,3 +611,8 @@ Nested under `options.ssh` for MySQL and PostgreSQL.
 | `port`     | `number` | No       | Default: `22`.                                         |
 | `user`     | `string` | Yes      | SSH login user.                                        |
 | `password` | `string` | No       | SSH login password; no password supplied when omitted. |
+| `hostFingerprint` | `string` | Yes | Trusted server host key fingerprint in OpenSSH `SHA256:<base64>` format, without padding. |
+
+SSH verifies the server host key before authentication. Missing or invalid fingerprints fail before connecting; a mismatched key fails the handshake before any password is sent. Existing SSH configurations must add `hostFingerprint`.
+
+Obtain the fingerprint from the server administrator over a trusted channel. For example, the administrator can run `ssh-keygen -lf /etc/ssh/ssh_host_ed25519_key.pub -E sha256` on the SSH server and share the `SHA256:...` value. Do not trust a key collected from an unverified network connection. AVA uses the configured fingerprint and does not automatically trust new keys or read `known_hosts`.

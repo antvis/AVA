@@ -17,6 +17,10 @@ export interface SSHTunnel {
 }
 
 function connectSshClient(ssh: SSHOptions): Promise<Client> {
+  if (typeof ssh.hostFingerprint !== 'string' || !/^SHA256:[A-Za-z0-9+/]{43}$/.test(ssh.hostFingerprint)) {
+    throw new Error('SSH requires hostFingerprint in SHA256:<base64> format from a trusted source.');
+  }
+  const fingerprint = Buffer.from(ssh.hostFingerprint.slice('SHA256:'.length), 'base64').toString('hex');
   const client = new Client();
   return new Promise((resolve, reject) => {
     client
@@ -27,6 +31,8 @@ function connectSshClient(ssh: SSHOptions): Promise<Client> {
         port: ssh.port ?? 22,
         username: ssh.user,
         password: ssh.password,
+        hostHash: 'sha256',
+        hostVerifier: (hash: string) => hash === fingerprint,
         readyTimeout: SSH_CONNECT_TIMEOUT_MS,
       });
   });

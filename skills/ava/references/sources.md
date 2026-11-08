@@ -81,7 +81,7 @@ Use the configuration format and load command shown above:
 Use authorized read-only credentials. Restrict temporary credential files to the current user and delete them after loading. Do not put credentials in deliverables or logs.
 
 - MySQL, PostgreSQL, SQLite, and MongoDB require the corresponding DuckDB extensions. MongoDB uses the `mongo` community extension. Each collection becomes a table, and its schema is inferred from samples, so rare fields may be missed.
-- MySQL/PostgreSQL accept `port` and `ssh: {"host":"bastion","user":"reader","port":22,"password":"REPLACE"}`. PostgreSQL defaults to schema `public`.
+- MySQL/PostgreSQL accept `port` and `ssh: {"host":"bastion","user":"reader","port":22,"password":"REPLACE","hostFingerprint":"SHA256:REPLACE_WITH_TRUSTED_FINGERPRINT"}`. SSH requires the server's OpenSSH SHA-256 host key fingerprint (without base64 padding), obtained from the administrator over a trusted channel. Missing/invalid fingerprints fail before connecting; mismatched keys fail before authentication. Existing SSH configurations must add this field. PostgreSQL defaults to schema `public`.
 - MongoDB accepts `connection` or structured `host`, `port`, `user`, `password`, `authSource`, `srv`, `tls`, `ssl`, `tlsCAFile`, and `tlsAllowInvalidCertificates`; `database` is required in either form. `connection` takes precedence; keep its database consistent with `database`.
 - ClickHouse connects over HTTP(S) and requires version 23.10 or later.
 - ClickHouse requires `database` and either `host` or `url`. It accepts `port`, `user`/`username`, `password`, `access_token`, `pathname`, `application`, `session_id`, `role` (string or string array), `http_headers`, `request_timeout`, and other ClickHouse client options.
