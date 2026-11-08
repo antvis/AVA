@@ -119,6 +119,8 @@ await ava.source({
 
 Use `type: 'csv-file'` with a local path or HTTP(S) URL. For a protected URL, supply request headers in `options.headers`.
 
+For remote CSV, JSON, Parquet, and Excel files, a nonempty `headers` object restricts redirects to the same origin (scheme, hostname, and effective port), with a limit of 20 redirects. This applies to both DuckDB and Python, including custom Python executors. Cross-origin redirects fail before the next request, even when the only header is `Accept` or the redirect upgrades HTTP to HTTPS. Downloads without headers, or with `headers: {}`, retain the underlying downloader's redirect behavior. Use the final trusted URL when a protected download requires a different origin.
+
 ```typescript
 await ava.source({
   type: 'csv-file',

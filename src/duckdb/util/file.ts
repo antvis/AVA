@@ -24,10 +24,38 @@ export async function writeTempFile(content: string | Buffer, ext: string): Prom
   return tmpFile;
 }
 
+/** Caller-supplied headers may contain credentials with arbitrary names. */
+async function fetchFile(url: string, headers?: Record<string, string>): Promise<Response> {
+  const requestHeaders = new Headers(headers);
+  let hasHeaders = false;
+  requestHeaders.forEach(() => {
+    hasHeaders = true;
+  });
+  if (!hasHeaders) return fetch(url, { headers });
+
+  const origin = new URL(url).origin;
+  let current = new URL(url);
+  for (let redirects = 0; ; redirects++) {
+    const response = await fetch(current, { headers: requestHeaders, redirect: 'manual' });
+    const location = response.headers.get('location');
+    if (![301, 302, 303, 307, 308].includes(response.status) || location === null) return response;
+
+    await response.body?.cancel();
+    const next = new URL(location, current);
+    if (next.origin !== origin) {
+      throw new Error('Cross-origin redirects are not allowed for remote files with headers');
+    }
+    // Match native fetch's limit while retaining credentials on same-origin hops.
+    if (redirects === 20) throw new Error('Remote file redirect limit exceeded (20)');
+    current = next;
+  }
+}
+
 /** Download a remote URL to a temp file and return its path */
 export async function downloadToTempFile(url: string, ext: string, headers?: Record<string, string>): Promise<string> {
-  const response = await fetch(url, { headers });
+  const response = await fetchFile(url, headers);
   if (!response.ok) {
+    await response.body?.cancel();
     throw new Error(`Failed to fetch ${url}: ${response.status} ${response.statusText}`);
   }
   return writeTempFile(Buffer.from(await response.arrayBuffer()), ext);
