@@ -63,6 +63,25 @@ const clickhouse = z
   })
   .passthrough()
   .refine((value) => value.host || value.url, { message: "ClickHouse sources require either 'host' or 'url'" });
+// Other snowflake-sdk connection options pass through to the driver.
+const snowflake = z
+  .object({
+    account: text,
+    database: text,
+    schema: text.optional(),
+    warehouse: text.optional(),
+    role: text.optional(),
+    username: text.optional(),
+    authenticator: text.optional(),
+    password: z.string().optional(),
+    token: z.string().optional(),
+    tokenFilePath: text.optional(),
+    privateKey: z.string().optional(),
+    privateKeyPath: text.optional(),
+    privateKeyPass: z.string().optional(),
+    queryTimeoutMs: z.number().int().positive().optional(),
+  })
+  .passthrough();
 
 const feishuBitable = z
   .object({
@@ -130,12 +149,21 @@ const sourceSchema = z.discriminatedUnion('type', [
     .strict(),
   z.object({ type: z.literal('clickhouse'), options: clickhouse }).strict(),
   z.object({ type: z.literal('sqlserver'), options: sqlserver }).strict(),
+  z.object({ type: z.literal('snowflake'), options: snowflake }).strict(),
   z.object({ type: z.literal('feishu-bitable'), options: feishuBitable }).strict(),
 ]);
 
 export const sourceConfig = sourceSchema.transform((value) => value as DataSourceConfig);
 export const modelSchema = z.object({ model: text, apiKey: text.optional(), baseURL: text.optional() }).strict();
-export const engineTypeSchema = z.enum(['duckdb', 'python', 'javascript', 'supabase', 'clickhouse', 'sqlserver']);
+export const engineTypeSchema = z.enum([
+  'duckdb',
+  'python',
+  'javascript',
+  'supabase',
+  'clickhouse',
+  'sqlserver',
+  'snowflake',
+]);
 
 const execution = {
   maxRows: z.number().int().positive().max(10000).optional(),

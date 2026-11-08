@@ -38,8 +38,32 @@ await ava.source({
 
 使用 `url` 或 `host`，并提供必填的 `database`。`username` 的优先级高于别名 `user`。查询通过官方 ClickHouse 客户端执行，并启用只读设置。
 
+<Heading as="h2" id="snowflake">Snowflake</Heading>
+
+```typescript
+const ava = new AVA({
+  llm: { model: 'YOUR_MODEL', apiKey: process.env.OPENAI_API_KEY },
+  engine: { type: 'snowflake' },
+});
+await ava.source({
+  type: 'snowflake',
+  options: {
+    account: 'myorg-myaccount',
+    username: 'AVA_READER_SVC',
+    authenticator: 'SNOWFLAKE_JWT',
+    privateKeyPath: '/secure/ava_reader_key.p8',
+    warehouse: 'AVA_WH',
+    role: 'AVA_READER',
+    database: 'ANALYTICS',
+    schema: 'SALES',
+  },
+});
+```
+
+查询通过 Snowflake 官方 Node.js 驱动在你的仓库中执行，并使用角色自身的权限。引擎发现一个 schema，只接受能编译为单个查询的语句（拒绝匿名存储过程和 `SYSTEM$` 函数），并在 Snowflake 和客户端两侧执行 `queryTimeoutMs`。
+
 <Heading as="h2" id="shared-workflow">共同工作流</Heading>
 
-两种引擎都支持 `schema()`、`profile()`、`translate()`、`query()` 和 `analyze()`。在 JavaScript API 中，数据源类型与引擎类型需要匹配。使用结束后调用 `await ava.dispose()` 释放资源。
+这些引擎都支持 `schema()`、`profile()`、`translate()`、`query()` 和 `analyze()`。在 JavaScript API 中，数据源类型与引擎类型需要匹配。使用结束后调用 `await ava.dispose()` 释放资源。
 
-完整配置表见 [Supabase 参数](/documentation/data/sources/#supabase)和 [ClickHouse 选项](/documentation/data/sources/#clickhouse)。
+完整配置表见 [Supabase 参数](/documentation/data/sources/#supabase)、[ClickHouse 选项](/documentation/data/sources/#clickhouse)和 [Snowflake 选项](/documentation/data/sources/#snowflake)。
