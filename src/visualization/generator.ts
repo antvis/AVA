@@ -21,8 +21,8 @@ import type { ChartConfig } from './types';
  * Wrap a GPT-Vis JSON config into a standalone HTML file that can be opened in any browser
  */
 export function wrapConfigInHTML(config: ChartConfig): string {
-  // JSON is valid JS; escape sequences that could terminate the script block or are line terminators
-  const serialized = JSON.stringify(config)
+  // JSON.parse preserves __proto__ as data; escape script terminators and JS line separators.
+  const serialized = JSON.stringify(JSON.stringify(config))
     .replace(/</g, '\\u003c')
     .replace(/\u2028/g, '\\u2028')
     .replace(/\u2029/g, '\\u2029');
@@ -50,7 +50,7 @@ export function wrapConfigInHTML(config: ChartConfig): string {
         container: '#container',
       });
 
-      const visConfig = ${serialized};
+      const visConfig = JSON.parse(${serialized});
 
       gptVis.render(visConfig);
     </script>

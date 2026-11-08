@@ -83,7 +83,7 @@ if (spec) {
 }
 ```
 
-`viz(spec: ChartSpec): Promise<string>` wraps the config in HTML without an LLM call. The generated document loads the same pinned GPT-Vis version as the package dependency from a CDN. A complete `visualize()` result can also be passed to `viz()`; the existing `html` is not reused.
+`viz(spec: ChartSpecInput): Promise<string>` wraps the config in HTML without an LLM call. JSON inputs can omit `config.type`; AVA fills it from `chartType`. The generated document loads the same pinned GPT-Vis version as the package dependency from a CDN. A complete `visualize()` result can also be passed to `viz()`; the existing `html` is not reused.
 
 ## Supported chart types
 
@@ -94,6 +94,6 @@ if (spec) {
 | Composition & flow           | `pie`, `treemap`, `sankey`, `waterfall`, `funnel`           |
 | Other                        | `radar`, `liquid`, `word-cloud`, `venn`, `table` |
 
-The table lists the 19 JSON chart types defined by AVA's source contracts. A chart's suitability depends on its data requirements and the user's question. The recommendation module supplies these definitions to the model.
+The table lists AVA's 19 recommended JSON chart types. GPT-Vis itself supports 26 types; AVA additionally accepts native summary strings through `viz({ chartType: 'summary', config: '# Sales report' })`. Its six relationship graph types are outside AVA's current contract. A chart's suitability depends on its data requirements and the user's question. The recommendation module supplies the 19 chart definitions to the model.
 
 See [recommend parameters](/documentation/reference/api/#visualize-and-recommend) and [viz parameters](/documentation/reference/api/#viz) for all fields and chart types.

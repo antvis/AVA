@@ -85,7 +85,7 @@ if (spec) {
 }
 ```
 
-`viz(spec: ChartSpec): Promise<string>` 将配置包装为 HTML，不调用大模型。生成的文档从 CDN 加载与依赖包一致的固定版本 GPT-Vis。也可以直接传入 `visualize()` 的完整结果，已有 `html` 不会被复用。
+`viz(spec: ChartSpecInput): Promise<string>` 将配置包装为 HTML，不调用大模型。JSON 输入可以省略 `config.type`，由 AVA 根据 `chartType` 补齐。生成的文档从 CDN 加载与依赖包一致的固定版本 GPT-Vis。也可以直接传入 `visualize()` 的完整结果，已有 `html` 不会被复用。
 
 <Heading as="h2" id="supported-chart-types">支持的图表类型</Heading>
 
@@ -96,6 +96,6 @@ if (spec) {
 | 构成与流向 | `pie`, `treemap`, `sankey`, `waterfall`, `funnel` |
 | 其他 | `radar`, `liquid`, `word-cloud`, `venn`, `table` |
 
-上表列出 AVA 源码契约定义的 19 种 JSON 图表。图表是否合适，取决于数据要求和用户问题。推荐模块会将这些类型的定义提供给模型。
+上表列出 AVA 自动推荐的 19 种 JSON 图表。GPT-Vis 本身支持 26 种类型；AVA 还支持通过 `viz({ chartType: 'summary', config: '# 销售报告' })` 渲染原生摘要字符串，其余 6 种关系图暂不在 AVA 契约范围内。图表是否合适，取决于数据要求和用户问题。推荐模块会将 19 种图表的定义提供给模型。
 
 完整字段与图表类型见 [recommend 参数](/documentation/reference/api/#visualize-and-recommend)和 [viz 参数](/documentation/reference/api/#viz)。

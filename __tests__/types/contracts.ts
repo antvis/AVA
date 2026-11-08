@@ -1,9 +1,21 @@
 // Compile-time regressions: run by test:types, including the expected failures.
-import { sourceConfigSchema } from '../../src';
+import { sourceConfigSchema, chartSpecSchema } from '../../src';
 import { charts } from '../fixtures/charts';
 
-import type { AnalysisResponse, DataSourceConfig, ExecutionResult, ChartSpec, VisualizeResponse } from '../../src';
-import type { DataSourceConfig as BrowserSource, ExecutionResult as BrowserResult } from '../../src/index.browser';
+import type {
+  AVA,
+  AnalysisResponse,
+  DataSourceConfig,
+  ExecutionResult,
+  ChartSpec,
+  ChartSpecInput,
+  VisualizeResponse,
+} from '../../src';
+import type {
+  DataSourceConfig as BrowserSource,
+  ExecutionResult as BrowserResult,
+  ChartSpecInput as BrowserChartInput,
+} from '../../src/index.browser';
 import type {
   ClickHouseSourceOptions,
   SnowflakeSourceOptions,
@@ -33,6 +45,8 @@ const badCSV: CSVReadOptions = { header: 'true' };
 const badJSON: JSONReadOptions = { format: 'csv' };
 // @ts-expect-error The source discriminant must select matching options.
 const badSource: DataSourceConfig = { type: 'csv', options: { data: [] } };
+// @ts-expect-error JSON source rows must remain objects in the public input type.
+const badJSONRow: DataSourceConfig = { type: 'json', options: { data: [1] } };
 // @ts-expect-error Required connection fields must stay required after inference.
 const missingDatabase: DataSourceConfig = { type: 'mysql', options: { host: 'db' } };
 const unpinnedSSH: DataSourceConfig = {
@@ -99,6 +113,7 @@ void [
   badCSV,
   badJSON,
   badSource,
+  badJSONRow,
   missingDatabase,
   unpinnedSSH,
   badTLS,
@@ -157,3 +172,20 @@ export function renderedChartSpec(response: VisualizeResponse): ChartSpec {
   void html;
   return response;
 }
+
+const chartInput: ChartSpecInput = { chartType: 'column', config: { data: [{ category: 'A', value: 1 }] } };
+const browserChartInput: BrowserChartInput = chartInput;
+export function renderChartInputs(ava: AVA): Promise<string>[] {
+  return [ava.viz(chartInput), ava.viz(browserChartInput), ava.viz({ chartType: 'summary', config: '# Sales' })];
+}
+const normalized = chartSpecSchema.parse(chartInput);
+if (normalized.chartType === 'column') {
+  const type: 'column' = normalized.config.type;
+  void type;
+}
+// @ts-expect-error Input defaults must not weaken the chart discriminant.
+const mismatchedChart: ChartSpecInput = {
+  chartType: 'column',
+  config: { type: 'line', data: [{ time: 'A', value: 1 }] },
+};
+void mismatchedChart;

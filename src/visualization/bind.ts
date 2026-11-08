@@ -2,11 +2,10 @@ import { z } from 'zod';
 
 import { chartSpecSchema, bindingSchema } from '../contracts/visualize';
 import { executionResultSchema } from '../contracts/query';
+import { dataRowSchema } from '../contracts/shared/json';
 
 import type { ChartSpec, ChartType, ChartDataBinding } from '../contracts/visualize';
 import type { ExecutionResult } from '../contracts/query';
-
-const rowSchema = z.record(z.string(), z.unknown());
 
 /**
  * Validate a query result and project explicit native chart fields without coercion.
@@ -15,7 +14,7 @@ const rowSchema = z.record(z.string(), z.unknown());
  */
 export function bindChartData(
   input: ExecutionResult<unknown>,
-  spec: { chartType: ChartType; config?: Record<string, unknown> },
+  spec: { chartType: Exclude<ChartType, 'summary'>; config?: Record<string, unknown> },
   binding?: ChartDataBinding
 ): ChartSpec {
   const result = executionResultSchema.parse(input);
@@ -32,14 +31,14 @@ export function bindChartData(
   let data: Record<string, unknown>;
   if (parsed && 'configField' in parsed) {
     if (result.data.length !== 1) throw new Error('configField requires exactly one result row');
-    const row = rowSchema.parse(result.data[0]);
-    data = rowSchema.parse(row[parsed.configField]);
+    const row = dataRowSchema.parse(result.data[0]);
+    data = dataRowSchema.parse(row[parsed.configField]);
   } else {
     const fields = parsed && 'fields' in parsed ? parsed.fields : undefined;
     data = {
       data: fields
         ? z
-            .array(rowSchema)
+            .array(dataRowSchema)
             .parse(result.data)
             .map((row) => Object.fromEntries(Object.entries(fields).map(([native, column]) => [native, row[column]])))
         : result.data,

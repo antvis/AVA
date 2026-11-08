@@ -363,15 +363,17 @@ Neither requires a loaded source. Both use the model and return `null` for empty
 
 ### viz
 
-`viz(spec: ChartSpec): Promise<string>`
+`viz(spec: ChartSpecInput): Promise<string>`
 
 | Parameter        | Type        | Required | Meaning                                                                                             |
 | ---------------- | ----------- | -------- | --------------------------------------------------------------------------------------------------- |
-| `spec`           | `ChartSpec` | Yes      | Chart specification.                                                                                |
-| `spec.chartType` | `ChartType` | Yes      | One of the 19 chart types below; must match `config.type`. |
-| `spec.config`    | `ChartSpec['config']` | Yes    | Native GPT-Vis config; a missing `config.type` is filled from `chartType`.                            |
+| `spec`           | `ChartSpecInput` | Yes      | Chart specification before defaults are applied. |
+| `spec.chartType` | `ChartType` | Yes      | One of the types below; must match `config.type` for JSON charts. |
+| `spec.config`    | `ChartSpecInput['config']` | Yes    | Native GPT-Vis config; a missing `config.type` is filled from `chartType`. For `summary`, pass a T8 Syntax string. |
 
-`ChartType` values: `line`, `column`, `bar`, `pie`, `area`, `scatter`, `dual-axes`, `histogram`, `boxplot`, `radar`, `funnel`, `waterfall`, `liquid`, `word-cloud`, `violin`, `venn`, `treemap`, `sankey`, `table`.
+`ChartType` values: `line`, `column`, `bar`, `pie`, `area`, `scatter`, `dual-axes`, `histogram`, `boxplot`, `radar`, `funnel`, `waterfall`, `liquid`, `word-cloud`, `violin`, `venn`, `treemap`, `sankey`, `table`, `summary`.
+
+GPT-Vis supports 26 visualization types. AVA recommends the 19 JSON chart types above and additionally accepts native summary strings through `viz({ chartType: 'summary', config: '# Sales report' })`. The six relationship graph types are outside AVA's current contract. `ChartSpec` describes the normalized result, with `config.type` filled for JSON charts.
 
 `spec.html?: string` accepts the complete result from `visualize()`. Rendering always uses `config` to generate fresh HTML; an existing `html` value is not reused. Other unknown envelope fields are rejected.
 
@@ -389,7 +391,7 @@ Source options, result metadata and chart types are derived from these schemas, 
 | --- | --- |
 | `sourceConfigSchema.parse(input)` | Validate built-in source types and their options. |
 | `executionResultSchema.parse(input)` | Validate result columns, data and consistent truncation/row-count metadata. |
-| `chartSpecSchema.parse(input)` | Validate the 19 native chart shapes in the [visualization guide](/documentation/visualization/overview/). |
+| `chartSpecSchema.parse(input)` | Validate 19 native JSON chart shapes and summary strings in the [visualization guide](/documentation/visualization/overview/). |
 | `inferFileSourceType(path)` | Infer a file source type from a file path or HTTP(S) URL; return `undefined` for unknown extensions. |
 | `bindChartData(result, spec, binding?)` | Validate the result and bind native chart data without a model call. |
 
@@ -412,7 +414,7 @@ const spec = bindChartData(
 const html = await ava.viz(spec);
 ```
 
-`binding.fields` maps native chart field names to existing result columns. Omitting `binding` uses `result.data` as native chart data, including numeric arrays for histograms. For non-row shapes such as liquid and dual-axes charts, use `{ configField: 'chart' }` to read a native config object from one cell of a single result row. These two binding forms are mutually exclusive; JSON strings are not parsed.
+`binding.fields` maps native chart field names to existing result columns. Omitting `binding` uses `result.data` as native chart data, including numeric arrays for histograms. For non-row shapes such as liquid and dual-axes charts, use `{ configField: 'chart' }` to read a native config object from one cell of a single result row. These two binding forms are mutually exclusive; JSON strings are not parsed. Binding supports the 19 JSON chart types; pass summary strings directly to `viz()`.
 
 `spec.config` supplies presentation and native options; `data`, `categories`, `series` and `percent` must come from the result. Numeric values stay numbers; cast numeric strings in the query. Inspect `result.truncated` when deciding whether partial data is suitable for rendering.
 

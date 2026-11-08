@@ -1,3 +1,5 @@
+import { runInNewContext } from 'node:vm';
+
 import { z } from 'zod';
 import { describe, expect, it } from 'vitest';
 
@@ -10,14 +12,29 @@ import type { ChartSpec } from '../src/types';
 
 describe('native chart contracts', () => {
   it('covers every advisor chart and renders each native data shape through the SDK', async () => {
-    expect(z.toJSONSchema(chartSpecSchema, { io: 'input' }).oneOf).toHaveLength(19);
+    expect(z.toJSONSchema(chartSpecSchema, { io: 'input' }).oneOf).toHaveLength(20);
     expect(Object.keys(fixtures).sort()).toEqual(chartDefinitions.map((chart) => chart.type).sort());
     const ava = new AVA({ llm: { model: 'unused' } });
     for (const [chartType, config] of Object.entries(fixtures)) {
       const spec = chartSpecSchema.parse({ chartType, config: { ...config, customOption: true } });
       expect(spec.config.type).toBe(chartType);
       expect(spec.config.customOption).toBe(true);
-      expect(await ava.viz(spec)).toContain(`"type":"${chartType}"`);
+      const html = await ava.viz(spec);
+      expect(runInNewContext(`(${html.match(/const visConfig = (.+);/)![1]})`, {}, { timeout: 1000 }).type).toBe(
+        chartType
+      );
+    }
+  });
+
+  it('accepts native summary strings without adding summaries to automatic chart recommendations', async () => {
+    const ava = new AVA({ llm: { model: 'unused' } });
+    const spec = { chartType: 'summary' as const, config: '# Sales report\nRevenue increased by 10%.' };
+    const html = await ava.viz(spec);
+    expect(runInNewContext(`(${html.match(/const visConfig = (.+);/)![1]})`, {}, { timeout: 1000 })).toBe(spec.config);
+    expect(chartDefinitions.some((chart) => chart.type === 'summary')).toBe(false);
+    expect(() => chartSpecSchema.parse({ ...spec, config: { type: 'summary', text: 'Report' } })).toThrow();
+    for (const config of ['', '   ', 'vis column\ndata\n  - category A\n    value 1']) {
+      expect(() => chartSpecSchema.parse({ ...spec, config })).toThrow();
     }
   });
 

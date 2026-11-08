@@ -34,7 +34,7 @@ export type {
 } from './contracts/profile';
 export type { MetricOption, Metric } from './util/profile';
 export type { ExecutionOptions, ExecutionResult, QueryColumn } from './contracts/query';
-export type { ChartSpec, VisualizeResponse, ChartType } from './contracts/visualize';
+export type { ChartSpec, ChartSpecInput, VisualizeResponse, ChartType } from './contracts/visualize';
 export type { ChartConfig, ChartTypeDefinition } from './visualization/types';
 export type { SuggestResult } from './contracts/suggest';
 export type { ExcelSheetOptions, ExcelReadOptions } from './contracts/source/excel';

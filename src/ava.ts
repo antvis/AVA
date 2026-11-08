@@ -25,7 +25,7 @@ import type { EngineConfig, AnalysisEngine } from './engines';
 import type { DataSourceConfig } from './contracts/source';
 import type { SchemaOptions, Schema } from './contracts/schema';
 import type { AnalysisResponse, AnalysisConfig } from './contracts/analyze';
-import type { VisualizeResponse, ChartSpec } from './contracts/visualize';
+import type { VisualizeResponse, ChartSpec, ChartSpecInput } from './contracts/visualize';
 import type { SuggestResult } from './contracts/suggest';
 import type { Profile, ProfileOptions } from './contracts/profile';
 import type { ExecutionOptions, ExecutionResult } from './contracts/query';
@@ -350,7 +350,7 @@ export class AVA extends EventEmitter {
   /**
    * Render a chart specification as standalone HTML.
    */
-  async viz(spec: ChartSpec): Promise<string> {
+  async viz(spec: ChartSpecInput): Promise<string> {
     const parsed = chartSpecSchema.parse(spec);
     return wrapConfigInHTML(parsed.config);
   }

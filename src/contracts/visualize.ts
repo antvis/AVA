@@ -1,6 +1,8 @@
 /** Tool schemas should use z.toJSONSchema(schema, { io: 'input' }) to describe input before normalization. */
 import { z } from 'zod';
 
+import { dataRowSchema } from './shared/json';
+
 const label = z.union([z.string(), z.number()]);
 const number = z.number().describe('Finite JSON number; cast numeric strings in the query');
 const group = z.string().optional();
@@ -211,7 +213,7 @@ const chartSchemas = [
       nodeAlign: z.enum(['left', 'center', 'right', 'justify']).optional(),
     })
   ),
-  defineChart('table', z.looseObject({ data: z.array(z.record(z.string(), z.unknown())).min(1) })),
+  defineChart('table', z.looseObject({ data: z.array(dataRowSchema).min(1) })),
   defineChart(
     'dual-axes',
     z.looseObject({
@@ -228,6 +230,15 @@ const chartSchemas = [
       axisXTitle: z.string().optional(),
     })
   ),
+  z
+    .object({
+      chartType: z.literal('summary'),
+      config: z.string().refine((text) => text.trim().length > 0 && !text.trim().startsWith('vis '), {
+        message: 'Summary requires nonempty T8 text, not vis chart syntax',
+      }),
+      html: z.string().optional(),
+    })
+    .strict(),
 ] as const;
 export const chartSpecSchema = z.discriminatedUnion('chartType', chartSchemas).superRefine((spec, context) => {
   if (spec.chartType !== 'dual-axes') return;
@@ -247,6 +258,9 @@ export const chartSpecSchema = z.discriminatedUnion('chartType', chartSchemas).s
  * Chart specification for rendering.
  */
 export type ChartSpec = z.infer<typeof chartSpecSchema>;
+
+/** Rendering input before defaults such as config.type are applied. */
+export type ChartSpecInput = z.input<typeof chartSpecSchema>;
 
 /** Standalone chart generation result. */
 export type VisualizeResponse = ChartSpec & Required<Pick<ChartSpec, 'html'>>;

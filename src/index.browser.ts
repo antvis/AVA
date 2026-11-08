@@ -58,6 +58,7 @@ export type {
   AnalysisRuntime,
   VisualizeResponse,
   ChartSpec,
+  ChartSpecInput,
   SuggestResult,
   ChartType,
   ProfileOptions,

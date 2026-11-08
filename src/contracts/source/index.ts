@@ -1,6 +1,8 @@
 /** Tool schemas should use z.toJSONSchema(schema, { io: 'input' }) to describe input before normalization. */
 import { z } from 'zod';
 
+import { dataRowSchema } from '../shared/json';
+
 import { excelOptionsSchema } from './excel';
 import { csvReadOptionsSchema, jsonReadOptionsSchema } from './read-options';
 
@@ -120,7 +122,7 @@ export const sourceSchemas = {
       type: z.literal('json'),
       options: z
         .object({
-          data: z.array(z.record(z.string(), z.unknown())),
+          data: z.array(dataRowSchema),
           options: jsonReadOptionsSchema.optional(),
         })
         .strict(),

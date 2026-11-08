@@ -1,3 +1,5 @@
+import { runInNewContext } from 'node:vm';
+
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { generateText } from 'ai';
 import { version as gptVisVersion } from '@antv/gpt-vis/package.json';
@@ -70,7 +72,9 @@ describe('chart recommendation', () => {
     ]);
     expect(visualization).toMatchObject({ chartType: 'column', config });
     expect(visualization?.html).toContain('<!DOCTYPE html>');
-    expect(JSON.parse(visualization!.html.match(/const visConfig = (.+);/)![1])).toEqual(config);
+    expect(
+      runInNewContext(`(${visualization!.html.match(/const visConfig = (.+);/)![1]})`, {}, { timeout: 1000 })
+    ).toEqual(config);
     expect(generateText).toHaveBeenCalledTimes(2);
     expect(await ava.viz(visualization!)).toBe(visualization!.html);
     expect(await ava.viz({ ...visualization!, html: 'stale HTML' })).toBe(visualization!.html);
@@ -81,11 +85,17 @@ describe('chart recommendation', () => {
     const spec = { chartType: 'column' as const, config };
     const html = await ava['viz'](spec);
     expect(html).toContain('<!DOCTYPE html>');
-    expect(JSON.parse(html.match(/const visConfig = (.+);/)![1])).toEqual(config);
+    expect(runInNewContext(`(${html.match(/const visConfig = (.+);/)![1]})`, {}, { timeout: 1000 })).toEqual(config);
     expect(html).toContain('gptVis.render(visConfig)');
     expect(dependencies['@antv/gpt-vis']).toBe(gptVisVersion);
     expect(html).toContain(`https://unpkg.com/@antv/gpt-vis@${gptVisVersion}/dist/umd/index.min.js`);
     expect(await ava['viz'](spec)).toBe(html);
+    const title = '</script><script>throw new Error("injected")</script>\u2028\u2029';
+    const escaped = await ava.viz({ chartType: 'column', config: { ...config, type: 'column', title } });
+    expect(escaped).not.toContain('</script><script>');
+    expect(runInNewContext(`(${escaped.match(/const visConfig = (.+);/)![1]})`, {}, { timeout: 1000 }).title).toBe(
+      title
+    );
     expect(generateText).not.toHaveBeenCalled();
   });
 });

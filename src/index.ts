@@ -74,6 +74,7 @@ export type {
   VisualizeResponse,
   ChartConfig,
   ChartSpec,
+  ChartSpecInput,
   SuggestResult,
   ChartType,
   ProfileOptions,

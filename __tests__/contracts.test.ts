@@ -1,3 +1,5 @@
+import { runInNewContext } from 'node:vm';
+
 import { z } from 'zod';
 import { describe, expect, it } from 'vitest';
 
@@ -12,6 +14,10 @@ import type { DataSourceConfig } from '../src/types';
 const source = { type: 'json' as const, options: { data: [{ sales: 10 }] } };
 
 describe('public source contracts', () => {
+  it.each([null, [], 1, 'row', new Date()])('rejects non-record JSON rows: %j', (row) => {
+    expect(() => sourceConfigSchema.parse({ type: 'json', options: { data: [row] } })).toThrow(z.ZodError);
+  });
+
   it.each([
     { type: 'csv', options: { csv: 'value\n1', options: { header: 'true' } } },
     { type: 'csv-file', options: { path: 'sales.csv', options: { types: [1] } } },
@@ -23,7 +29,13 @@ describe('public source contracts', () => {
   });
 
   it('uses the same source contract in SDK and CLI without erasing the discriminant', async () => {
-    expect(z.toJSONSchema(sourceConfigSchema, { io: 'input' }).oneOf).toHaveLength(16);
+    const schema = z.toJSONSchema(sourceConfigSchema, { io: 'input' });
+    expect(schema.oneOf).toHaveLength(16);
+    const json = schema.oneOf!.find((source) => source.properties?.type.const === 'json');
+    expect(json?.properties?.options.properties?.data.items).toMatchObject({
+      type: 'object',
+      additionalProperties: {},
+    });
     const parsed = sourceConfigSchema.parse(source);
     if (parsed.type === 'json') expect(parsed.options.data).toEqual(source.options.data);
     expect(startupSchema.parse({ source, llm: { model: 'unused' } }).source).toEqual(parsed);
@@ -80,6 +92,43 @@ describe('public result contract', () => {
 });
 
 describe('source-to-chart contract flow', () => {
+  it.each(['javascript', 'duckdb'])(
+    'preserves prototype-like column names through %s and chart binding',
+    async (type) => {
+      const data = JSON.parse('[{"__proto__":"A","constructor":"B","prototype":"C","value":10}]');
+      const source = { type: 'json' as const, options: { data } };
+      expect(sourceConfigSchema.parse(source)).toEqual(source);
+      expect(startupSchema.parse({ source, llm: { model: 'unused' } }).source).toEqual(source);
+      const ava = new node.AVA({ llm: { model: 'unused' }, engine: { type } });
+      try {
+        await ava.source(source);
+        const result = await ava.query(type === 'duckdb' ? 'SELECT * FROM data' : 'const result = data;');
+        expect(Object.entries(result.data[0])).toEqual(Object.entries(data[0]));
+        expect(Object.getPrototypeOf(result.data[0])).toBe(Object.prototype);
+        const table = node.bindChartData(result, { chartType: 'table' });
+        expect(table.config).toMatchObject({ data });
+        const column = node.bindChartData(
+          result,
+          { chartType: 'column' },
+          { fields: { category: '__proto__', value: 'value' } }
+        );
+        expect(column.config).toMatchObject({ data: [{ category: 'A', value: 10 }] });
+        const html = await ava.viz(table);
+        expect(runInNewContext(`(${html.match(/const visConfig = (.+);/)![1]})`, {}, { timeout: 1000 }).data).toEqual(
+          data
+        );
+        expect(Object.entries(data[0])).toEqual([
+          ['__proto__', 'A'],
+          ['constructor', 'B'],
+          ['prototype', 'C'],
+          ['value', 10],
+        ]);
+      } finally {
+        await ava.dispose();
+      }
+    }
+  );
+
   it('exposes shared contracts and helpers from Node and browser entry points', () => {
     expect(node.sourceConfigSchema).toBe(browser.sourceConfigSchema);
     expect(node.executionResultSchema).toBe(browser.executionResultSchema);
@@ -105,7 +154,7 @@ describe('source-to-chart contract flow', () => {
         { fields: { category: 'month', value: 'revenue' } }
       );
       const html = await ava.viz(spec);
-      expect(JSON.parse(html.match(/const visConfig = (.+);/)![1])).toEqual({
+      expect(runInNewContext(`(${html.match(/const visConfig = (.+);/)![1]})`, {}, { timeout: 1000 })).toEqual({
         type: 'column',
         data: [
           { category: 'Jan', value: 10 },
