@@ -2,6 +2,7 @@ import { runInNewContext } from 'node:vm';
 
 import { z } from 'zod';
 import { describe, expect, it } from 'vitest';
+import * as ts from 'typescript';
 
 import { AVA, executionResultSchema, sourceConfigSchema } from '../src/index.browser';
 import * as node from '../src';
@@ -201,6 +202,21 @@ describe('source-to-chart contract flow', () => {
 });
 
 describe('API input and output contracts', () => {
+  it('checks public contract types', () => {
+    const config = ts.readConfigFile('tsconfig.json', ts.sys.readFile);
+    expect(config.error).toBeUndefined();
+    const parsed = ts.parseJsonConfigFileContent(
+      { ...config.config, include: [...config.config.include, '__tests__/types/**/*.ts'] },
+      ts.sys,
+      process.cwd(),
+      { noEmit: true }
+    );
+    const host = ts.createCompilerHost(parsed.options);
+    const program = ts.createProgram(parsed.fileNames, parsed.options, host);
+    const diagnostics = [...parsed.errors, ...ts.getPreEmitDiagnostics(program)];
+    expect(ts.formatDiagnostics(diagnostics, host)).toBe('');
+  }, 30_000);
+
   it('keeps existing runtime exports as aliases', () => {
     expect(contracts.sourceInputSchema).toBe(contracts.sourceConfigSchema);
     expect(contracts.schemaOutputSchema).toBe(contracts.schemaMetadataSchema);

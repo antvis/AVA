@@ -68,8 +68,8 @@
     "build:esm": "vite build",
     "build": "npm run clean && npm run build:cjs && npm run build:esm",
     "prepublishOnly": "npm run build",
-    "test": "vitest run && npm run test:types",
-    "test:types": "tsc --noEmit -p tsconfig.types.json",
+    "test": "vitest run",
+    "test:types": "vitest run __tests__/contracts.test.ts -t \"checks public contract types\"",
     "test:watch": "vitest",
     "test:ui": "vitest --ui",
     "test:coverage": "vitest run --coverage"
