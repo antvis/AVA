@@ -1,20 +1,18 @@
 # Data Sources
 
-## Choose an Engine
+## Choose a SQL Engine
 
 | Data source | Engine | Query language |
 | --- | --- | --- |
-| CSV/JSON/Parquet/Excel files | DuckDB by default; Python is optional | DuckDB SQL / Python (pandas) |
-| Inline CSV/JSON | DuckDB by default; Python or JavaScript is optional | SQL / Python / JavaScript |
-| Unstructured text | DuckDB by default; JavaScript is optional; requires a model | SQL / JavaScript |
+| CSV/JSON/Parquet/Excel files | DuckDB | DuckDB SQL |
+| Inline CSV/JSON | DuckDB | DuckDB SQL |
+| Unstructured text | DuckDB; requires a model for extraction | DuckDB SQL |
 | MySQL, PostgreSQL, SQLite, MongoDB | DuckDB only | DuckDB SQL |
 | ClickHouse | ClickHouse only, selected automatically | ClickHouse SQL |
 | SQL Server | SQL Server only, selected automatically | T-SQL |
 | Snowflake | Snowflake only, selected automatically | Snowflake SQL |
 | Supabase | Supabase only, selected automatically | PostgreSQL SQL |
 | Feishu Bitable | DuckDB only | DuckDB SQL |
-
-To use Python or JavaScript, add `--engine python` or `--engine javascript` to the `source` command. Python does not connect directly to databases. To post-process database results with pandas, query the database first, then export the complete result as described in [Results and Post-Processing](queries.md#results-and-post-processing).
 
 ## Files and Configuration
 
@@ -59,9 +57,7 @@ For other common configurations, set `type` and `options` as shown:
 
 File sources except SQLite accept `headers` for HTTP(S) authentication. `csv-file` and `json-file` accept nested `options` for reader settings; `parquet` does not.
 
-For Excel, omitting `sheets` loads every sheet. Otherwise use a nonempty array of unique sheet names, each with `sheet`, optional inclusive A1 `range`, and `header` (default `true`). DuckDB expects `.xlsx` and also accepts per-sheet booleans `all_varchar`, `ignore_errors`, `stop_at_empty`, and `empty_as_varchar`. Python supports `sheet`, `range`, and `header` only.
-
-Python CSV reader options are limited to `header`, `names`, `delim`, `quote`, `escape`, `comment`, `skip`, `nullstr`, `all_varchar`, `decimal_separator`, `thousands`, `encoding`, and `compression`. Python JSON sources do not accept reader `options`. Do not assume DuckDB reader settings work in Python.
+For Excel, omitting `sheets` loads every sheet. Otherwise use a nonempty array of unique sheet names, each with `sheet`, optional inclusive A1 `range`, and `header` (default `true`). DuckDB expects `.xlsx` and also accepts per-sheet booleans `all_varchar`, `ignore_errors`, `stop_at_empty`, and `empty_as_varchar`.
 
 The native `text` source extracts rows using an AVA model and requires model credentials (see [Setup](setup.md)). Alternatively, extract JSON rows yourself, keeping only information supported by the source text, then load `json`.
 
@@ -110,7 +106,7 @@ Keep the database `host` and `port` set to the address reachable from the bastio
 
 ## Feishu Bitable
 
-`feishu-bitable` is read-only and uses DuckDB; the Python and JavaScript engines cannot load it. Rows are exposed as one view named `data`. The `view` parameter in the URL is ignored and the whole table is loaded, not one view.
+`feishu-bitable` is read-only and uses DuckDB. Rows are exposed as one view named `data`. The `view` parameter in the URL is ignored and the whole table is loaded, not one view.
 
 The CLI detects Bitable links on `feishu.cn` and `larksuite.com` automatically (Node.js 22.13+), including tables that live inside a wiki:
 

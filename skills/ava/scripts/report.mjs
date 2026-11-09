@@ -77,8 +77,7 @@ export async function recordQuery({ evidence, datasetId, dsl, source, maxRows, m
     text(evidence) && text(datasetId) && text(dsl) && text(source),
     'query requires --evidence, datasetId, --dsl and --source.'
   );
-  const language = { '.sql': 'sql', '.py': 'python', '.js': 'javascript' }[extname(dsl)];
-  check(language, 'Save DSL as a .sql, .py or .js file.');
+  check(extname(dsl) === '.sql', 'Save the SQL query as a .sql file.');
   const sql = await readFile(dsl, 'utf8');
   check(sql.trim() && Buffer.byteLength(sql) <= 512 * 1024, 'DSL must be nonempty and at most 512 KiB.');
   const args = ['query', datasetId, '--dsl', '-'];
@@ -95,7 +94,7 @@ export async function recordQuery({ evidence, datasetId, dsl, source, maxRows, m
   await mkdir(directory, { recursive: true, mode: 0o700 });
   const result = await invoke(args, sql);
   validateResult(result);
-  const body = { datasetId, source, language, sql, executedAt: new Date().toISOString(), result };
+  const body = { datasetId, source, language: 'sql', sql, executedAt: new Date().toISOString(), result };
   const queryId = `q_${digest(body)}`;
   const evidenceOutput = join(directory, `${queryId}.json`);
   await writeNew(evidenceOutput, JSON.stringify({ queryId, ...body }, null, 2));
@@ -399,7 +398,7 @@ const help = `AVA Skill reports (Node.js 22.13+, AVA CLI 4.x on PATH; AVA_CLI ma
   node report.mjs render --evidence /task/evidence --spec report-spec.json --output /task/report-v1.html
       [--previous /task/report-v0.json] [--template /task/report-template.html]
 
-query executes once and saves content-addressed evidence; index lists its metadata.
+query executes SQL once and saves content-addressed evidence; index lists its metadata.
 render consumes saved results and optionally merges sections by stable id with a previous report.
 It uses the bundled default layout unless --template selects a task-local customized template.
 It does not rerun queries. Existing output files are never overwritten.

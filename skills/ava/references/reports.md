@@ -14,7 +14,7 @@ Preserve the template's data-binding behavior and its single `<!-- ARTIFACT_DATA
 
 Use a task-specific output directory. The shell must resolve `ava` to a working CLI 4.x and `node` to Node.js 22.13+. `AVA_CLI` can select a different AVA executable; use an executable wrapper when an entrypoint needs explicit Node arguments. This is a process-local choice, not a global configuration change.
 
-After loading the source and inspecting schema, save each report query as `.sql`, `.py`, or `.js`, matching the session language. Execute it through the recorder rather than separately running and then copying its result:
+After loading the source and confirming its SQL schema as described in [Queries and results](queries.md), save each report query as `.sql`. Execute it through the recorder rather than separately running and then copying its result:
 
 ```sh
 node /absolute/path/to/ava/scripts/report.mjs query "$DATASET_ID" \

@@ -23,20 +23,6 @@ A supported Node installation elsewhere on the machine does not change the agent
 
 `source` with type `text`, `analyze`, `translate`, `suggest`, `recommend`, and `visualize` use AVA's model integration. Set `OPENAI_API_KEY`; optionally set `OPENAI_MODEL` (default `gpt-4o-mini`) and `OPENAI_BASE_URL`. For session commands, set these before creating the session; later environment changes do not update its model configuration. Loading structured data, running `query`, managing semantic, and rendering a supplied Spec with `viz` do not require a model API key.
 
-## Python
-
-When using `--engine python`, select an existing virtual environment or a Python environment for the current task, and put its `python3` on `PATH`.
-
-Check the dependencies in that environment. pandas is required; Parquet also requires a supported reader (such as `pyarrow`), and XLSX requires `openpyxl`. For example:
-
-```sh
-python3 -c 'import pandas; print(pandas.__version__)'
-```
-
-Install any missing packages in the same environment, then create the session. Switching Python environments requires a new session.
-
-By default, execution runs in a local subprocess with the current user's file and network permissions; it is not a security sandbox. For isolation, run the entire CLI inside a sandbox provided by the host.
-
 ## Sessions
 
 Save session IDs and query outputs in a task-specific directory. For example:

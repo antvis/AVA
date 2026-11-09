@@ -4,7 +4,7 @@ description: >-
   Use the AVA CLI for data access, exploration, querying, analysis, and
   visualization with CSV, Excel, JSON, and Parquet files, databases, and
   Feishu Bitable. Supports inspecting schemas and data quality,
-  SQL/Python/JavaScript queries, transformation and aggregation,
+  SQL queries, transformation and aggregation,
   clarifying and reusing business definitions, metric and trend analysis,
   chart recommendations, interactive HTML charts, and evidence-backed
   HTML reports that can be updated across follow-up questions.
@@ -13,6 +13,8 @@ description: >-
 # AVA
 
 The agent reasons and explains; AVA loads data, executes calculations, and renders charts. This workflow needs no additional model API key.
+
+Use SQL analysis engines for this skill. Perform transformations, aggregations, and statistics in SQL.
 
 ## Analysis Flow
 
@@ -54,9 +56,9 @@ Read only what the task needs.
 
 | Need | Reference |
 | --- | --- |
-| Source configuration and engine selection | [Sources](references/sources.md) |
+| Source configuration and SQL engine selection | [Sources](references/sources.md) |
 | Semantic format, incremental maintenance, and session loading | [Semantic](references/semantic.md) |
-| Query languages, profiling options, and response limits | [Queries and results](references/queries.md) |
+| SQL dialects, profiling options, and response limits | [Queries and results](references/queries.md) |
 | Chart selection, rendering, and inspection | [Visualization](references/visualization.md) |
 | Evidence-backed HTML reports and follow-up updates | [Reports](references/reports.md) |
 | Environment, session recovery, and cleanup | [Setup](references/setup.md) |

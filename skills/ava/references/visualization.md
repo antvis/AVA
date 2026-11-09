@@ -1,6 +1,6 @@
 # Visualization
 
-Build charts from user-provided data or the `data` in query results. All engines use the same charting workflow. Follow the steps in order; at each `IF`, take the first branch that matches.
+Build charts from user-provided data or the `data` in SQL query results. Follow the steps in order; at each `IF`, take the first branch that matches.
 
 ## Workflow
 
