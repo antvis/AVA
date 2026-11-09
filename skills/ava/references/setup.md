@@ -35,6 +35,6 @@ ava schema "$DATASET_ID" > schema.json
 
 Across terminals, recover the ID from the file instead of relying on another process's environment variables.
 
-Sessions expire after 30 idle minutes or disposal. If access remains authorized, reload the same source and engine, refresh schema, and reapply compatible saved semantic. Recompute statistics only as needed.
+Sessions expire after 30 idle minutes or disposal. If access remains authorized, reload the same source, refresh schema, and reapply compatible saved semantic. Recompute statistics only as needed.
 
 When finished or after failure, close task-created sessions that are no longer needed with `ava dispose "$DATASET_ID"`. Keep a session if analysis will continue. Close a user-provided session only when explicitly asked.

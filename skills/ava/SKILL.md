@@ -14,7 +14,7 @@ description: >-
 
 The agent reasons and explains; AVA loads data, executes calculations, and renders charts. This workflow needs no additional model API key.
 
-Use SQL analysis engines for this skill. Perform transformations, aggregations, and statistics in SQL.
+Perform transformations, aggregations, and statistics in SQL.
 
 ## Analysis Flow
 
@@ -26,7 +26,7 @@ Request -> Reuse context -> Resolve gaps -> Compute -> Check -> Deliver
                                  +-- missing context ---+
 ```
 
-- Load with `ava source` only when needed; use its returned `datasetId`. Default to DuckDB. Inspect `ava schema` for actual fields, source mappings, and query language.
+- Load with `ava source` only when needed; use its returned `datasetId`. Inspect `ava schema` for actual fields, source mappings, and query language.
 - Calculate against the agreed meaning and actual schema. Check population, grain, time, units, joins, nulls, denominators, and truncation; reconcile contributions with the overall change. Investigate discrepancies rather than changing definitions to fit.
 - Deliver findings, the definition used, and limitations. Keep reproducible queries and necessary results; link new or updated semantic files. State what was not run or verified.
 
@@ -56,7 +56,7 @@ Read only what the task needs.
 
 | Need | Reference |
 | --- | --- |
-| Source configuration and SQL engine selection | [Sources](references/sources.md) |
+| Source types and configuration | [Sources](references/sources.md) |
 | Semantic format, incremental maintenance, and session loading | [Semantic](references/semantic.md) |
 | SQL dialects, profiling options, and response limits | [Queries and results](references/queries.md) |
 | Chart selection, rendering, and inspection | [Visualization](references/visualization.md) |

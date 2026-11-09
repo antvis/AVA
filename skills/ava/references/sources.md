@@ -1,18 +1,6 @@
 # Data Sources
 
-## Choose a SQL Engine
-
-| Data source | Engine | Query language |
-| --- | --- | --- |
-| CSV/JSON/Parquet/Excel files | DuckDB | DuckDB SQL |
-| Inline CSV/JSON | DuckDB | DuckDB SQL |
-| Unstructured text | DuckDB; requires a model for extraction | DuckDB SQL |
-| MySQL, PostgreSQL, SQLite, MongoDB | DuckDB only | DuckDB SQL |
-| ClickHouse | ClickHouse only, selected automatically | ClickHouse SQL |
-| SQL Server | SQL Server only, selected automatically | T-SQL |
-| Snowflake | Snowflake only, selected automatically | Snowflake SQL |
-| Supabase | Supabase only, selected automatically | PostgreSQL SQL |
-| Feishu Bitable | DuckDB only | DuckDB SQL |
+Load data with `ava source` using a file, URL, or configuration. Use `ava schema` to discover tables, columns, and the SQL dialect.
 
 ## Files and Configuration
 
@@ -26,7 +14,7 @@ The CLI identifies CSV, JSON, Parquet, XLSX, and SQLite (`.sqlite`, `.sqlite3`, 
 
 **Use configuration for inline data, authentication, or custom read options:**
 
-Configuration includes `type` and `options`. `type` specifies the data format or database type, not the engine. For example, to read a semicolon-delimited CSV while preserving text types, save the following as `source.json`:
+Configuration includes `type` (the data format or database type) and `options`. For example, to read a semicolon-delimited CSV while preserving text types, save the following as `source.json`:
 
 ```json
 {
@@ -57,7 +45,7 @@ For other common configurations, set `type` and `options` as shown:
 
 File sources except SQLite accept `headers` for HTTP(S) authentication. `csv-file` and `json-file` accept nested `options` for reader settings; `parquet` does not.
 
-For Excel, omitting `sheets` loads every sheet. Otherwise use a nonempty array of unique sheet names, each with `sheet`, optional inclusive A1 `range`, and `header` (default `true`). DuckDB expects `.xlsx` and also accepts per-sheet booleans `all_varchar`, `ignore_errors`, `stop_at_empty`, and `empty_as_varchar`.
+For Excel, omitting `sheets` loads every sheet. Otherwise use a nonempty array of unique sheet names, each with `sheet`, optional inclusive A1 `range`, and `header` (default `true`). Excel sources support `.xlsx` and also accept per-sheet booleans `all_varchar`, `ignore_errors`, `stop_at_empty`, and `empty_as_varchar`.
 
 The native `text` source extracts rows using an AVA model and requires model credentials (see [Setup](setup.md)). Alternatively, extract JSON rows yourself, keeping only information supported by the source text, then load `json`.
 
@@ -78,7 +66,7 @@ Use the configuration format and load command shown above:
 
 Use authorized read-only credentials. Restrict temporary credential files to the current user and delete them after loading. Do not put credentials in deliverables or logs.
 
-- MySQL, PostgreSQL, SQLite, and MongoDB require the corresponding DuckDB extensions. MongoDB uses the `mongo` community extension. Each collection becomes a table, and its schema is inferred from samples, so rare fields may be missed.
+- Each MongoDB collection becomes a table, and its schema is inferred from samples, so rare fields may be missed.
 - MySQL/PostgreSQL accept `port` and an optional [SSH tunnel](#connect-through-ssh). PostgreSQL defaults to schema `public`.
 - MongoDB accepts `connection` or structured `host`, `port`, `user`, `password`, `authSource`, `srv`, `tls`, `ssl`, `tlsCAFile`, and `tlsAllowInvalidCertificates`; `database` is required in either form. `connection` takes precedence; keep its database consistent with `database`.
 - ClickHouse connects over HTTP(S) and requires version 23.10 or later.
@@ -106,7 +94,7 @@ Keep the database `host` and `port` set to the address reachable from the bastio
 
 ## Feishu Bitable
 
-`feishu-bitable` is read-only and uses DuckDB. Rows are exposed as one view named `data`. The `view` parameter in the URL is ignored and the whole table is loaded, not one view.
+`feishu-bitable` is read-only. Rows are exposed as one view named `data`. The `view` parameter in the URL is ignored and the whole table is loaded, not one view.
 
 The CLI detects Bitable links on `feishu.cn` and `larksuite.com` automatically (Node.js 22.13+), including tables that live inside a wiki:
 

@@ -21,7 +21,7 @@ node /absolute/path/to/ava/scripts/report.mjs query "$DATASET_ID" \
   --dsl /task/monthly.sql --source sales.csv --evidence /task/evidence
 ```
 
-The command returns the real query result, `queryId` and `evidenceOutput`. Optional `--max-rows` and `--max-result-bytes` have the same meaning as AVA query limits. Inspect results and truncation before using them. Compute comparisons and ratios in the engine. A failed query does not create evidence; an uncertain operation must not be automatically retried.
+The command returns the real query result, `queryId` and `evidenceOutput`. Optional `--max-rows` and `--max-result-bytes` have the same meaning as AVA query limits. Inspect results and truncation before using them. Compute comparisons and ratios in SQL. A failed query does not create evidence; an uncertain operation must not be automatically retried.
 
 Each `q_<hash>.json` is an exclusively created snapshot containing the query code, language, dataset ID, source label, execution time, and result. The hash detects changes to saved evidence; it is not a signature proving who created it. Use a non-secret source label, not credentials or a connection URL. Do not edit evidence files to correct results: execute the corrected query and reference its new ID.
 

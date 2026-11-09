@@ -12,7 +12,7 @@ Each profile call recomputes statistics. `--metrics` replaces the defaults and a
 
 ## Run a Query
 
-`ava schema` discovers structure on demand and caches it. Use its `models`, `tableReference`, and `columns` to identify the data. Confirm that the returned `language` identifies a SQL dialect (for example, `duckdb-sql`), and follow the optional top-level `instructions` for that dialect. For an existing non-SQL session, reload the source with a SQL engine if its configuration and authorized access are available; otherwise explain the blocker. Apply confirmed [business definitions](semantic.md) explicitly; `query` executes the supplied SQL without applying semantic filters or expressions for you. Save the query as UTF-8 and run it with `--dsl`:
+`ava schema` discovers structure on demand and caches it. Use its `models`, `tableReference`, and `columns` to identify the data. Confirm that the returned `language` identifies a SQL dialect (for example, `duckdb-sql`), and follow the optional top-level `instructions` for that dialect. For an existing non-SQL session, reload the source with `ava source` if its configuration and authorized access are available; otherwise explain the blocker. Apply confirmed [business definitions](semantic.md) explicitly; `query` executes the supplied SQL without applying semantic filters or expressions for you. Save the query as UTF-8 and run it with `--dsl`:
 
 ```sh
 ava query "$DATASET_ID" --dsl @query.sql > result.json
