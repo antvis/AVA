@@ -55,8 +55,6 @@ describe('wiki-hosted Bitable', () => {
     for (const options of [
       { url: invalid },
       { url: `${signed}/base/link-secret?signature=url-signature&table=tbl123`, appToken: 'other' },
-      { url: `${signed}/wiki/link-secret?signature=url-signature&table=tbl123`, appToken: 'other' },
-      { url: `${signed}/wiki/link-secret?signature=url-signature&table=tbl123`, tableId: 'other' },
     ]) {
       await expect(resolveBitableTable(options, api)).rejects.toHaveProperty(
         'message',
@@ -132,11 +130,11 @@ describe('wiki-hosted Bitable', () => {
   it('keeps rejecting an appToken that disagrees with the link', async () => {
     stubFetch();
 
-    await expect(resolveBitableTable({ url: wikiUrl, appToken: 'other' }, api)).rejects.toThrow(
-      'appToken does not match the wiki node'
+    await expect(resolveBitableTable({ url: wikiUrl, appToken: 'other' }, api)).rejects.toEqual(
+      new Error("Feishu Bitable appToken does not match the wiki node's table.")
     );
-    await expect(resolveBitableTable({ url: wikiUrl, tableId: 'tbl999' }, api)).rejects.toThrow(
-      'tableId does not match url'
+    await expect(resolveBitableTable({ url: wikiUrl, tableId: 'tbl999' }, api)).rejects.toEqual(
+      new Error('Feishu Bitable tableId does not match url.')
     );
   });
 

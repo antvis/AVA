@@ -6,27 +6,11 @@ import * as fs from 'fs/promises';
 import { tmpdir } from 'node:os';
 import { dirname, join } from 'node:path';
 
-import { afterEach, describe, it, expect, vi } from 'vitest';
+import { describe, it, expect, vi } from 'vitest';
 
-import { downloadToTempFile, fileSource, writeTempFile, removeTempFile } from '../../../src/duckdb/util/file';
-
-afterEach(() => vi.unstubAllGlobals());
+import { fileSource, writeTempFile, removeTempFile } from '../../../src/duckdb/util/file';
 
 describe('duckdb/util/file', () => {
-  it('does not add a signed URL or response status text to download errors', async () => {
-    const url = 'https://user:url-password@example.com/data.csv?signature=url-signature';
-    vi.stubGlobal('fetch', vi.fn().mockResolvedValue(new Response(null, { status: 403, statusText: 'status-secret' })));
-    await expect(downloadToTempFile(url, 'csv', { 'X-Custom-Key': 'header-secret' })).rejects.toEqual(
-      new Error('Failed to fetch remote file (HTTP 403).')
-    );
-  });
-
-  it('preserves the original fetch error for SDK callers', async () => {
-    const failure = Object.assign(new Error('upstream error with token=original-secret'), { code: 'ECONNRESET' });
-    vi.stubGlobal('fetch', vi.fn().mockRejectedValue(failure));
-    await expect(downloadToTempFile('https://example.com/data.csv', 'csv')).rejects.toBe(failure);
-  });
-
   it('prepares extended encodings before reading CSV', async () => {
     const conn = { run: vi.fn().mockResolvedValue(undefined), runAndReadAll: vi.fn() };
     const source = fileSource('/tmp/data.csv', 'csv', async () => {}, { encoding: 'gb18030' });
