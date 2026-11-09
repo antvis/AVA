@@ -147,7 +147,6 @@ describe('source-to-chart contract flow', () => {
     expect(contracts.schemaOutputSchema.parse({ models: [] })).toEqual({ models: [] });
     expect(contracts.profileOutputSchema.parse({ models: [] })).toEqual({ models: [] });
     expect(contracts.semanticOutputSchema.parse({ description: 'Sales' })).toEqual({ description: 'Sales' });
-    expect(node.inferFileSourceType).toBe(browser.inferFileSourceType);
   });
 
   it('loads, queries and renders real SQL results through the public contracts', async () => {

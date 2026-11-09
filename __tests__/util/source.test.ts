@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 
-import { inferFileSourceType } from '../../src/index.browser';
+import { inferFileSourceType } from '../../src/util/source';
 
 describe('file source type inference', () => {
   it.each([

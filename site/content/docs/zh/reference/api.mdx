@@ -385,7 +385,7 @@ GPT-Vis 支持 26 种可视化类型。AVA 自动推荐上述 19 种 JSON 图表
 
 AVA 将 `@antv/gpt-vis` 固定为 1.3.1。生成的 HTML 从 CDN 加载同一版本，原生图表契约也通过该包的类型检查。分类、名称和分组标签遵循原生字符串类型，时间标签也可以是数值；Treemap 节点必须提供 `value`。主题支持内置名称和原生主题对象，原生选项包含子标题、瀑布图中间合计和 Venn 字符串集合。
 
-Node 和浏览器入口导出共享运行时 schema，以及数据源类型推断工具函数。SDK 的 `source()`、`recommend()`、`viz()` 和 CLI 在各自的输入边界使用这些契约。
+Node 和浏览器入口导出共享运行时 schema。SDK 的 `source()`、`recommend()`、`viz()` 和 CLI 在各自的输入边界使用这些契约。
 
 MCP 等集成直接从 SDK 入口导入 API schema 与数据类型。Node 使用 `@antv/ava`，浏览器使用 `@antv/ava/browser`：
 
@@ -415,11 +415,7 @@ API 类型统一通过 `z.input<typeof inputSchema>` 与 `z.output<typeof output
 | `visualize` | `visualizeInputSchema`：`{ query, data }` | `visualizeOutputSchema`：必含 HTML 的图表配置或 `null` |
 | `viz` | `vizInputSchema`：应用默认值前的图表配置 | `vizOutputSchema`：HTML 字符串 |
 
-Node 和 browser 入口统一导出 API 输入、输出 schema。类型沿用 `DataSourceConfig`、`SchemaOptions`、`ExecutionResult`、`AnalysisResponse` 等原有命名。`ExecutionResult<Row>`、`AnalysisResponse<Row>` 保留行泛型，默认使用对象行类型。`dispose()` 没有输入数据或返回值，无需数据 schema。SDK 还提供以下工具函数：
-
-| 导出 | 用途 |
-| --- | --- |
-| `inferFileSourceType(path)` | 根据本地路径或 HTTP(S) URL 推断文件数据源类型；未知扩展名返回 `undefined`。 |
+Node 和 browser 入口统一导出 API 输入、输出 schema。类型沿用 `DataSourceConfig`、`SchemaOptions`、`ExecutionResult`、`AnalysisResponse` 等原有命名。`ExecutionResult<Row>`、`AnalysisResponse<Row>` 保留行泛型，默认使用对象行类型。`dispose()` 没有输入数据或返回值，无需数据 schema。
 
 MCP 等 JSON Schema 工具对输入使用 `z.toJSONSchema(inputSchema, { io: 'input' })`，对输出使用 `z.toJSONSchema(outputSchema, { io: 'output' })`。输入模式描述归一化之前的值；输出模式包含图表 `config.type` 等归一化后的必需字段。
 

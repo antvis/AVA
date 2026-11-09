@@ -32,8 +32,6 @@ export {
   vizOutputSchema,
 } from './contracts';
 
-export { inferFileSourceType } from './util/source';
-
 export { AVA } from './ava';
 export { registerEngine } from './engines';
 
