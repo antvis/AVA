@@ -516,8 +516,8 @@ export interface NotionSourceOptions {
   timeoutMs?: number;
   /** Retries for transient failures only, 0–5. Default 2. */
   maxRetries?: number;
-  /** Notion-Version request header value. Default '2022-06-28'. */
-  version?: string;
+  /** Only the adapted legacy database API version. Default '2022-06-28'. */
+  version?: '2022-06-28';
 }
 
 /** Read-only snapshot of one Tencent Docs SmartSheet table (Node.js / DuckDB). */

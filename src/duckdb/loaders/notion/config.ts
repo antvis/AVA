@@ -14,7 +14,7 @@ export const notionOptionsSchema = z
     timeoutMs: z.number().int().min(1).max(110000).optional(),
     /** Retries for transient failures only, 0–5. Default 2. */
     maxRetries: z.number().int().min(0).max(5).optional(),
-    /** Notion API version header, e.g. '2022-06-28'. Default '2022-06-28'. */
-    version: z.string().trim().min(1).optional(),
+    /** Only the API version whose legacy database endpoints and response shapes are adapted here. */
+    version: z.literal('2022-06-28').optional(),
   })
   .strict();

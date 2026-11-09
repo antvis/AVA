@@ -1,6 +1,11 @@
 import { describe, expect, it } from 'vitest';
 
-import { columnTypes, convertPage, supportedFields } from '../../../src/duckdb/loaders/notion/convert';
+import {
+  NOTION_DATE_RANGE_SQL_TYPE,
+  columnTypes,
+  convertPage,
+  supportedFields,
+} from '../../../src/duckdb/loaders/notion/convert';
 
 const field = (name: string, type: string, id = name) => ({
   id,
@@ -40,12 +45,12 @@ describe('Notion field conversion', () => {
       Done: 'BOOLEAN',
       Due: 'TIMESTAMPTZ',
       Region: 'VARCHAR',
-      Tags: 'VARCHAR',
+      Tags: 'VARCHAR[]',
       Status: 'VARCHAR',
       Link: 'VARCHAR',
       Email: 'VARCHAR',
       Phone: 'VARCHAR',
-      Owner: 'VARCHAR',
+      Owner: 'VARCHAR[]',
     });
   });
 
@@ -85,7 +90,7 @@ describe('Notion field conversion', () => {
     });
   });
 
-  it('concatenates rich text, joins select lists and normalizes local dates to UTC', () => {
+  it('concatenates rich text, preserves select lists and normalizes local dates to UTC', () => {
     const fields = supportedFields([
       field('Summary', 'rich_text'),
       field('Tags', 'multi_select'),
@@ -113,10 +118,20 @@ describe('Notion field conversion', () => {
     expect(row).toEqual({
       _id: 'p1',
       Summary: 'ab',
-      Tags: 'urgent, bug',
+      Tags: ['urgent', 'bug'],
       Region: null,
       Due: '2026-09-15T14:30:00.000Z',
     });
+  });
+
+  it.each([
+    { options: [{ name: 'a, b' }], expected: ['a, b'] },
+    { options: [{ name: 'a' }, { name: 'b' }], expected: ['a', 'b'] },
+    { options: [], expected: [] },
+  ])('keeps multi-value boundaries and empty lists', ({ options, expected }) => {
+    const fields = supportedFields([field('Tags', 'multi_select')]);
+    const row = convertPage(fields, page({ Tags: { type: 'multi_select', multi_select: options } }));
+    expect(row.Tags).toEqual(expected);
   });
 
   it('treats hostile names as data, not object prototypes', () => {
@@ -133,25 +148,45 @@ describe('Notion field conversion', () => {
     expect(row['__proto__']).toBe('safe');
   });
 
-  it('keeps formula/rollup schemas and converts their computed page values', () => {
-    const fields = supportedFields([
-      {
-        id: 'tot',
-        name: 'Total',
-        type: 'rollup',
-        rollup: { function: 'sum', relation_property_id: 'rel', rollup_property_id: 'amount' },
+  it.each([
+    {
+      propertyType: 'formula',
+      result: { type: 'number', number: 8 },
+      sqlType: 'DOUBLE',
+      value: 8,
+    },
+    {
+      propertyType: 'formula',
+      result: {
+        type: 'date',
+        date: { start: '2026-01-01T09:00:00', end: '2026-01-02T10:30:00', time_zone: 'Asia/Shanghai' },
       },
-      field('Formula', 'formula'),
-    ]);
-    expect(columnTypes(fields)).toEqual({ _id: 'VARCHAR', Total: 'VARCHAR', Formula: 'VARCHAR' });
-    const row = convertPage(fields, {
-      id: 'p1',
-      properties: {
-        Total: { type: 'rollup', rollup: { type: 'number', number: 8, function: 'sum' } },
-        Formula: { type: 'formula', formula: { type: 'string', string: 'ok' } },
-      },
-    });
-    expect(row).toEqual({ _id: 'p1', Total: 8, Formula: 'ok' });
+      sqlType: NOTION_DATE_RANGE_SQL_TYPE,
+      value: { start: '2026-01-01T09:00:00', end: '2026-01-02T10:30:00', time_zone: 'Asia/Shanghai' },
+    },
+    {
+      propertyType: 'formula',
+      result: { type: 'string', string: null },
+      sqlType: 'VARCHAR',
+      value: null,
+    },
+    {
+      propertyType: 'formula',
+      result: { type: 'boolean', boolean: null },
+      sqlType: 'BOOLEAN',
+      value: null,
+    },
+    {
+      propertyType: 'rollup',
+      result: { type: 'number', number: null, function: 'sum' },
+      sqlType: 'DOUBLE',
+      value: null,
+    },
+  ])('derives computed SQL types and preserves typed values', ({ propertyType, result, sqlType, value }) => {
+    const fields = supportedFields([field('Computed', propertyType)]);
+    const row = convertPage(fields, page({ Computed: { type: propertyType, [propertyType]: result } }));
+    expect(row).toEqual({ _id: 'p1', Computed: value });
+    expect(columnTypes(fields)).toEqual({ _id: 'VARCHAR', Computed: sqlType });
   });
 
   it('uses user ids or a placeholder when Notion omits user names', () => {
@@ -171,13 +206,14 @@ describe('Notion field conversion', () => {
         },
       })
     );
-    expect(row).toEqual({ _id: 'p1', Creator: 'user-1', Editor: 'user-2', Owners: 'user-3, Unknown user' });
+    expect(row).toEqual({ _id: 'p1', Creator: 'user-1', Editor: 'user-2', Owners: ['user-3', 'Unknown user'] });
   });
 
-  it('rejects people values at the 25-user response boundary as potentially partial', () => {
+  it('converts a complete people property at the 25-user page-response boundary', () => {
     const f = field('Owners', 'people');
     const people = Array.from({ length: 25 }, (_, index) => ({ object: 'user', id: `user-${index}` }));
-    expect(() => convertPage([f], page({ Owners: { type: 'people', people } }))).toThrow('25-user response limit');
+    const row = convertPage([f], page({ Owners: { type: 'people', people } }));
+    expect(row.Owners).toHaveLength(25);
   });
 
   it.each([

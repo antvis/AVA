@@ -43,6 +43,7 @@ describe('Notion CLI source config', () => {
 
   it.each([
     { options: { databaseId: 'db', pageSize: 101 } },
+    { options: { databaseId: 'db', version: '2025-09-03' } },
     { options: { databaseId: 'db', endpoint: 'https://other-host.invalid' } },
     { options: {} },
   ])('rejects invalid or unknown options', ({ options }) => {

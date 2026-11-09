@@ -1,6 +1,6 @@
 # Notion database → AVA
 
-Read one authorized Notion database into AVA's DuckDB engine, then analyze it using natural language. The connector calls only the Notion REST `GET /v1/databases/:id` (retrieve schema) and `POST /v1/databases/:id/query` (read pages) endpoints. It never exposes a page write or create/update/delete operation, so a model routed through AVA can modify no source data.
+Read one authorized Notion database into AVA's DuckDB engine, then analyze it using natural language. The connector calls only the Notion REST `GET /v1/databases/:id` (retrieve schema), `POST /v1/databases/:id/query` (read pages), and `GET /v1/pages/:page_id/properties/:property_id` (complete property values) endpoints. It never exposes a page write or create/update/delete operation, so a model routed through AVA can modify no source data.
 
 ## Platform research and authorization
 
@@ -10,8 +10,9 @@ Notion is a collaboration workspace. Its typed database properties (status, numb
 - [Retrieve a database](https://developers.notion.com/reference/retrieve-a-database)
 - [Query a database](https://developers.notion.com/reference/post-database-query)
 - [Page property values](https://developers.notion.com/reference/page-property-values)
+- [Retrieve a page property item](https://developers.notion.com/reference/retrieve-a-page-property)
 
-Create an integration at https://www.notion.so/profile/integrations and copy its internal integration token. The integration must be a member of the database's parent page and have read access to the database. This implementation accepts a user-provided token; it does not implement an OAuth callback or automatic refresh. A token with write access is still read-only through this connector because only the two retrieve/query endpoints are called.
+Create an integration at https://www.notion.so/profile/integrations and copy its internal integration token. The integration must be a member of the database's parent page and have read access to the database. This implementation accepts a user-provided token; it does not implement an OAuth callback or automatic refresh. A token with write access is still read-only through this connector because only the three read endpoints listed above are called.
 
 ## Setup
 
@@ -78,18 +79,21 @@ The existing dataset-session CLI requires macOS/Linux. On Windows use the SDK or
 | `title`, `rich_text` | `VARCHAR` | Concatenate rich-text segments' `plain_text` in order; preserve whitespace and empty strings. |
 | `number` | `DOUBLE` | Preserve the finite raw number; `0.75` remains `0.75`. |
 | `select`, `status` | `VARCHAR` | Use the option's `name`; an empty selection is null. |
-| `multi_select`, `people` | `VARCHAR` | Join option/user names with `, `; an empty array is null. |
-| `date` | `TIMESTAMPTZ` | Use `date.start`; a concrete timestamp without a named zone is normalized to UTC. |
+| `multi_select`, `people` | `VARCHAR[]` (DuckDB `LIST`) | Preserve each option/user name as a separate element; an empty array stays `[]`, while an omitted property is null. |
+| `date` | `TIMESTAMPTZ` | Use `date.start`; a concrete timestamp without a named zone is normalized to UTC. The first version does not expose a regular date property's `end`/`time_zone` as separate SQL fields. |
 | `checkbox` | `BOOLEAN` | Preserve the boolean, including `false`. |
 | `url`, `email`, `phone_number` | `VARCHAR` | Preserve the string, including leading zeros. |
 | `created_time`, `last_edited_time` | `TIMESTAMPTZ` | Preserve the ISO string. |
 | `created_by`, `last_edited_by` | `VARCHAR` | Use the user object's `name`. |
 | `unique_id` | `VARCHAR` | Format as `PREFIX-NUMBER`. |
-| `formula`, `rollup` | `DOUBLE` / `BOOLEAN` / `VARCHAR` | Follow the computed result type. |
+| `formula` | `DOUBLE` / `BOOLEAN` / `VARCHAR` / date `STRUCT` | Infer from each typed property-item result. Numeric results support aggregates such as `SUM`; string/boolean/date nulls remain null. |
+| `rollup` | `DOUBLE` / date `STRUCT` | Read every property-item page and use the final number/date result; incomplete or unsupported results fail. |
+
+Computed dates use `STRUCT(start VARCHAR, "end" VARCHAR, time_zone VARCHAR)`. All three source values are retained verbatim, including ranges and named zones, rather than coercing the object to text or guessing a named-zone conversion. A computed column whose values have conflicting result types fails instead of being silently coerced. If an empty snapshot contains no computed result from which to infer a type, its fallback is `VARCHAR`. Array rollups are not supported in this version.
 
 Other property types (`files`, `relation`, `button`, `place`, `verification`) are not exposed in the first version. A database without supported properties fails. Original property names become column names; case-insensitive duplicates and the reserved `_id` name are rejected rather than silently renamed. `_id` preserves the source page id.
 
-Omitted properties become null; pages with no populated properties are retained. Empty databases and all-null columns retain explicit SQL types. Invalid values for supported types fail the whole load rather than coercing them to incorrect numbers or null. Numbers use IEEE-754 doubles, not exact financial decimal arithmetic.
+Omitted properties become null; pages with no populated properties are retained. Empty databases and all-null columns retain explicit SQL types (typed computed nulls retain their result type; a computed column with no observed result uses the fallback described above). Invalid values for supported types fail the whole load rather than coercing them to incorrect numbers or null. Numbers use IEEE-754 doubles, not exact financial decimal arithmetic.
 
 ## Reliability and limits
 
@@ -99,11 +103,11 @@ Omitted properties become null; pages with no populated properties are retained.
 | `maxRecords` | 10,000 | 1–100,000; exceeding it fails, never silently truncates. |
 | `timeoutMs` | 60,000 | 1–110,000 ms across pagination and retries. |
 | `maxRetries` | 2 | 0–5 per transient operation. |
-| `version` | `2022-06-28` | Notion-Version request header. |
+| `version` | `2022-06-28` | Only `2022-06-28` is accepted: these legacy database endpoints and response shapes are the only adapted API version. Other values fail validation rather than changing only the header. |
 
 Property discovery is capped at 2,000 properties. Response streams and paginated reads are bounded at 16 MiB. Separately, the expanded snapshot is limited to 16 MiB of UTF-8 JSON (including column names, null cells, page ids, brackets and commas) and 1,000,000 cells (including `_id`). The effective record limit is the smaller of `maxRecords` and `floor(1000000 / (supported property count + 1))`; large sparse databases are rejected from their reported total before dense expansion. Validated pages are converted one at a time without retaining the entire raw page array. Each row must fit the remaining expanded budgets before it is retained; exceeding any budget fails the load, never truncates it.
 
-Pages are fully cursor-paginated; the connector rejects invalid cursors, repeated page ids, changing totals and incomplete final pages. Property metadata is rechecked after the pages are read. Stop editing the source while importing: the provider does not offer a transactionally consistent multi-page snapshot, and same-count edits cannot all be detected. This is a load-time snapshot, not live synchronization.
+Pages are fully cursor-paginated; the connector rejects invalid cursors, repeated page ids, changing totals and incomplete final pages. Page pagination does not replace property pagination: every `people`, `formula`, and `rollup` value is retrieved through its property-item endpoint, and `title`/`rich_text` values at the 25-item boundary are expanded the same way. Property cursors are followed independently (up to 100,000 items and 16 MiB per property); rollup results are used only after the final page. Relation properties are outside the declared first-version schema and are omitted rather than partially loaded. Property metadata is rechecked after the pages are read. Stop editing the source while importing: the provider does not offer a transactionally consistent multi-page snapshot, and same-count edits cannot all be detected. This is a load-time snapshot, not live synchronization.
 
 HTTP 429/502/503/504 and network failures have bounded retries within the overall deadline. `Retry-After` waits over 30 seconds are not attempted. Authentication, permission and rate-limit failures are not retried. Upstream error codes and messages are retained alongside known-code hints. SDK/network failures preserve their error type, stack, and cause chain rather than being replaced by a generic failure. HTTP failures include status and up to 8 KiB of upstream response diagnostics (with truncation marked); `NotionError.code`, `.status` and `.cause` expose structured details to SDK callers. The configured token is redacted from diagnostic strings and nested error properties. The endpoint is fixed (`https://api.notion.com`). After loading, data is materialized in memory, so analysis does not whitelist a temporary directory.
 
@@ -139,7 +143,7 @@ Both modes deliberately use `pageSize: 2` to exercise pagination. Natural-langua
 
 ## Tests
 
-Offline unit/integration tests use mock Notion REST responses and a real in-memory DuckDB; no network or credentials are needed:
+Offline unit/integration tests use mock Notion REST responses and a real in-memory DuckDB; no network or credentials are needed. A live workspace read has not been verified in this checkout because no Notion authorization/token is available:
 
 ```sh
 npx vitest run notion

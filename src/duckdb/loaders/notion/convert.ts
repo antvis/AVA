@@ -1,14 +1,34 @@
 import { isObject, NotionError } from './client';
 
+export type NotionComputedType = 'string' | 'number' | 'boolean' | 'date';
+
 /** A supported Notion database property, with its SQL column mapping. */
 export interface NotionField {
   id: string;
   name: string;
   type: string;
   sqlType: string;
+  /** Inferred from typed formula/rollup values rather than their expression schema. */
+  resultType?: NotionComputedType;
 }
 
-export type NotionCell = string | number | boolean | null;
+export interface NotionDateRange {
+  start: string;
+  end: string | null;
+  time_zone: string | null;
+}
+
+export type NotionCell = string | number | boolean | string[] | NotionDateRange | null;
+
+/** Preserve every part of a computed date/range without assuming a named-zone conversion. */
+export const NOTION_DATE_RANGE_SQL_TYPE = 'STRUCT(start VARCHAR, "end" VARCHAR, time_zone VARCHAR)';
+
+const COMPUTED_SQL_TYPES: Record<NotionComputedType, string> = {
+  string: 'VARCHAR',
+  number: 'DOUBLE',
+  boolean: 'BOOLEAN',
+  date: NOTION_DATE_RANGE_SQL_TYPE,
+};
 
 /** Notion property types mapped to DuckDB column types. */
 const SQL_TYPES: Record<string, string> = {
@@ -16,7 +36,7 @@ const SQL_TYPES: Record<string, string> = {
   rich_text: 'VARCHAR',
   number: 'DOUBLE',
   select: 'VARCHAR',
-  multi_select: 'VARCHAR',
+  multi_select: 'VARCHAR[]',
   status: 'VARCHAR',
   date: 'TIMESTAMPTZ',
   checkbox: 'BOOLEAN',
@@ -27,7 +47,7 @@ const SQL_TYPES: Record<string, string> = {
   last_edited_time: 'TIMESTAMPTZ',
   created_by: 'VARCHAR',
   last_edited_by: 'VARCHAR',
-  people: 'VARCHAR',
+  people: 'VARCHAR[]',
   unique_id: 'VARCHAR',
   formula: 'VARCHAR',
   rollup: 'VARCHAR',
@@ -52,7 +72,8 @@ export function supportedFields(raw: unknown[]): NotionField[] {
     const type = typeof item.type === 'string' ? item.type : '';
     if (!Object.prototype.hasOwnProperty.call(SQL_TYPES, type)) continue;
     // Formula and rollup schemas contain their expression/configuration, not
-    // the result type found on page values. Keep them using their scalar text mapping.
+    // the result type. VARCHAR is only the empty-snapshot fallback; conversion
+    // replaces it with the typed result observed in property-item responses.
     const sqlType = SQL_TYPES[type];
     // DuckDB identifiers are case insensitive; do not let it silently rename columns.
     const name = item.name.toLowerCase();
@@ -84,13 +105,12 @@ function toPlainText(value: unknown): string {
   return text;
 }
 
-function namesList(value: unknown): string | null {
+function namesList(value: unknown): string[] {
   if (!Array.isArray(value)) return invalidCell();
-  const names = value.map((entry) => {
+  return value.map((entry) => {
     if (!isObject(entry) || typeof entry.name !== 'string') return invalidCell();
     return entry.name;
   });
-  return names.length ? names.join(', ') : null;
 }
 
 function userName(value: unknown): string {
@@ -100,17 +120,9 @@ function userName(value: unknown): string {
   return 'Unknown user';
 }
 
-function peopleList(value: unknown): string | null {
+function peopleList(value: unknown): string[] {
   if (!Array.isArray(value)) return invalidCell();
-  // Database query responses include at most 25 users. At that boundary the
-  // value may be incomplete, and page pagination cannot retrieve the remainder.
-  if (value.length >= 25) {
-    throw new NotionError(
-      "People property may be truncated at Notion's 25-user response limit; no partial snapshot was loaded."
-    );
-  }
-  const names = value.map(userName);
-  return names.length ? names.join(', ') : null;
+  return value.map(userName);
 }
 
 function uniqueId(value: unknown): string | null {
@@ -137,26 +149,42 @@ function dateValue(value: unknown): string | null {
   return normalized;
 }
 
-function computedDate(raw: unknown): string | null {
-  if (typeof raw !== 'string') return invalidCell();
-  if (/T\d{2}:\d{2}/.test(raw) && !/[zZ]|[+-]\d{2}:\d{2}$/.test(raw)) {
-    const parsed = new Date(`${raw}Z`);
-    if (Number.isNaN(parsed.getTime())) return invalidCell();
-    return parsed.toISOString();
+function computedDate(raw: unknown): NotionDateRange {
+  if (!isObject(raw)) return invalidCell();
+  const start = raw.start;
+  const end = raw.end ?? null;
+  const timeZone = raw.time_zone ?? null;
+  if (
+    typeof start !== 'string' ||
+    (end !== null && typeof end !== 'string') ||
+    (timeZone !== null && typeof timeZone !== 'string')
+  ) {
+    return invalidCell();
   }
-  return raw;
+  return { start, end: end as string | null, time_zone: timeZone as string | null };
 }
 
-function computedCell(value: unknown): NotionCell {
+function isComputedType(type: string): type is NotionComputedType {
+  return Object.prototype.hasOwnProperty.call(COMPUTED_SQL_TYPES, type);
+}
+
+function computedCell(value: unknown): { type: NotionComputedType; cell: NotionCell } {
   if (!isObject(value)) return invalidCell();
   const type = typeof value.type === 'string' ? value.type : '';
+  if (!isComputedType(type)) {
+    throw new NotionError(
+      `Unsupported formula/rollup result type "${type || 'unknown'}"; no partial snapshot was loaded.`
+    );
+  }
   const raw = value[type];
-  if (type === 'number')
-    return typeof raw === 'number' && Number.isFinite(raw) ? raw : raw === null ? null : invalidCell();
-  if (type === 'boolean') return typeof raw === 'boolean' ? raw : invalidCell();
-  if (type === 'string') return typeof raw === 'string' ? raw : invalidCell();
-  if (type === 'date') return raw === null ? null : computedDate(raw);
-  return invalidCell();
+  // Every supported computed result is nullable, including strings/booleans.
+  if (raw === null) return { type, cell: null };
+  if (type === 'number') {
+    return { type, cell: typeof raw === 'number' && Number.isFinite(raw) ? raw : invalidCell() };
+  }
+  if (type === 'boolean') return { type, cell: typeof raw === 'boolean' ? raw : invalidCell() };
+  if (type === 'string') return { type, cell: typeof raw === 'string' ? raw : invalidCell() };
+  return { type, cell: computedDate(raw) };
 }
 
 function convertCell(field: NotionField, raw: unknown): NotionCell {
@@ -165,7 +193,7 @@ function convertCell(field: NotionField, raw: unknown): NotionCell {
     case 'rich_text':
       return toPlainText(raw);
     case 'number':
-      return typeof raw === 'number' ? raw : raw === null ? null : invalidCell();
+      return typeof raw === 'number' && Number.isFinite(raw) ? raw : raw === null ? null : invalidCell();
     case 'select':
       return isObject(raw)
         ? typeof raw.name === 'string'
@@ -203,8 +231,17 @@ function convertCell(field: NotionField, raw: unknown): NotionCell {
     case 'unique_id':
       return raw === null ? null : uniqueId(raw);
     case 'formula':
-    case 'rollup':
-      return computedCell(raw);
+    case 'rollup': {
+      const computed = computedCell(raw);
+      if (field.resultType && field.resultType !== computed.type) {
+        throw new NotionError(
+          `Formula/rollup result type changed from ${field.resultType} to ${computed.type}; no partial snapshot was loaded.`
+        );
+      }
+      field.resultType = computed.type;
+      field.sqlType = COMPUTED_SQL_TYPES[computed.type];
+      return computed.cell;
+    }
     default:
       return invalidCell();
   }

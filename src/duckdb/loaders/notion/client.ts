@@ -82,7 +82,7 @@ function upstreamCode(value: Record<string, unknown>): string | undefined {
 
 /**
  * Notion Rest client: read-only operations against the official REST API.
- * Only database retrieve and database query are exposed; no page write or
+ * Only database retrieve/query and page-property retrieval are exposed; no
  * create/update/delete operation exists on this connector, so a model routed
  * through AVA can never modify the source workspace.
  */
@@ -108,6 +108,20 @@ export class NotionClient {
   /** Query a database's pages: POST /v1/databases/:id/query (read-only, never writes). */
   async queryDatabase(databaseId: string, body: Record<string, unknown>): Promise<Record<string, unknown>> {
     return this.request('POST', `/v1/databases/${encodeURIComponent(databaseId)}/query`, body);
+  }
+
+  /** Retrieve a complete page property, following its independent item cursor in the reader. */
+  async retrievePropertyItem(
+    pageId: string,
+    propertyId: string,
+    startCursor?: string
+  ): Promise<Record<string, unknown>> {
+    const query = new URLSearchParams({ page_size: '100' });
+    if (startCursor) query.set('start_cursor', startCursor);
+    return this.request(
+      'GET',
+      `/v1/pages/${encodeURIComponent(pageId)}/properties/${encodeURIComponent(propertyId)}?${query}`
+    );
   }
 
   private async request(

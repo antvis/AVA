@@ -31,7 +31,7 @@ export async function loadNotion(options: NotionSourceOptions): Promise<LoadedSo
       return ['data'];
     },
     getSchema: (conn) => getDuckDBSchema(conn, ['data']),
-    allowedDirectories: [],
+    allowedPaths: [],
     cleanup: async () => {
       await source?.cleanup();
     },

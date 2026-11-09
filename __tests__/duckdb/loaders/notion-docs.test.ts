@@ -26,8 +26,8 @@ function task(id: string, 名称: string, 金额: number, 状态: string, 日期
   };
 }
 
-const rows = [task('r1', '任务A', 120, '已完成', '2026-01-10'), task('r2', '任务B', 80, '进行中', '2026-01-20')].map((p) =>
-  convertPage(fields, p)
+const rows = [task('r1', '任务A', 120, '已完成', '2026-01-10'), task('r2', '任务B', 80, '进行中', '2026-01-20')].map(
+  (p) => convertPage(fields, p)
 );
 
 let ava: AVA;
@@ -42,7 +42,7 @@ afterEach(async () => {
 
 const options = { databaseId: 'db', token: 'test-token' };
 
-describe('Notion AVA / DuckDB integration (offline)', () => {
+describe('Notion AVA / DuckDB integration (offline)', { timeout: 20000 }, () => {
   it('loads a typed snapshot and verifies two natural-language business examples deterministically', async () => {
     await ava.source({ type: 'notion', options });
     const schema = await ava.schema();
@@ -91,7 +91,7 @@ describe('Notion AVA / DuckDB integration (offline)', () => {
 
   it('does not whitelist temp directories for analysis and cleans up repeatedly', async () => {
     const source = await loadNotion(options);
-    expect(source.allowedDirectories).toEqual([]);
+    expect(source.allowedPaths).toEqual([]);
     await source.cleanup();
     await source.cleanup();
   });
