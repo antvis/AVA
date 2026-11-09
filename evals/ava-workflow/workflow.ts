@@ -5,11 +5,18 @@ import { integer } from '../_shared/args.js';
 import type { AVA, AnalysisConfig, AnalysisStrategyConfig, DataSourceConfig, Semantic } from '../../lib/index.js';
 import type { Metadata } from './metadata.ts';
 
-export function readStrategy(values: { strategy: string; 'max-retries': string; 'max-steps': string }): AnalysisStrategyConfig {
+export function readStrategy(values: {
+  strategy: string;
+  'max-retries': string;
+  'max-steps': string;
+}): AnalysisStrategyConfig {
   switch (values.strategy) {
-    case 'direct': return { type: 'direct', maxRetries: integer(values['max-retries'], 'max-retries', 0) };
-    case 'loop': return { type: 'loop', maxSteps: integer(values['max-steps'], 'max-steps') };
-    default: throw new Error('--strategy must be direct or loop');
+    case 'direct':
+      return { type: 'direct', maxRetries: integer(values['max-retries'], 'max-retries', 0) };
+    case 'loop':
+      return { type: 'loop', maxSteps: integer(values['max-steps'], 'max-steps') };
+    default:
+      throw new Error('--strategy must be direct or loop');
   }
 }
 
@@ -24,7 +31,7 @@ export async function workflow(
   query: string,
   config: AnalysisConfig = {},
   semantic?: Semantic,
-  loadMetadata?: () => Promise<Metadata>,
+  loadMetadata?: () => Promise<Metadata>
 ) {
   await ava.source(source);
   if (loadMetadata) {

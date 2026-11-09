@@ -3,7 +3,6 @@ import { z } from 'zod';
 import { dataModelStructure, modelStructure, column, withModelSource } from './shared/data-model';
 
 export const semanticInputSchema = z.record(z.string(), z.never());
-/** Semantic definitions exclude model and column profiling metrics. */
 export const semanticOutputSchema = dataModelStructure.extend({
   models: z
     .array(
