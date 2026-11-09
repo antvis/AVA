@@ -39,6 +39,7 @@ export class BigQueryEngine implements AnalysisEngine {
   private connector: QueryConnector | null = null;
   private dataset: string | null = null;
   private readonly queryDialect: BigQueryQueryDialect;
+  private projectId = '';
 
   constructor(llmConfig: LLMConfig) {
     this.queryDialect = new BigQueryQueryDialect(llmConfig);
@@ -62,13 +63,14 @@ export class BigQueryEngine implements AnalysisEngine {
 
     this.connector = connector;
     this.dataset = config.options.dataset ?? null;
+    this.projectId = config.options.projectId;
   }
 
   async schema(): Promise<Schema> {
     if (!this.connector || !this.dataset) {
       throw new Error('No data loaded. Please call source() first or provide a dataset option.');
     }
-    return getBigQuerySchema((sql) => this.runQuery(sql), this.dataset);
+    return getBigQuerySchema((sql) => this.runQuery(sql), this.dataset, this.projectId);
   }
 
   async profile(schema: Schema, options: ProfileOptions = {}): Promise<Profile> {
@@ -94,6 +96,7 @@ export class BigQueryEngine implements AnalysisEngine {
 
   async dispose(): Promise<void> {
     this.dataset = null;
+    this.projectId = '';
     const connector = this.connector;
     this.connector = null;
     if (connector) {

@@ -13,10 +13,14 @@
 import type { Schema } from '../../types';
 
 interface TableRow {
+  table_catalog?: string;
+  table_schema?: string;
   table_name: string;
 }
 
 interface ColumnRow {
+  table_catalog?: string;
+  table_schema?: string;
   table_name: string;
   column_name: string;
   data_type: string;
@@ -47,12 +51,15 @@ function identifier(value: string): string {
 
 export async function getBigQuerySchema(
   runQuery: (sql: string) => Promise<Record<string, unknown>[]>,
-  dataset: string
+  dataset: string,
+  project: string
 ): Promise<Schema> {
   const ds = identifier(dataset);
   const columnsProjection = 'table_catalog, table_schema, table_name, column_name, ordinal_position, is_nullable, data_type';
 
-  const tables = (await runQuery(`SELECT table_name\nFROM ${ds}.INFORMATION_SCHEMA.TABLES\nWHERE table_type = 'BASE TABLE'\nORDER BY table_name`)) as unknown as TableRow[];
+  const tables = (await runQuery(
+    `SELECT table_catalog, table_schema, table_name\nFROM ${ds}.INFORMATION_SCHEMA.TABLES\nWHERE table_type = 'BASE TABLE'\nORDER BY table_name`
+  )) as unknown as TableRow[];
 
   if (tables.length === 0) return { models: [], relationships: [] };
 
@@ -71,9 +78,18 @@ export async function getBigQuerySchema(
   );
 
   return {
-    models: tables.map(({ table_name }) => {
+    models: tables.map(({ table_catalog, table_schema, table_name }) => {
+      // Dataset-scoped INFORMATION_SCHEMA rows carry project / dataset / table
+      // separately; prefer each table's reported values over the config.
+      const catalog = table_catalog ?? project;
+      const schema = table_schema ?? dataset;
       const fields = columnData
-        .filter((column) => column.table_name === table_name)
+        .filter(
+          (column) =>
+            column.table_name === table_name &&
+            (column.table_catalog ?? catalog) === catalog &&
+            (column.table_schema ?? schema) === schema
+        )
         .map((column) => ({
           name: column.column_name,
           type: column.data_type,
@@ -90,7 +106,7 @@ export async function getBigQuerySchema(
 
       return {
         name: table_name,
-        tableReference: { catalog: dataset, table: table_name },
+        tableReference: { catalog, schema, table: table_name },
         columns: fields,
         ...(primaryColumns.length === 1
           ? { primaryKey: primaryColumns[0] }

@@ -104,7 +104,7 @@ describe('BigQueryEngine (mock adapter)', () => {
         expect.arrayContaining([{ name: 'order_id', type: 'INT64', notNull: true }])
       );
       expect(orders.primaryKey).toBe('order_id');
-      expect(orders.tableReference).toEqual({ catalog: 'sales', table: 'orders' });
+      expect(orders.tableReference).toEqual({ catalog: 'demo-project', schema: 'sales', table: 'orders' });
     } finally {
       await engine.dispose();
     }
@@ -194,8 +194,55 @@ describe('BigQueryEngine (mock adapter)', () => {
     }
   });
 
-  it('dispose releases the connector so further calls fail cleanly', async () => {
+  it('profiles JSON columns with type-agnostic metrics only', async () => {
     const engine = new BigQueryEngine(getLLMConfig());
+    try {
+      await engine.load({
+        type: 'bigquery',
+        options: {
+          projectId: 'demo-project',
+          dataset: 'sales',
+          adapter: 'mock',
+          tables: [
+            {
+              name: 'events',
+              columns: [
+                { name: 'payload', type: 'JSON', notNull: false },
+                { name: 'device', type: 'STRING', notNull: true },
+              ],
+              rows: [
+                { payload: '{"a":1}', device: 'phone' },
+                { payload: '{"b":2}', device: 'phone' },
+                { payload: '{"c":3}', device: 'tablet' },
+              ],
+            },
+          ],
+        },
+      });
+
+      const result = await engine.profile(await engine.schema(), {
+        metrics: [
+          { id: 'row_count' },
+          { id: 'null_count' },
+          { id: 'duplicate_count' },
+          { id: 'distinct_count' },
+        ],
+      });
+      const events = result.models.find((model) => model.name === 'events')!;
+      const payload = events.columns.find((column) => column.name === 'payload')!;
+      expect(payload.properties.logicalType).toBe('unknown');
+      expect(payload.metrics.duplicate_count).toBeUndefined();
+      expect(payload.metrics.distinct_count).toBeUndefined();
+      expect(payload.metrics.top_values).toBeUndefined();
+      expect(payload.metrics.null_count).toBe(0);
+      const device = events.columns.find((column) => column.name === 'device')!;
+      expect(device.metrics.duplicate_count).toBe(1);
+    } finally {
+      await engine.dispose();
+    }
+  });
+
+  it('dispose releases the connector so further calls fail cleanly', async () => {    const engine = new BigQueryEngine(getLLMConfig());
     await engine.load(MOCK_SOURCE);
     await engine.dispose();
     await expect(engine.schema()).rejects.toThrow('No data loaded');
@@ -297,25 +344,215 @@ describe('BigQueryEngine profile', () => {
     const ids = BIGQUERY_METRICS.map((m) => m.id).sort();
     expect(ids).toEqual(['distinct_count', 'duplicate_count', 'max', 'max_length', 'mean', 'min', 'min_length', 'null_count', 'row_count', 'stddev', 'sum', 'top_values']);
   });
+
+  it('generates duplicate-scale metrics only for columns whose type supports them', async () => {
+    const jsonSchema: Schema = {
+      models: [
+        {
+          name: 'orders',
+          tableReference: { catalog: 'demo-project', schema: 'sales', table: 'orders' },
+          columns: [
+            { name: 'payload', type: 'JSON', notNull: false },
+            { name: 'region', type: 'STRING', notNull: false },
+          ],
+        },
+      ],
+    };
+    // m0: table row_count; m1/m2: region duplicate/distinct counts. The JSON
+    // column has no pending metrics, so nothing is requested for it.
+    const run = vi
+      .fn<(sql: string) => Promise<Record<string, unknown>[]>>()
+      .mockResolvedValue([{ m0: '6', m1: '0', m2: '3' }]);
+    const result = await bigQueryProfile(
+      run,
+      jsonSchema,
+      { metrics: [{ id: 'row_count' }, { id: 'duplicate_count' }, { id: 'distinct_count' }] }
+    );
+    const payload = result.models[0].columns.find((column) => column.name === 'payload')!;
+    expect(payload.metrics).toEqual({});
+    const region = result.models[0].columns.find((column) => column.name === 'region')!;
+    expect(region.metrics.duplicate_count).toBe(0);
+    expect(region.metrics.distinct_count).toBe(3);
+    expect(run).toHaveBeenCalledTimes(1);
+    const query = run.mock.calls[0][0];
+    expect(query).not.toContain('`payload`');
+    expect(query).toContain('`region`');
+  });
 });
 
-describe('BigQueryQueryConnector', () => {
+describe('BigQueryQueryConnector (SDK mocked)', () => {
+  type Stub = {
+    client: { createQueryJob: ReturnType<typeof vi.fn> };
+    job: { getQueryResults: ReturnType<typeof vi.fn>; getMetadata: ReturnType<typeof vi.fn>; cancel: ReturnType<typeof vi.fn> };
+    createQueryJob: ReturnType<typeof vi.fn>;
+  };
+
+  /**
+   * Stub the `@google-cloud/bigquery` client surface the connector uses:
+   * `createQueryJob` (dry-run + regular) and `Job#getQueryResults`/`getMetadata`.
+   */
+  function stubClient(options: {
+    dryRunBytes?: string;
+    rows?: Record<string, unknown>[];
+    responseSchema?: { fields?: Array<{ name: string; type: string }> };
+    jobSchema?: { fields?: Array<{ name: string; type: string }> };
+  }): Stub {
+    const { dryRunBytes = '0', rows = [], responseSchema, jobSchema } = options;
+    const job = {
+      getQueryResults: vi.fn(async () => [
+        rows,
+        null,
+        responseSchema === undefined ? {} : { schema: responseSchema },
+      ]),
+      getMetadata: vi.fn(async () => [{ statistics: { query: { schema: jobSchema ?? {} } } }]),
+      cancel: vi.fn(async () => ({ status: { state: 'DONE' } })),
+    };
+    const createQueryJob = vi.fn(async (queryOptions: Record<string, unknown>) => {
+      if ('dryRun' in queryOptions) {
+        return [job, { statistics: { query: { totalBytesProcessed: dryRunBytes } } }];
+      }
+      return [job, {}];
+    });
+    return { client: { createQueryJob }, job, createQueryJob };
+  }
+
+  async function connect(
+    options: Partial<Parameters<typeof BigQueryQueryConnector>[0]> & { projectId: string },
+    stub: Stub
+  ): Promise<BigQueryQueryConnector> {
+    const connector = new BigQueryQueryConnector({ projectId: options.projectId, ...options });
+    Reflect.set(connector, 'client', stub.client);
+    return connector;
+  }
+
+  it('applies the row bound at the result-read interface, not the job config', async () => {
+    const stub = stubClient({
+      rows: [{ n: 1 }],
+      responseSchema: { fields: [{ name: 'n', type: 'INT64' }] },
+    });
+    const connector = await connect(
+      { projectId: 'demo-project', defaultRowLimit: 5, timeoutMs: 1000 },
+      stub
+    );
+    try {
+      const result = await connector.query('SELECT n FROM t');
+      const jobOptions = stub.createQueryJob.mock.calls[0][0];
+      expect(jobOptions.useLegacySql).toBe(false);
+      expect('maxResults' in jobOptions).toBe(false);
+      expect(stub.job.getQueryResults).toHaveBeenCalledWith(
+        expect.objectContaining({ maxResults: 5, wrapIntegers: true, autoPaginate: false })
+      );
+      // Column names and types come from the driver schema, untouched.
+      expect(result.columns).toEqual([{ name: 'n', type: 'INT64' }]);
+    } finally {
+      await connector.close();
+    }
+  });
+
+  it('decodes values losslessly (BigInt/INT64 digits, temporal strings, numeric, bytes)', async () => {
+    const stub = stubClient({
+      rows: [
+        {
+          id: { value: '9007199254740993' },
+          day: { value: '2023-01-02' },
+          at: { value: '2023-01-02T10:00:00.000Z' },
+          amount: { s: 1, e: 0, c: [9007199254740993, 25], toString() {
+            return '9007199254740993.25';
+          } },
+          blob: Buffer.from('hello'),
+        },
+      ],
+      responseSchema: {
+        fields: [
+          { name: 'id', type: 'INT64' },
+          { name: 'day', type: 'DATE' },
+          { name: 'at', type: 'TIMESTAMP' },
+          { name: 'amount', type: 'NUMERIC' },
+          { name: 'blob', type: 'BYTES' },
+        ],
+      },
+    });
+    const connector = await connect({ projectId: 'demo-project' }, stub);
+    try {
+      const result = await connector.query('SELECT id FROM t');
+      expect(BigInt(result.rows[0]!.id as string)).toBe(9007199254740993n);
+      expect(result.rows[0]).toEqual({
+        id: '9007199254740993',
+        day: '2023-01-02',
+        at: '2023-01-02T10:00:00.000Z',
+        amount: '9007199254740993.25',
+        blob: 'aGVsbG8=',
+      });
+    } finally {
+      await connector.close();
+    }
+  });
+
+  it('exposes a schema for empty results from the job metadata', async () => {
+    const stub = stubClient({ rows: [], jobSchema: { fields: [{ name: 'n', type: 'INT64' }] } });
+    const connector = await connect({ projectId: 'demo-project' }, stub);
+    try {
+      const result = await connector.query('SELECT COUNT(*) AS n FROM t');
+      expect(result.rows).toEqual([]);
+      expect(result.columns).toEqual([{ name: 'n', type: 'INT64' }]);
+      expect(stub.job.getMetadata).toHaveBeenCalledTimes(1);
+    } finally {
+      await connector.close();
+    }
+  });
+
+  it('rejects a dry-run estimate above the maximumBytesBilled budget before starting a job', async () => {
+    const stub = stubClient({ dryRunBytes: '10000027' });
+    const connector = await connect({ projectId: 'demo-project', maxBytesBilled: 10000000 }, stub);
+    try {
+      await expect(connector.query('SELECT * FROM big_table')).rejects.toThrow(/maximumBytesBilled/);
+      expect(stub.createQueryJob).toHaveBeenCalledTimes(1);
+      expect(stub.createQueryJob.mock.calls[0][0]).toEqual(expect.objectContaining({ dryRun: true }));
+      expect(stub.job.getQueryResults).not.toHaveBeenCalled();
+    } finally {
+      await connector.close();
+    }
+  });
+
+  it('starts the real job with a server-side maximumBytesBilled when within budget', async () => {
+    const stub = stubClient({ dryRunBytes: '42', rows: [{ n: 1 }], responseSchema: { fields: [{ name: 'n', type: 'INT64' }] } });
+    const connector = await connect({ projectId: 'demo-project', maxBytesBilled: 10000000 }, stub);
+    try {
+      await connector.query('SELECT n FROM t');
+      const jobOptions = stub.createQueryJob.mock.calls[1][0];
+      expect('dryRun' in jobOptions).toBe(false);
+      expect(jobOptions.maximumBytesBilled).toBe('10000000');
+      expect(jobOptions.useLegacySql).toBe(false);
+      expect(stub.job.getQueryResults).toHaveBeenCalledTimes(1);
+    } finally {
+      await connector.close();
+    }
+  });
+
+  it('does not run a dry run when no budget is configured', async () => {
+    const stub = stubClient({ rows: [{ n: 1 }], responseSchema: { fields: [{ name: 'n', type: 'INT64' }] } });
+    const connector = await connect({ projectId: 'demo-project' }, stub);
+    try {
+      await connector.query('SELECT n FROM t');
+      expect(stub.createQueryJob).toHaveBeenCalledTimes(1);
+      expect(stub.createQueryJob.mock.calls[0][0]).toEqual(expect.objectContaining({ useLegacySql: false }));
+      expect('dryRun' in stub.createQueryJob.mock.calls[0][0]).toBe(false);
+    } finally {
+      await connector.close();
+    }
+  });
+
   it.each([
     { configured: 25, expected: 25 },
     { configured: undefined, expected: 60000 },
   ])('enforces the $expected ms query deadline and requests job cancellation', async ({ configured, expected }) => {
     vi.useFakeTimers();
-    const cancel = vi.fn(async () => undefined);
-    const job = {
-      getQueryResults: vi.fn(() => new Promise<never>(() => undefined)),
-      cancel,
-    };
-    const createQueryJob = vi.fn(async () => [job, {}]);
-    const connector = new BigQueryQueryConnector({
-      projectId: 'demo-project',
-      ...(configured === undefined ? {} : { timeoutMs: configured }),
-    });
-    Reflect.set(connector, 'client', { createQueryJob });
+    const stub = stubClient({});
+    stub.job.getQueryResults = vi.fn(() => new Promise<never>(() => undefined));
+    const connector = await connect(
+      { projectId: 'demo-project', ...(configured === undefined ? {} : { timeoutMs: configured }) },
+      stub
+    );
 
     const pending = connector.query('SELECT 1');
     const rejection = expect(pending).rejects.toThrow(
@@ -325,9 +562,8 @@ describe('BigQueryQueryConnector', () => {
     await vi.advanceTimersByTimeAsync(expected);
     await rejection;
 
-    expect(createQueryJob).toHaveBeenCalledTimes(1);
-    expect(job.getQueryResults).toHaveBeenCalledTimes(1);
-    expect(cancel).toHaveBeenCalledTimes(1);
+    expect(stub.job.getQueryResults).toHaveBeenCalledTimes(1);
+    expect(stub.job.cancel).toHaveBeenCalledTimes(1);
   });
 });
 

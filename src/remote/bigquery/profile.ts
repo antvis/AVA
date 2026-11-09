@@ -66,7 +66,7 @@ export const BUILTIN_METRICS: BigQueryMetric[] = [
   },
   {
     id: 'duplicate_count',
-    enable: column,
+    enable: logicalTypes('numeric', 'string', 'boolean', 'date'),
     expression: ({ column }) => `COUNT(${column!}) - COUNT(DISTINCT ${column!})`,
   },
   {

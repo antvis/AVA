@@ -12,6 +12,7 @@
  */
 import { resolveMetric } from '../../util/profile';
 import { sqlIdentifier, sqlStringLiteral } from '../../util/sql';
+
 import { BUILTIN_METRICS, logicalType } from './profile';
 
 import type { BigQuerySourceOptions, JsonValue, ParsedProfileOptions, Profile, Schema } from '../../types';
@@ -52,16 +53,16 @@ function comparable(a: unknown, b: unknown): number {
 }
 
 /** Build dataset-scoped INFORMATION_SCHEMA catalog tables seeded from a concrete table list. */
-function makeCatalog(dataset: string, tables: Table[]): Table[] {
+function makeCatalog(dataset: string, tables: Table[], project = dataset): Table[] {
   const tabs: Record<string, unknown>[] = tables.map((t) => ({
-    table_catalog: dataset,
+    table_catalog: project,
     table_schema: dataset,
     table_name: t.name,
     table_type: 'BASE TABLE',
   }));
   const cols: Record<string, unknown>[] = tables.flatMap((t) =>
     t.columns.map((c, i) => ({
-      table_catalog: dataset,
+      table_catalog: project,
       table_schema: dataset,
       table_name: t.name,
       column_name: c.name,
@@ -76,11 +77,11 @@ function makeCatalog(dataset: string, tables: Table[]): Table[] {
       .map((name) => t.columns.find((c) => c.name === name))
       .filter((c): c is Column => c !== undefined)
       .map((c, i) => ({
-        table_catalog: dataset,
+        table_catalog: project,
         table_schema: dataset,
         table_name: t.name,
         column_name: c.name,
-        constraint_catalog: dataset,
+        constraint_catalog: project,
         constraint_schema: dataset,
         constraint_name: `PK_${t.name}`,
         ordinal_position: i + 1,
@@ -89,10 +90,10 @@ function makeCatalog(dataset: string, tables: Table[]): Table[] {
   const tableConstraints = tables
     .filter((t) => keyUsage.some((key) => key.table_name === t.name))
     .map((t) => ({
-      table_catalog: dataset,
+      table_catalog: project,
       table_schema: dataset,
       table_name: t.name,
-      constraint_catalog: dataset,
+      constraint_catalog: project,
       constraint_schema: dataset,
       constraint_name: `PK_${t.name}`,
       constraint_type: 'PRIMARY KEY',
@@ -784,7 +785,7 @@ export class MockQueryConnector implements QueryConnector {
           ? (Array.isArray(t.primaryKey) ? t.primaryKey : [t.primaryKey]).map((name) => name.toLowerCase())
           : undefined,
       }));
-    this.tables = [...seeded, ...makeCatalog(dataset, seeded)];
+    this.tables = [...seeded, ...makeCatalog(dataset, seeded, this.options.projectId)];
     this.connected = true;
   }
 
