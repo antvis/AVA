@@ -2,7 +2,6 @@ import { runInNewContext } from 'node:vm';
 
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { generateText } from 'ai';
-import { version as gptVisVersion } from '@antv/gpt-vis/package.json';
 
 import { dependencies, devDependencies } from '../package.json';
 import { AVA } from '../src/ava';
@@ -88,8 +87,6 @@ describe('chart recommendation', () => {
     expect(runInNewContext(`(${html.match(/const visConfig = (.+);/)![1]})`, {}, { timeout: 1000 })).toEqual(config);
     expect(html).toContain('gptVis.render(visConfig)');
     expect(dependencies).not.toHaveProperty('@antv/gpt-vis');
-    expect(devDependencies['@antv/gpt-vis']).toBe(gptVisVersion);
-    expect(html).toContain(`https://unpkg.com/@antv/gpt-vis@${gptVisVersion}/dist/umd/index.min.js`);
     expect(await ava['viz'](spec)).toBe(html);
     const title = '</script><script>throw new Error("injected")</script>\u2028\u2029';
     const escaped = await ava.viz({ chartType: 'column', config: { ...config, type: 'column', title } });

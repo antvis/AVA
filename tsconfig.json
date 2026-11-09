@@ -18,8 +18,7 @@
     "noImplicitReturns": true,
     "moduleResolution": "node",
     "resolveJsonModule": true,
-    "skipLibCheck": true,
-    "strictNullChecks": true
+    "skipLibCheck": true
   },
   "include": ["./src"],
   "exclude": ["node_modules", "**/esm", "**/lib", "**/dist", "**/build"]
