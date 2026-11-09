@@ -10,8 +10,8 @@ import { profileTables } from './profile';
 import { getSQLServerSchema } from './schema';
 
 import type { ConnectionPool, config as SQLConfig, IColumnMetadata, IResult, Request } from 'mssql';
-import type { AnalysisEngine } from '../../engines';
 import type {
+  AnalysisEngine,
   DataModel,
   DataSourceConfig,
   SQLServerSourceOptions,
@@ -21,9 +21,9 @@ import type {
   Profile,
   ProfileOptions,
   Schema,
-} from '../../contracts';
-import type { LLMConfig } from '../../config';
-import type { TranslationResult } from '../../query/types';
+  LLMConfig,
+  TranslationResult,
+} from '../../types';
 
 function connectionConfig(options: SQLServerSourceOptions): SQLConfig {
   return {

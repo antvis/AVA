@@ -1,6 +1,6 @@
 import { excelRange } from '../../../util/excel';
 
-import type { DataSourceConfig, ExecutionOptions } from '../../../contracts';
+import type { DataSourceConfig, ExecutionOptions } from '../../../types';
 
 /** Generate only the loader needed for this source. */
 function sourceCode(source: DataSourceConfig, protectedFile: boolean): string {

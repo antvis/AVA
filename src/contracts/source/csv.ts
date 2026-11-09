@@ -103,6 +103,3 @@ export const csvSourceSchema = z
     options: z.object({ csv: text, options: csvReadOptionsSchema.optional() }).strict(),
   })
   .strict();
-
-export type CSVSourceOptions = z.input<typeof csvSourceSchema>['options'];
-export type CSVReadOptions = z.input<typeof csvReadOptionsSchema>;

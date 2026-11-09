@@ -2,7 +2,7 @@
  * JSON loader: validate an in-memory object array.
  */
 
-import type { JsonSourceOptions } from '../../../contracts';
+import type { JsonSourceOptions } from '../../../types';
 
 export async function loadJson(options: JsonSourceOptions): Promise<any[]> {
   const { data } = options;

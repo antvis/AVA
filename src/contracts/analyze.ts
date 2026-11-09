@@ -19,11 +19,3 @@ export const analyzeOutputSchema = queryOutputSchema.safeExtend({
   markdown: z.string().optional(),
   sql: z.string().optional(),
 });
-
-export type AnalysisConfig = z.input<typeof analysisConfigSchema>;
-export type AnalysisStrategyConfig = z.input<typeof strategySchema>;
-export type AnalyzeInput = z.input<typeof analyzeInputSchema>;
-export type AnalyzeOutput<T = unknown> = Omit<z.output<ReturnType<typeof analyzeOutputSchema.strip>>, 'data'> & {
-  data: T[];
-};
-export type AnalysisResponse<T = Record<string, unknown>> = AnalyzeOutput<T>;

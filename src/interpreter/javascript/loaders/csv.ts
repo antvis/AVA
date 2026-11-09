@@ -5,7 +5,7 @@
 // eslint-disable-next-line import/no-unresolved
 import { parse } from 'csv-parse/browser/esm/sync';
 
-import type { CSVSourceOptions } from '../../../contracts';
+import type { CSVSourceOptions } from '../../../types';
 
 export async function loadCSV(options: CSVSourceOptions): Promise<any[]> {
   return parse(options.csv, {

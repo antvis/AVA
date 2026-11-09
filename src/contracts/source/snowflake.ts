@@ -2,8 +2,6 @@ import { z } from 'zod';
 
 import { text } from './shared';
 
-import type { ConnectionOptions as SnowflakeConnectionOptions } from 'snowflake-sdk';
-
 // Other snowflake-sdk connection options pass through to the driver.
 const snowflake = z
   .object({
@@ -25,18 +23,3 @@ const snowflake = z
   .passthrough();
 
 export const snowflakeSourceSchema = z.object({ type: z.literal('snowflake'), options: snowflake }).strict();
-
-type SnowflakeFields = z.input<ReturnType<typeof snowflake.strip>>;
-
-/** Native driver options exclude the result/session controls owned by AVA. */
-export type SnowflakeSourceOptions = SnowflakeFields &
-  Omit<
-    SnowflakeConnectionOptions,
-    | keyof SnowflakeFields
-    | 'rowMode'
-    | 'streamResult'
-    | 'fetchAsString'
-    | 'jsTreatIntegerAsBigInt'
-    | 'representNullAsStringNull'
-    | 'serverSessionKeepAlive'
-  >;

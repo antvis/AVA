@@ -1,7 +1,7 @@
 import { rowObjects2Schema } from '../../util/schema';
 import { sqlIdentifier } from '../../util/sql';
 
-import type { Schema } from '../../contracts';
+import type { Schema } from '../../types';
 
 /** The database and schema whose tables and views a Snowflake source exposes. */
 export interface SnowflakeScope {

@@ -4,8 +4,7 @@ import { resolve } from 'node:path';
 import { sqlIdentifier, sqlStringLiteral, sqlUnionAll } from '../../util/sql';
 import { rowObjects2Schema } from '../../util/schema';
 
-import type { LoadedSource } from '../types';
-import type { SQLiteSourceOptions } from '../../contracts';
+import type { LoadedSource, SQLiteSourceOptions } from '../../types';
 
 const ATTACH_ALIAS = 'sqlite_source';
 

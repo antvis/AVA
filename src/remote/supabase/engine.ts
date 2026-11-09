@@ -15,8 +15,8 @@ import { DEFAULT_METRICS, parseProfileOptions } from '../../util/profile';
 import { profileTables } from './profile';
 import { getSupabaseSchema } from './schema';
 
-import type { TranslationResult } from '../../query/types';
 import type {
+  TranslationResult,
   Profile,
   ProfileOptions,
   DataModel,
@@ -24,9 +24,9 @@ import type {
   Schema,
   ExecutionOptions,
   ExecutionResult,
-} from '../../contracts';
-import type { AnalysisEngine } from '../../engines';
-import type { LLMConfig } from '../../config';
+  AnalysisEngine,
+  LLMConfig,
+} from '../../types';
 
 const SUPABASE_API_BASE = 'https://api.supabase.com';
 const REQUEST_TIMEOUT_MS = 30_000;

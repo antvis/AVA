@@ -9,5 +9,3 @@ export const jsonFileSourceSchema = z
     options: file.extend({ options: jsonReadOptionsSchema.optional() }),
   })
   .strict();
-
-export type JsonFileSourceOptions = z.input<typeof jsonFileSourceSchema>['options'];

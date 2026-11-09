@@ -3,9 +3,7 @@ import { generateText } from 'ai';
 import { languageModel } from '../util/model';
 import { stringifyDataModel } from '../util/data-model';
 
-import type { DataModel } from '../contracts';
-import type { LLMConfig } from '../config';
-import type { QueryDialect, TranslationResult } from './types';
+import type { DataModel, LLMConfig, QueryDialect, TranslationResult } from '../types';
 
 /** Compiles SQL in Snowflake without running it; rejects with Snowflake's compilation error. */
 export type SnowflakeCompiler = (sql: string) => Promise<void>;

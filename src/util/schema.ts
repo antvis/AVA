@@ -3,7 +3,7 @@ import { schemaMetadataSchema } from '../contracts';
 
 import { sqlIdentifier } from './sql';
 
-import type { Schema } from '../contracts';
+import type { Schema } from '../types';
 
 function inferType(values: any[]): 'number' | 'string' | 'date' | 'boolean' | 'unknown' {
   const nonNullValues = values.filter((v) => v != null && v !== '');

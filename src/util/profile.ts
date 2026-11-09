@@ -1,4 +1,4 @@
-import type { MetricId, MetricConfig, ProfileOptions, ParsedProfileOptions, LogicalType, Schema } from '../contracts';
+import type { Metric, MetricConfig, ProfileOptions, ParsedProfileOptions, LogicalType, Schema } from '../types';
 
 export type MetricField = Schema['models'][number]['columns'][number] & { logicalType: LogicalType };
 
@@ -62,33 +62,3 @@ export const TOP_VALUES_OPTIONS: NonNullable<Metric['options']> = {
 };
 
 export const DEFAULT_METRICS = ['row_count', 'null_count', 'distinct_count', 'top_values', 'min', 'max', 'mean'];
-
-/**
- * The rules for one metric option.
- */
-export type MetricOption = {
-  /** Throws if the value is not allowed. */
-  validate(value: number): void;
-};
-
-/**
- * A metric, its rules, and its engine-specific implementation.
- */
-export type Metric<Expression = unknown> = {
-  /** The metric name. */
-  id: MetricId;
-  /** The implementation interpreted by the registered engine. */
-  expression: Expression;
-  /** Returns true if the metric applies to this target. */
-  enable: (context: {
-    /** The kind of target to check. */
-    target: 'table' | 'column';
-    /** Field details for a column target. */
-    field?: {
-      /** The field type shared by all engines. */
-      logicalType: LogicalType;
-    };
-  }) => boolean;
-  /** Option rules keyed by option name. */
-  options?: Record<string, MetricOption>;
-};

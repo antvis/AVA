@@ -9,7 +9,7 @@ import { Client } from 'ssh2';
 
 import { createSshHostVerifier } from '../../util/ssh';
 
-import type { SSHOptions } from '../../contracts';
+import type { SSHOptions } from '../../types';
 
 const SSH_CONNECT_TIMEOUT_MS = 10000;
 

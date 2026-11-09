@@ -1,72 +1,373 @@
-/** Compatibility exports; definitions live with their contracts or owning module. */
-
-export type { LLMConfig, AVAConfig } from './config';
-export type { DuckDBConnection, DuckDBEngineOptions, FileFormat, LoadedSource } from './duckdb/types';
-export type { PythonEngineOptions } from './interpreter/python/types';
-export type { EngineConfig, AnalysisEngine } from './engines';
-export type {
-  AnalysisConfig,
-  AnalysisStrategyConfig,
-  AnalysisResponse,
-  JsonValue,
-  Properties,
-  Column,
-  TableReference,
-  PrimaryKey,
-  Model,
-  JoinType,
-  Relationship,
-  View,
-  Measure,
-  CubeDimension,
-  TimeDimension,
-  Cube,
-  DataModel,
-  Semantic,
-  SemanticOptions,
-  SchemaOptions,
-  Schema,
-  LogicalType,
-  MetricId,
-  MetricConfig,
-  ProfileOptions,
-  ParsedProfileOptions,
-  Profile,
-  ExecutionOptions,
-  ExecutionResult,
-  QueryColumn,
-  ChartSpec,
-  ChartSpecInput,
-  VisualizeResponse,
-  ChartType,
-  SuggestResult,
-  ExcelSheetOptions,
-  ExcelReadOptions,
-  SourceType,
-  CSVReadOptions,
-  JSONReadOptions,
-  CSVSourceOptions,
-  CSVFileSourceOptions,
-  JsonSourceOptions,
-  JsonFileSourceOptions,
-  ParquetSourceOptions,
-  ExcelSourceOptions,
-  TextSourceOptions,
-  SSHOptions,
-  MySQLSourceOptions,
-  SQLiteSourceOptions,
-  PostgreSQLSourceOptions,
-  MongoDBSourceOptions,
-  SupabaseSourceOptions,
-  ClickHouseSourceOptions,
-  FeishuBitableSourceOptions,
-  SQLServerSourceOptions,
-  SnowflakeSourceOptions,
-  DataSourceConfig,
+/** Public type definitions, inferred from runtime schemas where applicable. */
+import type { z } from 'zod';
+import type { LanguageModel, LanguageModelUsage } from 'ai';
+import type { ClickHouseClientConfigOptions } from '@clickhouse/client';
+import type { ConnectionOptions as SnowflakeConnectionOptions } from 'snowflake-sdk';
+import type { AnalysisEvent } from './event';
+import type {
+  sourceInputSchema,
+  sourceSchemas,
+  csvReadOptionsSchema,
+  jsonReadOptionsSchema,
+  excelSheetSchema,
+  schemaInputSchema,
+  schemaOutputSchema,
+  profileInputSchema,
+  profileOutputSchema,
+  semanticInputSchema,
+  semanticOutputSchema,
+  queryInputSchema,
+  queryOutputSchema,
+  analyzeInputSchema,
+  analyzeOutputSchema,
+  translateInputSchema,
+  translateOutputSchema,
+  suggestInputSchema,
+  suggestOutputSchema,
+  recommendInputSchema,
+  recommendOutputSchema,
+  visualizeInputSchema,
+  visualizeOutputSchema,
+  vizInputSchema,
+  vizOutputSchema,
+  chartSpecSchema,
+  bindingSchema,
+  dataModelMetadataSchema,
+  jsonValue,
 } from './contracts';
-export type { AnalysisRuntime, AnalysisStrategy } from './analysis/types';
-export type { QueryLanguage, TranslationResult, QueryDialect } from './query/types';
 
-export type { MetricOption, Metric } from './util/profile';
+/**
+ * LLM configuration
+ */
+export interface LLMConfig {
+  /** Defaults to OpenAI-compatible Chat Completions. Gateway reads AI_GATEWAY_API_KEY. */
+  provider?: 'openai' | 'gateway';
+  /** Model name or a preconfigured AI SDK model instance. */
+  model: string | LanguageModel;
+  /** API key for the LLM provider */
+  apiKey?: string;
+  /** Optional API base URL */
+  baseURL?: string;
+  /** Maximum retries for retryable model API failures. Default 3. */
+  maxRetries?: number;
+}
 
-export type { ChartConfig, ChartTypeDefinition } from './visualization/types';
+/**
+ * AVA configuration
+ */
+export interface AVAConfig {
+  /** LLM configuration */
+  llm: LLMConfig;
+  /** Engine selection and options (defaults to the DuckDB engine when omitted) */
+  engine?: EngineConfig;
+}
+
+// Data contracts keep input defaults optional and normalized outputs explicit.
+export type SchemaInput = z.input<typeof schemaInputSchema>;
+export type SchemaOutput = z.output<typeof schemaOutputSchema>;
+export type ProfileInput = z.input<typeof profileInputSchema>;
+export type ProfileOutput = z.output<typeof profileOutputSchema>;
+export type SemanticInput = z.input<typeof semanticInputSchema>;
+export type SemanticOutput = z.output<typeof semanticOutputSchema>;
+export type QueryInput = z.input<typeof queryInputSchema>;
+export type QueryOutput<T = unknown> = Omit<z.output<ReturnType<typeof queryOutputSchema.strip>>, 'data'> & {
+  data: T[];
+};
+export type AnalyzeInput = z.input<typeof analyzeInputSchema>;
+export type AnalyzeOutput<T = unknown> = Omit<z.output<ReturnType<typeof analyzeOutputSchema.strip>>, 'data'> & {
+  data: T[];
+};
+export type TranslateInput = z.input<typeof translateInputSchema>;
+export type TranslateOutput = z.output<typeof translateOutputSchema>;
+export type SuggestInput = z.input<typeof suggestInputSchema>;
+export type SuggestOutput = z.output<typeof suggestOutputSchema>;
+export type RecommendInput = z.input<typeof recommendInputSchema>;
+export type RecommendOutput = z.output<typeof recommendOutputSchema>;
+export type VisualizeInput = z.input<typeof visualizeInputSchema>;
+export type VisualizeOutput = z.output<typeof visualizeOutputSchema>;
+export type VizInput = z.input<typeof vizInputSchema>;
+export type VizOutput = z.output<typeof vizOutputSchema>;
+
+export type SchemaOptions = SchemaInput;
+export type Schema = SchemaOutput;
+export type ProfileOptions = ProfileInput;
+export type Profile = ProfileOutput;
+export type SemanticOptions = SemanticInput;
+export type Semantic = SemanticOutput;
+export type ExecutionOptions = NonNullable<QueryInput['options']>;
+export type QueryColumn = z.output<typeof queryOutputSchema>['schema'][number];
+/** SDK methods retain their existing default object-row types. */
+export type ExecutionResult<T = Record<string, unknown>> = QueryOutput<T>;
+export type AnalysisConfig = NonNullable<AnalyzeInput['config']>;
+export type AnalysisStrategyConfig = NonNullable<AnalysisConfig['strategy']>;
+export type AnalysisResponse<T = Record<string, unknown>> = AnalyzeOutput<T>;
+export type SuggestResult = SuggestOutput[number];
+export type ChartSpec = z.output<typeof chartSpecSchema>;
+export type ChartSpecInput = VizInput;
+export type ChartType = ChartSpec['chartType'];
+export type ChartDataBinding = z.output<typeof bindingSchema>;
+export type VisualizeResponse = NonNullable<VisualizeOutput>;
+export type LogicalType = Profile['models'][number]['columns'][number]['properties']['logicalType'];
+export type MetricConfig = NonNullable<ProfileInput['metrics']>[number];
+export type MetricId = Exclude<MetricConfig, string>['id'];
+export type ParsedProfileOptions = { metrics: Exclude<MetricConfig, string>[] };
+
+export type JsonValue = z.output<typeof jsonValue>;
+export type Properties = Record<string, JsonValue>;
+export type DataModel = z.output<typeof dataModelMetadataSchema>;
+export type Model = NonNullable<DataModel['models']>[number];
+export type Column = NonNullable<Model['columns']>[number];
+export type TableReference = NonNullable<Model['tableReference']>;
+export type PrimaryKey = NonNullable<Model['primaryKey']>;
+export type Relationship = NonNullable<DataModel['relationships']>[number];
+export type JoinType = Relationship['joinType'];
+export type View = NonNullable<DataModel['views']>[number];
+export type Cube = NonNullable<DataModel['cubes']>[number];
+export type Measure = Cube['measures'][number];
+export type CubeDimension = Measure;
+export type TimeDimension = CubeDimension;
+
+// Native driver options supplement the fields validated by AVA's source schemas.
+type SourceConfigInput = z.input<typeof sourceInputSchema>;
+type ClickHouseInput = Extract<SourceConfigInput, { type: 'clickhouse' }>;
+type SnowflakeInput = Extract<SourceConfigInput, { type: 'snowflake' }>;
+type ClickHouseFields = z.input<ReturnType<typeof sourceSchemas.clickhouse.shape.options.strip>>;
+type SnowflakeFields = z.input<ReturnType<typeof sourceSchemas.snowflake.shape.options.strip>>;
+export type ClickHouseSourceOptions = ClickHouseFields & Omit<ClickHouseClientConfigOptions, keyof ClickHouseFields>;
+export type SnowflakeSourceOptions = SnowflakeFields &
+  Omit<
+    SnowflakeConnectionOptions,
+    | keyof SnowflakeFields
+    | 'rowMode'
+    | 'streamResult'
+    | 'fetchAsString'
+    | 'jsTreatIntegerAsBigInt'
+    | 'representNullAsStringNull'
+    | 'serverSessionKeepAlive'
+  >;
+export type DataSourceConfig =
+  | Exclude<SourceConfigInput, ClickHouseInput | SnowflakeInput>
+  | (Omit<ClickHouseInput, 'options'> & { options: ClickHouseSourceOptions })
+  | (Omit<SnowflakeInput, 'options'> & { options: SnowflakeSourceOptions });
+export type SourceInput = DataSourceConfig;
+export type SourceType = DataSourceConfig['type'];
+export type CSVFileSourceOptions = Extract<SourceConfigInput, { type: 'csv-file' }>['options'];
+export type JsonFileSourceOptions = Extract<SourceConfigInput, { type: 'json-file' }>['options'];
+export type ParquetSourceOptions = Extract<SourceConfigInput, { type: 'parquet' }>['options'];
+export type ExcelSourceOptions = Extract<SourceConfigInput, { type: 'excel' }>['options'];
+export type SQLiteSourceOptions = Extract<SourceConfigInput, { type: 'sqlite' }>['options'];
+export type CSVSourceOptions = Extract<SourceConfigInput, { type: 'csv' }>['options'];
+export type JsonSourceOptions = Extract<SourceConfigInput, { type: 'json' }>['options'];
+export type TextSourceOptions = Extract<SourceConfigInput, { type: 'text' }>['options'];
+export type MySQLSourceOptions = Extract<SourceConfigInput, { type: 'mysql' }>['options'];
+export type MongoDBSourceOptions = Extract<SourceConfigInput, { type: 'mongodb' }>['options'];
+export type PostgreSQLSourceOptions = Extract<SourceConfigInput, { type: 'postgresql' }>['options'];
+export type SupabaseSourceOptions = Extract<SourceConfigInput, { type: 'supabase' }>['options'];
+export type SQLServerSourceOptions = Extract<SourceConfigInput, { type: 'sqlserver' }>['options'];
+export type FeishuBitableSourceOptions = Extract<SourceConfigInput, { type: 'feishu-bitable' }>['options'];
+export type CSVReadOptions = z.input<typeof csvReadOptionsSchema>;
+export type JSONReadOptions = z.input<typeof jsonReadOptionsSchema>;
+export type ExcelSheetOptions = z.input<typeof excelSheetSchema>;
+export type ExcelReadOptions = Omit<ExcelSheetOptions, 'sheet'>;
+export type SSHOptions = NonNullable<MySQLSourceOptions['ssh']>;
+
+/**
+ * Minimal structural type for a database connection used by LoadedSource.
+ * Matches the subset of @duckdb/node-api's DuckDBConnection that loaders use,
+ * declared here so the shared types never import the Node-only package.
+ */
+export interface DuckDBConnection {
+  run(sql: string): Promise<unknown>;
+  runAndReadAll(sql: string): Promise<{ getRowObjectsJson(): Record<string, unknown>[] }>;
+}
+
+/**
+ * DuckDB engine resource limits and query timeout. All optional; the engine
+ * applies secure defaults (512MB memory, 1 thread, 30s query timeout) so a
+ * runaway LLM-generated query cannot exhaust the host's memory/CPU/disk.
+ */
+export interface DuckDBEngineOptions {
+  /** Memory limit, e.g. '512MB'. Default '512MB'. */
+  memoryLimit?: string;
+  /** Number of worker threads. Default 1. */
+  threads?: number;
+  /** Max size of the spill (temp) directory, e.g. '1GB'. Unset = unlimited. */
+  maxTempDirectorySize?: string;
+  /** Per-query timeout in milliseconds. Default 30000. */
+  queryTimeoutMs?: number;
+  /** Allow DuckDB community extensions during source loading when explicitly needed. */
+  allowCommunityExtensions?: boolean;
+}
+
+/**
+ * File formats readable by DuckDB's readers (csv-file maps to csv, json-file to json).
+ */
+export type FileFormat = 'csv' | 'json' | 'parquet';
+
+/**
+ * A loaded data source, ready for an engine to register as one or more views.
+ * File loaders register a single `data` view; database loaders ATTACH and
+ * register one view per discovered table.
+ */
+export interface LoadedSource {
+  /** Register the source's table(s)/view(s) and return their exposed names. */
+  register: (conn: DuckDBConnection) => Promise<string[]>;
+  /** */
+  getSchema: (conn: DuckDBConnection) => Promise<Schema>;
+  /**
+   * Exact files the engine allows after registering (empty for sources without local files).
+   */
+  allowedPaths: string[];
+  /** Release resources (temp files, attached databases, tunnels) */
+  cleanup: () => Promise<void>;
+}
+
+/**
+ * Python engine options.
+ */
+export interface PythonEngineOptions {
+  /**
+   * Override local python3 execution with a custom environment. Local execution is not sandboxed.
+   * Run the complete Python script and return its JSON output as ExecutionResult.
+   * Each query first sends a compile-only validation script, then the source-loading and result script.
+   * Configure remote execution deadlines separately.
+   */
+  execute?: (code: string) => Promise<ExecutionResult>;
+  /** Wait and local process deadline for each validation or execution call. Default 30000 ms. */
+  queryTimeoutMs?: number;
+}
+
+/** Constructor signature every engine class must satisfy. */
+export type EngineClass = new (llmConfig: LLMConfig, options?: Record<string, unknown>) => AnalysisEngine;
+
+/**
+ * Engine selection and per-engine options. The `type` discriminant picks the
+ * analysis engine; the remaining fields are the options for that engine.
+ * External SDK engines use their registered name and validate their own options.
+ * Python defaults to local python3 execution; callers can supply their own execution environment.
+ */
+export type EngineConfig =
+  | ({ type: 'duckdb' } & DuckDBEngineOptions)
+  | ({ type: 'python' } & PythonEngineOptions)
+  | { type: 'javascript' }
+  | { type: 'supabase' }
+  | { type: 'clickhouse' }
+  | { type: 'sqlserver' }
+  | { type: 'snowflake' }
+  | { type: string; [option: string]: unknown };
+
+/**
+ * An analysis engine: loads a data source, turns natural-language queries
+ * into its executable DSL (SQL) via LLM, and executes it.
+ * Currently implemented by DuckDBEngine (duckdb/); kept as an interface
+ * to allow alternative engines in the future.
+ */
+export interface AnalysisEngine {
+  /** Query language, generation rules and validation supplied by every engine. */
+  readonly dialect: QueryDialect;
+  /** Load a data source and prepare it for execution. */
+  load(config: DataSourceConfig): Promise<void>;
+  /** Discover the loaded source structure. */
+  schema(): Promise<Schema>;
+  /** Compute statistics for the loaded data. */
+  profile?(schema: Schema, options?: ProfileOptions): Promise<Profile>;
+  /** Generate the executable DSL (SQL) for a natural-language query */
+  getDSL(query: string, dataModel: DataModel): Promise<TranslationResult>;
+  /** Execute one DSL statement with a bounded result. */
+  execute<T = Record<string, unknown>>(dsl: string, options?: ExecutionOptions): Promise<ExecutionResult<T>>;
+  /** Release resources (temp files, database connections) */
+  dispose(): Promise<void>;
+}
+
+/** Execution language id exposed by a query dialect. */
+export type QueryLanguage = string;
+
+/** Executable DSL and its model usage, when available. */
+export interface TranslationResult {
+  dsl: string;
+  usage?: LanguageModelUsage;
+}
+
+/**
+ * Generates and validates code for one query language.
+ */
+export interface QueryDialect {
+  readonly id: string;
+  /** Language rules and execution bindings, independent of the model response format. */
+  readonly rules: string;
+  /** Generate executable code for a natural-language query. */
+  getDSL(query: string, dataModel: DataModel): Promise<TranslationResult>;
+  /** Validate the DSL without executing it, preserving its source semantics. */
+  validateDSL(dsl: string): Promise<string>;
+}
+
+/** Runtime dependencies available to an analysis strategy. */
+export interface AnalysisRuntime {
+  /** Dispatch an analysis stage event. */
+  emit: (event: AnalysisEvent) => void;
+  dataModel: DataModel;
+  engine: AnalysisEngine;
+  llm: LLMConfig;
+}
+
+/** A replaceable way of analyzing a natural-language query. */
+export type AnalysisStrategy = (
+  query: string,
+  config: AnalysisConfig,
+  runtime: AnalysisRuntime
+) => Promise<AnalysisResponse>;
+
+/**
+ * GPT-Vis JSON config
+ */
+export type ChartConfig = ChartSpec['config'];
+
+/**
+ * Chart type definition — structured metadata for prompt generation
+ */
+export interface ChartTypeDefinition {
+  /** Chart type identifier */
+  type: ChartType;
+  /** Chinese name */
+  name: string;
+  /** Feature descriptions */
+  features: string[];
+  /** Applicable use cases */
+  useCases: string[];
+  /** Data requirements */
+  dataRequirements: string[];
+  /** Limitations / inapplicable scenarios */
+  limitations: string[];
+}
+
+/**
+ * The rules for one metric option.
+ */
+export type MetricOption = {
+  /** Throws if the value is not allowed. */
+  validate(value: number): void;
+};
+
+/**
+ * A metric, its rules, and its engine-specific implementation.
+ */
+export type Metric<Expression = unknown> = {
+  /** The metric name. */
+  id: MetricId;
+  /** The implementation interpreted by the registered engine. */
+  expression: Expression;
+  /** Returns true if the metric applies to this target. */
+  enable: (context: {
+    /** The kind of target to check. */
+    target: 'table' | 'column';
+    /** Field details for a column target. */
+    field?: {
+      /** The field type shared by all engines. */
+      logicalType: LogicalType;
+    };
+  }) => boolean;
+  /** Option rules keyed by option name. */
+  options?: Record<string, MetricOption>;
+};
+
+export type { JavaScriptEngine } from './interpreter/javascript';

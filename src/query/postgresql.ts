@@ -4,9 +4,7 @@ import { languageModel } from '../util/model';
 import { stringifyDataModel } from '../util/data-model';
 
 import type { PgParser } from '@supabase/pg-parser';
-import type { TranslationResult, QueryDialect } from './types';
-import type { LLMConfig } from '../config';
-import type { DataModel } from '../contracts';
+import type { TranslationResult, QueryDialect, LLMConfig, DataModel } from '../types';
 
 const MUTATING_NODES = new Set(['InsertStmt', 'UpdateStmt', 'DeleteStmt', 'MergeStmt']);
 

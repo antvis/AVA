@@ -14,8 +14,8 @@ import { getSnowflakeSchema } from './schema';
 import type { Readable } from 'node:stream';
 import type { Binds, Connection, RowStatement } from 'snowflake-sdk';
 import type { SnowflakeScope } from './schema';
-import type { AnalysisEngine } from '../../engines';
 import type {
+  AnalysisEngine,
   DataModel,
   DataSourceConfig,
   ExecutionOptions,
@@ -24,9 +24,9 @@ import type {
   Profile,
   ProfileOptions,
   Schema,
-} from '../../contracts';
-import type { LLMConfig } from '../../config';
-import type { TranslationResult } from '../../query/types';
+  LLMConfig,
+  TranslationResult,
+} from '../../types';
 
 type Driver = typeof import('snowflake-sdk');
 type Rows = Record<string, unknown>[];

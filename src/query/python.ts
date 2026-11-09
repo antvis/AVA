@@ -3,10 +3,7 @@ import { generateText } from 'ai';
 import { languageModel } from '../util/model';
 import { stringifyDataModel } from '../util/data-model';
 
-import type { DataModel } from '../contracts';
-import type { LLMConfig } from '../config';
-import type { PythonEngineOptions } from '../interpreter/python/types';
-import type { QueryDialect, TranslationResult } from './types';
+import type { DataModel, LLMConfig, PythonEngineOptions, QueryDialect, TranslationResult } from '../types';
 
 export class PythonDialect implements QueryDialect {
   readonly id = 'python';

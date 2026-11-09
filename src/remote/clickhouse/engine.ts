@@ -8,9 +8,9 @@ import { profileTables } from './profile';
 import { getClickHouseSchema } from './schema';
 
 import type { ClickHouseClient, ClickHouseClientConfigOptions } from '@clickhouse/client';
-import type { TranslationResult } from '../../query/types';
-import type { AnalysisEngine } from '../../engines';
 import type {
+  TranslationResult,
+  AnalysisEngine,
   ClickHouseSourceOptions,
   DataSourceConfig,
   DataModel,
@@ -19,8 +19,8 @@ import type {
   Profile,
   ProfileOptions,
   Schema,
-} from '../../contracts';
-import type { LLMConfig } from '../../config';
+  LLMConfig,
+} from '../../types';
 
 function normalizeUrl(hostOrUrl: string, port?: number): string {
   const base = /^[a-z]+:\/\//i.test(hostOrUrl) ? hostOrUrl : `http://${hostOrUrl}`;

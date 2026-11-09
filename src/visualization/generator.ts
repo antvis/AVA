@@ -13,9 +13,7 @@ import { z } from 'zod';
 import { languageModel } from '../util/model';
 import { chartSpecSchema } from '../contracts';
 
-import type { LLMConfig } from '../config';
-import type { ChartType } from '../contracts';
-import type { ChartConfig } from './types';
+import type { LLMConfig, ChartType, ChartConfig } from '../types';
 
 /**
  * Wrap a GPT-Vis JSON config into a standalone HTML file that can be opened in any browser

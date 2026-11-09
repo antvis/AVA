@@ -17,9 +17,7 @@ import { AnalysisEvent, AnalysisEventType, eventPair } from '../event';
 import { serializeError } from '../util/error';
 
 import type { LanguageModelUsage } from 'ai';
-import type { AnalysisStrategy } from './types';
-import type { QueryLanguage } from '../query/types';
-import type { ExecutionResult } from '../contracts';
+import type { AnalysisStrategy, QueryLanguage, ExecutionResult } from '../types';
 import type { SerializedError } from '../util/error';
 
 const DEFAULT_MAX_STEPS = 12;

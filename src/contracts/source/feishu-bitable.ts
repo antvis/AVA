@@ -18,5 +18,3 @@ const feishuBitable = z
 export const feishuBitableSourceSchema = z
   .object({ type: z.literal('feishu-bitable'), options: feishuBitable })
   .strict();
-
-export type FeishuBitableSourceOptions = z.input<typeof feishuBitableSourceSchema>['options'];

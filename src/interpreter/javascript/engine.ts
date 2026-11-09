@@ -15,8 +15,8 @@ import { profileTables } from './profile';
 import { executeCode } from './sandbox';
 import { loadSource } from './loaders';
 
-import type { TranslationResult } from '../../query/types';
 import type {
+  TranslationResult,
   Profile,
   ProfileOptions,
   DataModel,
@@ -24,9 +24,9 @@ import type {
   Schema,
   ExecutionOptions,
   ExecutionResult,
-} from '../../contracts';
-import type { AnalysisEngine } from '../../engines';
-import type { LLMConfig } from '../../config';
+  AnalysisEngine,
+  LLMConfig,
+} from '../../types';
 
 export class JavaScriptEngine implements AnalysisEngine {
   readonly dialect: JavaScriptDialect;

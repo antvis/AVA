@@ -3,9 +3,7 @@ import { generateText } from 'ai';
 import { languageModel } from '../util/model';
 import { stringifyDataModel } from '../util/data-model';
 
-import type { DataModel } from '../contracts';
-import type { LLMConfig } from '../config';
-import type { QueryDialect, TranslationResult } from './types';
+import type { DataModel, LLMConfig, QueryDialect, TranslationResult } from '../types';
 
 // Import only the T-SQL grammar; the package entry point loads every SQL grammar.
 // Shared with SQL Server view extraction, which also needs token tools for DDL normalization.

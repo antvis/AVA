@@ -16,9 +16,7 @@ import { loadSQLite } from './sqlite';
 import { loadText } from './text';
 import { loadFeishuBitable } from './feishu-bitable';
 
-import type { DataSourceConfig } from '../../contracts';
-import type { LLMConfig } from '../../config';
-import type { LoadedSource } from '../types';
+import type { DataSourceConfig, LLMConfig, LoadedSource } from '../../types';
 
 export type { LoadedSource } from '../../types';
 

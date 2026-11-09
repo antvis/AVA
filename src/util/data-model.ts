@@ -4,7 +4,7 @@ import { profileMetadataSchema, schemaStructure, semanticMetadataSchema, dataMod
 
 import { escapeMarkdown, markdownTable } from './markdown';
 
-import type { DataModel, Model, Semantic, Profile, Properties, Schema } from '../contracts';
+import type { DataModel, Model, Semantic, Profile, Properties, Schema } from '../types';
 
 const modelSchema = profileMetadataSchema.shape.models.element;
 const columnSchema = modelSchema.shape.columns.element;

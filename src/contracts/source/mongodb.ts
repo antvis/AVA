@@ -23,5 +23,3 @@ export const mongodbSourceSchema = z
       .strict(),
   })
   .strict();
-
-export type MongoDBSourceOptions = z.input<typeof mongodbSourceSchema>['options'];

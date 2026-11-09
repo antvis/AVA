@@ -92,21 +92,3 @@ export const dataModelStructure = z
 
 /** Validate and copy metadata without stripping semantic extensions or observations. */
 export const dataModelMetadataSchema = dataModelStructure;
-
-export type Column = z.output<typeof column>;
-export type TableReference = z.output<typeof tableReference>;
-/** A single column or a nonempty, ordered composite key. */
-export type PrimaryKey = z.output<typeof key>;
-/** Exactly one of refSql, baseObject or tableReference identifies the source. */
-export type Model = z.output<typeof model>;
-/** Relationship cardinality, not a SQL join operator such as LEFT or INNER. */
-export type JoinType = Relationship['joinType'];
-export type Relationship = z.output<typeof relationship>;
-export type View = z.output<typeof view>;
-/** A reusable aggregation, separate from observed profiling metrics. */
-export type Measure = z.output<typeof measure>;
-export type CubeDimension = Measure;
-export type TimeDimension = CubeDimension;
-export type Cube = z.output<typeof cube>;
-/** Schema, profiling and semantics enrich the same data model. */
-export type DataModel = z.output<typeof dataModelMetadataSchema>;

@@ -13,9 +13,9 @@ import { profileCode } from './profile';
 import { createPythonExecutor } from './util/execute';
 import { executionCode } from './util/code';
 
-import type { TranslationResult } from '../../query/types';
-import type { AnalysisEngine } from '../../engines';
 import type {
+  TranslationResult,
+  AnalysisEngine,
   DataModel,
   DataSourceConfig,
   ExecutionOptions,
@@ -23,9 +23,9 @@ import type {
   Profile,
   ProfileOptions,
   Schema,
-} from '../../contracts';
-import type { LLMConfig } from '../../config';
-import type { PythonEngineOptions } from './types';
+  LLMConfig,
+  PythonEngineOptions,
+} from '../../types';
 
 const DEFAULT_QUERY_TIMEOUT_MS = 30_000;
 

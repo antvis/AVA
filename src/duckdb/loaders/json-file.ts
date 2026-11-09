@@ -6,6 +6,6 @@
 
 import { createFileLoader } from '../util/file';
 
-import type { JsonFileSourceOptions } from '../../contracts';
+import type { JsonFileSourceOptions } from '../../types';
 
 export const loadJSONFile = createFileLoader<JsonFileSourceOptions>('json');

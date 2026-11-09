@@ -2,8 +2,7 @@
 import { sqlStringLiteral, sqlUnionAll } from '../../util/sql';
 import { rowObjects2Schema } from '../../util/schema';
 
-import type { DuckDBConnection } from '../types';
-import type { Schema } from '../../contracts';
+import type { DuckDBConnection, Schema } from '../../types';
 
 /** Source identity and canonical view definitions are available without scanning table data. */
 function objectsSQL(tableNames?: string[]): string {

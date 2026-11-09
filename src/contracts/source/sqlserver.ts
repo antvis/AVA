@@ -18,5 +18,3 @@ const sqlserver = z
   .strict();
 
 export const sqlserverSourceSchema = z.object({ type: z.literal('sqlserver'), options: sqlserver }).strict();
-
-export type SQLServerSourceOptions = z.input<typeof sqlserverSourceSchema>['options'];

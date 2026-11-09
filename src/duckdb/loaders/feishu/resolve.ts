@@ -4,7 +4,7 @@ import { resolveWikiNode } from './wiki';
 
 import type { FeishuApi } from './api';
 import type { BitableRef } from './url';
-import type { FeishuBitableSourceOptions } from '../../../contracts';
+import type { FeishuBitableSourceOptions } from '../../../types';
 
 export type BitableSourceOptions = Pick<FeishuBitableSourceOptions, 'url' | 'appToken' | 'tableId'>;
 

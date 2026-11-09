@@ -14,8 +14,7 @@ import { downloadToTempFile, removeTempFile } from '../util/file';
 import { getDuckDBSchema } from '../util/schema';
 import { escapeSql, serializeOptions, sqlIdentifier, sqlStringLiteral } from '../../util/sql';
 
-import type { ExcelSourceOptions } from '../../contracts';
-import type { LoadedSource } from '../types';
+import type { ExcelSourceOptions, LoadedSource } from '../../types';
 
 const noopCleanup = async (): Promise<void> => {};
 

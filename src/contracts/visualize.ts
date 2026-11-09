@@ -259,34 +259,9 @@ export const visualizeOutputSchema = chartSpecSchema.and(z.object({ html: z.stri
 export const vizInputSchema = chartSpecSchema;
 export const vizOutputSchema = z.string();
 
-export type RecommendInput = z.input<typeof recommendInputSchema>;
-export type RecommendOutput = z.output<typeof recommendOutputSchema>;
-export type VisualizeInput = z.input<typeof visualizeInputSchema>;
-export type VisualizeOutput = z.output<typeof visualizeOutputSchema>;
-export type VizInput = z.input<typeof vizInputSchema>;
-export type VizOutput = z.output<typeof vizOutputSchema>;
-
-/**
- * Chart specification for rendering.
- */
-export type ChartSpec = z.infer<typeof chartSpecSchema>;
-
-/** Rendering input before defaults such as config.type are applied. */
-export type ChartSpecInput = z.input<typeof chartSpecSchema>;
-
-/** Standalone chart generation result. */
-export type VisualizeResponse = NonNullable<VisualizeOutput>;
-
-/**
- * Supported chart types from GPT-Vis
- */
-export type ChartType = ChartSpec['chartType'];
-
 export const bindingSchema = z.union([
   z
     .object({ fields: z.record(z.string(), z.string().min(1)).refine((fields) => Object.keys(fields).length > 0) })
     .strict(),
   z.object({ configField: z.string().min(1) }).strict(),
 ]);
-
-export type ChartDataBinding = z.infer<typeof bindingSchema>;

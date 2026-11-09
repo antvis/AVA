@@ -2,7 +2,7 @@ import { z } from 'zod';
 
 import { chartSpecSchema, bindingSchema, executionResultSchema, dataRowSchema } from '../contracts';
 
-import type { ChartSpec, ChartType, ChartDataBinding, ExecutionResult } from '../contracts';
+import type { ChartSpec, ChartType, ChartDataBinding, ExecutionResult } from '../types';
 
 /**
  * Validate a query result and project explicit native chart fields without coercion.

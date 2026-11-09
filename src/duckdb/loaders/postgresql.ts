@@ -8,8 +8,7 @@ import { escapeSql, sqlIdentifier, sqlStringLiteral, sqlUnionAll } from '../../u
 import { rowObjects2Schema } from '../../util/schema';
 import { createSshTunnel } from '../util/ssh';
 
-import type { PostgreSQLSourceOptions } from '../../contracts';
-import type { LoadedSource } from '../types';
+import type { PostgreSQLSourceOptions, LoadedSource } from '../../types';
 
 const ATTACH_ALIAS = 'pg_source';
 

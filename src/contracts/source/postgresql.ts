@@ -5,5 +5,3 @@ import { database, text } from './shared';
 export const postgresqlSourceSchema = z
   .object({ type: z.literal('postgresql'), options: database.extend({ schema: text.optional() }) })
   .strict();
-
-export type PostgreSQLSourceOptions = z.input<typeof postgresqlSourceSchema>['options'];

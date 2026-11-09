@@ -45,6 +45,12 @@ export {
 
 export { inferFileSourceType } from './util/source';
 export { bindChartData } from './visualization/bind';
+
+export { AVA } from './ava';
+export { registerEngine } from './engines';
+
+export { executionResult } from './util/result';
+
 export type {
   SourceInput,
   SchemaInput,
@@ -68,15 +74,8 @@ export type {
   VizInput,
   VizOutput,
   ChartDataBinding,
-} from './contracts';
-
-export { AVA } from './ava';
-export { registerEngine } from './engines';
-export type { EngineClass } from './engines';
-export { executionResult } from './util/result';
-
-export type { JavaScriptEngine } from './interpreter';
-export type {
+  EngineClass,
+  JavaScriptEngine,
   DataModel,
   Semantic,
   Model,

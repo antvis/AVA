@@ -14,9 +14,3 @@ export const dataRowSchema = z
   .meta({ type: 'object', additionalProperties: {} });
 
 export const jsonValue = z.json();
-
-/** Serializable metadata values; numeric finiteness is checked at runtime. */
-export type JsonValue = z.output<typeof jsonValue>;
-
-/** Extensible metadata whose keys and meanings are agreed on by producers and consumers. */
-export type Properties = Record<string, JsonValue>;

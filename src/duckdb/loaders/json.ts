@@ -5,8 +5,7 @@
 
 import { fileSource, removeTempFile, writeTempFile } from '../util/file';
 
-import type { JsonSourceOptions } from '../../contracts';
-import type { LoadedSource } from '../types';
+import type { JsonSourceOptions, LoadedSource } from '../../types';
 
 export async function loadJson(options: JsonSourceOptions): Promise<LoadedSource> {
   const { data, options: readerOptions } = options;

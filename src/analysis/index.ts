@@ -1,8 +1,7 @@
 import { directAnalysis } from './direct';
 import { loopAnalysis } from './loop';
 
-import type { AnalysisConfig, AnalysisResponse } from '../contracts';
-import type { AnalysisRuntime } from './types';
+import type { AnalysisConfig, AnalysisResponse, AnalysisRuntime } from '../types';
 
 export function analyze(query: string, config: AnalysisConfig, runtime: AnalysisRuntime): Promise<AnalysisResponse> {
   const strategy = config.strategy?.type ?? 'direct';

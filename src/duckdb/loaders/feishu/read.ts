@@ -3,7 +3,7 @@ import { convertRecord, isSupportedFieldType } from './convert';
 import { resolveBitableTable } from './resolve';
 
 import type { FeishuCell, FeishuField } from './convert';
-import type { FeishuBitableSourceOptions } from '../../../contracts';
+import type { FeishuBitableSourceOptions } from '../../../types';
 
 function tableUrl(origin: string, table: { appToken: string; tableId: string }, suffix: string): string {
   return `${origin}/open-apis/bitable/v1/apps/${encodeURIComponent(table.appToken)}/tables/${encodeURIComponent(

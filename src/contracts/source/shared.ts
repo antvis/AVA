@@ -16,5 +16,3 @@ export const database = z
       .optional(),
   })
   .strict();
-
-export type SSHOptions = NonNullable<z.input<typeof database>['ssh']>;

@@ -7,8 +7,7 @@ import { generateText } from 'ai';
 import { languageModel } from '../util/model';
 import { stringifyDataModel } from '../util/data-model';
 
-import type { SuggestResult, DataModel } from '../contracts';
-import type { LLMConfig } from '../config';
+import type { SuggestResult, DataModel, LLMConfig } from '../types';
 
 /**
  * Generate suggested analysis queries based on dataset

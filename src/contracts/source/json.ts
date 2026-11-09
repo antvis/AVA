@@ -53,6 +53,3 @@ export const jsonSourceSchema = z
       .strict(),
   })
   .strict();
-
-export type JsonSourceOptions = z.input<typeof jsonSourceSchema>['options'];
-export type JSONReadOptions = z.input<typeof jsonReadOptionsSchema>;

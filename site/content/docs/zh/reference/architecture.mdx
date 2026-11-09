@@ -9,10 +9,9 @@ import { Heading } from '../../../../mdx-components';
 | 源码 | 职责 |
 | ---------------------------------------------------------------------------------------------- | ----------------------------------------------------- |
 | [`ava.ts`](https://github.com/antvis/AVA/blob/ai/src/ava.ts) | 公开 API、数据源状态与生命周期 |
-| [`types.ts`](https://github.com/antvis/AVA/blob/ai/src/types.ts) | 仅作兼容类型出口；定义位于所属模块 |
-| [`config.ts`](https://github.com/antvis/AVA/blob/ai/src/config.ts) | AVA 与模型配置，保留原生 SDK 类型 |
+| [`types.ts`](https://github.com/antvis/AVA/blob/ai/src/types.ts) | 统一维护公开类型定义及 schema 推导类型 |
 | [`contracts/`](https://github.com/antvis/AVA/tree/ai/src/contracts/) | 按 source、schema、profile、semantic、query、analyze、suggest 与图表 API 组织契约 |
-| [`engines.ts`](https://github.com/antvis/AVA/blob/ai/src/engines.ts) | 引擎接口、选择与注册表 |
+| [`engines.ts`](https://github.com/antvis/AVA/blob/ai/src/engines.ts) | 引擎选择与注册表 |
 | [`analysis/`](https://github.com/antvis/AVA/tree/ai/src/analysis/) | Direct 与 Loop 分析策略 |
 | [`duckdb/`](https://github.com/antvis/AVA/tree/ai/src/duckdb/) | SQL 引擎、数据源加载器与统计 |
 | [`interpreter/javascript/`](https://github.com/antvis/AVA/tree/ai/src/interpreter/javascript/) | 内存数据与 JavaScript 执行 |
@@ -27,9 +26,9 @@ import { Heading } from '../../../../mdx-components';
 | [`cli/`](https://github.com/antvis/AVA/tree/ai/src/cli/) | 命令与本地数据集会话 |
 | [`util/`](https://github.com/antvis/AVA/tree/ai/src/util/) | 目录组装、模型格式化、指标执行规则与结果限制 |
 
-契约按公开 API 组织。`source/` 按数据源类型分文件维护 schema、选项与类型，包括 CSV/JSON/Excel 读取选项；`source/index.ts` 组装数据源联合契约，`source/shared.ts` 维护共用的文件与连接字段。`schema.ts`、`profile.ts`、`semantic.ts`、`query.ts`、`analyze.ts`、`translate.ts`、`suggest.ts` 分别维护对应 API 的公开输入与输出。`visualize.ts` 维护 `recommend()`、`viz()`、`visualize()` 共用的图表结构及显式绑定配置。跨 API 的 JSON 值与数据模型基础定义放在 `shared/`。
+契约按公开 API 组织。`source/` 按数据源类型分文件维护运行时 schema，包括 CSV/JSON/Excel 读取选项；`source/index.ts` 组装数据源联合契约，`source/shared.ts` 维护共用的文件与连接字段。`schema.ts`、`profile.ts`、`semantic.ts`、`query.ts`、`analyze.ts`、`translate.ts`、`suggest.ts` 分别维护对应 API 输入与输出的运行时 schema。`visualize.ts` 维护 `recommend()`、`viz()`、`visualize()` 共用的图表结构及显式绑定配置。跨 API 的 JSON 值与数据模型基础定义放在 `shared/`。
 
-策略、方言与各引擎的运行接口继续跟随实现。数据模型组装器维护从公共元数据字段派生的严格输入校验。`contracts/` 外的模块统一通过 `contracts/index.ts` 导入共享契约；契约定义之间直接引用，避免循环依赖。`index.ts` 与 `index.browser.ts` 统一导出 API 输入、输出 schema 及其推导类型，保留既有导出兼容；CLI 消息协议、AI 阶段输出与引擎专用限制仍由各自模块维护。
+`types.ts` 汇总公开的配置、引擎、策略及数据类型定义；数据类型从运行时 schema 推导。数据模型组装器维护从公共元数据字段派生的严格输入校验。`contracts/` 外的模块通过 `contracts/index.ts` 导入运行时 schema，通过 `types.ts` 导入类型；契约定义之间直接引用，避免循环依赖。`index.ts` 与 `index.browser.ts` 统一导出 API 输入、输出 schema 及其推导类型，保留既有导出兼容；CLI 消息协议、AI 阶段输出与引擎专用限制仍由各自模块维护。
 
 <Heading as="h2" id="method-to-module">方法与模块的对应关系</Heading>
 

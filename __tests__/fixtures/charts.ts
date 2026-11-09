@@ -1,5 +1,5 @@
 import type { GPTVisConfig } from '@antv/gpt-vis';
-import type { ChartType } from '../../src/contracts';
+import type { ChartType } from '../../src/types';
 
 /** Shared runtime and compile-time examples checked against the installed renderer. */
 export const charts: { [T in Exclude<ChartType, 'summary'>]: Omit<Extract<GPTVisConfig, { type?: T }>, 'type'> } = {

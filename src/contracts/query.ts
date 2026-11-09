@@ -29,13 +29,3 @@ export const queryOutputSchema = resultShape.loose().superRefine((result, contex
 });
 
 export const executionResultSchema = queryOutputSchema;
-
-/** Engine-native column metadata, derived from the result contract. */
-export type QueryColumn = z.output<typeof queryOutputSchema>['schema'][number];
-export type QueryInput = z.input<typeof queryInputSchema>;
-/** The envelope allows any row shape; callers retain their query's row type. */
-export type QueryOutput<T = unknown> = Omit<z.output<ReturnType<typeof queryOutputSchema.strip>>, 'data'> & {
-  data: T[];
-};
-export type ExecutionResult<T = Record<string, unknown>> = QueryOutput<T>;
-export type ExecutionOptions = z.input<typeof executionOptionsSchema>;

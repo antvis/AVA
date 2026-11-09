@@ -9,5 +9,3 @@ export const csvFileSourceSchema = z
     options: file.extend({ options: csvReadOptionsSchema.optional() }),
   })
   .strict();
-
-export type CSVFileSourceOptions = z.input<typeof csvFileSourceSchema>['options'];
