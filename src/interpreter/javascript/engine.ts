@@ -19,13 +19,13 @@ import type {
   TranslationResult,
   Profile,
   ProfileOptions,
-  AnalysisEngine,
   DataModel,
   DataSourceConfig,
-  LLMConfig,
   Schema,
   ExecutionOptions,
   ExecutionResult,
+  AnalysisEngine,
+  LLMConfig,
 } from '../../types';
 
 export class JavaScriptEngine implements AnalysisEngine {

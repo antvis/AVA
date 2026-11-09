@@ -1,11 +1,8 @@
 import { describe, expect, it } from 'vitest';
 
-import {
-  buildDataModel,
-  dataModelMetadataSchema,
-  semanticMetadataSchema,
-  stringifyDataModel,
-} from '../../src/util/data-model';
+import { buildDataModel, stringifyDataModel, dataModelInputSchema } from '../../src/util/data-model';
+import { dataModelStructure } from '../../src/contracts/shared/data-model';
+import { semanticOutputSchema, profileOutputSchema } from '../../src/contracts';
 
 import type { DataModel, Profile, Schema, Semantic } from '../../src/types';
 
@@ -207,7 +204,7 @@ describe('stringifyDataModel', () => {
   });
 });
 
-describe('dataModelMetadataSchema', () => {
+describe('dataModelStructure', () => {
   it('preserves and snapshots structure, observations and semantic metadata together', () => {
     const input: DataModel = {
       properties: { description: 'Orders', custom: { labels: ['sales'] } },
@@ -245,7 +242,7 @@ describe('dataModelMetadataSchema', () => {
       ],
       views: [{ name: 'large_orders', statement: 'SELECT * FROM orders WHERE amount > 100', custom: true }],
     };
-    const result = dataModelMetadataSchema.parse(input);
+    const result = dataModelStructure.parse(input);
 
     expect(result).toEqual(input);
     expect(result.models[0].columns[2].metrics.custom).not.toBe(input.models[0].columns[2].metrics.custom);
@@ -258,29 +255,29 @@ describe('dataModelMetadataSchema', () => {
     { refSql: 'SELECT 1', baseObject: 'orders' },
     { baseObject: 'orders', tableReference: { table: 'orders' } },
   ])('rejects missing or ambiguous model sources: %j', (source) => {
-    expect(() => dataModelMetadataSchema.parse({ models: [{ name: 'orders', ...source }] })).toThrow('exactly one');
+    expect(() => dataModelStructure.parse({ models: [{ name: 'orders', ...source }] })).toThrow('exactly one');
   });
 
   it.each([Infinity, NaN, undefined, BigInt(1), () => 1])(
     'rejects non-JSON observations and properties: %s',
     (value) => {
-      expect(() => dataModelMetadataSchema.parse({ properties: { invalid: value } })).toThrow();
+      expect(() => dataModelStructure.parse({ properties: { invalid: value } })).toThrow();
       expect(() =>
-        dataModelMetadataSchema.parse({ models: [{ name: 'data', baseObject: 'source', metrics: { invalid: value } }] })
+        dataModelStructure.parse({ models: [{ name: 'data', baseObject: 'source', metrics: { invalid: value } }] })
       ).toThrow();
     }
   );
 
   it('accepts an incomplete description without inventing sources, columns or statistics', () => {
-    expect(dataModelMetadataSchema.parse({})).toEqual({});
+    expect(dataModelStructure.parse({})).toEqual({});
     const input = { models: [{ name: 'data', refSql: 'SELECT 1' }] };
-    expect(dataModelMetadataSchema.parse(input)).toEqual(input);
+    expect(dataModelStructure.parse(input)).toEqual(input);
   });
 
   it.each([{ tables: [] }, { catalog: 'analytics' }, { schema: 'sales' }])(
     'rejects obsolete root fields instead of silently discarding data: %j',
     (fields) => {
-      expect(() => dataModelMetadataSchema.parse({ models: [], ...fields })).toThrow();
+      expect(() => dataModelStructure.parse({ models: [], ...fields })).toThrow();
     }
   );
 });
@@ -322,7 +319,7 @@ describe('semantic metadata', () => {
   };
 
   it('validates and copies semantic definitions without filling defaults or mixing them with observations', () => {
-    const result = semanticMetadataSchema.parse(input);
+    const result = semanticOutputSchema.parse(input);
     expect(result).toEqual(input);
     expect(result.cubes[0].measures).not.toBe(input.cubes[0].measures);
     expect(result.models[0].columns).not.toBe(input.models[0].columns);
@@ -338,9 +335,9 @@ describe('semantic metadata', () => {
     },
   ])('rejects profiling observations in semantic definitions: %j', (model) => {
     const value = { models: [model] };
-    expect(() => semanticMetadataSchema.parse(value)).toThrow();
+    expect(() => semanticOutputSchema.parse(value)).toThrow();
     expect(() => buildDataModel({ schema: { models: [] }, semantic: value })).toThrow();
-    expect(dataModelMetadataSchema.parse(value)).toEqual(value);
+    expect(dataModelStructure.parse(value)).toEqual(value);
   });
 
   it('includes description and cubes in model context without mutating it', () => {
@@ -360,7 +357,7 @@ describe('semantic metadata', () => {
     { cubes: [{ ...input.cubes[0], measures: [{ name: 'total', type: 'DOUBLE' }] }] },
     { cubes: [{ ...input.cubes[0], hierarchies: { calendar: [] } }] },
   ])('rejects malformed semantic metadata: %j', (value) => {
-    expect(() => semanticMetadataSchema.parse(value)).toThrow();
+    expect(() => semanticOutputSchema.parse(value)).toThrow();
   });
 
   it.each([
@@ -390,8 +387,8 @@ describe('semantic metadata', () => {
       ],
     },
   ])('rejects unsupported execution metadata: %j', (value) => {
-    expect(() => semanticMetadataSchema.parse(value)).toThrow();
-    expect(() => dataModelMetadataSchema.parse(value)).toThrow();
+    expect(() => semanticOutputSchema.parse(value)).toThrow();
+    expect(() => dataModelStructure.parse(value)).toThrow();
     expect(() => buildDataModel({ schema: { models: [] }, semantic: value })).toThrow();
   });
 });
@@ -687,5 +684,31 @@ describe('buildDataModel', () => {
     Object.assign(input.models[0].columns[0], { type: 'VARCHAR' });
 
     expect(() => buildDataModel({ schema, profile: input })).toThrow();
+  });
+});
+
+describe('profile contract boundaries', () => {
+  const profile = {
+    models: [
+      {
+        name: 'data',
+        metrics: {},
+        columns: [{ name: 'value', metrics: {}, properties: { logicalType: 'numeric' as const } }],
+      },
+    ],
+  };
+  it('preserves the public projection while assembly rejects unsupported nested fields', () => {
+    const input = structuredClone(profile);
+    Object.assign(input.models[0].columns[0].properties, { unsupported: true });
+    expect(profileOutputSchema.parse(input)).toEqual(profile);
+    expect(() => dataModelInputSchema.parse({ schema: { models: [] }, profile: input })).toThrow();
+  });
+  it('keeps assembly model and column names nonempty', () => {
+    for (const field of [profile.models[0], profile.models[0].columns[0]]) {
+      const original = field.name;
+      field.name = '';
+      expect(() => dataModelInputSchema.parse({ schema: { models: [] }, profile })).toThrow();
+      field.name = original;
+    }
   });
 });

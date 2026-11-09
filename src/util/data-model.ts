@@ -1,136 +1,35 @@
 import { z } from 'zod';
 
+import { profileOutputSchema, schemaOutputSchema, semanticOutputSchema } from '../contracts';
+import { dataModelStructure } from '../contracts/shared/data-model';
+
 import { escapeMarkdown, markdownTable } from './markdown';
-import { jsonValue, schemaStructure } from './schema';
 
-import type { DataModel, Model, Profile, Properties, Schema, Semantic } from '../types';
+import type { DataModel, Model, Semantic, Profile, Properties, Schema } from '../types';
 
-const name = z.string().min(1);
-const properties = z.record(z.string(), jsonValue);
-const key = z.union([name, z.array(name).nonempty()]);
+const modelSchema = profileOutputSchema.shape.models.element;
+const columnSchema = modelSchema.shape.columns.element;
 
-const column = z
-  .object({
-    name,
-    type: name,
-    relationship: name.optional(),
-    isCalculated: z.boolean().optional(),
-    isPrimaryKey: z.boolean().optional(),
-    notNull: z.boolean().optional(),
-    expression: z.string().nullable().optional(),
-    metrics: properties.optional(),
-    properties: properties.optional(),
-  })
-  .strict();
-
-const tableReference = z
-  .object({ catalog: z.string().optional(), schema: z.string().optional(), table: name })
-  .catchall(jsonValue);
-
-const modelStructure = z
-  .object({
-    name,
-    columns: z.array(column).optional(),
-    primaryKey: key.optional(),
-    uniqueKeys: z.array(key).optional(),
-    dialect: name.optional(),
-    metrics: properties.optional(),
-    properties: properties.optional(),
-    refSql: name.optional(),
-    baseObject: name.optional(),
-    tableReference: tableReference.optional(),
-  })
-  .strict();
-
-const hasSingleSource = (value: z.infer<typeof modelStructure>) =>
-  [value.refSql, value.baseObject, value.tableReference].filter((source) => source !== undefined).length === 1;
-const modelSourceMessage = 'A model must specify exactly one of refSql, baseObject or tableReference';
-const model = modelStructure.refine(hasSingleSource, modelSourceMessage);
-
-const relationship = z
-  .object({
-    name,
-    models: z.tuple([name, name]),
-    joinType: z.enum(['ONE_TO_ONE', 'ONE_TO_MANY', 'MANY_TO_ONE', 'MANY_TO_MANY']),
-    condition: name,
-    properties: properties.optional(),
-  })
-  .catchall(jsonValue);
-
-const view = z
-  .object({ name, statement: name, dialect: name.optional(), properties: properties.optional() })
-  .catchall(jsonValue);
-
-const measure = z
-  .object({ name, expression: name, type: name, description: z.string().optional(), properties: properties.optional() })
-  .strict();
-
-const cube = z
-  .object({
-    name,
-    baseObject: name,
-    measures: z.array(measure).nonempty(),
-    dimensions: z.array(measure).optional(),
-    timeDimensions: z.array(measure).optional(),
-    hierarchies: z.record(z.string(), z.array(name).nonempty()).optional(),
-    properties: properties.optional(),
-  })
-  .strict();
-
-const dataModelStructure = z
-  .object({
-    description: z.string().optional(),
-    models: z.array(model).optional(),
-    relationships: z.array(relationship).optional(),
-    views: z.array(view).optional(),
-    cubes: z.array(cube).optional(),
-    properties: properties.optional(),
-  })
-  .strict();
-
-/** Validate and copy metadata without stripping semantic extensions or observations. */
-export const dataModelMetadataSchema = dataModelStructure as unknown as z.ZodType<DataModel>;
-
-/** Semantic definitions exclude model and column profiling metrics. */
-export const semanticMetadataSchema = dataModelStructure.extend({
-  models: z
-    .array(
-      modelStructure
-        .omit({ metrics: true })
-        .extend({ columns: z.array(column.omit({ metrics: true })).optional() })
-        .refine(hasSingleSource, modelSourceMessage)
-    )
-    .optional(),
-}) as unknown as z.ZodType<Semantic>;
-
-const dataModelInputSchema = z.object({
-  schema: schemaStructure.strict(),
-  profile: z
-    .object({
-      models: z.array(
-        z
-          .object({
-            name,
-            metrics: properties,
-            columns: z.array(
-              z
-                .object({
-                  name,
-                  metrics: properties,
-                  properties: z
-                    .object({ logicalType: z.enum(['numeric', 'string', 'boolean', 'date', 'unknown']) })
-                    .strict(),
-                })
-                .strict()
-            ),
-          })
-          .strict()
+// Assembly rejects unsupported nested fields instead of silently discarding them.
+const profileAssemblySchema = profileOutputSchema.extend({
+  models: z.array(
+    modelSchema.strict().extend({
+      name: modelSchema.shape.name.min(1),
+      columns: z.array(
+        columnSchema.strict().extend({
+          name: columnSchema.shape.name.min(1),
+          properties: columnSchema.shape.properties.strict(),
+        })
       ),
     })
-    .strict()
-    .optional(),
-  semantic: semanticMetadataSchema.optional(),
-}) as unknown as z.ZodType<{ schema: Schema; profile?: Profile; semantic?: Semantic }>;
+  ),
+});
+
+export const dataModelInputSchema = z.object({
+  schema: schemaOutputSchema.strict(),
+  profile: profileAssemblySchema.optional(),
+  semantic: semanticOutputSchema.optional(),
+});
 
 function indexByName<T extends { name: string }>(values: T[], label: string): Map<string, T> {
   const index = new Map<string, T>();
@@ -192,7 +91,7 @@ export function buildDataModel(input: { schema: Schema; profile?: Profile; seman
     models.set(definition.name, model);
   }
 
-  return dataModelMetadataSchema.parse({ ...schema, ...semantic, models: [...models.values()] });
+  return dataModelStructure.parse({ ...schema, ...semantic, models: [...models.values()] });
 }
 
 /** Describe each semantic object separately, retaining source mappings, properties and observations. */

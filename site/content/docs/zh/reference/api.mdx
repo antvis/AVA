@@ -117,7 +117,7 @@ await ava.source({ type: 'json', options: { data: [{ revenue: 120 }] } });
 | `config.type` | `SourceType` | 是 | [数据源类型](/documentation/data/sources/#connect-a-source)，例如 `json` 或 `csv-file`。 |
 | `config.options` | 数据源对应的对象 | 是 | 该类型的[读取或连接设置](/documentation/data/sources/#connect-a-source)。 |
 
-加载数据源会释放旧引擎，清除保存的 schema、profile 和业务语义。加载失败后没有活动数据源。替换数据源前，请等待正在进行的操作完成。
+数据源配置在替换前校验；无效配置会保留当前数据源和元数据。配置通过校验后，加载会释放旧引擎，清除保存的 schema、profile 和业务语义；此后加载失败则没有活动数据源。替换数据源前，请等待正在进行的操作完成。
 
 <Heading as="h3" id="schema">schema</Heading>
 
@@ -349,9 +349,9 @@ Setter 接收选项对象，同步返回 `Semantic`。AVA 验证并复制结果�
 
 <Heading as="h3" id="visualize-and-recommend">visualize 与 recommend</Heading>
 
-`visualize(analysisResult): Promise<VisualizeResponse | null>`
+`visualize(analysisResult: Pick<AnalysisResponse, 'query' | 'data'>): Promise<VisualizeResponse | null>`
 
-`recommend(analysisResult): Promise<ChartSpec | null>`
+`recommend(analysisResult: Pick<AnalysisResponse, 'query' | 'data'>): Promise<ChartSpec | null>`
 
 两种方法接受相同的输入：
 
@@ -359,23 +359,65 @@ Setter 接收选项对象，同步返回 `Semantic`。AVA 验证并复制结果�
 | ---------------------- | ------------------------------------------- | -------- | ---------------------------------------------------------------- |
 | `analysisResult` | `Pick<AnalysisResponse, 'query' \| 'data'>` | 是 | 分析结果，或包含下面两个字段的对象。 |
 | `analysisResult.query` | `string` | 是 | 问题或可视化意图。 |
-| `analysisResult.data` | `Record<string, unknown>[]` | 是 | 待可视化的数据行。 |
+| `analysisResult.data` | `AnalysisResponse['data']` | 是 | 待可视化的数据行。 |
 
 两种方法都不要求加载数据源，均调用模型；数据为空或没有推荐出图表时返回 `null`，生成错误则直接抛出。`recommend()` 返回 `ChartSpec`；`visualize()` 还返回 `html: string`，包含独立的图表页面。
 
 <Heading as="h3" id="viz">viz</Heading>
 
-`viz(spec: ChartSpec): Promise<string>`
+`viz(spec: ChartSpecInput): Promise<string>`
 
 | 参数 | 类型 | 必填 | 含义 |
 | ---------------- | ----------- | -------- | --------------------------------------------------------------------------------------------------- |
-| `spec` | `ChartSpec` | 是 | 图表描述对象。 |
-| `spec.chartType` | `ChartType` | 是 | 下方图表类型之一，属于共享描述对象；当前渲染器直接使用 `config`。 |
-| `spec.config` | `ChartConfig` | 是 | 嵌入 HTML 的 GPT-Vis JSON 配置，`config.type` 与 `chartType` 一致。 |
+| `spec` | `ChartSpecInput` | 是 | 应用默认值之前的图表描述对象。 |
+| `spec.chartType` | `ChartType` | 是 | 下方类型之一；JSON 图表必须与 `config.type` 一致。 |
+| `spec.config` | `ChartSpecInput['config']` | 是 | 原生 GPT-Vis 配置；省略 `config.type` 时由 `chartType` 补齐。`summary` 使用 T8 Syntax 字符串。 |
 
 `ChartType` 可选值：`line`、`column`、`bar`、`pie`、`area`、`scatter`、`dual-axes`、`histogram`、`boxplot`、`radar`、`funnel`、`waterfall`、`liquid`、`word-cloud`、`violin`、`venn`、`treemap`、`sankey`、`table`、`summary`。
 
+GPT-Vis 支持 26 种可视化类型。AVA 自动推荐上述 19 种 JSON 图表，也允许通过 `viz({ chartType: 'summary', config: '# 销售报告' })` 渲染原生摘要字符串。6 种关系图暂不在 AVA 契约范围内。`ChartSpec` 描述规范化后的结果，其中 JSON 图表的 `config.type` 已补齐。
+
+`spec.html?: string` 用于接收 `visualize()` 的完整返回值。渲染始终根据 `config` 生成新的 HTML，不复用已有 `html`；外层其他未知字段会被拒绝。
+
 返回独立 HTML 字符串，无需加载数据源，也不会调用模型。参见[图表配置](/documentation/visualization/overview/#recommend)。
+
+<Heading as="h2" id="runtime-contracts">运行时契约</Heading>
+
+AVA 将 `@antv/gpt-vis` 固定为 1.3.1。生成的 HTML 从 CDN 加载同一版本，原生图表契约也通过该包的类型检查。分类、名称和分组标签遵循原生字符串类型，时间标签也可以是数值；Treemap 节点必须提供 `value`。主题支持内置名称和原生主题对象，原生选项包含子标题、瀑布图中间合计和 Venn 字符串集合。
+
+Node 和浏览器入口导出共享运行时 schema。SDK 的 `source()`、`recommend()`、`viz()` 和 CLI 在各自的输入边界使用这些契约。
+
+MCP 等集成直接从 SDK 入口导入 API schema 与数据类型。Node 使用 `@antv/ava`，浏览器使用 `@antv/ava/browser`：
+
+```typescript
+import { queryInputSchema, queryOutputSchema } from '@antv/ava';
+import type { ExecutionResult } from '@antv/ava';
+
+const input = queryInputSchema.parse({ dsl: 'SELECT * FROM data', options: { maxRows: 10 } });
+const output: ExecutionResult<unknown> = queryOutputSchema.parse(await ava.query(input.dsl, input.options));
+```
+
+API 类型统一通过 `z.input<typeof inputSchema>` 与 `z.output<typeof outputSchema>` 推导，结构、画像、语义、分析和建议等类型均与运行时 schema 共用字段定义。数据源类型描述规范化之前的输入，例如 Excel 的 `header` 仍可省略。`ExecutionResult<Row>` 保留查询行的泛型；运行时校验结果结构，不推断调用方泛型中的行字段。ClickHouse 选项继续引用官方客户端的原生类型，支持 TLS Buffer、Agent 和回调等，由客户端处理透传的原生选项。
+
+公开 schema 按 API 的输入、输出命名。多参数方法使用命名参数对象，单参数方法直接使用参数值；省略选项时仍由 SDK 应用默认值。setter 回调保留为 SDK 函数，不放入数据 schema，其返回的元数据可用对应输出 schema 校验。CLI 会话字段和更严格的传输限制由适配层维护。
+
+| API | 输入 schema 与形状 | 输出 schema |
+| --- | --- | --- |
+| `source` | `sourceInputSchema`：数据源配置 | 无返回值（`void`） |
+| `schema` | `schemaInputSchema`：选项 `{}` | `schemaOutputSchema` |
+| `profile` | `profileInputSchema`：`{ metrics? }` | `profileOutputSchema` |
+| `semantic` | `semanticInputSchema`：选项 `{}` | `semanticOutputSchema` |
+| `query` | `queryInputSchema`：`{ dsl, options? }` | `queryOutputSchema` |
+| `analyze` | `analyzeInputSchema`：`{ query, config? }` | `analyzeOutputSchema` |
+| `translate` | `translateInputSchema`：问题字符串 | `translateOutputSchema`：DSL 字符串 |
+| `suggest` | `suggestInputSchema`：数量 | `suggestOutputSchema`：建议数组 |
+| `recommend` | `recommendInputSchema`：`{ query, data }` | `recommendOutputSchema`：图表配置或 `null` |
+| `visualize` | `visualizeInputSchema`：`{ query, data }` | `visualizeOutputSchema`：必含 HTML 的图表配置或 `null` |
+| `viz` | `vizInputSchema`：应用默认值前的图表配置 | `vizOutputSchema`：HTML 字符串 |
+
+Node 和 browser 入口统一导出 API 输入、输出 schema。类型沿用 `DataSourceConfig`、`SchemaOptions`、`ExecutionResult`、`AnalysisResponse` 等原有命名。`ExecutionResult<Row>`、`AnalysisResponse<Row>` 保留行泛型，默认使用对象行类型。`dispose()` 没有输入数据或返回值，无需数据 schema。
+
+MCP 等 JSON Schema 工具对输入使用 `z.toJSONSchema(inputSchema, { io: 'input' })`，对输出使用 `z.toJSONSchema(outputSchema, { io: 'output' })`。输入模式描述归一化之前的值；输出模式包含图表 `config.type` 等归一化后的必需字段。
 
 <Heading as="h2" id="cleanup">资源清理</Heading>
 
@@ -566,7 +608,7 @@ JSON 文件只包含定义对象，不带 JavaScript 变量声明或 setter。AV
 
 省略某部分会保留对应的 schema 上下文。需要在已发现的外键之外新增关系时，应在传入列表中包含仍要保留的关系。读取 `schema()`、`profile()`、`semantic()` 返回的仍是各自输入，不是组合模型；目前没有公开方法读取合并后的 `DataModel`。
 
-更新 schema 会清空 profile、保留语义；计算 profile 会替换统计信息、保留语义；加载新数据源或调用 `dispose()` 会清空三者。加载新数据源后应重新应用保存的定义，并在结构变化时复核映射。这些调用都需要活动数据源，替换数据源失败后则没有活动数据源。
+更新 schema 会清空 profile、保留语义；计算 profile 会替换统计信息、保留语义；加载新数据源或调用 `dispose()` 会清空三者。加载新数据源后应重新应用保存的定义，并在结构变化时复核映射。这些调用都需要活动数据源，无效数据源配置会保留当前数据集；配置通过校验后，实际替换过程失败则没有活动数据源。
 
 Setter 验证并复制返回对象。验证失败或 setter 抛错时，之前的语义定义保持不变。
 

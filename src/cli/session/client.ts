@@ -113,10 +113,11 @@ export async function createSession(
     const failure = error instanceof Error ? error : new Error(String(error));
     try {
       if (child?.pid && child.exitCode === null && child.signalCode === null) {
-        const exited = once(child, 'exit');
-        const timer = setTimeout(() => child.kill('SIGKILL'), 5_000);
+        const worker = child;
+        const exited = once(worker, 'exit');
+        const timer = setTimeout(() => worker.kill('SIGKILL'), 5_000);
         try {
-          child.kill();
+          worker.kill();
           await exited;
         } finally {
           clearTimeout(timer);

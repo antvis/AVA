@@ -1,6 +1,9 @@
+import { runInNewContext } from 'node:vm';
+
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { generateText } from 'ai';
 
+import { dependencies, devDependencies } from '../package.json';
 import { AVA } from '../src/ava';
 
 vi.mock('ai', () => ({ generateText: vi.fn() }));
@@ -34,6 +37,7 @@ describe('chart recommendation', () => {
     expect(prompt).toContain('- city (string)');
     expect(prompt).toContain('- revenue (number)');
     expect(vi.mocked(generateText).mock.calls[1][0].prompt).toContain('Hangzhou');
+    expect(vi.mocked(generateText).mock.calls[1][0].prompt).toContain('"category"');
   });
 
   it('skips empty data without calling the model', async () => {
@@ -67,7 +71,12 @@ describe('chart recommendation', () => {
     ]);
     expect(visualization).toMatchObject({ chartType: 'column', config });
     expect(visualization?.html).toContain('<!DOCTYPE html>');
-    expect(visualization?.html).toContain(json);
+    expect(
+      runInNewContext(`(${visualization!.html.match(/const visConfig = (.+);/)![1]})`, {}, { timeout: 1000 })
+    ).toEqual(config);
+    expect(generateText).toHaveBeenCalledTimes(2);
+    expect(await ava.viz(visualization!)).toBe(visualization!.html);
+    expect(await ava.viz({ ...visualization!, html: 'stale HTML' })).toBe(visualization!.html);
     expect(generateText).toHaveBeenCalledTimes(2);
   });
 
@@ -75,9 +84,16 @@ describe('chart recommendation', () => {
     const spec = { chartType: 'column' as const, config };
     const html = await ava['viz'](spec);
     expect(html).toContain('<!DOCTYPE html>');
-    expect(html).toContain(json);
+    expect(runInNewContext(`(${html.match(/const visConfig = (.+);/)![1]})`, {}, { timeout: 1000 })).toEqual(config);
     expect(html).toContain('gptVis.render(visConfig)');
+    expect(dependencies).not.toHaveProperty('@antv/gpt-vis');
     expect(await ava['viz'](spec)).toBe(html);
+    const title = '</script><script>throw new Error("injected")</script>\u2028\u2029';
+    const escaped = await ava.viz({ chartType: 'column', config: { ...config, type: 'column', title } });
+    expect(escaped).not.toContain('</script><script>');
+    expect(runInNewContext(`(${escaped.match(/const visConfig = (.+);/)![1]})`, {}, { timeout: 1000 }).title).toBe(
+      title
+    );
     expect(generateText).not.toHaveBeenCalled();
   });
 });

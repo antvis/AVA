@@ -3,7 +3,7 @@ import { useEffect, useRef } from 'react';
 import { GPTVis } from '@antv/gpt-vis';
 
 interface GPTVisRendererProps {
-  config: Record<string, unknown>;
+  config: Parameters<GPTVis['render']>[0];
   width?: number;
   height?: number;
   /** Show gpt-vis's built-in Chart/Code tabs (default: false) */

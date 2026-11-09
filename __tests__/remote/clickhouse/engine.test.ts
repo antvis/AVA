@@ -1,3 +1,5 @@
+import { Agent } from 'node:http';
+
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { createClient } from '@clickhouse/client';
 
@@ -44,6 +46,33 @@ afterEach(() => {
 });
 
 describe('ClickHouseEngine', () => {
+  it('passes native resources and callbacks through SDK source validation without copying them', async () => {
+    stubClient(() => []);
+    const agent = new Agent();
+    const certificate = Buffer.from('test CA');
+    const parse = vi.fn(JSON.parse);
+    const ava = new AVA({ llm: { model: 'unused' }, engine: { type: 'clickhouse' } });
+    try {
+      await ava.source({
+        type: 'clickhouse',
+        options: {
+          url: 'http://localhost:8123',
+          database: 'sales',
+          http_agent: agent,
+          tls: { ca_cert: certificate },
+          json: { parse },
+        },
+      });
+      const config = mockedCreateClient.mock.calls[0][0]!;
+      expect(config.http_agent).toBe(agent);
+      expect(config.tls?.ca_cert).toBe(certificate);
+      expect(config.json?.parse).toBe(parse);
+    } finally {
+      await ava.dispose();
+      agent.destroy();
+    }
+  });
+
   it('requires a loaded source for schema discovery', async () => {
     const engine = new ClickHouseEngine(getLLMConfig());
     try {

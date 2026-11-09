@@ -20,11 +20,11 @@ import type {
   DataSourceConfig,
   ExecutionOptions,
   ExecutionResult,
-  LLMConfig,
+  QueryColumn,
   Profile,
   ProfileOptions,
-  QueryColumn,
   Schema,
+  LLMConfig,
   TranslationResult,
 } from '../../types';
 
@@ -245,7 +245,8 @@ export class SnowflakeEngine implements AnalysisEngine {
     let statement: RowStatement | undefined;
     let stream: Readable | undefined;
     let stopped = false;
-    let stop: (error: Error) => void;
+    // The Promise executor assigns this synchronously before registration or timeout handling.
+    let stop!: (error: Error) => void;
     const result = new Promise<QueryResult>((resolve, reject) => {
       stop = (error) => {
         stopped = true;

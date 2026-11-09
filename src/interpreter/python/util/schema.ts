@@ -1,42 +1,40 @@
 import { z } from 'zod';
 
-import { jsonValue } from '../../../util/schema';
-import { excelOptionsSchema, excelSheetSchema } from '../../../util/excel';
+import { jsonValue } from '../../../contracts/shared/json';
+import { excelOptionsSchema, excelSheetSchema } from '../../../contracts/source/excel';
+import { queryOutputSchema } from '../../../contracts';
+import { sourceSchemas } from '../../../contracts/source';
+import { csvReadOptionsSchema } from '../../../contracts/source/csv';
 
 /** Validate the JSON output of the generated Python script. */
-export const resultSchema = z
-  .object({
-    data: z.array(z.record(z.string(), jsonValue)),
-    schema: z.array(z.object({ name: z.string(), type: z.string().optional() })),
-    truncated: z.literal(true).optional(),
-    truncatedBy: z.enum(['maxRows', 'maxResultBytes']).optional(),
-    rowCount: z.number().int().nonnegative().optional(),
-  })
-  .refine(
-    (result) =>
-      Boolean(result.truncated) === Boolean(result.truncatedBy) &&
-      (result.rowCount === undefined || (!result.truncated && result.rowCount === result.data.length)),
-    'Invalid Python execution result metadata'
-  );
+export const resultSchema = queryOutputSchema.safeExtend({ data: z.array(z.record(z.string(), jsonValue)) }).strip();
 
 // Accept options the generated script can translate to pandas; reject DuckDB-specific options.
-const csvOptions = z
-  .object({
-    header: z.boolean().optional(),
-    names: z.array(z.string()).optional(),
+const csvOptions = csvReadOptionsSchema
+  .pick({
+    header: true,
+    names: true,
+    delim: true,
+    quote: true,
+    escape: true,
+    comment: true,
+    skip: true,
+    nullstr: true,
+    all_varchar: true,
+    decimal_separator: true,
+    thousands: true,
+    encoding: true,
+    compression: true,
+  })
+  .extend({
     delim: z.string().length(1).optional(),
     quote: z.string().length(1).optional(),
     escape: z.string().length(1).optional(),
     comment: z.string().length(1).optional(),
     skip: z.number().int().nonnegative().optional(),
-    nullstr: z.union([z.string(), z.array(z.string())]).optional(),
-    all_varchar: z.boolean().optional(),
     decimal_separator: z.string().length(1).optional(),
     thousands: z.string().length(1).optional(),
-    encoding: z.string().optional(),
-    compression: z.string().optional(),
-  })
-  .strict();
+  });
 
 const excelOptions = excelOptionsSchema.extend({
   sheets: z
@@ -49,20 +47,21 @@ const excelOptions = excelOptionsSchema.extend({
     .optional(),
 });
 
-const fileOptions = z.object({ path: z.string().min(1), headers: z.record(z.string(), z.string()).optional() }).strict();
-
 /** Validate and snapshot configuration; data loading runs in the generated script. */
 export const sourceSchema = z
   .discriminatedUnion('type', [
-    z.object({
-      type: z.literal('csv'),
-      options: z.object({ csv: z.string(), options: csvOptions.optional() }).strict(),
+    sourceSchemas.csv.extend({ options: sourceSchemas.csv.shape.options.extend({ options: csvOptions.optional() }) }),
+    sourceSchemas.json.extend({
+      options: sourceSchemas.json.shape.options
+        .omit({ options: true })
+        .extend({ data: z.array(z.record(z.string(), jsonValue)) }),
     }),
-    z.object({ type: z.literal('json'), options: z.object({ data: z.array(z.record(z.string(), jsonValue)) }).strict() }),
-    z.object({ type: z.literal('csv-file'), options: fileOptions.extend({ options: csvOptions.optional() }) }),
-    z.object({ type: z.literal('json-file'), options: fileOptions }),
-    z.object({ type: z.literal('excel'), options: excelOptions }),
-    z.object({ type: z.literal('parquet'), options: fileOptions }),
+    sourceSchemas['csv-file'].extend({
+      options: sourceSchemas['csv-file'].shape.options.extend({ options: csvOptions.optional() }),
+    }),
+    sourceSchemas['json-file'].extend({ options: sourceSchemas['json-file'].shape.options.omit({ options: true }) }),
+    sourceSchemas.excel.extend({ options: excelOptions }),
+    sourceSchemas.parquet,
   ])
   .superRefine(({ options }, ctx) => {
     if (!('path' in options)) return;

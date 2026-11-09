@@ -1,4 +1,4 @@
-import type { Semantic } from '@antv/ava/browser';
+import type { ChartSpec, Semantic } from '@antv/ava/browser';
 import type { AIUIMessage } from '../core/session';
 export type ToolDetailLine = { text: string; tone?: 'add' | 'del' | 'ctx' };
 export type ToolStep = {
@@ -22,7 +22,7 @@ export interface AnalysisArtifact {
     insight: string;
     limitations: string;
   };
-  config?: Record<string, unknown>;
+  config?: ChartSpec['config'];
   code?: string;
   data?: Record<string, unknown>[];
 }

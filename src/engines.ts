@@ -8,10 +8,7 @@
  * browser bundles.
  */
 
-import type { AnalysisEngine, EngineConfig, LLMConfig } from './types';
-
-/** Constructor signature every engine class must satisfy. */
-export type EngineClass = new (llmConfig: LLMConfig, options?: Record<string, unknown>) => AnalysisEngine;
+import type { EngineClass, EngineConfig } from './types';
 
 const registry = new Map<EngineConfig['type'], EngineClass>();
 

@@ -24,12 +24,12 @@ import type {
   ProfileOptions,
   DataModel,
   DataSourceConfig,
-  LoadedSource,
-  DuckDBEngineOptions,
   Schema,
-  LLMConfig,
   ExecutionOptions,
   ExecutionResult,
+  LoadedSource,
+  DuckDBEngineOptions,
+  LLMConfig,
 } from '../types';
 
 /**
@@ -169,7 +169,12 @@ export class DuckDBEngine implements AnalysisEngine {
       name: reader.columnName(index),
       type: reader.columnType(index).toString(),
     }));
-    return executionResult(coerceNumbers(reader.getRowObjectsJson(), schema) as T[], schema, options);
+    const names = reader.deduplicatedColumnNames();
+    // The driver's object conversion assigns __proto__ through the prototype setter.
+    const rows = reader
+      .getRowsJson()
+      .map((row) => Object.fromEntries(row.map((value, index) => [names[index], value])));
+    return executionResult(coerceNumbers(rows, schema) as T[], schema, options);
   }
 
   /**

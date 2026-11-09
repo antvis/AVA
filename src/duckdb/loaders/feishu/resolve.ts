@@ -4,12 +4,9 @@ import { resolveWikiNode } from './wiki';
 
 import type { FeishuApi } from './api';
 import type { BitableRef } from './url';
+import type { FeishuBitableSourceOptions } from '../../../types';
 
-export interface BitableSourceOptions {
-  url?: string;
-  appToken?: string;
-  tableId?: string;
-}
+export type BitableSourceOptions = Pick<FeishuBitableSourceOptions, 'url' | 'appToken' | 'tableId'>;
 
 const TABLES_PAGE_SIZE = 100;
 const TABLES_TO_LIST = 10;
