@@ -23,23 +23,32 @@ import { serializeError } from './util/error';
 import type { LanguageModelUsage } from 'ai';
 import type {
   DataModel,
-  RecommendInput,
-  VisualizeInput,
-  Semantic,
-  SemanticOptions,
-  DataSourceConfig,
-  SchemaOptions,
   Schema,
-  AnalysisResponse,
-  AnalysisConfig,
-  VisualizeResponse,
-  ChartSpec,
-  ChartSpecInput,
-  SuggestResult,
   Profile,
-  ProfileOptions,
+  Semantic,
+  AnalysisConfig,
   ExecutionOptions,
-  ExecutionResult,
+  SourceInput,
+  SchemaInput,
+  SchemaOutput,
+  ProfileInput,
+  ProfileOutput,
+  SemanticInput,
+  SemanticOutput,
+  QueryInput,
+  QueryOutput,
+  AnalyzeInput,
+  AnalyzeOutput,
+  TranslateInput,
+  TranslateOutput,
+  SuggestInput,
+  SuggestOutput,
+  RecommendInput,
+  RecommendOutput,
+  VisualizeInput,
+  VisualizeOutput,
+  VizInput,
+  VizOutput,
 } from './contracts';
 import type { AVAConfig, LLMConfig } from './config';
 import type { EngineConfig, AnalysisEngine } from './engines';
@@ -134,7 +143,7 @@ export class AVA extends EventEmitter {
    * Load a data source config into the engine.
    * Reloading disposes the previous engine and its resources.
    */
-  async source(config: DataSourceConfig): Promise<void> {
+  async source(config: SourceInput): Promise<void> {
     // Reject invalid replacements before disposing the current dataset.
     config = sourceInputSchema.parse(config);
     emit(this, new LifecycleEvent(LifecycleEventType.SOURCE_START, { type: config.type }));
@@ -162,7 +171,7 @@ export class AVA extends EventEmitter {
    * Describe the data source structure.
    * Include tables, fields, types, indexes, and relations.
    */
-  async schema(options: SchemaOptions = {}, setter?: (options: SchemaOptions) => Schema): Promise<Schema> {
+  async schema(options: SchemaInput = {}, setter?: (options: SchemaInput) => SchemaOutput): Promise<SchemaOutput> {
     if (!this.engine) {
       throw new Error('No data loaded. Please call source() first.');
     }
@@ -189,7 +198,7 @@ export class AVA extends EventEmitter {
   /**
    * Compute a statistical profile of the data source.
    */
-  async profile(options: ProfileOptions = {}, setter?: (options: ProfileOptions) => Profile): Promise<Profile> {
+  async profile(options: ProfileInput = {}, setter?: (options: ProfileInput) => ProfileOutput): Promise<ProfileOutput> {
     if (!this.engine) {
       throw new Error('No data loaded. Please call source() first.');
     }
@@ -201,7 +210,7 @@ export class AVA extends EventEmitter {
 
     try {
       this.dataSchema ??= await this.engine!.schema();
-      const f = setter ?? (async (options: ProfileOptions) => this.engine!.profile!(this.dataSchema!, options));
+      const f = setter ?? (async (options: ProfileInput) => this.engine!.profile!(this.dataSchema!, options));
       this.dataProfile = profileOutputSchema.parse(await f(options));
     } catch (error) {
       emit(this, new LifecycleEvent(LifecycleEventType.PROFILE_END, { error: serializeError(error) }));
@@ -215,7 +224,10 @@ export class AVA extends EventEmitter {
   }
 
   /** Read or replace semantic definitions used in model-facing operations. */
-  async semantic(options: SemanticOptions = {}, setter?: (options: SemanticOptions) => Semantic): Promise<Semantic> {
+  async semantic(
+    options: SemanticInput = {},
+    setter?: (options: SemanticInput) => SemanticOutput
+  ): Promise<SemanticOutput> {
     if (!this.engine) {
       throw new Error('No data loaded. Please call source() first.');
     }
@@ -242,14 +254,17 @@ export class AVA extends EventEmitter {
    * The query is turned into SQL via LLM and executed by the configured engine.
    * Use visualize() separately to generate charts from the analysis result.
    */
-  async analyze(query: string, config: AnalysisConfig = {}): Promise<AnalysisResponse> {
+  async analyze(
+    query: AnalyzeInput['query'],
+    config: AnalysisConfig = {}
+  ): Promise<AnalyzeOutput<Record<string, unknown>>> {
     if (!this.engine) {
       throw new Error('No data loaded. Please call source() first.');
     }
 
     emit(this, new LifecycleEvent(LifecycleEventType.ANALYZE_START, { query }));
 
-    let result: AnalysisResponse;
+    let result: AnalyzeOutput<Record<string, unknown>>;
     try {
       const runtime = {
         emit: (event: AnalysisEvent) => emit(this, event),
@@ -273,7 +288,7 @@ export class AVA extends EventEmitter {
    * Translate a natural-language query into DSL.
    * Use query() to execute the generated DSL.
    */
-  async translate(query: string): Promise<string> {
+  async translate(query: TranslateInput): Promise<TranslateOutput> {
     if (!this.engine) {
       throw new Error('No data loaded. Please call source() first.');
     }
@@ -299,14 +314,14 @@ export class AVA extends EventEmitter {
    * Execute a read-only query against the data source.
    * The DSL must match the current engine's query language.
    */
-  async query(dsl: string, options?: ExecutionOptions): Promise<ExecutionResult> {
+  async query(dsl: QueryInput['dsl'], options?: ExecutionOptions): Promise<QueryOutput<Record<string, unknown>>> {
     if (!this.engine) {
       throw new Error('No data loaded. Please call source() first.');
     }
 
     emit(this, new AnalysisEvent(AnalysisEventType.QUERY_START, { dsl }));
 
-    let result: ExecutionResult;
+    let result: QueryOutput<Record<string, unknown>>;
     try {
       result = await this.engine.execute(dsl, options);
     } catch (error) {
@@ -325,12 +340,12 @@ export class AVA extends EventEmitter {
    * Accepts the result from analyze() — the query and data are read from it.
    *
    * @param analysisResult - The result returned from analyze()
-   * @returns VisualizeResponse, or null if no chart is needed. Generation errors propagate to the caller.
+   * @returns VisualizeOutput, or null if no chart is needed. Generation errors propagate to the caller.
    */
-  async visualize(analysisResult: VisualizeInput): Promise<VisualizeResponse | null> {
+  async visualize(analysisResult: VisualizeInput): Promise<VisualizeOutput> {
     emit(this, new LifecycleEvent(LifecycleEventType.VISUALIZE_START, { query: analysisResult.query }));
 
-    let result: VisualizeResponse | null;
+    let result: VisualizeOutput;
     try {
       const spec = await this.recommend(analysisResult);
       result = spec ? { ...spec, html: await this.viz(spec) } : null;
@@ -349,7 +364,7 @@ export class AVA extends EventEmitter {
    * Recommend a chart specification for the analysis result.
    * Combine a suitable chart type with GPT-Vis JSON config for rendering.
    */
-  async recommend(analysisResult: RecommendInput): Promise<ChartSpec | null> {
+  async recommend(analysisResult: RecommendInput): Promise<RecommendOutput> {
     const { data, query } = analysisResult;
     if (!hasData(data)) return null;
 
@@ -364,7 +379,7 @@ export class AVA extends EventEmitter {
   /**
    * Render a chart specification as standalone HTML.
    */
-  async viz(spec: ChartSpecInput): Promise<string> {
+  async viz(spec: VizInput): Promise<VizOutput> {
     const parsed = vizInputSchema.parse(spec);
     return wrapConfigInHTML(parsed.config);
   }
@@ -372,14 +387,14 @@ export class AVA extends EventEmitter {
   /**
    * Suggest questions about the loaded data.
    */
-  async suggest(count: number = 3): Promise<SuggestResult[]> {
+  async suggest(count: SuggestInput = 3): Promise<SuggestOutput> {
     if (!this.engine) {
       throw new Error('No data loaded. Please call source() first.');
     }
 
     emit(this, new LifecycleEvent(LifecycleEventType.SUGGEST_START));
 
-    let result: SuggestResult[];
+    let result: SuggestOutput;
     try {
       result = await generateSuggestions(this.llmConfig, await this.getDataModel(), count);
     } catch (error) {

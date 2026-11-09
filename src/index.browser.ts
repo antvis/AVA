@@ -8,11 +8,59 @@ import { registerEngine } from './engines';
 
 registerEngine('javascript', JavaScriptEngine);
 
-export { sourceConfigSchema, executionResultSchema, chartSpecSchema } from './contracts';
+export {
+  sourceInputSchema,
+  schemaInputSchema,
+  schemaOutputSchema,
+  profileInputSchema,
+  profileOutputSchema,
+  semanticInputSchema,
+  semanticOutputSchema,
+  queryInputSchema,
+  queryOutputSchema,
+  analyzeInputSchema,
+  analyzeOutputSchema,
+  translateInputSchema,
+  translateOutputSchema,
+  suggestInputSchema,
+  suggestOutputSchema,
+  recommendInputSchema,
+  recommendOutputSchema,
+  visualizeInputSchema,
+  visualizeOutputSchema,
+  vizInputSchema,
+  vizOutputSchema,
+  sourceConfigSchema,
+  executionResultSchema,
+  chartSpecSchema,
+} from './contracts';
 
 export { inferFileSourceType } from './util/source';
 export { bindChartData } from './visualization/bind';
-export type { ChartDataBinding } from './contracts';
+export type {
+  SourceInput,
+  SchemaInput,
+  SchemaOutput,
+  ProfileInput,
+  ProfileOutput,
+  SemanticInput,
+  SemanticOutput,
+  QueryInput,
+  QueryOutput,
+  AnalyzeInput,
+  AnalyzeOutput,
+  TranslateInput,
+  TranslateOutput,
+  SuggestInput,
+  SuggestOutput,
+  RecommendInput,
+  RecommendOutput,
+  VisualizeInput,
+  VisualizeOutput,
+  VizInput,
+  VizOutput,
+  ChartDataBinding,
+} from './contracts';
 
 export { AVA } from './ava';
 export { registerEngine } from './engines';

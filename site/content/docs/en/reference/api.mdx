@@ -100,7 +100,7 @@ Set `engine.type` to the name passed to `registerEngine()`. Additional fields ar
 ### source
 
 ```typescript
-source(config: DataSourceConfig): Promise<void>
+source(config: SourceInput): Promise<void>
 ```
 
 Loads a data source through the engine. It returns no value and does not discover the schema.
@@ -111,7 +111,7 @@ await ava.source({ type: 'json', options: { data: [{ revenue: 120 }] } });
 
 | Parameter | Type | Required | Meaning |
 | --- | --- | --- | --- |
-| `config` | `DataSourceConfig` | Yes | Data source to load. |
+| `config` | `SourceInput` | Yes | Data source to load. |
 | `config.type` | `SourceType` | Yes | [Source type](/documentation/data/sources/#connect-a-source), such as `json` or `csv-file`. |
 | `config.options` | Source-specific object | Yes | [Reader or connection settings](/documentation/data/sources/#connect-a-source) for that type. |
 
@@ -120,7 +120,7 @@ Source configuration is validated before replacing the active dataset; an invali
 ### schema
 
 ```typescript
-schema(options?: SchemaOptions, setter?: (options: SchemaOptions) => Schema): Promise<Schema>
+schema(options?: SchemaInput, setter?: (options: SchemaInput) => SchemaOutput): Promise<SchemaOutput>
 ```
 
 Returns the structure of the loaded source. Without a setter, AVA returns the saved schema or discovers it through the engine and saves it.
@@ -137,8 +137,8 @@ await ava.schema(undefined, () => savedSchema);
 
 | Parameter | Type | Required | Meaning / default |
 | --- | --- | --- | --- |
-| `options` | `SchemaOptions` | No | `{}`; currently has no configurable fields. |
-| `setter` | `(options: SchemaOptions) => Schema` | No | Returns the schema to save instead of discovering it through the engine. |
+| `options` | `SchemaInput` | No | `{}`; currently has no configurable fields. |
+| `setter` | `(options: SchemaInput) => SchemaOutput` | No | Returns the schema to save instead of discovering it through the engine. |
 
 A setter receives the options object (default `{}`) and returns a `Schema` synchronously. Its result replaces the saved schema and clears the saved profile. AVA validates and copies the result; invalid results or thrown errors reject the call without changing previous metadata.
 
@@ -162,7 +162,7 @@ The details depend on the source and engine. A query result's `schema` describes
 ### profile
 
 ```typescript
-profile(options?: ProfileOptions, setter?: (options: ProfileOptions) => Profile): Promise<Profile>
+profile(options?: ProfileInput, setter?: (options: ProfileInput) => ProfileOutput): Promise<ProfileOutput>
 ```
 
 Calculates and saves statistics for the loaded source through the engine. Each call without a setter computes a fresh profile and requires engine profiling support.
@@ -179,9 +179,9 @@ await ava.profile(undefined, () => savedProfile);
 
 | Parameter | Type | Required | Meaning / default |
 | --- | --- | --- | --- |
-| `options` | `ProfileOptions` | No | `{}`; uses the default metrics below. |
+| `options` | `ProfileInput` | No | `{}`; uses the default metrics below. |
 | `options.metrics` | `MetricConfig[]` | No | Metrics for engine computation. A supplied list replaces the defaults. |
-| `setter` | `(options: ProfileOptions) => Profile` | No | Returns the profile to save instead of computing it through the engine. |
+| `setter` | `(options: ProfileInput) => ProfileOutput` | No | Returns the profile to save instead of computing it through the engine. |
 
 A setter receives the options object (default `{}`) and returns a `Profile` synchronously. It does not require engine profiling support. AVA validates and copies its result; invalid results or thrown errors reject the call without changing previous metadata. The options are passed to the setter; AVA does not calculate or filter metrics on its behalf.
 
@@ -226,7 +226,7 @@ Other built-in metrics accept no additional options. Unknown metrics and unknown
 ### semantic
 
 ```typescript
-semantic(options?: SemanticOptions, setter?: (options: SemanticOptions) => Semantic): Promise<Semantic>
+semantic(options?: SemanticInput, setter?: (options: SemanticInput) => SemanticOutput): Promise<SemanticOutput>
 ```
 
 Reads or replaces the semantic definitions for the loaded source. Without a setter, returns the saved definitions, initially `{}`. This call does not discover the schema, compute a profile, or call an LLM.
@@ -247,8 +247,8 @@ await ava.semantic(undefined, () => ({})); // Clear the saved definitions.
 
 | Parameter | Type | Required | Meaning / default |
 | --- | --- | --- | --- |
-| `options` | `SemanticOptions` | No | `{}`; currently has no configurable fields. |
-| `setter` | `(options: SemanticOptions) => Semantic` | No | Returns the semantic definitions to save, replacing the previous definitions. |
+| `options` | `SemanticInput` | No | `{}`; currently has no configurable fields. |
+| `setter` | `(options: SemanticInput) => SemanticOutput` | No | Returns the semantic definitions to save, replacing the previous definitions. |
 
 The setter receives the options object and returns a `Semantic` synchronously. AVA validates and copies the result; invalid results or thrown errors leave the previous definitions unchanged. Requires a loaded source. Source replacement and disposal clear these definitions; schema and profile updates retain them.
 
@@ -264,7 +264,7 @@ These definitions provide context for query generation. Declaring a cube, view, 
 
 ### analyze
 
-`analyze(query: string, config?: AnalysisConfig): Promise<AnalysisResponse>`
+`analyze(query: AnalyzeInput['query'], config?: AnalysisConfig): Promise<AnalyzeOutput<Record<string, unknown>>>`
 
 | Parameter                    | Type                               | Required                  | Default / behavior                                                                                                              |
 | ---------------------------- | ---------------------------------- | ------------------------- | ------------------------------------------------------------------------------------------------------------------------------- |
@@ -291,7 +291,7 @@ Requires a loaded source. Returns an [ExecutionResult](#executionresult) plus:
 
 ### translate
 
-`translate(query: string): Promise<string>`
+`translate(query: TranslateInput): Promise<TranslateOutput>`
 
 | Parameter | Type     | Required | Meaning                    |
 | --------- | -------- | -------- | -------------------------- |
@@ -301,7 +301,7 @@ Requires a loaded source. Returns generated DSL without executing it; use `query
 
 ### query
 
-`query(dsl: string, options?: ExecutionOptions): Promise<ExecutionResult>`
+`query(dsl: QueryInput['dsl'], options?: ExecutionOptions): Promise<QueryOutput<Record<string, unknown>>>`
 
 | Parameter                | Type               | Required | Default / behavior                                      |
 | ------------------------ | ------------------ | -------- | ------------------------------------------------------- |
@@ -335,7 +335,7 @@ These limits bound returned data; they are separate from engine execution timeou
 
 ### suggest
 
-`suggest(count?: number): Promise<SuggestResult[]>`
+`suggest(count?: SuggestInput): Promise<SuggestOutput>`
 
 | Parameter | Type     | Required | Default / behavior                  |
 | --------- | -------- | -------- | ----------------------------------- |
@@ -347,9 +347,9 @@ Requires a loaded source. Returns suggestions sorted by descending score, each w
 
 ### visualize and recommend
 
-`visualize(analysisResult): Promise<VisualizeResponse | null>`
+`visualize(analysisResult: VisualizeInput): Promise<VisualizeOutput>`
 
-`recommend(analysisResult): Promise<ChartSpec | null>`
+`recommend(analysisResult: RecommendInput): Promise<RecommendOutput>`
 
 Both methods accept the same input:
 
@@ -363,13 +363,13 @@ Neither requires a loaded source. Both use the model and return `null` for empty
 
 ### viz
 
-`viz(spec: ChartSpecInput): Promise<string>`
+`viz(spec: VizInput): Promise<VizOutput>`
 
 | Parameter        | Type        | Required | Meaning                                                                                             |
 | ---------------- | ----------- | -------- | --------------------------------------------------------------------------------------------------- |
-| `spec`           | `ChartSpecInput` | Yes      | Chart specification before defaults are applied. |
+| `spec`           | `VizInput` | Yes      | Chart specification before defaults are applied. |
 | `spec.chartType` | `ChartType` | Yes      | One of the types below; must match `config.type` for JSON charts. |
-| `spec.config`    | `ChartSpecInput['config']` | Yes    | Native GPT-Vis config; a missing `config.type` is filled from `chartType`. For `summary`, pass a T8 Syntax string. |
+| `spec.config`    | `VizInput['config']` | Yes    | Native GPT-Vis config; a missing `config.type` is filled from `chartType`. For `summary`, pass a T8 Syntax string. |
 
 `ChartType` values: `line`, `column`, `bar`, `pie`, `area`, `scatter`, `dual-axes`, `histogram`, `boxplot`, `radar`, `funnel`, `waterfall`, `liquid`, `word-cloud`, `violin`, `venn`, `treemap`, `sankey`, `table`, `summary`.
 
@@ -413,7 +413,7 @@ Public schemas follow API input/output names. Multi-argument methods use named a
 | `visualize` | `visualizeInputSchema`: `{ query, data }` | `visualizeOutputSchema`: chart spec with required HTML, or `null` |
 | `viz` | `vizInputSchema`: chart spec before defaults | `vizOutputSchema`: HTML string |
 
-Each schema exports a corresponding type such as `QueryInput` / `QueryOutput`. `QueryOutput<Row>` and `AnalyzeOutput<Row>` retain row generics. `dispose()` has neither input data nor a return value, so it needs no data schema. Existing validator and type names remain available:
+The Node, browser and standalone schema entry points export the same API input/output schemas and corresponding types, such as `QueryInput` / `QueryOutput`. SDK query/analysis methods retain their existing default object-row types; standalone output contracts default to unknown rows. `QueryOutput<Row>` and `AnalyzeOutput<Row>` retain row generics. `dispose()` has neither input data nor a return value, so it needs no data schema. Existing validator and type names remain available:
 
 | Export | Purpose |
 | --- | --- |

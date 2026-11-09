@@ -11,11 +11,15 @@ import type {
   ChartSpec,
   ChartSpecInput,
   VisualizeResponse,
+  QueryInput as NodeQueryInput,
+  QueryOutput as NodeQueryOutput,
 } from '../../src';
 import type {
   DataSourceConfig as BrowserSource,
   ExecutionResult as BrowserResult,
   ChartSpecInput as BrowserChartInput,
+  QueryInput as BrowserQueryInput,
+  QueryOutput as BrowserQueryOutput,
 } from '../../src/index.browser';
 import type {
   ClickHouseSourceOptions,
@@ -293,3 +297,18 @@ const inferredAnalyzeOutput: AnalyzeOutput = analyzeOutputSchema.parse({
   data: [1],
 });
 void [inferredQueryOutput, inferredAnalyzeOutput];
+
+// Existing SDK callers retain their default object-row types after the public rename.
+export function legacySDKOutputs(
+  ava: AVA
+): [Promise<ExecutionResult>, Promise<AnalysisResponse>, Promise<VisualizeResponse | null>] {
+  return [ava.query('SELECT 1'), ava.analyze('Sales'), ava.visualize({ query: 'Sales', data: [] })];
+}
+export function sharedQueryInputs(input: QueryInput): BrowserQueryInput {
+  const node: NodeQueryInput = input;
+  return node;
+}
+export function sharedQueryOutputs(output: QueryOutput<Row>): BrowserQueryOutput<Row> {
+  const node: NodeQueryOutput<Row> = output;
+  return node;
+}

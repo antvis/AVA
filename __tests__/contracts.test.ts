@@ -131,6 +131,12 @@ describe('source-to-chart contract flow', () => {
   );
 
   it('exposes shared contracts and helpers from Node and browser entry points', () => {
+    for (const [name, schema] of Object.entries(contracts)) {
+      if (name.endsWith('InputSchema') || name.endsWith('OutputSchema')) {
+        expect(node).toHaveProperty(name, schema);
+        expect(browser).toHaveProperty(name, schema);
+      }
+    }
     expect(node.sourceConfigSchema).toBe(browser.sourceConfigSchema);
     expect(node.executionResultSchema).toBe(browser.executionResultSchema);
     expect(node.chartSpecSchema).toBe(browser.chartSpecSchema);
