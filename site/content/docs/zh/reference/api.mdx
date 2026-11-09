@@ -385,7 +385,7 @@ GPT-Vis 支持 26 种可视化类型。AVA 自动推荐上述 19 种 JSON 图表
 
 AVA 将 `@antv/gpt-vis` 固定为 1.3.1。生成的 HTML 从 CDN 加载同一版本，原生图表契约也通过该包的类型检查。分类、名称和分组标签遵循原生字符串类型，时间标签也可以是数值；Treemap 节点必须提供 `value`。主题支持内置名称和原生主题对象，原生选项包含子标题、瀑布图中间合计和 Venn 字符串集合。
 
-Node 和浏览器入口导出共享运行时 schema，以及数据源类型推断和图表绑定工具函数。SDK 的 `source()`、`recommend()`、`viz()` 和 CLI 在各自的输入边界使用这些契约。
+Node 和浏览器入口导出共享运行时 schema，以及数据源类型推断工具函数。SDK 的 `source()`、`recommend()`、`viz()` 和 CLI 在各自的输入边界使用这些契约。
 
 MCP 等集成直接从 SDK 入口导入 API schema 与数据类型。Node 使用 `@antv/ava`，浏览器使用 `@antv/ava/browser`：
 
@@ -420,30 +420,6 @@ Node 和 browser 入口统一导出 API 输入、输出 schema。类型沿用 `D
 | 导出 | 用途 |
 | --- | --- |
 | `inferFileSourceType(path)` | 根据本地路径或 HTTP(S) URL 推断文件数据源类型；未知扩展名返回 `undefined`。 |
-| `bindChartData(result, spec, binding?)` | 校验查询结果并绑定原生图表数据，无需调用模型。 |
-
-例如，使用 Node SDK 实例：
-
-```typescript
-import { bindChartData, sourceInputSchema } from '@antv/ava';
-
-const source = sourceInputSchema.parse({
-  type: 'json',
-  options: { data: [{ month: 'Jan', revenue: 10 }] },
-});
-await ava.source(source);
-const result = await ava.query('SELECT month, revenue FROM data');
-const spec = bindChartData(
-  result,
-  { chartType: 'column', config: { title: 'Revenue' } },
-  { fields: { category: 'month', value: 'revenue' } }
-);
-const html = await ava.viz(spec);
-```
-
-`binding.fields` 将原生图表字段映射到已有结果列。省略 `binding` 时，直接将 `result.data` 用作原生图表数据，包括直方图需要的数值数组。水波图、双轴图等非行式数据可用 `{ configField: 'chart' }`，从单行结果的一个单元格读取原生配置对象。两种绑定形式互斥，JSON 字符串不会自动解析。绑定支持 19 种 JSON 图表；摘要字符串直接传给 `viz()`。
-
-`spec.config` 提供展示和原生选项；`data`、`categories`、`series`、`percent` 必须来自查询结果。数值保持原样，数字字符串应在查询中显式转换。渲染前检查 `result.truncated`，由应用决定部分结果是否适合制图。
 
 MCP 等 JSON Schema 工具对输入使用 `z.toJSONSchema(inputSchema, { io: 'input' })`，对输出使用 `z.toJSONSchema(outputSchema, { io: 'output' })`。输入模式描述归一化之前的值；输出模式包含图表 `config.type` 等归一化后的必需字段。
 

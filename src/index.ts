@@ -41,7 +41,6 @@ export {
 } from './contracts';
 
 export { inferFileSourceType } from './util/source';
-export { bindChartData } from './visualization/bind';
 
 export { AVA } from './ava';
 export { registerEngine } from './engines';
@@ -49,7 +48,6 @@ export { registerEngine } from './engines';
 export { executionResult } from './util/result';
 
 export type {
-  ChartDataBinding,
   EngineClass,
   JavaScriptEngine,
   DataModel,

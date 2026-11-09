@@ -383,7 +383,7 @@ Returns a standalone HTML string. Does not require a loaded source or call a mod
 
 AVA pins `@antv/gpt-vis` to 1.3.1. The generated HTML loads that exact version from the CDN; its types also check the native chart contracts. Category, name and group labels follow the native string types; time labels can also be numbers. Treemap nodes require `value`. Chart themes accept built-in names and native theme objects, and native options include subtitles, waterfall intermediate totals and Venn string sets.
 
-The Node and browser entry points export shared runtime schemas plus pure helpers for source-type inference and chart binding. SDK `source()`, `recommend()`, `viz()` and the CLI use these contracts at their input boundaries.
+The Node and browser entry points export shared runtime schemas plus a pure helper for source-type inference. SDK `source()`, `recommend()`, `viz()` and the CLI use these contracts at their input boundaries.
 
 MCP and other integrations import API schemas and data types from the SDK entry point. Use `@antv/ava` in Node and `@antv/ava/browser` in browser code:
 
@@ -418,30 +418,6 @@ The Node and browser entry points export the same API input/output schemas. Type
 | Export | Purpose |
 | --- | --- |
 | `inferFileSourceType(path)` | Infer a file source type from a file path or HTTP(S) URL; return `undefined` for unknown extensions. |
-| `bindChartData(result, spec, binding?)` | Validate the result and bind native chart data without a model call. |
-
-For example, with a Node SDK instance:
-
-```typescript
-import { bindChartData, sourceInputSchema } from '@antv/ava';
-
-const source = sourceInputSchema.parse({
-  type: 'json',
-  options: { data: [{ month: 'Jan', revenue: 10 }] },
-});
-await ava.source(source);
-const result = await ava.query('SELECT month, revenue FROM data');
-const spec = bindChartData(
-  result,
-  { chartType: 'column', config: { title: 'Revenue' } },
-  { fields: { category: 'month', value: 'revenue' } }
-);
-const html = await ava.viz(spec);
-```
-
-`binding.fields` maps native chart field names to existing result columns. Omitting `binding` uses `result.data` as native chart data, including numeric arrays for histograms. For non-row shapes such as liquid and dual-axes charts, use `{ configField: 'chart' }` to read a native config object from one cell of a single result row. These two binding forms are mutually exclusive; JSON strings are not parsed. Binding supports the 19 JSON chart types; pass summary strings directly to `viz()`.
-
-`spec.config` supplies presentation and native options; `data`, `categories`, `series` and `percent` must come from the result. Numeric values stay numbers; cast numeric strings in the query. Inspect `result.truncated` when deciding whether partial data is suitable for rendering.
 
 For MCP or other JSON Schema tools, use `z.toJSONSchema(inputSchema, { io: 'input' })` for inputs and `z.toJSONSchema(outputSchema, { io: 'output' })` for outputs. Input mode describes values before normalization; output mode includes required normalized fields such as chart `config.type`.
 

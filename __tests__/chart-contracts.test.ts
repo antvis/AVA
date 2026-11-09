@@ -3,7 +3,7 @@ import { runInNewContext } from 'node:vm';
 import { z } from 'zod';
 import { describe, expect, it } from 'vitest';
 
-import { AVA, bindChartData, vizInputSchema } from '../src/index.browser';
+import { AVA, vizInputSchema } from '../src/index.browser';
 import { chartDefinitions } from '../src/visualization/vis';
 
 import { charts as fixtures } from './fixtures/charts';
@@ -70,89 +70,5 @@ describe('native chart contracts', () => {
   ])('rejects invalid native input in the SDK before producing HTML: %j', async (spec) => {
     const ava = new AVA({ llm: { model: 'unused' } });
     await expect(ava.viz(spec as unknown as ChartSpec)).rejects.toThrow();
-  });
-});
-
-describe('explicit query-to-chart binding', () => {
-  const result = { schema: [{ name: 'month' }, { name: 'revenue' }], data: [{ month: 'Jan', revenue: 10 }] };
-
-  it('projects named fields without mutating the result or guessing columns', () => {
-    const before = JSON.stringify(result);
-    expect(
-      bindChartData(
-        result,
-        { chartType: 'column', config: { title: 'Sales' } },
-        {
-          fields: { category: 'month', value: 'revenue' },
-        }
-      ).config
-    ).toEqual({ type: 'column', title: 'Sales', data: [{ category: 'Jan', value: 10 }] });
-    expect(JSON.stringify(result)).toBe(before);
-    expect(() => bindChartData(result, { chartType: 'column' })).toThrow();
-    expect(() => bindChartData(result, { chartType: 'column' }, { fields: { value: 'unknown' } })).toThrow(
-      'Unknown result column'
-    );
-    expect(() =>
-      bindChartData(
-        { ...result, data: [{ month: 'Jan', revenue: '10' }] },
-        { chartType: 'column' },
-        {
-          fields: { category: 'month', value: 'revenue' },
-        }
-      )
-    ).toThrow();
-  });
-
-  it('validates bounded result metadata before binding native chart data', () => {
-    for (const metadata of [{ rowCount: 2 }, { truncated: true }, { truncatedBy: 'maxRows' }]) {
-      expect(() =>
-        bindChartData(
-          { ...result, ...metadata },
-          { chartType: 'column' },
-          { fields: { category: 'month', value: 'revenue' } }
-        )
-      ).toThrow(z.ZodError);
-    }
-    expect(() =>
-      bindChartData(
-        { schema: [{ name: 'month' }], data: [null] },
-        { chartType: 'table' },
-        { fields: { month: 'month' } }
-      )
-    ).toThrow(z.ZodError);
-    expect(() =>
-      bindChartData({ schema: [{ name: 'chart' }], data: [null] }, { chartType: 'liquid' }, { configField: 'chart' })
-    ).toThrow(z.ZodError);
-  });
-
-  it('binds native interpreter values without requiring object rows', () => {
-    expect(bindChartData({ schema: [], data: [1, 2, 3] }, { chartType: 'histogram' }).config).toEqual({
-      type: 'histogram',
-      data: [1, 2, 3],
-    });
-  });
-
-  it('supports non-row native configs from one structured result cell', () => {
-    const value = { schema: [{ name: 'chart' }], data: [{ chart: fixtures['dual-axes'] }] };
-    expect(bindChartData(value, { chartType: 'dual-axes' }, { configField: 'chart' }).config).toMatchObject(
-      fixtures['dual-axes']
-    );
-    expect(() =>
-      bindChartData(
-        { ...value, data: [...value.data, ...value.data] },
-        { chartType: 'dual-axes' },
-        { configField: 'chart' }
-      )
-    ).toThrow('exactly one');
-    expect(() =>
-      bindChartData(
-        { ...value, data: [{ chart: JSON.stringify(fixtures['dual-axes']) }] },
-        { chartType: 'dual-axes' },
-        { configField: 'chart' }
-      )
-    ).toThrow();
-    expect(() => bindChartData(result, { chartType: 'column', config: fixtures.column })).toThrow(
-      'must come from the result'
-    );
   });
 });

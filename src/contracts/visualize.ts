@@ -258,10 +258,3 @@ export const visualizeInputSchema = recommendInputSchema;
 export const visualizeOutputSchema = chartSpecSchema.and(z.object({ html: z.string() })).nullable();
 export const vizInputSchema = chartSpecSchema;
 export const vizOutputSchema = z.string();
-
-export const bindingSchema = z.union([
-  z
-    .object({ fields: z.record(z.string(), z.string().min(1)).refine((fields) => Object.keys(fields).length > 0) })
-    .strict(),
-  z.object({ configField: z.string().min(1) }).strict(),
-]);

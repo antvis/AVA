@@ -26,7 +26,7 @@ import { Heading } from '../../../../mdx-components';
 | [`cli/`](https://github.com/antvis/AVA/tree/ai/src/cli/) | 命令与本地数据集会话 |
 | [`util/`](https://github.com/antvis/AVA/tree/ai/src/util/) | 目录组装、模型格式化、指标执行规则与结果限制 |
 
-契约按公开 API 组织。`source/` 按数据源类型分文件维护运行时 schema，包括 CSV/JSON/Excel 读取选项；`source/index.ts` 组装数据源联合契约，`source/shared.ts` 维护共用的文件与连接字段。`schema.ts`、`profile.ts`、`semantic.ts`、`query.ts`、`analyze.ts`、`translate.ts`、`suggest.ts` 分别维护对应 API 输入与输出的运行时 schema。`visualize.ts` 维护 `recommend()`、`viz()`、`visualize()` 共用的图表结构及显式绑定配置。跨 API 的 JSON 值与数据模型基础定义放在 `shared/`。
+契约按公开 API 组织。`source/` 按数据源类型分文件维护运行时 schema，包括 CSV/JSON/Excel 读取选项；`source/index.ts` 组装数据源联合契约，`source/shared.ts` 维护共用的文件与连接字段。`schema.ts`、`profile.ts`、`semantic.ts`、`query.ts`、`analyze.ts`、`translate.ts`、`suggest.ts` 分别维护对应 API 输入与输出的运行时 schema。`visualize.ts` 维护 `recommend()`、`viz()`、`visualize()` 共用的图表结构。跨 API 的 JSON 值与数据模型基础定义放在 `shared/`。
 
 `types.ts` 汇总公开的配置、引擎、策略及数据类型定义；数据类型从运行时 schema 推导。数据模型组装器维护从公共元数据字段派生的严格输入校验。模块通过 `contracts/index.ts` 导入 API schema，从所属模块导入内部 schema，通过 `types.ts` 导入类型；契约定义之间直接引用，避免循环依赖。`index.ts` 与 `index.browser.ts` 统一导出 API 输入、输出 schema，类型沿用原有名称；CLI 消息协议、AI 阶段输出与引擎专用限制仍由各自模块维护。
 

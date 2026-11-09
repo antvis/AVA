@@ -95,7 +95,7 @@ describe('public result contract', () => {
 
 describe('source-to-chart contract flow', () => {
   it.each(['javascript', 'duckdb'])(
-    'preserves prototype-like column names through %s and chart binding',
+    'preserves prototype-like column names through %s and chart rendering',
     async (type) => {
       const data = JSON.parse('[{"__proto__":"A","constructor":"B","prototype":"C","value":10}]');
       const source = { type: 'json' as const, options: { data } };
@@ -107,14 +107,8 @@ describe('source-to-chart contract flow', () => {
         const result = await ava.query(type === 'duckdb' ? 'SELECT * FROM data' : 'const result = data;');
         expect(Object.entries(result.data[0])).toEqual(Object.entries(data[0]));
         expect(Object.getPrototypeOf(result.data[0])).toBe(Object.prototype);
-        const table = node.bindChartData(result, { chartType: 'table' });
+        const table = node.vizInputSchema.parse({ chartType: 'table', config: { data: result.data } });
         expect(table.config).toMatchObject({ data });
-        const column = node.bindChartData(
-          result,
-          { chartType: 'column' },
-          { fields: { category: '__proto__', value: 'value' } }
-        );
-        expect(column.config).toMatchObject({ data: [{ category: 'A', value: 10 }] });
         const html = await ava.viz(table);
         expect(runInNewContext(`(${html.match(/const visConfig = (.+);/)![1]})`, {}, { timeout: 1000 }).data).toEqual(
           data
@@ -153,11 +147,10 @@ describe('source-to-chart contract flow', () => {
     expect(contracts.schemaOutputSchema.parse({ models: [] })).toEqual({ models: [] });
     expect(contracts.profileOutputSchema.parse({ models: [] })).toEqual({ models: [] });
     expect(contracts.semanticOutputSchema.parse({ description: 'Sales' })).toEqual({ description: 'Sales' });
-    expect(node.bindChartData).toBe(browser.bindChartData);
     expect(node.inferFileSourceType).toBe(browser.inferFileSourceType);
   });
 
-  it('loads, queries, binds and renders real SQL results through the public contracts', async () => {
+  it('loads, queries and renders real SQL results through the public contracts', async () => {
     const ava = new node.AVA({ llm: { model: 'unused' } });
     const data = [
       { month: 'Jan', revenue: 10 },
@@ -166,13 +159,10 @@ describe('source-to-chart contract flow', () => {
     const config = sourceInputSchema.parse({ type: 'json', options: { data } });
     try {
       await ava.source(config);
-      const result = queryOutputSchema.parse(await ava.query('SELECT month, revenue FROM data ORDER BY revenue'));
+      const sql = 'SELECT month AS category, revenue AS value FROM data ORDER BY revenue';
+      const result = queryOutputSchema.parse(await ava.query(sql));
       const before = JSON.stringify(result);
-      const spec = node.bindChartData(
-        result,
-        { chartType: 'column' },
-        { fields: { category: 'month', value: 'revenue' } }
-      );
+      const spec = node.vizInputSchema.parse({ chartType: 'column', config: { data: result.data } });
       const html = await ava.viz(spec);
       expect(runInNewContext(`(${html.match(/const visConfig = (.+);/)![1]})`, {}, { timeout: 1000 })).toEqual({
         type: 'column',
@@ -187,18 +177,16 @@ describe('source-to-chart contract flow', () => {
         { month: 'Feb', revenue: 20 },
       ]);
 
-      const partial = await ava.query('SELECT month, revenue FROM data ORDER BY revenue', { maxRows: 1 });
+      const partial = await ava.query(sql, { maxRows: 1 });
       expect(partial).toMatchObject({ truncated: true, truncatedBy: 'maxRows' });
-      expect(
-        node.bindChartData(partial, { chartType: 'column' }, { fields: { category: 'month', value: 'revenue' } }).config
-          .data
-      ).toEqual([{ category: 'Jan', value: 10 }]);
+      const partialSpec = node.vizInputSchema.parse({ chartType: 'column', config: { data: partial.data } });
+      expect(partialSpec.config).toMatchObject({ data: [{ category: 'Jan', value: 10 }] });
       expect(partial.truncated).toBe(true);
 
-      const strings = await ava.query('SELECT month, CAST(revenue AS VARCHAR) AS revenue FROM data');
-      expect(() =>
-        node.bindChartData(strings, { chartType: 'column' }, { fields: { category: 'month', value: 'revenue' } })
-      ).toThrow(z.ZodError);
+      const strings = await ava.query('SELECT month AS category, CAST(revenue AS VARCHAR) AS value FROM data');
+      expect(() => node.vizInputSchema.parse({ chartType: 'column', config: { data: strings.data } })).toThrow(
+        z.ZodError
+      );
     } finally {
       await ava.dispose();
     }

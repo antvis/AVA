@@ -24,7 +24,7 @@ import type { sourceSchemas } from './contracts/source';
 import type { csvReadOptionsSchema } from './contracts/source/csv';
 import type { jsonReadOptionsSchema } from './contracts/source/json';
 import type { excelSheetSchema } from './contracts/source/excel';
-import type { chartSpecSchema, bindingSchema } from './contracts/visualize';
+import type { chartSpecSchema } from './contracts/visualize';
 import type { dataModelMetadataSchema } from './contracts/shared/data-model';
 import type { jsonValue } from './contracts/shared/json';
 
@@ -81,7 +81,6 @@ export type SuggestResult = z.output<typeof suggestOutputSchema>[number];
 export type ChartSpec = z.output<typeof chartSpecSchema>;
 export type ChartSpecInput = z.input<typeof vizInputSchema>;
 export type ChartType = ChartSpec['chartType'];
-export type ChartDataBinding = z.output<typeof bindingSchema>;
 export type VisualizeResponse = NonNullable<z.output<typeof visualizeOutputSchema>>;
 export type LogicalType = Profile['models'][number]['columns'][number]['properties']['logicalType'];
 export type MetricConfig = NonNullable<ProfileOptions['metrics']>[number];
