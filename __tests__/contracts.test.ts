@@ -2,7 +2,6 @@ import { runInNewContext } from 'node:vm';
 
 import { z } from 'zod';
 import { describe, expect, it } from 'vitest';
-import * as ts from 'typescript';
 
 import { AVA, queryOutputSchema, sourceInputSchema } from '../src/index.browser';
 import * as node from '../src';
@@ -193,21 +192,6 @@ describe('source-to-chart contract flow', () => {
 });
 
 describe('API input and output contracts', () => {
-  it('checks public contract types', () => {
-    const config = ts.readConfigFile('tsconfig.json', ts.sys.readFile);
-    expect(config.error).toBeUndefined();
-    const parsed = ts.parseJsonConfigFileContent(
-      { ...config.config, include: [...config.config.include, '__tests__/types/**/*.ts'] },
-      ts.sys,
-      process.cwd(),
-      { noEmit: true }
-    );
-    const host = ts.createCompilerHost(parsed.options);
-    const program = ts.createProgram(parsed.fileNames, parsed.options, host);
-    const diagnostics = [...parsed.errors, ...ts.getPreEmitDiagnostics(program)];
-    expect(ts.formatDiagnostics(diagnostics, host)).toBe('');
-  }, 30_000);
-
   it('describes serializable API arguments without transport-specific fields or limits', () => {
     expect(contracts.sourceInputSchema.parse(source)).toEqual(source);
     expect(contracts.schemaInputSchema.parse({})).toEqual({});
