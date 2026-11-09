@@ -1,45 +1,36 @@
 // Compile-time regressions: run by test:types, including the expected failures.
-import { sourceInputSchema, vizInputSchema, queryOutputSchema, analyzeOutputSchema } from '../../src';
+import {
+  sourceInputSchema,
+  vizInputSchema,
+  queryInputSchema,
+  queryOutputSchema,
+  analyzeInputSchema,
+  analyzeOutputSchema,
+} from '../../src';
 import { charts } from '../fixtures/charts';
 
 import type {
   AVA,
   AnalysisResponse,
   DataSourceConfig,
+  ExecutionOptions,
   ExecutionResult,
+  SchemaOptions,
+  Schema,
+  ProfileOptions,
+  Profile,
+  SemanticOptions,
+  Semantic,
+  SuggestResult,
   ChartSpec,
   ChartSpecInput,
   VisualizeResponse,
-  QueryInput as NodeQueryInput,
-  QueryOutput as NodeQueryOutput,
-  QueryInput,
-  QueryOutput,
-  AnalyzeInput,
-  AnalyzeOutput,
-  SchemaInput,
-  SchemaOutput,
-  ProfileInput,
-  ProfileOutput,
-  SemanticInput,
-  SemanticOutput,
-  RecommendInput,
-  RecommendOutput,
-  VisualizeInput,
-  VisualizeOutput,
-  VizInput,
-  VizOutput,
-  TranslateInput,
-  TranslateOutput,
-  SuggestInput,
-  SuggestOutput,
-  SourceInput,
 } from '../../src';
 import type {
   DataSourceConfig as BrowserSource,
   ExecutionResult as BrowserResult,
   ChartSpecInput as BrowserChartInput,
-  QueryInput as BrowserQueryInput,
-  QueryOutput as BrowserQueryOutput,
+  ExecutionOptions as BrowserExecutionOptions,
 } from '../../src/index.browser';
 import type {
   ClickHouseSourceOptions,
@@ -57,6 +48,7 @@ import type {
 import type { ClickHouseClientConfigOptions } from '@clickhouse/client';
 import type { ConnectionOptions as SnowflakeConnectionOptions } from 'snowflake-sdk';
 import type { GPTVisConfig } from '@antv/gpt-vis';
+import type { z } from 'zod';
 
 const csv: CSVReadOptions = { header: true, types: { amount: 'BIGINT' }, nullstr: ['NA'], sample_size: -1 };
 const csvByPosition: CSVReadOptions = { types: ['VARCHAR', 'BIGINT'] };
@@ -219,48 +211,48 @@ void mismatchedChart;
 export async function callWithAPIContracts(
   ava: AVA,
   input: {
-    source: SourceInput;
-    schema: SchemaInput;
-    profile: ProfileInput;
-    semantic: SemanticInput;
-    query: QueryInput;
-    analyze: AnalyzeInput;
-    recommend: RecommendInput;
-    visualize: VisualizeInput;
-    viz: VizInput;
-    translate: TranslateInput;
-    suggest: SuggestInput;
+    source: DataSourceConfig;
+    schema: SchemaOptions;
+    profile: ProfileOptions;
+    semantic: SemanticOptions;
+    query: z.input<typeof queryInputSchema>;
+    analyze: z.input<typeof analyzeInputSchema>;
+    recommend: Pick<AnalysisResponse, 'query' | 'data'>;
+    visualize: Pick<AnalysisResponse, 'query' | 'data'>;
+    viz: ChartSpecInput;
+    translate: string;
+    suggest: number;
   }
 ) {
   await ava.source(input.source);
-  const schema: SchemaOutput = await ava.schema(input.schema);
-  const profile: ProfileOutput = await ava.profile(input.profile);
-  const semantic: SemanticOutput = await ava.semantic(input.semantic);
-  const query: QueryOutput = await ava.query(input.query.dsl, input.query.options);
-  const analyze: AnalyzeOutput = await ava.analyze(input.analyze.query, input.analyze.config);
-  const recommend: RecommendOutput = await ava.recommend(input.recommend);
-  const visualize: VisualizeOutput = await ava.visualize(input.visualize);
-  const viz: VizOutput = await ava.viz(input.viz);
-  const translate: TranslateOutput = await ava.translate(input.translate);
-  const suggest: SuggestOutput = await ava.suggest(input.suggest);
+  const schema: Schema = await ava.schema(input.schema);
+  const profile: Profile = await ava.profile(input.profile);
+  const semantic: Semantic = await ava.semantic(input.semantic);
+  const query: ExecutionResult = await ava.query(input.query.dsl, input.query.options);
+  const analyze: AnalysisResponse = await ava.analyze(input.analyze.query, input.analyze.config);
+  const recommend: ChartSpec | null = await ava.recommend(input.recommend);
+  const visualize: VisualizeResponse | null = await ava.visualize(input.visualize);
+  const viz: string = await ava.viz(input.viz);
+  const translate: string = await ava.translate(input.translate);
+  const suggest: SuggestResult[] = await ava.suggest(input.suggest);
   return { schema, profile, semantic, query, analyze, recommend, visualize, viz, translate, suggest };
 }
-export function genericAPIResults(query: QueryOutput<Row>, analyze: AnalyzeOutput<Row>): number[] {
+export function genericAPIResults(query: ExecutionResult<Row>, analyze: AnalysisResponse<Row>): number[] {
   return [query.data[0].amount, analyze.data[0].amount];
 }
 // @ts-expect-error Discovery still requires the catalog's columns.
-const missingCatalogColumns: SchemaOutput = { models: [{ name: 'data', tableReference: { table: 'data' } }] };
-const emptyCatalogKey: SchemaOutput = {
+const missingCatalogColumns: Schema = { models: [{ name: 'data', tableReference: { table: 'data' } }] };
+const emptyCatalogKey: Schema = {
   // @ts-expect-error Inferred catalog keys remain nonempty.
   models: [{ name: 'data', tableReference: { table: 'data' }, columns: [], primaryKey: [] }],
 };
 // @ts-expect-error Semantic definitions exclude profiling observations.
-const semanticMetrics: SemanticOutput = { models: [{ name: 'data', baseObject: 'raw', metrics: {} }] };
+const semanticMetrics: Semantic = { models: [{ name: 'data', baseObject: 'raw', metrics: {} }] };
 // @ts-expect-error Inferred semantic models still require exactly one source.
-const ambiguousSemantic: SemanticOutput = { models: [{ name: 'data', baseObject: 'raw', refSql: 'SELECT 1' }] };
+const ambiguousSemantic: Semantic = { models: [{ name: 'data', baseObject: 'raw', refSql: 'SELECT 1' }] };
 // @ts-expect-error Visualizations must include generated HTML.
-const missingHTML: VisualizeOutput = { chartType: 'summary', config: '# Sales' };
-const missingOutputType: NonNullable<RecommendOutput> = {
+const missingHTML: VisualizeResponse = { chartType: 'summary', config: '# Sales' };
+const missingOutputType: ChartSpec = {
   chartType: 'column',
   // @ts-expect-error Normalized chart output retains a required config.type.
   config: { data: [{ category: 'A', value: 1 }] },
@@ -268,13 +260,13 @@ const missingOutputType: NonNullable<RecommendOutput> = {
 void [missingCatalogColumns, emptyCatalogKey, semanticMetrics, ambiguousSemantic, missingHTML, missingOutputType];
 
 // @ts-expect-error Schema has no configurable options.
-const invalidSchemaOptions: SchemaInput = { unknownOption: true };
+const invalidSchemaOptions: SchemaOptions = { unknownOption: true };
 // @ts-expect-error Semantic has no configurable options.
-const invalidSemanticOptions: SemanticInput = { unknownOption: true };
+const invalidSemanticOptions: SemanticOptions = { unknownOption: true };
 void [invalidSchemaOptions, invalidSemanticOptions];
 
-const inferredQueryOutput: QueryOutput = queryOutputSchema.parse({ schema: [], data: [1] });
-const inferredAnalyzeOutput: AnalyzeOutput = analyzeOutputSchema.parse({
+const inferredQueryOutput: ExecutionResult<unknown> = queryOutputSchema.parse({ schema: [], data: [1] });
+const inferredAnalyzeOutput: AnalysisResponse<unknown> = analyzeOutputSchema.parse({
   query: 'Value?',
   text: '',
   schema: [],
@@ -282,17 +274,15 @@ const inferredAnalyzeOutput: AnalyzeOutput = analyzeOutputSchema.parse({
 });
 void [inferredQueryOutput, inferredAnalyzeOutput];
 
-// Existing SDK callers retain their default object-row types after the public rename.
+// SDK callers retain their original type names and default object-row types.
 export function legacySDKOutputs(
   ava: AVA
 ): [Promise<ExecutionResult>, Promise<AnalysisResponse>, Promise<VisualizeResponse | null>] {
   return [ava.query('SELECT 1'), ava.analyze('Sales'), ava.visualize({ query: 'Sales', data: [] })];
 }
-export function sharedQueryInputs(input: QueryInput): BrowserQueryInput {
-  const node: NodeQueryInput = input;
-  return node;
+export function sharedQueryInputs(input: ExecutionOptions): BrowserExecutionOptions {
+  return input;
 }
-export function sharedQueryOutputs(output: QueryOutput<Row>): BrowserQueryOutput<Row> {
-  const node: NodeQueryOutput<Row> = output;
-  return node;
+export function sharedQueryOutputs(output: ExecutionResult<Row>): BrowserResult<Row> {
+  return output;
 }

@@ -102,7 +102,7 @@ import { Heading } from '../../../../mdx-components';
 <Heading as="h3" id="source">source</Heading>
 
 ```typescript
-source(config: SourceInput): Promise<void>
+source(config: DataSourceConfig): Promise<void>
 ```
 
 通过引擎加载数据源，没有返回值，也不会发现 schema。
@@ -113,7 +113,7 @@ await ava.source({ type: 'json', options: { data: [{ revenue: 120 }] } });
 
 | 参数 | 类型 | 必填 | 含义 |
 | --- | --- | --- | --- |
-| `config` | `SourceInput` | 是 | 待加载的数据源。 |
+| `config` | `DataSourceConfig` | 是 | 待加载的数据源。 |
 | `config.type` | `SourceType` | 是 | [数据源类型](/documentation/data/sources/#connect-a-source)，例如 `json` 或 `csv-file`。 |
 | `config.options` | 数据源对应的对象 | 是 | 该类型的[读取或连接设置](/documentation/data/sources/#connect-a-source)。 |
 
@@ -122,7 +122,7 @@ await ava.source({ type: 'json', options: { data: [{ revenue: 120 }] } });
 <Heading as="h3" id="schema">schema</Heading>
 
 ```typescript
-schema(options?: SchemaInput, setter?: (options: SchemaInput) => SchemaOutput): Promise<SchemaOutput>
+schema(options?: SchemaOptions, setter?: (options: SchemaOptions) => Schema): Promise<Schema>
 ```
 
 返回已加载数据源的结构。不提供 setter 时，AVA 优先返回已保存的 schema；没有缓存则通过引擎发现并保存。
@@ -139,8 +139,8 @@ await ava.schema(undefined, () => savedSchema);
 
 | 参数 | 类型 | 必填 | 含义与默认值 |
 | --- | --- | --- | --- |
-| `options` | `SchemaInput` | 否 | `{}`，目前没有可配置字段。 |
-| `setter` | `(options: SchemaInput) => SchemaOutput` | 否 | 返回要保存的 schema，替代引擎发现过程。 |
+| `options` | `SchemaOptions` | 否 | `{}`，目前没有可配置字段。 |
+| `setter` | `(options: SchemaOptions) => Schema` | 否 | 返回要保存的 schema，替代引擎发现过程。 |
 
 Setter 接收选项对象（默认 `{}`），同步返回 `Schema`。结果会替换已保存的 schema，并清空 profile。AVA 会验证并复制结果；结果无效或 setter 抛错时，调用失败，原有元数据保持不变。
 
@@ -164,7 +164,7 @@ Setter 接收选项对象（默认 `{}`），同步返回 `Schema`。结果会�
 <Heading as="h3" id="profile">profile</Heading>
 
 ```typescript
-profile(options?: ProfileInput, setter?: (options: ProfileInput) => ProfileOutput): Promise<ProfileOutput>
+profile(options?: ProfileOptions, setter?: (options: ProfileOptions) => Profile): Promise<Profile>
 ```
 
 通过引擎计算并保存已加载数据源的统计信息。不传 setter 时，每次调用都会重新计算，需要引擎支持统计。
@@ -181,9 +181,9 @@ await ava.profile(undefined, () => savedProfile);
 
 | 参数 | 类型 | 必填 | 含义与默认值 |
 | --- | --- | --- | --- |
-| `options` | `ProfileInput` | 否 | `{}`，使用下方默认指标。 |
+| `options` | `ProfileOptions` | 否 | `{}`，使用下方默认指标。 |
 | `options.metrics` | `MetricConfig[]` | 否 | 交给引擎计算的指标列表；提供后替换默认列表。 |
-| `setter` | `(options: ProfileInput) => ProfileOutput` | 否 | 返回要保存的 profile，替代引擎计算。 |
+| `setter` | `(options: ProfileOptions) => Profile` | 否 | 返回要保存的 profile，替代引擎计算。 |
 
 Setter 接收选项对象（默认 `{}`），同步返回 `Profile`，不要求引擎支持统计。AVA 会验证并复制结果；无效结果或 setter 抛错会让调用失败，并保留原有元数据。选项直接传给 setter，AVA 不会代替它计算或过滤指标。
 
@@ -228,7 +228,7 @@ await ava.profile({
 <Heading as="h3" id="semantic">semantic</Heading>
 
 ```typescript
-semantic(options?: SemanticInput, setter?: (options: SemanticInput) => SemanticOutput): Promise<SemanticOutput>
+semantic(options?: SemanticOptions, setter?: (options: SemanticOptions) => Semantic): Promise<Semantic>
 ```
 
 读取或替换已加载数据源的语义定义。不传 setter 时返回已保存的定义，初始为 `{}`。这个调用不会发现 schema、计算 profile 或请求大模型。
@@ -249,8 +249,8 @@ await ava.semantic(undefined, () => ({})); // Clear the saved definitions.
 
 | 参数 | 类型 | 必填 | 含义与默认值 |
 | --- | --- | --- | --- |
-| `options` | `SemanticInput` | 否 | `{}`，目前没有可配置字段。 |
-| `setter` | `(options: SemanticInput) => SemanticOutput` | 否 | 返回要保存的业务语义，替换之前的完整定义。 |
+| `options` | `SemanticOptions` | 否 | `{}`，目前没有可配置字段。 |
+| `setter` | `(options: SemanticOptions) => Semantic` | 否 | 返回要保存的业务语义，替换之前的完整定义。 |
 
 Setter 接收选项对象，同步返回 `Semantic`。AVA 验证并复制结果；结果无效或 setter 抛错时保留之前的定义。需要先加载数据源。替换数据源或释放实例会清空语义；更新 schema、profile 会保留它。
 
@@ -266,7 +266,7 @@ Setter 接收选项对象，同步返回 `Semantic`。AVA 验证并复制结果�
 
 <Heading as="h3" id="analyze">analyze</Heading>
 
-`analyze(query: AnalyzeInput['query'], config?: AnalysisConfig): Promise<AnalyzeOutput<Record<string, unknown>>>`
+`analyze(query: string, config?: AnalysisConfig): Promise<AnalysisResponse>`
 
 | 参数 | 类型 | 必填 | 默认值与行为 |
 | ---------------------------- | ---------------------------------- | ------------------------- | ------------------------------------------------------------------------------------------------------------------------------- |
@@ -293,7 +293,7 @@ Setter 接收选项对象，同步返回 `Semantic`。AVA 验证并复制结果�
 
 <Heading as="h3" id="translate">translate</Heading>
 
-`translate(query: TranslateInput): Promise<TranslateOutput>`
+`translate(query: string): Promise<string>`
 
 | 参数 | 类型 | 必填 | 含义 |
 | --------- | -------- | -------- | -------------------------- |
@@ -303,7 +303,7 @@ Setter 接收选项对象，同步返回 `Semantic`。AVA 验证并复制结果�
 
 <Heading as="h3" id="query">query</Heading>
 
-`query(dsl: QueryInput['dsl'], options?: ExecutionOptions): Promise<QueryOutput<Record<string, unknown>>>`
+`query(dsl: string, options?: ExecutionOptions): Promise<ExecutionResult>`
 
 | 参数 | 类型 | 必填 | 默认值与行为 |
 | ------------------------ | ------------------ | -------- | ------------------------------------------------------- |
@@ -337,7 +337,7 @@ Setter 接收选项对象，同步返回 `Semantic`。AVA 验证并复制结果�
 
 <Heading as="h3" id="suggest">suggest</Heading>
 
-`suggest(count?: SuggestInput): Promise<SuggestOutput>`
+`suggest(count?: number): Promise<SuggestResult[]>`
 
 | 参数 | 类型 | 必填 | 默认值与行为 |
 | --------- | -------- | -------- | ----------------------------------- |
@@ -349,29 +349,29 @@ Setter 接收选项对象，同步返回 `Semantic`。AVA 验证并复制结果�
 
 <Heading as="h3" id="visualize-and-recommend">visualize 与 recommend</Heading>
 
-`visualize(analysisResult: VisualizeInput): Promise<VisualizeOutput>`
+`visualize(analysisResult: Pick<AnalysisResponse, 'query' | 'data'>): Promise<VisualizeResponse | null>`
 
-`recommend(analysisResult: RecommendInput): Promise<RecommendOutput>`
+`recommend(analysisResult: Pick<AnalysisResponse, 'query' | 'data'>): Promise<ChartSpec | null>`
 
 两种方法接受相同的输入：
 
 | 参数 | 类型 | 必填 | 含义 |
 | ---------------------- | ------------------------------------------- | -------- | ---------------------------------------------------------------- |
-| `analysisResult` | `RecommendInput` / `VisualizeInput` | 是 | 分析结果，或包含下面两个字段的对象。 |
+| `analysisResult` | `Pick<AnalysisResponse, 'query' \| 'data'>` | 是 | 分析结果，或包含下面两个字段的对象。 |
 | `analysisResult.query` | `string` | 是 | 问题或可视化意图。 |
-| `analysisResult.data` | `unknown[]` | 是 | 待可视化的数据行。 |
+| `analysisResult.data` | `AnalysisResponse['data']` | 是 | 待可视化的数据行。 |
 
 两种方法都不要求加载数据源，均调用模型；数据为空或没有推荐出图表时返回 `null`，生成错误则直接抛出。`recommend()` 返回 `ChartSpec`；`visualize()` 还返回 `html: string`，包含独立的图表页面。
 
 <Heading as="h3" id="viz">viz</Heading>
 
-`viz(spec: VizInput): Promise<VizOutput>`
+`viz(spec: ChartSpecInput): Promise<string>`
 
 | 参数 | 类型 | 必填 | 含义 |
 | ---------------- | ----------- | -------- | --------------------------------------------------------------------------------------------------- |
-| `spec` | `VizInput` | 是 | 应用默认值之前的图表描述对象。 |
+| `spec` | `ChartSpecInput` | 是 | 应用默认值之前的图表描述对象。 |
 | `spec.chartType` | `ChartType` | 是 | 下方类型之一；JSON 图表必须与 `config.type` 一致。 |
-| `spec.config` | `VizInput['config']` | 是 | 原生 GPT-Vis 配置；省略 `config.type` 时由 `chartType` 补齐。`summary` 使用 T8 Syntax 字符串。 |
+| `spec.config` | `ChartSpecInput['config']` | 是 | 原生 GPT-Vis 配置；省略 `config.type` 时由 `chartType` 补齐。`summary` 使用 T8 Syntax 字符串。 |
 
 `ChartType` 可选值：`line`、`column`、`bar`、`pie`、`area`、`scatter`、`dual-axes`、`histogram`、`boxplot`、`radar`、`funnel`、`waterfall`、`liquid`、`word-cloud`、`violin`、`venn`、`treemap`、`sankey`、`table`、`summary`。
 
@@ -391,10 +391,10 @@ MCP 等集成直接从 SDK 入口导入 API schema 与数据类型。Node 使用
 
 ```typescript
 import { queryInputSchema, queryOutputSchema } from '@antv/ava';
-import type { QueryInput, QueryOutput } from '@antv/ava';
+import type { ExecutionResult } from '@antv/ava';
 
-const input: QueryInput = queryInputSchema.parse({ dsl: 'SELECT * FROM data', options: { maxRows: 10 } });
-const output: QueryOutput = queryOutputSchema.parse(await ava.query(input.dsl, input.options));
+const input = queryInputSchema.parse({ dsl: 'SELECT * FROM data', options: { maxRows: 10 } });
+const output: ExecutionResult<unknown> = queryOutputSchema.parse(await ava.query(input.dsl, input.options));
 ```
 
 API 类型统一通过 `z.input<typeof inputSchema>` 与 `z.output<typeof outputSchema>` 推导，结构、画像、语义、分析和建议等类型均与运行时 schema 共用字段定义。数据源类型描述规范化之前的输入，例如 Excel 的 `header` 仍可省略。`ExecutionResult<Row>` 保留查询行的泛型；运行时校验结果结构，不推断调用方泛型中的行字段。ClickHouse 选项继续引用官方客户端的原生类型，支持 TLS Buffer、Agent 和回调等，由客户端处理透传的原生选项。
@@ -415,7 +415,7 @@ API 类型统一通过 `z.input<typeof inputSchema>` 与 `z.output<typeof output
 | `visualize` | `visualizeInputSchema`：`{ query, data }` | `visualizeOutputSchema`：必含 HTML 的图表配置或 `null` |
 | `viz` | `vizInputSchema`：应用默认值前的图表配置 | `vizOutputSchema`：HTML 字符串 |
 
-Node 和 browser 入口统一导出 API 输入、输出 schema 及对应类型，例如 `QueryInput` / `QueryOutput`。SDK 查询、分析方法保留原有的对象行默认类型；`QueryOutput`、`AnalyzeOutput` 类型默认使用未知行类型。`QueryOutput<Row>`、`AnalyzeOutput<Row>` 保留行泛型。`dispose()` 没有输入数据或返回值，无需数据 schema。既有类型名称保留。SDK 还提供以下工具函数：
+Node 和 browser 入口统一导出 API 输入、输出 schema。类型沿用 `DataSourceConfig`、`SchemaOptions`、`ExecutionResult`、`AnalysisResponse` 等原有命名。`ExecutionResult<Row>`、`AnalysisResponse<Row>` 保留行泛型，默认使用对象行类型。`dispose()` 没有输入数据或返回值，无需数据 schema。SDK 还提供以下工具函数：
 
 | 导出 | 用途 |
 | --- | --- |

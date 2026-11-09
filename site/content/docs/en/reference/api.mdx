@@ -100,7 +100,7 @@ Set `engine.type` to the name passed to `registerEngine()`. Additional fields ar
 ### source
 
 ```typescript
-source(config: SourceInput): Promise<void>
+source(config: DataSourceConfig): Promise<void>
 ```
 
 Loads a data source through the engine. It returns no value and does not discover the schema.
@@ -111,7 +111,7 @@ await ava.source({ type: 'json', options: { data: [{ revenue: 120 }] } });
 
 | Parameter | Type | Required | Meaning |
 | --- | --- | --- | --- |
-| `config` | `SourceInput` | Yes | Data source to load. |
+| `config` | `DataSourceConfig` | Yes | Data source to load. |
 | `config.type` | `SourceType` | Yes | [Source type](/documentation/data/sources/#connect-a-source), such as `json` or `csv-file`. |
 | `config.options` | Source-specific object | Yes | [Reader or connection settings](/documentation/data/sources/#connect-a-source) for that type. |
 
@@ -120,7 +120,7 @@ Source configuration is validated before replacing the active dataset; an invali
 ### schema
 
 ```typescript
-schema(options?: SchemaInput, setter?: (options: SchemaInput) => SchemaOutput): Promise<SchemaOutput>
+schema(options?: SchemaOptions, setter?: (options: SchemaOptions) => Schema): Promise<Schema>
 ```
 
 Returns the structure of the loaded source. Without a setter, AVA returns the saved schema or discovers it through the engine and saves it.
@@ -137,8 +137,8 @@ await ava.schema(undefined, () => savedSchema);
 
 | Parameter | Type | Required | Meaning / default |
 | --- | --- | --- | --- |
-| `options` | `SchemaInput` | No | `{}`; currently has no configurable fields. |
-| `setter` | `(options: SchemaInput) => SchemaOutput` | No | Returns the schema to save instead of discovering it through the engine. |
+| `options` | `SchemaOptions` | No | `{}`; currently has no configurable fields. |
+| `setter` | `(options: SchemaOptions) => Schema` | No | Returns the schema to save instead of discovering it through the engine. |
 
 A setter receives the options object (default `{}`) and returns a `Schema` synchronously. Its result replaces the saved schema and clears the saved profile. AVA validates and copies the result; invalid results or thrown errors reject the call without changing previous metadata.
 
@@ -162,7 +162,7 @@ The details depend on the source and engine. A query result's `schema` describes
 ### profile
 
 ```typescript
-profile(options?: ProfileInput, setter?: (options: ProfileInput) => ProfileOutput): Promise<ProfileOutput>
+profile(options?: ProfileOptions, setter?: (options: ProfileOptions) => Profile): Promise<Profile>
 ```
 
 Calculates and saves statistics for the loaded source through the engine. Each call without a setter computes a fresh profile and requires engine profiling support.
@@ -179,9 +179,9 @@ await ava.profile(undefined, () => savedProfile);
 
 | Parameter | Type | Required | Meaning / default |
 | --- | --- | --- | --- |
-| `options` | `ProfileInput` | No | `{}`; uses the default metrics below. |
+| `options` | `ProfileOptions` | No | `{}`; uses the default metrics below. |
 | `options.metrics` | `MetricConfig[]` | No | Metrics for engine computation. A supplied list replaces the defaults. |
-| `setter` | `(options: ProfileInput) => ProfileOutput` | No | Returns the profile to save instead of computing it through the engine. |
+| `setter` | `(options: ProfileOptions) => Profile` | No | Returns the profile to save instead of computing it through the engine. |
 
 A setter receives the options object (default `{}`) and returns a `Profile` synchronously. It does not require engine profiling support. AVA validates and copies its result; invalid results or thrown errors reject the call without changing previous metadata. The options are passed to the setter; AVA does not calculate or filter metrics on its behalf.
 
@@ -226,7 +226,7 @@ Other built-in metrics accept no additional options. Unknown metrics and unknown
 ### semantic
 
 ```typescript
-semantic(options?: SemanticInput, setter?: (options: SemanticInput) => SemanticOutput): Promise<SemanticOutput>
+semantic(options?: SemanticOptions, setter?: (options: SemanticOptions) => Semantic): Promise<Semantic>
 ```
 
 Reads or replaces the semantic definitions for the loaded source. Without a setter, returns the saved definitions, initially `{}`. This call does not discover the schema, compute a profile, or call an LLM.
@@ -247,8 +247,8 @@ await ava.semantic(undefined, () => ({})); // Clear the saved definitions.
 
 | Parameter | Type | Required | Meaning / default |
 | --- | --- | --- | --- |
-| `options` | `SemanticInput` | No | `{}`; currently has no configurable fields. |
-| `setter` | `(options: SemanticInput) => SemanticOutput` | No | Returns the semantic definitions to save, replacing the previous definitions. |
+| `options` | `SemanticOptions` | No | `{}`; currently has no configurable fields. |
+| `setter` | `(options: SemanticOptions) => Semantic` | No | Returns the semantic definitions to save, replacing the previous definitions. |
 
 The setter receives the options object and returns a `Semantic` synchronously. AVA validates and copies the result; invalid results or thrown errors leave the previous definitions unchanged. Requires a loaded source. Source replacement and disposal clear these definitions; schema and profile updates retain them.
 
@@ -264,7 +264,7 @@ These definitions provide context for query generation. Declaring a cube, view, 
 
 ### analyze
 
-`analyze(query: AnalyzeInput['query'], config?: AnalysisConfig): Promise<AnalyzeOutput<Record<string, unknown>>>`
+`analyze(query: string, config?: AnalysisConfig): Promise<AnalysisResponse>`
 
 | Parameter                    | Type                               | Required                  | Default / behavior                                                                                                              |
 | ---------------------------- | ---------------------------------- | ------------------------- | ------------------------------------------------------------------------------------------------------------------------------- |
@@ -291,7 +291,7 @@ Requires a loaded source. Returns an [ExecutionResult](#executionresult) plus:
 
 ### translate
 
-`translate(query: TranslateInput): Promise<TranslateOutput>`
+`translate(query: string): Promise<string>`
 
 | Parameter | Type     | Required | Meaning                    |
 | --------- | -------- | -------- | -------------------------- |
@@ -301,7 +301,7 @@ Requires a loaded source. Returns generated DSL without executing it; use `query
 
 ### query
 
-`query(dsl: QueryInput['dsl'], options?: ExecutionOptions): Promise<QueryOutput<Record<string, unknown>>>`
+`query(dsl: string, options?: ExecutionOptions): Promise<ExecutionResult>`
 
 | Parameter                | Type               | Required | Default / behavior                                      |
 | ------------------------ | ------------------ | -------- | ------------------------------------------------------- |
@@ -335,7 +335,7 @@ These limits bound returned data; they are separate from engine execution timeou
 
 ### suggest
 
-`suggest(count?: SuggestInput): Promise<SuggestOutput>`
+`suggest(count?: number): Promise<SuggestResult[]>`
 
 | Parameter | Type     | Required | Default / behavior                  |
 | --------- | -------- | -------- | ----------------------------------- |
@@ -347,29 +347,29 @@ Requires a loaded source. Returns suggestions sorted by descending score, each w
 
 ### visualize and recommend
 
-`visualize(analysisResult: VisualizeInput): Promise<VisualizeOutput>`
+`visualize(analysisResult: Pick<AnalysisResponse, 'query' | 'data'>): Promise<VisualizeResponse | null>`
 
-`recommend(analysisResult: RecommendInput): Promise<RecommendOutput>`
+`recommend(analysisResult: Pick<AnalysisResponse, 'query' | 'data'>): Promise<ChartSpec | null>`
 
 Both methods accept the same input:
 
 | Parameter              | Type                                        | Required | Meaning                                                          |
 | ---------------------- | ------------------------------------------- | -------- | ---------------------------------------------------------------- |
-| `analysisResult`       | `RecommendInput` / `VisualizeInput` | Yes      | An analysis result or an object containing the two fields below. |
+| `analysisResult`       | `Pick<AnalysisResponse, 'query' \| 'data'>` | Yes      | An analysis result or an object containing the two fields below. |
 | `analysisResult.query` | `string`                                    | Yes      | Question or visualization intent.                                |
-| `analysisResult.data`  | `unknown[]`                 | Yes      | Rows to visualize.                                               |
+| `analysisResult.data`  | `AnalysisResponse['data']`                 | Yes      | Rows to visualize.                                               |
 
 Neither requires a loaded source. Both use the model and return `null` for empty data or when no chart is recommended. Generation errors propagate. `recommend()` returns a `ChartSpec`; `visualize()` additionally returns `html: string` containing a standalone chart page.
 
 ### viz
 
-`viz(spec: VizInput): Promise<VizOutput>`
+`viz(spec: ChartSpecInput): Promise<string>`
 
 | Parameter        | Type        | Required | Meaning                                                                                             |
 | ---------------- | ----------- | -------- | --------------------------------------------------------------------------------------------------- |
-| `spec`           | `VizInput` | Yes      | Chart specification before defaults are applied. |
+| `spec`           | `ChartSpecInput` | Yes      | Chart specification before defaults are applied. |
 | `spec.chartType` | `ChartType` | Yes      | One of the types below; must match `config.type` for JSON charts. |
-| `spec.config`    | `VizInput['config']` | Yes    | Native GPT-Vis config; a missing `config.type` is filled from `chartType`. For `summary`, pass a T8 Syntax string. |
+| `spec.config`    | `ChartSpecInput['config']` | Yes    | Native GPT-Vis config; a missing `config.type` is filled from `chartType`. For `summary`, pass a T8 Syntax string. |
 
 `ChartType` values: `line`, `column`, `bar`, `pie`, `area`, `scatter`, `dual-axes`, `histogram`, `boxplot`, `radar`, `funnel`, `waterfall`, `liquid`, `word-cloud`, `violin`, `venn`, `treemap`, `sankey`, `table`, `summary`.
 
@@ -389,10 +389,10 @@ MCP and other integrations import API schemas and data types from the SDK entry 
 
 ```typescript
 import { queryInputSchema, queryOutputSchema } from '@antv/ava';
-import type { QueryInput, QueryOutput } from '@antv/ava';
+import type { ExecutionResult } from '@antv/ava';
 
-const input: QueryInput = queryInputSchema.parse({ dsl: 'SELECT * FROM data', options: { maxRows: 10 } });
-const output: QueryOutput = queryOutputSchema.parse(await ava.query(input.dsl, input.options));
+const input = queryInputSchema.parse({ dsl: 'SELECT * FROM data', options: { maxRows: 10 } });
+const output: ExecutionResult<unknown> = queryOutputSchema.parse(await ava.query(input.dsl, input.options));
 ```
 
 API types are derived with `z.input<typeof inputSchema>` and `z.output<typeof outputSchema>`, so runtime validation and TypeScript share one field definition, including structure, profile, semantic, analysis and suggestions. Source types describe input before normalization (for example, Excel's `header` remains optional). `ExecutionResult<Row>` preserves your query's row type; runtime validation checks the result envelope, not the caller's generic row fields. ClickHouse options retain the official client's native types, including TLS buffers, agents and callbacks; those native options pass through to the client.
@@ -413,7 +413,7 @@ Public schemas follow API input/output names. Multi-argument methods use named a
 | `visualize` | `visualizeInputSchema`: `{ query, data }` | `visualizeOutputSchema`: chart spec with required HTML, or `null` |
 | `viz` | `vizInputSchema`: chart spec before defaults | `vizOutputSchema`: HTML string |
 
-The Node and browser entry points export the same API input/output schemas and corresponding types, such as `QueryInput` / `QueryOutput`. SDK query/analysis methods retain their existing default object-row types; the `QueryOutput` and `AnalyzeOutput` types default to unknown rows. `QueryOutput<Row>` and `AnalyzeOutput<Row>` retain row generics. `dispose()` has neither input data nor a return value, so it needs no data schema. Existing type names remain available. Additional SDK helpers:
+The Node and browser entry points export the same API input/output schemas. Type names remain unchanged, including `DataSourceConfig`, `SchemaOptions`, `ExecutionResult` and `AnalysisResponse`. `ExecutionResult<Row>` and `AnalysisResponse<Row>` retain row generics and default to object rows. `dispose()` has neither input data nor a return value, so it needs no data schema. Additional SDK helpers:
 
 | Export | Purpose |
 | --- | --- |

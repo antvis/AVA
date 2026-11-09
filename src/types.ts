@@ -16,16 +16,9 @@ import type {
   queryOutputSchema,
   analyzeInputSchema,
   analyzeOutputSchema,
-  translateInputSchema,
-  translateOutputSchema,
-  suggestInputSchema,
   suggestOutputSchema,
-  recommendInputSchema,
-  recommendOutputSchema,
-  visualizeInputSchema,
   visualizeOutputSchema,
   vizInputSchema,
-  vizOutputSchema,
 } from './contracts';
 import type { sourceSchemas } from './contracts/source';
 import type { csvReadOptionsSchema } from './contracts/source/csv';
@@ -62,52 +55,36 @@ export interface AVAConfig {
 }
 
 // Data contracts keep input defaults optional and normalized outputs explicit.
-export type SchemaInput = z.input<typeof schemaInputSchema>;
-export type SchemaOutput = z.output<typeof schemaOutputSchema>;
-export type ProfileInput = z.input<typeof profileInputSchema>;
-export type ProfileOutput = z.output<typeof profileOutputSchema>;
-export type SemanticInput = z.input<typeof semanticInputSchema>;
-export type SemanticOutput = z.output<typeof semanticOutputSchema>;
-export type QueryInput = z.input<typeof queryInputSchema>;
-export type QueryOutput<T = unknown> = Omit<z.output<ReturnType<typeof queryOutputSchema.strip>>, 'data'> & {
-  data: T[];
-};
-export type AnalyzeInput = z.input<typeof analyzeInputSchema>;
-export type AnalyzeOutput<T = unknown> = Omit<z.output<ReturnType<typeof analyzeOutputSchema.strip>>, 'data'> & {
-  data: T[];
-};
-export type TranslateInput = z.input<typeof translateInputSchema>;
-export type TranslateOutput = z.output<typeof translateOutputSchema>;
-export type SuggestInput = z.input<typeof suggestInputSchema>;
-export type SuggestOutput = z.output<typeof suggestOutputSchema>;
-export type RecommendInput = z.input<typeof recommendInputSchema>;
-export type RecommendOutput = z.output<typeof recommendOutputSchema>;
-export type VisualizeInput = z.input<typeof visualizeInputSchema>;
-export type VisualizeOutput = z.output<typeof visualizeOutputSchema>;
-export type VizInput = z.input<typeof vizInputSchema>;
-export type VizOutput = z.output<typeof vizOutputSchema>;
-
-export type SchemaOptions = SchemaInput;
-export type Schema = SchemaOutput;
-export type ProfileOptions = ProfileInput;
-export type Profile = ProfileOutput;
-export type SemanticOptions = SemanticInput;
-export type Semantic = SemanticOutput;
-export type ExecutionOptions = NonNullable<QueryInput['options']>;
+export type SchemaOptions = z.input<typeof schemaInputSchema>;
+export type Schema = z.output<typeof schemaOutputSchema>;
+export type ProfileOptions = z.input<typeof profileInputSchema>;
+export type Profile = z.output<typeof profileOutputSchema>;
+export type SemanticOptions = z.input<typeof semanticInputSchema>;
+export type Semantic = z.output<typeof semanticOutputSchema>;
+export type ExecutionOptions = NonNullable<z.input<typeof queryInputSchema>['options']>;
 export type QueryColumn = z.output<typeof queryOutputSchema>['schema'][number];
-/** SDK methods retain their existing default object-row types. */
-export type ExecutionResult<T = Record<string, unknown>> = QueryOutput<T>;
-export type AnalysisConfig = NonNullable<AnalyzeInput['config']>;
+export type ExecutionResult<T = Record<string, unknown>> = Omit<
+  z.output<ReturnType<typeof queryOutputSchema.strip>>,
+  'data'
+> & {
+  data: T[];
+};
+export type AnalysisConfig = NonNullable<z.input<typeof analyzeInputSchema>['config']>;
 export type AnalysisStrategyConfig = NonNullable<AnalysisConfig['strategy']>;
-export type AnalysisResponse<T = Record<string, unknown>> = AnalyzeOutput<T>;
-export type SuggestResult = SuggestOutput[number];
+export type AnalysisResponse<T = Record<string, unknown>> = Omit<
+  z.output<ReturnType<typeof analyzeOutputSchema.strip>>,
+  'data'
+> & {
+  data: T[];
+};
+export type SuggestResult = z.output<typeof suggestOutputSchema>[number];
 export type ChartSpec = z.output<typeof chartSpecSchema>;
-export type ChartSpecInput = VizInput;
+export type ChartSpecInput = z.input<typeof vizInputSchema>;
 export type ChartType = ChartSpec['chartType'];
 export type ChartDataBinding = z.output<typeof bindingSchema>;
-export type VisualizeResponse = NonNullable<VisualizeOutput>;
+export type VisualizeResponse = NonNullable<z.output<typeof visualizeOutputSchema>>;
 export type LogicalType = Profile['models'][number]['columns'][number]['properties']['logicalType'];
-export type MetricConfig = NonNullable<ProfileInput['metrics']>[number];
+export type MetricConfig = NonNullable<ProfileOptions['metrics']>[number];
 export type MetricId = Exclude<MetricConfig, string>['id'];
 export type ParsedProfileOptions = { metrics: Exclude<MetricConfig, string>[] };
 
@@ -148,7 +125,6 @@ export type DataSourceConfig =
   | Exclude<SourceConfigInput, ClickHouseInput | SnowflakeInput>
   | (Omit<ClickHouseInput, 'options'> & { options: ClickHouseSourceOptions })
   | (Omit<SnowflakeInput, 'options'> & { options: SnowflakeSourceOptions });
-export type SourceInput = DataSourceConfig;
 export type SourceType = DataSourceConfig['type'];
 export type CSVFileSourceOptions = Extract<SourceConfigInput, { type: 'csv-file' }>['options'];
 export type JsonFileSourceOptions = Extract<SourceConfigInput, { type: 'json-file' }>['options'];
