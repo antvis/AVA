@@ -282,7 +282,7 @@ async function readFirstPage(
     if (apiResponse.jobComplete !== false) return response;
     const nextQuery = response[1];
     if (!nextQuery) throw new Error('BigQuery returned an incomplete query without a continuation request');
-    request = { ...nextQuery, autoPaginate: false, wrapIntegers: true };
+    request = { ...readOptions(options), ...nextQuery, autoPaginate: false, wrapIntegers: true };
   }
 }
 

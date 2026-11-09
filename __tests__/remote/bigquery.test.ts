@@ -173,6 +173,19 @@ describe('BigQueryEngine (mock adapter)', () => {
     }
   });
 
+  it('applies the serialized-byte bound independently of the row bound', async () => {
+    const engine = new BigQueryEngine(getLLMConfig());
+    try {
+      await engine.load(MOCK_SOURCE);
+      const result = await engine.execute('SELECT * FROM orders', { maxRows: 6, maxResultBytes: 100 });
+      expect(result.data.length).toBeLessThan(6);
+      expect(result.truncated).toBe(true);
+      expect(result.truncatedBy).toBe('maxResultBytes');
+    } finally {
+      await engine.dispose();
+    }
+  });
+
   it('lets query errors propagate with a clear message', async () => {
     const engine = new BigQueryEngine(getLLMConfig());
     try {
@@ -242,7 +255,8 @@ describe('BigQueryEngine (mock adapter)', () => {
     }
   });
 
-  it('dispose releases the connector so further calls fail cleanly', async () => {    const engine = new BigQueryEngine(getLLMConfig());
+  it('dispose releases the connector so further calls fail cleanly', async () => {
+    const engine = new BigQueryEngine(getLLMConfig());
     await engine.load(MOCK_SOURCE);
     await engine.dispose();
     await expect(engine.schema()).rejects.toThrow('No data loaded');
@@ -425,6 +439,17 @@ describe('BigQueryQueryConnector (SDK mocked)', () => {
     return connector;
   }
 
+  it('rejects writes before calling the SDK even when the connector is used directly', async () => {
+    const stub = stubClient({});
+    const connector = await connect({ projectId: 'demo-project' }, stub);
+    try {
+      await expect(connector.query('DELETE FROM orders')).rejects.toThrow('read-only');
+      expect(stub.createQueryJob).not.toHaveBeenCalled();
+    } finally {
+      await connector.close();
+    }
+  });
+
   it('applies the row bound at the result-read interface, not the job config', async () => {
     const stub = stubClient({
       rows: [{ n: 1 }],
@@ -502,7 +527,7 @@ describe('BigQueryQueryConnector (SDK mocked)', () => {
   });
 
   it('rejects a dry-run estimate above the maximumBytesBilled budget before starting a job', async () => {
-    const stub = stubClient({ dryRunBytes: '10000027' });
+    const stub = stubClient({ dryRunBytes: '900719925474099300' });
     const connector = await connect({ projectId: 'demo-project', maxBytesBilled: 10000000 }, stub);
     try {
       await expect(connector.query('SELECT * FROM big_table')).rejects.toThrow(/maximumBytesBilled/);
@@ -540,6 +565,69 @@ describe('BigQueryQueryConnector (SDK mocked)', () => {
     } finally {
       await connector.close();
     }
+  });
+
+  it('polls an incomplete job without enabling automatic result pagination', async () => {
+    const stub = stubClient({});
+    stub.job.getQueryResults
+      .mockResolvedValueOnce([[], { location: 'US' }, { jobComplete: false }])
+      .mockResolvedValueOnce([
+        [{ n: { value: '1' } }],
+        null,
+        { jobComplete: true, schema: { fields: [{ name: 'n', type: 'INT64' }] } },
+      ]);
+    const connector = await connect({ projectId: 'demo-project', defaultRowLimit: 1 }, stub);
+    try {
+      const result = await connector.query('SELECT n FROM t');
+      expect(result.rows).toEqual([{ n: '1' }]);
+      expect(stub.job.getQueryResults).toHaveBeenCalledTimes(2);
+      expect(stub.job.getQueryResults).toHaveBeenLastCalledWith(
+        expect.objectContaining({ maxResults: 1, autoPaginate: false, wrapIntegers: true })
+      );
+    } finally {
+      await connector.close();
+    }
+  });
+
+  it('does not follow a result page token and pull the full result set', async () => {
+    const stub = stubClient({});
+    stub.job.getQueryResults.mockResolvedValue([
+      [{ n: { value: '1' } }],
+      { pageToken: 'more-rows' },
+      { jobComplete: true, schema: { fields: [{ name: 'n', type: 'INT64' }] } },
+    ]);
+    const connector = await connect({ projectId: 'demo-project', defaultRowLimit: 1 }, stub);
+    try {
+      const result = await connector.query('SELECT n FROM t');
+      expect(result.rows).toEqual([{ n: '1' }]);
+      expect(stub.job.getQueryResults).toHaveBeenCalledTimes(1);
+    } finally {
+      await connector.close();
+    }
+  });
+
+  it('cancels an in-flight job on close and rejects its pending query', async () => {
+    const stub = stubClient({});
+    let resolveResults: ((value: unknown) => void) | undefined;
+    stub.job.getQueryResults = vi.fn(
+      () =>
+        new Promise((resolve) => {
+          resolveResults = resolve;
+        })
+    );
+    const connector = await connect({ projectId: 'demo-project' }, stub);
+    const pending = connector.query('SELECT n FROM t');
+    const rejection = expect(pending).rejects.toThrow('connector was closed');
+    await vi.waitFor(() => expect(stub.job.getQueryResults).toHaveBeenCalledTimes(1));
+
+    await connector.close();
+    expect(stub.job.cancel).toHaveBeenCalledTimes(1);
+    resolveResults!([
+      [{ n: { value: '1' } }],
+      null,
+      { schema: { fields: [{ name: 'n', type: 'INT64' }] } },
+    ]);
+    await rejection;
   });
 
   it.each([

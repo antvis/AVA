@@ -554,6 +554,29 @@ class Parser {
   }
 }
 
+function applyAggregate(name: string, args: Expr[], group: Record<string, unknown>[]): unknown {
+  const upper = name.toUpperCase();
+  if (upper === 'COUNT') {
+    const arg = args[0];
+    const col = arg?.kind === 'ident' ? arg.name! : undefined;
+    return col ? group.filter((r) => r[col] != null).length : group.length;
+  }
+  const col = args[0]?.kind === 'ident' ? args[0]!.name! : '';
+  const values = group.map((r) => r[col]).filter((v) => typeof v === 'number');
+  if (upper === 'SUM') return values.length ? values.reduce<number>((s, v) => s + v, 0) : null;
+  if (upper === 'AVG' || upper === 'MEAN') return values.length ? values.reduce<number>((s, v) => s + v, 0) / values.length : null;
+  if (values.length === 0) return null;
+  if (upper === 'MIN') return Math.min(...values);
+  if (upper === 'MAX') return Math.max(...values);
+  if (upper === 'STDDEV_SAMP' || upper === 'STDDEV') {
+    if (values.length < 2) return null;
+    const mean = values.reduce((s, v) => s + v, 0) / values.length;
+    const variance = values.reduce((s, v) => s + (v - mean) * (v - mean), 0) / (values.length - 1);
+    return Math.sqrt(variance);
+  }
+  return null;
+}
+
 function matches(
   predicates: Predicate[],
   row: Record<string, unknown>,
@@ -608,29 +631,6 @@ function matches(
     orGroups[orGroups.length - 1].push(current);
   }
   return orGroups.some((andGroup) => andGroup.every(Boolean));
-}
-
-function applyAggregate(name: string, args: Expr[], group: Record<string, unknown>[]): unknown {
-  const upper = name.toUpperCase();
-  if (upper === 'COUNT') {
-    const arg = args[0];
-    const col = arg?.kind === 'ident' ? arg.name! : undefined;
-    return col ? group.filter((r) => r[col] != null).length : group.length;
-  }
-  const col = args[0]?.kind === 'ident' ? args[0]!.name! : '';
-  const values = group.map((r) => r[col]).filter((v) => typeof v === 'number');
-  if (upper === 'SUM') return values.length ? values.reduce<number>((s, v) => s + v, 0) : null;
-  if (upper === 'AVG' || upper === 'MEAN') return values.length ? values.reduce<number>((s, v) => s + v, 0) / values.length : null;
-  if (values.length === 0) return null;
-  if (upper === 'MIN') return Math.min(...values);
-  if (upper === 'MAX') return Math.max(...values);
-  if (upper === 'STDDEV_SAMP' || upper === 'STDDEV') {
-    if (values.length < 2) return null;
-    const mean = values.reduce((s, v) => s + v, 0) / values.length;
-    const variance = values.reduce((s, v) => s + (v - mean) * (v - mean), 0) / (values.length - 1);
-    return Math.sqrt(variance);
-  }
-  return null;
 }
 
 function distinctValues(values: unknown[]): unknown[] {

@@ -41,7 +41,12 @@ table name (the dataset-scoped `INFORMATION_SCHEMA` catalog column).
 ## Connection
 
 ```typescript
-const ava = new AVA({ llm: { model: 'gpt-4o', apiKey: *** } });
+import { AVA } from '@antv/ava';
+
+const ava = new AVA({
+  llm: { model: 'gpt-4o', apiKey: process.env.OPENAI_API_KEY },
+  engine: { type: 'bigquery' },
+});
 await ava.source({
   type: 'bigquery',
   options: {
@@ -62,6 +67,26 @@ Required: `projectId`. Optional: `dataset` (needed for `schema()`/
 `getQueryResults` read), `adapter`, `tables`.
 When no credentials are passed, the client uses application-default
 credentials (ADC). See the [site docs][docs] for the full table.
+
+### Real GCP run
+
+1. Install the optional SDK if your package manager omitted optional packages:
+   `npm install @google-cloud/bigquery@^9.6.0`.
+2. Use a dedicated service account with **BigQuery Data Viewer**
+   (`roles/bigquery.dataViewer`) on the project or dataset and **BigQuery Job
+   User** (`roles/bigquery.jobUser`) on the project. Do not grant Data Editor,
+   Owner, or write permissions; local SQL validation is not an IAM boundary.
+3. Configure ADC with `gcloud auth application-default login`, or point
+   `GOOGLE_APPLICATION_CREDENTIALS` at the service-account JSON and omit
+   `options.credentials`. Alternatively, pass that JSON through
+   `options.credentials` as above.
+4. Build AVA and run the snippet in Node.js. Call `ava.schema()` to inspect the
+   dataset, then `ava.query('SELECT …')` or `ava.analyze(…)`; use `try/finally`
+   with `await ava.dispose()`. Set `maxBytesBilled` before any billable query so
+   a dry run can reject an over-budget statement.
+
+No live GCP result is bundled with this documentation. The mock adapter and
+SDK request mocks do not authenticate against or validate a real dataset.
 
 ## Support scope
 
@@ -103,8 +128,9 @@ credentials (ADC). See the [site docs][docs] for the full table.
   `ARRAY`, `STRUCT` and other unrecognized types only receive type-agnostic
   metrics such as `null_count`. BigQuery has no enforced primary keys, so
   keys from `.KEY_COLUMN_USAGE` are observations, not guarantees.
-- **Resource release.** Call `engine.dispose()` / `ava.dispose()` to `close()` 
-  the connection; `dispose` is idempotent and tolerates close errors.
+- **Resource release.** Call `engine.dispose()` / `ava.dispose()` to `close()`
+  the connector; closing also requests cancellation of in-flight jobs. Engine
+  `dispose` is idempotent and tolerates close errors.
 
 ## Adapters
 
@@ -116,7 +142,7 @@ a deferred dynamic import — the module is still usable without it (install it
 when you want real connections):
 
 ```bash
-npm install @google-cloud/bigquery
+npm install @google-cloud/bigquery@^9.6.0
 ```
 
 The connector is compiled against the SDK's published type declarations: job
