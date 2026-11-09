@@ -2,7 +2,7 @@ import { z } from 'zod';
 
 const name = z.string();
 const key = z.union([name, z.tuple([name]).rest(name)]);
-export const schemaStructure = z.object({
+export const schemaOutputSchema = z.object({
   models: z.array(
     z.object({
       name,
@@ -25,5 +25,3 @@ export const schemaStructure = z.object({
   views: z.array(z.object({ name, statement: name })).optional(),
 });
 export const schemaInputSchema = z.record(z.string(), z.never());
-export const schemaOutputSchema = schemaStructure;
-export const schemaMetadataSchema = schemaOutputSchema;

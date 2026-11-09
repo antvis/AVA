@@ -1,7 +1,7 @@
 import { describe, it, expect } from 'vitest';
 
 import { extractDataSchema } from '../../src/util/schema';
-import { schemaMetadataSchema } from '../../src/contracts/schema';
+import { schemaOutputSchema } from '../../src/contracts';
 
 import type { Profile, Schema } from '../../src/types';
 
@@ -60,23 +60,19 @@ describe('extractDataSchema', () => {
   });
 });
 
-describe('schemaMetadataSchema', () => {
+describe('schemaOutputSchema', () => {
   it('rejects independent profiles and accepts CLI schema output', () => {
-    expect(() => schemaMetadataSchema.parse(profile)).toThrow();
-    expect(schemaMetadataSchema.parse({ ...schema, language: 'javascript', instructions: 'Use data.' })).toEqual(
-      schema
-    );
-    expect(schemaMetadataSchema.parse({ models: [] })).toEqual({ models: [] });
+    expect(() => schemaOutputSchema.parse(profile)).toThrow();
+    expect(schemaOutputSchema.parse({ ...schema, language: 'javascript', instructions: 'Use data.' })).toEqual(schema);
+    expect(schemaOutputSchema.parse({ models: [] })).toEqual({ models: [] });
   });
 
   it('checks field formats without verifying schema consistency', () => {
     const input = structuredClone(schema);
     input.models[0].columns[0].name = 'renamed';
     input.relationships![0].models[1] = 'not verified';
-    expect(schemaMetadataSchema.parse(input)).toEqual(input);
-    expect(() => schemaMetadataSchema.parse({ models: [{ ...schema.models[0], columns: 'invalid' }] })).toThrow();
-    expect(() =>
-      schemaMetadataSchema.parse({ models: [{ ...schema.models[0], tableReference: undefined }] })
-    ).toThrow();
+    expect(schemaOutputSchema.parse(input)).toEqual(input);
+    expect(() => schemaOutputSchema.parse({ models: [{ ...schema.models[0], columns: 'invalid' }] })).toThrow();
+    expect(() => schemaOutputSchema.parse({ models: [{ ...schema.models[0], tableReference: undefined }] })).toThrow();
   });
 });

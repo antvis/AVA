@@ -17,4 +17,3 @@ const modelSchema = z.object({
 const metricConfigSchema = z.union([z.string(), z.object({ id: z.string() }).catchall(z.unknown())]);
 export const profileInputSchema = z.object({ metrics: z.array(metricConfigSchema).optional() }).strict();
 export const profileOutputSchema = z.object({ models: z.array(modelSchema) }).strict();
-export const profileMetadataSchema = profileOutputSchema;

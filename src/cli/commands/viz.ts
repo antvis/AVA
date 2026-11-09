@@ -1,5 +1,5 @@
 import { AVA } from '../../ava';
-import { chartSpecSchema } from '../../contracts/visualize';
+import { vizInputSchema } from '../../contracts';
 import { readJSON, writeHTML } from '../io';
 import { option } from '../options';
 
@@ -24,7 +24,7 @@ export async function run(_args: string[], options: Options): Promise<unknown> {
 
   if (raw === undefined) throw new Error('--spec is required.');
 
-  const spec = chartSpecSchema.parse(await readJSON(raw));
+  const spec = vizInputSchema.parse(await readJSON(raw));
 
   const ava = new AVA({ llm: { model: 'unused' } });
 

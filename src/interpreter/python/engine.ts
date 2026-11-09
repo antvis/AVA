@@ -5,7 +5,7 @@ import { z } from 'zod';
 import { PythonDialect } from '../../query/python';
 import { executionResult, maxRows, maxResultBytes } from '../../util/result';
 import { DEFAULT_METRICS, parseProfileOptions } from '../../util/profile';
-import { profileMetadataSchema } from '../../contracts/profile';
+import { profileOutputSchema } from '../../contracts';
 import { runWithTimeout } from '../../util/timeout';
 
 import { SCHEMA_CODE, sourceSchema, tableSchema, resultSchema } from './util/schema';
@@ -79,7 +79,7 @@ export class PythonEngine implements AnalysisEngine {
     if (!this.source) throw new Error('No data loaded. Please call source() first.');
 
     const tables = await this.metadata(profileCode(parseProfileOptions(options, { metrics: DEFAULT_METRICS }), schema));
-    return profileMetadataSchema.parse({ models: tables });
+    return profileOutputSchema.parse({ models: tables });
   }
 
   async execute<T = Record<string, unknown>>(code: string, options?: ExecutionOptions): Promise<ExecutionResult<T>> {

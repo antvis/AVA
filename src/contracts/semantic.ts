@@ -12,4 +12,3 @@ export const semanticOutputSchema = dataModelStructure.extend({
     )
     .optional(),
 });
-export const semanticMetadataSchema = semanticOutputSchema;

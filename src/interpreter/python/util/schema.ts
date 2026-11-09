@@ -2,14 +2,12 @@ import { z } from 'zod';
 
 import { jsonValue } from '../../../contracts/shared/json';
 import { excelOptionsSchema, excelSheetSchema } from '../../../contracts/source/excel';
-import { executionResultSchema } from '../../../contracts/query';
+import { queryOutputSchema } from '../../../contracts';
 import { sourceSchemas } from '../../../contracts/source';
 import { csvReadOptionsSchema } from '../../../contracts/source/csv';
 
 /** Validate the JSON output of the generated Python script. */
-export const resultSchema = executionResultSchema
-  .safeExtend({ data: z.array(z.record(z.string(), jsonValue)) })
-  .strip();
+export const resultSchema = queryOutputSchema.safeExtend({ data: z.array(z.record(z.string(), jsonValue)) }).strip();
 
 // Accept options the generated script can translate to pandas; reject DuckDB-specific options.
 const csvOptions = csvReadOptionsSchema

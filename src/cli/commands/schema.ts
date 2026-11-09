@@ -1,7 +1,7 @@
 import { request } from '../session/client';
 import { readJSONFile } from '../io';
 import { option } from '../options';
-import { schemaMetadataSchema } from '../../contracts/schema';
+import { schemaOutputSchema } from '../../contracts';
 
 import type { Options } from '../options';
 
@@ -14,7 +14,7 @@ export const definition = {
 
 export async function run([datasetId]: string[], options: Options): Promise<unknown> {
   const file = option(options, 'file');
-  const schema = file === undefined ? undefined : schemaMetadataSchema.parse(await readJSONFile(file));
+  const schema = file === undefined ? undefined : schemaOutputSchema.parse(await readJSONFile(file));
   return request(datasetId, { command: 'schema', schema });
 }
 

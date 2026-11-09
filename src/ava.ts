@@ -10,7 +10,6 @@ import {
   semanticOutputSchema,
   vizInputSchema,
 } from './contracts';
-import { chartSpecSchema } from './contracts/visualize';
 import { getEngineClass } from './engines';
 import { extractDataSchema } from './util/schema';
 import { buildDataModel, stringifyDataModel } from './util/data-model';
@@ -358,7 +357,7 @@ export class AVA extends EventEmitter {
     if (!chartType) return null;
 
     const config = await generateVisualizationConfig(chartType, data, query, this.llmConfig);
-    return chartSpecSchema.parse({ chartType, config });
+    return vizInputSchema.parse({ chartType, config });
   }
 
   /**

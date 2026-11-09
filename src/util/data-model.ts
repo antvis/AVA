@@ -1,19 +1,17 @@
 import { z } from 'zod';
 
-import { profileMetadataSchema } from '../contracts/profile';
-import { schemaStructure } from '../contracts/schema';
-import { semanticMetadataSchema } from '../contracts/semantic';
-import { dataModelMetadataSchema } from '../contracts/shared/data-model';
+import { profileOutputSchema, schemaOutputSchema, semanticOutputSchema } from '../contracts';
+import { dataModelStructure } from '../contracts/shared/data-model';
 
 import { escapeMarkdown, markdownTable } from './markdown';
 
 import type { DataModel, Model, Semantic, Profile, Properties, Schema } from '../types';
 
-const modelSchema = profileMetadataSchema.shape.models.element;
+const modelSchema = profileOutputSchema.shape.models.element;
 const columnSchema = modelSchema.shape.columns.element;
 
 // Assembly rejects unsupported nested fields instead of silently discarding them.
-const profileInputSchema = profileMetadataSchema.extend({
+const profileAssemblySchema = profileOutputSchema.extend({
   models: z.array(
     modelSchema.strict().extend({
       name: modelSchema.shape.name.min(1),
@@ -28,9 +26,9 @@ const profileInputSchema = profileMetadataSchema.extend({
 });
 
 export const dataModelInputSchema = z.object({
-  schema: schemaStructure.strict(),
-  profile: profileInputSchema.optional(),
-  semantic: semanticMetadataSchema.optional(),
+  schema: schemaOutputSchema.strict(),
+  profile: profileAssemblySchema.optional(),
+  semantic: semanticOutputSchema.optional(),
 });
 
 function indexByName<T extends { name: string }>(values: T[], label: string): Map<string, T> {
@@ -93,7 +91,7 @@ export function buildDataModel(input: { schema: Schema; profile?: Profile; seman
     models.set(definition.name, model);
   }
 
-  return dataModelMetadataSchema.parse({ ...schema, ...semantic, models: [...models.values()] });
+  return dataModelStructure.parse({ ...schema, ...semantic, models: [...models.values()] });
 }
 
 /** Describe each semantic object separately, retaining source mappings, properties and observations. */

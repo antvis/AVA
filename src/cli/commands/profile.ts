@@ -1,7 +1,7 @@
 import { request } from '../session/client';
 import { list, option } from '../options';
 import { readJSONFile } from '../io';
-import { profileMetadataSchema } from '../../contracts/profile';
+import { profileOutputSchema } from '../../contracts';
 
 import type { Options } from '../options';
 
@@ -15,7 +15,7 @@ export const definition = {
 export async function run([datasetId]: string[], options: Options): Promise<unknown> {
   const file = option(options, 'file');
   if (file !== undefined && options.metrics !== undefined) throw new Error('--file cannot be combined with --metrics.');
-  const profile = file === undefined ? undefined : profileMetadataSchema.parse(await readJSONFile(file));
+  const profile = file === undefined ? undefined : profileOutputSchema.parse(await readJSONFile(file));
   return request(datasetId, { command: 'profile', metrics: list(options, 'metrics'), profile });
 }
 

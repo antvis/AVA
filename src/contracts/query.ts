@@ -27,5 +27,3 @@ export const queryOutputSchema = resultShape.loose().superRefine((result, contex
     context.addIssue({ code: 'custom', path: ['rowCount'], message: 'rowCount must describe a complete result' });
   }
 });
-
-export const executionResultSchema = queryOutputSchema;

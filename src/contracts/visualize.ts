@@ -237,7 +237,7 @@ const chartSchemas = [
     })
     .strict(),
 ] as const;
-export const chartSpecSchema = z.discriminatedUnion('chartType', chartSchemas).superRefine((spec, context) => {
+export const vizInputSchema = z.discriminatedUnion('chartType', chartSchemas).superRefine((spec, context) => {
   if (spec.chartType !== 'dual-axes') return;
   const config = spec.config;
   config.series.forEach((series, index) => {
@@ -253,8 +253,7 @@ export const chartSpecSchema = z.discriminatedUnion('chartType', chartSchemas).s
 
 /** Input is the query/data subset of an analysis result; full results may be passed directly. */
 export const recommendInputSchema = z.object({ query: z.string(), data: z.array(z.unknown()) });
-export const recommendOutputSchema = chartSpecSchema.nullable();
+export const recommendOutputSchema = vizInputSchema.nullable();
 export const visualizeInputSchema = recommendInputSchema;
-export const visualizeOutputSchema = chartSpecSchema.and(z.object({ html: z.string() })).nullable();
-export const vizInputSchema = chartSpecSchema;
+export const visualizeOutputSchema = vizInputSchema.and(z.object({ html: z.string() })).nullable();
 export const vizOutputSchema = z.string();

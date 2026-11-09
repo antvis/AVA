@@ -24,8 +24,7 @@ import type { sourceSchemas } from './contracts/source';
 import type { csvReadOptionsSchema } from './contracts/source/csv';
 import type { jsonReadOptionsSchema } from './contracts/source/json';
 import type { excelSheetSchema } from './contracts/source/excel';
-import type { chartSpecSchema } from './contracts/visualize';
-import type { dataModelMetadataSchema } from './contracts/shared/data-model';
+import type { dataModelStructure } from './contracts/shared/data-model';
 import type { jsonValue } from './contracts/shared/json';
 
 /**
@@ -78,7 +77,7 @@ export type AnalysisResponse<T = Record<string, unknown>> = Omit<
   data: T[];
 };
 export type SuggestResult = z.output<typeof suggestOutputSchema>[number];
-export type ChartSpec = z.output<typeof chartSpecSchema>;
+export type ChartSpec = z.output<typeof vizInputSchema>;
 export type ChartSpecInput = z.input<typeof vizInputSchema>;
 export type ChartType = ChartSpec['chartType'];
 export type VisualizeResponse = NonNullable<z.output<typeof visualizeOutputSchema>>;
@@ -89,7 +88,7 @@ export type ParsedProfileOptions = { metrics: Exclude<MetricConfig, string>[] };
 
 export type JsonValue = z.output<typeof jsonValue>;
 export type Properties = Record<string, JsonValue>;
-export type DataModel = z.output<typeof dataModelMetadataSchema>;
+export type DataModel = z.output<typeof dataModelStructure>;
 export type Model = NonNullable<DataModel['models']>[number];
 export type Column = NonNullable<Model['columns']>[number];
 export type TableReference = NonNullable<Model['tableReference']>;

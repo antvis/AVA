@@ -3,18 +3,13 @@ import { join } from 'path';
 
 import { z } from 'zod';
 
-import { sourceConfigSchema } from '../../contracts/source';
-import { profileMetadataSchema } from '../../contracts/profile';
-import { schemaMetadataSchema } from '../../contracts/schema';
-import { semanticMetadataSchema } from '../../contracts/semantic';
+import { sourceInputSchema, profileOutputSchema, schemaOutputSchema, semanticOutputSchema } from '../../contracts';
 
 export const IPC_TIMEOUT_MS = 120_000;
 export const IPC_MAX_REQUEST_BYTES = 1024 * 1024;
 export const IPC_MAX_RESPONSE_BYTES = 16 * 1024 * 1024;
 
 const text = z.string().min(1);
-
-export { sourceConfigSchema as sourceConfig } from '../../contracts/source';
 
 export const modelSchema = z.object({ model: text, apiKey: text.optional(), baseURL: text.optional() }).strict();
 export const engineTypeSchema = z.enum([
@@ -33,13 +28,13 @@ const execution = {
 };
 
 export const requestSchema = z.discriminatedUnion('command', [
-  z.object({ command: z.literal('schema'), schema: schemaMetadataSchema.optional() }).strict(),
-  z.object({ command: z.literal('semantic'), semantic: semanticMetadataSchema.optional() }).strict(),
+  z.object({ command: z.literal('schema'), schema: schemaOutputSchema.optional() }).strict(),
+  z.object({ command: z.literal('semantic'), semantic: semanticOutputSchema.optional() }).strict(),
   z
     .object({
       command: z.literal('profile'),
       metrics: z.array(text).optional(),
-      profile: profileMetadataSchema.optional(),
+      profile: profileOutputSchema.optional(),
     })
     .strict(),
   z.object({ command: z.literal('suggest'), count: z.number().int().positive().max(100) }).strict(),
@@ -60,7 +55,7 @@ export type Request = z.infer<typeof requestSchema>;
 
 export const startupSchema = z
   .object({
-    source: sourceConfigSchema,
+    source: sourceInputSchema,
     llm: modelSchema,
     engine: engineTypeSchema.optional(),
   })

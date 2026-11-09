@@ -39,7 +39,7 @@ export const sourceSchemas = {
 };
 
 /** Shared runtime contract for built-in source configurations. */
-export const sourceConfigSchema = z.discriminatedUnion('type', [
+export const sourceInputSchema = z.discriminatedUnion('type', [
   sourceSchemas['csv-file'],
   sourceSchemas['json-file'],
   sourceSchemas.parquet,
@@ -57,4 +57,3 @@ export const sourceConfigSchema = z.discriminatedUnion('type', [
   sourceSchemas.snowflake,
   sourceSchemas['feishu-bitable'],
 ]);
-export const sourceInputSchema = sourceConfigSchema;

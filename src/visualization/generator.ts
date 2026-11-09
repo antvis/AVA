@@ -11,7 +11,7 @@ import { version as gptVisVersion } from '@antv/gpt-vis/package.json';
 import { z } from 'zod';
 
 import { languageModel } from '../util/model';
-import { chartSpecSchema } from '../contracts/visualize';
+import { vizInputSchema } from '../contracts';
 
 import type { LLMConfig, ChartType, ChartConfig } from '../types';
 
@@ -65,7 +65,7 @@ export async function generateVisualizationConfig(
   query: string,
   llmConfig: LLMConfig
 ): Promise<Record<string, unknown>> {
-  const chartSchema = chartSpecSchema.options.find((schema) => schema.shape.chartType.value === chartType)!;
+  const chartSchema = vizInputSchema.options.find((schema) => schema.shape.chartType.value === chartType)!;
   const prompt = `你是一个 GPT-Vis 可视化专家。根据图表类型、数据和用户查询，生成对应的 GPT-Vis JSON 配置。
 
 ## 任务信息

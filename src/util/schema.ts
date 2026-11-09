@@ -1,5 +1,5 @@
 /** Catalog discovery and structural assembly. */
-import { schemaMetadataSchema } from '../contracts/schema';
+import { schemaOutputSchema } from '../contracts';
 
 import { sqlIdentifier } from './sql';
 
@@ -215,7 +215,7 @@ export function rowObjects2Schema(rows: Record<string, unknown>[]): Schema {
     });
   }
 
-  return schemaMetadataSchema.parse({
+  return schemaOutputSchema.parse({
     models: [...models.values()].sort((a, b) => a.name.localeCompare(b.name)),
     relationships,
     views,

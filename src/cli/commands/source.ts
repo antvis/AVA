@@ -2,7 +2,8 @@ import { resolve } from 'path';
 
 import { inferFileSourceType } from '../../util/source';
 import { createSession } from '../session/client';
-import { engineTypeSchema, sourceConfig } from '../session/protocol';
+import { engineTypeSchema } from '../session/protocol';
+import { sourceInputSchema } from '../../contracts';
 import { isFeishuBitableUrl, isFeishuHostUrl, feishuCredentials } from '../feishu';
 import { llmConfig } from '../config';
 import { readJSON } from '../io';
@@ -41,7 +42,7 @@ export async function run([dataset]: string[], options: Options): Promise<{ data
     input = { type, options: { path: dataset } };
   }
 
-  const config = sourceConfig.parse(input);
+  const config = sourceInputSchema.parse(input);
 
   if (
     'path' in config.options &&

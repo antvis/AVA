@@ -89,6 +89,3 @@ export const dataModelStructure = z
     properties: properties.optional(),
   })
   .strict();
-
-/** Validate and copy metadata without stripping semantic extensions or observations. */
-export const dataModelMetadataSchema = dataModelStructure;
