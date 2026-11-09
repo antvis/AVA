@@ -58,19 +58,14 @@ describe('wiki-hosted Bitable', () => {
       { url: `${signed}/wiki/link-secret?signature=url-signature&table=tbl123`, appToken: 'other' },
       { url: `${signed}/wiki/link-secret?signature=url-signature&table=tbl123`, tableId: 'other' },
     ]) {
-      const failure = await resolveBitableTable(options, api).catch((error: Error) => error);
-      expect(failure).toBeInstanceOf(Error);
-      for (const secret of ['url-password', 'url-signature', 'link-secret']) {
-        expect((failure as Error).message).not.toContain(secret);
-      }
+      await expect(resolveBitableTable(options, api)).rejects.toHaveProperty(
+        'message',
+        expect.not.stringMatching(/url-password|url-signature|link-secret/)
+      );
     }
     stubFetch({ tables: [] });
     await expect(resolveBitableTable({ url: `${signed}/base/link-secret` }, api)).rejects.toEqual(
       new Error('Feishu Bitable has no tables.')
-    );
-    stubFetch({ node: { code: 0, data: { node: {} } } });
-    await expect(resolveBitableTable({ url: `${signed}/wiki/link-secret` }, api)).rejects.toEqual(
-      new Error('Feishu wiki node does not point at a document.')
     );
   });
 
@@ -157,8 +152,8 @@ describe('wiki-hosted Bitable', () => {
   it('reports a wiki node that no longer points at a document', async () => {
     stubFetch({ node: { code: 0, data: { node: { obj_type: 'bitable' } } } });
 
-    await expect(readTable({ url: wikiUrl, appId: 'id', appSecret: 'secret' })).rejects.toThrow(
-      'does not point at a document'
+    await expect(readTable({ url: wikiUrl, appId: 'id', appSecret: 'secret' })).rejects.toEqual(
+      new Error('Feishu wiki node does not point at a document.')
     );
   });
 });

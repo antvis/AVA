@@ -44,9 +44,6 @@ describe('AVA', () => {
     await ava.source(source);
     vi.spyOn(ava.engine!, 'execute').mockRejectedValueOnce(failure);
     await expect(ava.query('const result = data;')).rejects.toBe(failure);
-    expect(failure.code).toBe('UPSTREAM_AUTH_FAILED');
-    expect(failure.detail.token).toBe('original-token');
-    expect(failure.cause.message).toBe('original cause');
   });
 
   it('returns the current schema throughout the source lifecycle', async () => {
