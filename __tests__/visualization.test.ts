@@ -4,7 +4,7 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { generateText } from 'ai';
 import { version as gptVisVersion } from '@antv/gpt-vis/package.json';
 
-import { dependencies } from '../package.json';
+import { dependencies, devDependencies } from '../package.json';
 import { AVA } from '../src/ava';
 
 vi.mock('ai', () => ({ generateText: vi.fn() }));
@@ -87,7 +87,8 @@ describe('chart recommendation', () => {
     expect(html).toContain('<!DOCTYPE html>');
     expect(runInNewContext(`(${html.match(/const visConfig = (.+);/)![1]})`, {}, { timeout: 1000 })).toEqual(config);
     expect(html).toContain('gptVis.render(visConfig)');
-    expect(dependencies['@antv/gpt-vis']).toBe(gptVisVersion);
+    expect(dependencies).not.toHaveProperty('@antv/gpt-vis');
+    expect(devDependencies['@antv/gpt-vis']).toBe(gptVisVersion);
     expect(html).toContain(`https://unpkg.com/@antv/gpt-vis@${gptVisVersion}/dist/umd/index.min.js`);
     expect(await ava['viz'](spec)).toBe(html);
     const title = '</script><script>throw new Error("injected")</script>\u2028\u2029';
