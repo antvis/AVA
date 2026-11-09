@@ -6,7 +6,8 @@ description: >-
   Feishu Bitable. Supports inspecting schemas and data quality,
   SQL/Python/JavaScript queries, transformation and aggregation,
   clarifying and reusing business definitions, metric and trend analysis,
-  chart recommendations, and interactive HTML charts.
+  chart recommendations, interactive HTML charts, and evidence-backed
+  HTML reports that can be updated across follow-up questions.
 ---
 
 # AVA
@@ -28,6 +29,8 @@ Request -> Reuse context -> Resolve gaps -> Compute -> Check -> Deliver
 - Deliver findings, the definition used, and limitations. Keep reproducible queries and necessary results; link new or updated semantic files. State what was not run or verified.
 
 For charts, use actual data or verified results. For recommendations only, explain the chart type and field mapping.
+
+For a complete analysis report, read [Reports](references/reports.md). Use the bundled report script to execute and index the report's queries, then assemble the supplied template from saved evidence. Keep existing questions and evidence when updating a report; do not rerun queries solely to change presentation. Simple questions still need only a direct answer.
 
 ## Business Meaning
 
@@ -55,6 +58,7 @@ Read only what the task needs.
 | Semantic format, incremental maintenance, and session loading | [Semantic](references/semantic.md) |
 | Query languages, profiling options, and response limits | [Queries and results](references/queries.md) |
 | Chart selection, rendering, and inspection | [Visualization](references/visualization.md) |
+| Evidence-backed HTML reports and follow-up updates | [Reports](references/reports.md) |
 | Environment, session recovery, and cleanup | [Setup](references/setup.md) |
 
 ## Boundaries

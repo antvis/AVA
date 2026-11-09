@@ -17,6 +17,12 @@ Prefer an existing installation or project build of this version. Otherwise, ins
 npm install -g @antv/ava@4
 ```
 
+## WorkBuddy
+
+Install this `ava` skill folder in WorkBuddy's user skills location, or import a ZIP containing the folder through its skill manager. Use a normal task with the skill; deselect the old AVA expert, whose instructions require MCP rather than this CLI workflow. The skill itself needs no MCP connection or separate model key for structured-data analysis.
+
+Before analysis, confirm the Node and AVA executables actually used by WorkBuddy's shell. A supported Node installation elsewhere on the machine does not change that shell's `PATH`. Use a task-local `PATH` or executable wrapper when necessary; do not change unrelated global settings. For the report script, `AVA_CLI` selects that executable. Follow the host's normal tool permissions. A missing shell, blocked Unix socket or unavailable attachment path is an environment blocker; do not claim AVA ran.
+
 ## Model-Backed Commands
 
 `source` with type `text`, `analyze`, `translate`, `suggest`, `recommend`, and `visualize` use AVA's model integration. Set `OPENAI_API_KEY`; optionally set `OPENAI_MODEL` (default `gpt-4o-mini`) and `OPENAI_BASE_URL`. For session commands, set these before creating the session; later environment changes do not update its model configuration. Loading structured data, running `query`, managing semantic, and rendering a supplied Spec with `viz` do not require a model API key.
