@@ -46,10 +46,6 @@
       "import": "./esm/index.browser.mjs",
       "require": "./lib/index.browser.js"
     },
-    "./schema": {
-      "import": "./esm/schema.mjs",
-      "require": "./lib/schema.js"
-    },
     "./package.json": "./package.json"
   },
   "files": [

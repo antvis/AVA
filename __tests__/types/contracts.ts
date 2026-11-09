@@ -1,6 +1,5 @@
 // Compile-time regressions: run by test:types, including the expected failures.
-import { sourceConfigSchema, chartSpecSchema } from '../../src';
-import { queryOutputSchema, analyzeOutputSchema } from '../../src/schema';
+import { sourceConfigSchema, chartSpecSchema, queryOutputSchema, analyzeOutputSchema } from '../../src';
 import { charts } from '../fixtures/charts';
 
 import type {
@@ -13,6 +12,27 @@ import type {
   VisualizeResponse,
   QueryInput as NodeQueryInput,
   QueryOutput as NodeQueryOutput,
+  QueryInput,
+  QueryOutput,
+  AnalyzeInput,
+  AnalyzeOutput,
+  SchemaInput,
+  SchemaOutput,
+  ProfileInput,
+  ProfileOutput,
+  SemanticInput,
+  SemanticOutput,
+  RecommendInput,
+  RecommendOutput,
+  VisualizeInput,
+  VisualizeOutput,
+  VizInput,
+  VizOutput,
+  TranslateInput,
+  TranslateOutput,
+  SuggestInput,
+  SuggestOutput,
+  SourceInput,
 } from '../../src';
 import type {
   DataSourceConfig as BrowserSource,
@@ -37,32 +57,6 @@ import type {
 import type { ClickHouseClientConfigOptions } from '@clickhouse/client';
 import type { ConnectionOptions as SnowflakeConnectionOptions } from 'snowflake-sdk';
 import type { GPTVisConfig } from '@antv/gpt-vis';
-import type {
-  DataSourceConfig as ContractSource,
-  ExecutionResult as ContractResult,
-  ChartSpecInput as ContractChartInput,
-  QueryInput,
-  QueryOutput,
-  AnalyzeInput,
-  AnalyzeOutput,
-  SchemaInput,
-  SchemaOutput,
-  ProfileInput,
-  ProfileOutput,
-  SemanticInput,
-  SemanticOutput,
-  RecommendInput,
-  RecommendOutput,
-  VisualizeInput,
-  VisualizeOutput,
-  VizInput,
-  VizOutput,
-  TranslateInput,
-  TranslateOutput,
-  SuggestInput,
-  SuggestOutput,
-  SourceInput,
-} from '../../src/schema';
 
 const csv: CSVReadOptions = { header: true, types: { amount: 'BIGINT' }, nullstr: ['NA'], sample_size: -1 };
 const csvByPosition: CSVReadOptions = { types: ['VARCHAR', 'BIGINT'] };
@@ -70,7 +64,6 @@ const json: JSONReadOptions = { format: 'newline_delimited', records: 'true', ma
 const excel: ExcelSourceOptions = { path: 'book.xlsx', sheets: [{ sheet: 'Sales' }] };
 const source: DataSourceConfig = { type: 'csv-file', options: { path: 'sales.csv', options: csv } };
 const browser: BrowserSource = source;
-const contractSource: ContractSource = source;
 // @ts-expect-error Reader booleans must not widen to unknown or any.
 const badCSV: CSVReadOptions = { header: 'true' };
 // @ts-expect-error JSON layout remains a finite union.
@@ -125,7 +118,6 @@ const result: ExecutionResult<Row> = {
 };
 const amount: number = result.data[0].amount;
 const browserResult: BrowserResult<Row> = result;
-const contractResult: ContractResult<Row> = result;
 // @ts-expect-error Generic row fields must not widen to unknown or any.
 const badRow: ExecutionResult<Row> = { schema: [], data: [{ amount: '10' }] };
 // @ts-expect-error The result schema is required.
@@ -143,7 +135,6 @@ void [
   json,
   excel,
   browser,
-  contractSource,
   badCSV,
   badJSON,
   badSource,
@@ -154,7 +145,6 @@ void [
   unknownNative,
   amount,
   browserResult,
-  contractResult,
   badRow,
   missingSchema,
   missingData,
@@ -210,14 +200,8 @@ export function renderedChartSpec(response: VisualizeResponse): ChartSpec {
 
 const chartInput: ChartSpecInput = { chartType: 'column', config: { data: [{ category: 'A', value: 1 }] } };
 const browserChartInput: BrowserChartInput = chartInput;
-const contractChartInput: ContractChartInput = chartInput;
 export function renderChartInputs(ava: AVA): Promise<string>[] {
-  return [
-    ava.viz(chartInput),
-    ava.viz(browserChartInput),
-    ava.viz(contractChartInput),
-    ava.viz({ chartType: 'summary', config: '# Sales' }),
-  ];
+  return [ava.viz(chartInput), ava.viz(browserChartInput), ava.viz({ chartType: 'summary', config: '# Sales' })];
 }
 const normalized = chartSpecSchema.parse(chartInput);
 if (normalized.chartType === 'column') {

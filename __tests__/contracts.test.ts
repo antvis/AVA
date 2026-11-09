@@ -7,7 +7,7 @@ import * as ts from 'typescript';
 import { AVA, executionResultSchema, sourceConfigSchema } from '../src/index.browser';
 import * as node from '../src';
 import * as browser from '../src/index.browser';
-import * as contracts from '../src/schema';
+import * as contracts from '../src/contracts';
 import { startupSchema } from '../src/cli/session/protocol';
 import { resultSchema as pythonResultSchema } from '../src/interpreter/python/util/schema';
 

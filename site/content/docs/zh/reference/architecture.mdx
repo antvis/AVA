@@ -29,7 +29,7 @@ import { Heading } from '../../../../mdx-components';
 
 契约按公开 API 组织。`source/` 按数据源类型分文件维护 schema、选项与类型，包括 CSV/JSON/Excel 读取选项；`source/index.ts` 组装数据源联合契约，`source/shared.ts` 维护共用的文件与连接字段。`schema.ts`、`profile.ts`、`semantic.ts`、`query.ts`、`analyze.ts`、`translate.ts`、`suggest.ts` 分别维护对应 API 的公开输入与输出。`visualize.ts` 维护 `recommend()`、`viz()`、`visualize()` 共用的图表结构及显式绑定配置。跨 API 的 JSON 值与数据模型基础定义放在 `shared/`。
 
-策略、方言与各引擎的运行接口继续跟随实现。数据模型组装器维护从公共元数据字段派生的严格输入校验。`contracts/` 外的模块统一通过 `contracts/index.ts` 导入共享契约；契约定义之间直接引用，避免循环依赖。`@antv/ava/schema` 统一导出 API 输入、输出 schema 及其推导类型，保留既有导出兼容；CLI 消息协议、AI 阶段输出与引擎专用限制仍由各自模块维护。
+策略、方言与各引擎的运行接口继续跟随实现。数据模型组装器维护从公共元数据字段派生的严格输入校验。`contracts/` 外的模块统一通过 `contracts/index.ts` 导入共享契约；契约定义之间直接引用，避免循环依赖。`index.ts` 与 `index.browser.ts` 统一导出 API 输入、输出 schema 及其推导类型，保留既有导出兼容；CLI 消息协议、AI 阶段输出与引擎专用限制仍由各自模块维护。
 
 <Heading as="h2" id="method-to-module">方法与模块的对应关系</Heading>
 

@@ -1,4 +1,4 @@
-import type { ChartSpec, Semantic } from '@antv/ava/schema';
+import type { ChartSpec, Semantic } from '@antv/ava/browser';
 import type { AIUIMessage } from '../core/session';
 export type ToolDetailLine = { text: string; tone?: 'add' | 'del' | 'ctx' };
 export type ToolStep = {

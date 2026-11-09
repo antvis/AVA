@@ -387,11 +387,11 @@ AVA 将 `@antv/gpt-vis` 固定为 1.3.1。生成的 HTML 从 CDN 加载同一版
 
 Node 和浏览器入口导出共享运行时 schema，以及数据源类型推断和图表绑定工具函数。SDK 的 `source()`、`recommend()`、`viz()` 和 CLI 在各自的输入边界使用这些契约。
 
-MCP 等集成可在 Node 或浏览器代码中，从 `@antv/ava/schema` 导入校验器和数据类型。该入口直接复用相同契约，无需注册引擎或加载模型、数据库的运行时代码：
+MCP 等集成直接从 SDK 入口导入 API schema 与数据类型。Node 使用 `@antv/ava`，浏览器使用 `@antv/ava/browser`：
 
 ```typescript
-import { queryInputSchema, queryOutputSchema } from '@antv/ava/schema';
-import type { QueryInput, QueryOutput } from '@antv/ava/schema';
+import { queryInputSchema, queryOutputSchema } from '@antv/ava';
+import type { QueryInput, QueryOutput } from '@antv/ava';
 
 const input: QueryInput = queryInputSchema.parse({ dsl: 'SELECT * FROM data', options: { maxRows: 10 } });
 const output: QueryOutput = queryOutputSchema.parse(await ava.query(input.dsl, input.options));
@@ -415,16 +415,13 @@ API 类型统一通过 `z.input<typeof inputSchema>` 与 `z.output<typeof output
 | `visualize` | `visualizeInputSchema`：`{ query, data }` | `visualizeOutputSchema`：必含 HTML 的图表配置或 `null` |
 | `viz` | `vizInputSchema`：应用默认值前的图表配置 | `vizOutputSchema`：HTML 字符串 |
 
-Node、browser 和独立 schema 入口统一导出 API 输入、输出 schema 及对应类型，例如 `QueryInput` / `QueryOutput`。SDK 查询、分析方法保留原有的对象行默认类型；独立输出契约默认使用未知行类型。`QueryOutput<Row>`、`AnalyzeOutput<Row>` 保留行泛型。`dispose()` 没有输入数据或返回值，无需数据 schema。既有校验器与类型名称继续兼容：
+Node 和 browser 入口统一导出 API 输入、输出 schema 及对应类型，例如 `QueryInput` / `QueryOutput`。SDK 查询、分析方法保留原有的对象行默认类型；`QueryOutput`、`AnalyzeOutput` 类型默认使用未知行类型。`QueryOutput<Row>`、`AnalyzeOutput<Row>` 保留行泛型。`dispose()` 没有输入数据或返回值，无需数据 schema。既有校验器与类型名称继续兼容：
 
 | 导出 | 用途 |
 | --- | --- |
 | `sourceConfigSchema.parse(input)` | 校验内置数据源类型及对应选项。 |
 | `executionResultSchema.parse(input)` | 校验结果列、数据及截断标记、已知行数的一致性。 |
 | `chartSpecSchema.parse(input)` | 校验[可视化指南](/documentation/visualization/overview/)中的 19 种原生 JSON 图表形状和摘要字符串。 |
-| `schemaMetadataSchema`、`profileMetadataSchema`、`semanticMetadataSchema` | 校验结构、画像与业务语义元数据，由 `@antv/ava/schema` 导出。 |
-| `dataModelMetadataSchema` | 校验组合后的数据模型，由 `@antv/ava/schema` 导出。 |
-| `bindingSchema` | 校验显式图表字段和配置绑定，由 `@antv/ava/schema` 导出。 |
 | `inferFileSourceType(path)` | 根据本地路径或 HTTP(S) URL 推断文件数据源类型；未知扩展名返回 `undefined`。 |
 | `bindChartData(result, spec, binding?)` | 校验查询结果并绑定原生图表数据，无需调用模型。 |
 
