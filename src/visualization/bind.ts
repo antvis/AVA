@@ -1,6 +1,8 @@
 import { z } from 'zod';
 
-import { chartSpecSchema, bindingSchema, executionResultSchema, dataRowSchema } from '../contracts';
+import { chartSpecSchema, bindingSchema } from '../contracts/visualize';
+import { executionResultSchema } from '../contracts/query';
+import { dataRowSchema } from '../contracts/shared/json';
 
 import type { ChartSpec, ChartType, ChartDataBinding, ExecutionResult } from '../types';
 

@@ -1,5 +1,5 @@
 // Compile-time regressions: run by test:types, including the expected failures.
-import { sourceConfigSchema, chartSpecSchema, queryOutputSchema, analyzeOutputSchema } from '../../src';
+import { sourceInputSchema, vizInputSchema, queryOutputSchema, analyzeOutputSchema } from '../../src';
 import { charts } from '../fixtures/charts';
 
 import type {
@@ -99,7 +99,7 @@ const badTLS: ClickHouseSourceOptions = { database: 'sales', tls: 'certificate' 
 // @ts-expect-error Unknown options must not become an untyped escape hatch.
 const unknownNative: ClickHouseSourceOptions = { database: 'sales', unknown_option: true };
 
-const parsed = sourceConfigSchema.parse(source);
+const parsed = sourceInputSchema.parse(source);
 if (parsed.type === 'csv-file') {
   const header: boolean | undefined = parsed.options.options?.header;
   const path: string = parsed.options.path;
@@ -203,7 +203,7 @@ const browserChartInput: BrowserChartInput = chartInput;
 export function renderChartInputs(ava: AVA): Promise<string>[] {
   return [ava.viz(chartInput), ava.viz(browserChartInput), ava.viz({ chartType: 'summary', config: '# Sales' })];
 }
-const normalized = chartSpecSchema.parse(chartInput);
+const normalized = vizInputSchema.parse(chartInput);
 if (normalized.chartType === 'column') {
   const type: 'column' = normalized.config.type;
   void type;

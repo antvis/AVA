@@ -9,8 +9,8 @@ import {
   profileOutputSchema,
   semanticOutputSchema,
   vizInputSchema,
-  chartSpecSchema,
 } from './contracts';
+import { chartSpecSchema } from './contracts/visualize';
 import { getEngineClass } from './engines';
 import { extractDataSchema } from './util/schema';
 import { buildDataModel, stringifyDataModel } from './util/data-model';

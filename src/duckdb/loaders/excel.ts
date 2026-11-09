@@ -9,7 +9,7 @@ import { resolve } from 'node:path';
 import AdmZip from 'adm-zip';
 import { SaxesParser } from 'saxes';
 
-import { excelOptionsSchema } from '../../contracts';
+import { excelOptionsSchema } from '../../contracts/source/excel';
 import { downloadToTempFile, removeTempFile } from '../util/file';
 import { getDuckDBSchema } from '../util/schema';
 import { escapeSql, serializeOptions, sqlIdentifier, sqlStringLiteral } from '../../util/sql';

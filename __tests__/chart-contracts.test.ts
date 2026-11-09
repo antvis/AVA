@@ -3,7 +3,7 @@ import { runInNewContext } from 'node:vm';
 import { z } from 'zod';
 import { describe, expect, it } from 'vitest';
 
-import { AVA, bindChartData, chartSpecSchema } from '../src/index.browser';
+import { AVA, bindChartData, vizInputSchema } from '../src/index.browser';
 import { chartDefinitions } from '../src/visualization/vis';
 
 import { charts as fixtures } from './fixtures/charts';
@@ -12,11 +12,11 @@ import type { ChartSpec } from '../src/types';
 
 describe('native chart contracts', () => {
   it('covers every advisor chart and renders each native data shape through the SDK', async () => {
-    expect(z.toJSONSchema(chartSpecSchema, { io: 'input' }).oneOf).toHaveLength(20);
+    expect(z.toJSONSchema(vizInputSchema, { io: 'input' }).oneOf).toHaveLength(20);
     expect(Object.keys(fixtures).sort()).toEqual(chartDefinitions.map((chart) => chart.type).sort());
     const ava = new AVA({ llm: { model: 'unused' } });
     for (const [chartType, config] of Object.entries(fixtures)) {
-      const spec = chartSpecSchema.parse({ chartType, config: { ...config, customOption: true } });
+      const spec = vizInputSchema.parse({ chartType, config: { ...config, customOption: true } });
       expect(spec.config.type).toBe(chartType);
       expect(spec.config.customOption).toBe(true);
       const html = await ava.viz(spec);
@@ -32,9 +32,9 @@ describe('native chart contracts', () => {
     const html = await ava.viz(spec);
     expect(runInNewContext(`(${html.match(/const visConfig = (.+);/)![1]})`, {}, { timeout: 1000 })).toBe(spec.config);
     expect(chartDefinitions.some((chart) => chart.type === 'summary')).toBe(false);
-    expect(() => chartSpecSchema.parse({ ...spec, config: { type: 'summary', text: 'Report' } })).toThrow();
+    expect(() => vizInputSchema.parse({ ...spec, config: { type: 'summary', text: 'Report' } })).toThrow();
     for (const config of ['', '   ', 'vis column\ndata\n  - category A\n    value 1']) {
-      expect(() => chartSpecSchema.parse({ ...spec, config })).toThrow();
+      expect(() => vizInputSchema.parse({ ...spec, config })).toThrow();
     }
   });
 
@@ -45,14 +45,14 @@ describe('native chart contracts', () => {
       theme: { id: 'brand', label: 'Brand', tokens: { colorDefault: '#1783FF' } },
       style: { mark: { interval: { radius: 4 } } },
     };
-    expect(chartSpecSchema.parse({ chartType: 'column', config }).config).toMatchObject(config);
-    expect(chartSpecSchema.parse({ chartType: 'column', config: { ...config, theme: 'midnight' } }).config.theme).toBe(
+    expect(vizInputSchema.parse({ chartType: 'column', config }).config).toMatchObject(config);
+    expect(vizInputSchema.parse({ chartType: 'column', config: { ...config, theme: 'midnight' } }).config.theme).toBe(
       'midnight'
     );
-    expect(() => chartSpecSchema.parse({ chartType: 'column', config, hmtl: '' })).toThrow();
-    expect(() => chartSpecSchema.parse({ chartType: 'column', config, html: 1 })).toThrow();
+    expect(() => vizInputSchema.parse({ chartType: 'column', config, hmtl: '' })).toThrow();
+    expect(() => vizInputSchema.parse({ chartType: 'column', config, html: 1 })).toThrow();
     expect(() =>
-      chartSpecSchema.parse({ chartType: 'column', config: { ...config, style: { palette: 'blue' } } })
+      vizInputSchema.parse({ chartType: 'column', config: { ...config, style: { palette: 'blue' } } })
     ).toThrow();
   });
 

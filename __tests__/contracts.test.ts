@@ -4,7 +4,7 @@ import { z } from 'zod';
 import { describe, expect, it } from 'vitest';
 import * as ts from 'typescript';
 
-import { AVA, executionResultSchema, sourceConfigSchema } from '../src/index.browser';
+import { AVA, queryOutputSchema, sourceInputSchema } from '../src/index.browser';
 import * as node from '../src';
 import * as browser from '../src/index.browser';
 import * as contracts from '../src/contracts';
@@ -17,7 +17,7 @@ const source = { type: 'json' as const, options: { data: [{ sales: 10 }] } };
 
 describe('public source contracts', () => {
   it.each([null, [], 1, 'row', new Date()])('rejects non-record JSON rows: %j', (row) => {
-    expect(() => sourceConfigSchema.parse({ type: 'json', options: { data: [row] } })).toThrow(z.ZodError);
+    expect(() => sourceInputSchema.parse({ type: 'json', options: { data: [row] } })).toThrow(z.ZodError);
   });
 
   it.each([
@@ -26,19 +26,19 @@ describe('public source contracts', () => {
     { type: 'json', options: { data: [], options: { records: true } } },
     { type: 'json-file', options: { path: 'sales.json', options: { format: 'csv' } } },
   ])('rejects malformed native reader options before loading: %j', (config) => {
-    expect(() => sourceConfigSchema.parse(config)).toThrow(z.ZodError);
+    expect(() => sourceInputSchema.parse(config)).toThrow(z.ZodError);
     expect(() => startupSchema.parse({ source: config, llm: { model: 'unused' } })).toThrow(z.ZodError);
   });
 
   it('uses the same source contract in SDK and CLI without erasing the discriminant', async () => {
-    const schema = z.toJSONSchema(sourceConfigSchema, { io: 'input' });
+    const schema = z.toJSONSchema(sourceInputSchema, { io: 'input' });
     expect(schema.oneOf).toHaveLength(16);
     const json = schema.oneOf!.find((source) => source.properties?.type.const === 'json');
     expect(json?.properties?.options.properties?.data.items).toMatchObject({
       type: 'object',
       additionalProperties: {},
     });
-    const parsed = sourceConfigSchema.parse(source);
+    const parsed = sourceInputSchema.parse(source);
     if (parsed.type === 'json') expect(parsed.options.data).toEqual(source.options.data);
     expect(startupSchema.parse({ source, llm: { model: 'unused' } }).source).toEqual(parsed);
     const ava = new AVA({ llm: { model: 'unused' }, engine: { type: 'javascript' } });
@@ -74,10 +74,10 @@ describe('public result contract', () => {
       rowCount: 1,
       query: 'Total?',
     };
-    expect(executionResultSchema.parse(result)).toEqual(result);
-    expect(executionResultSchema.parse({ schema: [], data: [1, null, [2]], rowCount: 3 }).data).toEqual([1, null, [2]]);
+    expect(queryOutputSchema.parse(result)).toEqual(result);
+    expect(queryOutputSchema.parse({ schema: [], data: [1, null, [2]], rowCount: 3 }).data).toEqual([1, null, [2]]);
     expect(
-      executionResultSchema.parse({ schema: [], data: [], truncated: true, truncatedBy: 'maxResultBytes' })
+      queryOutputSchema.parse({ schema: [], data: [], truncated: true, truncatedBy: 'maxResultBytes' })
     ).toMatchObject({ truncated: true });
   });
 
@@ -88,7 +88,7 @@ describe('public result contract', () => {
     { rowCount: 1 },
     { truncated: true, truncatedBy: 'maxRows', rowCount: 0 },
   ])('rejects inconsistent result limits: %j', (limits) => {
-    expect(() => executionResultSchema.parse({ schema: [], data: [], ...limits })).toThrow();
+    expect(() => queryOutputSchema.parse({ schema: [], data: [], ...limits })).toThrow();
     expect(() => pythonResultSchema.parse({ schema: [], data: [], ...limits })).toThrow();
   });
 });
@@ -99,7 +99,7 @@ describe('source-to-chart contract flow', () => {
     async (type) => {
       const data = JSON.parse('[{"__proto__":"A","constructor":"B","prototype":"C","value":10}]');
       const source = { type: 'json' as const, options: { data } };
-      expect(sourceConfigSchema.parse(source)).toEqual(source);
+      expect(sourceInputSchema.parse(source)).toEqual(source);
       expect(startupSchema.parse({ source, llm: { model: 'unused' } }).source).toEqual(source);
       const ava = new node.AVA({ llm: { model: 'unused' }, engine: { type } });
       try {
@@ -131,24 +131,28 @@ describe('source-to-chart contract flow', () => {
     }
   );
 
-  it('exposes shared contracts and helpers from Node and browser entry points', () => {
+  it('exports only API input/output schemas from Node and browser entry points', () => {
+    const names = Object.keys(contracts)
+      .filter((name) => /(Input|Output)Schema$/.test(name))
+      .sort();
+    expect(names).toHaveLength(21);
+    expect(Object.keys(contracts).sort()).toEqual(names);
+    for (const entry of [node, browser]) {
+      expect(
+        Object.keys(entry)
+          .filter((name) => /Schemas?$/.test(name))
+          .sort()
+      ).toEqual(names);
+    }
     for (const [name, schema] of Object.entries(contracts)) {
       if (name.endsWith('InputSchema') || name.endsWith('OutputSchema')) {
         expect(node).toHaveProperty(name, schema);
         expect(browser).toHaveProperty(name, schema);
       }
     }
-    expect(node.sourceConfigSchema).toBe(browser.sourceConfigSchema);
-    expect(node.executionResultSchema).toBe(browser.executionResultSchema);
-    expect(node.chartSpecSchema).toBe(browser.chartSpecSchema);
-    expect(contracts.sourceConfigSchema).toBe(node.sourceConfigSchema);
-    expect(contracts.executionResultSchema).toBe(node.executionResultSchema);
-    expect(contracts.chartSpecSchema).toBe(node.chartSpecSchema);
-    expect(contracts.schemaMetadataSchema.parse({ models: [] })).toEqual({ models: [] });
-    expect(contracts.profileMetadataSchema.parse({ models: [] })).toEqual({ models: [] });
-    expect(contracts.semanticMetadataSchema.parse({ description: 'Sales' })).toEqual({ description: 'Sales' });
-    expect(contracts.dataModelMetadataSchema.parse({ description: 'Sales' })).toEqual({ description: 'Sales' });
-    expect(contracts.bindingSchema.parse({ fields: { value: 'sales' } })).toEqual({ fields: { value: 'sales' } });
+    expect(contracts.schemaOutputSchema.parse({ models: [] })).toEqual({ models: [] });
+    expect(contracts.profileOutputSchema.parse({ models: [] })).toEqual({ models: [] });
+    expect(contracts.semanticOutputSchema.parse({ description: 'Sales' })).toEqual({ description: 'Sales' });
     expect(node.bindChartData).toBe(browser.bindChartData);
     expect(node.inferFileSourceType).toBe(browser.inferFileSourceType);
   });
@@ -159,10 +163,10 @@ describe('source-to-chart contract flow', () => {
       { month: 'Jan', revenue: 10 },
       { month: 'Feb', revenue: 20 },
     ];
-    const config = sourceConfigSchema.parse({ type: 'json', options: { data } });
+    const config = sourceInputSchema.parse({ type: 'json', options: { data } });
     try {
       await ava.source(config);
-      const result = executionResultSchema.parse(await ava.query('SELECT month, revenue FROM data ORDER BY revenue'));
+      const result = queryOutputSchema.parse(await ava.query('SELECT month, revenue FROM data ORDER BY revenue'));
       const before = JSON.stringify(result);
       const spec = node.bindChartData(
         result,
@@ -216,15 +220,6 @@ describe('API input and output contracts', () => {
     const diagnostics = [...parsed.errors, ...ts.getPreEmitDiagnostics(program)];
     expect(ts.formatDiagnostics(diagnostics, host)).toBe('');
   }, 30_000);
-
-  it('keeps existing runtime exports as aliases', () => {
-    expect(contracts.sourceInputSchema).toBe(contracts.sourceConfigSchema);
-    expect(contracts.schemaOutputSchema).toBe(contracts.schemaMetadataSchema);
-    expect(contracts.profileOutputSchema).toBe(contracts.profileMetadataSchema);
-    expect(contracts.semanticOutputSchema).toBe(contracts.semanticMetadataSchema);
-    expect(contracts.queryOutputSchema).toBe(contracts.executionResultSchema);
-    expect(contracts.vizInputSchema).toBe(contracts.chartSpecSchema);
-  });
 
   it('describes serializable API arguments without transport-specific fields or limits', () => {
     expect(contracts.sourceInputSchema.parse(source)).toEqual(source);

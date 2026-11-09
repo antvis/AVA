@@ -5,7 +5,7 @@ import { z } from 'zod';
 import { PythonDialect } from '../../query/python';
 import { executionResult, maxRows, maxResultBytes } from '../../util/result';
 import { DEFAULT_METRICS, parseProfileOptions } from '../../util/profile';
-import { profileMetadataSchema } from '../../contracts';
+import { profileMetadataSchema } from '../../contracts/profile';
 import { runWithTimeout } from '../../util/timeout';
 
 import { SCHEMA_CODE, sourceSchema, tableSchema, resultSchema } from './util/schema';

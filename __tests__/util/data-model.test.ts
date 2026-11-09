@@ -1,7 +1,9 @@
 import { describe, expect, it } from 'vitest';
 
 import { buildDataModel, stringifyDataModel, dataModelInputSchema } from '../../src/util/data-model';
-import { dataModelMetadataSchema, semanticMetadataSchema, profileMetadataSchema } from '../../src/contracts';
+import { dataModelMetadataSchema } from '../../src/contracts/shared/data-model';
+import { semanticMetadataSchema } from '../../src/contracts/semantic';
+import { profileMetadataSchema } from '../../src/contracts/profile';
 
 import type { DataModel, Profile, Schema, Semantic } from '../../src/types';
 

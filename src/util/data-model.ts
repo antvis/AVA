@@ -1,6 +1,9 @@
 import { z } from 'zod';
 
-import { profileMetadataSchema, schemaStructure, semanticMetadataSchema, dataModelMetadataSchema } from '../contracts';
+import { profileMetadataSchema } from '../contracts/profile';
+import { schemaStructure } from '../contracts/schema';
+import { semanticMetadataSchema } from '../contracts/semantic';
+import { dataModelMetadataSchema } from '../contracts/shared/data-model';
 
 import { escapeMarkdown, markdownTable } from './markdown';
 

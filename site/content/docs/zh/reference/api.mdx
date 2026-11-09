@@ -415,22 +415,19 @@ API 类型统一通过 `z.input<typeof inputSchema>` 与 `z.output<typeof output
 | `visualize` | `visualizeInputSchema`：`{ query, data }` | `visualizeOutputSchema`：必含 HTML 的图表配置或 `null` |
 | `viz` | `vizInputSchema`：应用默认值前的图表配置 | `vizOutputSchema`：HTML 字符串 |
 
-Node 和 browser 入口统一导出 API 输入、输出 schema 及对应类型，例如 `QueryInput` / `QueryOutput`。SDK 查询、分析方法保留原有的对象行默认类型；`QueryOutput`、`AnalyzeOutput` 类型默认使用未知行类型。`QueryOutput<Row>`、`AnalyzeOutput<Row>` 保留行泛型。`dispose()` 没有输入数据或返回值，无需数据 schema。既有校验器与类型名称继续兼容：
+Node 和 browser 入口统一导出 API 输入、输出 schema 及对应类型，例如 `QueryInput` / `QueryOutput`。SDK 查询、分析方法保留原有的对象行默认类型；`QueryOutput`、`AnalyzeOutput` 类型默认使用未知行类型。`QueryOutput<Row>`、`AnalyzeOutput<Row>` 保留行泛型。`dispose()` 没有输入数据或返回值，无需数据 schema。既有类型名称保留。SDK 还提供以下工具函数：
 
 | 导出 | 用途 |
 | --- | --- |
-| `sourceConfigSchema.parse(input)` | 校验内置数据源类型及对应选项。 |
-| `executionResultSchema.parse(input)` | 校验结果列、数据及截断标记、已知行数的一致性。 |
-| `chartSpecSchema.parse(input)` | 校验[可视化指南](/documentation/visualization/overview/)中的 19 种原生 JSON 图表形状和摘要字符串。 |
 | `inferFileSourceType(path)` | 根据本地路径或 HTTP(S) URL 推断文件数据源类型；未知扩展名返回 `undefined`。 |
 | `bindChartData(result, spec, binding?)` | 校验查询结果并绑定原生图表数据，无需调用模型。 |
 
 例如，使用 Node SDK 实例：
 
 ```typescript
-import { bindChartData, sourceConfigSchema } from '@antv/ava';
+import { bindChartData, sourceInputSchema } from '@antv/ava';
 
-const source = sourceConfigSchema.parse({
+const source = sourceInputSchema.parse({
   type: 'json',
   options: { data: [{ month: 'Jan', revenue: 10 }] },
 });

@@ -1,7 +1,7 @@
 import { describe, it, expect } from 'vitest';
 
 import { extractDataSchema } from '../../src/util/schema';
-import { schemaMetadataSchema } from '../../src/contracts';
+import { schemaMetadataSchema } from '../../src/contracts/schema';
 
 import type { Profile, Schema } from '../../src/types';
 

@@ -30,9 +30,6 @@ export {
   visualizeOutputSchema,
   vizInputSchema,
   vizOutputSchema,
-  sourceConfigSchema,
-  executionResultSchema,
-  chartSpecSchema,
 } from './contracts';
 
 export { inferFileSourceType } from './util/source';

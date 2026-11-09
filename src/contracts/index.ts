@@ -1,16 +1,15 @@
-/** Runtime schemas shared by the SDK, CLI and integration consumers. */
-export { sourceConfigSchema, sourceSchemas, sourceInputSchema } from './source';
-export { csvReadOptionsSchema } from './source/csv';
-export { jsonReadOptionsSchema } from './source/json';
-export { excelOptionsSchema, excelSheetSchema } from './source/excel';
-export { schemaMetadataSchema, schemaStructure, schemaInputSchema, schemaOutputSchema } from './schema';
-export { profileMetadataSchema, profileInputSchema, profileOutputSchema } from './profile';
-export { semanticMetadataSchema, semanticInputSchema, semanticOutputSchema } from './semantic';
-export { dataModelMetadataSchema } from './shared/data-model';
-export { executionResultSchema, queryInputSchema, queryOutputSchema } from './query';
+/**
+ * Public API input and output schemas.
+ */
+export { sourceInputSchema } from './source';
+export { schemaInputSchema, schemaOutputSchema } from './schema';
+export { profileInputSchema, profileOutputSchema } from './profile';
+export { semanticInputSchema, semanticOutputSchema } from './semantic';
+export { queryInputSchema, queryOutputSchema } from './query';
+export { analyzeInputSchema, analyzeOutputSchema } from './analyze';
+export { translateInputSchema, translateOutputSchema } from './translate';
+export { suggestInputSchema, suggestOutputSchema } from './suggest';
 export {
-  chartSpecSchema,
-  bindingSchema,
   recommendInputSchema,
   recommendOutputSchema,
   visualizeInputSchema,
@@ -18,7 +17,3 @@ export {
   vizInputSchema,
   vizOutputSchema,
 } from './visualize';
-export { jsonValue, dataRowSchema } from './shared/json';
-export { analyzeInputSchema, analyzeOutputSchema } from './analyze';
-export { translateInputSchema, translateOutputSchema } from './translate';
-export { suggestInputSchema, suggestOutputSchema } from './suggest';

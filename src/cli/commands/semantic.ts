@@ -1,7 +1,7 @@
 import { request } from '../session/client';
 import { readJSONFile } from '../io';
 import { option } from '../options';
-import { semanticMetadataSchema } from '../../contracts';
+import { semanticMetadataSchema } from '../../contracts/semantic';
 
 import type { Options } from '../options';
 

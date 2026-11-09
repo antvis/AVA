@@ -3,12 +3,10 @@ import { join } from 'path';
 
 import { z } from 'zod';
 
-import {
-  sourceConfigSchema,
-  profileMetadataSchema,
-  schemaMetadataSchema,
-  semanticMetadataSchema,
-} from '../../contracts';
+import { sourceConfigSchema } from '../../contracts/source';
+import { profileMetadataSchema } from '../../contracts/profile';
+import { schemaMetadataSchema } from '../../contracts/schema';
+import { semanticMetadataSchema } from '../../contracts/semantic';
 
 export const IPC_TIMEOUT_MS = 120_000;
 export const IPC_MAX_REQUEST_BYTES = 1024 * 1024;
@@ -16,7 +14,7 @@ export const IPC_MAX_RESPONSE_BYTES = 16 * 1024 * 1024;
 
 const text = z.string().min(1);
 
-export { sourceConfigSchema as sourceConfig } from '../../contracts';
+export { sourceConfigSchema as sourceConfig } from '../../contracts/source';
 
 export const modelSchema = z.object({ model: text, apiKey: text.optional(), baseURL: text.optional() }).strict();
 export const engineTypeSchema = z.enum([

@@ -1,5 +1,5 @@
 /** Catalog discovery and structural assembly. */
-import { schemaMetadataSchema } from '../contracts';
+import { schemaMetadataSchema } from '../contracts/schema';
 
 import { sqlIdentifier } from './sql';
 

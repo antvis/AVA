@@ -6,10 +6,6 @@ import type { ConnectionOptions as SnowflakeConnectionOptions } from 'snowflake-
 import type { AnalysisEvent } from './event';
 import type {
   sourceInputSchema,
-  sourceSchemas,
-  csvReadOptionsSchema,
-  jsonReadOptionsSchema,
-  excelSheetSchema,
   schemaInputSchema,
   schemaOutputSchema,
   profileInputSchema,
@@ -30,11 +26,14 @@ import type {
   visualizeOutputSchema,
   vizInputSchema,
   vizOutputSchema,
-  chartSpecSchema,
-  bindingSchema,
-  dataModelMetadataSchema,
-  jsonValue,
 } from './contracts';
+import type { sourceSchemas } from './contracts/source';
+import type { csvReadOptionsSchema } from './contracts/source/csv';
+import type { jsonReadOptionsSchema } from './contracts/source/json';
+import type { excelSheetSchema } from './contracts/source/excel';
+import type { chartSpecSchema, bindingSchema } from './contracts/visualize';
+import type { dataModelMetadataSchema } from './contracts/shared/data-model';
+import type { jsonValue } from './contracts/shared/json';
 
 /**
  * LLM configuration

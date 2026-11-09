@@ -413,22 +413,19 @@ Public schemas follow API input/output names. Multi-argument methods use named a
 | `visualize` | `visualizeInputSchema`: `{ query, data }` | `visualizeOutputSchema`: chart spec with required HTML, or `null` |
 | `viz` | `vizInputSchema`: chart spec before defaults | `vizOutputSchema`: HTML string |
 
-The Node and browser entry points export the same API input/output schemas and corresponding types, such as `QueryInput` / `QueryOutput`. SDK query/analysis methods retain their existing default object-row types; the `QueryOutput` and `AnalyzeOutput` types default to unknown rows. `QueryOutput<Row>` and `AnalyzeOutput<Row>` retain row generics. `dispose()` has neither input data nor a return value, so it needs no data schema. Existing validator and type names remain available:
+The Node and browser entry points export the same API input/output schemas and corresponding types, such as `QueryInput` / `QueryOutput`. SDK query/analysis methods retain their existing default object-row types; the `QueryOutput` and `AnalyzeOutput` types default to unknown rows. `QueryOutput<Row>` and `AnalyzeOutput<Row>` retain row generics. `dispose()` has neither input data nor a return value, so it needs no data schema. Existing type names remain available. Additional SDK helpers:
 
 | Export | Purpose |
 | --- | --- |
-| `sourceConfigSchema.parse(input)` | Validate built-in source types and their options. |
-| `executionResultSchema.parse(input)` | Validate result columns, data and consistent truncation/row-count metadata. |
-| `chartSpecSchema.parse(input)` | Validate 19 native JSON chart shapes and summary strings in the [visualization guide](/documentation/visualization/overview/). |
 | `inferFileSourceType(path)` | Infer a file source type from a file path or HTTP(S) URL; return `undefined` for unknown extensions. |
 | `bindChartData(result, spec, binding?)` | Validate the result and bind native chart data without a model call. |
 
 For example, with a Node SDK instance:
 
 ```typescript
-import { bindChartData, sourceConfigSchema } from '@antv/ava';
+import { bindChartData, sourceInputSchema } from '@antv/ava';
 
-const source = sourceConfigSchema.parse({
+const source = sourceInputSchema.parse({
   type: 'json',
   options: { data: [{ month: 'Jan', revenue: 10 }] },
 });

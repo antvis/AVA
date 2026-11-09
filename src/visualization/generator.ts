@@ -11,7 +11,7 @@ import { version as gptVisVersion } from '@antv/gpt-vis/package.json';
 import { z } from 'zod';
 
 import { languageModel } from '../util/model';
-import { chartSpecSchema } from '../contracts';
+import { chartSpecSchema } from '../contracts/visualize';
 
 import type { LLMConfig, ChartType, ChartConfig } from '../types';
 
