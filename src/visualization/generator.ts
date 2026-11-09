@@ -7,7 +7,6 @@
  */
 
 import { generateText } from 'ai';
-import { version as gptVisVersion } from '@antv/gpt-vis/package.json';
 import { z } from 'zod';
 
 import { languageModel } from '../util/model';
@@ -30,7 +29,7 @@ export function wrapConfigInHTML(config: ChartConfig): string {
   <head>
     <meta charset="UTF-8">
     <title>Data Visualization</title>
-    <script src="https://unpkg.com/@antv/gpt-vis@${gptVisVersion}/dist/umd/index.min.js"></script>
+    <script src="https://unpkg.com/@antv/gpt-vis@1.3.1/dist/umd/index.min.js"></script>
     <style>
       html, body, #container {
         margin: 0;

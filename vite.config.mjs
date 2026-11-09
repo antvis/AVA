@@ -33,10 +33,7 @@ export default defineConfig({
       fileName: (_format, name) => `${name}.mjs`,
     },
     rollupOptions: {
-      // Inline package metadata so ESM consumers do not need JSON import attributes.
-      external: (id) =>
-        !id.endsWith('/package.json') &&
-        (isBuiltin(id) || external.some((name) => id === name || id.startsWith(`${name}/`))),
+      external: (id) => isBuiltin(id) || external.some((name) => id === name || id.startsWith(`${name}/`)),
     },
   },
 });

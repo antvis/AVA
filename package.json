@@ -60,7 +60,7 @@
     "lint-fix": "eslint --ext .ts,.tsx src __tests__ --fix",
     "format": "prettier --write \"src/**/*.{ts,tsx}\" && npm run lint-fix",
     "clean": "rimraf lib esm",
-    "build:cjs": "tsc --module commonjs --outDir lib && node scripts/inline-gpt-vis-version.mjs",
+    "build:cjs": "tsc --module commonjs --outDir lib",
     "build:esm": "vite build",
     "build": "npm run clean && npm run build:cjs && npm run build:esm",
     "prepublishOnly": "npm run build",
