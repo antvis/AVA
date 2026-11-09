@@ -42,7 +42,6 @@
       }
       button:focus-visible,
       a:focus-visible,
-      summary:focus-visible,
       [tabindex]:focus-visible {
         outline: 2px solid #737373;
         outline-offset: 4px;
@@ -226,27 +225,54 @@
         line-height: 1.95;
       }
       .panel {
+        position: relative;
+        padding-top: 56px;
         border: 1px solid var(--line);
         border-radius: 18px;
         overflow: hidden;
         background: #fff;
       }
-      .panel.has-chart {
-        display: grid;
-        grid-template-columns: minmax(0, 1.08fr) minmax(0, 1fr);
-        grid-template-rows: 1fr auto;
+      .view-tabs {
+        position: absolute;
+        top: 12px;
+        right: 12px;
+        z-index: 1;
+        display: flex;
+        gap: 2px;
+        padding: 3px;
+        border: 1px solid var(--line);
+        border-radius: 11px;
+        background: #fff;
+        box-shadow: 0 2px 8px #00000008;
+      }
+      .view-tabs button {
+        border: 0;
+        border-radius: 7px;
+        padding: 4px 11px;
+        line-height: 18px;
+        background: transparent;
+      }
+      .view-tabs button:hover:not(:disabled) {
+        background: #f3f3f3;
+      }
+      .view-tabs button[aria-selected='true'] {
+        background: var(--ink);
+        color: #fff;
+      }
+      .view-tabs button[aria-selected='true']:hover {
+        background: #404040;
+      }
+      .view-tabs button:disabled {
+        color: #b8b8b8;
+        cursor: not-allowed;
+      }
+      .view-panel {
+        min-height: 282px;
       }
       figure {
         margin: 0;
         padding: 18px 16px 14px;
-        border-bottom: 1px solid var(--line);
         min-width: 0;
-      }
-      .has-chart > figure {
-        grid-column: 1;
-        grid-row: 1;
-        border-bottom: 0;
-        border-right: 1px solid var(--line);
       }
       iframe {
         display: block;
@@ -257,8 +283,8 @@
         border-radius: 8px;
       }
       .data-count {
-        float: right;
-        margin-left: 12px;
+        margin: 0;
+        padding: 0 20px 12px;
         font-size: 10px;
         color: var(--muted);
       }
@@ -268,10 +294,6 @@
         scrollbar-width: thin;
         scrollbar-color: #d4d4d4 transparent;
         min-width: 0;
-      }
-      .has-chart > .table-scroll {
-        grid-column: 2;
-        grid-row: 1;
       }
       table {
         width: 100%;
@@ -314,27 +336,9 @@
         color: var(--muted);
         font-size: 12px;
       }
-      details {
-        border-top: 1px solid var(--line);
+      .sql {
+        padding-top: 14px;
         background: #fafafa;
-      }
-      .has-chart > details {
-        grid-column: 1 / -1;
-        grid-row: 2;
-      }
-      summary {
-        cursor: pointer;
-        font-size: 11px;
-        color: #666666;
-        padding: 12px 20px;
-        transition: background 0.15s, color 0.15s;
-      }
-      summary:hover {
-        color: var(--ink);
-        background: #f3f3f3;
-      }
-      summary::marker {
-        font-size: 9px;
       }
       .sql-meta {
         display: flex;
@@ -570,12 +574,8 @@
         .panel {
           border-radius: 15px;
         }
-        .panel.has-chart {
-          display: block;
-        }
-        .has-chart > figure {
-          border-right: 0;
-          border-bottom: 1px solid var(--line);
+        .view-panel {
+          min-height: 267px;
         }
         iframe {
           height: 235px;
@@ -584,8 +584,8 @@
         td {
           padding-inline: 16px;
         }
-        summary {
-          padding: 12px 16px;
+        .data-count {
+          padding-inline: 16px;
         }
         .sql-meta {
           flex-wrap: wrap;
@@ -618,7 +618,6 @@
       }
       @media (prefers-reduced-motion: reduce) {
         button,
-        summary,
         #status {
           transition: none;
         }
@@ -628,6 +627,7 @@
        ----------------------------------------------------------------------- */
       @media print {
         .copy,
+        .view-tabs,
         #status,
         .skip,
         .report-index {
@@ -657,8 +657,8 @@
         .sources {
           break-inside: avoid;
         }
-        .sql:not([open]) {
-          display: none;
+        .panel {
+          padding-top: 0;
         }
         iframe {
           height: 220px;
@@ -736,9 +736,17 @@
         <p class="conclusion" data-field="conclusion"></p>
         <p class="notice truncated" hidden>结果已截断：下方数据不完整，请勿据此推断全量结果。</p>
         <div class="panel">
-          <figure hidden><iframe sandbox="allow-scripts"></iframe></figure>
+          <div class="view-tabs" role="tablist" aria-label="视图切换">
+            <button type="button" role="tab" data-view="chart">Chart</button>
+            <button type="button" role="tab" data-view="data">Data</button>
+            <button type="button" role="tab" data-view="sql">SQL</button>
+          </div>
+          <figure class="view-panel" data-view="chart" role="tabpanel" tabindex="0" hidden>
+            <iframe sandbox="allow-scripts"></iframe>
+          </figure>
           <p class="notice chart-error" hidden></p>
-          <div class="table-scroll" tabindex="0" role="region">
+          <div class="table-scroll view-panel" data-view="data" tabindex="0" role="tabpanel" hidden>
+            <p class="data-count" data-field="count"></p>
             <table>
               <caption class="sr-only"></caption>
               <thead><tr></tr></thead>
@@ -746,18 +754,14 @@
             </table>
             <p class="empty" hidden>查询未返回数据。</p>
           </div>
-          <details class="sql">
-            <summary>
-              查询代码
-              <span class="data-count" data-field="count"></span>
-            </summary>
+          <div class="sql view-panel" data-view="sql" role="tabpanel" tabindex="0" hidden>
             <div class="sql-meta">
               <span data-field="source"></span>
               <button type="button" class="copy">复制代码</button>
             </div>
             <pre><code data-field="sql"></code></pre>
             <p class="query-id" data-field="queryMeta"></p>
-          </details>
+          </div>
         </div>
       </section>
     </template>
@@ -926,9 +930,6 @@
         node.querySelector('h2').id = 'heading-' + (index + 1);
         node.setAttribute('aria-labelledby', 'heading-' + (index + 1));
         node.querySelector('.truncated').hidden = !query.result.truncated;
-        node
-          .querySelector('.table-scroll')
-          .setAttribute('aria-label', section.question + ' — 查询结果');
         node.querySelector('caption').textContent = section.question + '的结果数据';
         columns.forEach((name) => {
           const cell = document.createElement('th');
@@ -956,15 +957,14 @@
 
         const chart = report.charts.find((chart) => chart.section === index + 1);
         if (chart) {
-          node.querySelector('.panel').classList.add('has-chart');
           const frame = node.querySelector('iframe');
           frame.title = section.question + ' — 交互图表';
           frame.srcdoc = chart.html;
-          node.querySelector('figure').hidden = false;
           // GPT-Vis measures its container at mount; remount after a real width change.
           let width = 0;
           new ResizeObserver((entries) => {
             const next = entries[0].contentRect.width;
+            if (!next) return;
             if (width && Math.abs(next - width) > 1) {
               frame.srcdoc = chart.html;
             }
@@ -977,12 +977,51 @@
           node.querySelector('.chart-error').textContent =
             '图表暂不可用：' + error.message + ' 结果表与查询代码已保留。';
         }
+
+        const tablist = node.querySelector('.view-tabs');
+        const tabs = [...tablist.querySelectorAll('[role="tab"]')];
+        const views = [...node.querySelectorAll('[role="tabpanel"]')];
+        tablist.setAttribute('aria-label', section.question + ' — 视图切换');
+        tabs[0].disabled = !chart;
+        const selectView = (selected) => {
+          tabs.forEach((tab) => {
+            const active = tab === selected;
+            tab.setAttribute('aria-selected', String(active));
+            tab.tabIndex = active ? 0 : -1;
+          });
+          views.forEach((view) => {
+            view.hidden = view.dataset.view !== selected.dataset.view;
+          });
+        };
+        tabs.forEach((tab, tabIndex) => {
+          const view = views[tabIndex];
+          tab.id = node.id + '-tab-' + tab.dataset.view;
+          view.id = node.id + '-view-' + view.dataset.view;
+          tab.setAttribute('aria-controls', view.id);
+          view.setAttribute('aria-labelledby', tab.id);
+          tab.addEventListener('click', () => selectView(tab));
+        });
+        tablist.addEventListener('keydown', (event) => {
+          if (!['ArrowLeft', 'ArrowRight', 'Home', 'End'].includes(event.key)) return;
+          event.preventDefault();
+          const enabled = tabs.filter((tab) => !tab.disabled);
+          const current = enabled.indexOf(document.activeElement);
+          const next =
+            event.key === 'Home'
+              ? 0
+              : event.key === 'End'
+              ? enabled.length - 1
+              : (current + (event.key === 'ArrowRight' ? 1 : -1) + enabled.length) % enabled.length;
+          selectView(enabled[next]);
+          enabled[next].focus();
+        });
+        selectView(tabs.find((tab) => !tab.disabled));
         node.querySelector('.copy').addEventListener('click', async () => {
           try {
             await navigator.clipboard.writeText(query.sql);
             notify('查询代码已复制');
           } catch {
-            notify('复制未成功，请展开查询代码后手动选择复制');
+            notify('复制未成功，请在 SQL 视图中手动选择复制');
           }
         });
         document.getElementById('sections').append(node);

@@ -50,7 +50,7 @@ async function writeNew(path, value) {
 // Use argv and stdin, preserving exact DSL without shell interpolation.
 export function runAVA(args, input) {
   return new Promise((resolveResult, reject) => {
-    const child = spawn(process.env.AVA_CLI || 'ava', args, { stdio: ['pipe', 'pipe', 'pipe'] });
+    const child = spawn('ava', args, { stdio: ['pipe', 'pipe', 'pipe'] });
     const output = [];
     const errors = [];
     child.stdout.on('data', (chunk) => output.push(chunk));
@@ -390,7 +390,7 @@ export async function renderReport({ evidence, spec, output, previous, template 
   }
 }
 
-const help = `AVA Skill reports (Node.js 22.13+, AVA CLI 4.x on PATH; AVA_CLI may select an executable)
+const help = `AVA Skill reports (Node.js 22.13+, AVA CLI 4.x on PATH)
 
   node report.mjs query <datasetId> --dsl query.sql --source sales.csv --evidence /task/evidence
       [--max-rows 10000] [--max-result-bytes 1048576]

@@ -1,100 +1,192 @@
 # Semantic
 
-Semantic stores reusable business meaning: metric formulas, eligible records, units, time conventions, and join rules.
+## Establish Definitions
 
-## File
+Read existing session definitions and saved files alongside the actual schema. Confirm source identity, scope, effective period, and fields. Resolve the relevant business choices:
 
-| Item | Rule |
-| --- | --- |
-| Location | Use the user's location or project convention; otherwise `.ava/semantics/<source-key>.json`. |
-| Identity | Use a stable source/reporting-scope key, not the temporary session ID. |
-| Contents | Reusable definitions with their source, scope, and provenance. |
-| Exclude | Temporary filters, guesses, answers, profile statistics, credentials, and personal records. |
+- Row grain and keys; join cardinality and whether joins can multiply amounts.
+- Eligible records, formulas, numerator/denominator, null handling, currency, and units.
+- Business timestamp, timezone, aggregation grain, and attribution of refunds or adjustments.
 
-Keep the file outside disposable outputs and the installed skill. Start with plain language:
+Use user-confirmed or authoritative documented definitions within their applicable scope. A value appearing in a saved file or session alone does not establish that it was confirmed. Data checks can verify uniqueness or reconcile totals but do not establish business meaning.
 
-```json
-{
-  "description": "Revenue is paid amount minus cumulative refunds. Null refunds mean zero.",
-  "properties": {
-    "source": "data/orders.csv",
-    "scope": "Sales operations order reporting",
-    "confirmedBy": "user",
-    "confirmedAt": "2026-11-02"
-  }
+## Resolve and Confirm
+
+```text
+Read request + schema + saved/session Semantic
+  |
+  +-- Confirmed and applicable ----------> Reuse -> SQL
+  |
+  +-- Missing / unclear / conflicting
+        |
+        v
+      Propose definition + scope; ask user
+        |
+        +-- Confirmed for reuse --------> Merge -> load/save -> SQL
+        +-- Authorized for this task ---> Task context only -> SQL
+        +-- Unresolved / no reply ------> Wait; no Semantic writes
+```
+
+- A clear, scoped user instruction counts as confirmation. Recheck applicability when the source, schema, or reporting period changes.
+- Ask only about unresolved choices, showing their consequences and whether the rule is task-only or reusable.
+- Partial confirmation resolves only the agreed parts. Without a clear answer, continue independent data checks but wait on dependent analysis. Pending rules stay in the conversation, never in session Semantic, saved files, or candidate JSON.
+- Temporary filters, task-only definitions, and authorized provisional assumptions stay in task context, labeled in results. Do not load or save them as Semantic; honor requests not to save.
+
+## JSON Type Contract
+
+```ts
+type JsonValue = string | number | boolean | null | JsonValue[] | { [key: string]: JsonValue };
+type Properties = Record<string, JsonValue>;
+type Key = string | [string, ...string[]];
+type JoinType = 'ONE_TO_ONE' | 'ONE_TO_MANY' | 'MANY_TO_ONE' | 'MANY_TO_MANY';
+
+interface Semantic {
+  description?: string;
+  properties?: Properties;
+  models?: Model[];
+  relationships?: Relationship[];
+  views?: View[];
+  cubes?: Cube[];
 }
 ```
 
-Adapt the example to the actual evidence. Attribute documented rules to their source instead of labeling them user-confirmed. The `properties` keys above are conventions for the agent, not fields with special CLI behavior.
-
-## Structured Format
-
-All six top-level keys are optional: `description` (string), `properties` (JSON object), and the arrays `models`, `relationships`, `views`, `cubes`. Add structured definitions only when useful. Names, types, `refSql`, `baseObject`, `condition`, `statement`, and measure expressions must be nonempty strings. Column `expression` may also be empty or null.
-
-| Object | Required fields | Optional fields |
+| Type | Required fields | Optional fields |
 | --- | --- | --- |
-| Model | `name`; exactly one of `tableReference`, `refSql`, `baseObject` | `columns`, `primaryKey`, `uniqueKeys`, `dialect`, `properties` |
-| Table reference | `table` | `catalog`, `schema` |
-| Column | `name`, `type` | `relationship`, `isCalculated`, `isPrimaryKey`, `notNull`, `expression`, `properties` |
-| Relationship | `name`, `models` (exactly two model names), `joinType`, `condition` (SQL) | `properties` |
-| View | `name`, `statement` (SQL) | `dialect`, `properties` |
-| Cube | `name`, `baseObject`, nonempty `measures` | `dimensions`, `timeDimensions`, `hierarchies`, `properties` |
-| Measure, dimension, time dimension | `name`, `expression`, `type` | `description`, `properties` |
+| `Model` | `name: string`; exactly one of `tableReference: TableReference`, `refSql: string`, `baseObject: string` | `columns: Column[]`, `primaryKey: Key`, `uniqueKeys: Key[]`, `dialect: string`, `properties: Properties` |
+| `TableReference` | `table: string` | `catalog: string`, `schema: string`; source-specific JSON fields |
+| `Column` | `name: string`, `type: string` | `relationship: string`, `isCalculated: boolean`, `isPrimaryKey: boolean`, `notNull: boolean`, `expression: string \| null`, `properties: Properties` |
+| `Relationship` | `name: string`, `models: [string, string]`, `joinType: JoinType`, `condition: string` | `properties: Properties`; additional JSON fields |
+| `View` | `name: string`, `statement: string` | `dialect: string`, `properties: Properties`; additional JSON fields |
+| `Cube` | `name: string`, `baseObject: string`, `measures: [Measure, ...Measure[]]` | `dimensions: Measure[]`, `timeDimensions: Measure[]`, `hierarchies: Record<string, [string, ...string[]]>`, `properties: Properties` |
+| `Measure` / dimension / time dimension | `name: string`, `expression: string`, `type: string` | `description: string`, `properties: Properties` |
 
-`primaryKey` is a string or nonempty string array; `uniqueKeys` is an array of the same key shape. Column flags are booleans; `relationship` names a relationship. Relationship `joinType` is cardinality: `ONE_TO_ONE`, `ONE_TO_MANY`, `MANY_TO_ONE`, or `MANY_TO_MANY`. Cube `hierarchies` maps names to nonempty string arrays ordered from coarse to fine.
+Names, type labels, and SQL definitions must be nonempty; column `expression` may also be empty or null. Custom annotations belong in `properties`; unknown fields are rejected except the JSON extensions listed above. Profiling `metrics` do not belong in Semantic.
 
-Use an existing schema model name to enrich that model; additional names can define logical models. `tableReference` maps a physical table, `refSql` defines a SQL source, and `baseObject` refers to another object. Keep names unique and references consistent. Put measure eligibility rules in the measure expression or its base.
+`tableReference` identifies a physical source; `refSql` defines source rows with SQL; `baseObject` refers to another model or view. Reuse a schema model's name to enrich it. `Column.relationship` names a relationship, not a foreign-key column; a relationship column's `type` names its target model. `joinType` describes the first model relative to the second, not `LEFT` versus `INNER JOIN`. Hierarchies list dimension names from coarse to fine.
 
-For example, for a DuckDB session whose table `data` has `paid_amount`, `refund_amount`, `status`, and `region`:
+## Example: Paid-Order Sales
+
+Example assumptions (DuckDB): one row per order/customer; non-null CNY payments; null refunds mean zero; `paid_at` is already business-local time. Cumulative refunds are attributed to the original payment period, not their refund date.
 
 ```json
 {
-  "models": [{
-    "name": "paid_orders",
-    "refSql": "SELECT *, paid_amount - COALESCE(refund_amount, 0) AS net_revenue FROM data WHERE status = 'paid'",
-    "columns": [{
-      "name": "net_revenue",
-      "type": "DOUBLE",
-      "properties": {"description": "Paid amount minus cumulative refunds"}
-    }]
+  "description": "Net revenue and order value for paid orders, by payment time and customer geography.",
+  "properties": {
+    "source": "sales warehouse: orders and customers",
+    "scope": "Paid-order reporting",
+    "definitionSource": "Project sales definitions (example)",
+    "currency": "CNY",
+    "timezone": "Asia/Shanghai"
+  },
+  "models": [
+    {
+      "name": "orders",
+      "tableReference": { "table": "orders" },
+      "primaryKey": "order_id",
+      "properties": { "grain": "One row per order" },
+      "columns": [
+        { "name": "order_id", "type": "BIGINT", "isPrimaryKey": true, "notNull": true },
+        { "name": "customer_id", "type": "BIGINT" },
+        { "name": "status", "type": "VARCHAR" },
+        { "name": "paid_at", "type": "TIMESTAMP", "properties": { "timezone": "Asia/Shanghai" } },
+        { "name": "paid_amount", "type": "DECIMAL(18,2)", "notNull": true, "properties": { "unit": "CNY" } },
+        { "name": "refund_amount", "type": "DECIMAL(18,2)", "properties": { "nullMeaning": "No refund" } },
+        {
+          "name": "net_revenue",
+          "type": "DECIMAL(18,2)",
+          "isCalculated": true,
+          "expression": "paid_amount - COALESCE(refund_amount, 0)",
+          "properties": { "unit": "CNY" }
+        }
+      ]
+    },
+    {
+      "name": "customers",
+      "tableReference": { "table": "customers" },
+      "primaryKey": "customer_id",
+      "columns": [
+        { "name": "customer_id", "type": "BIGINT", "isPrimaryKey": true, "notNull": true },
+        { "name": "country", "type": "VARCHAR" },
+        { "name": "region", "type": "VARCHAR" }
+      ]
+    }
+  ],
+  "relationships": [{
+    "name": "order_customer",
+    "models": ["orders", "customers"],
+    "joinType": "MANY_TO_ONE",
+    "condition": "orders.customer_id = customers.customer_id",
+    "properties": { "joinPolicy": "LEFT JOIN; retain orders without a matching customer" }
   }],
   "views": [{
-    "name": "regional_revenue",
-    "statement": "SELECT region, SUM(net_revenue) AS revenue FROM paid_orders GROUP BY region",
-    "dialect": "duckdb"
+    "name": "eligible_orders",
+    "dialect": "duckdb",
+    "statement": "SELECT o.order_id, o.paid_at, o.paid_amount - COALESCE(o.refund_amount, 0) AS net_revenue, COALESCE(c.country, 'Unknown') AS country, COALESCE(c.region, 'Unknown') AS region FROM orders o LEFT JOIN customers c ON o.customer_id = c.customer_id WHERE o.status = 'paid'",
+    "properties": { "eligibility": "status = 'paid'", "grain": "One row per paid order" }
   }],
   "cubes": [{
-    "name": "sales",
-    "baseObject": "paid_orders",
-    "measures": [{"name": "revenue", "expression": "SUM(net_revenue)", "type": "DOUBLE"}],
-    "dimensions": [{"name": "region", "expression": "region", "type": "VARCHAR"}]
+    "name": "paid_order_sales",
+    "baseObject": "eligible_orders",
+    "measures": [
+      { "name": "net_revenue", "expression": "SUM(net_revenue)", "type": "DECIMAL(38,2)", "properties": { "unit": "CNY" } },
+      { "name": "paid_orders", "expression": "COUNT(DISTINCT order_id)", "type": "BIGINT" },
+      {
+        "name": "average_order_value",
+        "expression": "SUM(net_revenue) / NULLIF(COUNT(DISTINCT order_id), 0)",
+        "type": "DOUBLE",
+        "description": "Net revenue per paid order; undefined when there are no paid orders.",
+        "properties": { "unit": "CNY/order" }
+      }
+    ],
+    "dimensions": [
+      { "name": "country", "expression": "country", "type": "VARCHAR" },
+      { "name": "region", "expression": "region", "type": "VARCHAR" }
+    ],
+    "timeDimensions": [{ "name": "paid_month", "expression": "DATE_TRUNC('month', paid_at)", "type": "TIMESTAMP" }],
+    "hierarchies": { "geography": ["country", "region"] }
   }]
 }
 ```
 
-Loading metadata does not create physical tables, views, or calculated columns. A query using the example must supply the `paid_orders` CTE explicitly. Store custom annotations in `properties`; unknown keys are rejected except JSON extensions on table references, relationships, and views. Profiling `metrics` are not accepted on semantic models or columns.
+The example's `properties` keys are conventions, not executable CLI settings.
 
-## Incremental Maintenance
+## Apply Definitions in SQL
 
-| Step | Operation |
-| --- | --- |
-| Read | Read the local file and `ava semantic "$DATASET_ID"`. Check source identity, scope, effective period, and required fields; matching field names alone are insufficient. |
-| Merge | Add new rules or revise affected ones. Preserve unrelated definitions and provenance. Clarify material conflicts; temporary report overrides stay in task context. Preserve history for lasting corrections. |
-| Load | Write a complete temporary candidate; run `ava semantic "$DATASET_ID" --file semantic-candidate.json`. Pass a plain path without `@`. |
-| Save | Check the returned definition before replacing the local file. On load/save failure, retain the previous durable file and report what succeeded. |
+Semantic does not create database views, calculated columns, or cubes. Expand their SQL/CTEs explicitly in `query`; a relationship declaration does not perform the join. For the example:
 
-When several files apply, combine their rules into one candidate; keep each durable file within its source/scope.
+```sql
+WITH eligible_orders AS (
+  SELECT o.order_id, o.paid_at,
+         o.paid_amount - COALESCE(o.refund_amount, 0) AS net_revenue,
+         COALESCE(c.country, 'Unknown') AS country,
+         COALESCE(c.region, 'Unknown') AS region
+  FROM orders o
+  LEFT JOIN customers c ON o.customer_id = c.customer_id
+  WHERE o.status = 'paid'
+)
+SELECT DATE_TRUNC('month', paid_at) AS paid_month, country, region,
+       SUM(net_revenue) AS net_revenue,
+       COUNT(DISTINCT order_id) AS paid_orders,
+       SUM(net_revenue) / NULLIF(COUNT(DISTINCT order_id), 0) AS average_order_value
+FROM eligible_orders
+GROUP BY 1, 2, 3
+ORDER BY 1, 2, 3;
+```
 
-## Runtime Behavior
+Check customer-key uniqueness and reconcile counts/amounts before and after joins. Keep prior-period definitions separately scoped when a new rule does not replace them.
 
-| Operation | Behavior |
-| --- | --- |
-| Read | Returns the current definition, initially `{}`. |
-| Invalid write | Preserves the previous session value. |
-| Load `{}` | Clears session semantic. |
-| Update schema/profile | Retains semantic. |
-| New session | Starts empty; reload compatible local definitions. |
-| `analyze`, `translate`, `suggest` | Receive loaded semantic as model context. |
-| `query` | Executes supplied code; the agent must implement the business rules explicitly. |
+## Load and Maintain
 
-Structure validation does not verify business meaning or SQL correctness. Check new expressions with targeted queries and relevant edge cases. If the CLI lacks `semantic`, use an updated build; do not substitute `schema --file`.
+Save established reusable definitions in the user's/project's location, otherwise `.ava/semantics/<source-key>.json`, keyed by stable source and scope. Keep definitions and provenance outside disposable outputs and the installed skill; exclude pending assumptions, results, temporary filters, credentials, and personal records.
+
+After confirmation, re-read saved files and `ava semantic "$DATASET_ID"`. Merge agreed changes by object/member name, preserving unrelated definitions and provenance. Record source, scope, and any confirmed effective period in `properties`. Resolve new conflicts before writing; skip unchanged files.
+
+Keep different source/reporting scopes distinct. Save a complete merged candidate containing only established definitions, then load it with a plain path (no `@`):
+
+```sh
+ava semantic "$DATASET_ID" --file semantic-candidate.json
+```
+
+`--file` replaces the entire session value. Check the response before updating the durable file; retain the old file if loading fails. If saving fails after loading, report that only the session was updated. Without an active session, save confirmed JSON for later loading and disclose that it has not been loaded or execution-validated.
+
+New sessions start empty; reload applicable saved definitions. Loading validates structure, not formulas or business meaning.
