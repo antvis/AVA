@@ -31,6 +31,24 @@ describe('AVA', () => {
     await ava?.dispose();
   });
 
+  it('passes original source and query errors through without changing diagnostic fields', async () => {
+    ava = new AVA({ llm: getLLMConfig(), engine: { type: 'javascript' } });
+    const failure = Object.assign(new Error('upstream password=original-secret'), {
+      code: 'UPSTREAM_AUTH_FAILED',
+      cause: new Error('original cause'),
+      detail: { token: 'original-token' },
+    });
+    const source = { type: 'json' as const, options: { data: [{ value: 1 }] } };
+    vi.spyOn(JavaScriptEngine.prototype, 'load').mockRejectedValueOnce(failure);
+    await expect(ava.source(source)).rejects.toBe(failure);
+    await ava.source(source);
+    vi.spyOn(ava.engine!, 'execute').mockRejectedValueOnce(failure);
+    await expect(ava.query('const result = data;')).rejects.toBe(failure);
+    expect(failure.code).toBe('UPSTREAM_AUTH_FAILED');
+    expect(failure.detail.token).toBe('original-token');
+    expect(failure.cause.message).toBe('original cause');
+  });
+
   it('returns the current schema throughout the source lifecycle', async () => {
     const onEnd = vi.fn();
     ava.on(LifecycleEventType.SOURCE_END, onEnd);

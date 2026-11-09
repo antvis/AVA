@@ -24,7 +24,7 @@ export async function resolveWikiNode(wikiToken: string, api: FeishuApi): Promis
   const node = isRecord(data.node) ? data.node : {};
   const objToken = typeof node.obj_token === 'string' ? node.obj_token : '';
   if (!objToken) {
-    throw new Error(`Feishu wiki node ${wikiToken} does not point at a document.`);
+    throw new Error('Feishu wiki node does not point at a document.');
   }
   return {
     objToken,

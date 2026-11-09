@@ -62,7 +62,7 @@ export async function downloadToTempFile(url: string, ext: string, headers?: Rec
   const response = await fetchFile(url, headers);
   if (!response.ok) {
     await response.body?.cancel();
-    throw new Error(`Failed to fetch ${url}: ${response.status} ${response.statusText}`);
+    throw new Error(`Failed to fetch remote file (HTTP ${response.status}).`);
   }
   return writeTempFile(Buffer.from(await response.arrayBuffer()), ext);
 }

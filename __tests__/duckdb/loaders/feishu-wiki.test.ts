@@ -2,6 +2,8 @@ import { afterEach, describe, expect, it, vi } from 'vitest';
 
 import { readTable } from '../../../src/duckdb/loaders/feishu/read';
 import { resolveBitableTable } from '../../../src/duckdb/loaders/feishu/resolve';
+import { feishuGet } from '../../../src/duckdb/loaders/feishu/api';
+import { parseBitableUrl } from '../../../src/duckdb/loaders/feishu/url';
 
 afterEach(() => vi.unstubAllGlobals());
 
@@ -39,6 +41,39 @@ function stubFetch(routes: Routes = {}) {
 }
 
 describe('wiki-hosted Bitable', () => {
+  it('preserves the original Feishu transport error without adding the request URL', async () => {
+    const failure = Object.assign(new Error('upstream token=original-secret'), { code: 'ECONNRESET' });
+    vi.stubGlobal('fetch', vi.fn().mockRejectedValue(failure));
+    await expect(feishuGet('https://example.com/api?token=url-secret', 'header-secret')).rejects.toBe(failure);
+  });
+
+  it('does not echo source URLs or tokens in its own validation errors', async () => {
+    const signed = 'https://user:url-password@my.feishu.cn';
+    const invalid = `${signed}/unsupported?signature=url-signature`;
+    expect(() => parseBitableUrl(invalid)).toThrow(new Error('Invalid Feishu Bitable URL.'));
+    stubFetch();
+    for (const options of [
+      { url: invalid },
+      { url: `${signed}/base/link-secret?signature=url-signature&table=tbl123`, appToken: 'other' },
+      { url: `${signed}/wiki/link-secret?signature=url-signature&table=tbl123`, appToken: 'other' },
+      { url: `${signed}/wiki/link-secret?signature=url-signature&table=tbl123`, tableId: 'other' },
+    ]) {
+      const failure = await resolveBitableTable(options, api).catch((error: Error) => error);
+      expect(failure).toBeInstanceOf(Error);
+      for (const secret of ['url-password', 'url-signature', 'link-secret']) {
+        expect((failure as Error).message).not.toContain(secret);
+      }
+    }
+    stubFetch({ tables: [] });
+    await expect(resolveBitableTable({ url: `${signed}/base/link-secret` }, api)).rejects.toEqual(
+      new Error('Feishu Bitable has no tables.')
+    );
+    stubFetch({ node: { code: 0, data: { node: {} } } });
+    await expect(resolveBitableTable({ url: `${signed}/wiki/link-secret` }, api)).rejects.toEqual(
+      new Error('Feishu wiki node does not point at a document.')
+    );
+  });
+
   it('resolves a wiki node token to the Bitable it hosts', async () => {
     const fetch = stubFetch();
 
