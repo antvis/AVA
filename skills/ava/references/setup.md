@@ -4,7 +4,7 @@
 
 Requires AVA CLI **4.x**, Node.js ≥22.13, and macOS or Linux. The runtime must support long-lived background processes and Unix sockets. Calls must share the same user, runtime environment, and temporary directory.
 
-Check the Node.js version and confirm that the CLI is available:
+Check the Node.js version and confirm that the CLI is available in the host agent's shell:
 
 ```sh
 node --version
@@ -17,11 +17,7 @@ Prefer an existing installation or project build of this version. Otherwise, ins
 npm install -g @antv/ava@4
 ```
 
-## WorkBuddy
-
-Install this `ava` skill folder in WorkBuddy's user skills location, or import a ZIP containing the folder through its skill manager. Use a normal task with the skill; deselect the old AVA expert, whose instructions require MCP rather than this CLI workflow. The skill itself needs no MCP connection or separate model key for structured-data analysis.
-
-Before analysis, confirm the Node and AVA executables actually used by WorkBuddy's shell. A supported Node installation elsewhere on the machine does not change that shell's `PATH`. Use a task-local `PATH` or executable wrapper when necessary; do not change unrelated global settings. For the report script, `AVA_CLI` selects that executable. Follow the host's normal tool permissions. A missing shell, blocked Unix socket or unavailable attachment path is an environment blocker; do not claim AVA ran.
+A supported Node installation elsewhere on the machine does not change the agent's `PATH`. Use a task-local `PATH` or executable wrapper when necessary; do not change unrelated global settings. For the report script, `AVA_CLI` selects that executable. Follow the host's normal tool permissions. A missing shell, blocked Unix socket or unavailable attachment path is an environment blocker; do not claim AVA ran.
 
 ## Model-Backed Commands
 

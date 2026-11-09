@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-// Report assembly adapted from yvonneyx/ava-workbuddy (MIT); see ../assets/LICENSE.
+// Report assembly; upstream attribution and MIT terms are in ../assets/LICENSE.
 import { createHash } from 'node:crypto';
 import { spawn } from 'node:child_process';
 import { mkdir, mkdtemp, open, readFile, readdir, rm } from 'node:fs/promises';
@@ -305,7 +305,7 @@ function prepareReport(spec, previous, available) {
   return { report, queries: [...queries.values()], plans, chartErrors };
 }
 
-export async function renderReport({ evidence, spec, output, previous }, invoke = runAVA) {
+export async function renderReport({ evidence, spec, output, previous, template }, invoke = runAVA) {
   check(
     text(spec) && text(output) && extname(output).toLowerCase() === '.html',
     'render requires --spec and a new --output .html path.'
@@ -317,6 +317,16 @@ export async function renderReport({ evidence, spec, output, previous }, invoke 
     available.set(query.queryId, validateEvidence(query));
   }
   const { report, queries, plans, chartErrors } = prepareReport(await readJSON(spec), prior, available);
+  const templatePath = template === undefined ? new URL('../assets/report.html', import.meta.url) : resolve(template);
+  const logo = await readFile(new URL('../assets/icon.svg', import.meta.url));
+  const reportTemplate = (await readFile(templatePath, 'utf8')).replace(
+    'src="icon.svg"',
+    () => `src="data:image/svg+xml;base64,${logo.toString('base64')}"`
+  );
+  check(
+    reportTemplate.split('<!-- ARTIFACT_DATA -->').length === 2,
+    'Report template must contain exactly one ARTIFACT_DATA slot.'
+  );
   const destination = resolve(output);
   const dataOutput = destination.slice(0, -extname(destination).length) + '.json';
   // Reserve both outputs before rendering; collisions never replace existing artifacts.
@@ -351,18 +361,12 @@ export async function renderReport({ evidence, spec, output, previous }, invoke 
       chartErrors: chartErrors.sort((a, b) => a.section - b.section),
     };
     if (previous) payload.previousReport = basename(previous);
-    const logo = await readFile(new URL('../assets/icon.svg', import.meta.url));
-    const template = (await readFile(new URL('../assets/report.html', import.meta.url), 'utf8')).replace(
-      'src="icon.svg"',
-      () => `src="data:image/svg+xml;base64,${logo.toString('base64')}"`
-    );
-    check(template.split('<!-- ARTIFACT_DATA -->').length === 2, 'Invalid report template.');
     const json = JSON.stringify(payload)
       .replace(/</g, '\\u003c')
       .replace(/\u2028/g, '\\u2028')
       .replace(/\u2029/g, '\\u2029');
     await htmlFile.writeFile(
-      template.replace(
+      reportTemplate.replace(
         '<!-- ARTIFACT_DATA -->',
         () => `<script id="artifact-data" type="application/json">${json}</script>`
       )
@@ -393,10 +397,11 @@ const help = `AVA Skill reports (Node.js 22.13+, AVA CLI 4.x on PATH; AVA_CLI ma
       [--max-rows 10000] [--max-result-bytes 1048576]
   node report.mjs index --evidence /task/evidence
   node report.mjs render --evidence /task/evidence --spec report-spec.json --output /task/report-v1.html
-      [--previous /task/report-v0.json]
+      [--previous /task/report-v0.json] [--template /task/report-template.html]
 
 query executes once and saves content-addressed evidence; index lists its metadata.
 render consumes saved results and optionally merges sections by stable id with a previous report.
+It uses the bundled default layout unless --template selects a task-local customized template.
 It does not rerun queries. Existing output files are never overwritten.
 `;
 
@@ -407,10 +412,9 @@ async function main() {
     args,
     allowPositionals: true,
     options: Object.fromEntries(
-      ['dsl', 'source', 'evidence', 'spec', 'output', 'previous', 'max-rows', 'max-result-bytes'].map((key) => [
-        key,
-        { type: 'string' },
-      ])
+      ['dsl', 'source', 'evidence', 'spec', 'output', 'previous', 'template', 'max-rows', 'max-result-bytes'].map(
+        (key) => [key, { type: 'string' }]
+      )
     ),
   });
   let result;

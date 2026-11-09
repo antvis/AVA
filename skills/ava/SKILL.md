@@ -30,7 +30,7 @@ Request -> Reuse context -> Resolve gaps -> Compute -> Check -> Deliver
 
 For charts, use actual data or verified results. For recommendations only, explain the chart type and field mapping.
 
-For a complete analysis report, read [Reports](references/reports.md). Use the bundled report script to execute and index the report's queries, then assemble the supplied template from saved evidence. Keep existing questions and evidence when updating a report; do not rerun queries solely to change presentation. Simple questions still need only a direct answer.
+For a complete analysis report, read [Reports](references/reports.md). Use the bundled report script to execute and index queries, then assemble the report from saved evidence. Use the supplied template as the default when the user has no layout or style requirements. When the user requests a different layout or style, adapt a task-local template while preserving the evidence bindings. Keep existing questions and evidence when updating a report; do not rerun queries solely to change presentation. Simple questions still need only a direct answer.
 
 ## Business Meaning
 

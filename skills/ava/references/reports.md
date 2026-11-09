@@ -1,8 +1,14 @@
 # Reports
 
-Use `scripts/report.mjs` relative to this skill's directory for complete analysis reports. It reuses the AVA WorkBuddy report template and assembly approach, executes the existing AVA CLI, and needs no additional npm dependencies or model key. Resolve the installed skill path; do not assume the user's working directory is the skill directory.
+Use `scripts/report.mjs` relative to this skill's directory for complete analysis reports. It executes the existing AVA CLI and assembles HTML from saved evidence, with no additional npm dependencies or model key. Resolve the installed skill path; do not assume the user's working directory is the skill directory.
 
 The agent writes the analysis and queries. The script saves actual execution evidence and assembles the HTML; it does not verify the truth of narrative conclusions. Continue to apply the analysis and business-definition rules in SKILL.md.
+
+## Layout and style
+
+`assets/report.html` is a general-purpose default example. When the user has no layout or style requirements, use it as supplied without asking them to choose a style. If the user provides a reference or requests different typography, colors, branding or layout, copy the template into the task directory and adjust that copy to match the request. Pass it with `render --template /task/report-template.html`; keep the installed default intact for other tasks.
+
+Preserve the template's data-binding behavior and its single `<!-- ARTIFACT_DATA -->` slot. Layout changes must keep the conclusions, metric values, charts, result tables and query code tied to the saved evidence. The script fills that slot with the same report payload and embeds the default logo where `src="icon.svg"` remains. Keep other custom assets self-contained. Chart appearance can also be adjusted through `chart.config` using the options in [Visualization](visualization.md). Presentation changes reuse existing evidence and do not require new queries.
 
 ## Record queries
 
@@ -60,6 +66,8 @@ node /absolute/path/to/ava/scripts/report.mjs render \
   --evidence /task/evidence --spec /task/report-spec.json --output /task/report-v1.html
 ```
 
+Omit `--template` for the default layout. Supply the task-local template only when adapting the report to the user's layout or style requirements.
+
 The script produces HTML and matching JSON, both with owner-only permissions; their parent directory must exist. Existing files are never overwritten. Invalid references or chart bindings fail before output files are created. Empty or truncated results are not plotted; truncated results cannot supply metric cards. A renderer failure keeps the affected table and code and is returned in `chartErrors`. Report the returned `chartCount`, not the number of requested charts.
 
 The HTML embeds query results. Sharing it shares those results. Interactive charts load third-party GPT-Vis scripts from unpkg.com, which can access chart data; explain this dependency when relevant to the user's sharing or data authorization. The report body, tables and code can be viewed offline. Preview the actual report when a browser is available and check labels, values, units, charts and code. Generation alone does not prove browser rendering; the script returns `chartPreviewVerified: false`.
@@ -77,3 +85,5 @@ node /absolute/path/to/ava/scripts/report.mjs render \
 ```
 
 The previous JSON also contains the evidence needed by its sections, so earlier questions remain reproducible even if their live sessions have expired. Presentation-only changes need no live dataset. Never silently revise historical evidence or discard earlier questions; explain corrected conclusions in the new report. Deliver the new HTML and JSON links with the findings and material limits.
+
+If the report uses a customized layout, reuse its task-local `--template` on follow-up renders unless the user requests another style.
