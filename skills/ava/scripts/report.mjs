@@ -62,7 +62,7 @@ async function windowsAvaEntry() {
       // Continue looking for the scoped AVA package.
     }
   }
-  throw new Error('Could not find the @antv/ava npm CLI on PATH. Install it with npm install -g @antv/ava@latest.');
+  throw new Error('Could not find the @antv/ava npm CLI on PATH. Install it with npm install -g @antv/ava.');
 }
 
 // Keep argv and stdin separate even on Windows, where npm's launcher is a .cmd file.

@@ -5,7 +5,7 @@
 Use Node.js ≥22.13 on macOS, Linux, or native Windows and the AVA CLI from `@antv/ava`. Install only if a compatible CLI is unavailable:
 
 ```sh
-npm install -g @antv/ava@latest
+npm install -g @antv/ava
 ```
 
 Put the compatible Node's `bin` directory on the task's `PATH` so both `node` and `ava` use it.

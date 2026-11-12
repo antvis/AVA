@@ -72,10 +72,10 @@
 
 ## 🚀 Getting started
 
-Install the latest AVA with Node.js 22.13+:
+Install AVA with Node.js 22.13+:
 
 ```bash
-npm install @antv/ava@latest
+npm install @antv/ava
 ```
 
 ## 💻 Usage
