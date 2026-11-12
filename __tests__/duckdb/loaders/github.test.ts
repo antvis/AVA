@@ -204,7 +204,11 @@ describe('transport', () => {
         now += ms;
       },
     });
-    const list = (limit = 10) => github.list('/repos/acme/widgets/issues', { state: 'all' }, limit, 'Too many');
+    const list = async (state = 'all') => {
+      const items: unknown[] = [];
+      await github.forEachItem('/repos/acme/widgets/issues', { state }, (item) => items.push(item));
+      return items;
+    };
     return { fetch, waits, list };
   }
 
@@ -238,12 +242,75 @@ describe('transport', () => {
     await expect(client([page([1], 200, { link: self })]).list()).rejects.toThrow('GitHub pagination repeated');
   });
 
-  it('fails instead of truncating a list longer than the limit', async () => {
-    const next = { link: '<https://api.github.com/x?page=2>; rel="next"' };
-    await expect(client([page([1, 2], 200, next)]).list(2)).rejects.toThrow(
-      'Too many. Set a later "since", or raise "maxRecords".'
+  function paddedPage(mib: number, headers: Record<string, string> = {}, cancel = vi.fn()) {
+    const padding = new Uint8Array(1024 * 1024).fill(32);
+    let remaining = mib * padding.byteLength - 2;
+    return new Response(
+      new ReadableStream<Uint8Array>({
+        start(controller) {
+          controller.enqueue(Uint8Array.of(91, 93)); // []
+        },
+        pull(controller) {
+          if (remaining === 0) {
+            controller.close();
+            return;
+          }
+          const size = Math.min(remaining, padding.byteLength);
+          controller.enqueue(padding.subarray(0, size));
+          remaining -= size;
+        },
+        cancel,
+      }),
+      { headers }
     );
-    expect(await client([page([1, 2])]).list(2)).toEqual([1, 2]);
+  }
+
+  it('cancels an oversized response without retrying', async () => {
+    const cancel = vi.fn();
+    const { fetch, list } = client([paddedPage(20, {}, cancel)]);
+    await expect(list()).rejects.toThrow('GitHub response exceeds the 16 MiB per-response limit');
+    expect(cancel).toHaveBeenCalledOnce();
+    expect(fetch).toHaveBeenCalledOnce();
+  });
+
+  it('counts response bytes across pages and across the open and closed scans', async () => {
+    const openPages = [2, 3, 4].map((page) =>
+      paddedPage(16, {
+        link: `<https://api.github.com/x?state=open&page=${page}>; rel="next"`,
+      })
+    );
+    const cancel = vi.fn();
+    const { fetch, list } = client([...openPages, paddedPage(16), paddedPage(2, {}, cancel)]);
+    expect(await list('open')).toEqual([]);
+    await expect(list('closed')).rejects.toThrow('GitHub responses exceed the 64 MiB total read limit');
+    expect(cancel).toHaveBeenCalledOnce();
+    expect(fetch).toHaveBeenCalledTimes(5);
+  });
+
+  it('preserves UTF-8 characters split across stream chunks', async () => {
+    const bytes = new TextEncoder().encode('["你"]');
+    const body = new ReadableStream<Uint8Array>({
+      start(controller) {
+        controller.enqueue(bytes.subarray(0, 3));
+        controller.enqueue(bytes.subarray(3));
+        controller.close();
+      },
+    });
+    expect(await client([new Response(body)]).list()).toEqual(['你']);
+  });
+
+  it.each([
+    [1, 31000],
+    [45, 45000],
+  ])('waits for both reset and retry-after (%i seconds)', async (retry, expected) => {
+    const limited = page({ message: 'API rate limit exceeded' }, 429, {
+      'x-ratelimit-remaining': '0',
+      'x-ratelimit-reset': String(START / 1000 + 30),
+      'retry-after': String(retry),
+    });
+    const { waits, list } = client([limited, page([1])]);
+    expect(await list()).toEqual([1]);
+    expect(waits).toEqual([expected]);
   });
 
   it('waits for the primary rate limit to reset, also before the next request', async () => {
@@ -262,8 +329,9 @@ describe('transport', () => {
     const limited = page({ message: 'API rate limit exceeded' }, 403, {
       'x-ratelimit-remaining': '0',
       'x-ratelimit-reset': String(START / 1000 + 1800),
+      'retry-after': '1',
     });
-    const { waits, list } = client([limited]);
+    const { waits, list, fetch } = client([limited]);
     const error = await list().catch((caught) => caught);
     expect(error).toBeInstanceOf(GitHubError);
     expect(error.message).toBe(
@@ -272,6 +340,7 @@ describe('transport', () => {
         'set a token for 5,000 per hour.'
     );
     expect(waits).toEqual([]);
+    expect(fetch).toHaveBeenCalledOnce();
   });
 
   it('honors retry-after, waits a minute for other secondary limits, and gives up after three', async () => {
@@ -341,9 +410,9 @@ describe('transport', () => {
           new Promise((_resolve, reject) => init.signal.addEventListener('abort', () => reject(init.signal.reason)))
       )
     );
-    await expect(new GitHubClient(undefined, 20).list('/repos/acme/widgets/issues', {}, 10, 'x')).rejects.toThrow(
-      'GitHub loading exceeded timeoutMs (20 ms) at GET /repos/acme/widgets/issues'
-    );
+    await expect(
+      new GitHubClient(undefined, 20).forEachItem('/repos/acme/widgets/issues', {}, () => {})
+    ).rejects.toThrow('GitHub loading exceeded timeoutMs (20 ms) at GET /repos/acme/widgets/issues');
   });
 });
 
@@ -492,7 +561,7 @@ describe('GitHub HTTP → loader → DuckDB', () => {
       ...times('2026-10-07T00:00:00Z', '2026-10-20T00:00:00Z', '2026-10-20T00:00:00Z'),
     };
     const urls = serveRepository([...items, closing]);
-    const ava = await load({ since: '2026-09-15' });
+    const ava = await load({ since: '2026-09-15', maxRecords: 5 });
     try {
       expect(urls.map((url) => [url.searchParams.get('state'), url.searchParams.get('since')])).toEqual([
         ['open', null],
@@ -517,6 +586,14 @@ describe('GitHub HTTP → loader → DuckDB', () => {
       expect(
         await rows(ava, 'SELECT (SELECT count(*) FROM issues) AS issues, (SELECT count(*) FROM pull_requests) AS pulls')
       ).toEqual([{ issues: 0, pulls: 0 }]);
+      expect(
+        await rows(
+          ava,
+          `SELECT count(*) AS merged_prs,
+        median(date_diff('second', created_at, merged_at)) / 3600 AS median_hours
+        FROM pull_requests WHERE is_merged`
+        )
+      ).toEqual([{ merged_prs: 0, median_hours: null }]);
       expect((await ava.schema()).models[1].columns).toContainEqual({
         name: 'merged_at',
         type: 'TIMESTAMP',
@@ -533,7 +610,10 @@ describe('GitHub HTTP → loader → DuckDB', () => {
       [{ ...items[0], created_at: 'yesterday' }],
       'GitHub returned an invalid issue or pull request; nothing was loaded.',
     ],
-    [[...items, ...items, ...items], 'acme/widgets has more than 20 issues and pull requests.'],
+    [
+      Array.from({ length: 21 }, (_, index) => ({ ...items[0], number: index + 1 })),
+      'acme/widgets has more than 20 issues and pull requests.',
+    ],
   ])('fails without a partial source: %#', async (list, message) => {
     serveRepository(list as typeof items);
     await expect(load({ maxRecords: 20 })).rejects.toThrow(message);

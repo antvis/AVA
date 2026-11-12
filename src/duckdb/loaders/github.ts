@@ -2,7 +2,7 @@ import { githubOptionsSchema } from '../../contracts/source/github';
 import { sqlIdentifier, sqlStringLiteral } from '../../util/sql';
 import { getDuckDBSchema } from '../util/schema';
 
-import { GitHubClient } from './github/client';
+import { GitHubClient, GitHubError } from './github/client';
 import { githubSince, parseRepository } from './github/config';
 import { convertItem, issuesTable, pullRequestsTable } from './github/convert';
 
@@ -52,22 +52,28 @@ export async function loadGitHub(input: GitHubSourceOptions): Promise<LoadedSour
     since ? ` that are open or updated since ${since}` : ''
   }`;
 
-  // The issues endpoint lists pull requests too. With since, every open item is still read, so
-  // the current backlog stays complete; closed items are those updated since then.
-  const items = await client.list(path, { state: since ? 'open' : 'all' }, maxRecords, tooMany);
-  if (since) items.push(...(await client.list(path, { state: 'closed', since }, maxRecords - items.length, tooMany)));
+  // Convert immediately so only the selected fields survive pagination. A repeated item
+  // keeps its later state, including an item that closed between the two scans.
+  const records = new Map<number, ReturnType<typeof convertItem>>();
+  const append = (item: unknown) => {
+    const record = convertItem(item);
+    records.set(record.row.number, record);
+    if (records.size > maxRecords) {
+      throw new GitHubError(`${tooMany}. Set a later "since", or raise "maxRecords".`);
+    }
+  };
 
-  // An item read twice, for example closed while loading, keeps its later state.
-  const rows = { issues: new Map<number, GitHubRow>(), pull_requests: new Map<number, GitHubRow>() };
-  for (const item of items) {
-    const { table, row } = convertItem(item);
-    rows[table].set(row.number as number, row);
-  }
+  // The issues endpoint lists pull requests too. With since, still read every open item.
+  await client.forEachItem(path, { state: since ? 'open' : 'all' }, append);
+  if (since) await client.forEachItem(path, { state: 'closed', since }, append);
+
+  const rows: Record<GitHubTable['name'], GitHubRow[]> = { issues: [], pull_requests: [] };
+  for (const { table, row } of records.values()) rows[table].push(row);
 
   return {
     register: async (conn) => {
-      await createTable(conn, issuesTable, [...rows.issues.values()]);
-      await createTable(conn, pullRequestsTable, [...rows.pull_requests.values()]);
+      await createTable(conn, issuesTable, rows.issues);
+      await createTable(conn, pullRequestsTable, rows.pull_requests);
       return [issuesTable.name, pullRequestsTable.name];
     },
     getSchema: (conn) => getDuckDBSchema(conn, [issuesTable.name, pullRequestsTable.name]),

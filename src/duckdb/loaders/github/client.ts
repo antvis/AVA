@@ -1,6 +1,8 @@
 import { setTimeout as delay } from 'node:timers/promises';
 
 const API = 'https://api.github.com';
+const MAX_RESPONSE_BYTES = 16 * 1024 * 1024;
+const MAX_READ_BYTES = 64 * 1024 * 1024;
 /** Network errors, cut-off bodies and 5xx responses are retried after 1, 2 and 4 seconds. */
 const RETRIES = 3;
 const RATE_LIMIT_RETRIES = 3;
@@ -57,6 +59,7 @@ function detail(response: Response, text: string): { message: string; docs?: str
 export class GitHubClient {
   private readonly signal: AbortSignal;
   private readonly deadline: number;
+  private readBytes = 0;
   /** Set when GitHub reports no remaining requests, so the next request waits for the reset. */
   private resetAt: number | undefined;
 
@@ -69,9 +72,8 @@ export class GitHubClient {
     this.deadline = clock.now() + timeoutMs;
   }
 
-  /** Every item of a list endpoint; fails with `tooMany` instead of returning more than `limit` items. */
-  async list(path: string, query: Record<string, string>, limit: number, tooMany: string): Promise<unknown[]> {
-    const items: unknown[] = [];
+  /** Consume each page before requesting the next one. */
+  async forEachItem(path: string, query: Record<string, string>, append: (item: unknown) => void): Promise<void> {
     const seen = new Set<string>();
     let url: URL | undefined = new URL(`${API}${path}?${new URLSearchParams({ per_page: '100', ...query })}`);
     while (url) {
@@ -79,16 +81,38 @@ export class GitHubClient {
       seen.add(url.href);
       const { body, link } = await this.get(url);
       if (!Array.isArray(body)) throw new GitHubError(`GitHub returned a non-list response for ${describe(url)}`);
-      items.push(...body);
+      for (const item of body) append(item);
       const next = nextLink(link);
-      if (items.length > limit || (next && items.length >= limit)) {
-        throw new GitHubError(`${tooMany}. Set a later "since", or raise "maxRecords".`);
-      }
       // Pagination links stay on the API host, so the token is never sent elsewhere.
       url = next ? new URL(next) : undefined;
       if (url && url.origin !== API) throw new GitHubError(`GitHub pagination left ${API}: ${url.origin}`);
     }
-    return items;
+  }
+
+  private async readBody(response: Response): Promise<string> {
+    if (!response.body) return '';
+    const reader = response.body.getReader();
+    const decoder = new TextDecoder();
+    let text = '';
+    let responseBytes = 0;
+    try {
+      for (;;) {
+        const { value, done } = await reader.read();
+        if (done) return text + decoder.decode();
+        responseBytes += value.byteLength;
+        this.readBytes += value.byteLength;
+        if (responseBytes > MAX_RESPONSE_BYTES || this.readBytes > MAX_READ_BYTES) {
+          await reader.cancel().catch(() => undefined);
+          if (responseBytes > MAX_RESPONSE_BYTES) {
+            throw new GitHubError('GitHub response exceeds the 16 MiB per-response limit.');
+          }
+          throw new GitHubError('GitHub responses exceed the 64 MiB total read limit.');
+        }
+        text += decoder.decode(value, { stream: true });
+      }
+    } finally {
+      reader.releaseLock();
+    }
   }
 
   private async get(url: URL): Promise<{ body: unknown; link: string | null }> {
@@ -110,8 +134,9 @@ export class GitHubClient {
           signal: this.signal,
         });
         // Read the body inside the retry: a connection can also drop in the middle of it.
-        text = await response.text();
+        text = await this.readBody(response);
       } catch (error) {
+        if (error instanceof GitHubError) throw error;
         if (this.signal.aborted) throw this.timeoutError(url);
         if (transient >= RETRIES) {
           throw new GitHubError(`GitHub request failed: GET ${describe(url)} (${(error as Error)?.message ?? error})`);
@@ -137,12 +162,10 @@ export class GitHubClient {
         response.status === 429 ||
         (response.status === 403 && (remaining === '0' || retryAfter !== null || /rate limit/i.test(message)));
       if (rateLimited && limited < RATE_LIMIT_RETRIES) {
-        const wait =
-          retryAfter !== null && /^\d+$/.test(retryAfter)
-            ? Number(retryAfter) * 1000
-            : this.resetAt !== undefined
-            ? this.resetAt - this.clock.now()
-            : SECONDARY_LIMIT_WAIT_MS * 2 ** limited;
+        const waits: number[] = [];
+        if (this.resetAt !== undefined) waits.push(this.resetAt - this.clock.now());
+        if (retryAfter !== null && /^\d+$/.test(retryAfter)) waits.push(Number(retryAfter) * 1000);
+        const wait = waits.length ? Math.max(...waits) : SECONDARY_LIMIT_WAIT_MS * 2 ** limited;
         limited += 1;
         await this.wait(wait, url, this.rateLimitError(url, response.status, message));
         this.resetAt = undefined;

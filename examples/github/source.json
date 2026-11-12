@@ -1,9 +1,0 @@
-{
-  "type": "github",
-  "options": {
-    "repository": "antvis/AVA",
-    "since": "2026-01-01",
-    "maxRecords": 10000,
-    "timeoutMs": 60000
-  }
-}

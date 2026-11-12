@@ -211,5 +211,6 @@ GitHub (Node.js / DuckDB):
   github.json:
     { "type": "github", "options": { "repository": "antvis/AVA", "since": "2026-01-01" } }
   since keeps every open item and the closed ones updated since then (UTC).
-  Lists over maxRecords (default 10000) fail instead of loading partially.
+  More than maxRecords distinct items (default 10000) fail the load.
+  Response bodies are capped at 16 MiB each and 64 MiB per load.
 `;

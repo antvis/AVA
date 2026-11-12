@@ -162,29 +162,4 @@ Incomplete paging, repeated IDs, changed totals/supported metadata and resource 
 
 ## GitHub
 
-Load a repository's issues and pull requests to analyze issue backlog and pull request merge times. The CLI detects github.com repository links, including their `/issues` and `/pulls` pages; `owner/name` needs `--type github`:
-
-```sh
-ava source https://github.com/antvis/AVA > session.json
-ava source antvis/AVA --type github > session.json
-```
-
-Public repositories load without a token, but unauthenticated requests share 60 per hour per IP address. The CLI reads `GH_TOKEN`, then `GITHUB_TOKEN`; a token allows 5,000 requests per hour and reads the private repositories it can access (fine-grained, read-only Issues and Pull requests). Never put tokens in deliverables or logs. Use a config for the other options:
-
-```json
-{
-  "type": "github",
-  "options": { "repository": "antvis/AVA", "since": "2026-01-01", "maxRecords": 10000, "timeoutMs": 60000 }
-}
-```
-
-`since` (UTC without an offset) keeps every open item, so backlog counts stay complete, plus closed items updated since then; counts of items closed before it are incomplete. More than `maxRecords` (default 10,000, max 100,000) issues and pull requests fail the load instead of truncating it; `timeoutMs` (default 60,000, max 110,000) bounds the whole load, including retries and rate-limit waits. CLI loads must finish within two minutes.
-
-Tables, both keyed by `number`:
-
-| Table | Columns |
-| --- | --- |
-| `issues` | `title`, `state` (`open`/`closed`), `state_reason` (`completed`, `not_planned`, `duplicate`, `reopened`), `author`, `author_association`, `author_is_bot`, `assignees`, `labels`, `comments`, `created_at`, `updated_at`, `closed_at`, `html_url` |
-| `pull_requests` | The same columns without `state_reason`, plus `is_draft`, `is_merged`, `merged_at` |
-
-Query notes: a merged pull request has `state = 'closed'` and `is_merged`; closed without merging is `state = 'closed' AND NOT is_merged`. `state`, `state_reason` and `author_association` are ENUMs, so `ava schema` lists their values. Times are UTC `TIMESTAMP`s matching GitHub search qualifiers; compute durations with `date_diff('hour', created_at, merged_at)`. `assignees` and `labels` are `VARCHAR[]`: use `len(assignees) = 0`, `list_contains(labels, 'bug')` or `unnest(labels)`. Exclude bots with `NOT author_is_bot`. Bodies, reviews, commits and other repository objects are not loaded. See `examples/github/README.md` for the two business examples checked against GitHub search.
+Load GitHub issues and pull requests with the DuckDB engine. See the [GitHub source documentation](https://ava.antv.vision/documentation/data/sources/#github) for configuration, limits and query examples.
