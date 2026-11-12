@@ -20,12 +20,13 @@ from data_profiling import ProfileReport, __version__
 from data_profiling.config import Settings
 from data_profiling.model.pandas.describe_timeseries_pandas import compute_gap_stats, get_fft, get_fft_peaks, stationarity_test
 from data_profiling.model.pandas.timeseries_index_pandas import pandas_get_time_index_description
-from data_profiling.visualisation.charts.builders import acf_pacf, missing_matrix
+from data_profiling.model.pairwise import get_scatter_tasks
+from data_profiling.visualisation.charts.builders import acf_pacf, missing_matrix, scatter
 
 
 ROOT = Path(__file__).resolve().parents[2]
 TABLE_METRICS = ["row_count", "table_summary", "pearson", "spearman", "kendall", "cramers", "auto", "missing_correlation",
-                 "missing_matrix", "missing_bands"]
+                 "missing_matrix", "missing_bands", "scatter_pairs"]
 COLUMN_METRICS = {
     "valid_count": "count",
     "null_count": "n_missing",
@@ -255,6 +256,17 @@ def compare(path, types, infer_types=False, file_root=None, phik=False):
     if "time_index" in actual["metrics"]:
         expected_index = pandas_get_time_index_description(config, frame.sort_values("time").set_index("time"), expected.table)
         check("table.time_index", actual["metrics"]["time_index"], expected_index)
+    continuous = [name for name, description in expected.variables.items() if description["type"] in {"Numeric", "TimeSeries"}]
+    config.interactions.continuous = True
+    pairs = []
+    for x, y in get_scatter_tasks(config, continuous):
+        xs, ys = pd.to_numeric(frame[x]), pd.to_numeric(frame[y])
+        valid = np.isfinite(xs) & np.isfinite(ys)
+        plot = scatter(config, xs[valid], ys[valid], x, y, int(valid.sum()), gridsize=15)
+        pairs.append({"x_column": x, "y_column": y, "count": plot.n_points,
+                      "points": [{"x": a, "y": b} for a, b in zip(plot.x, plot.y)]})
+    check("table.scatter_pairs", [{key: value for key, value in pair.items() if key in {"x_column", "y_column", "count", "points"}}
+                                   for pair in actual["metrics"]["scatter_pairs"]], pairs)
     check("table.row_duplicates.group_count", actual["metrics"]["row_duplicates"]["group_count"], expected.table["n_duplicates"])
     check("quality.uniform", sorted(alert["column"] for alert in quality if alert["rule"] == "uniform"),
           sorted(alert.column_name for alert in expected.alerts if alert.alert_type.name == "UNIFORM"))

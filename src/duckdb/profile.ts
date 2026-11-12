@@ -21,6 +21,7 @@ import { augmentedDickeyFuller } from './profile-adf';
 import { booleanSql, inferColumnTypes, numericTextSql } from './profile-inference';
 import { fileSummary } from './profile-files';
 import { imageSummary } from './profile-images';
+import { scatterPairSql } from './profile-scatter';
 import {
   characterCountsSql,
   lengthCountsSql,
@@ -365,6 +366,45 @@ function numericCorrelationFields(context: ExpressionContext): MetricField[] {
   return fields;
 }
 
+function scatterPairs(context: ExpressionContext): string {
+  const fields = selectFields(context).filter(({ logicalType }) => logicalType === 'numeric');
+  if (context.metric.columns && fields.length !== (context.metric.columns as string[]).length) {
+    throw new Error('scatter_pairs requires numeric columns');
+  }
+  const { targets, threshold = 1000, gridsize = 15 } = context.metric;
+  const series = fields.map((field, i) => ({
+    name: field.name,
+    alias: `c${i}`,
+    value: profileValue(field, context.sourceAlias),
+  }));
+  const known = new Map(series.map((field) => [field.name, field]));
+  const selected =
+    targets === undefined
+      ? series
+      : (targets as string[]).map((name) => {
+          const field = known.get(name);
+          if (!field) throw new Error(`Unknown scatter target: ${name}`);
+          return field;
+        });
+  if (!series.length) return 'coalesce(first(NULL), [])';
+  const input = context.table.toLowerCase().startsWith('"__ava_scatter_rows"')
+    ? '__ava_scatter_rows_2'
+    : '__ava_scatter_rows';
+  const projection = series.map(({ alias, value }) => `try_cast(${value} AS DOUBLE) AS ${alias}`);
+  const present = series.map(({ alias }) => `coalesce(bool_or(NOT isnan(${alias})), false) AS ${alias}`);
+  const pairs = series.flatMap((right) =>
+    selected.map(
+      (left) =>
+        `CASE WHEN ${left.alias} AND ${right.alias}
+      THEN (${scatterPairSql(input, left, right, threshold as number, gridsize as number)}) END`
+    )
+  );
+  return `coalesce(first((WITH ${input} AS MATERIALIZED (
+    SELECT row_number() OVER () AS position, ${projection.join(', ')} FROM ${context.table}
+  ) SELECT list_filter([${pairs.join(', ')}], lambda pair: pair IS NOT NULL)
+  FROM (SELECT ${present.join(', ')} FROM ${input}) present)), [])`;
+}
+
 const emptyCorrelation = 'struct_pack(columns := []::VARCHAR[], matrix := COALESCE(first(NULL), []::DOUBLE[][]))';
 
 function correlationMatrix(
@@ -697,6 +737,25 @@ export const BUILTIN_METRICS: DuckDBMetric[] = [
   { id: 'pearson', enable: table, options: { columns: columnNamesOption }, expression: pearson },
   { id: 'spearman', enable: table, options: { columns: columnNamesOption }, expression: rankCorrelation },
   { id: 'kendall', enable: table, options: { columns: columnNamesOption }, expression: rankCorrelation },
+  {
+    id: 'scatter_pairs',
+    enable: table,
+    options: {
+      columns: columnNamesOption,
+      targets: columnNamesOption,
+      threshold: {
+        validate: (value) => {
+          z.number().int().nonnegative().parse(value);
+        },
+      },
+      gridsize: {
+        validate: (value) => {
+          z.number().int().positive().parse(value);
+        },
+      },
+    },
+    expression: scatterPairs,
+  },
   { id: 'missing_correlation', enable: table, options: { columns: columnNamesOption }, expression: missingCorrelation },
   {
     id: 'missing_matrix',

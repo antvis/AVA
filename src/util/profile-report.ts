@@ -132,10 +132,62 @@ function valueMarkup(value: JsonValue | undefined): string {
   return escape(String(value));
 }
 
+const pointSchema = z.object({ x: z.number(), y: z.number() });
+const scatterSchema = z.object({
+  x_column: z.string(),
+  y_column: z.string(),
+  count: z.number().nonnegative(),
+  gridsize: z.number().positive(),
+  x_min: z.number().nullable(),
+  x_max: z.number().nullable(),
+  y_min: z.number().nullable(),
+  y_max: z.number().nullable(),
+  points: z.array(pointSchema),
+  hexagons: z.array(pointSchema.extend({ count: z.number().positive() })),
+});
+
+function scatterMarkup(chart: z.output<typeof scatterSchema>): string {
+  const title = `${escape(chart.y_column)} vs ${escape(chart.x_column)}`;
+  if (!chart.count)
+    return `<figure><figcaption>${title}</figcaption><span class="missing">0 observations</span></figure>`;
+  const normalized = (value: number, lo: number, hi: number) =>
+    hi === lo ? 0.5 : Number.isFinite(hi - lo) ? (value - lo) / (hi - lo) : (value / 2 - lo / 2) / (hi / 2 - lo / 2);
+  const hex = chart.hexagons.length > 0;
+  const peak = chart.hexagons.reduce((maximum, { count }) => Math.max(maximum, count), 1);
+  const marks = hex
+    ? chart.hexagons.map(
+        ({ x, y, count }) => `<span class="hexagon" title="${count} observations"
+      style="left:${x * 100}%;bottom:${y * 100}%;width:${100 / chart.gridsize}%;height:${
+          300 / (Math.sqrt(3) * chart.gridsize)
+        }%;opacity:${0.15 + 0.85 * Math.sqrt(count / peak)}"></span>`
+      )
+    : chart.points.map(
+        ({ x, y }) => `<span class="point" title="(${x}, ${y})"
+      style="left:${normalized(x, chart.x_min!, chart.x_max!) * 100}%;bottom:${
+          normalized(y, chart.y_min!, chart.y_max!) * 100
+        }%"></span>`
+      );
+  return `<figure class="scatter"><figcaption>${title} · ${chart.count} observations</figcaption>
+    <div class="scatter-chart" role="img" aria-label="${title}">${marks.join('')}</div>
+    <div class="scatter-bounds"><span>${escape(chart.x_column)} ${chart.x_min}–${chart.x_max}</span>
+    <span>${escape(chart.y_column)} ${chart.y_min}–${chart.y_max}</span></div></figure>`;
+}
+
+function metricValueMarkup(name: string, value: JsonValue | undefined): string {
+  if (name === 'scatter_pairs') {
+    const charts = z.array(scatterSchema).safeParse(value);
+    if (charts.success && charts.data.length)
+      return `<details><summary>${charts.data.length} pairs</summary>${charts.data
+        .map(scatterMarkup)
+        .join('')}</details>`;
+  }
+  return valueMarkup(value);
+}
+
 function metricTable(metrics: Record<string, JsonValue>): string {
   return table(
     ['Metric', 'Value'],
-    Object.entries(metrics).map(([name, value]) => [escape(name), valueMarkup(value)])
+    Object.entries(metrics).map(([name, value]) => [escape(name), metricValueMarkup(name, value)])
   );
 }
 
@@ -199,6 +251,12 @@ const css = `
   .missing-bands tbody th, .missing-bands tbody td { padding:0; border:0; line-height:0; }
   .band-cell { display:block; height:4px; background:rgba(35,89,67,var(--coverage)); border-right:1px solid var(--paper); }
   .visually-hidden { position:absolute; width:1px; height:1px; overflow:hidden; clip-path:inset(50%); white-space:nowrap; }
+  .scatter { margin:1rem 0; min-width:12rem; max-width:35rem; }
+  .scatter-chart { position:relative; aspect-ratio:3/2; background:#fdfbf4; overflow:hidden; border:1px solid var(--line); }
+  .scatter-chart span { position:absolute; transform:translate(-50%,50%); background:var(--green); }
+  .scatter-chart .point { width:.4rem; height:.4rem; border-radius:50%; opacity:.7; }
+  .scatter-chart .hexagon { clip-path:polygon(50% 0,100% 25%,100% 75%,50% 100%,0 75%,0 25%); }
+  .scatter-bounds { display:flex; flex-wrap:wrap; justify-content:space-between; gap:.2rem .8rem; color:var(--muted); }
   @media (max-width:40rem) { th,td { padding:.45rem; } .column > div { margin-left:0; } }
   @media print { body { background:white; } header, main { padding:1rem 0; } nav { display:none; } }
 `;
@@ -263,8 +321,8 @@ export function renderProfileComparisonHtml(
       ['Metric', 'Before', 'After', 'Change'],
       metrics.map((metric) => [
         escape(metric.name),
-        valueMarkup(metric.before),
-        valueMarkup(metric.after),
+        metricValueMarkup(metric.name, metric.before),
+        metricValueMarkup(metric.name, metric.after),
         valueMarkup(metric.delta),
       ])
     );

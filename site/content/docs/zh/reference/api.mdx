@@ -256,6 +256,7 @@ await ava.profile({
 | `missing_correlation` | 表 | 缺失标记之间的 Pearson 相关矩阵，SQL NULL 与 NaN 均算缺失。排除全缺失或全非缺失的列。 |
 | `missing_matrix` | 表 | 按扫描顺序为每行返回一个字符串。所选列的 SQL NULL 或 NaN 记为 `1`，有值记为 `0`。同时返回列名和总行数。 |
 | `missing_bands` | 表 | 将扫描行等间距分段，汇总每段中各列的非缺失比例，供 HTML 报告绘制缺失矩阵。 |
+| `scatter_pairs` | 表 | 数值列之间的散点。数据量较小时返回配对的有限值，超过阈值时返回六边形分箱计数。 |
 | `valid_count` | 列 | 非 NULL 值数量。 |
 | `null_ratio` | 列 | SQL NULL 数量除以总行数。 |
 | `distinct_ratio` | 数值、文本、布尔、日期 | 不同非空值数除以非空值数。 |
@@ -335,6 +336,8 @@ DuckDB 中，分母为零时比例返回 `0`。默认分别统计 SQL NULL、NaN
 | `missing_matrix` | `columns` | 全部列 | 非空且不重复的列名列表。 |
 | `missing_matrix` | `limit` | 全部行 | 缺失矩阵返回的最大行数。 |
 | `missing_bands` | `columns`、`bands` | 全部列、`200` | 选择列并限制最大分段数量。 |
+| `scatter_pairs` | `columns`、`targets` | 全部数值列 | 选择数值列，可指定横轴使用的列。 |
+| `scatter_pairs` | `threshold`、`gridsize` | `1000`、`15` | 设置切换到六边形分箱的点数阈值和横向分箱数。 |
 | `missing_correlation` | `columns` | 所有列 | 非空且不重复的列名列表。同时含缺失值与有效值的列不足两列时返回 `null`。 |
 | `quantiles` | `probabilities` | `[0.05, 0.25, 0.5, 0.75, 0.95]` | 非空数组，元素在 `[0, 1]` 范围内。 |
 | `histogram` | `bins` | `50` | 非负整数，`0` 表示按 Sturges/Freedman–Diaconis 规则自动选桶。 |
