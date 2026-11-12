@@ -331,6 +331,24 @@ function missingMask(field: MetricField, sourceAlias?: string): string {
   return floatingPoint.test(field.type) ? `(${column} IS NULL OR isnan(${column}))` : `(${column} IS NULL)`;
 }
 
+function missingMatrix(context: ExpressionContext): string {
+  const fields = selectFields(context);
+  const columns = `[${fields.map(({ name }) => sqlStringLiteral(name)).join(', ')}]::VARCHAR[]`;
+  const limit = context.metric.limit;
+  let rows = '[]::VARCHAR[]';
+  if (fields.length && limit !== 0) {
+    const masks = fields.map((field) => `CASE WHEN ${missingMask(field, context.sourceAlias)} THEN '1' ELSE '0' END`);
+    const mask = `concat(${masks.join(', ')})`;
+    rows =
+      limit === undefined
+        ? `coalesce(list(${mask}), [])`
+        : `coalesce(first((SELECT arg_min(mask, position, ${limit}) FROM (
+        SELECT ${mask} AS mask, row_number() OVER () AS position FROM ${context.table}
+      ) ordered_rows)), [])`;
+  }
+  return `struct_pack(columns := ${columns}, row_count := count(*)::DOUBLE, rows := ${rows})`;
+}
+
 function missingCorrelation(context: ExpressionContext): string {
   const fields = selectFields(context);
   if (fields.length < 2) return 'first(NULL)';
@@ -568,6 +586,19 @@ export const BUILTIN_METRICS: DuckDBMetric[] = [
   { id: 'spearman', enable: table, options: { columns: columnNamesOption }, expression: rankCorrelation },
   { id: 'kendall', enable: table, options: { columns: columnNamesOption }, expression: rankCorrelation },
   { id: 'missing_correlation', enable: table, options: { columns: columnNamesOption }, expression: missingCorrelation },
+  {
+    id: 'missing_matrix',
+    enable: table,
+    options: {
+      columns: columnNamesOption,
+      limit: {
+        validate: (value) => {
+          z.number().int().nonnegative().parse(value);
+        },
+      },
+    },
+    expression: missingMatrix,
+  },
   ...['cramers', 'auto'].map(
     (id): DuckDBMetric => ({
       id,

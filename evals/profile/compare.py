@@ -22,7 +22,7 @@ from data_profiling.visualisation.charts.builders import acf_pacf
 
 
 ROOT = Path(__file__).resolve().parents[2]
-TABLE_METRICS = ["row_count", "table_summary", "pearson", "spearman", "kendall", "cramers", "auto", "missing_correlation"]
+TABLE_METRICS = ["row_count", "table_summary", "pearson", "spearman", "kendall", "cramers", "auto", "missing_correlation", "missing_matrix"]
 COLUMN_METRICS = {
     "valid_count": "count",
     "null_count": "n_missing",
@@ -254,6 +254,10 @@ def compare(path, types, infer_types=False, file_root=None):
         check(f"table.row_sample.{sample.id}", received,
               [{"index": int(index), "row_values": row.to_dict()} for index, row in sample.data.iterrows()])
     missing = frame.isna()
+    check("table.missing_matrix", actual["metrics"]["missing_matrix"], {
+        "columns": list(frame.columns), "row_count": len(frame),
+        "rows": ["".join("1" if item else "0" for item in row) for row in missing.itertuples(index=False, name=None)],
+    })
     partial = [name for name in frame if 0 < missing[name].sum() < len(frame)]
     check("table.missing_correlation", actual["metrics"]["missing_correlation"],
           {"columns": partial, "matrix": missing[partial].corr().to_numpy()} if len(partial) >= 2 else None)

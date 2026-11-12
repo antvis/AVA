@@ -245,6 +245,7 @@ await ava.profile({
 | `cramers` | Table, category columns | Bias-corrected Cramér's V with Yates correction for 2 × 2 pairs. NULL and NaN are excluded. Returns `null` when fewer than two columns qualify. |
 | `auto` | Table, numeric and category columns | Spearman for numeric pairs, Cramér's V for pairs involving categories. Mixed pairs use right-closed equal-width bins. |
 | `missing_correlation` | Table | Pearson correlations of missing-value masks. SQL NULL and NaN count as missing. Columns with constant masks are excluded. |
+| `missing_matrix` | Table | One string per row in scan order. Each selected column contributes `1` for SQL NULL or NaN and `0` for a present value. Includes column names and total row count. |
 | `valid_count` | Column | Number of non-NULL values. |
 | `null_ratio` | Column | SQL NULL count / total rows. |
 | `distinct_ratio` | Numeric, text, boolean, date | Different non-NULL values / non-NULL count. |
@@ -312,6 +313,8 @@ Table completeness shares the scan with column NULL counts, frequency metrics sh
 | `adf` | `autolag` | `AIC` | Lag selection with `AIC`, `BIC`, or `t-stat`. Use `null` to fit the maximum lag. |
 | `adf` | `significance` | `0.05` | P-value threshold for the stationarity test. |
 | `file_summary` | `root` | Required | Absolute local directory that contains the referenced files. |
+| `missing_matrix` | `columns` | All columns | Non-empty list of distinct column names. |
+| `missing_matrix` | `limit` | All rows | Maximum number of rows included in the matrix. |
 | `missing_correlation` | `columns` | All columns | Non-empty list of distinct column names. Returns `null` when fewer than two columns have both missing and present values. |
 | `quantiles` | `probabilities` | `[0.05, 0.25, 0.5, 0.75, 0.95]` | Non-empty array of numbers in `[0, 1]`. |
 | `histogram` | `bins` | `50` | Non-negative integer. Use `0` for automatic Sturges/Freedman–Diaconis selection. |
