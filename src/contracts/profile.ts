@@ -46,6 +46,14 @@ export const profileInputSchema = z
         path: z.boolean().optional(),
         fileRoot: z.string().min(1).optional(),
         image: z.boolean().optional(),
+        timeSeries: z
+          .object({
+            orderBy: z.string().min(1).optional(),
+            lags: z.array(z.number().int().min(1).max(2048)).nonempty().optional(),
+            threshold: z.number().min(-1).max(1).optional(),
+          })
+          .strict()
+          .optional(),
       })
       .strict()
       .optional(),

@@ -188,6 +188,7 @@ await ava.profile(undefined, () => savedProfile);
 | `options.inferTypes.booleanMappings` | `Record<string, boolean>` | No | Map lowercase strings to boolean values. Defaults to `true`, `t`, `yes`, `y` and `false`, `f`, `no`, `n`. Every observed string must match for inference. |
 | `options.inferTypes.url`, `options.inferTypes.path` | Boolean | No | Detect URLs with a scheme and authority, or absolute POSIX paths, when every observed value qualifies. |
 | `options.inferTypes.fileRoot`, `options.inferTypes.image` | String, Boolean | No | With an absolute local root, infer `File` for paths to regular files inside it. Set `image: true` to recognize supported image signatures as `Image`. Sensitive mode skips filesystem inference. |
+| `options.inferTypes.timeSeries` | Object | No | `{}` enables `TimeSeries` inference when any lag autocorrelation meets `threshold` (default `0.7`). The default `lags` are `[1, 7, 12, 24, 30]`. `orderBy` optionally sorts the observations. |
 | `options.sensitive` | Boolean | No | `true` limits DuckDB computation to aggregate metrics. Raw rows, duplicate groups, values and text frequencies, file metadata, and time-series points are omitted. |
 | `setter` | `(options: ProfileOptions) => Profile` | No | Returns the profile to save instead of computing it through the engine. |
 

@@ -211,6 +211,8 @@ def compare(path, types, infer_types=False, file_root=None, phik=False):
         inference = {"url": "URL" in types.values(), "path": bool({"Path", "File", "Image"} & set(types.values()))}
         if file_root is not None:
             inference.update(fileRoot=str(file_root), image=has_image)
+        if "TimeSeries" in types.values():
+            inference["timeSeries"] = {"orderBy": "time"}
         type_options = {"inferTypes": inference} if infer_types else {"typeSchema": {"data": types}}
         actual = cli("profile", dataset, "--options", "-", payload={
             "metrics": metrics, "semantics": "data-profiling", **type_options,
@@ -497,7 +499,7 @@ def main():
         for name, table, types in fixtures():
             path = Path(directory) / f"{name}.parquet"
             pq.write_table(table, path)
-            results[name], reference_warnings[name] = compare(path, types, infer_types=name in {"inferred", "urls", "paths"}, phik=name == "phi_k")
+            results[name], reference_warnings[name] = compare(path, types, infer_types=name in {"inferred", "urls", "paths", "seasonal"}, phik=name == "phi_k")
         file_root = Path(directory).resolve() / "profile-files"
         file_root.mkdir()
         files = [file_root / name for name in ("first.txt", "second.csv", "third.bin")]

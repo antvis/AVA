@@ -1,7 +1,7 @@
 import { stat } from 'node:fs/promises';
 import { isAbsolute } from 'node:path';
 
-import { sqlStringLiteral } from '../util/sql';
+import { sqlIdentifier, sqlStringLiteral } from '../util/sql';
 
 import { parseDateSql } from './profile-dates';
 import { profileFilePath, profileFileRoot } from './profile-files';
@@ -13,6 +13,7 @@ import type { LogicalType, ProfileOptions, ProfileType } from '../types';
 
 type Field = { name: string; value: string; logicalType: LogicalType };
 type InferredType = { profileType: ProfileType; cast?: 'BIGINT' | 'UBIGINT' | 'DOUBLE' | 'TIMESTAMPTZ' };
+type InferenceOptions = NonNullable<ProfileOptions['inferTypes']>;
 
 export function numericTextSql(value: string, type: string): string {
   const text = `CAST(${value} AS VARCHAR)`;
@@ -70,11 +71,31 @@ async function inferPathType(
   return file ? (image ? 'Image' : 'File') : 'Path';
 }
 
+async function timedependent(
+  connection: DuckDBConnection,
+  table: string,
+  value: string,
+  { lags = [1, 7, 12, 24, 30], orderBy, threshold = 0.7 }: NonNullable<InferenceOptions['timeSeries']>
+): Promise<boolean> {
+  const order = orderBy ? `ORDER BY ${sqlIdentifier(orderBy)} NULLS LAST` : '';
+  const lagColumns = [...new Set(lags)].map((lag) => `lag(${value}, ${lag}) OVER (${order}) AS lag${lag}`);
+  const correlated = [...new Set(lags)].map((lag) => {
+    const finite = `isfinite(series_value) AND isfinite(lag${lag})`;
+    const corr = `corr(series_value, lag${lag}) FILTER (WHERE ${finite})`;
+    return `(count(*) FILTER (WHERE NOT (${finite}) AND lag${lag} IS NOT NULL) = 0
+      AND isfinite(${corr}) AND ${corr} >= ${threshold})`;
+  });
+  const query = `SELECT (${correlated.join(' OR ')}) AS timedependent FROM (
+    SELECT ${value} AS series_value, ${lagColumns.join(', ')} FROM ${table} WHERE ${value} IS NOT NULL
+  ) pairs`;
+  return (await connection.runAndReadAll(query)).getRowObjectsJson()[0].timedependent === true;
+}
+
 export async function inferColumnTypes(
   connection: DuckDBConnection,
   table: string,
   fields: Field[],
-  options: NonNullable<ProfileOptions['inferTypes']>,
+  options: InferenceOptions,
   lowercase?: string
 ): Promise<Map<string, InferredType>> {
   const inferred = new Map<string, InferredType>();
@@ -115,12 +136,24 @@ export async function inferColumnTypes(
     else if (logicalType === 'date') inferred.set(name, { profileType: 'DateTime' });
     else if (row[`b${i}`]) inferred.set(name, { profileType: 'Boolean' });
     else if (logicalType === 'numeric') {
-      inferred.set(name, { profileType: distinct <= numericCategoryThreshold ? 'Categorical' : 'Numeric' });
+      let profileType: ProfileType = 'Numeric';
+      if (distinct <= numericCategoryThreshold) profileType = 'Categorical';
+      else if (options.timeSeries && (await timedependent(connection, table, value, options.timeSeries))) {
+        profileType = 'TimeSeries';
+      }
+      inferred.set(name, { profileType });
     } else if (row[`x${i}`] && distinct > numericCategoryThreshold) {
-      inferred.set(name, {
-        profileType: 'Numeric',
-        cast: row[`i${i}`] ? 'BIGINT' : row[`u${i}`] ? 'UBIGINT' : 'DOUBLE',
-      });
+      const cast = row[`i${i}`] ? 'BIGINT' : row[`u${i}`] ? 'UBIGINT' : 'DOUBLE';
+      const parsed = numericTextSql(value, cast);
+      const timeSeries =
+        options.timeSeries &&
+        (await timedependent(
+          connection,
+          table,
+          cast === 'DOUBLE' ? `(CASE WHEN NOT isnan(${parsed}) THEN ${parsed} END)` : parsed,
+          options.timeSeries
+        ));
+      inferred.set(name, { profileType: timeSeries ? 'TimeSeries' : 'Numeric', cast });
     } else if (row[`t${i}`]) {
       inferred.set(name, { profileType: 'DateTime', cast: 'TIMESTAMPTZ' });
     } else if (row[`l${i}`]) {
