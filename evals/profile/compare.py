@@ -113,6 +113,13 @@ def fixtures():
         "time": pa.array([datetime(2026, 1, 1) + timedelta(hours=int(i)) for i in t], type=pa.timestamp("ns")),
         "signal": signal,
     }), {"time": "DateTime", "signal": "Numeric"}
+    yield "inferred", pa.table({
+        "code": [1, 3, 3, 1, 2, 2, 3, 3, 2, 1, 1, 3],
+        "name": ["North", "South", "East", "North", "North", "South", "East", "North", "North", "South", "North", "South"],
+        "description": [f"Reference description {i}" for i in range(12)],
+        "amount": [0., 4., 3., 5., 10., 7., -8., 2., 10., 11., 12., -12.],
+        "flag": [True, False] * 6,
+    }), {"code": "Categorical", "name": "Categorical", "description": "Text", "amount": "Numeric", "flag": "Boolean"}
 
 
 def json_value(value):
@@ -160,7 +167,7 @@ def cli(*args, payload=None):
     return json.loads(result.stdout)
 
 
-def compare(path, types):
+def compare(path, types, infer_types=False):
     metrics = [*TABLE_METRICS, *COLUMN_METRICS, "value_counts", "histogram", "quantiles", "nan_count", "word_counts",
                "character_counts", "unicode_summary", "monotonicity", "duplicate_count", "length_histogram", "mode", "mode_count",
                {"id": "row_duplicates", "limit": 0}, {"id": "row_sample", "head": 3, "tail": 3}]
@@ -175,17 +182,19 @@ def compare(path, types):
         metrics.append({"id": "adf", "orderBy": "time"})
     dataset = cli("source", str(path), "--engine", "duckdb")["datasetId"]
     try:
+        type_options = {"inferTypes": {}} if infer_types else {"typeSchema": {"data": types}}
         actual = cli("profile", dataset, "--options", "-", payload={
-            "metrics": metrics, "semantics": "data-profiling", "typeSchema": {"data": types},
+            "metrics": metrics, "semantics": "data-profiling", **type_options,
         })["models"][0]
         quality = cli("quality", dataset, "--rules", "uniform,high_correlation")["models"][0]["alerts"]
     finally:
         cli("dispose", dataset)
 
     config = Settings(
-        progress_bar=False, pool_size=1, infer_dtypes=False, missing_diagrams={"bar": False, "matrix": False, "heatmap": False},
+        progress_bar=False, pool_size=1, infer_dtypes=infer_types,
+        missing_diagrams={"bar": False, "matrix": False, "heatmap": False},
         interactions={"continuous": False}, samples={"head": 3, "tail": 3, "random": 0},
-        vars={"num": {"low_categorical_threshold": 0, "chi_squared_threshold": 0.999},
+        vars={"num": {"low_categorical_threshold": 5 if infer_types else 0, "chi_squared_threshold": 0.999},
               "cat": {"length": True, "characters": True, "words": True},
               "url": {"active": "URL" in types.values()}, "path": {"active": "Path" in types.values()},
               "timeseries": {"pacf_acf_lag": 4}},
@@ -196,7 +205,7 @@ def compare(path, types):
     integer_columns = {field.name for field in pq.read_schema(path) if pa.types.is_integer(field.type)}
     with warnings.catch_warnings(record=True) as emitted:
         warnings.simplefilter("always")
-        expected = ProfileReport(frame, config=config, type_schema=types).get_description()
+        expected = ProfileReport(frame, config=config, type_schema=None if infer_types else types).get_description()
     checks = []
 
     def check(name, received, reference):
@@ -356,7 +365,7 @@ def compare(path, types):
                 key = lambda entry: json.dumps(entry["value"], sort_keys=True)
                 received = observed.get(native, MISSING)
                 if received is not MISSING:
-                    received = sorted([{"value": decoded(name, item["value"]), "count": item["count"]}
+                    received = sorted([{"value": item["value"] if reference["type"] == "Categorical" else decoded(name, item["value"]), "count": item["count"]}
                                        for item in received], key=key)
                 check(f"{name}.{native}", received, sorted(frequencies, key=key))
 
@@ -382,7 +391,7 @@ def main():
         for name, table, types in fixtures():
             path = Path(directory) / f"{name}.parquet"
             pq.write_table(table, path)
-            results[name], reference_warnings[name] = compare(path, types)
+            results[name], reference_warnings[name] = compare(path, types, infer_types=name == "inferred")
         path = Path(directory) / "date_validation.parquet"
         pq.write_table(pa.table({"date": [
             "2026/01/02", "Jan 3, 2026", "31/01/2026", "20260405", "2026", "2026-02",

@@ -58,6 +58,7 @@ export type {
   JsonValue,
   Schema,
   Profile,
+  ProfileType,
   Quality,
   QualityOptions,
   LLMConfig,

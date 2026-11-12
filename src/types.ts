@@ -83,6 +83,7 @@ export type ChartSpecInput = z.input<typeof vizInputSchema>;
 export type ChartType = ChartSpec['chartType'];
 export type VisualizeResponse = NonNullable<z.output<typeof visualizeOutputSchema>>;
 export type LogicalType = Profile['models'][number]['columns'][number]['properties']['logicalType'];
+export type ProfileType = NonNullable<Profile['models'][number]['columns'][number]['properties']['profileType']>;
 export type MetricConfig = NonNullable<ProfileOptions['metrics']>[number];
 export type MetricId = Exclude<MetricConfig, string>['id'];
 export type ParsedProfileOptions = Omit<ProfileOptions, 'metrics'> & { metrics: Exclude<MetricConfig, string>[] };

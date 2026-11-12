@@ -14,6 +14,7 @@ import { timeGapsSql } from './profile-time-gaps';
 import { dateValidationSql, parseDateSql } from './profile-dates';
 import { frequencySpectrum } from './profile-spectrum';
 import { augmentedDickeyFuller } from './profile-adf';
+import { inferColumnTypes } from './profile-inference';
 import {
   characterCountsSql,
   lengthCountsSql,
@@ -24,7 +25,7 @@ import {
 
 import type { DuckDBConnection } from '@duckdb/node-api';
 import type { MetricField } from '../util/profile';
-import type { Metric, Schema, ParsedProfileOptions, LogicalType, Profile } from '../types';
+import type { Metric, Schema, ParsedProfileOptions, LogicalType, Profile, ProfileType } from '../types';
 
 /** Map a database type to a profile type. */
 export function logicalType(nativeType: string): LogicalType {
@@ -41,7 +42,6 @@ export function logicalType(nativeType: string): LogicalType {
   return 'unknown';
 }
 
-type ProfileType = NonNullable<Profile['models'][number]['columns'][number]['properties']['profileType']>;
 type ProfileField = MetricField & { profileType?: ProfileType };
 
 const logicalProfileTypes: Record<ProfileType, LogicalType> = {
@@ -1040,6 +1040,23 @@ export async function profileTables(
       }
       return { ...field, logicalType: target, profileType };
     });
+    if (options.inferTypes) {
+      const candidates = fields.filter(({ profileType }) => !profileType);
+      const inferred = await inferColumnTypes(
+        connection,
+        reference,
+        candidates.map((field) => ({
+          name: field.name,
+          logicalType: field.logicalType,
+          value: profileValue(field, undefined, true),
+        })),
+        options.inferTypes
+      );
+      for (const field of candidates) {
+        field.profileType = inferred.get(field.name)!;
+        field.logicalType = logicalProfileTypes[field.profileType];
+      }
+    }
     const centerTable = sqlIdentifier(
       tableReference.table.toLowerCase() === '__ava_centers' ? '__ava_centers_2' : '__ava_centers'
     );

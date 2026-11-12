@@ -31,6 +31,14 @@ export const profileInputSchema = z
     metrics: z.array(metricConfigSchema).optional(),
     semantics,
     typeSchema: z.record(z.string(), z.record(z.string(), profileTypeSchema)).optional(),
+    inferTypes: z
+      .object({
+        numericCategoryThreshold: z.number().int().nonnegative().optional(),
+        textCategoryThreshold: z.number().int().nonnegative().optional(),
+        textCategoryRatio: z.number().nonnegative().optional(),
+      })
+      .strict()
+      .optional(),
   })
   .strict();
 export const profileOutputSchema = z.object({ models: z.array(modelSchema), semantics }).strict();
