@@ -38,6 +38,8 @@ export { AVA } from './ava';
 export { compareProfiles } from './util/profile-compare';
 export type { ProfileComparison } from './util/profile-compare';
 export { renderProfileHtml, renderProfileComparisonHtml } from './util/profile-report';
+export { profileExpectations } from './util/profile-expectations';
+export type { ProfileExpectationSuite } from './util/profile-expectations';
 export { registerEngine } from './engines';
 
 export type {

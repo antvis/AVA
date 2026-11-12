@@ -353,6 +353,10 @@ const comparison = compareProfiles(beforeProfile, afterProfile);
 
 `renderProfileHtml(profile, { title })` renders a saved profile as standalone HTML. The report includes tables, distributions, correlations and quality alerts when those observations are present. It can open offline and does not rerun the profile.
 
+### profileExpectations
+
+`profileExpectations(profile, { name })` derives legacy Great Expectations-style suites from saved observations. Request the corresponding metrics for non-null, uniqueness, numeric and date bounds, monotonicity, and allowed-value rules. The return value contains one suite per model.
+
 ### quality
 
 ```typescript
