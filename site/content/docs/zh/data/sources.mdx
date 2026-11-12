@@ -740,3 +740,15 @@ AVA 可以读取单个 GitHub 仓库中的 Issue 和 Pull Request。
 | Pull Request | 是否为草稿、是否已合并、合并时间。 |
 
 公开仓库可以直接读取。读取私有仓库需要有相应权限的 GitHub 令牌。
+
+<Heading as="h3" id="github-options">连接参数</Heading>
+
+通过 SDK 或 CLI 的 `@file` 配置时，将 `type` 设为 `github`，把下列参数写在 `options` 中。
+
+| 参数 | 类型 | 说明 |
+| --- | --- | --- |
+| `repository` | `string` | 必填。填写 `owner/name` 或 GitHub 仓库链接。 |
+| `token` | `string` | GitHub 令牌。省略时，CLI 依次读取 `GH_TOKEN` 和 `GITHUB_TOKEN`。 |
+| `since` | `string` | 可选的 ISO 8601 日期或时间。不带时区偏移时按 UTC 处理。保留所有未关闭记录，以及从该时间起更新过的已关闭记录。 |
+| `maxRecords` | `number` | Issue 和 Pull Request 去重后的总数上限。默认 10,000，取值为 1 至 100,000 的整数。 |
+| `timeoutMs` | `number` | 读取时限，包含重试和限流等待。默认 60,000 毫秒，取值为 1 至 110,000 的整数。 |
