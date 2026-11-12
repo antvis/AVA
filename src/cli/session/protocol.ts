@@ -1,6 +1,12 @@
 import { z } from 'zod';
 
-import { sourceInputSchema, profileOutputSchema, schemaOutputSchema, semanticOutputSchema } from '../../contracts';
+import {
+  sourceInputSchema,
+  profileInputSchema,
+  profileOutputSchema,
+  schemaOutputSchema,
+  semanticOutputSchema,
+} from '../../contracts';
 
 export const IPC_TIMEOUT_MS = 120_000;
 export const IPC_MAX_REQUEST_BYTES = 1024 * 1024;
@@ -30,7 +36,7 @@ export const requestSchema = z.discriminatedUnion('command', [
   z
     .object({
       command: z.literal('profile'),
-      metrics: z.array(text).optional(),
+      metrics: profileInputSchema.shape.metrics,
       profile: profileOutputSchema.optional(),
     })
     .strict(),

@@ -1,7 +1,7 @@
 import { request } from '../session/client';
 import { list, option } from '../options';
 import { readJSONFile } from '../io';
-import { profileOutputSchema } from '../../contracts';
+import { profileInputSchema, profileOutputSchema } from '../../contracts';
 
 import type { Options } from '../options';
 
@@ -9,14 +9,22 @@ export const description = 'Compute dataset statistics';
 
 export const definition = {
   positionals: 1,
-  options: { metrics: { type: 'string' }, file: { type: 'string' } },
+  options: { metrics: { type: 'string' }, file: { type: 'string' }, options: { type: 'string' } },
 } as const;
 
 export async function run([datasetId]: string[], options: Options): Promise<unknown> {
   const file = option(options, 'file');
+  const optionsFile = option(options, 'options');
   if (file !== undefined && options.metrics !== undefined) throw new Error('--file cannot be combined with --metrics.');
+  if (optionsFile !== undefined && (file !== undefined || options.metrics !== undefined)) {
+    throw new Error('--options cannot be combined with --file or --metrics.');
+  }
   const profile = file === undefined ? undefined : profileOutputSchema.parse(await readJSONFile(file));
-  return request(datasetId, { command: 'profile', metrics: list(options, 'metrics'), profile });
+  const metrics =
+    optionsFile === undefined
+      ? list(options, 'metrics')
+      : profileInputSchema.parse(await readJSONFile(optionsFile)).metrics;
+  return request(datasetId, { command: 'profile', metrics, profile });
 }
 
 export const help = `${description}.
@@ -32,6 +40,8 @@ Options:
                    Cannot be combined with --metrics. Does not replace schema.
   --metrics <list>  Comma-separated metric names; replaces the defaults.
                    Use --metrics "" for structure without statistics.
+  --options <path|-> Read ProfileOptions JSON, including metric options, from a file or stdin.
+                    Cannot be combined with --file or --metrics.
   -h, --help        Show help.
 
 Default metrics:

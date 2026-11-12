@@ -53,6 +53,12 @@ ava query "$DATASET_ID" --dsl @query.sql --max-rows 100 > result.json
 
 `profile` without `--file` recomputes statistics on each call. `--metrics` replaces the default metric list. For a few statistics on a large database, prefer targeted queries.
 
+Use `--options` with a `ProfileOptions` JSON file when a metric needs parameters. Use `-` to read the options from stdin. `--options`, `--file`, and `--metrics` are mutually exclusive.
+
+```bash
+printf '%s\n' '{"metrics":[{"id":"quantiles","probabilities":[0.1,0.9]}]}' | ava profile "$DATASET_ID" --options -
+```
+
 With model settings configured at session creation, use these commands for natural-language work:
 
 ```bash
@@ -81,7 +87,7 @@ All commands accept `-h` / `--help` (boolean; optional). Every positional argume
 | ----------- | -------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `source`    | One or more `dataset` inputs: path, URL, `@file`, or `-`  | `-t` / `--type`: `csv-file`, `json-file`, `parquet`, `excel`, `sqlite`, `github`; file types are inferred from extensions. `--engine`: `duckdb`, `python`, `javascript`, `supabase`, `clickhouse`, `sqlserver`, `snowflake`; inferred as described above. |
 | `schema` | `dataset-id` | Optional `--file`: path to an existing schema JSON file. |
-| `profile` | `dataset-id` | Optional `--file`: path to an existing profile JSON file. Otherwise, `--metrics` selects comma-separated metric names; defaults to the [standard metric set](/documentation/reference/api/#profile). An empty string computes no statistics. |
+| `profile` | `dataset-id` | `--file` imports a profile, `--metrics` selects comma-separated metric names, and `--options` accepts a JSON options file. The default is the [standard metric set](/documentation/reference/api/#profile). An empty metric list computes no statistics. |
 | `semantic` | `dataset-id` | Optional `--file`: path to a Semantic JSON file that replaces the complete session definition. Without it, reads the current definition. |
 | `suggest`   | `dataset-id`                           | `--count`: integer `1`–`100`; default `3`.                                                                                                                                                            |
 | `analyze`   | `dataset-id`, natural-language `query` | `--strategy`: `direct` (default), `loop`; `--max-rows` and `--max-result-bytes` below.                                                                                                      |
