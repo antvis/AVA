@@ -205,6 +205,8 @@ A missing metric means it was not computed, not zero. Setting a schema clears th
 
 The default metrics are `row_count`, `null_count`, `distinct_count`, `top_values`, `min`, `max`, and `mean`. Additional built-in metrics are `duplicate_count`, `min_length`, `max_length`, `sum`, `stddev`, and `median`.
 
+DuckDB also supports `valid_count` (non-null count), `null_ratio` (nulls / rows), `distinct_ratio` (different non-null values / non-null count), `unique_count` (values occurring exactly once), `unique_ratio` (singletons / non-null count), and `is_unique` (all non-null values occur once). Empty denominators produce `0`; `is_unique` is `false` when there are no non-null values. These metrics use SQL null semantics; NaN is a non-null value.
+
 Each entry is a metric name or an object with an `id` and metric-specific options:
 
 ```typescript

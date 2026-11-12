@@ -39,6 +39,8 @@ Default metrics:
 
 Additional metrics:
   duplicate_count, min_length, max_length, sum, stddev, median
+  DuckDB: valid_count, null_ratio, distinct_ratio, unique_count, unique_ratio, is_unique
+  unique_count counts non-null values occurring exactly once; distinct_count counts different values.
   Metrics apply only to compatible fields.
 
 Example:

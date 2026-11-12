@@ -43,11 +43,38 @@ function range(fn: string, context: ExpressionContext): string {
 
 export const BUILTIN_METRICS: DuckDBMetric[] = [
   { id: 'row_count', enable: table, expression: () => 'COUNT(*)' },
+  { id: 'valid_count', enable: column, expression: ({ column }) => `COUNT(${column})` },
   { id: 'null_count', enable: column, expression: ({ column }) => `COUNT(*) - COUNT(${column})` },
+  {
+    id: 'null_ratio',
+    enable: column,
+    expression: ({ column }) => `COALESCE((COUNT(*) - COUNT(${column}))::DOUBLE / NULLIF(COUNT(*), 0), 0)`,
+  },
   {
     id: 'distinct_count',
     enable: logicalTypes('numeric', 'string', 'boolean', 'date'),
     expression: ({ column }) => `COUNT(DISTINCT ${column})`,
+  },
+  {
+    id: 'distinct_ratio',
+    enable: logicalTypes('numeric', 'string', 'boolean', 'date'),
+    expression: ({ column }) => `COALESCE(COUNT(DISTINCT ${column})::DOUBLE / NULLIF(COUNT(${column}), 0), 0)`,
+  },
+  {
+    id: 'unique_count',
+    enable: logicalTypes('numeric', 'string', 'boolean', 'date'),
+    expression: ({ column }) => `COALESCE(list_count(list_filter(map_values(histogram(${column})), n -> n = 1)), 0)`,
+  },
+  {
+    id: 'unique_ratio',
+    enable: logicalTypes('numeric', 'string', 'boolean', 'date'),
+    expression: ({ column }) => `COALESCE(list_count(list_filter(map_values(histogram(${column})), n -> n = 1))::DOUBLE
+      / NULLIF(COUNT(${column}), 0), 0)`,
+  },
+  {
+    id: 'is_unique',
+    enable: logicalTypes('numeric', 'string', 'boolean', 'date'),
+    expression: ({ column }) => `COUNT(${column}) > 0 AND COUNT(DISTINCT ${column}) = COUNT(${column})`,
   },
   {
     id: 'top_values',
@@ -101,7 +128,7 @@ function postProcessMetrics(
     const raw = row[`m${i}`];
     delete output[metricId];
     if (metricId === 'top_values' && raw == null) continue;
-    if (Array.isArray(raw)) {
+    if (Array.isArray(raw) || typeof raw === 'boolean') {
       output[metricId] = raw;
     } else {
       // Profile numbers use JavaScript precision, including BIGINT and DECIMAL results.

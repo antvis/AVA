@@ -207,6 +207,8 @@ Profile 通过名称，将统计信息附加到已有的 schema 模型和列上�
 
 默认指标为 `row_count`、`null_count`、`distinct_count`、`top_values`、`min`、`max`、`mean`。其他内置指标包括 `duplicate_count`、`min_length`、`max_length`、`sum`、`stddev`、`median`。
 
+DuckDB 还支持 `valid_count`（非空值数）、`null_ratio`（空值数 / 行数）、`distinct_ratio`（不同非空值数 / 非空值数）、`unique_count`（仅出现一次的值数）、`unique_ratio`（仅出现一次的值数 / 非空值数）与 `is_unique`（所有非空值是否都仅出现一次）。分母为零时比例返回 `0`；没有非空值时 `is_unique` 为 `false`。这些指标沿用 SQL 空值语义，NaN 不属于 NULL。
+
 每项可以是指标名称，也可以是包含 `id` 和该指标专用选项的对象：
 
 ```typescript
