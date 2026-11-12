@@ -3,7 +3,7 @@ import { runInNewContext } from 'node:vm';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { generateText } from 'ai';
 
-import { dependencies, devDependencies } from '../package.json';
+import { dependencies } from '../package.json';
 import { AVA } from '../src/ava';
 
 vi.mock('ai', () => ({ generateText: vi.fn() }));
