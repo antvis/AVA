@@ -6,6 +6,7 @@ import math
 import os
 import subprocess
 import tempfile
+import warnings
 from datetime import datetime, timedelta
 from pathlib import Path
 
@@ -55,7 +56,8 @@ COLUMN_METRICS = {
     "imbalance": "imbalance",
     "chi_squared": "chi_squared",
 }
-REFERENCE_TYPES = {"Numeric": "numeric", "Categorical": "string", "Boolean": "boolean", "DateTime": "date"}
+REFERENCE_TYPES = {"Numeric": "numeric", "Categorical": "string", "Text": "string", "Boolean": "boolean",
+                   "DateTime": "date", "Unsupported": "unknown"}
 MISSING = object()
 
 
@@ -75,6 +77,18 @@ def fixtures():
         "units": [1., 2., 2., None, 0., 1., 1., 3., 4.],
         "region": ["A", "A", "B", "B", None, "A", "A", "B", "B"],
     }), {"amount": "Numeric", "units": "Numeric", "region": "Categorical"}
+    yield "unicode", pa.table({
+        'quoted "label"': ["Straße!"] * 4 + ["e\u0301  É"] * 5 + ["İSTANBUL\u00a0ΟΣ"] * 2 + ["", None, "👩\u200d💻 中文"],
+        "case": ["A"] * 4 + ["AB"] * 3 + ["ABC"] * 2 + ["A😀CD"] + ["ABCDEF"] * 3 + [""],
+        "score": [0, 1, 2, 5, 3, 2, 1, 2, 6, 7, 8, 8, 9, 11],
+    }), {'quoted "label"': "Categorical", "case": "Categorical", "score": "Numeric"}
+    yield "sparse", pa.table({
+        "single": [None, 3., None, None, None, None],
+        "constant": [1., 1., None, 1., 1., 1.],
+        "empty": pa.nulls(6, pa.float64()),
+        "date": pa.array([None, datetime(1900, 1, 1), datetime(1970, 1, 1), None, datetime(1970, 1, 2), None],
+                         type=pa.timestamp("ns")),
+    }), {"single": "Numeric", "constant": "Numeric", "empty": "Numeric", "date": "DateTime"}
 
 
 def json_value(value):
@@ -113,15 +127,18 @@ def equal(left, right):
 
 def cli(*args, payload=None):
     result = subprocess.run(
-        ["node", str(ROOT / "lib/cli/index.js"), *args], cwd=ROOT, check=True, text=True,
+        ["node", str(ROOT / "lib/cli/index.js"), *args], cwd=ROOT, text=True,
         input=json.dumps(payload) if payload is not None else None, capture_output=True,
         env={**os.environ, "OPENAI_API_KEY": ""},
     )
+    if result.returncode != 0:
+        raise RuntimeError(f"ava {args[0]} failed: {result.stderr.strip()}")
     return json.loads(result.stdout)
 
 
 def compare(path, types):
-    metrics = [*TABLE_METRICS, *COLUMN_METRICS, "value_counts", "histogram", "quantiles", "nan_count", "word_counts", "character_counts", "monotonicity",
+    metrics = [*TABLE_METRICS, *COLUMN_METRICS, "value_counts", "histogram", "quantiles", "nan_count", "word_counts",
+               "character_counts", "monotonicity", "duplicate_count", "length_histogram", "mode", "mode_count",
                {"id": "row_duplicates", "limit": 0}, {"id": "row_sample", "head": 3, "tail": 3}]
     dataset = cli("source", str(path), "--engine", "duckdb")["datasetId"]
     try:
@@ -138,7 +155,10 @@ def compare(path, types):
         correlations={method: {"calculate": True} for method in ("pearson", "spearman", "kendall", "cramers", "auto")},
     )
     frame = pd.read_parquet(path)
-    expected = ProfileReport(frame, config=config, type_schema=types).get_description()
+    integer_columns = {field.name for field in pq.read_schema(path) if pa.types.is_integer(field.type)}
+    with warnings.catch_warnings(record=True) as emitted:
+        warnings.simplefilter("always")
+        expected = ProfileReport(frame, config=config, type_schema=types).get_description()
     checks = []
 
     def check(name, received, reference):
@@ -157,12 +177,21 @@ def compare(path, types):
     check("table.row_duplicates.group_count", actual["metrics"]["row_duplicates"]["group_count"], expected.table["n_duplicates"])
     check("quality.uniform", sorted(alert["column"] for alert in quality),
           sorted(alert.column_name for alert in expected.alerts if alert.alert_type.name == "UNIFORM"))
+
+    def decoded(name, value):
+        if value is None:
+            return None
+        if name in integer_columns:
+            return int(value)
+        if types[name] == "DateTime":
+            return json_value(pd.Timestamp(value))
+        return value
+
     for sample in expected.sample:
         received = actual["metrics"]["row_sample"][sample.id]
         for row in received:
             for name, value in row["row_values"].items():
-                if types[name] == "DateTime" and value is not None:
-                    row["row_values"][name] = json_value(pd.Timestamp(value))
+                row["row_values"][name] = decoded(name, value)
         check(f"table.row_sample.{sample.id}", received,
               [{"index": int(index), "row_values": row.to_dict()} for index, row in sample.data.iterrows()])
     missing = frame.isna()
@@ -184,7 +213,7 @@ def compare(path, types):
                 "strictly_decreasing": reference["monotonic_decrease_strict"], "direction": reference["monotonic"],
             })
         if "histogram" in reference:
-            counts, edges = reference["histogram"]
+            counts, edges = reference["histogram"] or ([], [])
             if reference["type"] == "DateTime":
                 edges = edges * 1000
             check(f"{name}.histogram", observed.get("histogram", MISSING), {"counts": counts, "bin_edges": edges})
@@ -192,13 +221,26 @@ def compare(path, types):
             check(f"{name}.quantiles", observed.get("quantiles", MISSING), [
                 {"probability": p, "value": reference[f"{p:.0%}"]} for p in (0.05, 0.25, 0.5, 0.75, 0.95)
             ])
+        if "n_distinct" in reference:
+            check(f"{name}.duplicate_count", observed.get("duplicate_count", MISSING),
+                  reference["count"] - reference["n_distinct"])
+        if "length_histogram" in reference:
+            check(f"{name}.length_histogram", observed.get("length_histogram", MISSING),
+                  [{"length": length, "count": count} for length, count in reference["length_histogram"].sort_index().items()])
+        if "top" in reference:
+            check(f"{name}.mode_count", observed.get("mode_count", MISSING), reference["freq"])
+            if (reference["value_counts_without_nan"] == reference["freq"]).sum() <= 1:
+                check(f"{name}.mode", observed.get("mode", MISSING), reference["top"])
         for native, source in (("value_counts", "value_counts_without_nan"), ("word_counts", "word_counts"),
                                ("character_counts", "character_counts")):
             if source in reference and reference["type"] != "DateTime":
                 frequencies = [{"value": json_value(value), "count": int(count)}
                                for value, count in reference[source].items()]
                 key = lambda entry: json.dumps(entry["value"], sort_keys=True)
-                received = sorted(observed[native], key=key) if native in observed else MISSING
+                received = observed.get(native, MISSING)
+                if received is not MISSING:
+                    received = sorted([{"value": decoded(name, item["value"]), "count": item["count"]}
+                                       for item in received], key=key)
                 check(f"{name}.{native}", received, sorted(frequencies, key=key))
 
     for method in ("pearson", "spearman", "kendall", "cramers", "auto"):
@@ -210,7 +252,7 @@ def compare(path, types):
         else:
             check(f"table.{method}.columns", native and sorted(native["columns"]),
                   sorted(reference.columns) if reference is not None else None)
-    return checks
+    return checks, sorted({f"{warning.category.__name__}: {warning.message}" for warning in emitted})
 
 
 def main():
@@ -218,13 +260,15 @@ def main():
     parser.add_argument("--strict", action="store_true", help="Fail if any compared metric differs")
     args = parser.parse_args()
     results = {}
+    reference_warnings = {}
     with tempfile.TemporaryDirectory(prefix="ava-profile-parity-") as directory:
         for name, table, types in fixtures():
             path = Path(directory) / f"{name}.parquet"
             pq.write_table(table, path)
-            results[name] = compare(path, types)
+            results[name], reference_warnings[name] = compare(path, types)
     print(json.dumps({"reference": {"data_profiling": __version__, "pandas": pd.__version__,
-                                   "numpy": np.__version__, "scipy": scipy.__version__}, "fixtures": results},
+                                   "numpy": np.__version__, "scipy": scipy.__version__}, "fixtures": results,
+                     "reference_warnings": reference_warnings},
                      indent=2, ensure_ascii=False, allow_nan=False))
     return int(args.strict and any(check["status"] != "match" for checks in results.values() for check in checks))
 
