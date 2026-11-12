@@ -25,6 +25,8 @@ interface ExpressionContext {
   readonly table: string;
   readonly column?: string;
   readonly field?: MetricField;
+  readonly fields?: MetricField[];
+  readonly sourceAlias?: string;
   readonly center?: string;
   readonly metric: ParsedProfileOptions['metrics'][number];
 }
@@ -87,6 +89,24 @@ function frequencyValue(value: string, field?: MetricField): string {
   return field?.logicalType === 'date' ? `CAST(${value} AS VARCHAR)` : value;
 }
 
+function tableSummary({ fields = [], sourceAlias }: ExpressionContext): string {
+  const counts = fields.map(({ name }) => `COUNT(${sqlQualifiedName(name, sourceAlias)})`);
+  const sum = (items: string[]) => (items.length ? `COALESCE(list_sum([${items.join(', ')}]), 0)::DOUBLE` : '0');
+  const missing = sum(counts.map((count) => `COUNT(*) - ${count}`));
+  const withNulls = sum(counts.map((count) => `(COUNT(*) > ${count})::INTEGER`));
+  const allNull = sum(counts.map((count) => `(COUNT(*) > 0 AND ${count} = 0)::INTEGER`));
+  const types = ['numeric', 'string', 'boolean', 'date', 'unknown'].map(
+    (type) => `${sqlIdentifier(type)} := ${fields.filter(({ logicalType }) => logicalType === type).length}`
+  );
+  return `struct_pack(row_count := COUNT(*)::DOUBLE, column_count := ${fields.length},
+    null_cell_count := ${missing}, null_cell_ratio := COALESCE(${missing} / NULLIF(COUNT(*)::DOUBLE * ${
+    fields.length
+  }, 0), 0),
+    columns_with_nulls := ${withNulls}, all_null_columns := ${allNull}, type_counts := struct_pack(${types.join(
+    ', '
+  )}))`;
+}
+
 const shapeMetrics = ['skewness', 'kurtosis'] as const;
 
 function shape(metric: (typeof shapeMetrics)[number], context: ExpressionContext): string {
@@ -109,6 +129,7 @@ function shape(metric: (typeof shapeMetrics)[number], context: ExpressionContext
 
 export const BUILTIN_METRICS: DuckDBMetric[] = [
   { id: 'row_count', enable: table, expression: () => 'COUNT(*)' },
+  { id: 'table_summary', enable: table, expression: tableSummary },
   { id: 'valid_count', enable: column, expression: ({ column }) => `COUNT(${column})` },
   { id: 'null_count', enable: column, expression: ({ column }) => `COUNT(*) - COUNT(${column})` },
   {
@@ -293,7 +314,7 @@ function postProcessMetrics(
     const raw = row[`m${i}`];
     delete output[metricId];
     if (metricId === 'top_values' && raw == null) continue;
-    if (Array.isArray(raw) || typeof raw === 'boolean' || metricId === 'mode') {
+    if (typeof raw === 'object' || typeof raw === 'boolean' || metricId === 'mode') {
       output[metricId] = raw ?? null;
     } else {
       // Profile numbers use JavaScript precision, including BIGINT and DECIMAL results.
@@ -349,6 +370,8 @@ export async function profileTables(
             column: field ? sqlQualifiedName(field.name, sourceAlias) : undefined,
             center: center ? `${centerTable}.${center}` : undefined,
             field,
+            fields,
+            sourceAlias,
             metric,
           }),
           metricId: metric.id,

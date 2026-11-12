@@ -211,6 +211,8 @@ DuckDB also supports `valid_count` (non-null count), `null_ratio` (nulls / rows)
 
 For text, DuckDB adds `mean_length`, `median_length`, and `length_histogram`. Lengths count Unicode code points, with repeated strings weighted by their occurrence. The histogram returns `{ length, count }` entries ordered by length. Nulls are excluded and an empty string has length zero.
 
+`table_summary` reports row and column counts, SQL NULL cell counts and ratios, columns with at least one NULL, entirely NULL columns, and counts by logical type. It covers the columns in the profile schema and shares the scan with column null counts. An empty table has no entirely NULL columns.
+
 Numeric DuckDB columns also support `zero_count`, `negative_count`, `infinite_count`, `nan_count`, and `finite_count`, and their `_ratio` counterparts (for example `zero_ratio`). Ratios divide by all rows, including nulls, and return `0` for an empty table. Negative infinity counts as both negative and infinite. NaN, infinity, and SQL NULL remain separate observations. These optional metrics share the aggregate scan and do not change the default metric set.
 
 DuckDB dispersion metrics are `variance` (sample variance), `mad` (median absolute deviation), `iqr` (75th minus 25th percentile), `cv` (sample standard deviation / mean), and `range` (maximum minus minimum; dates use milliseconds). They use finite observations. Insufficient observations return `null`; `cv` is also `null` for a zero mean. Integer and decimal ranges are subtracted before conversion to JavaScript numbers, with a floating-point fallback when native subtraction overflows.
