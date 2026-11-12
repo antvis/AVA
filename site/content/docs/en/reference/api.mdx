@@ -12,6 +12,7 @@ Use this reference to look up signatures, inputs, and return values after follow
 <tr><th scope="rowgroup" rowSpan={4}><a href="#data">Data</a></th><td><a href="#source"><code>source(configs)</code></a></td><td>Load or replace one or more data sources.</td></tr>
 <tr><td><a href="#schema"><code>schema(options?, setter?)</code></a></td><td>Inspect or set data structure.</td></tr>
 <tr><td><a href="#profile"><code>profile(options?, setter?)</code></a></td><td>Compute or set statistics.</td></tr>
+<tr><td><a href="#quality"><code>quality(options?)</code></a></td><td>Evaluate quality rules against the saved profile.</td></tr>
 <tr><td><a href="#semantic"><code>semantic(options?, setter?)</code></a></td><td>Read or set business definitions.</td></tr>
 </tbody>
 <tbody>
@@ -276,6 +277,34 @@ Table completeness shares the scan with column NULL counts, frequency metrics sh
 
 Metric objects require a string `id`. Engines reject unknown metrics and undocumented options. Use `metrics: []` to return the structure with empty metric objects. Each new profile replaces the previous observations.
 
+### quality
+
+```typescript
+quality(options?: QualityOptions): Promise<Quality>
+```
+
+Evaluates rules against the observations saved by `profile()` and returns `{ models: [{ name, alerts }] }`. It performs no data query or model call. Each alert has a `rule` and the relevant columns, observed value, and threshold when available.
+
+```typescript
+await ava.profile({ metrics: ['row_count', 'null_count', 'distinct_count'] });
+const quality = await ava.quality({ rules: ['missing', 'constant'] });
+```
+
+| Rule | Profile evidence | Default threshold |
+| --- | --- | --- |
+| `empty` | `row_count` or `table_summary` | Zero rows |
+| `duplicates` | `row_duplicates` | At least one repeated group |
+| `constant`, `unique` | `distinct_count`, `row_count` | One distinct value, or one distinct value per row |
+| `missing` | `null_ratio`, or `null_count` and `row_count` with `nan_count` when available | `ratioThreshold: 0.01` |
+| `zeros`, `infinite` | `zero_ratio`, `infinite_ratio` | `ratioThreshold: 0.01` |
+| `high_cardinality` | Text `distinct_count` | `cardinalityThreshold: 50` |
+| `high_correlation` | `pearson` | `correlationThreshold: 0.9` on the absolute coefficient |
+| `imbalance` | `imbalance` | `imbalanceThreshold: 0.5` |
+| `skewed` | `skewness` | `skewnessThreshold: 20` on the absolute skewness |
+| `unsupported` | Column logical type | `unknown` |
+
+Omit `rules` to evaluate every rule with available evidence. The default profile supplies basic checks. Request extra metrics to enable the corresponding checks.
+
 ### semantic
 
 ```typescript
@@ -457,6 +486,7 @@ Public schemas follow API input/output names. Multi-argument methods use named a
 | `source` | `sourceInputSchema`: source config | No result (`void`) |
 | `schema` | `schemaInputSchema`: options `{}` | `schemaOutputSchema` |
 | `profile` | `profileInputSchema`: `{ metrics? }` | `profileOutputSchema` |
+| `quality` | `qualityInputSchema` | `qualityOutputSchema` |
 | `semantic` | `semanticInputSchema`: options `{}` | `semanticOutputSchema` |
 | `query` | `queryInputSchema`: `{ dsl, options? }` | `queryOutputSchema` |
 | `analyze` | `analyzeInputSchema`: `{ query, config? }` | `analyzeOutputSchema` |

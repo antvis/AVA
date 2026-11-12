@@ -8,6 +8,8 @@ import type {
   schemaOutputSchema,
   profileInputSchema,
   profileOutputSchema,
+  qualityInputSchema,
+  qualityOutputSchema,
   semanticInputSchema,
   semanticOutputSchema,
   queryInputSchema,
@@ -55,6 +57,8 @@ export type SchemaOptions = z.input<typeof schemaInputSchema>;
 export type Schema = z.output<typeof schemaOutputSchema>;
 export type ProfileOptions = z.input<typeof profileInputSchema>;
 export type Profile = z.output<typeof profileOutputSchema>;
+export type QualityOptions = z.input<typeof qualityInputSchema>;
+export type Quality = z.output<typeof qualityOutputSchema>;
 export type SemanticOptions = z.input<typeof semanticInputSchema>;
 export type Semantic = z.output<typeof semanticOutputSchema>;
 export type ExecutionOptions = NonNullable<z.input<typeof queryInputSchema>['options']>;

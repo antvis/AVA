@@ -73,6 +73,8 @@ async function dispatch(message: Request): Promise<unknown> {
         );
       case 'suggest':
         return ava.suggest(message.count);
+      case 'quality':
+        return ava.quality({ rules: message.rules });
       case 'translate':
         return { dsl: await ava.translate(message.query) };
       case 'analyze':

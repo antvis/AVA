@@ -12,6 +12,7 @@ import { generateSuggestions } from './suggest';
 import { analyze } from './analysis';
 import { LifecycleEventType, LifecycleEvent, AnalysisEventType, AnalysisEvent, emit } from './event';
 import { serializeError } from './util/error';
+import { assessQuality } from './util/quality';
 
 import type { LanguageModelUsage } from 'ai';
 import type {
@@ -33,6 +34,8 @@ import type {
   SuggestResult,
   Profile,
   ProfileOptions,
+  Quality,
+  QualityOptions,
   ExecutionOptions,
   ExecutionResult,
 } from './types';
@@ -204,6 +207,12 @@ export class AVA extends EventEmitter {
     emit(this, new LifecycleEvent(LifecycleEventType.PROFILE_END));
 
     return this.dataProfile!;
+  }
+
+  /** Evaluate data quality using the current profile observations. */
+  async quality(options: QualityOptions = {}): Promise<Quality> {
+    if (!this.dataProfile) throw new Error('No profile available. Please call profile() first.');
+    return assessQuality(this.dataProfile, options);
   }
 
   /** Read or replace semantic definitions used in model-facing operations. */

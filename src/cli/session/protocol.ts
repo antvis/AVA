@@ -4,6 +4,7 @@ import {
   sourceInputSchema,
   profileInputSchema,
   profileOutputSchema,
+  qualityInputSchema,
   schemaOutputSchema,
   semanticOutputSchema,
 } from '../../contracts';
@@ -41,6 +42,7 @@ export const requestSchema = z.discriminatedUnion('command', [
     })
     .strict(),
   z.object({ command: z.literal('suggest'), count: z.number().int().positive().max(100) }).strict(),
+  z.object({ command: z.literal('quality'), rules: qualityInputSchema.shape.rules }).strict(),
   z
     .object({
       command: z.literal('analyze'),

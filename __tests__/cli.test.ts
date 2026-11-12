@@ -22,6 +22,7 @@ const commands = [
   'source',
   'schema',
   'profile',
+  'quality',
   'semantic',
   'suggest',
   'analyze',
@@ -176,6 +177,17 @@ describe('metadata input', () => {
 
     await execute(['profile', datasetId, '--options', '-']);
     expect(request).toHaveBeenCalledExactlyOnceWith(datasetId, { command: 'profile', metrics, profile: undefined });
+  });
+
+  it('validates quality rules before sending the request', async () => {
+    await execute(['quality', datasetId, '--rules', 'missing, duplicates']);
+    expect(request).toHaveBeenCalledExactlyOnceWith(datasetId, {
+      command: 'quality',
+      rules: ['missing', 'duplicates'],
+    });
+    vi.mocked(request).mockClear();
+    await expect(run(['quality', datasetId, '--rules', 'unknown'])).rejects.toThrow(ZodError);
+    expect(request).not.toHaveBeenCalled();
   });
 
   it.each(['--file', '--metrics'])('rejects combining profile --options with %s', async (flag) => {
