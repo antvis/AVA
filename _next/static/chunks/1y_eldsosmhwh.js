@@ -576,7 +576,7 @@ ${_}`)}return l.end(r),O0(OQ({query:e},r),{sql:_,text:!1===t.includeSummary?"":n
   <head>
     <meta charset="UTF-8">
     <title>Data Visualization</title>
-    <script src="https://unpkg.com/@antv/gpt-vis@1.3.1/dist/umd/index.min.js"></script>
+    <script src="https://registry.npmmirror.com/@antv/gpt-vis/1.3.1/files/dist/umd/index.min.js"></script>
     <style>
       html, body, #container {
         margin: 0;
