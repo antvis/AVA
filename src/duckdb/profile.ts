@@ -6,6 +6,7 @@ import { resolveMetric, table, column, logicalTypes, TOP_VALUES_OPTIONS } from '
 import { kendallPair } from './profile-kendall';
 import { cramersPair } from './profile-cramers';
 import { chiSquareBins, chiSquareCounts, chiSquareResult, chiSquareSql } from './profile-chi-square';
+import { referenceQuantiles } from './profile-quantiles';
 import { characterCountsSql, registerWordLowercase, wordCountsSql } from './profile-words';
 
 import type { DuckDBConnection } from '@duckdb/node-api';
@@ -83,9 +84,17 @@ function aggregate(fn: string, context: ColumnContext, argument?: string): strin
   return `${fn}(${context.column}${argument === undefined ? '' : `, ${argument}`})${finiteFilter(context)}`;
 }
 
+function withInfinity(fn: string, context: ColumnContext): string {
+  return context.rawColumn ? `${fn}(${context.column})` : aggregate(fn, context);
+}
+
 function range(fn: string, context: ExpressionContext): string {
-  const expression = aggregate(fn, context);
+  const expression = withInfinity(fn, context);
   return context.field?.logicalType === 'date' ? `epoch_ms(${expression})` : expression;
+}
+
+function onlyFiniteSample(context: ColumnContext, sql: string): string {
+  return context.rawColumn ? `CASE WHEN count(*) FILTER (WHERE isinf(${context.column})) = 0 THEN ${sql} END` : sql;
 }
 
 function numericCondition(id: string, { column, field, rawColumn }: ExpressionContext): string {
@@ -606,20 +615,29 @@ export const BUILTIN_METRICS: DuckDBMetric[] = [
     enable: logicalTypes('string'),
     expression: ({ table, column }) => characterCountsSql(table, column!),
   },
-  { id: 'mean', enable: logicalTypes('numeric'), expression: (context) => aggregate('avg', context) },
-  { id: 'sum', enable: logicalTypes('numeric'), expression: (context) => aggregate('sum', context) },
+  { id: 'mean', enable: logicalTypes('numeric'), expression: (context) => withInfinity('avg', context) },
+  { id: 'sum', enable: logicalTypes('numeric'), expression: (context) => withInfinity('sum', context) },
   {
     id: 'stddev',
     enable: logicalTypes('numeric'),
-    expression: (context) => aggregate('stddev_samp', context),
+    expression: (context) => onlyFiniteSample(context, aggregate('stddev_samp', context)),
   },
-  { id: 'median', enable: logicalTypes('numeric'), expression: (context) => aggregate('median', context) },
-  { id: 'variance', enable: logicalTypes('numeric'), expression: (context) => aggregate('var_samp', context) },
+  {
+    id: 'median',
+    enable: logicalTypes('numeric'),
+    expression: (context) =>
+      context.rawColumn ? `(${referenceQuantiles(context.column!, '[0.5]')})[1].value` : aggregate('median', context),
+  },
+  {
+    id: 'variance',
+    enable: logicalTypes('numeric'),
+    expression: (context) => onlyFiniteSample(context, aggregate('var_samp', context)),
+  },
   ...shapeMetrics.map(
     (id): DuckDBMetric => ({
       id,
       enable: logicalTypes('numeric'),
-      expression: (context) => shape(id, context),
+      expression: (context) => onlyFiniteSample(context, shape(id, context)),
     })
   ),
   {
@@ -644,11 +662,22 @@ export const BUILTIN_METRICS: DuckDBMetric[] = [
     },
     expression: histogramExpression,
   },
-  { id: 'mad', enable: logicalTypes('numeric'), expression: (context) => aggregate('mad', context) },
+  {
+    id: 'mad',
+    enable: logicalTypes('numeric'),
+    expression: (context) =>
+      context.rawColumn
+        ? `CASE WHEN isfinite(median(${context.column})) THEN mad(${context.column}) END`
+        : aggregate('mad', context),
+  },
   {
     id: 'iqr',
     enable: logicalTypes('numeric'),
     expression: (context) => {
+      if (context.rawColumn) {
+        const quartiles = referenceQuantiles(context.column!, '[0.25, 0.75]');
+        return `(${quartiles})[2].value - (${quartiles})[1].value`;
+      }
       const quartiles = aggregate('quantile_cont', context, '[0.25, 0.75]');
       return `(${quartiles})[2] - (${quartiles})[1]`;
     },
@@ -656,7 +685,8 @@ export const BUILTIN_METRICS: DuckDBMetric[] = [
   {
     id: 'cv',
     enable: logicalTypes('numeric'),
-    expression: (context) => `${aggregate('stddev_samp', context)} / NULLIF(${aggregate('avg', context)}, 0)`,
+    expression: (context) =>
+      onlyFiniteSample(context, `${aggregate('stddev_samp', context)} / NULLIF(${aggregate('avg', context)}, 0)`),
   },
   {
     id: 'range',
@@ -683,6 +713,7 @@ export const BUILTIN_METRICS: DuckDBMetric[] = [
       const probabilities = `[${(
         (context.metric.probabilities as number[] | undefined) ?? [0.05, 0.25, 0.5, 0.75, 0.95]
       ).join(', ')}]`;
+      if (context.rawColumn) return referenceQuantiles(context.column!, probabilities);
       return `list_transform(list_zip(${probabilities}::DOUBLE[],
         CAST(${aggregate('quantile_cont', context, probabilities)} AS DOUBLE[])),
         pair -> struct_pack(probability := pair[1], value := pair[2]))`;
@@ -708,7 +739,8 @@ export { DEFAULT_METRICS } from '../util/profile';
 /** Decode aggregate values into profile metrics. */
 function postProcessMetrics(
   row: Record<string, unknown>,
-  pending: { metricId: MetricId; output: Record<string, unknown> }[]
+  pending: { metricId: MetricId; output: Record<string, unknown> }[],
+  referenceSemantics: boolean
 ): void {
   for (let i = 0; i < pending.length; i += 1) {
     const { metricId, output } = pending[i];
@@ -717,7 +749,12 @@ function postProcessMetrics(
     if (metricId === 'top_values' && raw == null) continue;
     if (metricId === 'chi_squared') {
       output[metricId] = chiSquareResult(raw as Parameters<typeof chiSquareResult>[0]);
-    } else if (typeof raw === 'object' || typeof raw === 'boolean' || metricId === 'mode') {
+    } else if (
+      typeof raw === 'object' ||
+      typeof raw === 'boolean' ||
+      metricId === 'mode' ||
+      (referenceSemantics && (raw === 'Infinity' || raw === '-Infinity'))
+    ) {
       output[metricId] = raw ?? null;
     } else {
       // Profile numbers use JavaScript precision, including BIGINT and DECIMAL results.
@@ -893,7 +930,7 @@ export async function profileTables(
       .map(({ expression }, i) => `${expression} AS ${sqlIdentifier(`m${i}`)}`)
       .join(', ')} FROM ${source}${statistics.length ? ` CROSS JOIN ${centerTable}` : ''}`;
     const row = (await connection.runAndReadAll(sql)).getRowObjectsJson()[0];
-    postProcessMetrics(row, pending);
+    postProcessMetrics(row, pending, nanAsNull);
   }
 
   return options.semantics ? { models: profiles, semantics: options.semantics } : { models: profiles };
