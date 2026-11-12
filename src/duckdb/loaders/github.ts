@@ -4,7 +4,7 @@ import { getDuckDBSchema } from '../util/schema';
 
 import { GitHubClient, GitHubError } from './github/client';
 import { githubSince, parseRepository } from './github/config';
-import { convertItem, issuesTable, pullRequestsTable } from './github/convert';
+import { convertItem, issuesTable, pullRequestsTable, utc } from './github/convert';
 
 import type { GitHubColumn, GitHubRow, GitHubTable } from './github/convert';
 import type { DuckDBConnection, GitHubSourceOptions, LoadedSource } from '../../types';
@@ -45,6 +45,7 @@ export async function loadGitHub(input: GitHubSourceOptions): Promise<LoadedSour
   const options = githubOptionsSchema.parse(input);
   const { owner, name } = parseRepository(options.repository);
   const since = options.since === undefined ? undefined : githubSince(options.since);
+  const cutoff = utc(since);
   const maxRecords = options.maxRecords ?? 10000;
   const client = new GitHubClient(options.token, options.timeoutMs ?? 60000);
   const path = `/repos/${encodeURIComponent(owner)}/${encodeURIComponent(name)}/issues`;
@@ -57,15 +58,25 @@ export async function loadGitHub(input: GitHubSourceOptions): Promise<LoadedSour
   const records = new Map<number, ReturnType<typeof convertItem>>();
   const append = (item: unknown) => {
     const record = convertItem(item);
+    if (cutoff && record.row.state === 'closed' && record.row.updated_at < cutoff) {
+      records.delete(record.row.number);
+      return;
+    }
     records.set(record.row.number, record);
     if (records.size > maxRecords) {
       throw new GitHubError(`${tooMany}. Set a later "since", or raise "maxRecords".`);
     }
   };
 
-  // The issues endpoint lists pull requests too. With since, still read every open item.
-  await client.forEachItem(path, { state: since ? 'open' : 'all' }, append);
-  if (since) await client.forEachItem(path, { state: 'closed', since }, append);
+  if (since) {
+    // Start one second earlier so GitHub's strict cutoff also covers the first request's second.
+    const startedAt = githubSince(new Date(Date.now() - 1000).toISOString());
+    await client.forEachItem(path, { state: 'open' }, append);
+    // Fetch both states to catch an item reopened after the first scan.
+    await client.forEachItem(path, { state: 'all', since: since < startedAt ? since : startedAt }, append);
+  } else {
+    await client.forEachItem(path, { state: 'all' }, append);
+  }
 
   const rows: Record<GitHubTable['name'], GitHubRow[]> = { issues: [], pull_requests: [] };
   for (const { table, row } of records.values()) rows[table].push(row);

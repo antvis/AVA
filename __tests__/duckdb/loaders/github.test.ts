@@ -213,7 +213,10 @@ describe('GitHub SDK source', () => {
   beforeEach(() => {
     ava = new AVA({ llm: { model: 'no-model-call' } });
   });
-  afterEach(async () => ava.dispose());
+  afterEach(async () => {
+    vi.restoreAllMocks();
+    await ava.dispose();
+  });
 
   function load(options: Partial<GitHubSourceOptions> = {}) {
     return ava.source({ type: 'github', options: { repository, ...options } });
@@ -269,6 +272,7 @@ describe('GitHub SDK source', () => {
   });
 
   it('keeps old open items and counts a duplicate only once at maxRecords', async () => {
+    vi.spyOn(Date, 'now').mockReturnValue(start);
     const fetch = mockFetch(
       Response.json([item(1), item(2)]),
       Response.json([item(2, { state: 'closed', updated_at: '2026-09-20T00:00:00Z' })])
@@ -276,12 +280,31 @@ describe('GitHub SDK source', () => {
     await load({ since: '2026-09-15T08:00:00+08:00', maxRecords: 2 });
     expect(fetch.mock.calls.map(([url]) => Object.fromEntries(new URL(String(url)).searchParams))).toEqual([
       { per_page: '100', state: 'open' },
-      { per_page: '100', state: 'closed', since: '2026-09-15T00:00:00Z' },
+      { per_page: '100', state: 'all', since: '2026-09-15T00:00:00Z' },
     ]);
     expect((await ava.query('SELECT number, state FROM issues ORDER BY number')).data).toEqual([
       { number: 1, state: 'open' },
       { number: 2, state: 'closed' },
     ]);
+  });
+
+  it('keeps an issue reopened between scans even when since is in the future', async () => {
+    const reopenedAt = '2026-09-16T00:00:00Z';
+    let reopened = item(1, { state: 'closed' });
+    const stillClosed = item(2, { state: 'closed', updated_at: reopenedAt });
+    vi.stubGlobal('fetch', async (input: URL) => {
+      const params = new URL(input).searchParams;
+      const state = params.get('state');
+      const since = params.get('since');
+      const result = [reopened, stillClosed].filter(
+        (entry) => (state === 'all' || entry.state === state) && (!since || entry.updated_at > since)
+      );
+      reopened = { ...reopened, state: 'open', updated_at: reopenedAt };
+      return Response.json(result);
+    });
+    vi.spyOn(Date, 'now').mockReturnValue(Date.parse(reopenedAt));
+    await load({ since: '2026-09-17', maxRecords: 1 });
+    expect((await ava.query('SELECT number, state FROM issues')).data).toEqual([{ number: 1, state: 'open' }]);
   });
 
   it('creates queryable, typed tables for an empty repository', async () => {

@@ -1,7 +1,7 @@
 import { GitHubError } from './client';
 
 export type GitHubCell = string | number | boolean | string[] | null;
-export type GitHubRow = Record<string, GitHubCell> & { number: number };
+export type GitHubRow = Record<string, GitHubCell> & { number: number; updated_at: string };
 
 export interface GitHubColumn {
   name: string;
