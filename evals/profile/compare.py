@@ -17,6 +17,7 @@ import pyarrow.parquet as pq
 import scipy
 from data_profiling import ProfileReport, __version__
 from data_profiling.config import Settings
+from data_profiling.visualisation.charts.builders import acf_pacf
 
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -98,6 +99,12 @@ def fixtures():
         "/srv/报告/.env", "/srv/报告/.env", "/srv/报告/.env.dev", "/srv/报告/...file",
         "/srv/报告/subdir/", "/srv/报告/archive.tar.gz", "/srv/报告/.ext\nsuffix",
     ]}), {"path": "Path"}
+    order = [3, 6, 0, 2, 8, 5, 1, 4, 7]
+    values = [4., 2., 3., 1., 2., 5., 3., 6., None]
+    yield "time_series", pa.table({
+        "time": pa.array([datetime(2026, 1, 1) + timedelta(hours=i) for i in order], type=pa.timestamp("ns")),
+        "signal": [values[i] for i in order],
+    }), {"time": "DateTime", "signal": "Numeric"}
 
 
 def json_value(value):
@@ -153,6 +160,8 @@ def compare(path, types):
         metrics.append("url_summary")
     if "Path" in types.values():
         metrics.append("path_summary")
+    if "time" in types:
+        metrics.append({"id": "autocorrelation", "orderBy": "time", "lags": 4})
     dataset = cli("source", str(path), "--engine", "duckdb")["datasetId"]
     try:
         actual = cli("profile", dataset, "--options", "-", payload={"metrics": metrics, "semantics": "data-profiling"})["models"][0]
@@ -165,7 +174,8 @@ def compare(path, types):
         interactions={"continuous": False}, samples={"head": 3, "tail": 3, "random": 0},
         vars={"num": {"low_categorical_threshold": 0, "chi_squared_threshold": 0.999},
               "cat": {"length": True, "characters": True, "words": True},
-              "url": {"active": "URL" in types.values()}, "path": {"active": "Path" in types.values()}},
+              "url": {"active": "URL" in types.values()}, "path": {"active": "Path" in types.values()},
+              "timeseries": {"pacf_acf_lag": 4}},
         correlations={method: {"calculate": True} for method in ("pearson", "spearman", "kendall", "cramers", "auto")},
     )
     frame = pd.read_parquet(path)
@@ -262,6 +272,16 @@ def compare(path, types):
                       reference[key].to_dict())
                 unique = f"n_{part}_unique"
                 check(f"{name}.{unique}", observed["path_summary"][unique], reference[unique])
+        if "autocorrelation" in observed:
+            series = frame.sort_values("time")[name].dropna()
+            with warnings.catch_warnings(record=True) as chart_warnings:
+                chart = acf_pacf(config, series)
+            emitted.extend(chart_warnings)
+            check(f"{name}.autocorrelation", observed["autocorrelation"], {"count": len(series), **{
+                panel.title.lower(): [{"lag": lag, "value": value, "lower": value + lo, "upper": value + hi}
+                                      for lag, (value, lo, hi) in enumerate(zip(panel.values, panel.conf_low, panel.conf_high))]
+                for panel in chart.rows[0]
+            }})
         if "n_characters" in reference:
             unicode = observed["unicode_summary"]
             check(f"{name}.character_count", unicode["character_count"], reference["n_characters"])

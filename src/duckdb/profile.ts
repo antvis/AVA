@@ -9,6 +9,7 @@ import { chiSquareBins, chiSquareCounts, chiSquareResult, chiSquareSql } from '.
 import { referenceQuantiles } from './profile-quantiles';
 import { unicodeSummary } from './profile-unicode';
 import { pathSummarySql, urlSummarySql } from './profile-text-parts';
+import { autocorrelationResult, autocorrelationSql } from './profile-autocorrelation';
 import {
   characterCountsSql,
   lengthCountsSql,
@@ -626,6 +627,34 @@ export const BUILTIN_METRICS: DuckDBMetric[] = [
       `COALESCE(first(${monotonic}), struct_pack(increasing := true, decreasing := true,
       strictly_increasing := true, strictly_decreasing := true, direction := 2))`,
   },
+  {
+    id: 'autocorrelation',
+    enable: logicalTypes('numeric'),
+    options: {
+      lags: {
+        validate: (value) => {
+          z.number().int().min(0).max(2048).parse(value);
+        },
+      },
+      orderBy: {
+        validate: (value) => {
+          z.string().min(1).parse(value);
+        },
+      },
+    },
+    expression: ({ table, column, fields, metric, sourceAlias }) => {
+      const { lags = 100, orderBy } = metric;
+      if (orderBy !== undefined && !fields?.some(({ name }) => name === orderBy)) {
+        throw new Error(`Unknown autocorrelation order column: ${orderBy}`);
+      }
+      return autocorrelationSql(
+        table,
+        `TRY_CAST(${column} AS DOUBLE)`,
+        lags as number,
+        orderBy === undefined ? undefined : sqlQualifiedName(orderBy as string, sourceAlias)
+      );
+    },
+  },
   { id: 'min', enable: logicalTypes('numeric', 'date'), expression: (context) => range('min', context) },
   { id: 'max', enable: logicalTypes('numeric', 'date'), expression: (context) => range('max', context) },
   {
@@ -832,6 +861,8 @@ function postProcessMetrics(
     if (metricId === 'top_values' && raw == null) continue;
     if (metricId === 'chi_squared') {
       output[metricId] = chiSquareResult(raw as Parameters<typeof chiSquareResult>[0]);
+    } else if (metricId === 'autocorrelation') {
+      output[metricId] = autocorrelationResult(raw as Parameters<typeof autocorrelationResult>[0]);
     } else if (metricId === 'unicode_summary') {
       output[metricId] = unicodeSummary(raw as Parameters<typeof unicodeSummary>[0], unicodeProperties!);
     } else if (metricId === 'median_length' && referenceSemantics) {

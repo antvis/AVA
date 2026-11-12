@@ -252,6 +252,7 @@ await ava.profile({
 | `mode`、`mode_count` | 数值、文本、布尔、日期 | 频数排序中第一位的值及其计数。 |
 | `imbalance` | 文本、布尔、数值类别编码 | 一减去归一化的 Shannon 熵，排除 NULL 和 NaN。均匀分布或少于两个类别时返回零。 |
 | `monotonicity` | 数值 | 按 DuckDB 扫描顺序比较相邻有效值，跳过 NULL 和 NaN。返回递增、递减及各自严格单调的标志，`direction` 为严格递增 `2`、严格递减 `-2`、非严格递增 `1`、非严格递减 `-1` 或 `0`。 |
+| `autocorrelation` | 数值 | 对有限观测计算 ACF 和未调整的 Yule–Walker PACF，附 95% 置信区间。 |
 | `chi_squared` | 数值、日期、文本 | 检验频数是否符合均匀分布，返回 `{ statistic, pvalue }`。文本按类别计数，数值和日期对有限值自动等宽分箱。 |
 | `mean_length`、`median_length` | 文本 | 按 Unicode 码点计算的长度均值和中位数，重复值按出现次数加权。`data-profiling` 模式的中位数采用参考库将长度权重单独排序的算法。 |
 | `length_histogram` | 文本 | 按长度排列的 `{ length, count }`。排除 NULL，空字符串长度为零。 |
@@ -294,6 +295,8 @@ DuckDB 中，分母为零时比例返回 `0`。默认分别统计 SQL NULL、NaN
 | `auto` | `columns` | 数值、文本和布尔列 | 非空且不重复的列名列表。 |
 | `auto` | `maxCategories` | `100` | 文本和布尔列的不同值数量上限。 |
 | `auto` | `bins` | `10` | 数值与类别配对时的等宽分箱数量。 |
+| `autocorrelation` | `orderBy` | DuckDB 扫描顺序 | 对观测值作升序排序的列。 |
+| `autocorrelation` | `lags` | `100` | 请求的最大滞后阶数，范围为 0 到 2048。输出上限为有限样本数的一半减一，至少保留 0 阶。 |
 | `missing_correlation` | `columns` | 所有列 | 非空且不重复的列名列表。同时含缺失值与有效值的列不足两列时返回 `null`。 |
 | `quantiles` | `probabilities` | `[0.05, 0.25, 0.5, 0.75, 0.95]` | 非空数组，元素在 `[0, 1]` 范围内。 |
 | `histogram` | `bins` | `50` | 非负整数，`0` 表示按 Sturges/Freedman–Diaconis 规则自动选桶。 |
