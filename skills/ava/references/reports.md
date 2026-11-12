@@ -54,7 +54,7 @@ node /absolute/path/to/ava/scripts/report.mjs render \
 
 Produces HTML and matching JSON; the parent directory must exist and output files must be new. Empty/truncated results are not plotted; truncated results cannot supply metrics. Rendering failures keep the table/code and appear in `chartErrors`; report actual `chartCount`.
 
-HTML embeds query data; charts load GPT-Vis from unpkg.com, while text/tables/SQL work offline. Account for this when sharing. Preview each chart in a browser when available; generation alone is not a preview.
+HTML embeds query data; charts load GPT-Vis 1.3.1 from registry.npmmirror.com, while text/tables/SQL work offline. Account for this when sharing. Preview each chart in a browser when available; generation alone is not a preview.
 
 ## Layout and style
 

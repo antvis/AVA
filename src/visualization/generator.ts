@@ -29,7 +29,7 @@ export function wrapConfigInHTML(config: ChartConfig): string {
   <head>
     <meta charset="UTF-8">
     <title>Data Visualization</title>
-    <script src="https://unpkg.com/@antv/gpt-vis@1.3.1/dist/umd/index.min.js"></script>
+    <script src="https://registry.npmmirror.com/@antv/gpt-vis/1.3.1/files/dist/umd/index.min.js"></script>
     <style>
       html, body, #container {
         margin: 0;
