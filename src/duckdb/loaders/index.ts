@@ -23,7 +23,11 @@ export type { LoadedSource } from '../../types';
 /**
  * Load a data source config into a LoadedSource the engine can register.
  */
-export async function loadSource(config: DataSourceConfig, llmConfig: LLMConfig): Promise<LoadedSource> {
+export async function loadSource(
+  config: DataSourceConfig,
+  llmConfig: LLMConfig,
+  attachAlias?: string
+): Promise<LoadedSource> {
   switch (config.type) {
     case 'csv':
       return loadCSV(config.options);
@@ -40,13 +44,13 @@ export async function loadSource(config: DataSourceConfig, llmConfig: LLMConfig)
     case 'excel':
       return loadExcel(config.options);
     case 'mysql':
-      return loadMySQL(config.options);
+      return loadMySQL(config.options, attachAlias);
     case 'mongodb':
-      return loadMongoDB(config.options);
+      return loadMongoDB(config.options, attachAlias);
     case 'postgresql':
-      return loadPostgreSQL(config.options);
+      return loadPostgreSQL(config.options, attachAlias);
     case 'sqlite':
-      return loadSQLite(config.options);
+      return loadSQLite(config.options, attachAlias);
     case 'supabase':
       // Supabase is a SaaS source executed remotely — AVA routes it to
       // SupabaseEngine, so it must never reach the DuckDB loaders

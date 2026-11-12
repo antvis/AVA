@@ -1,7 +1,7 @@
 /** Catalog discovery and structural assembly. */
 import { schemaOutputSchema } from '../contracts';
 
-import { sqlIdentifier } from './sql';
+import { sqlIdentifier, sqlQualifiedName } from './sql';
 
 import type { Schema } from '../types';
 
@@ -85,8 +85,12 @@ function viewStatement(sql: string): string {
 type Metadata = Record<string, any>;
 const bool = (value: unknown): boolean => value === true || value === 1 || value === '1';
 
-/** Assemble models, keys and relationships from tagged catalog rows. */
-export function rowObjects2Schema(rows: Record<string, unknown>[]): Schema {
+/**
+ * Assemble models, keys and relationships from tagged catalog rows.
+ */
+export function rowObjects2Schema(rows: Record<string, unknown>[], namespace?: string): Schema {
+  const prefix = namespace === undefined ? '' : `${/[."]/.test(namespace) ? sqlIdentifier(namespace) : namespace}.`;
+  const modelName = (table: string) => `${prefix}${table}`;
   const models = new Map<string, Schema['models'][number]>();
   const columns = new Map<string, Metadata[]>();
   const keys = new Map<string, Metadata[]>();
@@ -123,7 +127,7 @@ export function rowObjects2Schema(rows: Record<string, unknown>[]): Schema {
       parts.set(id, part);
     } else if (row.kind === 'view') {
       const statement = meta.statement ?? (meta.sql ? viewStatement(meta.sql) : undefined);
-      if (statement) views.push({ name: table, statement });
+      if (statement) views.push({ name: modelName(table), statement });
     }
   }
 
@@ -201,22 +205,30 @@ export function rowObjects2Schema(rows: Record<string, unknown>[]): Schema {
     usedNames.add(name);
 
     relationships.push({
-      name,
-      models: [fk.table, fk.referencedTable],
+      name: modelName(name),
+      models: [modelName(fk.table), modelName(fk.referencedTable)],
       joinType: uniqueOn(fk.table, fk.columns) ? 'ONE_TO_ONE' : 'MANY_TO_ONE',
       condition: fk.columns
         .map(
           (column, i) =>
-            `${sqlIdentifier(fk.table)}.${sqlIdentifier(column)} = ${sqlIdentifier(fk.referencedTable)}.${sqlIdentifier(
-              fk.referencedColumns[i]
-            )}`
+            `${sqlQualifiedName(fk.table, namespace)}.${sqlIdentifier(column)} = ${sqlQualifiedName(
+              fk.referencedTable,
+              namespace
+            )}.${sqlIdentifier(fk.referencedColumns[i])}`
         )
         .join(' AND '),
     });
   }
 
+  const tables = [...models.values()].sort((a, b) => a.name.localeCompare(b.name));
+  if (namespace !== undefined) {
+    for (const model of tables) {
+      model.tableReference = { schema: namespace, table: model.name };
+      model.name = modelName(model.name);
+    }
+  }
   return schemaOutputSchema.parse({
-    models: [...models.values()].sort((a, b) => a.name.localeCompare(b.name)),
+    models: tables,
     relationships,
     views,
   });

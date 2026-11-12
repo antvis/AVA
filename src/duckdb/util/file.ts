@@ -9,7 +9,7 @@ import * as fs from 'node:fs/promises';
 import * as os from 'node:os';
 import { dirname, join, resolve } from 'node:path';
 
-import { READ_FN, escapeSql, serializeOptions } from '../../util/sql';
+import { READ_FN, escapeSql, serializeOptions, sqlQualifiedName } from '../../util/sql';
 
 import { getDuckDBSchema } from './schema';
 
@@ -100,7 +100,7 @@ export function fileSource(
 ): LoadedSource {
   path = resolve(path);
   return {
-    register: async (conn) => {
+    register: async (conn, namespace) => {
       if (isExtendedCSVEncoding(format, options && 'encoding' in options ? options.encoding : undefined)) {
         // Auto-install/load is disabled; prepare extended encodings before access is locked.
         await conn.run('INSTALL encodings');
@@ -109,10 +109,13 @@ export function fileSource(
       // csv/json default to auto_detect=true; a user-supplied auto_detect
       // overrides it because DuckDB applies later duplicate options over earlier ones.
       const sniff = format === 'parquet' ? '' : `, auto_detect=true${serializeOptions(options)}`;
-      await conn.run(`CREATE OR REPLACE VIEW data AS SELECT * FROM ${READ_FN[format]}('${escapeSql(path)}'${sniff})`);
+      const view = sqlQualifiedName('data', namespace);
+      await conn.run(
+        `CREATE OR REPLACE VIEW ${view} AS SELECT * FROM ${READ_FN[format]}('${escapeSql(path)}'${sniff})`
+      );
       return ['data'];
     },
-    getSchema: (conn) => getDuckDBSchema(conn, ['data']),
+    getSchema: (conn, namespace) => getDuckDBSchema(conn, ['data'], namespace),
     allowedPaths: [path],
     cleanup,
   };

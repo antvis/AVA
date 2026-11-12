@@ -9,7 +9,8 @@ import { join } from 'node:path';
 import { DuckDBSQLDialect } from '../query/duckdb-sql';
 import { executionResult, maxRows } from '../util/result';
 import { coerceNumbers } from '../util/coerce';
-import { sqlStringLiteral } from '../util/sql';
+import { sqlIdentifier, sqlStringLiteral } from '../util/sql';
+import { findAvailableName, parseSourceConfigs } from '../util/source';
 import { parseProfileOptions } from '../util/profile';
 import { runWithTimeout } from '../util/timeout';
 
@@ -51,6 +52,9 @@ const DEFAULT_MEMORY_LIMIT = '512MB';
 const DEFAULT_THREADS = 1;
 const DEFAULT_QUERY_TIMEOUT_MS = 30_000;
 
+// Built-in schemas and catalogs can conflict with two-part source.table references.
+const RESERVED_NAMESPACES = ['main', 'memory', 'system', 'temp', 'information_schema', 'pg_catalog'];
+
 /** Thrown when a query exceeds the configured timeout. */
 export class QueryTimeoutError extends Error {
   constructor(timeoutMs: number) {
@@ -62,7 +66,7 @@ export class QueryTimeoutError extends Error {
 export class DuckDBEngine implements AnalysisEngine {
   private instance: DuckDBInstance | null = null;
   private connection: DuckDBConnection | null = null;
-  private source: LoadedSource | null = null;
+  private sources: { source: LoadedSource; namespace?: string }[] = [];
   private tempDirectory: string | null = null;
   readonly dialect: DuckDBSQLDialect;
   private allowCommunityExtensions = false;
@@ -110,32 +114,53 @@ export class DuckDBEngine implements AnalysisEngine {
   }
 
   async load(configs: DataSourceConfig | DataSourceConfig[]): Promise<void> {
-    const sources = Array.isArray(configs) ? configs : [configs];
-    if (sources.length !== 1) {
-      throw new Error(`DuckDBEngine currently supports exactly one data source, received ${sources.length}`);
-    }
-    const config = sources[0];
+    const sources = parseSourceConfigs(configs, RESERVED_NAMESPACES);
+    const multiple = sources.length > 1;
+    const namespaces = new Set(sources.map(({ name }) => name.toLowerCase()));
+    const loaded: DuckDBEngine['sources'] = [];
+    let nextAttachIndex = 1;
     await this.dispose();
-    this.allowCommunityExtensions = config.type === 'mongodb';
+    this.allowCommunityExtensions = sources.some(({ type }) => type === 'mongodb');
     try {
-      this.source = await loadSource(config, this.llmConfig);
       const conn = await this.getConnection();
-      await this.source.register(conn);
-      await this.restrictAccess(conn, this.source.allowedPaths);
+      for (const config of sources) {
+        let namespace: string | undefined;
+        let attachAlias: string | undefined;
+        if (multiple) {
+          namespace = config.name;
+          attachAlias = findAvailableName(namespaces, () => `ava_attached_${nextAttachIndex++}`);
+          await conn.run(`CREATE SCHEMA ${sqlIdentifier(namespace)}`);
+        }
+        const source = await loadSource(config, this.llmConfig, attachAlias);
+        loaded.push({ source, namespace });
+        await source.register(conn, namespace);
+      }
+      await this.restrictAccess(conn, [...new Set(loaded.flatMap(({ source }) => source.allowedPaths))]);
     } catch (error) {
+      this.sources = loaded;
       await this.dispose();
       throw error;
     }
+    this.sources = loaded;
   }
 
   async schema(): Promise<Schema> {
-    if (!this.source || !this.connection) throw new Error('No data loaded. Please call source() first.');
+    if (!this.sources.length || !this.connection) throw new Error('No data loaded. Please call source() first.');
 
-    return this.source.getSchema(this.connection);
+    const models: Schema['models'] = [];
+    const relationships: NonNullable<Schema['relationships']> = [];
+    const views: NonNullable<Schema['views']> = [];
+    for (const { source, namespace } of this.sources) {
+      const schema = await source.getSchema(this.connection, namespace);
+      models.push(...schema.models);
+      relationships.push(...(schema.relationships ?? []));
+      views.push(...(schema.views ?? []));
+    }
+    return { models, relationships, views };
   }
 
   async profile(schema: Schema, options: ProfileOptions = {}): Promise<Profile> {
-    if (!this.source || !this.connection) {
+    if (!this.sources.length || !this.connection) {
       throw new Error('No data loaded. Please call source() first.');
     }
 
@@ -146,13 +171,13 @@ export class DuckDBEngine implements AnalysisEngine {
   }
 
   async getDSL(query: string, dataModel: DataModel): Promise<TranslationResult> {
-    if (!this.source) throw new Error('No data loaded. Please call source() first.');
+    if (!this.sources.length) throw new Error('No data loaded. Please call source() first.');
 
     return this.dialect.getDSL(query, dataModel);
   }
 
   async execute<T = Record<string, unknown>>(sql: string, options?: ExecutionOptions): Promise<ExecutionResult<T>> {
-    if (!this.source || !this.connection) throw new Error('No data loaded. Please call source() first.');
+    if (!this.sources.length || !this.connection) throw new Error('No data loaded. Please call source() first.');
 
     const conn = this.connection;
     const query = await this.dialect.validateDSL(sql);
@@ -198,19 +223,19 @@ export class DuckDBEngine implements AnalysisEngine {
   }
 
   async dispose(): Promise<void> {
-    const source = this.source;
+    const sources = this.sources;
     const tempDirectory = this.tempDirectory;
-    this.source = null;
+    this.sources = [];
     this.tempDirectory = null;
     this.close();
+    let failure: PromiseRejectedResult | undefined;
     try {
       await this.dialect.dispose();
     } finally {
-      try {
-        await source?.cleanup();
-      } finally {
-        if (tempDirectory) await rm(tempDirectory, { recursive: true, force: true });
-      }
+      const results = await Promise.allSettled(sources.map(async ({ source }) => source.cleanup()));
+      failure = results.find((result) => result.status === 'rejected');
+      if (tempDirectory) await rm(tempDirectory, { recursive: true, force: true });
     }
+    if (failure) throw failure.reason;
   }
 }

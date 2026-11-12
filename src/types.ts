@@ -164,10 +164,14 @@ export type FileFormat = 'csv' | 'json' | 'parquet';
  * register one view per discovered table.
  */
 export interface LoadedSource {
-  /** Register the source's table(s)/view(s) and return their exposed names. */
-  register: (conn: DuckDBConnection) => Promise<string[]>;
-  /** */
-  getSchema: (conn: DuckDBConnection) => Promise<Schema>;
+  /**
+   * Register views in the given DuckDB schema and return their table names.
+   */
+  register: (conn: DuckDBConnection, namespace?: string) => Promise<string[]>;
+  /**
+   * Describe the source using its exposed table references.
+   */
+  getSchema: (conn: DuckDBConnection, namespace?: string) => Promise<Schema>;
   /**
    * Exact files the engine allows after registering (empty for sources without local files).
    */

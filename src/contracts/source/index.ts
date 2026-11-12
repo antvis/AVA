@@ -17,7 +17,15 @@ import { sqlserverSourceSchema } from './sqlserver';
 import { snowflakeSourceSchema } from './snowflake';
 import { feishuBitableSourceSchema } from './feishu-bitable';
 
-const sourceFields = { name: z.string().trim().min(1).optional().catch(undefined) };
+const sourceFields = {
+  name: z
+    .string()
+    .trim()
+    .min(1)
+    .refine((name) => !name.includes('\0'))
+    .optional()
+    .catch(undefined),
+};
 
 /**
  * Shared runtime contract for built-in source configurations.

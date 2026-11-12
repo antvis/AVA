@@ -1,4 +1,4 @@
-import { sqlIdentifier } from '../../util/sql';
+import { sqlIdentifier, sqlQualifiedName } from '../../util/sql';
 import { getDuckDBSchema } from '../util/schema';
 
 import { FeishuFieldType } from './feishu/convert';
@@ -56,11 +56,11 @@ function sqlType(type: number): string {
 function emptyTable(fields: FeishuField[]): LoadedSource {
   const columns = fields.map((field) => `NULL::${sqlType(field.type)} AS ${sqlIdentifier(field.name)}`).join(',');
   return {
-    register: async (conn) => {
-      await conn.run(`CREATE OR REPLACE VIEW data AS SELECT ${columns} WHERE FALSE`);
+    register: async (conn, namespace) => {
+      await conn.run(`CREATE OR REPLACE VIEW ${sqlQualifiedName('data', namespace)} AS SELECT ${columns} WHERE FALSE`);
       return ['data'];
     },
-    getSchema: (conn) => getDuckDBSchema(conn, ['data']),
+    getSchema: (conn, namespace) => getDuckDBSchema(conn, ['data'], namespace),
     allowedPaths: [],
     cleanup: async () => {},
   };
