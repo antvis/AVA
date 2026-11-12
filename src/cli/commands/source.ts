@@ -1,6 +1,7 @@
 import { resolve } from 'path';
 
 import { inferFileSourceType } from '../../util/source';
+import { isGitHubRepositoryUrl } from '../../duckdb/loaders/github/config';
 import { createSession } from '../session/client';
 import { engineTypeSchema } from '../session/protocol';
 import { sourceInputSchema } from '../../contracts';
@@ -36,10 +37,20 @@ async function parseSourceArgument(dataset: string, options: Options): Promise<D
     throw new Error(
       'Only Feishu Bitable links are supported: /base/<appToken>?table=<tableId> or /wiki/<nodeToken>?table=<tableId>. Docx, Sheets, and other Feishu links cannot be loaded.'
     );
+  } else if (isGitHubRepositoryUrl(dataset)) {
+    if (options.type !== undefined) throw new Error('--type cannot be combined with a GitHub repository link.');
+    input = { type: 'github', options: { repository: dataset } };
   } else {
     const type = option(options, 'type') ?? inferFileSourceType(dataset);
-    if (!type) throw new Error('Cannot infer the source type. Pass --type.');
-    input = { type, options: { path: dataset } };
+    if (!type) {
+      if (/^https?:\/\/(www\.)?github\.com(\/|$)/i.test(dataset)) {
+        throw new Error(
+          'Only GitHub repository links are supported: https://github.com/<owner>/<repo>, or its /issues or /pulls page.'
+        );
+      }
+      throw new Error('Cannot infer the source type. Pass --type.');
+    }
+    input = type === 'github' ? { type, options: { repository: dataset } } : { type, options: { path: dataset } };
   }
 
   const config = sourceInputSchema.parse(input);
@@ -58,6 +69,11 @@ async function parseSourceArgument(dataset: string, options: Options): Promise<D
     config.options.appSecret = creds.appSecret;
   }
 
+  if (config.type === 'github' && config.options.token === undefined) {
+    const token = process.env.GH_TOKEN?.trim() || process.env.GITHUB_TOKEN?.trim();
+    if (token) config.options.token = token;
+  }
+
   return config;
 }
 
@@ -70,6 +86,10 @@ export async function run(datasets: string[], options: Options): Promise<{ datas
   const sources: DataSourceConfig[] = [];
   for (const dataset of datasets) {
     sources.push(await parseSourceArgument(dataset, options));
+  }
+
+  if (engine !== undefined && engine !== 'duckdb' && sources.some(({ type }) => type === 'github')) {
+    throw new Error('GitHub sources require the duckdb engine.');
   }
 
   return createSession(sources, llmConfig(sources.some(({ type }) => type === 'text')), engine);
@@ -97,9 +117,10 @@ Arguments:
                     Relative paths resolve from the current working directory.
 
 Options:
-  -t, --type <type>  Override the type inferred from file extensions for all path inputs.
-                    Types: csv-file, json-file, parquet, excel, sqlite.
-                    Cannot be used with @file, stdin configs, or Feishu URLs.
+  -t, --type <type>  Set the type for all file paths, file URLs, or repository names.
+                    Types: csv-file, json-file, parquet, excel, sqlite, github.
+                    With github, dataset is owner/name.
+                    Cannot be used with @file, stdin configs, Feishu or GitHub repository URLs.
   --engine <type>    duckdb, python, javascript, supabase, clickhouse, sqlserver, or snowflake.
                     Default: supabase/clickhouse/sqlserver/snowflake for those sources, otherwise duckdb.
                     Fixed for the session. Multiple sources require DuckDB.
@@ -133,6 +154,7 @@ Environment:
   OPENAI_API_KEY     Required for text sources and subsequent AI commands.
   OPENAI_MODEL       Model name (default: gpt-4o-mini).
   OPENAI_BASE_URL    Optional API base URL.
+  GH_TOKEN           GitHub token for github sources; GITHUB_TOKEN is read next.
   AVA_FEISHU_APP_ID      Feishu app credentials for feishu-bitable sources.
   AVA_FEISHU_APP_SECRET
   Model settings are fixed when the dataset is loaded.
@@ -156,6 +178,7 @@ Examples:
   ava source @feishu.json
   ava source @sqlserver.json
   ava source @snowflake.json
+  ava source https://github.com/antvis/AVA
 
 SQL Server:
   Pass a "sqlserver" config via @file or stdin; its engine is selected automatically.
@@ -188,4 +211,14 @@ snowflake.json:
     "schema": "<schema>"
   }
 }
+
+GitHub (Node.js / DuckDB):
+  A github.com repository link, or its /issues or /pulls page, is detected automatically;
+  owner/name works with --type github. Loads the tables issues and pull_requests (read-only).
+  Public repositories need no token, but unauthenticated requests share 60 per hour per IP.
+  github.json:
+    { "type": "github", "options": { "repository": "antvis/AVA", "since": "2026-01-01" } }
+  since keeps every open item and the closed ones updated since then (UTC).
+  More than maxRecords distinct items (default 10000) fail the load.
+  Response bodies are capped at 16 MiB each and 64 MiB per load.
 `;

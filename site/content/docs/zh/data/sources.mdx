@@ -101,7 +101,7 @@ await ava.source({
 
 <Heading as="h3" id="connect-multiple-sources">接入多个数据源</Heading>
 
-AVA 支持同时分析来自 [CSV](#csv)、[JSON](#json)、[Parquet](#parquet)、[Excel](#excel)、[文本](#text)、[SQLite](#sqlite)、[MySQL](#mysql)、[PostgreSQL](#postgresql)、[MongoDB](#mongodb) 和[飞书多维表格](#feishu-bitable)的数据。
+AVA 支持同时分析来自 [CSV](#csv)、[JSON](#json)、[Parquet](#parquet)、[Excel](#excel)、[文本](#text)、[SQLite](#sqlite)、[MySQL](#mysql)、[PostgreSQL](#postgresql)、[MongoDB](#mongodb)、[飞书多维表格](#feishu-bitable)和 [GitHub](#github) 的数据。
 
 在 Node.js SDK 中，使用 `ava.source([...])` 一次接入多个数据源。
 
@@ -705,3 +705,27 @@ try {
 - 使用单条只读 `SELECT`（支持 `WITH`），按 `schema()` 列出的名称为表和列加双引号。存储过程、`SYSTEM$` 函数，以及 `IDENTIFIER(name)(...)` 形式的动态函数调用会被拒绝。
 - `maxRows` 和 `maxResultBytes` 分别限制返回结果的行数和大小。
 - `NUMBER` 在转换不损失数字位数时转为 JavaScript 数字，更大或更精确的值保留为十进制字符串；浮点数的 `NaN` 和无穷大保留为字符串。日期使用 `YYYY-MM-DD`，时间和时间戳带九位小数，时区类型附带偏移量。`VARIANT`、`OBJECT` 和 `ARRAY` 是解析后的 JSON，`BINARY` 是十六进制文本。
+
+<Heading as="h2" id="github">GitHub</Heading>
+
+每个 GitHub 数据源读取一个仓库，提供 `issues` 和 `pull_requests` 两张表。
+
+| 数据 | 可读取的信息 |
+| --- | --- |
+| Issue 和 Pull Request | 编号、标题、状态、作者（含与仓库的关系、是否为机器人）、负责人、标签、评论数、创建时间、更新时间、关闭时间和链接。 |
+| Issue | 关闭原因或重新打开的状态。 |
+| Pull Request | 是否为草稿、是否已合并、合并时间。 |
+
+公开仓库可以直接读取。读取私有仓库需要有相应权限的 GitHub 令牌。
+
+<Heading as="h3" id="github-options">连接参数</Heading>
+
+通过 SDK 或 CLI 的 `@file` 配置时，将 `type` 设为 `github`，把下列参数写在 `options` 中。
+
+| 参数 | 类型 | 说明 |
+| --- | --- | --- |
+| `repository` | `string` | 必填。填写 `owner/name` 或 GitHub 仓库链接。 |
+| `token` | `string` | GitHub 令牌。省略时，CLI 依次读取 `GH_TOKEN` 和 `GITHUB_TOKEN`。 |
+| `since` | `string` | 可选的 ISO 8601 日期或时间。不带时区偏移时按 UTC 处理。保留所有未关闭记录，以及从该时间起更新过的已关闭记录。 |
+| `maxRecords` | `number` | Issue 和 Pull Request 去重后的总数上限。默认 10,000，取值为 1 至 100,000 的整数。 |
+| `timeoutMs` | `number` | 读取时限，包含重试和限流等待。默认 60,000 毫秒，取值为 1 至 110,000 的整数。 |

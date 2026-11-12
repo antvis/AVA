@@ -118,6 +118,7 @@ export type ClickHouseSourceOptions = DataSourceOptions<'clickhouse'>;
 export type SQLServerSourceOptions = DataSourceOptions<'sqlserver'>;
 export type SnowflakeSourceOptions = DataSourceOptions<'snowflake'>;
 export type FeishuBitableSourceOptions = DataSourceOptions<'feishu-bitable'>;
+export type GitHubSourceOptions = DataSourceOptions<'github'>;
 
 export type CSVReadOptions = z.input<typeof csvReadOptionsSchema>;
 export type JSONReadOptions = z.input<typeof jsonReadOptionsSchema>;
@@ -131,7 +132,7 @@ export type SSHOptions = NonNullable<MySQLSourceOptions['ssh']>;
  * declared here so the shared types never import the Node-only package.
  */
 export interface DuckDBConnection {
-  run(sql: string): Promise<unknown>;
+  run(sql: string, values?: string[]): Promise<unknown>;
   runAndReadAll(sql: string): Promise<{ getRowObjectsJson(): Record<string, unknown>[] }>;
 }
 
@@ -165,7 +166,7 @@ export type FileFormat = 'csv' | 'json' | 'parquet';
  */
 export interface LoadedSource {
   /**
-   * Register views in the given DuckDB schema and return their table names.
+   * Register tables or views in the given DuckDB schema and return their names.
    */
   register: (conn: DuckDBConnection, namespace?: string) => Promise<string[]>;
   /**

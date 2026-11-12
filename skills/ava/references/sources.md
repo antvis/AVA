@@ -138,3 +138,7 @@ Instead of `url`, a base table accepts `appToken` and `tableId`. When both forms
 ### Cell Values
 
 Complex cells flatten to text, lists join with commas, and dates use ISO strings. People/chats use names, attachments use filenames, and record links use IDs. Unsupported fields are omitted; unsupported formula/lookup results become null.
+
+## GitHub
+
+Pass a GitHub repository URL to `ava source` to load its issues and pull requests. Include other inputs in the same command to analyze them together, for example `ava source https://github.com/OWNER/REPO labels.csv`. See the [GitHub source documentation](https://ava.antv.vision/documentation/data/sources/#github) for fields and connection options.
