@@ -25,19 +25,25 @@ interface ExpressionContext {
   readonly table: string;
   readonly column?: string;
   readonly field?: MetricField;
+  readonly center?: string;
   readonly metric: ParsedProfileOptions['metrics'][number];
 }
 
 export type DuckDBMetricExpression = (context: ExpressionContext) => string;
 export type DuckDBMetric = Metric<DuckDBMetricExpression>;
 
+type ColumnContext = Pick<ExpressionContext, 'column' | 'field'>;
+
+function finiteFilter({ column, field }: ColumnContext): string {
+  return field && (field.logicalType === 'date' || /^(FLOAT|DOUBLE|REAL)$/i.test(field.type))
+    ? ` FILTER (WHERE isfinite(${column}))`
+    : '';
+}
+
 /** Build an aggregate for valid values. */
-function aggregate(fn: string, { column, field }: ExpressionContext, argument?: string): string {
-  if (!field) throw new Error(`${fn} requires a column`);
-  const finite = field.logicalType === 'date' || /^(FLOAT|DOUBLE|REAL)$/i.test(field.type);
-  return `${fn}(${column}${argument === undefined ? '' : `, ${argument}`})${
-    finite ? ` FILTER (WHERE isfinite(${column}))` : ''
-  }`;
+function aggregate(fn: string, context: ColumnContext, argument?: string): string {
+  if (!context.field) throw new Error(`${fn} requires a column`);
+  return `${fn}(${context.column}${argument === undefined ? '' : `, ${argument}`})${finiteFilter(context)}`;
 }
 
 function range(fn: string, context: ExpressionContext): string {
@@ -50,6 +56,26 @@ function numericCondition(id: string, { column, field }: ExpressionContext): str
   if (id === 'negative') return `${column} < 0`;
   if (!/^(FLOAT|DOUBLE|REAL)$/i.test(field!.type)) return id === 'finite' ? `${column} IS NOT NULL` : 'FALSE';
   return `${id === 'infinite' ? 'isinf' : id === 'nan' ? 'isnan' : 'isfinite'}(${column})`;
+}
+
+const shapeMetrics = ['skewness', 'kurtosis'] as const;
+
+function shape(metric: (typeof shapeMetrics)[number], context: ExpressionContext): string {
+  const count = `(${aggregate('count', context)})::DOUBLE`;
+  const delta = `(${context.column}::DOUBLE - ${context.center})`;
+  const centralSum = (power: number) => `fsum(pow(${delta}, ${power}))${finiteFilter(context)}`;
+  const second = centralSum(2);
+  // Match pandas' sample corrections and round-off threshold for near-zero moments.
+  const zeroSmall = (value: string) => `(CASE WHEN abs(${value}) < 1e-14 THEN 0 ELSE ${value} END)`;
+  if (metric === 'skewness') {
+    return `CASE WHEN ${count} < 3 THEN NULL WHEN abs(${second}) < 1e-14 THEN 0
+      ELSE ${count} * sqrt(${count} - 1) / (${count} - 2) * ${zeroSmall(centralSum(3))} / pow(${second}, 1.5) END`;
+  }
+  const correction = `(${count} - 2) * (${count} - 3)`;
+  const denominator = `(${correction} * pow(${second}, 2))`;
+  const numerator = `${count} * (${count} + 1) * (${count} - 1) * (${centralSum(4)})`;
+  return `CASE WHEN ${count} < 4 THEN NULL WHEN abs(${denominator}) < 1e-14 THEN 0
+    ELSE ${zeroSmall(numerator)} / ${denominator} - 3 * pow(${count} - 1, 2) / (${correction}) END`;
 }
 
 export const BUILTIN_METRICS: DuckDBMetric[] = [
@@ -126,6 +152,13 @@ export const BUILTIN_METRICS: DuckDBMetric[] = [
   },
   { id: 'median', enable: logicalTypes('numeric'), expression: (context) => aggregate('median', context) },
   { id: 'variance', enable: logicalTypes('numeric'), expression: (context) => aggregate('var_samp', context) },
+  ...shapeMetrics.map(
+    (id): DuckDBMetric => ({
+      id,
+      enable: logicalTypes('numeric'),
+      expression: (context) => shape(id, context),
+    })
+  ),
   { id: 'mad', enable: logicalTypes('numeric'), expression: (context) => aggregate('mad', context) },
   {
     id: 'iqr',
@@ -216,11 +249,20 @@ export async function profileTables(
   options: ParsedProfileOptions
 ): Promise<Profile> {
   const metrics = options.metrics.map((metric) => ({ metric, definition: resolveMetric(metric, BUILTIN_METRICS) }));
+  const needsCenters = metrics.some(({ metric }) => metric.id === 'skewness' || metric.id === 'kurtosis');
   const profiles: Profile['models'] = [];
 
   for (const table of schema.models) {
     const { name, tableReference } = table;
     const reference = sqlQualifiedName(tableReference.table, tableReference.schema);
+    const fields = table.columns.map((field) => ({ ...field, logicalType: logicalType(field.type) }));
+    const numeric = needsCenters ? fields.filter((field) => field.logicalType === 'numeric') : [];
+    const centers = new Map(numeric.map((field, i) => [field.name, sqlIdentifier(`center${i}`)]));
+    const centerTable = sqlIdentifier(
+      tableReference.table.toLowerCase() === '__ava_centers' ? '__ava_centers_2' : '__ava_centers'
+    );
+    const sourceAlias = numeric.length ? '__ava_source' : undefined;
+    const source = sourceAlias ? `${reference} AS ${sqlIdentifier(sourceAlias)}` : reference;
     const profile: Profile['models'][number] = {
       name,
       metrics: {},
@@ -231,6 +273,7 @@ export async function profileTables(
     const pending: Array<{ expression: string; metricId: MetricId; output: Record<string, unknown> }> = [];
 
     const addMetrics = (output: Record<string, unknown>, field?: MetricField) => {
+      const center = field && centers.get(field.name);
       for (const { metric, definition } of metrics) {
         const target = field ? 'column' : 'table';
         if (!definition.enable({ target, field })) {
@@ -239,8 +282,9 @@ export async function profileTables(
 
         pending.push({
           expression: definition.expression({
-            table: reference,
-            column: field ? sqlIdentifier(field.name) : undefined,
+            table: source,
+            column: field ? sqlQualifiedName(field.name, sourceAlias) : undefined,
+            center: center ? `${centerTable}.${center}` : undefined,
             field,
             metric,
           }),
@@ -251,8 +295,7 @@ export async function profileTables(
     };
 
     addMetrics(profile.metrics);
-    profile.columns = table.columns.map((column) => {
-      const field = { ...column, logicalType: logicalType(column.type) };
+    profile.columns = fields.map((field) => {
       const metrics = {};
       addMetrics(metrics, field);
       return { name: field.name, properties: { logicalType: field.logicalType }, metrics };
@@ -260,9 +303,18 @@ export async function profileTables(
 
     if (!pending.length) continue;
 
-    const sql = `SELECT ${pending
+    // All shape metrics share one pass for centers and one pass for centered moments.
+    const withCenters = numeric.length
+      ? `WITH ${centerTable} AS (SELECT ${numeric
+          .map(
+            (field) =>
+              `${aggregate('favg', { column: sqlIdentifier(field.name), field })} AS ${centers.get(field.name)}`
+          )
+          .join(', ')} FROM ${reference}) `
+      : '';
+    const sql = `${withCenters}SELECT ${pending
       .map(({ expression }, i) => `${expression} AS ${sqlIdentifier(`m${i}`)}`)
-      .join(', ')} FROM ${reference}`;
+      .join(', ')} FROM ${source}${numeric.length ? ` CROSS JOIN ${centerTable}` : ''}`;
     const row = (await connection.runAndReadAll(sql)).getRowObjectsJson()[0];
     postProcessMetrics(row, pending);
   }

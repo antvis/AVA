@@ -44,6 +44,7 @@ Additional metrics:
                   nan_count/ratio, finite_count/ratio (e.g. zero_count, zero_ratio)
   DuckDB quantiles: quantiles (5%, 25%, 50%, 75%, 95%; finite numeric values)
   DuckDB dispersion: variance, mad, iqr, cv, range
+  DuckDB distribution shape: skewness, kurtosis
   unique_count counts non-null values occurring exactly once; distinct_count counts different values.
   Metrics apply only to compatible fields.
 

@@ -211,6 +211,8 @@ Numeric DuckDB columns also support `zero_count`, `negative_count`, `infinite_co
 
 DuckDB dispersion metrics are `variance` (sample variance), `mad` (median absolute deviation), `iqr` (75th minus 25th percentile), `cv` (sample standard deviation / mean), and `range` (maximum minus minimum; dates use milliseconds). They use finite observations. Insufficient observations return `null`; `cv` is also `null` for a zero mean. Integer and decimal ranges are subtracted before conversion to JavaScript numbers, with a floating-point fallback when native subtraction overflows.
 
+`skewness` and `kurtosis` are the sample-adjusted skewness and excess kurtosis of finite numeric observations. They require at least three and four values, respectively. Requesting either adds one pass to compute column means, shared across all requested columns, so the moments can be calculated around their means in the aggregate scan.
+
 Each entry is a metric name or an object with an `id` and metric-specific options:
 
 ```typescript
