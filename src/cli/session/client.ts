@@ -20,7 +20,8 @@ import type { DataSourceConfig, EngineConfig, LLMConfig } from '../../types';
  * Combine a sanitized source name with a random suffix to identify a dataset session.
  */
 function createDatasetId(config: DataSourceConfig): string {
-  const source = 'path' in config.options ? config.options.path : config.type;
+  const { options } = config;
+  const source = 'path' in options && typeof options.path === 'string' ? options.path : config.type;
   const path = /^https?:\/\//i.test(source) ? new URL(source).pathname : source;
   const name =
     basename(path, extname(path))
