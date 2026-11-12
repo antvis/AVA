@@ -11,7 +11,7 @@ import { unicodeSummary } from './profile-unicode';
 import { pathSummarySql, urlSummarySql } from './profile-text-parts';
 import { autocorrelationResult, autocorrelationSql } from './profile-autocorrelation';
 import { timeGapsSql } from './profile-time-gaps';
-import { dateValidationSql } from './profile-dates';
+import { dateValidationSql, parseDateSql } from './profile-dates';
 import {
   characterCountsSql,
   lengthCountsSql,
@@ -39,12 +39,26 @@ export function logicalType(nativeType: string): LogicalType {
   return 'unknown';
 }
 
+type ProfileType = NonNullable<Profile['models'][number]['columns'][number]['properties']['profileType']>;
+type ProfileField = MetricField & { profileType?: ProfileType };
+
+const logicalProfileTypes: Record<ProfileType, LogicalType> = {
+  Numeric: 'numeric',
+  Categorical: 'string',
+  Text: 'string',
+  Boolean: 'boolean',
+  DateTime: 'date',
+  URL: 'string',
+  Path: 'string',
+  Unsupported: 'unknown',
+};
+
 interface ExpressionContext {
   readonly table: string;
   readonly column?: string;
   readonly rawColumn?: string;
-  readonly field?: MetricField;
-  readonly fields?: MetricField[];
+  readonly field?: ProfileField;
+  readonly fields?: ProfileField[];
   readonly sourceAlias?: string;
   readonly nanAsNull?: boolean;
   readonly center?: string;
@@ -99,9 +113,14 @@ function withInfinity(fn: string, context: ColumnContext): string {
   return context.rawColumn ? `${fn}(${context.column})` : aggregate(fn, context);
 }
 
+function dateValue({ column, field }: ColumnContext): string {
+  return logicalType(field!.type) === 'date' ? column! : parseDateSql(column!);
+}
+
 function range(fn: string, context: ExpressionContext): string {
-  const expression = withInfinity(fn, context);
-  return context.field?.logicalType === 'date' ? `epoch_ms(${expression})` : expression;
+  if (context.field?.logicalType !== 'date') return withInfinity(fn, context);
+  const value = dateValue(context);
+  return `epoch_ms(${fn}(${value}) FILTER (WHERE isfinite(${value})))`;
 }
 
 function onlyFiniteSample(context: ColumnContext, sql: string): string {
@@ -141,8 +160,8 @@ function frequencyRanks(context: ColumnContext): string {
     rank := -struct_extract(entry, 'value')::HUGEINT, value := struct_extract(entry, 'key')))`;
 }
 
-function frequencyValue(value: string, field?: MetricField): string {
-  return field?.logicalType === 'date' ? `CAST(${value} AS VARCHAR)` : value;
+function frequencyValue(value: string, field?: ProfileField): string {
+  return field?.logicalType === 'date' || field?.profileType === 'Categorical' ? `CAST(${value} AS VARCHAR)` : value;
 }
 
 function imbalance(context: ColumnContext): string {
@@ -203,7 +222,7 @@ function orderField({ fields, metric }: ExpressionContext): MetricField | undefi
   return field;
 }
 
-function selectFields({ fields = [], metric }: ExpressionContext): MetricField[] {
+function selectFields({ fields = [], metric }: ExpressionContext): ProfileField[] {
   if (metric.columns === undefined) return fields;
   const known = new Map(fields.map((field) => [field.name, field]));
   return (metric.columns as string[]).map((name) => {
@@ -265,7 +284,9 @@ function rowSample(context: ExpressionContext): string {
 }
 
 function numericCorrelationFields(context: ExpressionContext): MetricField[] {
-  const fields = selectFields(context).filter(({ logicalType }) => logicalType === 'numeric');
+  const fields = selectFields(context).filter(
+    (field) => (context.nanAsNull ? logicalType(field.type) : field.logicalType) === 'numeric'
+  );
   if (context.metric.columns && fields.length !== (context.metric.columns as string[]).length) {
     const method = context.metric.id;
     throw new Error(`${method[0].toUpperCase()}${method.slice(1)} correlation requires numeric columns`);
@@ -368,8 +389,8 @@ function categoryCorrelation(context: ExpressionContext): string {
   const { columns, maxCategories = 100, bins = 10 } = context.metric;
   const automatic = context.metric.id === 'auto';
   const fields = selectFields(context).filter(
-    ({ logicalType }) =>
-      logicalType === 'string' ||
+    ({ logicalType, profileType }) =>
+      (logicalType === 'string' && (!profileType || profileType === 'Categorical')) ||
       logicalType === 'boolean' ||
       ((automatic || columns !== undefined) && logicalType === 'numeric')
   );
@@ -457,7 +478,9 @@ function shape(metric: (typeof shapeMetrics)[number], context: ExpressionContext
 }
 
 function histogramValue({ column, field }: ColumnContext): string {
-  return field?.logicalType === 'date' ? `epoch_ms(${column})::DOUBLE` : `TRY_CAST(${column} AS DOUBLE)`;
+  return field?.logicalType === 'date'
+    ? `epoch_ms(${dateValue({ column, field })})::DOUBLE`
+    : `TRY_CAST(${column} AS DOUBLE)`;
 }
 
 function chiSquareValue(context: ColumnContext): string {
@@ -675,7 +698,7 @@ export const BUILTIN_METRICS: DuckDBMetric[] = [
       let position = 'row_number() OVER () - 1';
       if (index) {
         const column = sqlQualifiedName(index.name, sourceAlias);
-        if (index.logicalType === 'date') position = `epoch_ms(${column})`;
+        if (index.logicalType === 'date') position = `epoch_ms(${dateValue({ column, field: index })})`;
         else if (index.logicalType === 'numeric') position = column;
         else throw new Error('time_series_gaps requires a numeric or date order column');
       }
@@ -757,7 +780,7 @@ export const BUILTIN_METRICS: DuckDBMetric[] = [
   {
     id: 'date_validation',
     enable: logicalTypes('string', 'date'),
-    expression: ({ column, field }) => dateValidationSql(column!, field?.logicalType === 'date'),
+    expression: ({ column, field }) => dateValidationSql(column!, logicalType(field!.type) === 'date'),
   },
   { id: 'mean', enable: logicalTypes('numeric'), expression: (context) => withInfinity('avg', context) },
   { id: 'sum', enable: logicalTypes('numeric'), expression: (context) => withInfinity('sum', context) },
@@ -935,11 +958,32 @@ export async function profileTables(
     ? (await import('./unicode-properties.json')).default
     : undefined;
   const profiles: Profile['models'] = [];
+  const typeSchema = new Map(Object.entries(options.typeSchema ?? {}));
+  for (const [model, columns] of typeSchema) {
+    const source = schema.models.find(({ name }) => name === model);
+    if (!source) throw new Error(`Unknown profile type override model: ${model}`);
+    const unknown = Object.keys(columns).find((key) => !source.columns.some(({ name }) => name === key));
+    if (unknown) throw new Error(`Unknown profile type override column: ${model}.${unknown}`);
+  }
 
   for (const table of schema.models) {
     const { name, tableReference } = table;
     const reference = sqlQualifiedName(tableReference.table, tableReference.schema);
-    const fields = table.columns.map((field) => ({ ...field, logicalType: logicalType(field.type) }));
+    const overrides = new Map(Object.entries(typeSchema.get(name) ?? {}));
+    const fields: ProfileField[] = table.columns.map((field) => {
+      const profileType = overrides.get(field.name);
+      const native = logicalType(field.type);
+      if (!profileType) return { ...field, logicalType: native };
+      const target = logicalProfileTypes[profileType];
+      if (
+        ((target === 'numeric' || target === 'boolean') && target !== native) ||
+        (target === 'date' && native !== 'date' && native !== 'string') ||
+        ((profileType === 'URL' || profileType === 'Path') && native !== 'string')
+      ) {
+        throw new Error(`Cannot profile ${name}.${field.name} (${field.type}) as ${profileType}`);
+      }
+      return { ...field, logicalType: target, profileType };
+    });
     const centerTable = sqlIdentifier(
       tableReference.table.toLowerCase() === '__ava_centers' ? '__ava_centers_2' : '__ava_centers'
     );
@@ -1066,7 +1110,11 @@ export async function profileTables(
     profile.columns = fields.map((field) => {
       const metrics = {};
       addMetrics(metrics, field);
-      return { name: field.name, properties: { logicalType: field.logicalType }, metrics };
+      const properties = {
+        logicalType: field.logicalType,
+        ...(field.profileType && { profileType: field.profileType }),
+      };
+      return { name: field.name, properties, metrics };
     });
 
     const presence = nanAsNull
@@ -1091,7 +1139,10 @@ export async function profileTables(
     postProcessMetrics(row, pending, nanAsNull, unicodeProperties);
     if (nanAsNull) {
       for (const [i, column] of profile.columns.entries()) {
-        if (!row[`has_value${i}`]) column.properties.logicalType = 'unknown';
+        if (!row[`has_value${i}`]) {
+          column.properties.logicalType = 'unknown';
+          if (column.properties.profileType) column.properties.profileType = 'Unsupported';
+        }
       }
     }
   }

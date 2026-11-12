@@ -34,8 +34,9 @@ export function assessQuality(profile: Profile, options: QualityOptions): Qualit
       for (const {
         name: column,
         metrics: stats,
-        properties: { logicalType },
+        properties: { logicalType, profileType },
       } of columns) {
+        const categorical = logicalType === 'string' && (!profileType || profileType === 'Categorical');
         const compare = (rule: Alert['rule'], value: number | undefined, threshold: number) => {
           if (value !== undefined && value > threshold) add({ rule, column, value, threshold });
         };
@@ -53,12 +54,12 @@ export function assessQuality(profile: Profile, options: QualityOptions): Qualit
           const values = distinct - Number(nanCount > 0);
           if (values === 1) add({ rule: 'constant', column, value: 1 });
           if (rows && values === rows) add({ rule: 'unique', column, value: values });
-          if (logicalType === 'string') compare('high_cardinality', values, thresholds.cardinalityThreshold);
+          if (categorical) compare('high_cardinality', values, thresholds.cardinalityThreshold);
         }
         compare('zeros', observation(stats.zero_ratio), thresholds.ratioThreshold);
         compare('infinite', observation(stats.infinite_ratio), thresholds.ratioThreshold);
         compare('imbalance', observation(stats.imbalance), thresholds.imbalanceThreshold);
-        if (logicalType === 'numeric' || logicalType === 'string') {
+        if (logicalType === 'numeric' || categorical) {
           compare('uniform', observation(property(stats.chi_squared, 'pvalue')), thresholds.uniformThreshold);
         }
         const skewness = observation(stats.skewness);

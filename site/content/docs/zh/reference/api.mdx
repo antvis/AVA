@@ -184,6 +184,7 @@ await ava.profile(undefined, () => savedProfile);
 | --- | --- | --- | --- |
 | `options` | `ProfileOptions` | 否 | `{}`，使用下方默认指标。 |
 | `options.metrics` | `MetricConfig[]` | 否 | 交给引擎计算的指标列表；提供后替换默认列表。 |
+| `options.typeSchema` | `Record<string, Record<string, ProfileType>>` | 否 | 按模型名和列名覆写 DuckDB 画像类型。例如 `{ data: { order_date: 'DateTime' } }` 将文本按日期解析并计算日期指标。 |
 | `setter` | `(options: ProfileOptions) => Profile` | 否 | 返回要保存的 profile，替代引擎计算。 |
 
 Setter 接收选项对象（默认 `{}`），同步返回 `Profile`，不要求引擎支持统计。AVA 会验证并复制结果；无效结果或 setter 抛错会让调用失败，并保留原有元数据。选项直接传给 setter，AVA 不会代替它计算或过滤指标。

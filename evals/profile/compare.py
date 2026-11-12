@@ -167,7 +167,9 @@ def compare(path, types):
         metrics.append({"id": "time_series_gaps", "orderBy": "time"})
     dataset = cli("source", str(path), "--engine", "duckdb")["datasetId"]
     try:
-        actual = cli("profile", dataset, "--options", "-", payload={"metrics": metrics, "semantics": "data-profiling"})["models"][0]
+        actual = cli("profile", dataset, "--options", "-", payload={
+            "metrics": metrics, "semantics": "data-profiling", "typeSchema": {"data": types},
+        })["models"][0]
         quality = cli("quality", dataset, "--rules", "uniform")["models"][0]["alerts"]
     finally:
         cli("dispose", dataset)
@@ -234,6 +236,7 @@ def compare(path, types):
         name, observed = column["name"], column["metrics"]
         reference = expected.variables[name]
         check(f"{name}.type", column["properties"]["logicalType"], REFERENCE_TYPES[reference["type"]])
+        check(f"{name}.profile_type", column["properties"].get("profileType", MISSING), reference["type"])
         for native, source in COLUMN_METRICS.items():
             if source in reference:
                 check(f"{name}.{native}", observed.get(native, MISSING), reference[source])
@@ -349,15 +352,23 @@ def main():
         ]}), path)
         dataset = cli("source", str(path), "--engine", "duckdb")["datasetId"]
         try:
-            actual = cli("profile", dataset, "--metrics", "date_validation")["models"][0]["columns"][0]["metrics"]["date_validation"]
+            profile = cli("profile", dataset, "--options", "-", payload={
+                "metrics": ["date_validation", "valid_count", "min", "max", "range"],
+                "typeSchema": {"data": {"date": "DateTime"}},
+            })
+            actual = profile["models"][0]["columns"][0]["metrics"]
         finally:
             cli("dispose", dataset)
         with warnings.catch_warnings(record=True) as emitted:
             profile = ProfileReport(pd.read_parquet(path), minimal=True, progress_bar=False,
                                     type_schema={"date": "DateTime"}).get_description()
-        expected = {key: json_value(profile.variables["date"][key]) for key in actual}
-        results["date_validation"] = [{"metric": "date.date_validation", "ava": actual, "reference": expected,
-                                       "status": "match" if equal(actual, expected) else "different"}]
+        reference = profile.variables["date"]
+        expected = {key: json_value(reference[key]) for key in ("min", "max", "range")}
+        expected["valid_count"] = json_value(reference["count"])
+        expected["date_validation"] = {key: json_value(reference[key]) for key in actual["date_validation"]}
+        results["date_validation"] = [{"metric": f"date.{key}", "ava": value, "reference": expected[key],
+                                       "status": "match" if equal(value, expected[key]) else "different"}
+                                      for key, value in actual.items()]
         reference_warnings["date_validation"] = sorted({f"{warning.category.__name__}: {warning.message}" for warning in emitted})
     print(json.dumps({"reference": {"data_profiling": __version__, "pandas": pd.__version__,
                                    "numpy": np.__version__, "scipy": scipy.__version__}, "fixtures": results,

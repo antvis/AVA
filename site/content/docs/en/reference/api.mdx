@@ -182,6 +182,7 @@ await ava.profile(undefined, () => savedProfile);
 | --- | --- | --- | --- |
 | `options` | `ProfileOptions` | No | `{}`; uses the default metrics below. |
 | `options.metrics` | `MetricConfig[]` | No | Metrics for engine computation. A supplied list replaces the defaults. |
+| `options.typeSchema` | `Record<string, Record<string, ProfileType>>` | No | DuckDB type overrides by model and column name. For example, `{ data: { order_date: 'DateTime' } }` parses text dates for date metrics. |
 | `setter` | `(options: ProfileOptions) => Profile` | No | Returns the profile to save instead of computing it through the engine. |
 
 A setter receives the options object (default `{}`) and returns a `Profile` synchronously. It does not require engine profiling support. AVA validates and copies its result; invalid results or thrown errors reject the call without changing previous metadata. The options are passed to the setter; AVA does not calculate or filter metrics on its behalf.
@@ -191,6 +192,8 @@ Requires a loaded source. Both paths replace the saved profile, which analysis, 
 #### Profile format
 
 A profile attaches observations to existing schema models and columns by name:
+
+DuckDB type overrides use `Numeric`, `Categorical`, `Text`, `Boolean`, `DateTime`, `URL`, `Path`, or `Unsupported`. Overridden columns include `properties.profileType` in the profile output.
 
 | Field | Meaning |
 | --- | --- |

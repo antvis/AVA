@@ -166,8 +166,8 @@ export class DuckDBEngine implements AnalysisEngine {
     }
 
     const defaultOptions = { metrics: DEFAULT_METRICS };
-    const { semantics, ...selection } = profileInputSchema.parse(options);
-    const parsedOptions = { ...parseProfileOptions(selection, defaultOptions), semantics };
+    const validated = profileInputSchema.parse(options);
+    const parsedOptions = { ...validated, ...parseProfileOptions(validated, defaultOptions) };
 
     return profileTables(this.connection, schema, parsedOptions);
   }

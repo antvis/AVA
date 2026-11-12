@@ -191,8 +191,8 @@ export class AVA extends EventEmitter {
     if (!setter && !this.engine.profile) {
       throw new Error('Profiling is not supported by the registered engine.');
     }
-    if (!setter && options.semantics && this.engineConfig.type !== 'duckdb') {
-      throw new Error('Profile semantics options are supported only by DuckDB.');
+    if (!setter && (options.semantics || options.typeSchema) && this.engineConfig.type !== 'duckdb') {
+      throw new Error('Profile semantics and type overrides are supported only by DuckDB.');
     }
 
     emit(this, new LifecycleEvent(LifecycleEventType.PROFILE_START));
