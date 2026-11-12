@@ -57,7 +57,7 @@ COLUMN_METRICS = {
     "chi_squared": "chi_squared",
 }
 REFERENCE_TYPES = {"Numeric": "numeric", "Categorical": "string", "Text": "string", "Boolean": "boolean",
-                   "DateTime": "date", "Unsupported": "unknown"}
+                   "DateTime": "date", "URL": "string", "Unsupported": "unknown"}
 MISSING = object()
 
 
@@ -90,6 +90,10 @@ def fixtures():
         "date": pa.array([None, datetime(1900, 1, 1), datetime(1970, 1, 1), None, datetime(1970, 1, 2), None],
                          type=pa.timestamp("ns")),
     }), {"single": "Numeric", "constant": "Numeric", "empty": "Numeric", "date": "DateTime"}
+    yield "urls", pa.table({"url": [
+        "HTTPS://Example.com/a?name=A%20B#top", "HTTPS://Example.com/a?name=A%20B#top",
+        "http://name:pwd@[::1]:8080/路径?next=/a?b#header#body", "https://example.net", "ftp://a.example/file.tar.gz",
+    ]}), {"url": "URL"}
 
 
 def json_value(value):
@@ -141,6 +145,8 @@ def compare(path, types):
     metrics = [*TABLE_METRICS, *COLUMN_METRICS, "value_counts", "histogram", "quantiles", "nan_count", "word_counts",
                "character_counts", "unicode_summary", "monotonicity", "duplicate_count", "length_histogram", "mode", "mode_count",
                {"id": "row_duplicates", "limit": 0}, {"id": "row_sample", "head": 3, "tail": 3}]
+    if "URL" in types.values():
+        metrics.append("url_summary")
     dataset = cli("source", str(path), "--engine", "duckdb")["datasetId"]
     try:
         actual = cli("profile", dataset, "--options", "-", payload={"metrics": metrics, "semantics": "data-profiling"})["models"][0]
@@ -152,7 +158,8 @@ def compare(path, types):
         progress_bar=False, pool_size=1, infer_dtypes=False, missing_diagrams={"bar": False, "matrix": False, "heatmap": False},
         interactions={"continuous": False}, samples={"head": 3, "tail": 3, "random": 0},
         vars={"num": {"low_categorical_threshold": 0, "chi_squared_threshold": 0.999},
-              "cat": {"length": True, "characters": True, "words": True}},
+              "cat": {"length": True, "characters": True, "words": True},
+              "url": {"active": "URL" in types.values()}},
         correlations={method: {"calculate": True} for method in ("pearson", "spearman", "kendall", "cramers", "auto")},
     )
     frame = pd.read_parquet(path)
@@ -236,6 +243,11 @@ def compare(path, types):
             check(f"{name}.mode_count", observed.get("mode_count", MISSING), reference["freq"])
             if (reference["value_counts_without_nan"] == reference["freq"]).sum() <= 1:
                 check(f"{name}.mode", observed.get("mode", MISSING), reference["top"])
+        if reference["type"] == "URL":
+            for part in ("scheme", "netloc", "path", "query", "fragment"):
+                key = part + "_counts"
+                check(f"{name}.{key}", {item["value"]: item["count"] for item in observed["url_summary"][key]},
+                      reference[key].to_dict())
         if "n_characters" in reference:
             unicode = observed["unicode_summary"]
             check(f"{name}.character_count", unicode["character_count"], reference["n_characters"])
@@ -271,7 +283,7 @@ def compare(path, types):
             columns = native["columns"]
             check(f"table.{method}", native, {"columns": columns, "matrix": reference.loc[columns, columns].to_numpy()})
         else:
-            check(f"table.{method}.columns", native and sorted(native["columns"]),
+            check(f"table.{method}.columns", sorted(native["columns"]) if native and native["columns"] else None,
                   sorted(reference.columns) if reference is not None else None)
     return checks, sorted({f"{warning.category.__name__}: {warning.message}" for warning in emitted})
 

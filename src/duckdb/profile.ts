@@ -8,6 +8,7 @@ import { cramersPair } from './profile-cramers';
 import { chiSquareBins, chiSquareCounts, chiSquareResult, chiSquareSql } from './profile-chi-square';
 import { referenceQuantiles } from './profile-quantiles';
 import { unicodeSummary } from './profile-unicode';
+import { urlSummarySql } from './profile-url';
 import {
   characterCountsSql,
   lengthCountsSql,
@@ -686,6 +687,11 @@ export const BUILTIN_METRICS: DuckDBMetric[] = [
     id: 'unicode_summary',
     enable: logicalTypes('string'),
     expression: ({ table, column }) => characterCountsSql(table, column!),
+  },
+  {
+    id: 'url_summary',
+    enable: logicalTypes('string'),
+    expression: ({ table, column }) => urlSummarySql(table, column!),
   },
   { id: 'mean', enable: logicalTypes('numeric'), expression: (context) => withInfinity('avg', context) },
   { id: 'sum', enable: logicalTypes('numeric'), expression: (context) => withInfinity('sum', context) },

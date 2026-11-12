@@ -258,6 +258,7 @@ await ava.profile({
 | `word_counts` | 文本 | 使用 Unicode 小写、空白切词和 ASCII 标点修剪后的 `{ value, count }`。重复字符串按频数加权。 |
 | `character_counts` | 文本 | 各 Unicode 码点的 `{ value, count }` 频数，保留空白和大小写。 |
 | `unicode_summary` | 文本 | Unicode 码点总数、不同码点数，以及按通用类别、区块别名和文字系统分组的总频数与字符频数。 |
+| `url_summary` | 文本 | URL 协议、授权部分、路径、查询和片段的频数。缺省部分计为空字符串。 |
 | `zero_count`、`zero_ratio` | 数值 | 零值数量及其占总行数的比例。 |
 | `negative_count`、`negative_ratio` | 数值 | 负值数量及其占总行数的比例，包含负无穷。 |
 | `infinite_count`、`infinite_ratio` | 数值 | 正负无穷值数量及其占总行数的比例。 |
