@@ -217,6 +217,8 @@ For text, DuckDB adds `mean_length`, `median_length`, and `length_histogram`. Le
 
 `row_duplicates` groups rows by all profile columns or by a `columns` subset. It returns the number of repeated groups, their ratio to total rows, the rows in those groups, and the rows that would be removed by deduplication. Samples are ordered by count and then by key. `limit` defaults to `10`. Set `limit: 0` to return counts alone.
 
+`pearson` returns a symmetric `{ columns, matrix }` of Pearson correlations for numeric columns. Each pair uses rows where both values are finite. Constant columns and insufficient pairs yield `null`. Use `columns` to select a subset on wide tables, where the number of pairs grows quadratically. All pairs share the aggregate scan.
+
 Numeric DuckDB columns also support `zero_count`, `negative_count`, `infinite_count`, `nan_count`, and `finite_count`, and their `_ratio` counterparts (for example `zero_ratio`). Ratios divide by all rows, including nulls, and return `0` for an empty table. Negative infinity counts as both negative and infinite. NaN, infinity, and SQL NULL remain separate observations. These optional metrics share the aggregate scan and do not change the default metric set.
 
 DuckDB dispersion metrics are `variance` (sample variance), `mad` (median absolute deviation), `iqr` (75th minus 25th percentile), `cv` (sample standard deviation / mean), and `range` (maximum minus minimum; dates use milliseconds). They use finite observations. Insufficient observations return `null`; `cv` is also `null` for a zero mean. Integer and decimal ranges are subtracted before conversion to JavaScript numbers, with a floating-point fallback when native subtraction overflows.

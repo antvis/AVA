@@ -1,6 +1,6 @@
 import { z } from 'zod';
 
-import { sqlIdentifier, sqlQualifiedName } from '../util/sql';
+import { sqlIdentifier, sqlQualifiedName, sqlStringLiteral } from '../util/sql';
 import { resolveMetric, table, column, logicalTypes, TOP_VALUES_OPTIONS } from '../util/profile';
 
 import type { MetricField } from '../util/profile';
@@ -118,13 +118,29 @@ function tableSummary({ fields = [], sourceAlias }: ExpressionContext): string {
   )}))`;
 }
 
-function duplicateRows({ table, fields = [], sourceAlias, metric }: ExpressionContext): string {
-  const { limit = 10, columns = fields.map(({ name }) => name) } = metric;
-  const names = columns as string[];
-  const known = new Set(fields.map(({ name }) => name));
-  for (const name of names) {
-    if (!known.has(name)) throw new Error(`Unknown row_duplicates column: ${name}`);
-  }
+const columnNamesOption = {
+  validate(value: unknown): void {
+    z.array(z.string().min(1))
+      .nonempty()
+      .refine((names) => new Set(names).size === names.length)
+      .parse(value);
+  },
+};
+
+function selectFields({ fields = [], metric }: ExpressionContext): MetricField[] {
+  if (metric.columns === undefined) return fields;
+  const known = new Map(fields.map((field) => [field.name, field]));
+  return (metric.columns as string[]).map((name) => {
+    const field = known.get(name);
+    if (!field) throw new Error(`Unknown ${metric.id} column: ${name}`);
+    return field;
+  });
+}
+
+function duplicateRows(context: ExpressionContext): string {
+  const { table, sourceAlias, metric } = context;
+  const { limit = 10 } = metric;
+  const names = selectFields(context).map(({ name }) => name);
   const empty =
     'struct_pack(group_count := 0, group_ratio := 0, duplicate_row_count := 0, excess_row_count := 0, samples := [])';
   if (!names.length) return `COALESCE(first(NULL), ${empty})`;
@@ -144,6 +160,34 @@ function duplicateRows({ table, fields = [], sourceAlias, metric }: ExpressionCo
     duplicate_row_count := COALESCE(sum(n) FILTER (WHERE n > 1), 0)::DOUBLE,
     excess_row_count := COALESCE(sum(n - 1), 0)::DOUBLE, samples := ${samples})
     FROM (SELECT ${key} AS row_key, COUNT(*) AS n FROM ${table} GROUP BY 1) grouped)), ${empty})`;
+}
+
+function pearson(context: ExpressionContext): string {
+  const fields = selectFields(context).filter(({ logicalType }) => logicalType === 'numeric');
+  if (context.metric.columns && fields.length !== (context.metric.columns as string[]).length) {
+    throw new Error('Pearson correlation requires numeric columns');
+  }
+  if (!fields.length) return 'struct_pack(columns := []::VARCHAR[], matrix := COALESCE(first(NULL), []::DOUBLE[][]))';
+
+  const columns = fields.map(({ name }) => sqlStringLiteral(name));
+  const values = fields.map(({ name }) => `TRY_CAST(${sqlQualifiedName(name, context.sourceAlias)} AS DOUBLE)`);
+  const rows = values.map(
+    (_, i) =>
+      `[${values
+        .map((_, j) => {
+          // Use the same expression for both halves so DuckDB aggregates each pair once.
+          const left = values[Math.min(i, j)];
+          const right = values[Math.max(i, j)];
+          if (i === j) {
+            const finite = `FILTER (WHERE isfinite(${left}))`;
+            return `CASE WHEN min(${left}) ${finite} < max(${left}) ${finite} THEN 1::DOUBLE END`;
+          }
+          return `corr(${left}, ${right}) FILTER (WHERE isfinite(${left}) AND isfinite(${right}))`;
+        })
+        .join(', ')}]`
+  );
+  return `struct_pack(columns := [${columns.join(', ')}], matrix := list_transform([${rows.join(', ')}],
+    lambda r: list_transform(r, lambda v: CASE WHEN isfinite(v) THEN greatest(-1, least(1, v)) END)))`;
 }
 
 const shapeMetrics = ['skewness', 'kurtosis'] as const;
@@ -206,17 +250,11 @@ export const BUILTIN_METRICS: DuckDBMetric[] = [
           z.number().int().nonnegative().parse(value);
         },
       },
-      columns: {
-        validate: (value) => {
-          z.array(z.string().min(1))
-            .nonempty()
-            .refine((names) => new Set(names).size === names.length)
-            .parse(value);
-        },
-      },
+      columns: columnNamesOption,
     },
     expression: duplicateRows,
   },
+  { id: 'pearson', enable: table, options: { columns: columnNamesOption }, expression: pearson },
   { id: 'valid_count', enable: column, expression: ({ column }) => `COUNT(${column})` },
   { id: 'null_count', enable: column, expression: ({ column }) => `COUNT(*) - COUNT(${column})` },
   {
