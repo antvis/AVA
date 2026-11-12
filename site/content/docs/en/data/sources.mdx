@@ -58,6 +58,7 @@
     <img src="/logos/notion.svg" alt="" width="28" height="28" />
     <strong>Notion</strong>
     <span>Database</span>
+  </a>
   <a href="#snowflake">
     <img src="/logos/snowflake.svg" alt="" width="28" height="28" />
     <strong>Snowflake</strong>
@@ -659,15 +660,15 @@ Set `NOTION_TOKEN` to an integration/bot token from the [Notion integrations pag
 
 For the CLI, put the same source configuration in a JSON file and run `ava source @notion.json`. Keep the token in the environment, not in the file.
 
-|| Field | Type | Required / default |
-|| --- | --- | --- |
-|| `databaseId` | `string` | Required; the Notion database UUID. |
-|| `token` | `string` | Optional; overrides `NOTION_TOKEN`. |
-|| `pageSize` | `number` | 1–100; default 100 pages per request. |
-|| `maxRecords` | `number` | 1–100,000; default 10,000. Overflow fails, not truncates. |
-|| `timeoutMs` | `number` | 1–110,000; default 60,000 ms for the whole load. |
-|| `maxRetries` | `number` | 0–5; default 2 for transient failures. |
-|| `version` | `'2022-06-28'` | Optional; only the adapted legacy database API version is accepted. |
+| Field | Type | Required / default |
+| --- | --- | --- |
+| `databaseId` | `string` | Required. Notion database UUID. |
+| `token` | `string` | Optional. Overrides `NOTION_TOKEN`. |
+| `pageSize` | `number` | 1–100. Default 100 pages per request. |
+| `maxRecords` | `number` | 1–100,000. Default 10,000. Exceeding the limit fails the load. |
+| `timeoutMs` | `number` | 1–110,000. Default 60,000 ms for the whole load. |
+| `maxRetries` | `number` | 0–5. Default 2 for transient failures. |
+| `version` | `'2022-06-28'` | Optional. Only this API version is supported. |
 
 Supported Notion property types are `title`, `rich_text`, `number`, `select`, `multi_select`, `status`, `date`, `checkbox`, `url`, `email`, `phone_number`, `created_time`, `last_edited_time`, `created_by`, `last_edited_by`, `people`, `unique_id`, plus typed `formula` and `rollup` results. Other property types (`files`, `relation`, `button`, `place`, `verification`) are omitted. Property names become column names; `_id` preserves the source page id. Duplicate/reserved column names and invalid supported values fail the load. Numbers use `DOUBLE`, regular dates use UTC `TIMESTAMPTZ`, omitted properties use null, and empty pages are retained. Regular date properties expose `date.start`; their `end` and `time_zone` are not separate SQL fields in this version. `multi_select` and `people` use `VARCHAR[]`, preserving option boundaries (including commas) and empty lists instead of joining values into ambiguous text.
 
@@ -682,6 +683,7 @@ This is a load-time snapshot, not live synchronization. Stop source edits during
 Natural-language examples include aggregating tasks by status (`按状态统计每个状态的任务数和金额总和`) and counting tasks per month from a date property (`按月份统计任务数量`). The example scripts in `examples/notion` reproduce both against a synthetic dataset.
 
 See the [reproducible task example](https://github.com/antvis/AVA/tree/oss-camp2026/examples/notion) for configuration, optional synthetic fixture setup, status aggregation and monthly analysis with numerical assertions.
+
 ## Snowflake
 
 Use the `snowflake` source and engine in Node.js to analyze tables and views on your Snowflake warehouse. Each source discovers one schema and returns query results to AVA.
