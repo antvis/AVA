@@ -38,6 +38,7 @@ export const profileInputSchema = z
         numericCategoryThreshold: z.number().int().nonnegative().optional(),
         textCategoryThreshold: z.number().int().nonnegative().optional(),
         textCategoryRatio: z.number().nonnegative().optional(),
+        booleanMappings: z.record(z.string(), z.boolean()).optional(),
       })
       .strict()
       .optional(),

@@ -119,7 +119,7 @@ def fixtures():
         "name": ["North", "South", "East", "North", "North", "South", "East", "North", "North", "South", "North", "South"],
         "description": [f"Reference description {i}" for i in range(12)],
         "amount": [0., 4., 3., 5., 10., 7., -8., 2., 10., 11., 12., -12.],
-        "flag": [True, False] * 6,
+        "flag": ["True", "NO", "T", "false", "y", "f", "YES", "n", "True", "f", "y", "no"],
     }), {"code": "Categorical", "name": "Categorical", "description": "Text", "amount": "Numeric", "flag": "Boolean"}
     yield "phi_k", pa.table({
         "amount": [float(i % 80 + 20 * (i % 3)) for i in range(240)],

@@ -17,7 +17,7 @@ import { timeGapsSql } from './profile-time-gaps';
 import { dateValidationSql, parseDateSql } from './profile-dates';
 import { frequencySpectrum } from './profile-spectrum';
 import { augmentedDickeyFuller } from './profile-adf';
-import { inferColumnTypes } from './profile-inference';
+import { booleanSql, inferColumnTypes } from './profile-inference';
 import { fileSummary } from './profile-files';
 import {
   characterCountsSql,
@@ -46,7 +46,10 @@ export function logicalType(nativeType: string): LogicalType {
   return 'unknown';
 }
 
-type ProfileField = MetricField & { profileType?: ProfileType };
+type ProfileField = MetricField & {
+  profileType?: ProfileType;
+  booleanValues?: { mappings?: Record<string, boolean>; lowercase?: string };
+};
 
 const logicalProfileTypes: Record<ProfileType, LogicalType> = {
   Numeric: 'numeric',
@@ -87,8 +90,10 @@ function withoutNaN(column: string): string {
   return `(CASE WHEN NOT isnan(${column}) THEN ${column} END)`;
 }
 
-function profileValue(field: MetricField, sourceAlias?: string, nanAsNull?: boolean): string {
+function profileValue(field: ProfileField, sourceAlias?: string, nanAsNull?: boolean, raw = false): string {
   const column = sqlQualifiedName(field.name, sourceAlias);
+  if (!raw && field.booleanValues)
+    return booleanSql(column, field.booleanValues.mappings, field.booleanValues.lowercase);
   return nanAsNull && floatingPoint.test(field.type) ? withoutNaN(column) : column;
 }
 
@@ -246,9 +251,9 @@ function selectFields({ fields = [], metric }: ExpressionContext): ProfileField[
   });
 }
 
-function rowStruct(fields: MetricField[], { sourceAlias, nanAsNull }: ExpressionContext): string {
+function rowStruct(fields: ProfileField[], { sourceAlias, nanAsNull }: ExpressionContext): string {
   return `struct_pack(${fields
-    .map((field) => `${sqlIdentifier(field.name)} := ${profileValue(field, sourceAlias, nanAsNull)}`)
+    .map((field) => `${sqlIdentifier(field.name)} := ${profileValue(field, sourceAlias, nanAsNull, true)}`)
     .join(', ')})`;
 }
 
@@ -455,9 +460,10 @@ function categoryCorrelation(context: ExpressionContext): string {
   });
   const numeric = fields.map(({ logicalType }) => (automatic || phik) && logicalType === 'numeric');
   const needsBins = numeric.some(Boolean) && (phik || !numeric.every(Boolean));
-  const eligibility = fields.map((_, i) =>
-    numeric[i] ? `count(DISTINCT c${i}) > 1` : `count(DISTINCT c${i}) BETWEEN 2 AND ${maxCategories}`
-  );
+  const eligibility = fields.map(({ booleanValues }, i) => {
+    const value = booleanValues ? booleanSql(`c${i}`, booleanValues.mappings, booleanValues.lowercase) : `c${i}`;
+    return numeric[i] ? `count(DISTINCT ${value}) > 1` : `count(DISTINCT ${value}) BETWEEN 2 AND ${maxCategories}`;
+  });
   const bounds: string[] = [];
   const buckets: string[] = [];
   for (let i = 0; i < fields.length; i += 1) {
@@ -1140,9 +1146,10 @@ export async function profileTables(
   const needsCenters = metrics.some(({ metric }) => metric.id === 'skewness' || metric.id === 'kurtosis');
   const needsMonotonicity = metrics.some(({ metric }) => metric.id === 'monotonicity');
   const needsChiSquare = metrics.some(({ metric }) => metric.id === 'chi_squared');
-  const wordLowercase = metrics.some(({ metric }) => metric.id === 'word_counts')
-    ? registerWordLowercase(connection)
-    : undefined;
+  const wordLowercase =
+    options.inferTypes?.booleanMappings || metrics.some(({ metric }) => metric.id === 'word_counts')
+      ? registerWordLowercase(connection)
+      : undefined;
   const histogram = metrics.filter(({ metric }) => metric.id === 'histogram').pop()?.metric;
   const unicodeProperties = metrics.some(({ metric }) => metric.id === 'unicode_summary')
     ? (await import('./unicode-properties.json')).default
@@ -1184,10 +1191,17 @@ export async function profileTables(
           logicalType: field.logicalType,
           value: profileValue(field, undefined, true),
         })),
-        options.inferTypes
+        options.inferTypes,
+        options.inferTypes.booleanMappings ? wordLowercase : undefined
       );
       for (const field of candidates) {
         field.profileType = inferred.get(field.name)!;
+        if (field.profileType === 'Boolean' && field.logicalType === 'string') {
+          field.booleanValues = {
+            mappings: options.inferTypes.booleanMappings,
+            lowercase: options.inferTypes.booleanMappings ? wordLowercase : undefined,
+          };
+        }
         field.logicalType = logicalProfileTypes[field.profileType];
       }
     }
