@@ -209,6 +209,8 @@ DuckDB also supports `valid_count` (non-null count), `null_ratio` (nulls / rows)
 
 `value_counts` returns all non-null value frequencies as `{ value, count }` entries in descending count order, with ties in DuckDB value order. `mode` and `mode_count` report the first value in that order and its count. Dates, large integers, decimals, and non-finite numbers may use strings to preserve their values. Frequency metrics are opt-in because the complete result grows with the number of distinct values.
 
+`imbalance` measures class imbalance as one minus normalized Shannon entropy. It accepts strings, booleans, and numeric category codes, excludes NULL and NaN, and returns zero for uniform distributions or fewer than two classes. It shares its aggregate with the other frequency metrics.
+
 For text, DuckDB adds `mean_length`, `median_length`, and `length_histogram`. Lengths count Unicode code points, with repeated strings weighted by their occurrence. The histogram returns `{ length, count }` entries ordered by length. Nulls are excluded and an empty string has length zero.
 
 `table_summary` reports row and column counts, SQL NULL cell counts and ratios, columns with at least one NULL, entirely NULL columns, and counts by logical type. It covers the columns in the profile schema and shares the scan with column null counts. An empty table has no entirely NULL columns.

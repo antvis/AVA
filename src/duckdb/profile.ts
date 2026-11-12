@@ -90,6 +90,16 @@ function frequencyValue(value: string, field?: MetricField): string {
   return field?.logicalType === 'date' ? `CAST(${value} AS VARCHAR)` : value;
 }
 
+function imbalance(context: ColumnContext): string {
+  const counts = `map_values(${frequencyHistogram(context)})`;
+  const classes = `list_count(${counts})`;
+  const total = `list_sum(${counts})::DOUBLE`;
+  const weightedLogs = `list_sum(list_transform(${counts}, lambda n: n * log2(n)))`;
+  // Entropy = log2(total) - sum(count * log2(count)) / total.
+  return `CASE WHEN ${classes} > 1 THEN greatest(0, least(1,
+    1 - (log2(${total}) - ${weightedLogs} / ${total}) / log2(${classes}))) ELSE 0 END`;
+}
+
 function tableSummary({ fields = [], sourceAlias }: ExpressionContext): string {
   const counts = fields.map(({ name }) => `COUNT(${sqlQualifiedName(name, sourceAlias)})`);
   const sum = (items: string[]) => (items.length ? `COALESCE(list_sum([${items.join(', ')}]), 0)::DOUBLE` : '0');
@@ -275,6 +285,7 @@ export const BUILTIN_METRICS: DuckDBMetric[] = [
     enable: logicalTypes('numeric', 'string', 'boolean', 'date'),
     expression: (context) => `COALESCE(-struct_extract(list_min(${frequencyRanks(context)}), 'rank')::DOUBLE, 0)`,
   },
+  { id: 'imbalance', enable: logicalTypes('string', 'boolean', 'numeric'), expression: imbalance },
   { id: 'min', enable: logicalTypes('numeric', 'date'), expression: (context) => range('min', context) },
   { id: 'max', enable: logicalTypes('numeric', 'date'), expression: (context) => range('max', context) },
   {

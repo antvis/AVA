@@ -100,4 +100,20 @@ describe('profile/value frequencies', () => {
     expect(plan.match(/SEQ_SCAN/g)).toHaveLength(1);
     expect(plan.match(/histogram\(#\d+\)/g)).toHaveLength(1);
   });
+
+  it.each([
+    { type: 'BOOLEAN', rows: '(TRUE), (TRUE), (TRUE), (FALSE), (NULL)', expected: 0.18872187554086717 },
+    { type: 'VARCHAR', rows: "('A'), ('B'), ('C')", expected: 0 },
+    { type: 'VARCHAR', rows: "('A'), ('A')", expected: 0 },
+    { type: 'DOUBLE', rows: "(1), (1), (1), (2), ('NaN'), (NULL)", expected: 0.18872187554086717 },
+    { type: 'DOUBLE', rows: '(NULL)', expected: 0 },
+    { type: 'VARCHAR', rows: '', expected: 0 },
+  ])('computes normalized class imbalance for $type with $rows', async ({ type, rows, expected }) => {
+    await connection.run(`CREATE TABLE samples(value ${type})`);
+    if (rows) await connection.run(`INSERT INTO samples VALUES ${rows}`);
+    const profile = await profileTables(connection, await getDuckDBSchema(connection), {
+      metrics: [{ id: 'imbalance' }],
+    });
+    expect(profile.models[0].columns[0].metrics.imbalance).toBeCloseTo(expected, 12);
+  });
 });

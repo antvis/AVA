@@ -211,6 +211,8 @@ DuckDB 还支持 `valid_count`（非空值数）、`null_ratio`（空值数 / �
 
 `value_counts` 返回所有非空值的 `{ value, count }` 频数，按计数降序排列，同频值按 DuckDB 的值顺序排列。`mode` 与 `mode_count` 返回排在第一位的值及其计数。日期、大整数、小数和非有限数值可用字符串保留原值。完整频表的结果大小随不同值的数量增长，需要显式请求。
 
+`imbalance` 用一减去归一化的 Shannon 熵来衡量类别不均衡程度，支持字符串、布尔值和数值类别编码，排除 NULL 与 NaN。均匀分布或少于两个类别时返回零，并与其他频数指标共用一次聚合。
+
 DuckDB 文本列支持 `mean_length`、`median_length` 与 `length_histogram`。长度按 Unicode 码点计算，重复字符串按出现次数加权。直方图按长度返回 `{ length, count }`。NULL 不参与统计，空字符串长度为零。
 
 `table_summary` 返回行列数、SQL NULL 单元格数与占比、含 NULL 的列数、全 NULL 列数，以及各逻辑类型的列数。统计范围是画像 schema 中的列，与列空值计数共用一次扫描。空表的全 NULL 列数为零。
