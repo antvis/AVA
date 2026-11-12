@@ -159,3 +159,7 @@ Options: `pageSize` 1–100 (default 100 for fields/records), `maxRecords` 1–1
 HTTP status and business `ret` are both checked. Retry only network errors and HTTP 429/500/502/503/504, with valid `Retry-After` up to 30 seconds and the overall deadline. No business error-code retries or MCP quota assumptions. Preserve upstream ret/msg, HTTP status, request IDs and selected network error name/message/code plus one cause level. Do not copy arbitrary response/error objects, stacks or headers. Exact configured credentials are replaced only in selected diagnostic strings; fields over 8 KiB are omitted whole. Non-JSON or incomplete HTTP error bodies are omitted while status/request ID remain available. Redirects are refused.
 
 Incomplete paging, repeated IDs, changed totals/supported metadata and resource overflow fail without partial data. Stop edits during import: it is not a transactionally consistent or continuously synchronized snapshot. Multi-table, discovery, views, field-selection and writes are outside this migration. Model calls are not needed for loading/schema/SQL. See `examples/tencent-docs/README.md` for OAuth/native-ID setup, manually entered synthetic fixtures, two real natural-language sales examples and opt-in live validation.
+
+## GitHub
+
+Load GitHub issues and pull requests with the DuckDB engine. See the [GitHub source documentation](https://ava.antv.vision/documentation/data/sources/#github) for available data and connection options.

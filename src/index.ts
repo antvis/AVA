@@ -73,6 +73,7 @@ export type {
   PythonEngineOptions,
   DataSourceConfig,
   TencentDocsSourceOptions,
+  GitHubSourceOptions,
   SchemaOptions,
   SemanticOptions,
   JSONReadOptions,
