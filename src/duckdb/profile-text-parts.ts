@@ -6,6 +6,14 @@ const pattern = sqlStringLiteral('^(?:([a-zA-Z][a-zA-Z0-9+.-]*):)?(?://([^/?#]*)
 const leadingControl = sqlStringLiteral('^[\\x{0000}-\\x{0020}]+');
 const asciiWhitespace = sqlStringLiteral('[\\t\\r\\n]');
 
+function normalizeUrl(value: string) {
+  return `regexp_replace(regexp_replace(${value}, ${leadingControl}, ''), ${asciiWhitespace}, '', 'g')`;
+}
+
+export function isUrlSql(value: string) {
+  return `regexp_matches(${normalizeUrl(value)}, '^[a-zA-Z][a-zA-Z0-9+.-]*://[^/?#]+')`;
+}
+
 function componentSummarySql(
   table: string,
   column: string,
@@ -29,7 +37,7 @@ function componentSummarySql(
 }
 
 export function urlSummarySql(table: string, column: string): string {
-  const normalized = `regexp_replace(regexp_replace(value, ${leadingControl}, ''), ${asciiWhitespace}, '', 'g')`;
+  const normalized = normalizeUrl('value');
   const fields = `[${urlComponents.map(sqlStringLiteral).join(', ')}]`;
   const parts = `SELECT lower(scheme) AS scheme, netloc, path, query, fragment, weight
     FROM (SELECT unnest(regexp_extract(${normalized}, ${pattern}, ${fields})), weight FROM weighted) parsed`;

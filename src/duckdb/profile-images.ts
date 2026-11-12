@@ -4,7 +4,7 @@ import { profileFilePath, profileFileRoot } from './profile-files';
 
 type Dimensions = { width: number; height: number; count: number };
 
-async function supportedImage(path: string): Promise<boolean> {
+export async function supportedImage(path: string): Promise<boolean> {
   const file = await open(path, 'r');
   try {
     const header = Buffer.alloc(12);

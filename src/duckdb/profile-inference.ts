@@ -1,6 +1,12 @@
+import { stat } from 'node:fs/promises';
+import { isAbsolute } from 'node:path';
+
 import { sqlStringLiteral } from '../util/sql';
 
 import { parseDateSql } from './profile-dates';
+import { profileFilePath, profileFileRoot } from './profile-files';
+import { supportedImage } from './profile-images';
+import { isUrlSql } from './profile-text-parts';
 
 import type { DuckDBConnection } from '@duckdb/node-api';
 import type { LogicalType, ProfileOptions, ProfileType } from '../types';
@@ -40,6 +46,30 @@ export function booleanSql(value: string, mappings?: Record<string, boolean>, lo
   return branches.length ? `(CASE (${normalized}) ${branches.join(' ')} END)` : 'NULL::BOOLEAN';
 }
 
+async function inferPathType(
+  connection: DuckDBConnection,
+  table: string,
+  value: string,
+  root: string,
+  image: boolean
+): Promise<ProfileType> {
+  const result = await connection.stream(`SELECT DISTINCT ${value} AS value FROM ${table} WHERE ${value} IS NOT NULL`);
+  let file = true;
+  for await (const rows of result.yieldRowObjectJson()) {
+    for (const row of rows) {
+      if (!file) break;
+      try {
+        const path = await profileFilePath(root, String(row.value));
+        file = (await stat(path)).isFile();
+        if (file && image) image = await supportedImage(path);
+      } catch {
+        file = false;
+      }
+    }
+  }
+  return file ? (image ? 'Image' : 'File') : 'Path';
+}
+
 export async function inferColumnTypes(
   connection: DuckDBConnection,
   table: string,
@@ -49,6 +79,10 @@ export async function inferColumnTypes(
 ): Promise<Map<string, InferredType>> {
   const inferred = new Map<string, InferredType>();
   if (!fields.length) return inferred;
+  if (options.image && !options.fileRoot) throw new Error('Image inference requires a fileRoot');
+  if (options.fileRoot && !isAbsolute(options.fileRoot)) throw new Error('Profile fileRoot must be absolute');
+  const root = options.fileRoot ? await profileFileRoot(options.fileRoot) : undefined;
+  const path = root || options.path;
   const projection = fields.flatMap(({ value, logicalType }, i) => [
     `count(${value})::DOUBLE AS n${i}`,
     ...(logicalType === 'numeric' || logicalType === 'string' ? [`count(DISTINCT ${value})::DOUBLE AS d${i}`] : []),
@@ -66,12 +100,14 @@ export async function inferColumnTypes(
           `count(*) FILTER (WHERE ${value} IS NOT NULL AND (NOT regexp_full_match(trim(CAST(${value} AS VARCHAR)), '[+]?[0-9]+')
             OR try_cast(${value} AS UBIGINT) IS NULL)) = 0 AS u${i}`,
           `(${dateTextCondition(value)}) AS t${i}`,
+          ...(options.url ? [`bool_and(${isUrlSql(value)}) AS l${i}`] : []),
+          ...(path ? [`bool_and(starts_with(${value}, '/')) AS p${i}`] : []),
         ]
       : []),
   ]);
   const row = (await connection.runAndReadAll(`SELECT ${projection.join(', ')} FROM ${table}`)).getRowObjectsJson()[0];
   const { numericCategoryThreshold = 5, textCategoryThreshold = 50, textCategoryRatio = 0.5 } = options;
-  for (const [i, { name, logicalType }] of fields.entries()) {
+  for (const [i, { name, logicalType, value }] of fields.entries()) {
     const count = Number(row[`n${i}`]);
     const distinct = Number(row[`d${i}`]);
     if (!count || logicalType === 'unknown') inferred.set(name, { profileType: 'Unsupported' });
@@ -87,6 +123,12 @@ export async function inferColumnTypes(
       });
     } else if (row[`t${i}`]) {
       inferred.set(name, { profileType: 'DateTime', cast: 'TIMESTAMPTZ' });
+    } else if (row[`l${i}`]) {
+      inferred.set(name, { profileType: 'URL' });
+    } else if (row[`p${i}`]) {
+      inferred.set(name, {
+        profileType: root ? await inferPathType(connection, table, value, root, options.image ?? false) : 'Path',
+      });
     } else {
       const categorical =
         distinct <= textCategoryThreshold && (textCategoryRatio > 1 || distinct / count < textCategoryRatio);

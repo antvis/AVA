@@ -206,7 +206,10 @@ def compare(path, types, infer_types=False, file_root=None, phik=False):
         metrics.append({"id": "adf", "orderBy": "time"})
     dataset = cli("source", str(path), "--engine", "duckdb")["datasetId"]
     try:
-        type_options = {"inferTypes": {}} if infer_types else {"typeSchema": {"data": types}}
+        inference = {"url": "URL" in types.values(), "path": bool({"Path", "File", "Image"} & set(types.values()))}
+        if file_root is not None:
+            inference.update(fileRoot=str(file_root), image=has_image)
+        type_options = {"inferTypes": inference} if infer_types else {"typeSchema": {"data": types}}
         actual = cli("profile", dataset, "--options", "-", payload={
             "metrics": metrics, "semantics": "data-profiling", **type_options,
         })["models"][0]
@@ -483,7 +486,7 @@ def main():
         for name, table, types in fixtures():
             path = Path(directory) / f"{name}.parquet"
             pq.write_table(table, path)
-            results[name], reference_warnings[name] = compare(path, types, infer_types=name == "inferred", phik=name == "phi_k")
+            results[name], reference_warnings[name] = compare(path, types, infer_types=name in {"inferred", "urls", "paths"}, phik=name == "phi_k")
         file_root = Path(directory).resolve() / "profile-files"
         file_root.mkdir()
         files = [file_root / name for name in ("first.txt", "second.csv", "third.bin")]
@@ -491,7 +494,7 @@ def main():
             file.write_bytes(b"x" * (10 + i * 15))
         path = Path(directory) / "files.parquet"
         pq.write_table(pa.table({"file": [str(files[0]), str(files[1]), str(files[0]), str(files[2])]}), path)
-        results["files"], reference_warnings["files"] = compare(path, {"file": "File"}, file_root=file_root)
+        results["files"], reference_warnings["files"] = compare(path, {"file": "File"}, infer_types=True, file_root=file_root)
         first_image, second_image, truncated_image = [file_root / name for name in ("first.jpg", "second.png", "partial.jpg")]
         exif = Image.Exif()
         exif[271], exif[272] = "Test Camera", "Profile Fixture"
@@ -500,7 +503,7 @@ def main():
         truncated_image.write_bytes(first_image.read_bytes()[:-2])
         path = Path(directory) / "images.parquet"
         pq.write_table(pa.table({"image": [str(first_image), str(second_image), str(first_image), str(truncated_image)]}), path)
-        results["images"], reference_warnings["images"] = compare(path, {"image": "Image"}, file_root=file_root)
+        results["images"], reference_warnings["images"] = compare(path, {"image": "Image"}, infer_types=True, file_root=file_root)
         path = Path(directory) / "date_validation.parquet"
         pq.write_table(pa.table({"date": [
             "2026/01/02", "Jan 3, 2026", "31/01/2026", "20260405", "2026", "2026-02",

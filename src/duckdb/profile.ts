@@ -1370,7 +1370,7 @@ export async function profileTables(
           logicalType: field.logicalType,
           value: profileValue(field, undefined, true),
         })),
-        options.inferTypes,
+        options.sensitive ? { ...options.inferTypes, fileRoot: undefined, image: false } : options.inferTypes,
         options.inferTypes.booleanMappings ? wordLowercase : undefined
       );
       for (const field of candidates) {

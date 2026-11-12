@@ -41,6 +41,10 @@ export const profileInputSchema = z
         textCategoryThreshold: z.number().int().nonnegative().optional(),
         textCategoryRatio: z.number().nonnegative().optional(),
         booleanMappings: z.record(z.string(), z.boolean()).optional(),
+        url: z.boolean().optional(),
+        path: z.boolean().optional(),
+        fileRoot: z.string().min(1).optional(),
+        image: z.boolean().optional(),
       })
       .strict()
       .optional(),

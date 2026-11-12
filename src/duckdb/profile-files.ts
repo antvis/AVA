@@ -3,12 +3,17 @@ import { isAbsolute, relative, resolve, sep } from 'node:path';
 
 type FileFrequency = { value: string; count: number };
 
-export async function profileFilePath(root: string, value: string): Promise<string> {
-  const path = await realpath(resolve(root, value));
+function insideRoot(root: string, path: string): boolean {
   const child = relative(root, path);
-  if (child === '..' || child.startsWith(`..${sep}`) || isAbsolute(child)) {
-    throw new Error(`Profile file is outside the configured root: ${value}`);
-  }
+  return child !== '..' && !child.startsWith(`..${sep}`) && !isAbsolute(child);
+}
+
+export async function profileFilePath(root: string, value: string): Promise<string> {
+  const candidate = resolve(root, value);
+  const outside = () => new Error(`Profile file is outside the configured root: ${value}`);
+  if (!insideRoot(root, candidate)) throw outside();
+  const path = await realpath(candidate);
+  if (!insideRoot(root, path)) throw outside();
   return path;
 }
 
