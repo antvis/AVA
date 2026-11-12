@@ -162,4 +162,4 @@ Incomplete paging, repeated IDs, changed totals/supported metadata and resource 
 
 ## GitHub
 
-Load GitHub issues and pull requests with the DuckDB engine. See the [GitHub source documentation](https://ava.antv.vision/documentation/data/sources/#github) for available fields and connection options.
+Load GitHub issues and pull requests with the DuckDB engine. See the [GitHub source documentation](https://ava.antv.vision/documentation/data/sources/#github) for the data you can read.
