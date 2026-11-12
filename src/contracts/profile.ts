@@ -32,6 +32,7 @@ const semantics = z.literal('data-profiling').optional();
 export const profileInputSchema = z
   .object({
     metrics: z.array(metricConfigSchema).optional(),
+    preset: z.enum(['minimal', 'explorative']).optional(),
     semantics,
     sensitive: z.boolean().optional(),
     typeSchema: z.record(z.string(), z.record(z.string(), profileTypeSchema)).optional(),

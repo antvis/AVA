@@ -16,6 +16,7 @@ import { runWithTimeout } from '../util/timeout';
 import { profileInputSchema } from '../contracts';
 
 import { DEFAULT_METRICS, profileTables } from './profile';
+import { profilePreset } from './profile-presets';
 import { loadSource } from './loaders';
 
 import type { DuckDBConnection, DuckDBInstance } from '@duckdb/node-api';
@@ -166,7 +167,7 @@ export class DuckDBEngine implements AnalysisEngine {
     }
 
     const defaultOptions = { metrics: DEFAULT_METRICS };
-    const validated = profileInputSchema.parse(options);
+    const validated = profilePreset(profileInputSchema.parse(options));
     const parsedOptions = { ...validated, ...parseProfileOptions(validated, defaultOptions) };
 
     return profileTables(this.connection, schema, parsedOptions);

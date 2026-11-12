@@ -40,7 +40,7 @@ Options:
                    Cannot be combined with --metrics. Does not replace schema.
   --metrics <list>  Comma-separated metric names; replaces the defaults.
                    Use --metrics "" for structure without statistics.
-  --options <path|-> Read ProfileOptions JSON, including metric options, from a file or stdin.
+  --options <path|-> Read ProfileOptions JSON, including preset and metric options, from a file or stdin.
                     Cannot be combined with --file or --metrics.
   -h, --help        Show help.
 

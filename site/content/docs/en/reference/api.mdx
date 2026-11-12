@@ -182,6 +182,7 @@ await ava.profile(undefined, () => savedProfile);
 | --- | --- | --- | --- |
 | `options` | `ProfileOptions` | No | `{}`; uses the default metrics below. |
 | `options.metrics` | `MetricConfig[]` | No | Metrics for engine computation. A supplied list replaces the defaults. |
+| `options.preset` | `minimal` or `explorative` | No | DuckDB presets using `data-profiling` semantics. `minimal` includes univariate and overview statistics. `explorative` adds type inference, text and structured summaries, associations, missingness, and samples. Explicit `metrics` override the metric list. |
 | `options.typeSchema` | `Record<string, Record<string, ProfileType>>` | No | DuckDB type overrides by model and column name. For example, `{ data: { order_date: 'DateTime' } }` parses text dates for date metrics. |
 | `options.inferTypes` | Object | No | `{}` enables DuckDB type inference on stored values. Numeric columns with up to `numericCategoryThreshold` distinct values become categorical. Text is categorical if it meets `textCategoryThreshold` and `textCategoryRatio`. Defaults are `5`, `50`, and `0.5`. |
 | `options.inferTypes.booleanMappings` | `Record<string, boolean>` | No | Map lowercase strings to boolean values. Defaults to `true`, `t`, `yes`, `y` and `false`, `f`, `no`, `n`. Every observed string must match for inference. |
