@@ -326,6 +326,34 @@ function orderedValuesSql(context: ExpressionContext): string {
   return `coalesce(list(${value}${order}) FILTER (WHERE isfinite(${value})), [])`;
 }
 
+function timeSeriesPoints(context: ExpressionContext): string {
+  const { table, column, sourceAlias, metric } = context;
+  const index = orderField(context);
+  const limit = (metric.limit as number | undefined) ?? 1200;
+  let axis = 'row_number() OVER () - 1';
+  if (index) {
+    const source = profileValue(index, sourceAlias, context.nanAsNull);
+    if (index.logicalType === 'date') axis = `epoch_ms(${dateValue({ column: source, field: index })})`;
+    else if (index.logicalType === 'numeric') axis = source;
+    else throw new Error('time_series requires a numeric or date order column');
+  }
+  const point = 'struct_pack(x := x, y := y, i := i)';
+  return `first((WITH observations AS (
+    SELECT (${axis})::DOUBLE AS x, try_cast(${column} AS DOUBLE) AS y FROM ${table}
+  ), indexed AS (
+    SELECT x, CASE WHEN isfinite(y) THEN y END AS y,
+      row_number() OVER (${index ? 'ORDER BY x NULLS LAST' : ''}) - 1 AS i, count(*) OVER () AS n FROM observations
+  ), grouped AS (
+    SELECT first(n) AS n, arg_min(${point}, i) AS original,
+      arg_min(${point}, struct_pack(y := y, i := i)) FILTER (WHERE y IS NOT NULL) AS lo,
+      arg_max(${point}, struct_pack(y := y, i := -i)) FILTER (WHERE y IS NOT NULL) AS hi
+    FROM indexed GROUP BY CASE WHEN n <= ${limit} THEN i ELSE ((i + 1)::HUGEINT * ${Math.floor(limit / 2)} - 1) // n END
+  ), selected AS (
+    SELECT n, unnest(CASE WHEN lo IS NULL THEN [original] WHEN lo.i = hi.i THEN [lo] ELSE [lo, hi] END) AS p FROM grouped
+  ) SELECT struct_pack(count := coalesce(max(n), 0)::DOUBLE, date_index := ${index?.logicalType === 'date'},
+    points := coalesce(list(struct_pack(x := CASE WHEN isfinite(p.x) THEN p.x END, y := p.y) ORDER BY p.i), [])) FROM selected))`;
+}
+
 function selectFields({ fields = [], metric }: ExpressionContext): ProfileField[] {
   if (metric.columns === undefined) return fields;
   const known = new Map(fields.map((field) => [field.name, field]));
@@ -1003,6 +1031,19 @@ export const BUILTIN_METRICS: DuckDBMetric[] = [
         : `${value} IS NOT NULL`;
       return timeGapsSql(table, observed, position);
     },
+  },
+  {
+    id: 'time_series',
+    enable: logicalTypes('numeric'),
+    options: {
+      orderBy: orderByOption,
+      limit: {
+        validate: (value) => {
+          z.number().int().min(2).parse(value);
+        },
+      },
+    },
+    expression: timeSeriesPoints,
   },
   {
     id: 'frequency_spectrum',

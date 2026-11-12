@@ -22,7 +22,7 @@ from data_profiling.model.pandas.describe_timeseries_pandas import compute_gap_s
 from data_profiling.model.pandas.timeseries_index_pandas import pandas_get_time_index_description
 from data_profiling.model.pairwise import get_scatter_tasks
 from data_profiling.report.presentation.frequency_table_utils import extreme_obs_table
-from data_profiling.visualisation.charts.builders import acf_pacf, missing_matrix, scatter
+from data_profiling.visualisation.charts.builders import acf_pacf, missing_matrix, scatter, timeseries
 
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -202,6 +202,7 @@ def compare(path, types, infer_types=False, file_root=None, phik=False):
                        if has_image else {"id": "file_summary", "root": str(file_root)})
     if "time" in types:
         metrics.append({"id": "time_index", "orderBy": "time"})
+        metrics.append({"id": "time_series", "orderBy": "time"})
         metrics.append({"id": "autocorrelation", "orderBy": "time", "lags": 4})
         metrics.append({"id": "time_series_gaps", "orderBy": "time"})
         metrics.append({"id": "frequency_spectrum", "orderBy": "time"})
@@ -418,6 +419,10 @@ def compare(path, types, infer_types=False, file_root=None, phik=False):
                                       for lag, (value, lo, hi) in enumerate(zip(panel.values, panel.conf_low, panel.conf_high))]
                 for panel in chart.rows[0]
             }})
+        if "time_series" in observed:
+            chart = timeseries(config, frame.sort_values("time").set_index("time")[name], mini=False)
+            points = [{"x": x * 1000, "y": y} for x, y in zip(chart.series[0].x, chart.series[0].y)]
+            check(f"{name}.time_series", observed["time_series"], {"date_index": True, "count": len(frame), "points": points})
         if "time_series_gaps" in observed:
             gaps = compute_gap_stats(frame.sort_values("time").set_index("time")[name])
             check(f"{name}.time_series_gaps", observed["time_series_gaps"], {

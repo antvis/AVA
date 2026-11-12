@@ -133,6 +133,13 @@ function valueMarkup(value: JsonValue | undefined): string {
 }
 
 const pointSchema = z.object({ x: z.number(), y: z.number() });
+const linePointSchema = z.object({ x: z.number().nullable(), y: z.number().nullable() });
+const lineSeriesSchema = z.object({ date_index: z.boolean(), points: z.array(linePointSchema) });
+const correlationPoint = z.object({ lag: z.number(), value: z.number().nullable() });
+const lagSeriesSchema = z.object({ acf: z.array(correlationPoint), pacf: z.array(correlationPoint) });
+const spectrumSchema = z.object({
+  points: z.array(z.object({ frequency: z.number(), decibels: z.union([z.number(), z.string()]).nullable() })),
+});
 const scatterSchema = z.object({
   x_column: z.string(),
   y_column: z.string(),
@@ -146,12 +153,16 @@ const scatterSchema = z.object({
   hexagons: z.array(pointSchema.extend({ count: z.number().positive() })),
 });
 
+function normalized(value: number, lo: number, hi: number): number {
+  if (hi === lo) return 0.5;
+  if (Number.isFinite(hi - lo)) return (value - lo) / (hi - lo);
+  return (value / 2 - lo / 2) / (hi / 2 - lo / 2);
+}
+
 function scatterMarkup(chart: z.output<typeof scatterSchema>): string {
   const title = `${escape(chart.y_column)} vs ${escape(chart.x_column)}`;
   if (!chart.count)
     return `<figure><figcaption>${title}</figcaption><span class="missing">0 observations</span></figure>`;
-  const normalized = (value: number, lo: number, hi: number) =>
-    hi === lo ? 0.5 : Number.isFinite(hi - lo) ? (value - lo) / (hi - lo) : (value / 2 - lo / 2) / (hi / 2 - lo / 2);
   const hex = chart.hexagons.length > 0;
   const peak = chart.hexagons.reduce((maximum, { count }) => Math.max(maximum, count), 1);
   const marks = hex
@@ -173,6 +184,41 @@ function scatterMarkup(chart: z.output<typeof scatterSchema>): string {
     <span>${escape(chart.y_column)} ${chart.y_min}–${chart.y_max}</span></div></figure>`;
 }
 
+function lineMarkup(title: string, points: z.output<typeof linePointSchema>[], dateIndex = false): string {
+  const finite = points.filter((point): point is z.output<typeof pointSchema> => point.x !== null && point.y !== null);
+  if (!finite.length) return '';
+  let xMin = Infinity,
+    xMax = -Infinity,
+    yMin = Infinity,
+    yMax = -Infinity;
+  for (const { x, y } of finite) {
+    xMin = Math.min(xMin, x);
+    xMax = Math.max(xMax, x);
+    yMin = Math.min(yMin, y);
+    yMax = Math.max(yMax, y);
+  }
+  const position = (x: number, y: number) =>
+    `${(6 + normalized(x, xMin, xMax) * 588).toFixed(2)},${(154 - normalized(y, yMin, yMax) * 148).toFixed(2)}`;
+  let start = true;
+  const path = points
+    .map(({ x, y }) => {
+      if (x === null || y === null) {
+        start = true;
+        return '';
+      }
+      const command = start ? 'M' : 'L';
+      start = false;
+      return `${command}${position(x, y)}`;
+    })
+    .join(' ');
+  const label = (value: number) =>
+    dateIndex && Math.abs(value) <= 8.64e15 ? new Date(value).toISOString() : String(value);
+  const bounds = `x ${label(xMin)}–${label(xMax)} · y ${yMin.toPrecision(5)}–${yMax.toPrecision(5)}`;
+  return `<figure class="line-figure"><figcaption>${title}</figcaption>
+    <svg viewBox="0 0 600 160" role="img" aria-label="${title}, ${bounds}"><path d="${path}"/></svg>
+    <div class="missing">${bounds}</div></figure>`;
+}
+
 function metricValueMarkup(name: string, value: JsonValue | undefined): string {
   if (name === 'scatter_pairs') {
     const charts = z.array(scatterSchema).safeParse(value);
@@ -180,6 +226,37 @@ function metricValueMarkup(name: string, value: JsonValue | undefined): string {
       return `<details><summary>${charts.data.length} pairs</summary>${charts.data
         .map(scatterMarkup)
         .join('')}</details>`;
+  }
+  if (name === 'time_series') {
+    const chart = lineSeriesSchema.safeParse(value);
+    if (chart.success) return lineMarkup('Time series', chart.data.points, chart.data.date_index) + valueMarkup(value);
+  }
+  if (name === 'autocorrelation') {
+    const chart = lagSeriesSchema.safeParse(value);
+    if (chart.success)
+      return (
+        Object.entries(chart.data)
+          .map(([label, points]) =>
+            lineMarkup(
+              label.toUpperCase(),
+              points.map(({ lag, value }) => ({ x: lag, y: value }))
+            )
+          )
+          .join('') + valueMarkup(value)
+      );
+  }
+  if (name === 'frequency_spectrum') {
+    const chart = spectrumSchema.safeParse(value);
+    if (chart.success)
+      return (
+        lineMarkup(
+          'Frequency spectrum',
+          chart.data.points.map(({ frequency, decibels }) => ({
+            x: frequency,
+            y: typeof decibels === 'number' ? decibels : null,
+          }))
+        ) + valueMarkup(value)
+      );
   }
   return valueMarkup(value);
 }
@@ -257,6 +334,9 @@ const css = `
   .scatter-chart .point { width:.4rem; height:.4rem; border-radius:50%; opacity:.7; }
   .scatter-chart .hexagon { clip-path:polygon(50% 0,100% 25%,100% 75%,50% 100%,0 75%,0 25%); }
   .scatter-bounds { display:flex; flex-wrap:wrap; justify-content:space-between; gap:.2rem .8rem; color:var(--muted); }
+  .line-figure { margin:1rem 0; max-width:42rem; }
+  .line-figure svg { display:block; width:100%; min-width:12rem; border:1px solid var(--line); background:#fdfbf4; }
+  .line-figure path { fill:none; stroke:var(--green); stroke-width:2; stroke-linecap:round; stroke-linejoin:round; }
   @media (max-width:40rem) { th,td { padding:.45rem; } .column > div { margin-left:0; } }
   @media print { body { background:white; } header, main { padding:1rem 0; } nav { display:none; } }
 `;

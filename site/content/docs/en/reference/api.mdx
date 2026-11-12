@@ -248,6 +248,7 @@ await ava.profile({
 | `table_summary` | Table | Row and column counts, NULL cell count and ratio, columns with NULLs, all-NULL columns, and counts by logical type. An empty table has no all-NULL columns. Under `data-profiling` semantics, columns with no observed values have logical type `unknown`. |
 | `memory_size`, `record_size` | Table, column (`memory_size`) | Estimated DuckDB payload bytes and average bytes per row. Counts fixed-width slots, UTF-8 and binary payloads, and the UTF-8 representation of other types. Excludes runtime overhead and compression. |
 | `time_index` | Table | Number of time-series columns, index length, endpoints and mean interval. Date values and durations use milliseconds. |
+| `time_series` | Numeric | Ordered observations for line charts. Large series keep the extrema in equal row buckets. |
 | `row_duplicates` | Table | Repeated group count, group count / total rows, rows in repeated groups, rows removable by deduplication, and samples sorted by count and key. |
 | `row_sample` | Table | First, last, and random rows with zero-based positions in DuckDB's scan order. Random selection is without replacement. |
 | `pearson` | Table, numeric columns | Symmetric `{ columns, matrix }`. Each pair uses rows where both values are finite. Constant columns and insufficient pairs yield `null`. |
@@ -330,6 +331,7 @@ Table completeness shares the scan with column NULL counts, frequency metrics sh
 | `autocorrelation` | `lags` | `100` | Requested maximum lag from 0 to 2048. The output is capped at half the finite sample size minus one, with lag zero retained. |
 | `time_series_gaps` | `orderBy` | Zero-based row positions | Numeric or date index column. |
 | `time_index` | `orderBy` | Zero-based row positions | Numeric or date index column. |
+| `time_series` | `orderBy`, `limit` | Zero-based row positions, `1200` | Numeric or date index column and maximum displayed observations. |
 | `frequency_spectrum` | `orderBy` | DuckDB scan order | Column used to sort observations in ascending order. |
 | `frequency_spectrum` | `madThreshold` | `6` | Mean absolute deviation multiplier for the spectral peak threshold. |
 | `adf` | `orderBy` | DuckDB scan order | Column used to sort observations in ascending order. |

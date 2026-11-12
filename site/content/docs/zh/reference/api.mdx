@@ -250,6 +250,7 @@ await ava.profile({
 | `table_summary` | 表 | 行列数、SQL NULL 单元格数与占比、含 NULL 的列数、全 NULL 列数及各逻辑类型的列数。空表的全 NULL 列数为零。`data-profiling` 模式中，没有有效观测的列的逻辑类型为 `unknown`。 |
 | `memory_size`、`record_size` | 表、列（`memory_size`） | 估算 DuckDB 数据字节数及平均每行字节数。计入定长槽位、UTF-8 文本和二进制数据，其他类型按 UTF-8 文本表示估算。计算范围为数据本身。 |
 | `time_index` | 表 | 时序列数量、索引长度、端点和平均间隔。日期和时长使用毫秒。 |
+| `time_series` | 数值 | 用于折线图的有序观测。数据量较大时保留等长行分段中的极值。 |
 | `row_duplicates` | 表 | 重复组数、重复组数占总行数的比例、组内总行数、去重后会移除的行数，以及按频次和键排序的样本。 |
 | `row_sample` | 表 | 首部、尾部和随机样本，含按 DuckDB 扫描顺序计算的零起始行号。随机样本无放回。 |
 | `pearson` | 表中的数值列 | 对称相关矩阵 `{ columns, matrix }`。每对列使用两边均为有限值的行。常量列或样本不足时返回 `null`。 |
@@ -332,6 +333,7 @@ DuckDB 中，分母为零时比例返回 `0`。默认分别统计 SQL NULL、NaN
 | `autocorrelation` | `lags` | `100` | 请求的最大滞后阶数，范围为 0 到 2048。输出上限为有限样本数的一半减一，至少保留 0 阶。 |
 | `time_series_gaps` | `orderBy` | 零起始行号 | 数值或日期索引列。 |
 | `time_index` | `orderBy` | 零起始行号 | 数值或日期索引列。 |
+| `time_series` | `orderBy`、`limit` | 零起始行号、`1200` | 数值或日期索引列及最多显示的观测数。 |
 | `frequency_spectrum` | `orderBy` | DuckDB 扫描顺序 | 对观测值作升序排序的列。 |
 | `frequency_spectrum` | `madThreshold` | `6` | 计算频谱峰值阈值的平均绝对偏差倍数。 |
 | `adf` | `orderBy` | DuckDB 扫描顺序 | 对观测值作升序排序的列。 |
