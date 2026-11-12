@@ -25,7 +25,7 @@ export async function createPipeKey(directory: string): Promise<void> {
   const sid = /"(S-1-(?:\d+-)*\d+)"\s*$/.exec(stdout)?.[1];
   if (!sid) throw new Error('Cannot identify the Windows user for the dataset session.');
 
-  // icacls applies one ACL operation per invocation. Secure the directory before writing the key.
+  // Restrict inherited access before writing the key.
   const icacls = join(system, 'icacls.exe');
   await run(icacls, [directory, '/grant:r', '*' + sid + ':(OI)(CI)F'], options);
   await run(icacls, [directory, '/inheritancelevel:r'], options);

@@ -40,9 +40,13 @@ try {
     $sid = [Security.Principal.WindowsIdentity]::GetCurrent().User.Value
     $directoryAcl = Get-Acl (Split-Path $key)
     $acl = Get-Acl $key
-    $grants = $acl.GetAccessRules($true, $true, [Security.Principal.SecurityIdentifier])
-    if (!$directoryAcl.AreAccessRulesProtected -or $grants.Count -ne 1 -or $grants[0].IdentityReference.Value -ne $sid) {
-        throw "Unexpected key ACL (directory protected: $($directoryAcl.AreAccessRulesProtected), key rules: $($grants.Count))"
+    $grants = $acl.GetAccessRules($true, $true, [Security.Principal.SecurityIdentifier]) |
+        Where-Object AccessControlType -eq Allow |
+        ForEach-Object { $_.IdentityReference.Value }
+    # SYSTEM and local administrators already have privileged access to user files.
+    $allowed = @($sid, 'S-1-5-18', 'S-1-5-32-544')
+    if (!$directoryAcl.AreAccessRulesProtected -or $sid -notin $grants -or ($grants | Where-Object { $_ -notin $allowed })) {
+        throw "Unexpected key ACL (directory protected: $($directoryAcl.AreAccessRulesProtected), grants: $($grants -join ', '))"
     }
 
     # A client with an incorrect key must not receive a dataset response.
