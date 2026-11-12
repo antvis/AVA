@@ -44,6 +44,18 @@ describe('profile/column counts', () => {
     expect(profile.models[0].columns[0].metrics).toEqual({ unique_count: 0 });
   });
 
+  it('counts NaN separately from other numeric values and SQL NULL', async () => {
+    await connection.run('CREATE TABLE floats(value DOUBLE)');
+    await connection.run("INSERT INTO floats VALUES ('NaN'), (1), (1), (2), ('Infinity'), ('-Infinity'), (NULL)");
+    const schema = await getDuckDBSchema(connection);
+    const profile = () => profileTables(connection, schema, { metrics: metrics.map((id) => ({ id })) });
+    const first = (await profile()).models.find((model) => model.name === 'floats');
+    expect(first?.columns[0].metrics).toMatchObject({ valid_count: 6, unique_count: 4, unique_ratio: 4 / 6 });
+    await connection.run("INSERT INTO floats VALUES ('NaN')");
+    const repeated = (await profile()).models.find((model) => model.name === 'floats');
+    expect(repeated?.columns[0].metrics).toMatchObject({ valid_count: 7, unique_count: 3, unique_ratio: 3 / 7 });
+  });
+
   it('shares one histogram and one table scan for exact counts on high-cardinality input', async () => {
     await connection.run('INSERT INTO samples SELECT i::VARCHAR FROM range(50000) t(i)');
     const schema = await getDuckDBSchema(connection);

@@ -34,8 +34,10 @@ export type DuckDBMetric = Metric<DuckDBMetricExpression>;
 
 type ColumnContext = Pick<ExpressionContext, 'column' | 'field'>;
 
+const floatingPoint = /^(FLOAT|DOUBLE|REAL)$/i;
+
 function finiteFilter({ column, field }: ColumnContext): string {
-  return field && (field.logicalType === 'date' || /^(FLOAT|DOUBLE|REAL)$/i.test(field.type))
+  return field && (field.logicalType === 'date' || floatingPoint.test(field.type))
     ? ` FILTER (WHERE isfinite(${column}))`
     : '';
 }
@@ -54,8 +56,16 @@ function range(fn: string, context: ExpressionContext): string {
 function numericCondition(id: string, { column, field }: ExpressionContext): string {
   if (id === 'zero') return `${column} = 0`;
   if (id === 'negative') return `${column} < 0`;
-  if (!/^(FLOAT|DOUBLE|REAL)$/i.test(field!.type)) return id === 'finite' ? `${column} IS NOT NULL` : 'FALSE';
+  if (!floatingPoint.test(field!.type)) return id === 'finite' ? `${column} IS NOT NULL` : 'FALSE';
   return `${id === 'infinite' ? 'isinf' : id === 'nan' ? 'isnan' : 'isfinite'}(${column})`;
+}
+
+function singletons({ column, field }: ColumnContext): string {
+  const isFloat = field && floatingPoint.test(field.type);
+  // NaN is unordered in DuckDB's histogram map and must be counted separately.
+  const histogram = `histogram(${column})${isFloat ? ` FILTER (WHERE NOT isnan(${column}))` : ''}`;
+  const count = `COALESCE(list_count(list_filter(map_values(${histogram}), n -> n = 1)), 0)`;
+  return isFloat ? `(${count} + (COUNT(*) FILTER (WHERE isnan(${column})) = 1)::BIGINT)` : count;
 }
 
 const shapeMetrics = ['skewness', 'kurtosis'] as const;
@@ -100,13 +110,12 @@ export const BUILTIN_METRICS: DuckDBMetric[] = [
   {
     id: 'unique_count',
     enable: logicalTypes('numeric', 'string', 'boolean', 'date'),
-    expression: ({ column }) => `COALESCE(list_count(list_filter(map_values(histogram(${column})), n -> n = 1)), 0)`,
+    expression: singletons,
   },
   {
     id: 'unique_ratio',
     enable: logicalTypes('numeric', 'string', 'boolean', 'date'),
-    expression: ({ column }) => `COALESCE(list_count(list_filter(map_values(histogram(${column})), n -> n = 1))::DOUBLE
-      / NULLIF(COUNT(${column}), 0), 0)`,
+    expression: (context) => `COALESCE(${singletons(context)}::DOUBLE / NULLIF(COUNT(${context.column}), 0), 0)`,
   },
   {
     id: 'is_unique',
