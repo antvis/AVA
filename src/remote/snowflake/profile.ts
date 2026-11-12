@@ -2,7 +2,7 @@ import { column, logicalTypes, table, TOP_VALUES_OPTIONS, resolveMetric } from '
 import { sqlIdentifier } from '../../util/sql';
 
 import type { MetricField } from '../../util/profile';
-import type { LogicalType, Metric, ParsedProfileOptions, Profile, Schema } from '../../types';
+import type { Metric, LogicalType, ParsedProfileOptions, Profile, Schema } from '../../types';
 
 interface Context {
   table: string;

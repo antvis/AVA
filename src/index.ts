@@ -16,13 +16,38 @@ registerEngine('supabase', SupabaseEngine);
 registerEngine('javascript', JavaScriptEngine);
 registerEngine('python', PythonEngine);
 
+export {
+  sourceInputSchema,
+  schemaInputSchema,
+  schemaOutputSchema,
+  profileInputSchema,
+  profileOutputSchema,
+  semanticInputSchema,
+  semanticOutputSchema,
+  queryInputSchema,
+  queryOutputSchema,
+  analyzeInputSchema,
+  analyzeOutputSchema,
+  translateInputSchema,
+  translateOutputSchema,
+  suggestInputSchema,
+  suggestOutputSchema,
+  recommendInputSchema,
+  recommendOutputSchema,
+  visualizeInputSchema,
+  visualizeOutputSchema,
+  vizInputSchema,
+  vizOutputSchema,
+} from './contracts';
+
 export { AVA } from './ava';
 export { registerEngine } from './engines';
-export type { EngineClass } from './engines';
+
 export { executionResult } from './util/result';
 
-export type { JavaScriptEngine } from './interpreter';
 export type {
+  EngineClass,
+  JavaScriptEngine,
   DataModel,
   Semantic,
   Model,
@@ -49,6 +74,7 @@ export type {
   DataSourceConfig,
   NotionSourceOptions,
   TencentDocsSourceOptions,
+  GitHubSourceOptions,
   SchemaOptions,
   SemanticOptions,
   JSONReadOptions,
@@ -69,6 +95,7 @@ export type {
   VisualizeResponse,
   ChartConfig,
   ChartSpec,
+  ChartSpecInput,
   SuggestResult,
   ChartType,
   ProfileOptions,

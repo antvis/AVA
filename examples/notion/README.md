@@ -70,8 +70,6 @@ node lib/cli/index.js analyze <datasetId> "按状态统计每个状态的任务�
 node lib/cli/index.js dispose <datasetId>
 ```
 
-The existing dataset-session CLI requires macOS/Linux. On Windows use the SDK or run the CLI in WSL. Windows CLI session support is not added by this integration.
-
 ## Supported properties and data semantics
 
 | Notion property type | DuckDB type | Conversion |

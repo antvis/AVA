@@ -1,5 +1,6 @@
+import { notionOptionsSchema } from '../../../contracts/source/notion';
+
 import { NOTION_DEFAULT_VERSION, NotionClient, NotionError, isObject } from './client';
-import { notionOptionsSchema } from './config';
 import { supportedFields } from './convert';
 import { createSnapshotBuilder } from './snapshot';
 

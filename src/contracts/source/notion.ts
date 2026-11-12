@@ -18,3 +18,5 @@ export const notionOptionsSchema = z
     version: z.literal('2022-06-28').optional(),
   })
   .strict();
+
+export const notionSourceSchema = z.object({ type: z.literal('notion'), options: notionOptionsSchema }).strict();

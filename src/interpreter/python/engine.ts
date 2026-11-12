@@ -4,7 +4,8 @@ import { z } from 'zod';
 
 import { PythonDialect } from '../../query/python';
 import { executionResult, maxRows, maxResultBytes } from '../../util/result';
-import { DEFAULT_METRICS, parseProfileOptions, profileMetadataSchema } from '../../util/profile';
+import { DEFAULT_METRICS, parseProfileOptions } from '../../util/profile';
+import { profileOutputSchema } from '../../contracts';
 import { runWithTimeout } from '../../util/timeout';
 
 import { SCHEMA_CODE, sourceSchema, tableSchema, resultSchema } from './util/schema';
@@ -19,11 +20,11 @@ import type {
   DataSourceConfig,
   ExecutionOptions,
   ExecutionResult,
-  LLMConfig,
   Profile,
   ProfileOptions,
-  PythonEngineOptions,
   Schema,
+  LLMConfig,
+  PythonEngineOptions,
 } from '../../types';
 
 const DEFAULT_QUERY_TIMEOUT_MS = 30_000;
@@ -55,7 +56,7 @@ export class PythonEngine implements AnalysisEngine {
 
   async load(config: DataSourceConfig): Promise<void> {
     this.source = null;
-    this.source = sourceSchema.parse(config) as DataSourceConfig;
+    this.source = sourceSchema.parse(config);
   }
 
   async schema(): Promise<Schema> {
@@ -78,7 +79,7 @@ export class PythonEngine implements AnalysisEngine {
     if (!this.source) throw new Error('No data loaded. Please call source() first.');
 
     const tables = await this.metadata(profileCode(parseProfileOptions(options, { metrics: DEFAULT_METRICS }), schema));
-    return profileMetadataSchema.parse({ models: tables });
+    return profileOutputSchema.parse({ models: tables });
   }
 
   async execute<T = Record<string, unknown>>(code: string, options?: ExecutionOptions): Promise<ExecutionResult<T>> {
@@ -99,8 +100,9 @@ export class PythonEngine implements AnalysisEngine {
         onTimeout: () => new Error(`Python execution timed out after ${this.timeoutMs}ms`),
       }
     );
-    const result = resultSchema.parse(response) as ExecutionResult<T>;
-    return executionResult(result.data, result.schema, limits, result.truncatedBy);
+    const result = resultSchema.parse(response);
+    // Row fields are chosen by the caller's query; the envelope is runtime-validated above.
+    return executionResult(result.data as T[], result.schema, limits, result.truncatedBy);
   }
 
   private async metadata(code: string): Promise<Record<string, unknown>[]> {

@@ -2,6 +2,7 @@ import { z } from 'zod';
 
 export const tencentDocsOptionsSchema = z
   .object({
+    /** Native OpenAPI fileID. */
     fileId: z.string().trim().min(1).max(256),
     sheetId: z.string().trim().min(1).max(256),
     clientId: z.string().trim().min(1),
@@ -12,4 +13,8 @@ export const tencentDocsOptionsSchema = z
     timeoutMs: z.number().int().min(1).max(110000).optional(),
     maxRetries: z.number().int().min(0).max(5).optional(),
   })
+  .strict();
+
+export const tencentDocsSourceSchema = z
+  .object({ type: z.literal('tencent-smartsheet'), options: tencentDocsOptionsSchema })
   .strict();

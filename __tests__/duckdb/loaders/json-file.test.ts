@@ -8,7 +8,7 @@ import * as path from 'path';
 import { describe, it, expect, afterEach } from 'vitest';
 
 import { writeTempFile, removeTempFile } from '../../../src/duckdb/util/file';
-import { sourceConfig } from '../../../src/cli/session/protocol';
+import { sourceInputSchema } from '../../../src/contracts';
 import { DuckDBEngine } from '../../../src/duckdb/engine';
 import { getLLMConfig } from '../../test-utils';
 
@@ -25,7 +25,7 @@ describe('loaders/json-file', () => {
     try {
       engine = new DuckDBEngine(getLLMConfig());
       await engine.load(
-        sourceConfig.parse({
+        sourceInputSchema.parse({
           type: 'json-file',
           options: {
             path: file,

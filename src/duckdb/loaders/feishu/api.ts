@@ -9,13 +9,7 @@ export interface FeishuApi {
  * GET a Feishu Open API endpoint with a tenant access token and unwrap `data`.
  */
 export async function feishuGet(url: string, token: string): Promise<Record<string, unknown>> {
-  let response: Response;
-  try {
-    response = await fetch(url, { headers: { Authorization: `Bearer ${token}` } });
-  } catch (error) {
-    const reason = (error as Error)?.message ?? String(error);
-    throw new Error(`Feishu request failed: ${url} (${reason})`);
-  }
+  const response = await fetch(url, { headers: { Authorization: `Bearer ${token}` } });
   let body: unknown;
   try {
     body = await response.json();

@@ -1,5 +1,4 @@
 import { rm } from 'fs/promises';
-import { createServer } from 'net';
 
 import { createDataset, describeDataset, disposeDataset, withDataset } from './datasets';
 import {
@@ -7,15 +6,15 @@ import {
   IPC_MAX_REQUEST_BYTES,
   IPC_MAX_RESPONSE_BYTES,
   requestSchema,
-  sessionDirectory,
-  socketPath,
   startupSchema,
 } from './protocol';
+import { createSessionServer, readMessage, sendResponse, sessionDirectory, sessionEndpoint } from './transport';
 
+import type { Server, Socket } from 'net';
 import type { Request } from './protocol';
 
 const id = process.argv[2];
-let server: ReturnType<typeof createServer>;
+let server: Server | undefined;
 let closing: Promise<void> | undefined;
 let hasModel = false;
 let ready = false;
@@ -25,7 +24,7 @@ let pending = 0;
 function close(): Promise<void> {
   if (!closing) {
     clearTimeout(idle);
-    server.close();
+    server?.close();
     closing = disposeDataset().finally(() => rm(sessionDirectory(id), { recursive: true, force: true }));
   }
 
@@ -88,21 +87,11 @@ async function dispatch(message: Request): Promise<unknown> {
   });
 }
 
-server = createServer({ allowHalfOpen: true }, (socket) => {
-  let body = '';
-  let bytes = 0;
-
-  socket.setEncoding('utf8');
+function handleConnection(socket: Socket): void {
   socket.setTimeout(IPC_TIMEOUT_MS, () => socket.destroy());
   socket.on('error', () => socket.destroy());
 
-  socket.on('data', (chunk: string) => {
-    bytes += Buffer.byteLength(chunk);
-    if (bytes > IPC_MAX_REQUEST_BYTES) socket.destroy();
-    else body += chunk;
-  });
-
-  socket.on('end', () => {
+  readMessage(socket, IPC_MAX_REQUEST_BYTES, (body) => {
     if (socket.destroyed) return;
     socket.setTimeout(0);
     pending++;
@@ -123,18 +112,14 @@ server = createServer({ allowHalfOpen: true }, (socket) => {
           response = JSON.stringify({ ok: false, error: 'Dataset response exceeds 16 MiB.' });
 
         socket.setTimeout(IPC_TIMEOUT_MS);
-        socket.end(response);
+        sendResponse(socket, response);
       } finally {
         pending--;
         resetIdle();
       }
     })();
   });
-});
-
-server.on('error', (error) => {
-  void fail(error);
-});
+}
 
 process.once('message', (message) => {
   void (async () => {
@@ -143,7 +128,11 @@ process.once('message', (message) => {
     await createDataset(startup.source, { ...startup.llm, model: startup.llm.model }, startup.engine);
     if (closing) return;
 
-    server.listen(socketPath(id), () => {
+    server = await createSessionServer(id, handleConnection);
+    if (closing) return;
+    server.on('error', (error) => void fail(error));
+
+    server.listen(sessionEndpoint(id), () => {
       if (closing) return;
       ready = true;
       resetIdle();

@@ -1,3 +1,5 @@
+**English** | [简体中文](./README.zh-CN.md)
+
 <div align="center">
   <h1>AVA, AI-native Visual Analytics</h1>
   <img width="200" height="120" src="https://mdn.alipayobjects.com/huamei_qa8qxu/afts/img/A*yOHIQ48aRwgAAAAAAAAAAAAADmJ7AQ/original" alt="AVA logo">
@@ -25,6 +27,10 @@
 </p>
 
 [AVA](https://github.com/antvis/AVA) (<img src="https://mdn.alipayobjects.com/huamei_qa8qxu/afts/img/A*QzIsSrfsCW0AAAAAAAAAAAAADmJ7AQ/original" width="16" alt="AVA examples"> Visual Analytics) is a technology framework designed for more convenient visual analytics. **A** stands for AI-native, Automated, and Augmented; **VA** stands for Visual Analytics.
+
+<p align="center">
+  <img src="https://mdn.alipayobjects.com/huamei_aphk1k/afts/img/A*MMXYTJ0KhukAAAAAgEAAAAgAegfkAQ/original" width="100%" alt="AVA agent workflow: data access, schema inspection, profiling, metric definitions, analysis, visualization, and follow-up questions, with verifiable SQL and results." />
+</p>
 
 > [!NOTE]
 > **Think of AVA as PandasAI for JavaScript. 💬📊🤖**
@@ -72,10 +78,10 @@
 
 ## 🚀 Getting started
 
-Install AVA 4.0 with Node.js 22.13+:
+Install AVA with Node.js 22.13+:
 
 ```bash
-npm install @antv/ava@4
+npm install @antv/ava
 ```
 
 ## 💻 Usage
@@ -186,13 +192,14 @@ const chart = await ava.visualize({
 
 <table width="100%">
   <tr>
-    <td align="center" width="14%"><a href="https://ava.antv.vision/documentation/data/sources/#csv"><img src="https://mdn.alipayobjects.com/huamei_aphk1k/afts/img/A*SEIZRJCeCuYAAAAAQBAAAAgAegfkAQ/original" width="32" height="32" alt="CSV" /><br />CSV</a></td>
-    <td align="center" width="14%"><a href="https://ava.antv.vision/documentation/data/sources/#json"><img src="https://mdn.alipayobjects.com/huamei_aphk1k/afts/img/A*VBNjQJDMvMIAAAAAHYAAAAgAegfkAQ/original" width="32" height="32" alt="JSON" /><br />JSON</a></td>
-    <td align="center" width="14%"><a href="https://ava.antv.vision/documentation/data/sources/#parquet"><img src="https://mdn.alipayobjects.com/huamei_aphk1k/afts/img/A*-_h8RrPPA54AAAAAFkAAAAgAegfkAQ/original" width="32" height="32" alt="Parquet" /><br />Parquet</a></td>
-    <td align="center" width="14%"><a href="https://ava.antv.vision/documentation/data/sources/#excel"><img src="https://mdn.alipayobjects.com/huamei_aphk1k/afts/img/A*GfCXT7Mb_5gAAAAAQCAAAAgAegfkAQ/original" width="32" height="32" alt="Excel" /><br />Excel</a></td>
-    <td align="center" width="14%"><a href="https://ava.antv.vision/documentation/data/sources/#text"><img src="https://mdn.alipayobjects.com/huamei_aphk1k/afts/img/A*XrY8SK_9fGwAAAAAEsAAAAgAegfkAQ/original" width="32" height="32" alt="Text" /><br />Text</a></td>
-    <td align="center" width="14%"><a href="https://ava.antv.vision/documentation/data/sources/#feishu-bitable"><img src="https://mdn.alipayobjects.com/huamei_aphk1k/afts/img/A*Rly3Rou8Wv8AAAAAQFAAAAgAegfkAQ/original" width="32" height="32" alt="Feishu Bitable" /><br />Feishu Bitable</a></td>
-    <td align="center" width="14%"><a href="https://ava.antv.vision/documentation/data/sources/#csv-files"><img src="https://mdn.alipayobjects.com/huamei_aphk1k/afts/img/A*wH-PT4nF70wAAAAAMkAAAAgAegfkAQ/original" width="32" height="32" alt="Tencent Docs" /><br />Tencent Docs</a></td>
+    <td align="center" width="12.5%"><a href="https://ava.antv.vision/documentation/data/sources/#csv"><img src="https://mdn.alipayobjects.com/huamei_aphk1k/afts/img/A*SEIZRJCeCuYAAAAAQBAAAAgAegfkAQ/original" width="32" height="32" alt="CSV" /><br />CSV</a></td>
+    <td align="center" width="12.5%"><a href="https://ava.antv.vision/documentation/data/sources/#json"><img src="https://mdn.alipayobjects.com/huamei_aphk1k/afts/img/A*VBNjQJDMvMIAAAAAHYAAAAgAegfkAQ/original" width="32" height="32" alt="JSON" /><br />JSON</a></td>
+    <td align="center" width="12.5%"><a href="https://ava.antv.vision/documentation/data/sources/#parquet"><img src="https://mdn.alipayobjects.com/huamei_aphk1k/afts/img/A*-_h8RrPPA54AAAAAFkAAAAgAegfkAQ/original" width="32" height="32" alt="Parquet" /><br />Parquet</a></td>
+    <td align="center" width="12.5%"><a href="https://ava.antv.vision/documentation/data/sources/#excel"><img src="https://mdn.alipayobjects.com/huamei_aphk1k/afts/img/A*GfCXT7Mb_5gAAAAAQCAAAAgAegfkAQ/original" width="32" height="32" alt="Excel" /><br />Excel</a></td>
+    <td align="center" width="12.5%"><a href="https://ava.antv.vision/documentation/data/sources/#text"><img src="https://mdn.alipayobjects.com/huamei_aphk1k/afts/img/A*XrY8SK_9fGwAAAAAEsAAAAgAegfkAQ/original" width="32" height="32" alt="Text" /><br />Text</a></td>
+    <td align="center" width="12.5%"><a href="https://ava.antv.vision/documentation/data/sources/#feishu-bitable"><img src="https://mdn.alipayobjects.com/huamei_aphk1k/afts/img/A*Rly3Rou8Wv8AAAAAQFAAAAgAegfkAQ/original" width="32" height="32" alt="Feishu Bitable" /><br />Feishu Bitable</a></td>
+    <td align="center" width="12.5%"><a href="https://ava.antv.vision/documentation/data/sources/#csv-files"><img src="https://mdn.alipayobjects.com/huamei_aphk1k/afts/img/A*wH-PT4nF70wAAAAAMkAAAAgAegfkAQ/original" width="32" height="32" alt="Tencent Docs" /><br />Tencent Docs</a></td>
+    <td align="center" width="12.5%"><a href="https://ava.antv.vision/documentation/data/sources/#github"><img src="site/public/logos/github.svg" width="32" height="32" alt="GitHub" /><br />GitHub</a></td>
   </tr>
   <tr>
     <td align="center"><a href="https://ava.antv.vision/documentation/data/sources/#sqlite"><img src="https://mdn.alipayobjects.com/huamei_aphk1k/afts/img/A*3xulRYi0wWkAAAAAQBAAAAgAegfkAQ/original" width="32" height="32" alt="SQLite" /><br />SQLite</a></td>
@@ -220,8 +227,6 @@ We evaluate AVA on established benchmarks to measure the accuracy and efficiency
 [Evaluation setup and reports →](https://ava.antv.vision/documentation/reference/benchmarks/)
 
 ## 🧩 More ways to use AVA
-
-The agent and CLI workflows run on Node.js 22.13+ on macOS or Linux.
 
 ### Use with an Agent
 

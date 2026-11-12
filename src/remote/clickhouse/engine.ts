@@ -12,14 +12,14 @@ import type {
   TranslationResult,
   AnalysisEngine,
   ClickHouseSourceOptions,
-  DataModel,
   DataSourceConfig,
+  DataModel,
   ExecutionOptions,
   ExecutionResult,
-  LLMConfig,
   Profile,
   ProfileOptions,
   Schema,
+  LLMConfig,
 } from '../../types';
 
 function normalizeUrl(hostOrUrl: string, port?: number): string {

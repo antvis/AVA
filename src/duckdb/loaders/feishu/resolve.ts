@@ -4,12 +4,9 @@ import { resolveWikiNode } from './wiki';
 
 import type { FeishuApi } from './api';
 import type { BitableRef } from './url';
+import type { FeishuBitableSourceOptions } from '../../../types';
 
-export interface BitableSourceOptions {
-  url?: string;
-  appToken?: string;
-  tableId?: string;
-}
+export type BitableSourceOptions = Pick<FeishuBitableSourceOptions, 'url' | 'appToken' | 'tableId'>;
 
 const TABLES_PAGE_SIZE = 100;
 const TABLES_TO_LIST = 10;
@@ -47,7 +44,7 @@ async function onlyTable(appToken: string, api: FeishuApi): Promise<string> {
     return tables[0].tableId;
   }
   if (tables.length === 0) {
-    throw new Error(`Feishu Bitable ${appToken} has no tables.`);
+    throw new Error('Feishu Bitable has no tables.');
   }
   const listed = tables
     .slice(0, TABLES_TO_LIST)
@@ -55,17 +52,13 @@ async function onlyTable(appToken: string, api: FeishuApi): Promise<string> {
     .join(', ');
   const more = tables.length > TABLES_TO_LIST ? ', ...' : '';
   throw new Error(
-    `Feishu Bitable ${appToken} has ${tables.length} tables. Add ?table=<tableId> to the URL or "tableId" to the source config. Tables: ${listed}${more}`
+    `Feishu Bitable has ${tables.length} tables. Add ?table=<tableId> to the URL or "tableId" to the source config. Tables: ${listed}${more}`
   );
 }
 
-function pickTableId(
-  linkTableId: string | undefined,
-  optionTableId: string | undefined,
-  url: string
-): string | undefined {
+function pickTableId(linkTableId: string | undefined, optionTableId: string | undefined): string | undefined {
   if (linkTableId && optionTableId && linkTableId !== optionTableId) {
-    throw new Error(`Feishu Bitable tableId does not match url: ${url}`);
+    throw new Error('Feishu Bitable tableId does not match url.');
   }
   return linkTableId ?? optionTableId;
 }
@@ -88,13 +81,13 @@ export async function resolveBitableTable(options: BitableSourceOptions, api: Fe
 
   const link = parseTableLink(options.url);
   if (!link) {
-    throw new Error(`Invalid Feishu Bitable URL: ${options.url}`);
+    throw new Error('Invalid Feishu Bitable URL.');
   }
-  const tableId = pickTableId(link.tableId, options.tableId, options.url);
+  const tableId = pickTableId(link.tableId, options.tableId);
 
   if (link.kind === 'base') {
     if (options.appToken && options.appToken !== link.token) {
-      throw new Error(`Feishu Bitable appToken does not match url: ${options.url}`);
+      throw new Error('Feishu Bitable appToken does not match url.');
     }
     return { appToken: link.token, tableId: tableId ?? (await onlyTable(link.token, api)) };
   }
@@ -103,11 +96,11 @@ export async function resolveBitableTable(options: BitableSourceOptions, api: Fe
   if (node.objType !== 'bitable') {
     const label = node.title ? ` (${node.title})` : '';
     throw new Error(
-      `Feishu wiki node ${link.token}${label} hosts a ${node.objType}, not a Bitable (多维表格). Only wiki-hosted Bitable nodes can be loaded.`
+      `Feishu wiki node${label} hosts a ${node.objType}, not a Bitable (多维表格). Only wiki-hosted Bitable nodes can be loaded.`
     );
   }
   if (options.appToken && options.appToken !== node.objToken) {
-    throw new Error(`Feishu Bitable appToken does not match the wiki node's table: ${options.url}`);
+    throw new Error("Feishu Bitable appToken does not match the wiki node's table.");
   }
   return { appToken: node.objToken, tableId: tableId ?? (await onlyTable(node.objToken, api)) };
 }

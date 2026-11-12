@@ -1,36 +1,6 @@
-import { z } from 'zod';
-
-import { jsonValue } from './schema';
-
-import type {
-  Metric,
-  MetricConfig,
-  ProfileOptions,
-  ParsedProfileOptions,
-  LogicalType,
-  Profile,
-  Schema,
-} from '../types';
+import type { Metric, MetricConfig, ProfileOptions, ParsedProfileOptions, LogicalType, Schema } from '../types';
 
 export type MetricField = Schema['models'][number]['columns'][number] & { logicalType: LogicalType };
-
-export const profileMetadataSchema = z
-  .object({
-    models: z.array(
-      z.object({
-        name: z.string(),
-        metrics: z.record(z.string(), jsonValue),
-        columns: z.array(
-          z.object({
-            name: z.string(),
-            metrics: z.record(z.string(), jsonValue),
-            properties: z.object({ logicalType: z.enum(['numeric', 'string', 'boolean', 'date', 'unknown']) }),
-          })
-        ),
-      })
-    ),
-  })
-  .strict() as z.ZodType<Profile>;
 
 export function parseMetricConfig(config: MetricConfig): Exclude<MetricConfig, string> {
   return typeof config === 'string' ? { id: config } : config;

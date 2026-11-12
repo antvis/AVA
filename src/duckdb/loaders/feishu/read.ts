@@ -65,6 +65,7 @@ async function getAllItems(token: string, url: string, pageSize: number): Promis
 export async function readFeishuTable(
   options: FeishuBitableSourceOptions
 ): Promise<{ fields: FeishuField[]; rows: Record<string, FeishuCell>[] }> {
+  if (!options.appId || !options.appSecret) throw new Error('Feishu sources require appId and appSecret');
   const origin = feishuOrigin(options.url);
   const token = await getTenantAccessToken(options.appId, options.appSecret, origin);
   // Wiki links carry a node token, so resolve the table after the token exists.

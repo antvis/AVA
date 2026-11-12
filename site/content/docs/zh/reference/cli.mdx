@@ -2,7 +2,7 @@ import { Heading } from '../../../../mdx-components';
 
 <Heading as="h2" id="start-a-session">开始一个会话</Heading>
 
-安装 `@antv/ava` 后，使用 `ava` 命令；本地 npm 安装也可通过 `npx ava` 运行。持久会话需要 macOS 或 Linux。
+安装 `@antv/ava` 后，使用 `ava` 命令；本地 npm 安装也可通过 `npx ava` 运行。
 
 ```bash
 ava source sales.csv > session.json
@@ -16,7 +16,7 @@ ava schema "$DATASET_ID" > schema.json
 
 <Heading as="h2" id="source-inputs-and-engines">数据源输入与引擎</Heading>
 
-`ava source` 接受文件或 URL、包含数据源配置的 `@file`，或用 `-` 读取标准输入。CSV、JSON、Parquet、Excel、SQLite 可根据扩展名推断类型；路径输入可用 `--type` 覆盖类型。配置文件和标准输入本身已包含类型。
+`ava source` 接受文件或 URL、包含数据源配置的 `@file`，或用 `-` 读取标准输入。CSV、JSON、Parquet、Excel、SQLite 可根据扩展名推断类型，GitHub 仓库链接会被自动识别；路径输入可用 `--type` 覆盖类型，`owner/name` 用 `--type github`。配置文件和标准输入本身已包含类型。
 
 使用 `--engine` 选择执行引擎。CLI 会为匹配的数据源配置推断 Supabase、ClickHouse、Snowflake，其余情况默认 DuckDB；这与 JavaScript 构造函数的行为不同。引擎在会话期间固定。连接和读取配置见[数据源配置](/documentation/data/sources/)。
 
@@ -73,7 +73,7 @@ ava visualize --query "Plot revenue by region" --data @rows.json
 
 | 命令 | 位置参数 | 标志与默认值 |
 | ----------- | -------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `source` | `dataset`：路径、URL、`@file` 或 `-` | `-t` / `--type`：`csv-file`、`json-file`、`parquet`、`excel`、`sqlite`，默认按扩展名推断。`--engine`：`duckdb`、`python`、`javascript`、`supabase`、`clickhouse`、`snowflake`，推断规则见上文。 |
+| `source` | `dataset`：路径、URL、`@file` 或 `-` | `-t` / `--type`：`csv-file`、`json-file`、`parquet`、`excel`、`sqlite`、`github`，文件类型按扩展名推断。`--engine`：`duckdb`、`python`、`javascript`、`supabase`、`clickhouse`、`snowflake`，推断规则见上文。 |
 | `schema` | `dataset-id` | 可选 `--file`：已有 schema JSON 文件的路径。 |
 | `profile` | `dataset-id` | 可选 `--file`：已有 profile JSON 文件的路径；否则可用 `--metrics` 指定逗号分隔的指标名，默认[标准指标集](/documentation/reference/api/#profile)。传入空字符串则不计算统计项。 |
 | `semantic` | `dataset-id` | 可选 `--file`：Semantic JSON 文件的路径，用于替换会话中的完整定义；不提供时读取当前定义。 |

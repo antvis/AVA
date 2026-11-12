@@ -7,10 +7,10 @@ import { afterEach, describe, expect, it, vi } from 'vitest';
 import { AVA } from '../../../src';
 import { run as runSource } from '../../../src/cli/commands/source';
 import { createSession } from '../../../src/cli/session/client';
-import { sourceConfig } from '../../../src/cli/session/protocol';
+import { sourceInputSchema } from '../../../src/contracts';
 import { loadTencentDocs } from '../../../src/duckdb/loaders/tencent-smartsheet';
 import { TencentDocsClient, TencentDocsError } from '../../../src/duckdb/loaders/tencent/client';
-import { tencentDocsOptionsSchema } from '../../../src/duckdb/loaders/tencent/config';
+import { tencentDocsOptionsSchema } from '../../../src/contracts/source/tencent-smartsheet';
 import { columnTypes, createRecordConverter, supportedFields } from '../../../src/duckdb/loaders/tencent/convert';
 import { readFields, readRecords, readTencentTable } from '../../../src/duckdb/loaders/tencent/read';
 import { createSnapshotBuilder } from '../../../src/duckdb/loaders/tencent/snapshot';
@@ -338,7 +338,7 @@ describe('Tencent Docs explicit configuration and CLI', () => {
       vi.stubGlobal('fetch', fetch);
       const invalid = { ...options, [key]: undefined };
       expect(tencentDocsOptionsSchema.safeParse(invalid).success).toBe(false);
-      expect(sourceConfig.safeParse({ type: 'tencent-smartsheet', options: invalid }).success).toBe(false);
+      expect(sourceInputSchema.safeParse({ type: 'tencent-smartsheet', options: invalid }).success).toBe(false);
       await expect(readTencentTable(invalid as never)).rejects.toThrow(key);
       expect(fetch).not.toHaveBeenCalled();
     }
@@ -365,7 +365,7 @@ describe('Tencent Docs explicit configuration and CLI', () => {
 
   it('passes a complete CLI config and rejects unsupported engines before session creation', async () => {
     const config = { type: 'tencent-smartsheet', options };
-    expect(sourceConfig.parse(config)).toEqual(config);
+    expect(sourceInputSchema.parse(config)).toEqual(config);
     const directory = await mkdtemp(join(tmpdir(), 'ava-tencent-cli-'));
     try {
       const file = join(directory, 'source.json');

@@ -8,10 +8,35 @@ import { registerEngine } from './engines';
 
 registerEngine('javascript', JavaScriptEngine);
 
+export {
+  sourceInputSchema,
+  schemaInputSchema,
+  schemaOutputSchema,
+  profileInputSchema,
+  profileOutputSchema,
+  semanticInputSchema,
+  semanticOutputSchema,
+  queryInputSchema,
+  queryOutputSchema,
+  analyzeInputSchema,
+  analyzeOutputSchema,
+  translateInputSchema,
+  translateOutputSchema,
+  suggestInputSchema,
+  suggestOutputSchema,
+  recommendInputSchema,
+  recommendOutputSchema,
+  visualizeInputSchema,
+  visualizeOutputSchema,
+  vizInputSchema,
+  vizOutputSchema,
+} from './contracts';
+
 export { AVA } from './ava';
 export { registerEngine } from './engines';
-export type { JavaScriptEngine } from './interpreter/javascript';
+
 export type {
+  JavaScriptEngine,
   DataModel,
   Semantic,
   Model,
@@ -51,6 +76,7 @@ export type {
   AnalysisRuntime,
   VisualizeResponse,
   ChartSpec,
+  ChartSpecInput,
   SuggestResult,
   ChartType,
   ProfileOptions,

@@ -14,14 +14,14 @@ import type {
   AnalysisEngine,
   DataModel,
   DataSourceConfig,
+  SQLServerSourceOptions,
   ExecutionOptions,
   ExecutionResult,
-  LLMConfig,
+  QueryColumn,
   Profile,
   ProfileOptions,
-  QueryColumn,
   Schema,
-  SQLServerSourceOptions,
+  LLMConfig,
   TranslationResult,
 } from '../../types';
 

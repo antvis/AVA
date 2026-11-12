@@ -6,17 +6,18 @@ import { afterEach, describe, expect, it, vi } from 'vitest';
 
 import { run } from '../../src/cli/commands/source';
 import { createSession } from '../../src/cli/session/client';
-import { sourceConfig } from '../../src/cli/session/protocol';
+import { startupSchema } from '../../src/cli/session/protocol';
 
 vi.mock('../../src/cli/session/client', () => ({ createSession: vi.fn() }));
 afterEach(() => {
   vi.clearAllMocks();
 });
 const config = { type: 'notion', options: { databaseId: 'db-id' } };
+const startup = { source: config, llm: { model: 'gpt-4o-mini' } };
 
 describe('Notion CLI source config', () => {
   it('accepts a token-free config so the loader can use the inherited environment', async () => {
-    expect(sourceConfig.parse(config)).toEqual(config);
+    expect(startupSchema.parse(startup).source).toEqual(config);
     const directory = await mkdtemp(join(tmpdir(), 'ava-notion-cli-'));
     try {
       const file = join(directory, 'source.json');
@@ -47,6 +48,6 @@ describe('Notion CLI source config', () => {
     { options: { databaseId: 'db', endpoint: 'https://other-host.invalid' } },
     { options: {} },
   ])('rejects invalid or unknown options', ({ options }) => {
-    expect(() => sourceConfig.parse({ type: config.type, options })).toThrow();
+    expect(() => startupSchema.parse({ ...startup, source: { type: config.type, options } })).toThrow();
   });
 });

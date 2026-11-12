@@ -4,8 +4,11 @@ import { coerceNumbers } from '../../src/util/coerce';
 
 describe('coerceNumbers', () => {
   it('uses column types instead of guessing from values, without mutating input', () => {
-    const rows = [{ text: '42', integer: '42', unknown: '42', empty: '', missing: null, number: 2.5 }];
+    const rows = [
+      JSON.parse('{"__proto__":"7","text":"42","integer":"42","unknown":"42","empty":"","missing":null,"number":2.5}'),
+    ];
     const result = coerceNumbers(rows, [
+      { name: '__proto__', type: 'BIGINT' },
       { name: 'text', type: 'VARCHAR' },
       { name: 'integer', type: 'BIGINT' },
       { name: 'unknown' },
@@ -14,7 +17,8 @@ describe('coerceNumbers', () => {
       { name: 'number', type: 'DOUBLE' },
     ]);
 
-    expect(result).toEqual([{ ...rows[0], integer: 42 }]);
+    expect(result).toEqual([{ ...rows[0], ['__proto__']: 7, integer: 42 }]);
+    expect(Object.getPrototypeOf(result[0])).toBe(Object.prototype);
     expect(rows[0].integer).toBe('42');
     expect(result[0]).not.toBe(rows[0]);
   });

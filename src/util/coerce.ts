@@ -27,11 +27,12 @@ export function coerceNumericString(value: string): string | number {
 export function coerceNumbers(rows: any[], schema: QueryColumn[]): any[] {
   const numericColumns = new Set(schema.filter(({ type }) => NUMERIC_TYPE.test(type ?? '')).map(({ name }) => name));
 
-  return rows.map((row) => {
-    const out: Record<string, any> = {};
-    for (const [key, value] of Object.entries(row)) {
-      out[key] = typeof value === 'string' && numericColumns.has(key) ? coerceNumericString(value) : value;
-    }
-    return out;
-  });
+  return rows.map((row) =>
+    Object.fromEntries(
+      Object.entries(row).map(([key, value]) => [
+        key,
+        typeof value === 'string' && numericColumns.has(key) ? coerceNumericString(value) : value,
+      ])
+    )
+  );
 }
