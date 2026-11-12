@@ -258,6 +258,7 @@ await ava.profile({
 | `path_summary` | Text | POSIX path stem, suffix, name, parent and anchor frequencies with distinct counts and the common character prefix. |
 | `monotonicity` | Numeric | Compares adjacent observations in DuckDB scan order, skipping NULL and NaN. Returns increasing, decreasing and strict flags, with `direction` of `2` for strictly increasing, `-2` for strictly decreasing, `1` for increasing, `-1` for decreasing, or `0`. |
 | `autocorrelation` | Numeric | ACF and unadjusted Yule–Walker PACF with 95% confidence intervals on the finite observations. |
+| `time_series_gaps` | Numeric | Gaps larger than twice the mean positive interval between observed rows, including the endpoints and gap statistics. Date indexes and durations use milliseconds. |
 | `chi_squared` | Numeric, date, text | Chi-square goodness-of-fit `{ statistic, pvalue }` against uniform frequencies. Text uses category counts. Numeric and date columns use automatic equal-width bins over finite observations. |
 | `zero_count`, `zero_ratio` | Numeric | Zero values and their share of all rows. |
 | `negative_count`, `negative_ratio` | Numeric | Negative values, including negative infinity, and their share of all rows. |
@@ -295,6 +296,7 @@ Table completeness shares the scan with column NULL counts, frequency metrics sh
 | `auto` | `bins` | `10` | Number of equal-width bins for mixed pairs. |
 | `autocorrelation` | `orderBy` | DuckDB scan order | Column used to sort observations in ascending order. |
 | `autocorrelation` | `lags` | `100` | Requested maximum lag from 0 to 2048. The output is capped at half the finite sample size minus one, with lag zero retained. |
+| `time_series_gaps` | `orderBy` | Zero-based row positions | Numeric or date index column. |
 | `missing_correlation` | `columns` | All columns | Non-empty list of distinct column names. Returns `null` when fewer than two columns have both missing and present values. |
 | `quantiles` | `probabilities` | `[0.05, 0.25, 0.5, 0.75, 0.95]` | Non-empty array of numbers in `[0, 1]`. |
 | `histogram` | `bins` | `50` | Non-negative integer. Use `0` for automatic Sturges/Freedman–Diaconis selection. |

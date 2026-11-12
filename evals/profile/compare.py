@@ -17,6 +17,7 @@ import pyarrow.parquet as pq
 import scipy
 from data_profiling import ProfileReport, __version__
 from data_profiling.config import Settings
+from data_profiling.model.pandas.describe_timeseries_pandas import compute_gap_stats
 from data_profiling.visualisation.charts.builders import acf_pacf
 
 
@@ -102,7 +103,8 @@ def fixtures():
     order = [3, 6, 0, 2, 8, 5, 1, 4, 7]
     values = [4., 2., 3., 1., 2., 5., 3., 6., None]
     yield "time_series", pa.table({
-        "time": pa.array([datetime(2026, 1, 1) + timedelta(hours=i) for i in order], type=pa.timestamp("ns")),
+        "time": pa.array([datetime(2026, 1, 1) + timedelta(hours=i + (8 if i >= 7 else 0)) for i in order],
+                         type=pa.timestamp("ns")),
         "signal": [values[i] for i in order],
     }), {"time": "DateTime", "signal": "Numeric"}
 
@@ -162,6 +164,7 @@ def compare(path, types):
         metrics.append("path_summary")
     if "time" in types:
         metrics.append({"id": "autocorrelation", "orderBy": "time", "lags": 4})
+        metrics.append({"id": "time_series_gaps", "orderBy": "time"})
     dataset = cli("source", str(path), "--engine", "duckdb")["datasetId"]
     try:
         actual = cli("profile", dataset, "--options", "-", payload={"metrics": metrics, "semantics": "data-profiling"})["models"][0]
@@ -282,6 +285,12 @@ def compare(path, types):
                                       for lag, (value, lo, hi) in enumerate(zip(panel.values, panel.conf_low, panel.conf_high))]
                 for panel in chart.rows[0]
             }})
+        if "time_series_gaps" in observed:
+            gaps = compute_gap_stats(frame.sort_values("time").set_index("time")[name])
+            check(f"{name}.time_series_gaps", observed["time_series_gaps"], {
+                **{key: gaps[key] for key in ("n_gaps", "min", "max", "mean", "std")},
+                "gaps": [[pd.Timestamp(endpoint) for endpoint in interval] for interval in gaps["gaps"]],
+            })
         if "n_characters" in reference:
             unicode = observed["unicode_summary"]
             check(f"{name}.character_count", unicode["character_count"], reference["n_characters"])

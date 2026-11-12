@@ -10,6 +10,7 @@ import { referenceQuantiles } from './profile-quantiles';
 import { unicodeSummary } from './profile-unicode';
 import { pathSummarySql, urlSummarySql } from './profile-text-parts';
 import { autocorrelationResult, autocorrelationSql } from './profile-autocorrelation';
+import { timeGapsSql } from './profile-time-gaps';
 import {
   characterCountsSql,
   lengthCountsSql,
@@ -187,6 +188,19 @@ const columnNamesOption = {
       .parse(value);
   },
 };
+
+const orderByOption = {
+  validate(value: unknown): void {
+    z.string().min(1).parse(value);
+  },
+};
+
+function orderField({ fields, metric }: ExpressionContext): MetricField | undefined {
+  if (metric.orderBy === undefined) return undefined;
+  const field = fields?.find(({ name }) => name === metric.orderBy);
+  if (!field) throw new Error(`Unknown ${metric.id} order column: ${metric.orderBy}`);
+  return field;
+}
 
 function selectFields({ fields = [], metric }: ExpressionContext): MetricField[] {
   if (metric.columns === undefined) return fields;
@@ -636,23 +650,35 @@ export const BUILTIN_METRICS: DuckDBMetric[] = [
           z.number().int().min(0).max(2048).parse(value);
         },
       },
-      orderBy: {
-        validate: (value) => {
-          z.string().min(1).parse(value);
-        },
-      },
+      orderBy: orderByOption,
     },
-    expression: ({ table, column, fields, metric, sourceAlias }) => {
-      const { lags = 100, orderBy } = metric;
-      if (orderBy !== undefined && !fields?.some(({ name }) => name === orderBy)) {
-        throw new Error(`Unknown autocorrelation order column: ${orderBy}`);
-      }
+    expression: (context) => {
+      const { table, column, metric, sourceAlias } = context;
+      const { lags = 100 } = metric;
+      const index = orderField(context);
       return autocorrelationSql(
         table,
         `TRY_CAST(${column} AS DOUBLE)`,
         lags as number,
-        orderBy === undefined ? undefined : sqlQualifiedName(orderBy as string, sourceAlias)
+        index && sqlQualifiedName(index.name, sourceAlias)
       );
+    },
+  },
+  {
+    id: 'time_series_gaps',
+    enable: logicalTypes('numeric'),
+    options: { orderBy: orderByOption },
+    expression: (context) => {
+      const { table, field, sourceAlias } = context;
+      const index = orderField(context);
+      let position = 'row_number() OVER () - 1';
+      if (index) {
+        const column = sqlQualifiedName(index.name, sourceAlias);
+        if (index.logicalType === 'date') position = `epoch_ms(${column})`;
+        else if (index.logicalType === 'numeric') position = column;
+        else throw new Error('time_series_gaps requires a numeric or date order column');
+      }
+      return timeGapsSql(table, `NOT ${missingMask(field!, sourceAlias)}`, position);
     },
   },
   { id: 'min', enable: logicalTypes('numeric', 'date'), expression: (context) => range('min', context) },
