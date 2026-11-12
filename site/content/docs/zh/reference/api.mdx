@@ -332,7 +332,7 @@ const quality = await ava.quality({ rules: ['missing', 'constant'] });
 | `missing` | `null_ratio`，或 `null_count` 与 `row_count`，已有 `nan_count` 时计入 NaN | `ratioThreshold: 0.01` |
 | `zeros`、`infinite` | `zero_ratio`、`infinite_ratio` | `ratioThreshold: 0.01` |
 | `high_cardinality` | 文本列的 `distinct_count` | `cardinalityThreshold: 50` |
-| `high_correlation` | `pearson` | 相关系数绝对值达到 `correlationThreshold: 0.9` |
+| `high_correlation` | 已保存的相关矩阵，每对列取绝对值最大的系数 | `correlationThreshold: 0.9` |
 | `imbalance` | `imbalance` | `imbalanceThreshold: 0.5` |
 | `skewed` | `skewness` | 偏度绝对值超过 `skewnessThreshold: 20` |
 | `uniform` | 数值和文本列的 `chi_squared.pvalue` | `uniformThreshold: 0.999` |

@@ -170,7 +170,7 @@ def compare(path, types):
         actual = cli("profile", dataset, "--options", "-", payload={
             "metrics": metrics, "semantics": "data-profiling", "typeSchema": {"data": types},
         })["models"][0]
-        quality = cli("quality", dataset, "--rules", "uniform")["models"][0]["alerts"]
+        quality = cli("quality", dataset, "--rules", "uniform,high_correlation")["models"][0]["alerts"]
     finally:
         cli("dispose", dataset)
 
@@ -181,7 +181,8 @@ def compare(path, types):
               "cat": {"length": True, "characters": True, "words": True},
               "url": {"active": "URL" in types.values()}, "path": {"active": "Path" in types.values()},
               "timeseries": {"pacf_acf_lag": 4}},
-        correlations={method: {"calculate": True} for method in ("pearson", "spearman", "kendall", "cramers", "auto")},
+        correlations={method: {"calculate": True, "threshold": 0.9}
+                      for method in ("pearson", "spearman", "kendall", "cramers", "auto")},
     )
     frame = pd.read_parquet(path)
     integer_columns = {field.name for field in pq.read_schema(path) if pa.types.is_integer(field.type)}
@@ -208,8 +209,13 @@ def compare(path, types):
         for logical in set(REFERENCE_TYPES.values())
     })
     check("table.row_duplicates.group_count", actual["metrics"]["row_duplicates"]["group_count"], expected.table["n_duplicates"])
-    check("quality.uniform", sorted(alert["column"] for alert in quality),
+    check("quality.uniform", sorted(alert["column"] for alert in quality if alert["rule"] == "uniform"),
           sorted(alert.column_name for alert in expected.alerts if alert.alert_type.name == "UNIFORM"))
+    check("quality.high_correlation", sorted(sorted([alert["column"], alert["relatedColumn"]])
+                                             for alert in quality if alert["rule"] == "high_correlation"),
+          [list(pair) for pair in sorted({tuple(sorted([alert.column_name, other]))
+                                         for alert in expected.alerts if alert.alert_type.name == "HIGH_CORRELATION"
+                                         for other in alert.values["fields"]})])
 
     def decoded(name, value):
         if value is None:

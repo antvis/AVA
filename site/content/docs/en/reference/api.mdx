@@ -332,7 +332,7 @@ const quality = await ava.quality({ rules: ['missing', 'constant'] });
 | `missing` | `null_ratio`, or `null_count` and `row_count` with `nan_count` when available | `ratioThreshold: 0.01` |
 | `zeros`, `infinite` | `zero_ratio`, `infinite_ratio` | `ratioThreshold: 0.01` |
 | `high_cardinality` | Text `distinct_count` | `cardinalityThreshold: 50` |
-| `high_correlation` | `pearson` | `correlationThreshold: 0.9` on the absolute coefficient |
+| `high_correlation` | Saved correlation matrices, using the strongest absolute coefficient per pair | `correlationThreshold: 0.9` |
 | `imbalance` | `imbalance` | `imbalanceThreshold: 0.5` |
 | `skewed` | `skewness` | `skewnessThreshold: 20` on the absolute skewness |
 | `uniform` | Numeric and text `chi_squared.pvalue` | `uniformThreshold: 0.999` |

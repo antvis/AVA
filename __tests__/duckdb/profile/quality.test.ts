@@ -1,8 +1,48 @@
 import { describe, expect, it, vi } from 'vitest';
 
 import { AVA, qualityOutputSchema } from '../../../src';
+import { assessQuality } from '../../../src/util/quality';
 
 describe('profile quality', () => {
+  it('uses the strongest saved correlation for each pair across methods', () => {
+    const quality = assessQuality(
+      {
+        models: [
+          {
+            name: 'data',
+            columns: [],
+            metrics: {
+              pearson: {
+                columns: ['a', 'b'],
+                matrix: [
+                  [1, 0.91],
+                  [0.91, 1],
+                ],
+              },
+              spearman: {
+                columns: ['b', 'a'],
+                matrix: [
+                  [1, -0.98],
+                  [-0.98, 1],
+                ],
+              },
+              kendall: {
+                columns: ['a', 'b'],
+                matrix: [
+                  [1, 0.95],
+                  [0.95, 1],
+                ],
+              },
+            },
+          },
+        ],
+      },
+      { rules: ['high_correlation'] }
+    );
+    expect(quality.models[0].alerts).toEqual([
+      { rule: 'high_correlation', column: 'a', relatedColumn: 'b', value: -0.98, threshold: 0.9 },
+    ]);
+  });
   it('uses saved DuckDB observations without scanning the dataset again', async () => {
     const ava = new AVA({ llm: { model: 'unused' } });
     try {

@@ -69,17 +69,22 @@ export function assessQuality(profile: Profile, options: QualityOptions): Qualit
       }
 
       if (!rules || rules.has('high_correlation')) {
-        const correlation = correlationMatrix.safeParse(metrics.pearson);
-        if (correlation.success) {
+        const correlated = new Map<string, Alert>();
+        for (const method of ['pearson', 'spearman', 'kendall', 'cramers', 'auto']) {
+          const correlation = correlationMatrix.safeParse(metrics[method]);
+          if (!correlation.success) continue;
           const { columns: names, matrix } = correlation.data;
           for (let i = 0; i < names.length; i += 1) {
             for (let j = i + 1; j < names.length; j += 1) {
               const value = matrix[i]?.[j];
               if (value != null && Math.abs(value) >= thresholds.correlationThreshold) {
-                add({
+                const key = JSON.stringify([names[i], names[j]].sort());
+                const existing = correlated.get(key);
+                if (existing && Math.abs(existing.value!) >= Math.abs(value)) continue;
+                correlated.set(key, {
                   rule: 'high_correlation',
-                  column: names[i],
-                  relatedColumn: names[j],
+                  column: existing?.column ?? names[i],
+                  relatedColumn: existing?.relatedColumn ?? names[j],
                   value,
                   threshold: thresholds.correlationThreshold,
                 });
@@ -87,6 +92,7 @@ export function assessQuality(profile: Profile, options: QualityOptions): Qualit
             }
           }
         }
+        for (const alert of correlated.values()) add(alert);
       }
 
       return { name, alerts: alerts.sort((a, b) => a.rule.localeCompare(b.rule)) };
