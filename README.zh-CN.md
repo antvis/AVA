@@ -42,9 +42,9 @@
 <table width="100%">
   <tr>
     <td width="33%" valign="top">
-      <h3>🔌 统一数据接入</h3>
-      <p>通过同一套接口连接<strong>文件和数据库</strong>。</p>
-      <a href="https://ava.antv.vision/zh/documentation/data/sources/">数据源 →</a>
+      <h3>🔌 多源异构数据分析</h3>
+      <p>在<strong>同一次查询</strong>中关联文件和数据库里的数据。</p>
+      <a href="https://ava.antv.vision/zh/documentation/data/sources/#connect-multiple-sources">接入多个数据源 →</a>
     </td>
     <td width="33%" valign="top">
       <h3>🔎 有据可查的分析</h3>

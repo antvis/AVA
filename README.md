@@ -42,9 +42,9 @@
 <table width="100%">
   <tr>
     <td width="33%" valign="top">
-      <h3>🔌 Unified data access</h3>
-      <p>Connect <strong>files and databases</strong> through one interface.</p>
-      <a href="https://ava.antv.vision/documentation/data/sources/">Data sources →</a>
+      <h3>🔌 Analysis across data sources</h3>
+      <p>Join data from files and databases <strong>in a single query</strong>.</p>
+      <a href="https://ava.antv.vision/documentation/data/sources/#connect-multiple-sources">Connect multiple sources →</a>
     </td>
     <td width="33%" valign="top">
       <h3>🔎 Grounded answers</h3>
