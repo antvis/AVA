@@ -156,9 +156,17 @@ function tableSummary({ fields = [], sourceAlias, nanAsNull }: ExpressionContext
   const missing = sum(counts.map((count) => `COUNT(*) - ${count}`));
   const withNulls = sum(counts.map((count) => `(COUNT(*) > ${count})::INTEGER`));
   const allNull = sum(counts.map((count) => `(COUNT(*) > 0 AND ${count} = 0)::INTEGER`));
-  const types = ['numeric', 'string', 'boolean', 'date', 'unknown'].map(
-    (type) => `${sqlIdentifier(type)} := ${fields.filter(({ logicalType }) => logicalType === type).length}`
-  );
+  const types = ['numeric', 'string', 'boolean', 'date', 'unknown'].map((type) => {
+    const count = nanAsNull
+      ? sum(
+          fields.map(({ logicalType }, i) => {
+            if (type === 'unknown') return logicalType === 'unknown' ? '1' : `(${counts[i]} = 0)::INTEGER`;
+            return logicalType === type ? `(${counts[i]} > 0)::INTEGER` : '0';
+          })
+        )
+      : String(fields.filter(({ logicalType }) => logicalType === type).length);
+    return `${sqlIdentifier(type)} := ${count}`;
+  });
   return `struct_pack(row_count := COUNT(*)::DOUBLE, column_count := ${fields.length},
     null_cell_count := ${missing}, null_cell_ratio := COALESCE(${missing} / NULLIF(COUNT(*)::DOUBLE * ${
     fields.length
@@ -976,7 +984,12 @@ export async function profileTables(
       return { name: field.name, properties: { logicalType: field.logicalType }, metrics };
     });
 
-    if (!pending.length) continue;
+    const presence = nanAsNull
+      ? fields.map(
+          (field, i) => `count(${profileValue(field, sourceAlias, true)}) > 0 AS ${sqlIdentifier(`has_value${i}`)}`
+        )
+      : [];
+    if (!pending.length && !presence.length) continue;
 
     // Ordered comparisons, bin edges and moment centers share the same preliminary scan.
     const parameterSource = windows.length ? `(SELECT *, ${windows.join(', ')} FROM ${reference})` : reference;
@@ -986,11 +999,16 @@ export async function profileTables(
           axes.length ? `SELECT *, ${axes.join(', ')} FROM (${preliminary}) bounds` : preliminary
         }) `
       : '';
-    const sql = `${withParameters}SELECT ${pending
-      .map(({ expression }, i) => `${expression} AS ${sqlIdentifier(`m${i}`)}`)
-      .join(', ')} FROM ${source}${statistics.length ? ` CROSS JOIN ${centerTable}` : ''}`;
+    const projection = pending.map(({ expression }, i) => `${expression} AS ${sqlIdentifier(`m${i}`)}`);
+    const sql = `${withParameters}SELECT ${projection.concat(presence).join(', ')}
+      FROM ${source}${statistics.length ? ` CROSS JOIN ${centerTable}` : ''}`;
     const row = (await connection.runAndReadAll(sql)).getRowObjectsJson()[0];
     postProcessMetrics(row, pending, nanAsNull);
+    if (nanAsNull) {
+      for (const [i, column] of profile.columns.entries()) {
+        if (!row[`has_value${i}`]) column.properties.logicalType = 'unknown';
+      }
+    }
   }
 
   return options.semantics ? { models: profiles, semantics: options.semantics } : { models: profiles };

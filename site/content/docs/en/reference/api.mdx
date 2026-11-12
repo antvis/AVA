@@ -232,7 +232,7 @@ await ava.profile({
 
 | Metric | Applies to | Result |
 | --- | --- | --- |
-| `table_summary` | Table | Row and column counts, NULL cell count and ratio, columns with NULLs, all-NULL columns, and counts by logical type. An empty table has no all-NULL columns. |
+| `table_summary` | Table | Row and column counts, NULL cell count and ratio, columns with NULLs, all-NULL columns, and counts by logical type. An empty table has no all-NULL columns. Under `data-profiling` semantics, columns with no observed values have logical type `unknown`. |
 | `row_duplicates` | Table | Repeated group count, group count / total rows, rows in repeated groups, rows removable by deduplication, and samples sorted by count and key. |
 | `row_sample` | Table | First, last, and random rows with zero-based positions in DuckDB's scan order. Random selection is without replacement. |
 | `pearson` | Table, numeric columns | Symmetric `{ columns, matrix }`. Each pair uses rows where both values are finite. Constant columns and insufficient pairs yield `null`. |

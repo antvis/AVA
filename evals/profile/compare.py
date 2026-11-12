@@ -174,6 +174,10 @@ def compare(path, types):
                            "null_cell_ratio": "p_cells_missing", "columns_with_nulls": "n_vars_with_missing",
                            "all_null_columns": "n_vars_all_missing"}.items():
         check(f"table.{native}", summary[native], expected.table[source])
+    check("table.type_counts", summary["type_counts"], {
+        logical: sum(REFERENCE_TYPES[description["type"]] == logical for description in expected.variables.values())
+        for logical in set(REFERENCE_TYPES.values())
+    })
     check("table.row_duplicates.group_count", actual["metrics"]["row_duplicates"]["group_count"], expected.table["n_duplicates"])
     check("quality.uniform", sorted(alert["column"] for alert in quality),
           sorted(alert.column_name for alert in expected.alerts if alert.alert_type.name == "UNIFORM"))
