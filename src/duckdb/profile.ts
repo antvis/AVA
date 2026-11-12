@@ -4,6 +4,7 @@ import { sqlIdentifier, sqlQualifiedName, sqlStringLiteral } from '../util/sql';
 import { resolveMetric, table, column, logicalTypes, TOP_VALUES_OPTIONS } from '../util/profile';
 
 import { kendallPair } from './profile-kendall';
+import { cramersPair } from './profile-cramers';
 
 import type { MetricField } from '../util/profile';
 import type { Metric, DuckDBConnection, Schema, ParsedProfileOptions, LogicalType, MetricId, Profile } from '../types';
@@ -236,6 +237,44 @@ function rankCorrelation(context: ExpressionContext): string {
     SELECT ${matrix} FROM (SELECT ${pairs.join(', ')}) coefficients)), ${empty})`;
 }
 
+function cramers(context: ExpressionContext): string {
+  const { columns, maxCategories = 100 } = context.metric;
+  const fields = selectFields(context).filter(
+    ({ logicalType }) =>
+      logicalType === 'string' || logicalType === 'boolean' || (columns !== undefined && logicalType === 'numeric')
+  );
+  if (columns && fields.length !== (columns as string[]).length) {
+    throw new Error("Cramér's V requires text, boolean or numeric category columns");
+  }
+  if (fields.length < 2) return 'first(NULL)';
+
+  const input = context.table.toLowerCase().startsWith('"__ava_category_rows"')
+    ? '__ava_category_rows_2'
+    : '__ava_category_rows';
+  const projection = fields.map(({ name, type }, i) => {
+    const value = sqlQualifiedName(name, context.sourceAlias);
+    const category = floatingPoint.test(type) ? `CASE WHEN NOT isnan(${value}) THEN ${value} END` : value;
+    return `${category} AS c${i}`;
+  });
+  const eligibility = fields.map((_, i) => `count(DISTINCT c${i}) BETWEEN 2 AND ${maxCategories}`);
+  const pairs: string[] = [];
+  for (let i = 0; i < fields.length; i += 1) {
+    for (let j = i + 1; j < fields.length; j += 1) {
+      const active = `(SELECT flags[${i + 1}] AND flags[${j + 1}] FROM eligibility)`;
+      pairs.push(`(${cramersPair(input, `c${i}`, `c${j}`, active)}) AS p${i}_${j}`);
+    }
+  }
+  const matrix = correlationMatrix(fields, (i, j) => (i === j ? '1::DOUBLE' : `p${i}_${j}`));
+  return `first((WITH ${input} AS MATERIALIZED (SELECT ${projection.join(', ')} FROM ${context.table}),
+    eligibility AS (SELECT [${eligibility.join(', ')}] AS flags FROM ${input}),
+    coefficients AS (SELECT flags, ${pairs.join(', ')} FROM eligibility)
+    SELECT CASE WHEN list_count(list_filter(flags, lambda included: included)) >= 2 THEN
+      list_transform([${matrix}], lambda m: struct_pack(
+        columns := list_filter(m.columns, lambda c, i: flags[i]),
+        matrix := list_transform(list_filter(m.matrix, lambda r, i: flags[i]),
+          lambda r: list_filter(r, lambda v, j: flags[j]))))[1] END FROM coefficients))`;
+}
+
 const shapeMetrics = ['skewness', 'kurtosis'] as const;
 
 function shape(metric: (typeof shapeMetrics)[number], context: ExpressionContext): string {
@@ -303,6 +342,19 @@ export const BUILTIN_METRICS: DuckDBMetric[] = [
   { id: 'pearson', enable: table, options: { columns: columnNamesOption }, expression: pearson },
   { id: 'spearman', enable: table, options: { columns: columnNamesOption }, expression: rankCorrelation },
   { id: 'kendall', enable: table, options: { columns: columnNamesOption }, expression: rankCorrelation },
+  {
+    id: 'cramers',
+    enable: table,
+    options: {
+      columns: columnNamesOption,
+      maxCategories: {
+        validate: (value) => {
+          z.number().int().nonnegative().parse(value);
+        },
+      },
+    },
+    expression: cramers,
+  },
   { id: 'valid_count', enable: column, expression: ({ column }) => `COUNT(${column})` },
   { id: 'null_count', enable: column, expression: ({ column }) => `COUNT(*) - COUNT(${column})` },
   {
