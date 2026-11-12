@@ -52,13 +52,15 @@ node /absolute/path/to/ava/scripts/report.mjs render \
   --evidence evidence --spec report-spec.json --output report-v1.html
 ```
 
-Produces HTML and matching JSON; the parent directory must exist and output files must be new. Empty/truncated results are not plotted; truncated results cannot supply metrics. Rendering failures keep the table/code and appear in `chartErrors`; report actual `chartCount`.
+Produces HTML and matching JSON; the parent directory must exist and output files must be new. Empty/truncated results are not plotted; truncated results cannot supply metrics. CLI validation failures keep the table/code and appear in `chartErrors`; report actual `chartCount`. Browser loading/rendering failures show a message and keep the data and query views available.
 
-HTML embeds query data; charts load GPT-Vis 1.3.1 from registry.npmmirror.com, while text/tables/SQL work offline. Account for this when sharing. Preview each chart in a browser when available; generation alone is not a preview.
+Report assembly uses `ava viz --spec -` to validate and normalize each config without creating intermediate HTML. Use a CLI version that supports this mode; if it requires `--output`, update `@antv/ava` before generating reports.
+
+HTML embeds query data and chart configs. Charts render directly in the page, with one shared GPT-Vis 1.3.1 script from registry.npmmirror.com and no iframe. Text/tables/SQL work offline, but the report still requires JavaScript; direct rendering does not enable script-disabled file previews. Account for this when sharing. Preview each chart in a browser when available; generation alone is not a preview.
 
 ## Layout and style
 
-Use the bundled layout by default. For requested style changes, copy `assets/report.html` into the task directory and pass `--template report-template.html`. Preserve the binding code and single `<!-- ARTIFACT_DATA -->` slot; keep assets self-contained. `src="icon.svg"` is embedded automatically. Chart styles use `chart.config`; reuse the template on follow-ups.
+Use the bundled layout by default. For requested style changes, copy `assets/report.html` into the task directory and pass `--template report-template.html`. Preserve the binding code and single `<!-- ARTIFACT_DATA -->` slot; keep assets self-contained. `src="icon.svg"` is embedded automatically. Chart styles use `chart.config`; reuse the template on follow-ups. Older custom templates that read `chart.html` must be updated to render `chart.config`. Existing reports remain unchanged; regenerate with the current template to use direct rendering.
 
 ## Follow-up questions and revisions
 

@@ -473,6 +473,15 @@ describe('chart commands', () => {
     expect(AVA).not.toHaveBeenCalled();
   });
 
+  it('validates and normalizes a spec without generating HTML or creating an AVA instance', async () => {
+    const input = { chartType: 'column', config: { data: spec.config.data }, html: 'stale HTML' };
+    expect(JSON.parse(await execute(['viz', '--spec', JSON.stringify(input)]))).toEqual(spec);
+    await expect(
+      run(['viz', '--spec', JSON.stringify({ ...input, config: { type: 'pie', data: [] } })])
+    ).rejects.toThrow();
+    expect(AVA).not.toHaveBeenCalled();
+  });
+
   it.each([{ data: [{ month: 'Jan', revenue: 10 }] }, { data: [{ category: 'Jan', value: '10' }] }])(
     'rejects invalid native chart data before creating output: %j',
     async (config) => {

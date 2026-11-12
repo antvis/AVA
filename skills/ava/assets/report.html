@@ -274,7 +274,7 @@
         padding: 18px 16px 14px;
         min-width: 0;
       }
-      iframe {
+      .chart {
         display: block;
         width: 100%;
         height: 250px;
@@ -577,7 +577,7 @@
         .view-panel {
           min-height: 267px;
         }
-        iframe {
+        .chart {
           height: 235px;
         }
         th,
@@ -660,7 +660,7 @@
         .panel {
           padding-top: 0;
         }
-        iframe {
+        .chart {
           height: 220px;
         }
       }
@@ -742,7 +742,7 @@
             <button type="button" role="tab" data-view="sql">SQL</button>
           </div>
           <figure class="view-panel" data-view="chart" role="tabpanel" tabindex="0" hidden>
-            <iframe sandbox="allow-scripts"></iframe>
+            <div class="chart" role="group" aria-busy="true">图表加载中…</div>
           </figure>
           <p class="notice chart-error" hidden></p>
           <div class="table-scroll view-panel" data-view="data" tabindex="0" role="tabpanel" hidden>
@@ -793,6 +793,16 @@
           document.getElementById(id).append(item);
         });
       const clone = (id) => document.getElementById(id).content.firstElementChild.cloneNode(true);
+      // Load once without delaying the report's text, tables or query controls.
+      const chartLibrary = report.charts.length
+        ? new Promise((resolve, reject) => {
+            const script = document.createElement('script');
+            script.src = 'https://registry.npmmirror.com/@antv/gpt-vis/1.3.1/files/dist/umd/index.min.js';
+            script.onload = resolve;
+            script.onerror = () => reject(new Error('GPT-Vis 加载失败，请检查网络连接。'));
+            document.head.append(script);
+          })
+        : Promise.resolve();
 
       // -----------------------------------------------------------------------------
       // SQL 高亮：只创建文本节点与标记，不解释查询内容
@@ -952,32 +962,13 @@
         node.querySelector('.empty').hidden = query.result.data.length > 0;
 
         // -----------------------------------------------------------------------------
-        // 嵌入 AVA 原生图表
+        // 在报告页面内渲染 AVA 原生图表
         // -----------------------------------------------------------------------------
 
         const chart = report.charts.find((chart) => chart.section === index + 1);
-        if (chart) {
-          const frame = node.querySelector('iframe');
-          frame.title = section.question + ' — 交互图表';
-          frame.srcdoc = chart.html;
-          // GPT-Vis measures its container at mount; remount after a real width change.
-          let width = 0;
-          new ResizeObserver((entries) => {
-            const next = entries[0].contentRect.width;
-            if (!next) return;
-            if (width && Math.abs(next - width) > 1) {
-              frame.srcdoc = chart.html;
-            }
-            width = next;
-          }).observe(frame);
-        }
-        const error = report.chartErrors.find((error) => error.section === index + 1);
-        if (error) {
-          node.querySelector('.chart-error').hidden = false;
-          node.querySelector('.chart-error').textContent =
-            '图表暂不可用：' + error.message + ' 结果表与查询代码已保留。';
-        }
-
+        const container = node.querySelector('.chart');
+        container.setAttribute('aria-label', section.question + ' — 交互图表');
+        let renderChart = () => {};
         const tablist = node.querySelector('.view-tabs');
         const tabs = [...tablist.querySelectorAll('[role="tab"]')];
         const views = [...node.querySelectorAll('[role="tabpanel"]')];
@@ -992,6 +983,15 @@
           views.forEach((view) => {
             view.hidden = view.dataset.view !== selected.dataset.view;
           });
+          if (selected.dataset.view === 'chart') renderChart();
+        };
+        const showChartError = (error) => {
+          node.querySelector('.chart-error').hidden = false;
+          node.querySelector('.chart-error').textContent =
+            '图表暂不可用：' + error.message + ' 结果表与查询代码已保留。';
+          container.setAttribute('aria-busy', 'false');
+          tabs[0].disabled = true;
+          if (tabs[0].getAttribute('aria-selected') === 'true') selectView(tabs[1]);
         };
         tabs.forEach((tab, tabIndex) => {
           const view = views[tabIndex];
@@ -1015,7 +1015,6 @@
           selectView(enabled[next]);
           enabled[next].focus();
         });
-        selectView(tabs.find((tab) => !tab.disabled));
         node.querySelector('.copy').addEventListener('click', async () => {
           try {
             await navigator.clipboard.writeText(query.sql);
@@ -1025,6 +1024,43 @@
           }
         });
         document.getElementById('sections').append(node);
+        selectView(tabs.find((tab) => !tab.disabled));
+        const error = report.chartErrors.find((error) => error.section === index + 1);
+        if (error) showChartError(error);
+        if (chart) {
+          chartLibrary.then(() => {
+            let instance;
+            let width = 0;
+            let height = 0;
+            let observer;
+            renderChart = () => {
+              if (tabs[0].disabled) return;
+              const next = container.getBoundingClientRect();
+              if (!next.width || !next.height) return;
+              if (instance && Math.abs(next.width - width) < 1 && Math.abs(next.height - height) < 1) return;
+              try {
+                // GPT-Vis measures the visible container when mounted.
+                instance?.destroy();
+                container.replaceChildren();
+                instance = new GPTVis.GPTVis({ container, width: next.width, height: next.height });
+                instance.render(chart.config);
+                width = next.width;
+                height = next.height;
+                container.setAttribute('aria-busy', 'false');
+              } catch (error) {
+                observer?.disconnect();
+                showChartError(error);
+              }
+            };
+            if (typeof ResizeObserver !== 'undefined') {
+              observer = new ResizeObserver(renderChart);
+              observer.observe(container);
+            } else {
+              window.addEventListener('resize', renderChart);
+            }
+            renderChart();
+          }).catch(showChartError);
+        }
       });
 
       // -----------------------------------------------------------------------------
