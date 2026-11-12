@@ -205,31 +205,7 @@ Profile 通过名称，将统计信息附加到已有的 schema 模型和列上�
 
 <h4 id="metrics">统计指标</h4>
 
-默认指标为 `row_count`、`null_count`、`distinct_count`、`top_values`、`min`、`max`、`mean`。其他内置指标包括 `duplicate_count`、`min_length`、`max_length`、`sum`、`stddev`、`median`。
-
-DuckDB 还支持 `valid_count`（非空值数）、`null_ratio`（空值数 / 行数）、`distinct_ratio`（不同非空值数 / 非空值数）、`unique_count`（仅出现一次的值数）、`unique_ratio`（仅出现一次的值数 / 非空值数）与 `is_unique`（所有非空值是否都仅出现一次）。分母为零时比例返回 `0`；没有非空值时 `is_unique` 为 `false`。这些指标沿用 SQL 空值语义，NaN 不属于 NULL。
-
-`value_counts` 返回所有非空值的 `{ value, count }` 频数，按计数降序排列，同频值按 DuckDB 的值顺序排列。`mode` 与 `mode_count` 返回排在第一位的值及其计数。日期、大整数、小数和非有限数值可用字符串保留原值。完整频表的结果大小随不同值的数量增长，需要显式请求。
-
-`imbalance` 用一减去归一化的 Shannon 熵来衡量类别不均衡程度，支持字符串、布尔值和数值类别编码，排除 NULL 与 NaN。均匀分布或少于两个类别时返回零，并与其他频数指标共用一次聚合。
-
-DuckDB 文本列支持 `mean_length`、`median_length` 与 `length_histogram`。长度按 Unicode 码点计算，重复字符串按出现次数加权。直方图按长度返回 `{ length, count }`。NULL 不参与统计，空字符串长度为零。
-
-`table_summary` 返回行列数、SQL NULL 单元格数与占比、含 NULL 的列数、全 NULL 列数，以及各逻辑类型的列数。统计范围是画像 schema 中的列，与列空值计数共用一次扫描。空表的全 NULL 列数为零。
-
-`row_duplicates` 按画像中的全部列或 `columns` 指定的子集分组，返回重复组数、重复组数占总行数的比例、组内总行数和去重后会移除的行数。样本按频次和分组键排序，`limit` 默认 `10`，设为 `0` 时只返回计数。
-
-`pearson` 返回数值列的对称 Pearson 相关矩阵 `{ columns, matrix }`。每对列只使用两边均为有限值的行，常量列或样本不足时返回 `null`。列对数随列数平方增长，宽表可用 `columns` 选子集。所有列对共用聚合扫描。
-
-DuckDB 数值列还支持 `zero_count`、`negative_count`、`infinite_count`、`nan_count`、`finite_count`，以及对应的 `_ratio` 指标（例如 `zero_ratio`）。比例以包含空值的总行数为分母，空表返回 `0`。负无穷同时计入负值与无穷值；NaN、无穷值和 SQL NULL 分别统计。这些可选指标共用聚合扫描，不改变默认指标集。
-
-DuckDB 的离散程度指标包括 `variance`（样本方差）、`mad`（中位数绝对偏差）、`iqr`（75% 分位数减去 25% 分位数）、`cv`（样本标准差 / 均值）与 `range`（最大值减去最小值，日期使用毫秒）。这些指标使用有限观测值；样本不足时返回 `null`，均值为零时 `cv` 也返回 `null`。整数和小数的极差先相减，再转换为 JavaScript 数值；原生相减溢出时回退到浮点计算。
-
-`skewness` 与 `kurtosis` 分别计算有限数值的样本偏度和超额峰度，至少需要三个和四个值。请求任一指标时，DuckDB 增加一次扫描来计算各列均值，再在聚合扫描中计算中心矩。所有请求的列共用这两次扫描。
-
-`histogram` 对有限的数值和日期返回 `{ bin_edges, counts }`。`bins` 默认 `50`，设为 `0` 时按 Sturges/Freedman–Diaconis 规则选桶。`maxBins` 默认 `250`，`density` 默认 `false`。日期边界使用 Unix 毫秒，落在内部分界线上的值归右侧桶。常量列用一个加宽的桶。所有列的直方图边界和中心矩均值共用一次预扫描。
-
-每项可以是指标名称，也可以是包含 `id` 和该指标专用选项的对象：
+`metrics` 的每一项可以是指标名，也可以是带 `id` 和指标参数的对象。
 
 ```typescript
 await ava.profile({
@@ -237,17 +213,70 @@ await ava.profile({
 });
 ```
 
-| 字段 | 类型 | 默认值与行为 |
+**通用指标**
+
+| 指标 | 适用范围 | 默认计算 | 含义 |
+| --- | --- | --- | --- |
+| `row_count` | 表 | 是 | 总行数。 |
+| `null_count` | 列 | 是 | SQL NULL 或引擎中的缺失值数量。 |
+| `distinct_count` | 数值、文本、布尔、日期 | 是 | 不同非空值的数量。 |
+| `top_values` | 文本、布尔 | 是 | 最常见的非空值及其计数。不同值占比超过 `maxDistinctRatio` 时省略。 |
+| `min`、`max` | 数值、日期 | 是 | 最小值和最大值。日期使用 Unix 毫秒。 |
+| `mean` | 数值 | 是 | 算术均值。 |
+| `duplicate_count` | 列 | — | 非空值数减去不同值数。 |
+| `min_length`、`max_length` | 文本 | — | 最短和最长字符串的长度。 |
+| `sum` | 数值 | — | 总和。 |
+| `stddev` | 数值 | — | 样本标准差。 |
+| `median` | 数值 | — | 中位数。 |
+
+**DuckDB 扩展指标**
+
+| 指标 | 适用范围 | 含义 |
 | --- | --- | --- |
-| `id` | `string` | 对象形式必填，指标名称。 |
-| `limit` | `number` | 仅用于 `top_values`，默认 `3`，必须是非负安全整数。 |
-| `maxDistinctRatio` | `number` | 仅用于 `top_values`，默认 `0.5`，必须是 `0`—`1` 之间的有限数值。 |
+| `table_summary` | 表 | 行列数、SQL NULL 单元格数与占比、含 NULL 的列数、全 NULL 列数及各逻辑类型的列数。空表的全 NULL 列数为零。 |
+| `row_duplicates` | 表 | 重复组数、重复组数占总行数的比例、组内总行数、去重后会移除的行数，以及按频次和键排序的样本。 |
+| `pearson` | 表中的数值列 | 对称相关矩阵 `{ columns, matrix }`。每对列使用两边均为有限值的行。常量列或样本不足时返回 `null`。 |
+| `valid_count` | 列 | 非 NULL 值数量。 |
+| `null_ratio` | 列 | SQL NULL 数量除以总行数。 |
+| `distinct_ratio` | 数值、文本、布尔、日期 | 不同非空值数除以非空值数。 |
+| `unique_count`、`unique_ratio` | 数值、文本、布尔、日期 | 仅出现一次的值数，以及该数量占非空值数的比例。 |
+| `is_unique` | 数值、文本、布尔、日期 | 所有非空值是否都仅出现一次。无非空值时返回 `false`。 |
+| `value_counts` | 数值、文本、布尔、日期 | 全部非空值的 `{ value, count }` 频数，按计数降序和原值排序。结果大小随不同值的数量增长。 |
+| `mode`、`mode_count` | 数值、文本、布尔、日期 | 频数排序中第一位的值及其计数。 |
+| `imbalance` | 文本、布尔、数值类别编码 | 一减去归一化的 Shannon 熵，排除 NULL 和 NaN。均匀分布或少于两个类别时返回零。 |
+| `mean_length`、`median_length` | 文本 | 按 Unicode 码点计算的长度均值和中位数，重复值按出现次数加权。 |
+| `length_histogram` | 文本 | 按长度排列的 `{ length, count }`。排除 NULL，空字符串长度为零。 |
+| `zero_count`、`zero_ratio` | 数值 | 零值数量及其占总行数的比例。 |
+| `negative_count`、`negative_ratio` | 数值 | 负值数量及其占总行数的比例，包含负无穷。 |
+| `infinite_count`、`infinite_ratio` | 数值 | 正负无穷值数量及其占总行数的比例。 |
+| `nan_count`、`nan_ratio` | 数值 | NaN 数量及其占总行数的比例。 |
+| `finite_count`、`finite_ratio` | 数值 | 有限值数量及其占总行数的比例。 |
+| `variance`、`mad`、`iqr` | 数值 | 样本方差、中位数绝对偏差、75% 分位数减去 25% 分位数。 |
+| `cv` | 数值 | 样本标准差除以均值。均值为零时返回 `null`。 |
+| `range` | 数值、日期 | 最大值减去最小值。日期使用毫秒。整数和小数先相减再转为 JavaScript 数值，溢出时回退到浮点计算。 |
+| `skewness`、`kurtosis` | 数值 | 样本偏度和超额峰度，分别至少需要三个和四个有限值。 |
+| `quantiles` | 数值 | 按请求顺序返回 `{ probability, value }`。对有限值线性插值，无有限值时 `value` 为 `null`。 |
+| `histogram` | 数值、日期 | 有限值的 `{ bin_edges, counts }`。内部分界线上的值归右侧桶，常量列使用一个加宽的桶。日期边界使用 Unix 毫秒。 |
 
-DuckDB 的 `quantiles` 指标接受 `probabilities`：元素介于 `0`—`1` 的非空数组，默认 `[0.05, 0.25, 0.5, 0.75, 0.95]`。指标对有限数值做线性插值，按请求顺序返回 `[{ probability, value }]`；没有有限值时，`value` 为 `null`。所有分位点在同一次列表聚合中计算，不向 JavaScript 传输原始行。
+DuckDB 中，分母为零时比例返回 `0`。SQL NULL、NaN 和无穷值分别统计。离散程度指标使用有限值，样本不足时返回 `null`。频数中的日期、大整数、小数和非有限值可用字符串保留原值。
 
-未列出选项的指标会拒绝额外字段。引擎计算 profile 时会拒绝未知指标与未知选项名。指标是否可用取决于引擎及字段类型。
+表级缺失统计与列空值计数共用扫描，频数指标共用聚合，Pearson 的所有列对共用一次扫描。Pearson 的列对数随列数平方增长，宽表可指定列子集。直方图和分布形状指标共用一次预扫描计算分桶边界与均值。所有分位点在一次列表聚合中计算。
 
-`metrics: []` 会生成空的指标对象。新 profile 替换旧统计信息，不会累加之前的指标。
+**指标参数**
+
+| 指标 | 参数 | 默认值 | 约束与行为 |
+| --- | --- | --- | --- |
+| `top_values` | `limit` | `3` | 非负安全整数。 |
+| `top_values` | `maxDistinctRatio` | `0.5` | `[0, 1]` 范围内的有限数值。 |
+| `row_duplicates` | `columns` | 画像中的全部列 | 非空且不重复的分组键列名列表。 |
+| `row_duplicates` | `limit` | `10` | 样本数上限，设为 `0` 时只返回计数。 |
+| `pearson` | `columns` | 所有数值列 | 非空且不重复的数值列名列表。 |
+| `quantiles` | `probabilities` | `[0.05, 0.25, 0.5, 0.75, 0.95]` | 非空数组，元素在 `[0, 1]` 范围内。 |
+| `histogram` | `bins` | `50` | 非负整数，`0` 表示按 Sturges/Freedman–Diaconis 规则自动选桶。 |
+| `histogram` | `maxBins` | `250` | 正整数，限制最大桶数。 |
+| `histogram` | `density` | `false` | 开启后 `counts` 返回概率密度。 |
+
+对象形式的指标必须提供字符串 `id`。引擎会拒绝未知指标或未列出的参数。`metrics: []` 返回结构和空的指标对象。每次计算都会替换上一次的画像。
 
 <Heading as="h3" id="semantic">semantic</Heading>
 

@@ -203,31 +203,7 @@ A missing metric means it was not computed, not zero. Setting a schema clears th
 
 #### Metrics
 
-The default metrics are `row_count`, `null_count`, `distinct_count`, `top_values`, `min`, `max`, and `mean`. Additional built-in metrics are `duplicate_count`, `min_length`, `max_length`, `sum`, `stddev`, and `median`.
-
-DuckDB also supports `valid_count` (non-null count), `null_ratio` (nulls / rows), `distinct_ratio` (different non-null values / non-null count), `unique_count` (values occurring exactly once), `unique_ratio` (singletons / non-null count), and `is_unique` (all non-null values occur once). Empty denominators produce `0`; `is_unique` is `false` when there are no non-null values. These metrics use SQL null semantics; NaN is a non-null value.
-
-`value_counts` returns all non-null value frequencies as `{ value, count }` entries in descending count order, with ties in DuckDB value order. `mode` and `mode_count` report the first value in that order and its count. Dates, large integers, decimals, and non-finite numbers may use strings to preserve their values. Frequency metrics are opt-in because the complete result grows with the number of distinct values.
-
-`imbalance` measures class imbalance as one minus normalized Shannon entropy. It accepts strings, booleans, and numeric category codes, excludes NULL and NaN, and returns zero for uniform distributions or fewer than two classes. It shares its aggregate with the other frequency metrics.
-
-For text, DuckDB adds `mean_length`, `median_length`, and `length_histogram`. Lengths count Unicode code points, with repeated strings weighted by their occurrence. The histogram returns `{ length, count }` entries ordered by length. Nulls are excluded and an empty string has length zero.
-
-`table_summary` reports row and column counts, SQL NULL cell counts and ratios, columns with at least one NULL, entirely NULL columns, and counts by logical type. It covers the columns in the profile schema and shares the scan with column null counts. An empty table has no entirely NULL columns.
-
-`row_duplicates` groups rows by all profile columns or by a `columns` subset. It returns the number of repeated groups, their ratio to total rows, the rows in those groups, and the rows that would be removed by deduplication. Samples are ordered by count and then by key. `limit` defaults to `10`. Set `limit: 0` to return counts alone.
-
-`pearson` returns a symmetric `{ columns, matrix }` of Pearson correlations for numeric columns. Each pair uses rows where both values are finite. Constant columns and insufficient pairs yield `null`. Use `columns` to select a subset on wide tables, where the number of pairs grows quadratically. All pairs share the aggregate scan.
-
-Numeric DuckDB columns also support `zero_count`, `negative_count`, `infinite_count`, `nan_count`, and `finite_count`, and their `_ratio` counterparts (for example `zero_ratio`). Ratios divide by all rows, including nulls, and return `0` for an empty table. Negative infinity counts as both negative and infinite. NaN, infinity, and SQL NULL remain separate observations. These optional metrics share the aggregate scan and do not change the default metric set.
-
-DuckDB dispersion metrics are `variance` (sample variance), `mad` (median absolute deviation), `iqr` (75th minus 25th percentile), `cv` (sample standard deviation / mean), and `range` (maximum minus minimum; dates use milliseconds). They use finite observations. Insufficient observations return `null`; `cv` is also `null` for a zero mean. Integer and decimal ranges are subtracted before conversion to JavaScript numbers, with a floating-point fallback when native subtraction overflows.
-
-`skewness` and `kurtosis` are the sample-adjusted skewness and excess kurtosis of finite numeric observations. They require at least three and four values, respectively. Requesting either adds one pass to compute column means, shared across all requested columns, so the moments can be calculated around their means in the aggregate scan.
-
-`histogram` returns `{ bin_edges, counts }` for finite numeric and date values. Options are `bins` (default `50`, or `0` for automatic Sturges/Freedman–Diaconis selection), `maxBins` (default `250`), and `density` (default `false`). Date edges are epoch milliseconds. Interior edges belong to the bin on their right. Constant values use one padded bin. Histogram bounds and moment centers share one preliminary scan across columns.
-
-Each entry is a metric name or an object with an `id` and metric-specific options:
+Each `metrics` entry is a name or an object with an `id` and metric options.
 
 ```typescript
 await ava.profile({
@@ -235,17 +211,70 @@ await ava.profile({
 });
 ```
 
-| Field | Type | Default / behavior |
+**Common metrics**
+
+| Metric | Applies to | Default | Result |
+| --- | --- | --- | --- |
+| `row_count` | Table | Yes | Number of rows. |
+| `null_count` | Column | Yes | Number of SQL NULLs or missing values in the engine. |
+| `distinct_count` | Numeric, text, boolean, date | Yes | Number of different non-null values. |
+| `top_values` | Text, boolean | Yes | Most frequent non-null values with their counts. Omitted when the distinct ratio exceeds `maxDistinctRatio`. |
+| `min`, `max` | Numeric, date | Yes | Minimum and maximum. Date bounds use Unix milliseconds. |
+| `mean` | Numeric | Yes | Arithmetic mean. |
+| `duplicate_count` | Column | — | Non-null count minus distinct count. |
+| `min_length`, `max_length` | Text | — | Shortest and longest string lengths. |
+| `sum` | Numeric | — | Sum of values. |
+| `stddev` | Numeric | — | Sample standard deviation. |
+| `median` | Numeric | — | Median. |
+
+**Additional DuckDB metrics**
+
+| Metric | Applies to | Result |
 | --- | --- | --- |
-| `id` | `string` | Required for object entries; the metric name. |
-| `limit` | `number` | `top_values` only. Default `3`; a non-negative safe integer. |
-| `maxDistinctRatio` | `number` | `top_values` only. Default `0.5`; a finite number from `0` to `1`. |
+| `table_summary` | Table | Row and column counts, NULL cell count and ratio, columns with NULLs, all-NULL columns, and counts by logical type. An empty table has no all-NULL columns. |
+| `row_duplicates` | Table | Repeated group count, group count / total rows, rows in repeated groups, rows removable by deduplication, and samples sorted by count and key. |
+| `pearson` | Table, numeric columns | Symmetric `{ columns, matrix }`. Each pair uses rows where both values are finite. Constant columns and insufficient pairs yield `null`. |
+| `valid_count` | Column | Number of non-NULL values. |
+| `null_ratio` | Column | SQL NULL count / total rows. |
+| `distinct_ratio` | Numeric, text, boolean, date | Different non-NULL values / non-NULL count. |
+| `unique_count`, `unique_ratio` | Numeric, text, boolean, date | Number of values occurring exactly once, and that count divided by the non-NULL count. |
+| `is_unique` | Numeric, text, boolean, date | Whether all non-NULL values occur once. Returns `false` when no non-NULL values exist. |
+| `value_counts` | Numeric, text, boolean, date | All non-NULL frequencies as `{ value, count }`, sorted by count descending and then value. Output grows with the number of distinct values. |
+| `mode`, `mode_count` | Numeric, text, boolean, date | First value in frequency order and its count. |
+| `imbalance` | Text, boolean, numeric category codes | One minus normalized Shannon entropy, excluding NULL and NaN. Returns zero for uniform distributions or fewer than two classes. |
+| `mean_length`, `median_length` | Text | Mean and median length in Unicode code points, weighted by occurrence. |
+| `length_histogram` | Text | `{ length, count }` entries ordered by length. NULLs are excluded and an empty string has length zero. |
+| `zero_count`, `zero_ratio` | Numeric | Zero values and their share of all rows. |
+| `negative_count`, `negative_ratio` | Numeric | Negative values, including negative infinity, and their share of all rows. |
+| `infinite_count`, `infinite_ratio` | Numeric | Positive and negative infinity and their share of all rows. |
+| `nan_count`, `nan_ratio` | Numeric | NaN values and their share of all rows. |
+| `finite_count`, `finite_ratio` | Numeric | Finite values and their share of all rows. |
+| `variance`, `mad`, `iqr` | Numeric | Sample variance, median absolute deviation, and the 75th minus the 25th percentile. |
+| `cv` | Numeric | Sample standard deviation / mean. Returns `null` for a zero mean. |
+| `range` | Numeric, date | Maximum minus minimum. Dates use milliseconds. Integers and decimals are subtracted before conversion to JavaScript numbers, with a floating-point fallback on overflow. |
+| `skewness`, `kurtosis` | Numeric | Sample-adjusted skewness and excess kurtosis, requiring at least three and four finite values respectively. |
+| `quantiles` | Numeric | `{ probability, value }` entries in requested order. Uses linear interpolation over finite values and returns `null` values when none exist. |
+| `histogram` | Numeric, date | `{ bin_edges, counts }` over finite values. Interior edges belong to the bin on their right. Constants use one padded bin. Date edges use Unix milliseconds. |
 
-DuckDB's `quantiles` metric accepts `probabilities`, a non-empty array of numbers between `0` and `1` (default `[0.05, 0.25, 0.5, 0.75, 0.95]`). It uses linear interpolation over finite numeric values and returns `[{ probability, value }]` in the requested order. Values are `null` when there are no finite observations. One list aggregate calculates all requested probabilities; raw rows are not transferred to JavaScript.
+DuckDB ratios with a zero denominator return `0`. SQL NULL, NaN, and infinity are separate observations. Dispersion metrics use finite values and return `null` when observations are insufficient. Frequency values may be strings for dates, large integers, decimals, and non-finite values.
 
-Metrics without documented options reject extra keys. Unknown metrics and unknown option names are rejected when the engine computes the profile. Availability depends on the engine and field type.
+Table completeness shares the scan with column NULL counts, frequency metrics share their aggregate, and all Pearson pairs share one scan. Use a column subset to control the quadratic cost of Pearson on wide tables. Histograms and distribution shape share one preliminary scan for bin edges and means. Quantiles compute all requested probabilities in one list aggregate.
 
-`metrics: []` produces empty metric objects. A new profile replaces previous statistics; metrics are not accumulated.
+**Metric options**
+
+| Metric | Option | Default | Behavior |
+| --- | --- | --- | --- |
+| `top_values` | `limit` | `3` | Non-negative safe integer. |
+| `top_values` | `maxDistinctRatio` | `0.5` | Finite number in `[0, 1]`. |
+| `row_duplicates` | `columns` | All profile columns | Non-empty list of distinct column names used as the group key. |
+| `row_duplicates` | `limit` | `10` | Maximum sample count. Use `0` for counts alone. |
+| `pearson` | `columns` | All numeric columns | Non-empty list of distinct numeric column names. |
+| `quantiles` | `probabilities` | `[0.05, 0.25, 0.5, 0.75, 0.95]` | Non-empty array of numbers in `[0, 1]`. |
+| `histogram` | `bins` | `50` | Non-negative integer. Use `0` for automatic Sturges/Freedman–Diaconis selection. |
+| `histogram` | `maxBins` | `250` | Positive integer cap on the number of bins. |
+| `histogram` | `density` | `false` | Return probability density in `counts` instead of raw bin counts. |
+
+Metric objects require a string `id`. Engines reject unknown metrics and undocumented options. Use `metrics: []` to return the structure with empty metric objects. Each new profile replaces the previous observations.
 
 ### semantic
 
