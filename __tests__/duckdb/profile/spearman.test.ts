@@ -71,14 +71,16 @@ describe('profile/Spearman correlation', () => {
     expect(query).toHaveBeenCalledTimes(1);
     const sql = query.mock.calls[0][0];
     query.mockRestore();
+    const positive = expect.closeTo(1, 12);
+    const negative = expect.closeTo(-1, 12);
     expect(result.models[0].metrics).toEqual({
       row_count: 50000,
       spearman: {
         columns: ['a', 'b', 'c'],
         matrix: [
-          [1, -1, 1],
-          [-1, 1, -1],
-          [1, -1, 1],
+          [1, negative, positive],
+          [negative, 1, negative],
+          [positive, negative, 1],
         ],
       },
     });

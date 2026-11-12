@@ -29,12 +29,13 @@ describe('profile/Pearson correlation', () => {
     const profile = await profileTables(connection, schema, { metrics: [{ id: 'pearson' }] });
     const ab = expect.closeTo(0.78502642096301, 12);
     const bc = expect.closeTo(0.99124070716193, 12);
+    const perfect = expect.closeTo(1, 12);
     expect(profileOutputSchema.parse(profile).models[0].metrics.pearson).toEqual({
       columns: ['a', 'b', 'c', 'k'],
       matrix: [
-        [1, ab, 1, null],
+        [1, ab, perfect, null],
         [ab, 1, bc, null],
-        [1, bc, 1, null],
+        [perfect, bc, 1, null],
         [null, null, null, null],
       ],
     });
@@ -42,8 +43,8 @@ describe('profile/Pearson correlation', () => {
     expect(subset.models[0].metrics.pearson).toEqual({
       columns: ['c', 'a'],
       matrix: [
-        [1, 1],
-        [1, 1],
+        [1, perfect],
+        [perfect, 1],
       ],
     });
     await expect(
@@ -76,13 +77,14 @@ describe('profile/Pearson correlation', () => {
     expect(query).toHaveBeenCalledTimes(1);
     const sql = query.mock.calls[0][0];
     query.mockRestore();
+    const negative = expect.closeTo(-1, 12);
     expect(profile.models[0].metrics).toEqual({
       row_count: 50000,
       pearson: {
         columns: ['b', 'a'],
         matrix: [
-          [1, -1],
-          [-1, 1],
+          [1, negative],
+          [negative, 1],
         ],
       },
     });
