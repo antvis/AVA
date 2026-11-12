@@ -59,7 +59,7 @@ Additional metrics:
   DuckDB numeric and date histogram: histogram
   DuckDB frequencies: value_counts, mode, mode_count, imbalance
   DuckDB text: mean_length, median_length, length_histogram, word_counts, character_counts, unicode_summary
-  DuckDB structured text: url_summary, path_summary, date_validation
+  DuckDB structured text: url_summary, path_summary, file_summary, date_validation
   DuckDB table metrics: table_summary, row_duplicates, row_sample, pearson, spearman, kendall, cramers, auto
   DuckDB missingness: missing_correlation
   unique_count counts non-null values occurring exactly once; distinct_count counts different values.

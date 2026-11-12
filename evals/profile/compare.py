@@ -59,7 +59,7 @@ COLUMN_METRICS = {
     "chi_squared": "chi_squared",
 }
 REFERENCE_TYPES = {"Numeric": "numeric", "Categorical": "string", "Text": "string", "Boolean": "boolean",
-                   "DateTime": "date", "URL": "string", "Path": "string", "Unsupported": "unknown"}
+                   "DateTime": "date", "URL": "string", "Path": "string", "File": "string", "Unsupported": "unknown"}
 MISSING = object()
 
 
@@ -167,14 +167,16 @@ def cli(*args, payload=None):
     return json.loads(result.stdout)
 
 
-def compare(path, types, infer_types=False):
+def compare(path, types, infer_types=False, file_root=None):
     metrics = [*TABLE_METRICS, *COLUMN_METRICS, "value_counts", "histogram", "quantiles", "nan_count", "word_counts",
                "character_counts", "unicode_summary", "monotonicity", "duplicate_count", "length_histogram", "mode", "mode_count",
                {"id": "row_duplicates", "limit": 0}, {"id": "row_sample", "head": 3, "tail": 3}]
     if "URL" in types.values():
         metrics.append("url_summary")
-    if "Path" in types.values():
+    if {"Path", "File"} & set(types.values()):
         metrics.append("path_summary")
+    if file_root is not None:
+        metrics.append({"id": "file_summary", "root": str(file_root)})
     if "time" in types:
         metrics.append({"id": "autocorrelation", "orderBy": "time", "lags": 4})
         metrics.append({"id": "time_series_gaps", "orderBy": "time"})
@@ -196,7 +198,8 @@ def compare(path, types, infer_types=False):
         interactions={"continuous": False}, samples={"head": 3, "tail": 3, "random": 0},
         vars={"num": {"low_categorical_threshold": 5 if infer_types else 0, "chi_squared_threshold": 0.999},
               "cat": {"length": True, "characters": True, "words": True},
-              "url": {"active": "URL" in types.values()}, "path": {"active": "Path" in types.values()},
+              "url": {"active": "URL" in types.values()}, "path": {"active": bool({"Path", "File"} & set(types.values()))},
+              "file": {"active": file_root is not None},
               "timeseries": {"pacf_acf_lag": 4}},
         correlations={method: {"calculate": True, "threshold": 0.9}
                       for method in ("pearson", "spearman", "kendall", "cramers", "auto")},
@@ -293,7 +296,7 @@ def compare(path, types, infer_types=False):
                 key = part + "_counts"
                 check(f"{name}.{key}", {item["value"]: item["count"] for item in observed["url_summary"][key]},
                       reference[key].to_dict())
-        if reference["type"] == "Path":
+        if reference["type"] in ("Path", "File"):
             check(f"{name}.common_prefix", observed["path_summary"]["common_prefix"], reference["common_prefix"])
             for part in ("stem", "suffix", "name", "parent", "anchor"):
                 key = part + "_counts"
@@ -301,6 +304,20 @@ def compare(path, types, infer_types=False):
                       reference[key].to_dict())
                 unique = f"n_{part}_unique"
                 check(f"{name}.{unique}", observed["path_summary"][unique], reference[unique])
+        if reference["type"] == "File":
+            files = {}
+            for value, group in frame.groupby(name):
+                index = group.index[0]
+                files[value] = {"count": len(group), "size": int(reference["file_size"].loc[index])}
+                for native, key in (("created_at", "file_created_time"), ("accessed_at", "file_accessed_time"),
+                                    ("modified_at", "file_modified_time")):
+                    timestamp = datetime.strptime(reference[key].loc[index], "%Y-%m-%d %H:%M:%S")
+                    files[value][native] = int(timestamp.timestamp() * 1000)
+            check(f"{name}.file_summary", {file["value"]: {k: v for k, v in file.items() if k != "value"}
+                                           for file in observed["file_summary"]["files"]}, files)
+            counts, edges = reference["histogram_file_size"]
+            check(f"{name}.histogram_file_size", observed["file_summary"]["histogram_file_size"],
+                  {"counts": counts, "bin_edges": edges})
         if "autocorrelation" in observed:
             series = frame.sort_values("time")[name].dropna()
             with warnings.catch_warnings(record=True) as chart_warnings:
@@ -392,6 +409,14 @@ def main():
             path = Path(directory) / f"{name}.parquet"
             pq.write_table(table, path)
             results[name], reference_warnings[name] = compare(path, types, infer_types=name == "inferred")
+        file_root = Path(directory).resolve() / "profile-files"
+        file_root.mkdir()
+        files = [file_root / name for name in ("first.txt", "second.csv", "third.bin")]
+        for i, file in enumerate(files):
+            file.write_bytes(b"x" * (10 + i * 15))
+        path = Path(directory) / "files.parquet"
+        pq.write_table(pa.table({"file": [str(files[0]), str(files[1]), str(files[0]), str(files[2])]}), path)
+        results["files"], reference_warnings["files"] = compare(path, {"file": "File"}, file_root=file_root)
         path = Path(directory) / "date_validation.parquet"
         pq.write_table(pa.table({"date": [
             "2026/01/02", "Jan 3, 2026", "31/01/2026", "20260405", "2026", "2026-02",

@@ -194,6 +194,8 @@ Setter 接收选项对象（默认 `{}`），同步返回 `Profile`，不要求�
 
 <h4 id="profile-format">Profile 格式</h4>
 
+DuckDB 类型覆写支持 `Numeric`、`Categorical`、`Text`、`Boolean`、`DateTime`、`URL`、`Path`、`File` 和 `Unsupported`。已覆写的列会返回 `properties.profileType`。
+
 Profile 通过名称，将统计信息附加到已有的 schema 模型和列上：
 
 | 字段 | 含义 |
@@ -266,6 +268,7 @@ await ava.profile({
 | `unicode_summary` | 文本 | Unicode 码点总数、不同码点数，以及按通用类别、区块别名和文字系统分组的总频数与字符频数。 |
 | `url_summary` | 文本 | URL 协议、授权部分、路径、查询和片段的频数。缺省部分计为空字符串。 |
 | `path_summary` | 文本 | POSIX 路径的主干、后缀、名称、父目录和锚点频数与去重计数，以及字符级公共前缀。 |
+| `file_summary` | `File` | 文件大小、访问时间、修改时间、元数据变更时间和文件大小直方图。时间使用 Unix 毫秒，保留到秒。 |
 | `date_validation` | 文本、日期 | 无效日期的去重计数、行数和占比。文本支持 pandas 纳秒日期范围内的 ISO、常见数字和英文月份格式。 |
 | `zero_count`、`zero_ratio` | 数值 | 零值数量及其占总行数的比例。 |
 | `negative_count`、`negative_ratio` | 数值 | 负值数量及其占总行数的比例，包含负无穷。 |
@@ -310,6 +313,7 @@ DuckDB 中，分母为零时比例返回 `0`。默认分别统计 SQL NULL、NaN
 | `adf` | `maxLag` | 由样本数决定 | 回归最大滞后阶数。 |
 | `adf` | `autolag` | `AIC` | 滞后阶数选择方式，可用 `AIC`、`BIC`、`t-stat` 或 `null`（使用最大阶数）。 |
 | `adf` | `significance` | `0.05` | 平稳性检验的 p 值阈值。 |
+| `file_summary` | `root` | 必填 | 包含被引用文件的本地绝对目录。 |
 | `missing_correlation` | `columns` | 所有列 | 非空且不重复的列名列表。同时含缺失值与有效值的列不足两列时返回 `null`。 |
 | `quantiles` | `probabilities` | `[0.05, 0.25, 0.5, 0.75, 0.95]` | 非空数组，元素在 `[0, 1]` 范围内。 |
 | `histogram` | `bins` | `50` | 非负整数，`0` 表示按 Sturges/Freedman–Diaconis 规则自动选桶。 |

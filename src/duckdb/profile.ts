@@ -1,3 +1,5 @@
+import { isAbsolute } from 'node:path';
+
 import { z } from 'zod';
 
 import { sqlIdentifier, sqlQualifiedName, sqlStringLiteral } from '../util/sql';
@@ -15,6 +17,7 @@ import { dateValidationSql, parseDateSql } from './profile-dates';
 import { frequencySpectrum } from './profile-spectrum';
 import { augmentedDickeyFuller } from './profile-adf';
 import { inferColumnTypes } from './profile-inference';
+import { fileSummary } from './profile-files';
 import {
   characterCountsSql,
   lengthCountsSql,
@@ -52,6 +55,7 @@ const logicalProfileTypes: Record<ProfileType, LogicalType> = {
   DateTime: 'date',
   URL: 'string',
   Path: 'string',
+  File: 'string',
   Unsupported: 'unknown',
 };
 
@@ -823,6 +827,23 @@ export const BUILTIN_METRICS: DuckDBMetric[] = [
     expression: ({ table, column }) => pathSummarySql(table, column!),
   },
   {
+    id: 'file_summary',
+    enable: ({ target, field }) => target === 'column' && (field as ProfileField | undefined)?.profileType === 'File',
+    options: {
+      root: {
+        validate: (value) => {
+          z.string().refine(isAbsolute).parse(value);
+        },
+      },
+    },
+    expression: (context) => {
+      if (!context.metric.root) throw new Error('file_summary requires an absolute root directory');
+      return `COALESCE(list_transform(list_sort(${frequencyRanks(context)}), lambda entry:
+        struct_pack(value := CAST(struct_extract(entry, 'value') AS VARCHAR),
+          count := -struct_extract(entry, 'rank')::DOUBLE)), [])`;
+    },
+  },
+  {
     id: 'date_validation',
     enable: logicalTypes('string', 'date'),
     expression: ({ column, field }) => dateValidationSql(column!, logicalType(field!.type) === 'date'),
@@ -949,12 +970,12 @@ export const BUILTIN_METRICS: DuckDBMetric[] = [
 export { DEFAULT_METRICS } from '../util/profile';
 
 /** Decode aggregate values into profile metrics. */
-function postProcessMetrics(
+async function postProcessMetrics(
   row: Record<string, unknown>,
   pending: { alias: string; metric: ParsedProfileOptions['metrics'][number]; output: Record<string, unknown> }[],
   referenceSemantics: boolean,
   unicodeProperties?: Parameters<typeof unicodeSummary>[1]
-): void {
+): Promise<void> {
   for (const { alias, metric, output } of pending) {
     const metricId = metric.id;
     const raw = row[alias];
@@ -976,6 +997,8 @@ function postProcessMetrics(
       );
     } else if (metricId === 'unicode_summary') {
       output[metricId] = unicodeSummary(raw as Parameters<typeof unicodeSummary>[0], unicodeProperties!);
+    } else if (metricId === 'file_summary') {
+      output[metricId] = await fileSummary(raw as Parameters<typeof fileSummary>[0], metric.root as string);
     } else if (metricId === 'median_length' && referenceSemantics) {
       output[metricId] = referenceMedianLength(raw as Parameters<typeof referenceMedianLength>[0]);
     } else if (
@@ -1034,7 +1057,7 @@ export async function profileTables(
       if (
         ((target === 'numeric' || target === 'boolean') && target !== native) ||
         (target === 'date' && native !== 'date' && native !== 'string') ||
-        ((profileType === 'URL' || profileType === 'Path') && native !== 'string')
+        ((profileType === 'URL' || profileType === 'Path' || profileType === 'File') && native !== 'string')
       ) {
         throw new Error(`Cannot profile ${name}.${field.name} (${field.type}) as ${profileType}`);
       }
@@ -1209,7 +1232,7 @@ export async function profileTables(
     const sql = `${withParameters}SELECT ${projection.concat(presence).join(', ')}
       FROM ${source}${statistics.length ? ` CROSS JOIN ${centerTable}` : ''}`;
     const row = (await connection.runAndReadAll(sql)).getRowObjectsJson()[0];
-    postProcessMetrics(row, pending, nanAsNull, unicodeProperties);
+    await postProcessMetrics(row, pending, nanAsNull, unicodeProperties);
     if (nanAsNull) {
       for (const [i, column] of profile.columns.entries()) {
         if (!row[`has_value${i}`]) {

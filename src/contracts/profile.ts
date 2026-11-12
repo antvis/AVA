@@ -11,6 +11,7 @@ const profileTypeSchema = z.enum([
   'DateTime',
   'URL',
   'Path',
+  'File',
   'Unsupported',
 ]);
 const columnSchema = z.object({
