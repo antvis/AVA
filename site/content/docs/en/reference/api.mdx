@@ -249,7 +249,7 @@ await ava.profile({
 | `value_counts` | Numeric, text, boolean, date | All non-NULL frequencies as `{ value, count }`, sorted by count descending and then value. Output grows with the number of distinct values. |
 | `mode`, `mode_count` | Numeric, text, boolean, date | First value in frequency order and its count. |
 | `imbalance` | Text, boolean, numeric category codes | One minus normalized Shannon entropy, excluding NULL and NaN. Returns zero for uniform distributions or fewer than two classes. |
-| `mean_length`, `median_length` | Text | Mean and median length in Unicode code points, weighted by occurrence. |
+| `mean_length`, `median_length` | Text | Mean and median length in Unicode code points, weighted by occurrence. In `data-profiling` mode, the median follows the reference's separately sorted length weights. |
 | `length_histogram` | Text | `{ length, count }` entries ordered by length. NULLs are excluded and an empty string has length zero. |
 | `word_counts` | Text | `{ value, count }` entries after Unicode lowercasing, whitespace splitting and ASCII punctuation trimming. Repeated strings contribute by frequency. |
 | `character_counts` | Text | Frequency of each Unicode code point as `{ value, count }` entries. Counts preserve whitespace and case. |

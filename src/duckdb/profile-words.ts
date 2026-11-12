@@ -79,3 +79,25 @@ export function wordCountsSql(
 export function characterCountsSql(table: string, column: string): string {
   return textCountsSql(table, column, { tokens: "string_split(text, '')", value: 'token' });
 }
+
+export function lengthCountsSql(column: string): string {
+  return `COALESCE(list_transform(map_entries(histogram(length(CAST(${column} AS VARCHAR)))),
+      lambda entry: struct_pack(length := struct_extract(entry, 'key')::DOUBLE,
+        count := struct_extract(entry, 'value')::DOUBLE)), [])`;
+}
+
+export function referenceMedianLength(histogram: { length: number; count: number }[]): number | null {
+  if (!histogram.length) return null;
+  const midpoint = histogram.reduce((total, { count }) => total + count, 0) / 2;
+  // The reference sorts the weights independently of the lengths for this statistic.
+  const weights = histogram.map(({ count }) => count).sort((a, b) => a - b);
+  const maximum = weights[weights.length - 1];
+  if (maximum > midpoint) return histogram.find(({ count }) => count === maximum)!.length;
+  let total = 0;
+  for (let i = 0; i < weights.length; i += 1) {
+    total += weights[i];
+    if (total === midpoint) return (histogram[i].length + histogram[i + 1].length) / 2;
+    if (total > midpoint) return histogram[i].length;
+  }
+  return null;
+}

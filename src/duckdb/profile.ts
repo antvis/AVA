@@ -7,7 +7,13 @@ import { kendallPair } from './profile-kendall';
 import { cramersPair } from './profile-cramers';
 import { chiSquareBins, chiSquareCounts, chiSquareResult, chiSquareSql } from './profile-chi-square';
 import { referenceQuantiles } from './profile-quantiles';
-import { characterCountsSql, registerWordLowercase, wordCountsSql } from './profile-words';
+import {
+  characterCountsSql,
+  lengthCountsSql,
+  referenceMedianLength,
+  registerWordLowercase,
+  wordCountsSql,
+} from './profile-words';
 
 import type { DuckDBConnection } from '@duckdb/node-api';
 import type { MetricField } from '../util/profile';
@@ -630,14 +636,13 @@ export const BUILTIN_METRICS: DuckDBMetric[] = [
   {
     id: 'median_length',
     enable: logicalTypes('string'),
-    expression: ({ column }) => `MEDIAN(length(CAST(${column} AS VARCHAR)))`,
+    expression: ({ column, nanAsNull }) =>
+      nanAsNull ? lengthCountsSql(column!) : `MEDIAN(length(CAST(${column} AS VARCHAR)))`,
   },
   {
     id: 'length_histogram',
     enable: logicalTypes('string'),
-    expression: ({ column }) => `COALESCE(list_transform(map_entries(histogram(length(CAST(${column} AS VARCHAR)))),
-      lambda entry: struct_pack(length := struct_extract(entry, 'key')::DOUBLE,
-        count := struct_extract(entry, 'value')::DOUBLE)), [])`,
+    expression: ({ column }) => lengthCountsSql(column!),
   },
   {
     id: 'word_counts',
@@ -802,6 +807,8 @@ function postProcessMetrics(
     if (metricId === 'top_values' && raw == null) continue;
     if (metricId === 'chi_squared') {
       output[metricId] = chiSquareResult(raw as Parameters<typeof chiSquareResult>[0]);
+    } else if (metricId === 'median_length' && referenceSemantics) {
+      output[metricId] = referenceMedianLength(raw as Parameters<typeof referenceMedianLength>[0]);
     } else if (
       typeof raw === 'object' ||
       typeof raw === 'boolean' ||
