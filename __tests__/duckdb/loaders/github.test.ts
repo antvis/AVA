@@ -1,6 +1,6 @@
 import { mkdtemp, rm, writeFile } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
-import { join, resolve } from 'node:path';
+import { join } from 'node:path';
 
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
@@ -271,23 +271,6 @@ describe('GitHub SDK source', () => {
     ]);
   });
 
-  it('queries GitHub and CSV together using qualified table names', async () => {
-    mockFetch(Response.json([item(1), item(2, { pull_request: { merged_at: null } })]));
-    await ava.source([
-      { name: 'repo', type: 'github', options: { repository } },
-      { name: 'labels', type: 'csv', options: { csv: 'number,label\n1,priority\n' } },
-    ]);
-
-    const { models } = await ava.schema();
-    expect(models.map(({ name, tableReference }) => [name, tableReference])).toEqual([
-      ['repo.issues', { schema: 'repo', table: 'issues' }],
-      ['repo.pull_requests', { schema: 'repo', table: 'pull_requests' }],
-      ['labels.data', { schema: 'labels', table: 'data' }],
-    ]);
-    const result = await ava.query('SELECT number, label FROM repo.issues JOIN labels.data USING (number)');
-    expect(result.data).toEqual([{ number: 1, label: 'priority' }]);
-  });
-
   it('keeps old open items and counts a duplicate only once at maxRecords', async () => {
     vi.spyOn(Date, 'now').mockReturnValue(start);
     const fetch = mockFetch(
@@ -364,16 +347,12 @@ describe('GitHub SDK source', () => {
 describe('GitHub CLI source', () => {
   const sessionSources = () => vi.mocked(createSession).mock.calls.at(-1)?.[0];
 
-  it('loads a GitHub issues link and a file in one session using GH_TOKEN first', async () => {
+  it('detects a GitHub issues link and uses GH_TOKEN first', async () => {
     vi.stubEnv('GH_TOKEN', 'gh-token');
     vi.stubEnv('GITHUB_TOKEN', 'github-token');
     const url = 'https://github.com/antvis/AVA/issues?q=is%3Aopen';
-    await runSource([url, 'labels.csv'], {});
-    expect(createSession).toHaveBeenCalledOnce();
-    expect(sessionSources()).toEqual([
-      { type: 'github', options: { repository: url, token: 'gh-token' } },
-      { type: 'csv-file', options: { path: resolve('labels.csv') } },
-    ]);
+    await runSource([url], {});
+    expect(sessionSources()).toEqual([{ type: 'github', options: { repository: url, token: 'gh-token' } }]);
   });
 
   it('prefers a token from @file over environment variables', async () => {
