@@ -112,7 +112,7 @@ await ava.source({ type: 'json', options: { data: [{ revenue: 120 }] } });
 | Parameter | Type | Required | Meaning |
 | --- | --- | --- | --- |
 | `config` | `DataSourceConfig` | Yes | Data source to load. |
-| `config.type` | `SourceType` | Yes | [Source type](/documentation/data/sources/#connect-a-source), such as `json` or `csv-file`. |
+| `config.type` | `string` | Yes | [Source type](/documentation/data/sources/#connect-a-source), such as `json` or `csv-file`. |
 | `config.options` | Source-specific object | Yes | [Reader or connection settings](/documentation/data/sources/#connect-a-source) for that type. |
 
 Source configuration is validated before replacing the active dataset; an invalid configuration preserves the current source and metadata. Once validation succeeds, loading disposes the previous engine and clears the saved schema, profile, and semantic definitions. A later loading failure leaves no active source. Await pending operations before replacing a source.

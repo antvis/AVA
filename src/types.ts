@@ -99,8 +99,8 @@ export type CubeDimension = Measure;
 export type TimeDimension = CubeDimension;
 
 export type DataSourceConfig = z.input<typeof sourceInputSchema>;
-export type SourceType = DataSourceConfig['type'];
-export type DataSourceOptions<T extends SourceType> = Extract<DataSourceConfig, { type: T }>['options'];
+export type ParsedDataSourceConfig = z.output<typeof sourceInputSchema> & { name: string };
+export type DataSourceOptions<T extends DataSourceConfig['type']> = Extract<DataSourceConfig, { type: T }>['options'];
 
 export type CSVFileSourceOptions = DataSourceOptions<'csv-file'>;
 export type JsonFileSourceOptions = DataSourceOptions<'json-file'>;
@@ -220,7 +220,7 @@ export interface AnalysisEngine {
   /** Query language, generation rules and validation supplied by every engine. */
   readonly dialect: QueryDialect;
   /** Load a data source and prepare it for execution. */
-  load(config: DataSourceConfig): Promise<void>;
+  load(configs: ParsedDataSourceConfig[]): Promise<void>;
   /** Discover the loaded source structure. */
   schema(): Promise<Schema>;
   /** Compute statistics for the loaded data. */

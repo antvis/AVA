@@ -9,10 +9,44 @@ import * as browser from '../src/index.browser';
 import * as contracts from '../src/contracts';
 import { startupSchema } from '../src/cli/session/protocol';
 import { resultSchema as pythonResultSchema } from '../src/interpreter/python/util/schema';
+import { parseSourceConfigs } from '../src/util/source';
 
 import type { DataSourceConfig } from '../src/types';
 
 const source = { type: 'json' as const, options: { data: [{ sales: 10 }] } };
+
+describe('parseSourceConfigs', () => {
+  const orders = { type: 'csv-file' as const, name: 'orders', options: { path: 'orders.csv' } };
+
+  it('normalizes single inputs and keeps each source in a mixed batch', () => {
+    const defaultSource = { ...source, name: 'data1' };
+    expect(parseSourceConfigs(source)).toEqual([defaultSource]);
+    expect(parseSourceConfigs([source])).toEqual([defaultSource]);
+    expect(parseSourceConfigs(orders)).toEqual([orders]);
+
+    const customers = { type: 'excel', name: 'customers', options: { path: 'customers.xlsx' } };
+    expect(parseSourceConfigs([orders, { ...customers, name: ' customers ' }])).toEqual([orders, customers]);
+  });
+
+  it('assigns fallback names to missing, invalid, and duplicate names', () => {
+    expect(parseSourceConfigs([source, source]).map(({ name }) => name)).toEqual(['data1', 'data2']);
+    const sources = parseSourceConfigs([
+      source,
+      { ...orders, name: ' DATA1 ' },
+      { ...source, name: 'data1' },
+      { ...source, name: ' ' },
+      { ...source, name: 42 },
+    ]);
+    expect(sources.map(({ name }) => name)).toEqual(['data2', 'DATA1', 'data3', 'data4', 'data5']);
+  });
+
+  it.each([
+    [[], /at least one data source/i],
+    [[orders, { ...source, name: 'customers', options: { data: null } }], /data/],
+  ])('rejects invalid source input %j', (input, message) => {
+    expect(() => parseSourceConfigs(input)).toThrow(message);
+  });
+});
 
 describe('public source contracts', () => {
   it.each([null, [], 1, 'row', new Date()])('rejects non-record JSON rows: %j', (row) => {

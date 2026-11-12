@@ -114,7 +114,7 @@ await ava.source({ type: 'json', options: { data: [{ revenue: 120 }] } });
 | 参数 | 类型 | 必填 | 含义 |
 | --- | --- | --- | --- |
 | `config` | `DataSourceConfig` | 是 | 待加载的数据源。 |
-| `config.type` | `SourceType` | 是 | [数据源类型](/documentation/data/sources/#connect-a-source)，例如 `json` 或 `csv-file`。 |
+| `config.type` | `string` | 是 | [数据源类型](/documentation/data/sources/#connect-a-source)，例如 `json` 或 `csv-file`。 |
 | `config.options` | 数据源对应的对象 | 是 | 该类型的[读取或连接设置](/documentation/data/sources/#connect-a-source)。 |
 
 数据源配置在替换前校验；无效配置会保留当前数据源和元数据。配置通过校验后，加载会释放旧引擎，清除保存的 schema、profile 和业务语义；此后加载失败则没有活动数据源。替换数据源前，请等待正在进行的操作完成。
