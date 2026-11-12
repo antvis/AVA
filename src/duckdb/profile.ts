@@ -185,6 +185,30 @@ function correlationMatrix(fields: MetricField[], coefficient: (i: number, j: nu
     lambda r: list_transform(r, lambda v: CASE WHEN isfinite(v) THEN greatest(-1, least(1, v)) END)))`;
 }
 
+function filterCorrelation(matrix: string, flags: string): string {
+  return `list_transform([struct_pack(result := ${matrix}, flags := ${flags})], lambda item:
+    CASE WHEN list_count(list_filter(item.flags, lambda included: included)) >= 2 THEN
+      struct_pack(columns := list_filter(item.result.columns, lambda c, i: item.flags[i]),
+        matrix := list_transform(list_filter(item.result.matrix, lambda r, i: item.flags[i]),
+          lambda r: list_filter(r, lambda v, j: item.flags[j]))) END)[1]`;
+}
+
+function missingMask(field: MetricField, sourceAlias?: string): string {
+  const column = sqlQualifiedName(field.name, sourceAlias);
+  return floatingPoint.test(field.type) ? `(${column} IS NULL OR isnan(${column}))` : `(${column} IS NULL)`;
+}
+
+function missingCorrelation(context: ExpressionContext): string {
+  const fields = selectFields(context);
+  if (fields.length < 2) return 'first(NULL)';
+  const masks = fields.map((field) => missingMask(field, context.sourceAlias));
+  const flags = masks.map((mask) => `count(*) FILTER (WHERE ${mask}) BETWEEN 1 AND count(*) - 1`);
+  const matrix = correlationMatrix(fields, (i, j) =>
+    i === j ? '1::DOUBLE' : `corr(${masks[i]}::DOUBLE, ${masks[j]}::DOUBLE)`
+  );
+  return filterCorrelation(matrix, `[${flags.join(', ')}]`);
+}
+
 function pearson(context: ExpressionContext): string {
   const fields = numericCorrelationFields(context);
   if (!fields.length) return emptyCorrelation;
@@ -268,11 +292,7 @@ function cramers(context: ExpressionContext): string {
   return `first((WITH ${input} AS MATERIALIZED (SELECT ${projection.join(', ')} FROM ${context.table}),
     eligibility AS (SELECT [${eligibility.join(', ')}] AS flags FROM ${input}),
     coefficients AS (SELECT flags, ${pairs.join(', ')} FROM eligibility)
-    SELECT CASE WHEN list_count(list_filter(flags, lambda included: included)) >= 2 THEN
-      list_transform([${matrix}], lambda m: struct_pack(
-        columns := list_filter(m.columns, lambda c, i: flags[i]),
-        matrix := list_transform(list_filter(m.matrix, lambda r, i: flags[i]),
-          lambda r: list_filter(r, lambda v, j: flags[j]))))[1] END FROM coefficients))`;
+    SELECT ${filterCorrelation(matrix, 'flags')} FROM coefficients))`;
 }
 
 const shapeMetrics = ['skewness', 'kurtosis'] as const;
@@ -342,6 +362,7 @@ export const BUILTIN_METRICS: DuckDBMetric[] = [
   { id: 'pearson', enable: table, options: { columns: columnNamesOption }, expression: pearson },
   { id: 'spearman', enable: table, options: { columns: columnNamesOption }, expression: rankCorrelation },
   { id: 'kendall', enable: table, options: { columns: columnNamesOption }, expression: rankCorrelation },
+  { id: 'missing_correlation', enable: table, options: { columns: columnNamesOption }, expression: missingCorrelation },
   {
     id: 'cramers',
     enable: table,

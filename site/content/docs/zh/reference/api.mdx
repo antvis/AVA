@@ -240,6 +240,7 @@ await ava.profile({
 | `spearman` | 表中的数值列 | 对称秩相关矩阵。每对列在各自的有限观测上排序，并列值取平均秩。 |
 | `kendall` | 表中的数值列 | 有限值对的 Kendall tau-b 矩阵，分母包含并列值校正。 |
 | `cramers` | 表中的类别列 | 经过偏差校正的 Cramér's V，对 2 × 2 列联表使用 Yates 校正。排除 NULL 和 NaN，符合条件的列不足两列时返回 `null`。 |
+| `missing_correlation` | 表 | 缺失标记之间的 Pearson 相关矩阵，SQL NULL 与 NaN 均算缺失。排除全缺失或全非缺失的列。 |
 | `valid_count` | 列 | 非 NULL 值数量。 |
 | `null_ratio` | 列 | SQL NULL 数量除以总行数。 |
 | `distinct_ratio` | 数值、文本、布尔、日期 | 不同非空值数除以非空值数。 |
@@ -279,6 +280,7 @@ DuckDB 中，分母为零时比例返回 `0`。SQL NULL、NaN 和无穷值分别
 | `kendall` | `columns` | 所有数值列 | 非空且不重复的数值列名列表。通过分组秩统计观测对。 |
 | `cramers` | `columns` | 文本和布尔列 | 非空且不重复的类别列名列表。显式选择时也支持数值类别编码。 |
 | `cramers` | `maxCategories` | `100` | 每列的不同类别数上限。排除常量列和全缺失列。 |
+| `missing_correlation` | `columns` | 所有列 | 非空且不重复的列名列表。同时含缺失值与有效值的列不足两列时返回 `null`。 |
 | `quantiles` | `probabilities` | `[0.05, 0.25, 0.5, 0.75, 0.95]` | 非空数组，元素在 `[0, 1]` 范围内。 |
 | `histogram` | `bins` | `50` | 非负整数，`0` 表示按 Sturges/Freedman–Diaconis 规则自动选桶。 |
 | `histogram` | `maxBins` | `250` | 正整数，限制最大桶数。 |

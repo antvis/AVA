@@ -19,7 +19,7 @@ from data_profiling.config import Settings
 
 
 ROOT = Path(__file__).resolve().parents[2]
-TABLE_METRICS = ["row_count", "table_summary", "pearson", "spearman", "kendall", "cramers"]
+TABLE_METRICS = ["row_count", "table_summary", "pearson", "spearman", "kendall", "cramers", "missing_correlation"]
 COLUMN_METRICS = {
     "valid_count": "count",
     "null_count": "n_missing",
@@ -135,7 +135,8 @@ def compare(path, types):
               "cat": {"length": True, "characters": False, "words": False}},
         correlations={method: {"calculate": True} for method in ("pearson", "spearman", "kendall", "cramers")},
     )
-    expected = ProfileReport(pd.read_parquet(path), config=config, type_schema=types).get_description()
+    frame = pd.read_parquet(path)
+    expected = ProfileReport(frame, config=config, type_schema=types).get_description()
     checks = []
 
     def check(name, received, reference):
@@ -152,6 +153,10 @@ def compare(path, types):
                            "all_null_columns": "n_vars_all_missing"}.items():
         check(f"table.{native}", summary[native], expected.table[source])
     check("table.row_duplicates.group_count", actual["metrics"]["row_duplicates"]["group_count"], expected.table["n_duplicates"])
+    missing = frame.isna()
+    partial = [name for name in frame if 0 < missing[name].sum() < len(frame)]
+    check("table.missing_correlation", actual["metrics"]["missing_correlation"],
+          {"columns": partial, "matrix": missing[partial].corr().to_numpy()} if len(partial) >= 2 else None)
 
     for column in actual["columns"]:
         name, observed = column["name"], column["metrics"]
