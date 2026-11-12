@@ -52,7 +52,19 @@ jobs:
         with:
           node-version: 22.x
       - run: npm install --legacy-peer-deps
-      - run: npm run build
-      - name: Exercise the installed dataset session in PowerShell
+      - run: npm run build:cjs
+      - name: Smoke test a dataset session
         shell: pwsh
-        run: ./__tests__/cli/windows-session.ps1
+        run: |
+          $PSNativeCommandUseErrorActionPreference = $true
+          $cli = './lib/cli/index.js'
+          $csv = Join-Path $env:RUNNER_TEMP 'ava-smoke.csv'
+          @('amount', '42') | Set-Content -Encoding utf8 $csv
+          $id = (node $cli source $csv | ConvertFrom-Json).datasetId
+          if (!$id) { throw 'Missing datasetId' }
+          try {
+            $result = node $cli query $id --dsl 'SELECT amount FROM data' | ConvertFrom-Json
+            if ($result.data[0].amount -ne 42) { throw 'Unexpected query result' }
+          } finally {
+            node $cli dispose $id | Out-Null
+          }
