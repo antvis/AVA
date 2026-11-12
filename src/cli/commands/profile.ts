@@ -47,7 +47,7 @@ Additional metrics:
   DuckDB distribution shape: skewness, kurtosis
   DuckDB frequencies: value_counts, mode, mode_count
   DuckDB text lengths: mean_length, median_length, length_histogram
-  DuckDB table metrics: table_summary
+  DuckDB table metrics: table_summary, row_duplicates
   unique_count counts non-null values occurring exactly once; distinct_count counts different values.
   Metrics apply only to compatible fields.
 

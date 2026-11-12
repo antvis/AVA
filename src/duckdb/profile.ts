@@ -107,6 +107,34 @@ function tableSummary({ fields = [], sourceAlias }: ExpressionContext): string {
   )}))`;
 }
 
+function duplicateRows({ table, fields = [], sourceAlias, metric }: ExpressionContext): string {
+  const { limit = 10, columns = fields.map(({ name }) => name) } = metric;
+  const names = columns as string[];
+  const known = new Set(fields.map(({ name }) => name));
+  for (const name of names) {
+    if (!known.has(name)) throw new Error(`Unknown row_duplicates column: ${name}`);
+  }
+  const empty =
+    'struct_pack(group_count := 0, group_ratio := 0, duplicate_row_count := 0, excess_row_count := 0, samples := [])';
+  if (!names.length) return `COALESCE(first(NULL), ${empty})`;
+
+  const key = `struct_pack(${names
+    .map((name) => `${sqlIdentifier(name)} := ${sqlQualifiedName(name, sourceAlias)}`)
+    .join(', ')})`;
+  const duplicates = 'COUNT(*) FILTER (WHERE n > 1)';
+  const samples =
+    limit === 0
+      ? '[]'
+      : `COALESCE(arg_min(struct_pack(row_values := row_key, count := n::DOUBLE),
+    struct_pack(rank := -n, row_key := row_key), ${limit}) FILTER (WHERE n > 1), [])`;
+  // The group counts stay inside DuckDB and arg_min retains only the requested sample rows.
+  return `COALESCE(first((SELECT struct_pack(group_count := (${duplicates})::DOUBLE,
+    group_ratio := COALESCE((${duplicates})::DOUBLE / NULLIF(sum(n), 0), 0),
+    duplicate_row_count := COALESCE(sum(n) FILTER (WHERE n > 1), 0)::DOUBLE,
+    excess_row_count := COALESCE(sum(n - 1), 0)::DOUBLE, samples := ${samples})
+    FROM (SELECT ${key} AS row_key, COUNT(*) AS n FROM ${table} GROUP BY 1) grouped)), ${empty})`;
+}
+
 const shapeMetrics = ['skewness', 'kurtosis'] as const;
 
 function shape(metric: (typeof shapeMetrics)[number], context: ExpressionContext): string {
@@ -130,6 +158,26 @@ function shape(metric: (typeof shapeMetrics)[number], context: ExpressionContext
 export const BUILTIN_METRICS: DuckDBMetric[] = [
   { id: 'row_count', enable: table, expression: () => 'COUNT(*)' },
   { id: 'table_summary', enable: table, expression: tableSummary },
+  {
+    id: 'row_duplicates',
+    enable: table,
+    options: {
+      limit: {
+        validate: (value) => {
+          z.number().int().nonnegative().parse(value);
+        },
+      },
+      columns: {
+        validate: (value) => {
+          z.array(z.string().min(1))
+            .nonempty()
+            .refine((names) => new Set(names).size === names.length)
+            .parse(value);
+        },
+      },
+    },
+    expression: duplicateRows,
+  },
   { id: 'valid_count', enable: column, expression: ({ column }) => `COUNT(${column})` },
   { id: 'null_count', enable: column, expression: ({ column }) => `COUNT(*) - COUNT(${column})` },
   {

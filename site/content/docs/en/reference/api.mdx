@@ -213,6 +213,8 @@ For text, DuckDB adds `mean_length`, `median_length`, and `length_histogram`. Le
 
 `table_summary` reports row and column counts, SQL NULL cell counts and ratios, columns with at least one NULL, entirely NULL columns, and counts by logical type. It covers the columns in the profile schema and shares the scan with column null counts. An empty table has no entirely NULL columns.
 
+`row_duplicates` groups rows by all profile columns or by a `columns` subset. It returns the number of repeated groups, their ratio to total rows, the rows in those groups, and the rows that would be removed by deduplication. Samples are ordered by count and then by key. `limit` defaults to `10`. Set `limit: 0` to return counts alone.
+
 Numeric DuckDB columns also support `zero_count`, `negative_count`, `infinite_count`, `nan_count`, and `finite_count`, and their `_ratio` counterparts (for example `zero_ratio`). Ratios divide by all rows, including nulls, and return `0` for an empty table. Negative infinity counts as both negative and infinite. NaN, infinity, and SQL NULL remain separate observations. These optional metrics share the aggregate scan and do not change the default metric set.
 
 DuckDB dispersion metrics are `variance` (sample variance), `mad` (median absolute deviation), `iqr` (75th minus 25th percentile), `cv` (sample standard deviation / mean), and `range` (maximum minus minimum; dates use milliseconds). They use finite observations. Insufficient observations return `null`; `cv` is also `null` for a zero mean. Integer and decimal ranges are subtracted before conversion to JavaScript numbers, with a floating-point fallback when native subtraction overflows.
@@ -235,7 +237,7 @@ await ava.profile({
 
 DuckDB's `quantiles` metric accepts `probabilities`, a non-empty array of numbers between `0` and `1` (default `[0.05, 0.25, 0.5, 0.75, 0.95]`). It uses linear interpolation over finite numeric values and returns `[{ probability, value }]` in the requested order. Values are `null` when there are no finite observations. One list aggregate calculates all requested probabilities; raw rows are not transferred to JavaScript.
 
-Other built-in metrics accept no additional options. Unknown metrics and unknown option names are rejected when the engine computes the profile. Availability depends on the engine and field type.
+Metrics without documented options reject extra keys. Unknown metrics and unknown option names are rejected when the engine computes the profile. Availability depends on the engine and field type.
 
 `metrics: []` produces empty metric objects. A new profile replaces previous statistics; metrics are not accumulated.
 
