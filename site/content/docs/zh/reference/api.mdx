@@ -211,6 +211,8 @@ DuckDB 还支持 `valid_count`（非空值数）、`null_ratio`（空值数 / �
 
 DuckDB 数值列还支持 `zero_count`、`negative_count`、`infinite_count`、`nan_count`、`finite_count`，以及对应的 `_ratio` 指标（例如 `zero_ratio`）。比例以包含空值的总行数为分母，空表返回 `0`。负无穷同时计入负值与无穷值；NaN、无穷值和 SQL NULL 分别统计。这些可选指标共用聚合扫描，不改变默认指标集。
 
+DuckDB 的离散程度指标包括 `variance`（样本方差）、`mad`（中位数绝对偏差）、`iqr`（75% 分位数减去 25% 分位数）、`cv`（样本标准差 / 均值）与 `range`（最大值减去最小值，日期使用毫秒）。这些指标使用有限观测值；样本不足时返回 `null`，均值为零时 `cv` 也返回 `null`。整数和小数的极差先相减，再转换为 JavaScript 数值；原生相减溢出时回退到浮点计算。
+
 每项可以是指标名称，也可以是包含 `id` 和该指标专用选项的对象：
 
 ```typescript

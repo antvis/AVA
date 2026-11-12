@@ -125,6 +125,32 @@ export const BUILTIN_METRICS: DuckDBMetric[] = [
     expression: (context) => aggregate('stddev_samp', context),
   },
   { id: 'median', enable: logicalTypes('numeric'), expression: (context) => aggregate('median', context) },
+  { id: 'variance', enable: logicalTypes('numeric'), expression: (context) => aggregate('var_samp', context) },
+  { id: 'mad', enable: logicalTypes('numeric'), expression: (context) => aggregate('mad', context) },
+  {
+    id: 'iqr',
+    enable: logicalTypes('numeric'),
+    expression: (context) => {
+      const quartiles = aggregate('quantile_cont', context, '[0.25, 0.75]');
+      return `(${quartiles})[2] - (${quartiles})[1]`;
+    },
+  },
+  {
+    id: 'cv',
+    enable: logicalTypes('numeric'),
+    expression: (context) => `${aggregate('stddev_samp', context)} / NULLIF(${aggregate('avg', context)}, 0)`,
+  },
+  {
+    id: 'range',
+    enable: logicalTypes('numeric', 'date'),
+    expression: (context) => {
+      const min = range('min', context);
+      const max = range('max', context);
+      // TRY accepts scalar expressions, so bind the aggregate bounds before subtracting.
+      return `list_transform([struct_pack(lo := ${min}, hi := ${max})], bounds ->
+        COALESCE(TRY((bounds.hi - bounds.lo)::DOUBLE), TRY(bounds.hi::DOUBLE - bounds.lo::DOUBLE)))[1]`;
+    },
+  },
   {
     id: 'quantiles',
     enable: logicalTypes('numeric'),
