@@ -58,6 +58,9 @@ export function assessQuality(profile: Profile, options: QualityOptions): Qualit
         compare('zeros', observation(stats.zero_ratio), thresholds.ratioThreshold);
         compare('infinite', observation(stats.infinite_ratio), thresholds.ratioThreshold);
         compare('imbalance', observation(stats.imbalance), thresholds.imbalanceThreshold);
+        if (logicalType === 'numeric' || logicalType === 'string') {
+          compare('uniform', observation(property(stats.chi_squared, 'pvalue')), thresholds.uniformThreshold);
+        }
         const skewness = observation(stats.skewness);
         if (skewness !== undefined && Math.abs(skewness) > thresholds.skewnessThreshold) {
           add({ rule: 'skewed', column, value: skewness, threshold: thresholds.skewnessThreshold });

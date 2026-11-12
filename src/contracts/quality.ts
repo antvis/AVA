@@ -10,6 +10,7 @@ const rule = z.enum([
   'infinite',
   'missing',
   'skewed',
+  'uniform',
   'unique',
   'unsupported',
   'zeros',
@@ -24,6 +25,7 @@ export const qualityInputSchema = z
     correlationThreshold: ratio.default(0.9),
     imbalanceThreshold: ratio.default(0.5),
     skewnessThreshold: z.number().nonnegative().default(20),
+    uniformThreshold: ratio.default(0.999),
   })
   .strict();
 

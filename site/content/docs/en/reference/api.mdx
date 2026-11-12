@@ -323,6 +323,7 @@ const quality = await ava.quality({ rules: ['missing', 'constant'] });
 | `high_correlation` | `pearson` | `correlationThreshold: 0.9` on the absolute coefficient |
 | `imbalance` | `imbalance` | `imbalanceThreshold: 0.5` |
 | `skewed` | `skewness` | `skewnessThreshold: 20` on the absolute skewness |
+| `uniform` | Numeric and text `chi_squared.pvalue` | `uniformThreshold: 0.999` |
 | `unsupported` | Column logical type | `unknown` |
 
 Omit `rules` to evaluate every rule with available evidence. The default profile supplies basic checks. Request extra metrics to enable the corresponding checks.

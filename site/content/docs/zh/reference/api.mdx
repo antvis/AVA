@@ -325,6 +325,7 @@ const quality = await ava.quality({ rules: ['missing', 'constant'] });
 | `high_correlation` | `pearson` | 相关系数绝对值达到 `correlationThreshold: 0.9` |
 | `imbalance` | `imbalance` | `imbalanceThreshold: 0.5` |
 | `skewed` | `skewness` | 偏度绝对值超过 `skewnessThreshold: 20` |
+| `uniform` | 数值和文本列的 `chi_squared.pvalue` | `uniformThreshold: 0.999` |
 | `unsupported` | 列逻辑类型 | `unknown` |
 
 省略 `rules` 时检查所有具有对应指标的规则。默认画像支持基础检查，其他检查需要先计算相应指标。

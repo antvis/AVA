@@ -126,13 +126,14 @@ def compare(path, types):
     dataset = cli("source", str(path), "--engine", "duckdb")["datasetId"]
     try:
         actual = cli("profile", dataset, "--options", "-", payload={"metrics": metrics, "semantics": "data-profiling"})["models"][0]
+        quality = cli("quality", dataset, "--rules", "uniform")["models"][0]["alerts"]
     finally:
         cli("dispose", dataset)
 
     config = Settings(
         progress_bar=False, pool_size=1, infer_dtypes=False, missing_diagrams={"bar": False, "matrix": False, "heatmap": False},
         interactions={"continuous": False}, samples={"head": 3, "tail": 3, "random": 0},
-        vars={"num": {"low_categorical_threshold": 0, "chi_squared_threshold": 0.99},
+        vars={"num": {"low_categorical_threshold": 0, "chi_squared_threshold": 0.999},
               "cat": {"length": True, "characters": True, "words": True}},
         correlations={method: {"calculate": True} for method in ("pearson", "spearman", "kendall", "cramers", "auto")},
     )
@@ -154,6 +155,8 @@ def compare(path, types):
                            "all_null_columns": "n_vars_all_missing"}.items():
         check(f"table.{native}", summary[native], expected.table[source])
     check("table.row_duplicates.group_count", actual["metrics"]["row_duplicates"]["group_count"], expected.table["n_duplicates"])
+    check("quality.uniform", sorted(alert["column"] for alert in quality),
+          sorted(alert.column_name for alert in expected.alerts if alert.alert_type.name == "UNIFORM"))
     for sample in expected.sample:
         received = actual["metrics"]["row_sample"][sample.id]
         for row in received:
