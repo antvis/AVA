@@ -57,7 +57,7 @@ COLUMN_METRICS = {
     "chi_squared": "chi_squared",
 }
 REFERENCE_TYPES = {"Numeric": "numeric", "Categorical": "string", "Text": "string", "Boolean": "boolean",
-                   "DateTime": "date", "URL": "string", "Unsupported": "unknown"}
+                   "DateTime": "date", "URL": "string", "Path": "string", "Unsupported": "unknown"}
 MISSING = object()
 
 
@@ -94,6 +94,10 @@ def fixtures():
         "HTTPS://Example.com/a?name=A%20B#top", "HTTPS://Example.com/a?name=A%20B#top",
         "http://name:pwd@[::1]:8080/路径?next=/a?b#header#body", "https://example.net", "ftp://a.example/file.tar.gz",
     ]}), {"url": "URL"}
+    yield "paths", pa.table({"path": [
+        "/srv/报告/.env", "/srv/报告/.env", "/srv/报告/.env.dev", "/srv/报告/...file",
+        "/srv/报告/subdir/", "/srv/报告/archive.tar.gz", "/srv/报告/.ext\nsuffix",
+    ]}), {"path": "Path"}
 
 
 def json_value(value):
@@ -147,6 +151,8 @@ def compare(path, types):
                {"id": "row_duplicates", "limit": 0}, {"id": "row_sample", "head": 3, "tail": 3}]
     if "URL" in types.values():
         metrics.append("url_summary")
+    if "Path" in types.values():
+        metrics.append("path_summary")
     dataset = cli("source", str(path), "--engine", "duckdb")["datasetId"]
     try:
         actual = cli("profile", dataset, "--options", "-", payload={"metrics": metrics, "semantics": "data-profiling"})["models"][0]
@@ -159,7 +165,7 @@ def compare(path, types):
         interactions={"continuous": False}, samples={"head": 3, "tail": 3, "random": 0},
         vars={"num": {"low_categorical_threshold": 0, "chi_squared_threshold": 0.999},
               "cat": {"length": True, "characters": True, "words": True},
-              "url": {"active": "URL" in types.values()}},
+              "url": {"active": "URL" in types.values()}, "path": {"active": "Path" in types.values()}},
         correlations={method: {"calculate": True} for method in ("pearson", "spearman", "kendall", "cramers", "auto")},
     )
     frame = pd.read_parquet(path)
@@ -248,6 +254,14 @@ def compare(path, types):
                 key = part + "_counts"
                 check(f"{name}.{key}", {item["value"]: item["count"] for item in observed["url_summary"][key]},
                       reference[key].to_dict())
+        if reference["type"] == "Path":
+            check(f"{name}.common_prefix", observed["path_summary"]["common_prefix"], reference["common_prefix"])
+            for part in ("stem", "suffix", "name", "parent", "anchor"):
+                key = part + "_counts"
+                check(f"{name}.{key}", {item["value"]: item["count"] for item in observed["path_summary"][key]},
+                      reference[key].to_dict())
+                unique = f"n_{part}_unique"
+                check(f"{name}.{unique}", observed["path_summary"][unique], reference[unique])
         if "n_characters" in reference:
             unicode = observed["unicode_summary"]
             check(f"{name}.character_count", unicode["character_count"], reference["n_characters"])
