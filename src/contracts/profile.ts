@@ -12,6 +12,7 @@ const profileTypeSchema = z.enum([
   'URL',
   'Path',
   'File',
+  'Image',
   'Unsupported',
 ]);
 const columnSchema = z.object({

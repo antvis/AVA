@@ -3,13 +3,19 @@ import { isAbsolute, relative, resolve, sep } from 'node:path';
 
 type FileFrequency = { value: string; count: number };
 
-async function profileFilePath(root: string, value: string): Promise<string> {
+export async function profileFilePath(root: string, value: string): Promise<string> {
   const path = await realpath(resolve(root, value));
   const child = relative(root, path);
   if (child === '..' || child.startsWith(`..${sep}`) || isAbsolute(child)) {
     throw new Error(`Profile file is outside the configured root: ${value}`);
   }
   return path;
+}
+
+export async function profileFileRoot(directory: string): Promise<string> {
+  const root = await realpath(directory);
+  if (!(await stat(root)).isDirectory()) throw new Error('Profile file root must be a directory');
+  return root;
 }
 
 function fileHistogram(files: { size: number; count: number }[]) {
@@ -44,9 +50,9 @@ function fileHistogram(files: { size: number; count: number }[]) {
 }
 
 export async function fileSummary(paths: FileFrequency[], directory: string) {
-  const root = await realpath(directory);
-  if (!(await stat(root)).isDirectory()) throw new Error('Profile file root must be a directory');
-  const files: Array<FileFrequency & { size: number; created_at: number; accessed_at: number; modified_at: number }> = [];
+  const root = await profileFileRoot(directory);
+  const files: Array<FileFrequency & { size: number; created_at: number; accessed_at: number; modified_at: number }> =
+    [];
   const seconds = (millis: number) => Math.floor(millis / 1000) * 1000;
   for (let i = 0; i < paths.length; i += 16) {
     const batch = await Promise.all(

@@ -19,6 +19,7 @@ import { frequencySpectrum } from './profile-spectrum';
 import { augmentedDickeyFuller } from './profile-adf';
 import { booleanSql, inferColumnTypes } from './profile-inference';
 import { fileSummary } from './profile-files';
+import { imageSummary } from './profile-images';
 import {
   characterCountsSql,
   lengthCountsSql,
@@ -60,6 +61,7 @@ const logicalProfileTypes: Record<ProfileType, LogicalType> = {
   URL: 'string',
   Path: 'string',
   File: 'string',
+  Image: 'string',
   Unsupported: 'unknown',
 };
 
@@ -174,6 +176,19 @@ function frequencyRanks(context: ColumnContext): string {
 
 function frequencyValue(value: string, field?: ProfileField): string {
   return field?.logicalType === 'date' || field?.profileType === 'Categorical' ? `CAST(${value} AS VARCHAR)` : value;
+}
+
+const fileRootOption = {
+  validate: (value: unknown) => {
+    z.string().refine(isAbsolute).parse(value);
+  },
+};
+
+function filePathsSql(context: ExpressionContext): string {
+  if (!context.metric.root) throw new Error(`${context.metric.id} requires an absolute root directory`);
+  return `COALESCE(list_transform(list_sort(${frequencyRanks(context)}), lambda entry:
+    struct_pack(value := CAST(struct_extract(entry, 'value') AS VARCHAR),
+      count := -struct_extract(entry, 'rank')::DOUBLE)), [])`;
 }
 
 function imbalance(context: ColumnContext): string {
@@ -891,20 +906,25 @@ export const BUILTIN_METRICS: DuckDBMetric[] = [
   },
   {
     id: 'file_summary',
-    enable: ({ target, field }) => target === 'column' && (field as ProfileField | undefined)?.profileType === 'File',
+    enable: ({ target, field }) => {
+      const type = (field as ProfileField | undefined)?.profileType;
+      return target === 'column' && (type === 'File' || type === 'Image');
+    },
+    options: { root: fileRootOption },
+    expression: filePathsSql,
+  },
+  {
+    id: 'image_summary',
+    enable: ({ target, field }) => target === 'column' && (field as ProfileField | undefined)?.profileType === 'Image',
     options: {
-      root: {
+      root: fileRootOption,
+      exif: {
         validate: (value) => {
-          z.string().refine(isAbsolute).parse(value);
+          z.boolean().parse(value);
         },
       },
     },
-    expression: (context) => {
-      if (!context.metric.root) throw new Error('file_summary requires an absolute root directory');
-      return `COALESCE(list_transform(list_sort(${frequencyRanks(context)}), lambda entry:
-        struct_pack(value := CAST(struct_extract(entry, 'value') AS VARCHAR),
-          count := -struct_extract(entry, 'rank')::DOUBLE)), [])`;
-    },
+    expression: filePathsSql,
   },
   {
     id: 'date_validation',
@@ -1114,6 +1134,12 @@ async function postProcessMetrics(
       output[metricId] = unicodeSummary(raw as Parameters<typeof unicodeSummary>[0], unicodeProperties!);
     } else if (metricId === 'file_summary') {
       output[metricId] = await fileSummary(raw as Parameters<typeof fileSummary>[0], metric.root as string);
+    } else if (metricId === 'image_summary') {
+      output[metricId] = await imageSummary(
+        raw as Parameters<typeof imageSummary>[0],
+        metric.root as string,
+        metric.exif === true
+      );
     } else if (metricId === 'median_length' && referenceSemantics) {
       output[metricId] = referenceMedianLength(raw as Parameters<typeof referenceMedianLength>[0]);
     } else if (
@@ -1175,7 +1201,8 @@ export async function profileTables(
       if (
         ((target === 'numeric' || target === 'boolean') && target !== native) ||
         (target === 'date' && native !== 'date' && native !== 'string') ||
-        ((profileType === 'URL' || profileType === 'Path' || profileType === 'File') && native !== 'string')
+        ((profileType === 'URL' || profileType === 'Path' || profileType === 'File' || profileType === 'Image') &&
+          native !== 'string')
       ) {
         throw new Error(`Cannot profile ${name}.${field.name} (${field.type}) as ${profileType}`);
       }

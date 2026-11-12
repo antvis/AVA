@@ -15,6 +15,7 @@ import pandas as pd
 import pyarrow as pa
 import pyarrow.parquet as pq
 import scipy
+from PIL import Image
 from data_profiling import ProfileReport, __version__
 from data_profiling.config import Settings
 from data_profiling.model.pandas.describe_timeseries_pandas import compute_gap_stats, get_fft, get_fft_peaks, stationarity_test
@@ -59,7 +60,8 @@ COLUMN_METRICS = {
     "chi_squared": "chi_squared",
 }
 REFERENCE_TYPES = {"Numeric": "numeric", "Categorical": "string", "Text": "string", "Boolean": "boolean",
-                   "DateTime": "date", "URL": "string", "Path": "string", "File": "string", "Unsupported": "unknown"}
+                   "DateTime": "date", "URL": "string", "Path": "string", "File": "string", "Image": "string",
+                   "Unsupported": "unknown"}
 MISSING = object()
 os.environ.setdefault("LOKY_MAX_CPU_COUNT", "1")
 
@@ -183,10 +185,12 @@ def compare(path, types, infer_types=False, file_root=None, phik=False):
     if phik:
         metrics.append("phi_k")
         methods.append("phi_k")
-    if {"Path", "File"} & set(types.values()):
+    has_image = "Image" in types.values()
+    if {"Path", "File", "Image"} & set(types.values()):
         metrics.append("path_summary")
     if file_root is not None:
-        metrics.append({"id": "file_summary", "root": str(file_root)})
+        metrics.append({"id": "image_summary", "root": str(file_root), "exif": True}
+                       if has_image else {"id": "file_summary", "root": str(file_root)})
     if "time" in types:
         metrics.append({"id": "autocorrelation", "orderBy": "time", "lags": 4})
         metrics.append({"id": "time_series_gaps", "orderBy": "time"})
@@ -208,8 +212,9 @@ def compare(path, types, infer_types=False, file_root=None, phik=False):
         interactions={"continuous": False}, samples={"head": 3, "tail": 3, "random": 0},
         vars={"num": {"low_categorical_threshold": 5 if infer_types else 0, "chi_squared_threshold": 0.999},
               "cat": {"length": True, "characters": True, "words": True},
-              "url": {"active": "URL" in types.values()}, "path": {"active": bool({"Path", "File"} & set(types.values()))},
-              "file": {"active": file_root is not None},
+              "url": {"active": "URL" in types.values()},
+              "path": {"active": bool({"Path", "File", "Image"} & set(types.values()))},
+              "file": {"active": file_root is not None}, "image": {"active": has_image, "exif": has_image},
               "timeseries": {"pacf_acf_lag": 4}},
         correlations={method: {"calculate": True, "threshold": 0.9} for method in methods},
     )
@@ -309,7 +314,7 @@ def compare(path, types, infer_types=False, file_root=None, phik=False):
                 key = part + "_counts"
                 check(f"{name}.{key}", {item["value"]: item["count"] for item in observed["url_summary"][key]},
                       reference[key].to_dict())
-        if reference["type"] in ("Path", "File"):
+        if reference["type"] in ("Path", "File", "Image"):
             check(f"{name}.common_prefix", observed["path_summary"]["common_prefix"], reference["common_prefix"])
             for part in ("stem", "suffix", "name", "parent", "anchor"):
                 key = part + "_counts"
@@ -331,6 +336,19 @@ def compare(path, types, infer_types=False, file_root=None, phik=False):
             counts, edges = reference["histogram_file_size"]
             check(f"{name}.histogram_file_size", observed["file_summary"]["histogram_file_size"],
                   {"counts": counts, "bin_edges": edges})
+        if reference["type"] == "Image":
+            images = observed["image_summary"]
+            check(f"{name}.n_truncated", images["n_truncated"], reference["n_truncated"])
+            check(f"{name}.image_dimensions", sorted(images["image_dimensions"], key=lambda x: (x["width"], x["height"])),
+                  [{"width": w, "height": h, "count": n} for (w, h), n in sorted(reference["image_dimensions"].value_counts().items())])
+            for dimension in ("width", "height", "area"):
+                check(f"{name}.{dimension}", images[dimension],
+                      {stat: reference[f"{stat}_{dimension}"] for stat in ("min", "max", "mean", "median")})
+            check(f"{name}.exif_keys_counts", {entry["value"]: entry["count"] for entry in images["exif_keys_counts"]},
+                  reference["exif_keys_counts"])
+            check(f"{name}.exif_data", {entry["tag"]: {item["value"]: item["count"] for item in entry["values"]}
+                                       for entry in images["exif_data"]},
+                  {key: val.to_dict() for key, val in reference["exif_data"].items() if key != "exif_keys"})
         if "autocorrelation" in observed:
             series = frame.sort_values("time")[name].dropna()
             with warnings.catch_warnings(record=True) as chart_warnings:
@@ -431,6 +449,15 @@ def main():
         path = Path(directory) / "files.parquet"
         pq.write_table(pa.table({"file": [str(files[0]), str(files[1]), str(files[0]), str(files[2])]}), path)
         results["files"], reference_warnings["files"] = compare(path, {"file": "File"}, file_root=file_root)
+        first_image, second_image, truncated_image = [file_root / name for name in ("first.jpg", "second.png", "partial.jpg")]
+        exif = Image.Exif()
+        exif[271], exif[272] = "Test Camera", "Profile Fixture"
+        Image.new("RGB", (15, 21), "white").save(first_image, exif=exif)
+        Image.new("RGB", (24, 13), "blue").save(second_image)
+        truncated_image.write_bytes(first_image.read_bytes()[:-2])
+        path = Path(directory) / "images.parquet"
+        pq.write_table(pa.table({"image": [str(first_image), str(second_image), str(first_image), str(truncated_image)]}), path)
+        results["images"], reference_warnings["images"] = compare(path, {"image": "Image"}, file_root=file_root)
         path = Path(directory) / "date_validation.parquet"
         pq.write_table(pa.table({"date": [
             "2026/01/02", "Jan 3, 2026", "31/01/2026", "20260405", "2026", "2026-02",
