@@ -1033,24 +1033,32 @@
             let width = 0;
             let height = 0;
             let observer;
-            renderChart = () => {
-              if (tabs[0].disabled) return;
+            let rendering = false;
+            renderChart = async () => {
+              if (tabs[0].disabled || rendering) return;
               const next = container.getBoundingClientRect();
               if (!next.width || !next.height) return;
               if (instance && Math.abs(next.width - width) < 1 && Math.abs(next.height - height) < 1) return;
+              rendering = true;
+              container.setAttribute('aria-busy', 'true');
               try {
                 // GPT-Vis measures the visible container when mounted.
                 instance?.destroy();
                 container.replaceChildren();
                 instance = new GPTVis.GPTVis({ container, width: next.width, height: next.height });
-                instance.render(chart.config);
                 width = next.width;
                 height = next.height;
+                await instance.render(chart.config);
                 container.setAttribute('aria-busy', 'false');
               } catch (error) {
                 observer?.disconnect();
                 showChartError(error);
+                instance?.destroy();
+              } finally {
+                rendering = false;
               }
+              // A resize while rendering is handled after the current render settles.
+              if (!tabs[0].disabled) renderChart();
             };
             if (typeof ResizeObserver !== 'undefined') {
               observer = new ResizeObserver(renderChart);
