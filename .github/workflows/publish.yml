@@ -51,9 +51,6 @@ jobs:
 
       - name: Publish to NPM
         shell: bash
-        env:
-          NODE_AUTH_TOKEN: ''
-          NPM_TOKEN: ''
         run: |
           if [[ "${{ github.ref_name }}" == *"-alpha"* ]]; then
             npm publish --access public --tag alpha
