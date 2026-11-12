@@ -18,42 +18,22 @@ import { sqlserverSourceSchema } from './sqlserver';
 import { snowflakeSourceSchema } from './snowflake';
 import { feishuBitableSourceSchema } from './feishu-bitable';
 
-/** Engines reuse these shapes and narrow only the options they can execute. */
-export const sourceSchemas = {
-  'csv-file': csvFileSourceSchema,
-  'json-file': jsonFileSourceSchema,
-  parquet: parquetSourceSchema,
-  excel: excelSourceSchema,
-  sqlite: sqliteSourceSchema,
-  csv: csvSourceSchema,
-  json: jsonSourceSchema,
-  text: textSourceSchema,
-  mysql: mysqlSourceSchema,
-  mongodb: mongodbSourceSchema,
-  postgresql: postgresqlSourceSchema,
-  supabase: supabaseSourceSchema,
-  clickhouse: clickhouseSourceSchema,
-  sqlserver: sqlserverSourceSchema,
-  snowflake: snowflakeSourceSchema,
-  'feishu-bitable': feishuBitableSourceSchema,
-};
-
 /** Shared runtime contract for built-in source configurations. */
 export const sourceInputSchema = z.discriminatedUnion('type', [
-  sourceSchemas['csv-file'],
-  sourceSchemas['json-file'],
-  sourceSchemas.parquet,
-  sourceSchemas.excel,
-  sourceSchemas.sqlite,
-  sourceSchemas.csv,
-  sourceSchemas.json,
-  sourceSchemas.text,
-  sourceSchemas.mysql,
-  sourceSchemas.mongodb,
-  sourceSchemas.postgresql,
-  sourceSchemas.supabase,
-  sourceSchemas.clickhouse,
-  sourceSchemas.sqlserver,
-  sourceSchemas.snowflake,
-  sourceSchemas['feishu-bitable'],
+  csvFileSourceSchema,
+  jsonFileSourceSchema,
+  parquetSourceSchema,
+  excelSourceSchema,
+  sqliteSourceSchema,
+  csvSourceSchema,
+  jsonSourceSchema,
+  textSourceSchema,
+  mysqlSourceSchema,
+  mongodbSourceSchema,
+  postgresqlSourceSchema,
+  supabaseSourceSchema,
+  clickhouseSourceSchema,
+  sqlserverSourceSchema,
+  snowflakeSourceSchema,
+  feishuBitableSourceSchema,
 ]);

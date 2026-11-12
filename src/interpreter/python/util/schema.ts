@@ -1,10 +1,13 @@
 import { z } from 'zod';
 
+import { queryOutputSchema } from '../../../contracts/query';
 import { jsonValue } from '../../../contracts/shared/json';
-import { excelOptionsSchema, excelSheetSchema } from '../../../contracts/source/excel';
-import { queryOutputSchema } from '../../../contracts';
-import { sourceSchemas } from '../../../contracts/source';
-import { csvReadOptionsSchema } from '../../../contracts/source/csv';
+import { csvReadOptionsSchema, csvSourceSchema } from '../../../contracts/source/csv';
+import { csvFileSourceSchema } from '../../../contracts/source/csv-file';
+import { excelOptionsSchema, excelSheetSchema, excelSourceSchema } from '../../../contracts/source/excel';
+import { jsonSourceSchema } from '../../../contracts/source/json';
+import { jsonFileSourceSchema } from '../../../contracts/source/json-file';
+import { parquetSourceSchema } from '../../../contracts/source/parquet';
 
 /** Validate the JSON output of the generated Python script. */
 export const resultSchema = queryOutputSchema.safeExtend({ data: z.array(z.record(z.string(), jsonValue)) }).strip();
@@ -50,18 +53,18 @@ const excelOptions = excelOptionsSchema.extend({
 /** Validate and snapshot configuration; data loading runs in the generated script. */
 export const sourceSchema = z
   .discriminatedUnion('type', [
-    sourceSchemas.csv.extend({ options: sourceSchemas.csv.shape.options.extend({ options: csvOptions.optional() }) }),
-    sourceSchemas.json.extend({
-      options: sourceSchemas.json.shape.options
+    csvSourceSchema.extend({ options: csvSourceSchema.shape.options.extend({ options: csvOptions.optional() }) }),
+    jsonSourceSchema.extend({
+      options: jsonSourceSchema.shape.options
         .omit({ options: true })
         .extend({ data: z.array(z.record(z.string(), jsonValue)) }),
     }),
-    sourceSchemas['csv-file'].extend({
-      options: sourceSchemas['csv-file'].shape.options.extend({ options: csvOptions.optional() }),
+    csvFileSourceSchema.extend({
+      options: csvFileSourceSchema.shape.options.extend({ options: csvOptions.optional() }),
     }),
-    sourceSchemas['json-file'].extend({ options: sourceSchemas['json-file'].shape.options.omit({ options: true }) }),
-    sourceSchemas.excel.extend({ options: excelOptions }),
-    sourceSchemas.parquet,
+    jsonFileSourceSchema.extend({ options: jsonFileSourceSchema.shape.options.omit({ options: true }) }),
+    excelSourceSchema.extend({ options: excelOptions }),
+    parquetSourceSchema,
   ])
   .superRefine(({ options }, ctx) => {
     if (!('path' in options)) return;
