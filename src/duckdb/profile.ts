@@ -540,18 +540,26 @@ function missingCorrelation(context: ExpressionContext): string {
   const fields = selectFields(context);
   if (fields.length < 2) return 'first(NULL)';
   const masks = fields.map((field) => missingMask(field, context.sourceAlias));
-  const counts = masks.map((mask) => `count(*) FILTER (WHERE ${mask})`);
-  const flags = counts.map((count) => `${count} BETWEEN 1 AND count(*) - 1`);
-  const matrix = correlationMatrix(fields, (i, j) => {
-    if (i === j) return '1::DOUBLE';
-    const left = `(${counts[i]})`;
-    const right = `(${counts[j]})`;
-    const both = `(count(*) FILTER (WHERE ${masks[i]} AND ${masks[j]}))`;
-    // Pearson on binary masks is determined by the four contingency counts.
-    return `(count(*)::HUGEINT * ${both} - ${left}::HUGEINT * ${right})::DOUBLE
-      / nullif(sqrt(${left}::DOUBLE * (count(*) - ${left}) * ${right} * (count(*) - ${right})), 0)`;
-  });
-  return filterCorrelation(matrix, `[${flags.join(', ')}]`);
+  const columns = `[${fields.map(({ name }) => sqlStringLiteral(name)).join(', ')}]`;
+  const counts = `[${masks.map((mask) => `count(*) FILTER (WHERE ${mask})`).join(', ')}]`;
+  const joint = masks.map(
+    (_, i) =>
+      `[${masks
+        .map((_, j) =>
+          i === j ? '0' : `count(*) FILTER (WHERE ${masks[Math.min(i, j)]} AND ${masks[Math.max(i, j)]})`
+        )
+        .join(', ')}]`
+  );
+  const left = 'data.counts[i]';
+  const right = 'data.counts[j]';
+  // Pearson on binary masks is determined by the four contingency counts.
+  const coefficient = `(data.n * overlap - ${left}::HUGEINT * ${right})::DOUBLE
+    / nullif(sqrt(${left}::DOUBLE * (data.n - ${left}) * ${right} * (data.n - ${right})), 0)`;
+  const matrix = `struct_pack(columns := ${columns}, matrix := list_transform(data.joint, lambda row, i:
+    list_transform(row, lambda overlap, j: CASE WHEN i = j THEN 1::DOUBLE ELSE ${coefficient} END)))`;
+  const flags = 'list_transform(data.counts, lambda n: n BETWEEN 1 AND data.n - 1)';
+  return `list_transform([struct_pack(n := count(*)::HUGEINT, counts := ${counts}, joint := [${joint.join(', ')}])],
+    lambda data: ${filterCorrelation(matrix, flags)})[1]`;
 }
 
 function pearson(context: ExpressionContext): string {
