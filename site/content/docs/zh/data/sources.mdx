@@ -72,7 +72,19 @@ import { Heading } from '../../../../mdx-components';
 
 <Heading as="h2" id="connect-a-source">接入数据源</Heading>
 
-创建 AVA 实例，然后调用 `source(config)`，传入数据位置与读取设置：
+调用 `ava.source()` 时，可以传入一份数据源配置，也可以传入非空的配置数组。每份配置描述数据来自哪里以及如何读取。
+
+| 字段 | 类型 | 必填 | 含义 |
+| --- | --- | --- | --- |
+| `type` | `string` | 是 | 数据源类型，支持的取值见下方各章节。 |
+| `options` | 数据源对应的对象 | 是 | 对应数据源的读取或连接设置。 |
+| `name` | `string` | 否 | 接入多个数据源时，用作表名的前缀。 |
+
+每次调用都会先释放当前数据集并清空元数据，再加载新数据。加载失败后，实例没有活动数据集。加载成功后，用 `ava.schema()` 查看表结构，使用完毕后调用 `await ava.dispose()` 释放资源。
+
+<Heading as="h3" id="connect-one-source">接入单个数据源</Heading>
+
+传入一个配置对象。以下代码使用 Node.js SDK 的默认引擎。
 
 ```typescript
 import { AVA } from '@antv/ava';
@@ -83,26 +95,30 @@ const ava = new AVA({
 
 await ava.source({
   type: 'json',
-  options: {
-    data: [
-      { city: 'Hangzhou', revenue: 120 },
-      { city: 'Shanghai', revenue: 200 },
-      { city: 'Beijing', revenue: 160 },
-    ],
-  },
+  options: { data: [{ city: 'Hangzhou', revenue: 120 }] },
 });
+```
+
+<Heading as="h3" id="connect-multiple-sources">接入多个数据源</Heading>
+
+用 `ava.source([...])` 一次接入多个数据源。同一批配置可以混合接入 [CSV](#csv)、[JSON](#json)、[Parquet](#parquet)、[Excel](#excel)、[文本](#text)、[SQLite](#sqlite)、[MySQL](#mysql)、[PostgreSQL](#postgresql)、[MongoDB](#mongodb) 和[飞书多维表格](#feishu-bitable)。
+
+- 为每个数据源设置唯一的 **`name`**。
+- 接入两个或更多数据源时，`ava.schema()` 按 **`源名.表名`** 列出表。CSV 提供一张名为 `data` 的表，Excel 工作簿中的每张选定工作表各对应一张表。
+- **只接入一个数据源**时，配置对象和单元素数组都沿用原表名。
+
+<Callout>
+  批量接入适用于 Node.js SDK 的默认引擎。CLI 每个会话接收一份数据源配置。
+</Callout>
+
+```typescript
+await ava.source([
+  { name: 'orders', type: 'csv-file', options: { path: './sales.csv' } },
+  { name: 'workbook', type: 'excel', options: { path: './sales.xlsx' } },
+]);
 
 const schema = await ava.schema();
 ```
-
-| 参数 | 类型 | 必填 | 含义 |
-| --------- | ---------------------- | -------- | -------------------------------------------------------------------------------------------------------------------------------------------- |
-| `type` | `string` | 是 | 支持 `csv`、`csv-file`、`json`、`json-file`、`parquet`、`excel`、`text`、`sqlite`、`mysql`、`postgresql`、`mongodb`、`supabase`、`clickhouse`、`snowflake`、`feishu-bitable`。 |
-| `options` | 数据源对应的对象 | 是 | 使用下方对应的数据源参数表，字段名均相对于 `options`。 |
-
-`source()` 没有返回值，负责为执行准备数据。结构发现会推迟到 `schema()` 或其他操作需要时进行。再次调用 `source()` 会替换当前数据源并清空元数据缓存。使用 `schema()` 查看表名与字段名，结束后调用 `await ava.dispose()`。
-
-示例均在 Node.js 中运行。Supabase、ClickHouse 和 Snowflake 的示例同时给出了必需的构造函数配置。前端应用请参考[浏览器用法](/documentation/browser/)。
 
 <Heading as="h2" id="csv">CSV</Heading>
 

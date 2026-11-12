@@ -9,7 +9,7 @@ Use this reference to look up signatures, inputs, and return values after follow
 <tr><th scope="rowgroup" rowSpan={1}><a href="#initialization">Initialization</a></th><td><a href="#constructor"><code>new AVA(config)</code></a></td><td>Configure the model and execution engine.</td></tr>
 </tbody>
 <tbody>
-<tr><th scope="rowgroup" rowSpan={4}><a href="#data">Data</a></th><td><a href="#source"><code>source(config)</code></a></td><td>Load or replace a data source.</td></tr>
+<tr><th scope="rowgroup" rowSpan={4}><a href="#data">Data</a></th><td><a href="#source"><code>source(configs)</code></a></td><td>Load or replace one or more data sources.</td></tr>
 <tr><td><a href="#schema"><code>schema(options?, setter?)</code></a></td><td>Inspect or set data structure.</td></tr>
 <tr><td><a href="#profile"><code>profile(options?, setter?)</code></a></td><td>Compute or set statistics.</td></tr>
 <tr><td><a href="#semantic"><code>semantic(options?, setter?)</code></a></td><td>Read or set business definitions.</td></tr>
@@ -100,10 +100,10 @@ Set `engine.type` to the name passed to `registerEngine()`. Additional fields ar
 ### source
 
 ```typescript
-source(config: DataSourceConfig): Promise<void>
+source(configs: DataSourceConfig | DataSourceConfig[]): Promise<void>
 ```
 
-Loads a data source through the engine. It returns no value and does not discover the schema.
+Loads data sources through the configured engine. Schema discovery starts when an operation needs it.
 
 ```typescript
 await ava.source({ type: 'json', options: { data: [{ revenue: 120 }] } });
@@ -111,11 +111,11 @@ await ava.source({ type: 'json', options: { data: [{ revenue: 120 }] } });
 
 | Parameter | Type | Required | Meaning |
 | --- | --- | --- | --- |
-| `config` | `DataSourceConfig` | Yes | Data source to load. |
-| `config.type` | `string` | Yes | [Source type](/documentation/data/sources/#connect-a-source), such as `json` or `csv-file`. |
-| `config.options` | Source-specific object | Yes | [Reader or connection settings](/documentation/data/sources/#connect-a-source) for that type. |
+| `configs` | `DataSourceConfig \| DataSourceConfig[]` | Yes | A [source configuration](/documentation/data/sources/#connect-a-source) or a nonempty array of configurations. |
 
-Source configuration is validated before replacing the active dataset; an invalid configuration preserves the current source and metadata. Once validation succeeds, loading disposes the previous engine and clears the saved schema, profile, and semantic definitions. A later loading failure leaves no active source. Await pending operations before replacing a source.
+In the Node.js SDK, DuckDB can load multiple sources in one call. See [Connect multiple sources](/documentation/data/sources/#connect-multiple-sources) for batch configuration and naming.
+
+Each call releases the active engine and clears the saved schema, profile, and semantic definitions before loading. A failed load leaves the instance without an active dataset. Await pending operations before calling `source()`.
 
 ### schema
 
