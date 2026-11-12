@@ -13,6 +13,8 @@ Python 环境需要安装该源码版本的 `fg-data-profiling[arrow]`。输出�
 
 当前对照范围为数值、类别、布尔、日期、重复分组和已实现的相关系数。新增能力应补充相应输入和对照项。
 
+Unicode 分类表由 [Unicode Character Database 13.0.0](https://www.unicode.org/Public/13.0.0/) 生成，对齐 `tangled_up_in_unicode` 0.2.0 实际使用的字符属性。用 `python3 evals/profile/generate_unicode_properties.py /path/to/UCD.zip` 重建，脚本会核验源归档的 SHA-256。
+
 ## 扫描性能复现
 
 ```sh

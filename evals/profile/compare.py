@@ -78,7 +78,8 @@ def fixtures():
         "region": ["A", "A", "B", "B", None, "A", "A", "B", "B"],
     }), {"amount": "Numeric", "units": "Numeric", "region": "Categorical"}
     yield "unicode", pa.table({
-        'quoted "label"': ["Straße!"] * 4 + ["e\u0301  É"] * 5 + ["İSTANBUL\u00a0ΟΣ"] * 2 + ["", None, "👩\u200d💻 中文"],
+        'quoted "label"': ["Straße!"] * 4 + ["e\u0301  É"] * 5 + ["İSTANBUL\u00a0ΟΣ"] * 2
+                          + ["", None, "👩\u200d💻 中文\u0378\U0001f7f0"],
         "case": ["A"] * 4 + ["AB"] * 3 + ["ABC"] * 2 + ["A😀CD"] + ["ABCDEF"] * 3 + [""],
         "score": [0, 1, 2, 5, 3, 2, 1, 2, 6, 7, 8, 8, 9, 11],
     }), {'quoted "label"': "Categorical", "case": "Categorical", "score": "Numeric"}
@@ -138,7 +139,7 @@ def cli(*args, payload=None):
 
 def compare(path, types):
     metrics = [*TABLE_METRICS, *COLUMN_METRICS, "value_counts", "histogram", "quantiles", "nan_count", "word_counts",
-               "character_counts", "monotonicity", "duplicate_count", "length_histogram", "mode", "mode_count",
+               "character_counts", "unicode_summary", "monotonicity", "duplicate_count", "length_histogram", "mode", "mode_count",
                {"id": "row_duplicates", "limit": 0}, {"id": "row_sample", "head": 3, "tail": 3}]
     dataset = cli("source", str(path), "--engine", "duckdb")["datasetId"]
     try:
@@ -235,6 +236,22 @@ def compare(path, types):
             check(f"{name}.mode_count", observed.get("mode_count", MISSING), reference["freq"])
             if (reference["value_counts_without_nan"] == reference["freq"]).sum() <= 1:
                 check(f"{name}.mode", observed.get("mode", MISSING), reference["top"])
+        if "n_characters" in reference:
+            unicode = observed["unicode_summary"]
+            check(f"{name}.character_count", unicode["character_count"], reference["n_characters"])
+            check(f"{name}.distinct_character_count", unicode["distinct_character_count"], reference["n_characters_distinct"])
+            for native, key in (("category", "category_alias_char_counts"), ("block", "block_alias_char_counts"),
+                                ("script", "script_char_counts")):
+                def ordered(groups):
+                    return sorted([{
+                        **group, "characters": sorted(group["characters"], key=lambda item: item["value"]),
+                    } for group in groups], key=lambda group: json.dumps(group["value"]))
+
+                check(f"{name}.unicode_summary.{native}", ordered(unicode[native]), ordered([
+                    {"value": value, "count": int(frequencies.sum()),
+                     "characters": [{"value": char, "count": int(count)} for char, count in frequencies.items()]}
+                    for value, frequencies in reference[key].items()
+                ]))
         for native, source in (("value_counts", "value_counts_without_nan"), ("word_counts", "word_counts"),
                                ("character_counts", "character_counts")):
             if source in reference and reference["type"] != "DateTime":

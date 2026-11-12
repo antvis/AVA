@@ -7,6 +7,7 @@ import { kendallPair } from './profile-kendall';
 import { cramersPair } from './profile-cramers';
 import { chiSquareBins, chiSquareCounts, chiSquareResult, chiSquareSql } from './profile-chi-square';
 import { referenceQuantiles } from './profile-quantiles';
+import { unicodeSummary } from './profile-unicode';
 import {
   characterCountsSql,
   lengthCountsSql,
@@ -681,6 +682,11 @@ export const BUILTIN_METRICS: DuckDBMetric[] = [
     enable: logicalTypes('string'),
     expression: ({ table, column }) => characterCountsSql(table, column!),
   },
+  {
+    id: 'unicode_summary',
+    enable: logicalTypes('string'),
+    expression: ({ table, column }) => characterCountsSql(table, column!),
+  },
   { id: 'mean', enable: logicalTypes('numeric'), expression: (context) => withInfinity('avg', context) },
   { id: 'sum', enable: logicalTypes('numeric'), expression: (context) => withInfinity('sum', context) },
   {
@@ -805,16 +811,18 @@ export { DEFAULT_METRICS } from '../util/profile';
 /** Decode aggregate values into profile metrics. */
 function postProcessMetrics(
   row: Record<string, unknown>,
-  pending: { metricId: MetricId; output: Record<string, unknown> }[],
-  referenceSemantics: boolean
+  pending: { alias: string; metricId: MetricId; output: Record<string, unknown> }[],
+  referenceSemantics: boolean,
+  unicodeProperties?: Parameters<typeof unicodeSummary>[1]
 ): void {
-  for (let i = 0; i < pending.length; i += 1) {
-    const { metricId, output } = pending[i];
-    const raw = row[`m${i}`];
+  for (const { alias, metricId, output } of pending) {
+    const raw = row[alias];
     delete output[metricId];
     if (metricId === 'top_values' && raw == null) continue;
     if (metricId === 'chi_squared') {
       output[metricId] = chiSquareResult(raw as Parameters<typeof chiSquareResult>[0]);
+    } else if (metricId === 'unicode_summary') {
+      output[metricId] = unicodeSummary(raw as Parameters<typeof unicodeSummary>[0], unicodeProperties!);
     } else if (metricId === 'median_length' && referenceSemantics) {
       output[metricId] = referenceMedianLength(raw as Parameters<typeof referenceMedianLength>[0]);
     } else if (
@@ -849,6 +857,9 @@ export async function profileTables(
     ? registerWordLowercase(connection)
     : undefined;
   const histogram = metrics.filter(({ metric }) => metric.id === 'histogram').pop()?.metric;
+  const unicodeProperties = metrics.some(({ metric }) => metric.id === 'unicode_summary')
+    ? (await import('./unicode-properties.json')).default
+    : undefined;
   const profiles: Profile['models'] = [];
 
   for (const table of schema.models) {
@@ -947,7 +958,8 @@ export async function profileTables(
     };
     profiles.push(profile);
 
-    const pending: Array<{ expression: string; metricId: MetricId; output: Record<string, unknown> }> = [];
+    const pending: Array<{ alias: string; metricId: MetricId; output: Record<string, unknown> }> = [];
+    const expressions = new Map<string, string>();
 
     const addMetrics = (output: Record<string, unknown>, field?: MetricField) => {
       const raw = field ? sqlQualifiedName(field.name, sourceAlias) : undefined;
@@ -958,22 +970,21 @@ export async function profileTables(
           continue;
         }
 
-        pending.push({
-          expression: definition.expression({
-            table: source,
-            column,
-            rawColumn: column === raw ? undefined : raw,
-            ...(field && parameters.get(field.name)),
-            field,
-            fields,
-            sourceAlias,
-            nanAsNull,
-            wordLowercase,
-            metric,
-          }),
-          metricId: metric.id,
-          output,
+        const expression = definition.expression({
+          table: source,
+          column,
+          rawColumn: column === raw ? undefined : raw,
+          ...(field && parameters.get(field.name)),
+          field,
+          fields,
+          sourceAlias,
+          nanAsNull,
+          wordLowercase,
+          metric,
         });
+        const alias = expressions.get(expression) ?? `m${expressions.size}`;
+        expressions.set(expression, alias);
+        pending.push({ alias, metricId: metric.id, output });
       }
     };
 
@@ -999,11 +1010,11 @@ export async function profileTables(
           axes.length ? `SELECT *, ${axes.join(', ')} FROM (${preliminary}) bounds` : preliminary
         }) `
       : '';
-    const projection = pending.map(({ expression }, i) => `${expression} AS ${sqlIdentifier(`m${i}`)}`);
+    const projection = [...expressions].map(([expression, alias]) => `${expression} AS ${sqlIdentifier(alias)}`);
     const sql = `${withParameters}SELECT ${projection.concat(presence).join(', ')}
       FROM ${source}${statistics.length ? ` CROSS JOIN ${centerTable}` : ''}`;
     const row = (await connection.runAndReadAll(sql)).getRowObjectsJson()[0];
-    postProcessMetrics(row, pending, nanAsNull);
+    postProcessMetrics(row, pending, nanAsNull, unicodeProperties);
     if (nanAsNull) {
       for (const [i, column] of profile.columns.entries()) {
         if (!row[`has_value${i}`]) column.properties.logicalType = 'unknown';
