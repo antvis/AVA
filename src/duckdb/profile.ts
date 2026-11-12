@@ -30,9 +30,11 @@ export function logicalType(nativeType: string): LogicalType {
 interface ExpressionContext {
   readonly table: string;
   readonly column?: string;
+  readonly rawColumn?: string;
   readonly field?: MetricField;
   readonly fields?: MetricField[];
   readonly sourceAlias?: string;
+  readonly nanAsNull?: boolean;
   readonly center?: string;
   readonly histogram?: { edges: string; limits: string };
   readonly chiSquare?: { lo: string; hi: string; bins: string };
@@ -44,9 +46,18 @@ interface ExpressionContext {
 export type DuckDBMetricExpression = (context: ExpressionContext) => string;
 export type DuckDBMetric = Metric<DuckDBMetricExpression>;
 
-type ColumnContext = Pick<ExpressionContext, 'column' | 'field'>;
+type ColumnContext = Pick<ExpressionContext, 'column' | 'field' | 'rawColumn'>;
 
 const floatingPoint = /^(FLOAT|DOUBLE|REAL)$/i;
+
+function withoutNaN(column: string): string {
+  return `(CASE WHEN NOT isnan(${column}) THEN ${column} END)`;
+}
+
+function profileValue(field: MetricField, sourceAlias?: string, nanAsNull?: boolean): string {
+  const column = sqlQualifiedName(field.name, sourceAlias);
+  return nanAsNull && floatingPoint.test(field.type) ? withoutNaN(column) : column;
+}
 
 function monotonicity(column: string, previous: string): string {
   const compare = (op: string) => `coalesce(bool_and(${column} ${op} ${previous}), true)`;
@@ -77,28 +88,31 @@ function range(fn: string, context: ExpressionContext): string {
   return context.field?.logicalType === 'date' ? `epoch_ms(${expression})` : expression;
 }
 
-function numericCondition(id: string, { column, field }: ExpressionContext): string {
+function numericCondition(id: string, { column, field, rawColumn }: ExpressionContext): string {
   if (id === 'zero') return `${column} = 0`;
   if (id === 'negative') return `${column} < 0`;
   if (!floatingPoint.test(field!.type)) return id === 'finite' ? `${column} IS NOT NULL` : 'FALSE';
-  return `${id === 'infinite' ? 'isinf' : id === 'nan' ? 'isnan' : 'isfinite'}(${column})`;
+  if (id === 'nan') return `isnan(${rawColumn ?? column})`;
+  return `${id === 'infinite' ? 'isinf' : 'isfinite'}(${column})`;
 }
 
-function frequencyHistogram({ column, field }: ColumnContext): string {
+function frequencyHistogram({ column, field, rawColumn }: ColumnContext): string {
   // NaN is unordered in DuckDB's histogram map and must be counted separately.
-  return `histogram(${column})${field && floatingPoint.test(field.type) ? ` FILTER (WHERE NOT isnan(${column}))` : ''}`;
+  return `histogram(${column})${
+    !rawColumn && field && floatingPoint.test(field.type) ? ` FILTER (WHERE NOT isnan(${column}))` : ''
+  }`;
 }
 
 function singletons(context: ColumnContext): string {
   const count = `COALESCE(list_count(list_filter(map_values(${frequencyHistogram(context)}), n -> n = 1)), 0)`;
-  return context.field && floatingPoint.test(context.field.type)
+  return !context.rawColumn && context.field && floatingPoint.test(context.field.type)
     ? `(${count} + (COUNT(*) FILTER (WHERE isnan(${context.column})) = 1)::BIGINT)`
     : count;
 }
 
 function frequencyRanks(context: ColumnContext): string {
   let entries = `map_entries(${frequencyHistogram(context)})`;
-  if (context.field && floatingPoint.test(context.field.type)) {
+  if (!context.rawColumn && context.field && floatingPoint.test(context.field.type)) {
     const nanCount = `COUNT(*) FILTER (WHERE isnan(${context.column}))`;
     entries = `list_concat(${entries}, CASE WHEN ${nanCount} > 0
       THEN [struct_pack(key := 'NaN'::DOUBLE, value := (${nanCount})::UBIGINT)] ELSE [] END)`;
@@ -121,8 +135,8 @@ function imbalance(context: ColumnContext): string {
     1 - (log2(${total}) - ${weightedLogs} / ${total}) / log2(${classes}))) ELSE 0 END`;
 }
 
-function tableSummary({ fields = [], sourceAlias }: ExpressionContext): string {
-  const counts = fields.map(({ name }) => `COUNT(${sqlQualifiedName(name, sourceAlias)})`);
+function tableSummary({ fields = [], sourceAlias, nanAsNull }: ExpressionContext): string {
+  const counts = fields.map((field) => `COUNT(${profileValue(field, sourceAlias, nanAsNull)})`);
   const sum = (items: string[]) => (items.length ? `COALESCE(list_sum([${items.join(', ')}]), 0)::DOUBLE` : '0');
   const missing = sum(counts.map((count) => `COUNT(*) - ${count}`));
   const withNulls = sum(counts.map((count) => `(COUNT(*) > ${count})::INTEGER`));
@@ -158,21 +172,21 @@ function selectFields({ fields = [], metric }: ExpressionContext): MetricField[]
   });
 }
 
-function rowStruct(fields: MetricField[], sourceAlias?: string): string {
+function rowStruct(fields: MetricField[], { sourceAlias, nanAsNull }: ExpressionContext): string {
   return `struct_pack(${fields
-    .map(({ name }) => `${sqlIdentifier(name)} := ${sqlQualifiedName(name, sourceAlias)}`)
+    .map((field) => `${sqlIdentifier(field.name)} := ${profileValue(field, sourceAlias, nanAsNull)}`)
     .join(', ')})`;
 }
 
 function duplicateRows(context: ExpressionContext): string {
-  const { table, sourceAlias, metric } = context;
+  const { table, metric } = context;
   const { limit = 10 } = metric;
   const fields = selectFields(context);
   const empty =
     'struct_pack(group_count := 0, group_ratio := 0, duplicate_row_count := 0, excess_row_count := 0, samples := [])';
   if (!fields.length) return `COALESCE(first(NULL), ${empty})`;
 
-  const key = rowStruct(fields, sourceAlias);
+  const key = rowStruct(fields, context);
   const duplicates = 'COUNT(*) FILTER (WHERE n > 1)';
   const samples =
     limit === 0
@@ -188,16 +202,13 @@ function duplicateRows(context: ExpressionContext): string {
 }
 
 function rowSample(context: ExpressionContext): string {
-  const { table, sourceAlias, metric } = context;
+  const { table, metric } = context;
   const { head = 10, tail = 10, random = 0, seed } = metric;
   const fields = selectFields(context);
   const empty = 'struct_pack(head := [], tail := [], random := [])';
   if (!fields.length || (head === 0 && tail === 0 && random === 0)) return `COALESCE(first(NULL), ${empty})`;
 
-  const rows = `SELECT row_number() OVER () - 1 AS position, ${rowStruct(
-    fields,
-    sourceAlias
-  )} AS row_values FROM ${table}`;
+  const rows = `SELECT row_number() OVER () - 1 AS position, ${rowStruct(fields, context)} AS row_values FROM ${table}`;
   const row = 'struct_pack(index := position::DOUBLE, row_values := row_values)';
   const headRows = head === 0 ? '[]' : `COALESCE(arg_min(${row}, position, ${head}), [])`;
   const tailRows = tail === 0 ? '[]' : `COALESCE(list_reverse(arg_max(${row}, position, ${tail})), [])`;
@@ -725,6 +736,7 @@ export async function profileTables(
   options: ParsedProfileOptions
 ): Promise<Profile> {
   const metrics = options.metrics.map((metric) => ({ metric, definition: resolveMetric(metric, BUILTIN_METRICS) }));
+  const nanAsNull = options.semantics === 'data-profiling';
   const needsCenters = metrics.some(({ metric }) => metric.id === 'skewness' || metric.id === 'kurtosis');
   const needsMonotonicity = metrics.some(({ metric }) => metric.id === 'monotonicity');
   const needsChiSquare = metrics.some(({ metric }) => metric.id === 'chi_squared');
@@ -763,7 +775,7 @@ export async function profileTables(
           let alias = `__ava_previous${windows.length}`;
           while (usedNames.has(alias)) alias += '_';
           const previous = sqlIdentifier(alias);
-          const value = floatingPoint.test(field.type) ? `CASE WHEN NOT isnan(${column}) THEN ${column} END` : column;
+          const value = floatingPoint.test(field.type) ? withoutNaN(column) : column;
           windows.push(`lag(${value} IGNORE NULLS) OVER () AS ${previous}`);
           monotonic = `${centerTable}.${addParameter(monotonicity(value, previous))}`;
         }
@@ -833,6 +845,8 @@ export async function profileTables(
     const pending: Array<{ expression: string; metricId: MetricId; output: Record<string, unknown> }> = [];
 
     const addMetrics = (output: Record<string, unknown>, field?: MetricField) => {
+      const raw = field ? sqlQualifiedName(field.name, sourceAlias) : undefined;
+      const column = field ? profileValue(field, sourceAlias, nanAsNull) : undefined;
       for (const { metric, definition } of metrics) {
         const target = field ? 'column' : 'table';
         if (!definition.enable({ target, field }) || (metric.id === 'histogram' && metric !== histogram)) {
@@ -842,11 +856,13 @@ export async function profileTables(
         pending.push({
           expression: definition.expression({
             table: source,
-            column: field ? sqlQualifiedName(field.name, sourceAlias) : undefined,
+            column,
+            rawColumn: column === raw ? undefined : raw,
             ...(field && parameters.get(field.name)),
             field,
             fields,
             sourceAlias,
+            nanAsNull,
             wordLowercase,
             metric,
           }),
@@ -880,5 +896,5 @@ export async function profileTables(
     postProcessMetrics(row, pending);
   }
 
-  return { models: profiles };
+  return options.semantics ? { models: profiles, semantics: options.semantics } : { models: profiles };
 }

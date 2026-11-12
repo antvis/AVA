@@ -85,7 +85,7 @@ export type VisualizeResponse = NonNullable<z.output<typeof visualizeOutputSchem
 export type LogicalType = Profile['models'][number]['columns'][number]['properties']['logicalType'];
 export type MetricConfig = NonNullable<ProfileOptions['metrics']>[number];
 export type MetricId = Exclude<MetricConfig, string>['id'];
-export type ParsedProfileOptions = { metrics: Exclude<MetricConfig, string>[] };
+export type ParsedProfileOptions = Omit<ProfileOptions, 'metrics'> & { metrics: Exclude<MetricConfig, string>[] };
 
 export type JsonValue = z.output<typeof jsonValue>;
 export type Properties = Record<string, JsonValue>;

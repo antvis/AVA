@@ -37,7 +37,7 @@ export const requestSchema = z.discriminatedUnion('command', [
   z
     .object({
       command: z.literal('profile'),
-      metrics: profileInputSchema.shape.metrics,
+      ...profileInputSchema.shape,
       profile: profileOutputSchema.optional(),
     })
     .strict(),

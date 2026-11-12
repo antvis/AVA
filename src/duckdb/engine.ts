@@ -13,6 +13,7 @@ import { sqlIdentifier, sqlStringLiteral } from '../util/sql';
 import { findAvailableName, parseSourceConfigs } from '../util/source';
 import { parseProfileOptions } from '../util/profile';
 import { runWithTimeout } from '../util/timeout';
+import { profileInputSchema } from '../contracts';
 
 import { DEFAULT_METRICS, profileTables } from './profile';
 import { loadSource } from './loaders';
@@ -165,7 +166,8 @@ export class DuckDBEngine implements AnalysisEngine {
     }
 
     const defaultOptions = { metrics: DEFAULT_METRICS };
-    const parsedOptions = parseProfileOptions(options, defaultOptions);
+    const { semantics, ...selection } = profileInputSchema.parse(options);
+    const parsedOptions = { ...parseProfileOptions(selection, defaultOptions), semantics };
 
     return profileTables(this.connection, schema, parsedOptions);
   }

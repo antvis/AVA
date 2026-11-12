@@ -20,11 +20,11 @@ export async function run([datasetId]: string[], options: Options): Promise<unkn
     throw new Error('--options cannot be combined with --file or --metrics.');
   }
   const profile = file === undefined ? undefined : profileOutputSchema.parse(await readJSONFile(file));
-  const metrics =
+  const profileOptions =
     optionsFile === undefined
-      ? list(options, 'metrics')
-      : profileInputSchema.parse(await readJSONFile(optionsFile)).metrics;
-  return request(datasetId, { command: 'profile', metrics, profile });
+      ? { metrics: list(options, 'metrics') }
+      : profileInputSchema.parse(await readJSONFile(optionsFile));
+  return request(datasetId, { command: 'profile', ...profileOptions, profile });
 }
 
 export const help = `${description}.

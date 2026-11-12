@@ -125,7 +125,7 @@ def compare(path, types):
                {"id": "row_duplicates", "limit": 0}, {"id": "row_sample", "head": 3, "tail": 3}]
     dataset = cli("source", str(path), "--engine", "duckdb")["datasetId"]
     try:
-        actual = cli("profile", dataset, "--options", "-", payload={"metrics": metrics})["models"][0]
+        actual = cli("profile", dataset, "--options", "-", payload={"metrics": metrics, "semantics": "data-profiling"})["models"][0]
     finally:
         cli("dispose", dataset)
 

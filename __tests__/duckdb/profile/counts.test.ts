@@ -4,6 +4,7 @@ import { DuckDBInstance } from '@duckdb/node-api';
 import { profileTables } from '../../../src/duckdb/profile';
 import { getDuckDBSchema } from '../../../src/duckdb/util/schema';
 import { profileOutputSchema } from '../../../src/contracts';
+import { assessQuality } from '../../../src/util/quality';
 
 import type { DuckDBConnection } from '@duckdb/node-api';
 
@@ -72,5 +73,50 @@ describe('profile/column counts', () => {
     const plan = String((await connection.runAndReadAll(`EXPLAIN ${sql}`)).getRowObjectsJson()[0].explain_value);
     expect(plan.match(/SEQ_SCAN/g)).toHaveLength(1);
     expect(plan.match(/histogram\(#\d+\)/g)).toHaveLength(1);
+  });
+
+  it('can include NaN in missing values without losing the NaN count', async () => {
+    await connection.run('CREATE TABLE floats(value DOUBLE)');
+    await connection.run("INSERT INTO floats VALUES ('NaN'), (1), (2), (NULL)");
+    const schema = await getDuckDBSchema(connection);
+    const profile = await profileTables(connection, schema, {
+      semantics: 'data-profiling',
+      metrics: [
+        ...metrics,
+        'nan_count',
+        'null_count',
+        'value_counts',
+        'table_summary',
+        'row_duplicates',
+        'row_sample',
+      ].map((id) => ({ id })),
+    });
+    expect(profileOutputSchema.parse(profile).semantics).toBe('data-profiling');
+    const floats = profile.models.find(({ name }) => name === 'floats');
+    expect(floats?.columns[0].metrics).toMatchObject({
+      valid_count: 2,
+      null_ratio: 0.5,
+      unique_count: 2,
+      unique_ratio: 1,
+      nan_count: 1,
+      value_counts: [
+        { value: 1, count: 1 },
+        { value: 2, count: 1 },
+      ],
+    });
+    expect(floats?.metrics).toMatchObject({
+      table_summary: { null_cell_count: 2 },
+      row_duplicates: { group_count: 1, samples: [{ row_values: { value: null }, count: 2 }] },
+      row_sample: {
+        head: [
+          { index: 0, row_values: { value: null } },
+          { index: 1, row_values: { value: 1 } },
+          { index: 2, row_values: { value: 2 } },
+          { index: 3, row_values: { value: null } },
+        ],
+      },
+    });
+    const quality = assessQuality(profile, { rules: ['missing'] });
+    expect(quality.models.find(({ name }) => name === 'floats')?.alerts[0].value).toBe(0.5);
   });
 });

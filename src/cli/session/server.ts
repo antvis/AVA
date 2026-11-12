@@ -66,11 +66,10 @@ async function dispatch(message: Request): Promise<unknown> {
     switch (message.command) {
       case 'semantic':
         return ava.semantic(undefined, message.semantic === undefined ? undefined : () => message.semantic!);
-      case 'profile':
-        return ava.profile(
-          { metrics: message.metrics },
-          message.profile === undefined ? undefined : () => message.profile!
-        );
+      case 'profile': {
+        const { metrics, semantics, profile } = message;
+        return ava.profile({ metrics, semantics }, profile === undefined ? undefined : () => profile);
+      }
       case 'suggest':
         return ava.suggest(message.count);
       case 'quality':

@@ -40,7 +40,7 @@ export function assessQuality(profile: Profile, options: QualityOptions): Qualit
           if (value !== undefined && value > threshold) add({ rule, column, value, threshold });
         };
         const nullCount = observation(stats.null_count);
-        const nanCount = observation(stats.nan_count) ?? 0;
+        const nanCount = profile.semantics === 'data-profiling' ? 0 : observation(stats.nan_count) ?? 0;
         const missing = rows && nullCount !== undefined ? (nullCount + nanCount) / rows : observation(stats.null_ratio);
         compare('missing', missing, thresholds.ratioThreshold);
         if (logicalType === 'unknown') {
