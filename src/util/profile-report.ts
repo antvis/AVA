@@ -4,6 +4,7 @@ import { profileOutputSchema } from '../contracts';
 
 import { assessQuality } from './quality';
 import { compareProfiles } from './profile-compare';
+import { validateProfileExpectations } from './profile-expectations';
 
 import type { JsonValue, Profile } from '../types';
 import type { ProfileComparison } from './profile-compare';
@@ -446,6 +447,32 @@ export function renderProfileComparisonHtml(
     options.title ?? 'Profile comparison',
     comparison.models.map(({ name }) => name),
     models,
+    options
+  );
+}
+
+export function renderProfileValidationHtml(
+  input: unknown,
+  suites: unknown,
+  options: ProfileReportOptions = {}
+): string {
+  const validation = validateProfileExpectations(input, suites);
+  const models = validation.results.map(({ model, expectation_suite_name: suite, expectations }, i) => {
+    const rows = expectations.map(({ column, expectation_type: rule, status }) => [
+      escape(column),
+      escape(rule),
+      escape(status.replace(/_/g, ' ')),
+    ]);
+    const passed = expectations.filter(({ status }) => status === 'passed').length;
+    return `<section id="model-${i}"><h2>${escape(model)}</h2><p>${escape(suite)} · ${passed} of ${
+      rows.length
+    } passed</p>
+      ${table(['Column', 'Expectation', 'Status'], rows)}</section>`;
+  });
+  return documentHtml(
+    options.title ?? 'Profile validation',
+    validation.results.map(({ model }) => model),
+    models.join(''),
     options
   );
 }

@@ -93,7 +93,7 @@ ava visualize --query "Plot revenue by region" --data @rows.json
 | `profile-compare` | `before.json after.json` | 按模型、列和指标名称对照画像。用 `-` 从标准输入读取其中一份，用 `-o comparison.html` 保存 HTML。 |
 | `profile-report` | `profile.json` 或 `-` | 用 `-o report.html` 保存离线 HTML。可用 `--title`、`--theme light\|dark\|auto`、`--transparent` 和 `--full-width` 设置外观。 |
 | `profile-expectations` | `profile.json` 或 `-` | 根据保存的画像生成 JSON 规则集。`--name` 设置规则集名称。 |
-| `profile-validate` | `profile.json suites.json` | 根据保存的观测验证生成的规则集。可用 `-` 从标准输入读取其中一份。 |
+| `profile-validate` | `profile.json suites.json` | 根据保存的观测验证生成的规则集。可用 `-` 从标准输入读取其中一份，也可用 `-o validation.html` 保存离线报告。 |
 | `quality` | `dataset-id` | 检查已保存的画像。可用 `--rules` 传入逗号分隔的[质量规则](/documentation/reference/api/#quality)。 |
 | `semantic` | `dataset-id` | 可选 `--file`：Semantic JSON 文件的路径，用于替换会话中的完整定义；不提供时读取当前定义。 |
 | `suggest` | `dataset-id` | `--count`：整数 `1`—`100`，默认 `3`。 |
