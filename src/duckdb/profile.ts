@@ -235,6 +235,32 @@ function tableSummary({ fields = [], sourceAlias, nanAsNull }: ExpressionContext
   )}))`;
 }
 
+function fixedWidth(type: string): number | undefined {
+  if (/^(BOOLEAN|U?TINYINT)$/.test(type)) return 1;
+  if (/^U?SMALLINT$/.test(type)) return 2;
+  if (/^(U?INTEGER|FLOAT|REAL|DATE)$/.test(type)) return 4;
+  if (/^(U?BIGINT|DOUBLE|TIMESTAMP(_S|_MS|_NS|TZ| WITH TIME ZONE)?|TIME)$/.test(type)) return 8;
+  if (/^(U?HUGEINT|UUID|INTERVAL)$/.test(type)) return 16;
+  const decimal = /^DECIMAL\((\d+),/.exec(type);
+  if (!decimal) return undefined;
+  const precision = Number(decimal[1]);
+  if (precision <= 4) return 2;
+  if (precision <= 9) return 4;
+  return precision <= 18 ? 8 : 16;
+}
+
+function memorySize({ field, fields = [], sourceAlias }: ExpressionContext): string {
+  const bytes = (field: ProfileField): string => {
+    const value = profileValue(field, sourceAlias, false, true);
+    const type = (field.sourceType ?? field.type).toUpperCase();
+    const width = fixedWidth(type);
+    if (width) return `count(*) * ${width}`;
+    const length = type === 'BLOB' ? `octet_length(${value})` : `strlen(CAST(${value} AS VARCHAR))`;
+    return `coalesce(sum(${length}), 0)`;
+  };
+  return field ? bytes(field) : fields.map(bytes).join(' + ') || '0';
+}
+
 const columnNamesOption = {
   validate(value: unknown): void {
     z.array(z.string().min(1))
@@ -698,6 +724,12 @@ function histogramExpression(context: ExpressionContext): string {
 export const BUILTIN_METRICS: DuckDBMetric[] = [
   { id: 'row_count', enable: table, expression: () => 'COUNT(*)' },
   { id: 'table_summary', enable: table, expression: tableSummary },
+  { id: 'memory_size', enable: () => true, expression: memorySize },
+  {
+    id: 'record_size',
+    enable: table,
+    expression: (context) => `coalesce((${memorySize(context)})::DOUBLE / nullif(count(*), 0), 0)`,
+  },
   { id: 'time_index', enable: table, options: { orderBy: orderByOption }, expression: timeIndex },
   {
     id: 'row_sample',
@@ -1231,6 +1263,8 @@ export { DEFAULT_METRICS } from '../util/profile';
 const sensitiveMetrics = new Set([
   'row_count',
   'table_summary',
+  'memory_size',
+  'record_size',
   'time_index',
   'valid_count',
   'null_count',
