@@ -540,10 +540,17 @@ function missingCorrelation(context: ExpressionContext): string {
   const fields = selectFields(context);
   if (fields.length < 2) return 'first(NULL)';
   const masks = fields.map((field) => missingMask(field, context.sourceAlias));
-  const flags = masks.map((mask) => `count(*) FILTER (WHERE ${mask}) BETWEEN 1 AND count(*) - 1`);
-  const matrix = correlationMatrix(fields, (i, j) =>
-    i === j ? '1::DOUBLE' : `corr(${masks[i]}::DOUBLE, ${masks[j]}::DOUBLE)`
-  );
+  const counts = masks.map((mask) => `count(*) FILTER (WHERE ${mask})`);
+  const flags = counts.map((count) => `${count} BETWEEN 1 AND count(*) - 1`);
+  const matrix = correlationMatrix(fields, (i, j) => {
+    if (i === j) return '1::DOUBLE';
+    const left = `(${counts[i]})`;
+    const right = `(${counts[j]})`;
+    const both = `(count(*) FILTER (WHERE ${masks[i]} AND ${masks[j]}))`;
+    // Pearson on binary masks is determined by the four contingency counts.
+    return `(count(*)::HUGEINT * ${both} - ${left}::HUGEINT * ${right})::DOUBLE
+      / nullif(sqrt(${left}::DOUBLE * (count(*) - ${left}) * ${right} * (count(*) - ${right})), 0)`;
+  });
   return filterCorrelation(matrix, `[${flags.join(', ')}]`);
 }
 
