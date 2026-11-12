@@ -92,7 +92,7 @@ describe('public source contracts', () => {
           options: { account: 'org-account', database: 42 },
         } as unknown as DataSourceConfig)
       ).rejects.toThrow();
-      expect((await ava.query('const result = data;')).data).toEqual(source.options.data);
+      await expect(ava.query('const result = data;')).rejects.toThrow('No data loaded');
     } finally {
       await ava.dispose();
     }

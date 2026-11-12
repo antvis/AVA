@@ -124,8 +124,9 @@ export class AVA extends EventEmitter {
   }
 
   /**
-   * Load a data source config into the engine.
-   * Reloading disposes the previous engine and its resources.
+   * Load one or more data sources.
+   *
+   * Reloading releases the active engine before loading the new sources.
    */
   async source(configs: DataSourceConfig | DataSourceConfig[]): Promise<void> {
     emit(this, new LifecycleEvent(LifecycleEventType.SOURCE_START));

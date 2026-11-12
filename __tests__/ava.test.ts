@@ -106,10 +106,17 @@ describe('AVA', () => {
 
     await ava.source({ type: 'json', options: { data: [{ second: 'value' }] } });
     expect((await ava.schema()).models[0].columns.map((field) => field.name)).toEqual(['second']);
-    await expect(ava.source({ type: 'json', options: { data: null } })).rejects.toThrow();
-    expect((await ava.schema()).models[0].columns.map((field) => field.name)).toEqual(['second']);
+    await expect(
+      ava.source([
+        { type: 'json', options: { data: [{ third: true }] } },
+        { type: 'csv-file', options: { path: path.join(__dirname, 'datasets', 'missing.csv') } },
+      ])
+    ).rejects.toThrow('missing.csv');
+    await expect(ava.schema()).rejects.toThrow(message);
+    await expect(ava.query('SELECT * FROM data')).rejects.toThrow(message);
 
     await ava.source({ type: 'json', options: { data: [{ third: true }] } });
+    expect((await ava.query('SELECT * FROM data')).data).toEqual([{ third: true }]);
     await ava.dispose();
     await expect(ava.schema()).rejects.toThrow(message);
   });
