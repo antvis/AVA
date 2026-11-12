@@ -18,7 +18,7 @@ export function resolveMetric<T extends Metric>(config: Exclude<MetricConfig, st
   if (unknown) throw new Error(`Unknown option for ${definition.id}: ${unknown}`);
 
   for (const [name, option] of Object.entries(options)) {
-    const value = config[name] as number;
+    const value = config[name];
     if (value !== undefined) {
       option.validate(value);
     }
@@ -47,14 +47,14 @@ export const logicalTypes =
 export const TOP_VALUES_OPTIONS: NonNullable<Metric['options']> = {
   limit: {
     validate: (value) => {
-      if (!Number.isSafeInteger(value) || value < 0) {
+      if (typeof value !== 'number' || !Number.isSafeInteger(value) || value < 0) {
         throw new Error('top_values.limit must be a non-negative safe integer');
       }
     },
   },
   maxDistinctRatio: {
     validate: (value) => {
-      if (!Number.isFinite(value) || value < 0 || value > 1) {
+      if (typeof value !== 'number' || !Number.isFinite(value) || value < 0 || value > 1) {
         throw new Error('top_values.maxDistinctRatio must be between 0 and 1');
       }
     },

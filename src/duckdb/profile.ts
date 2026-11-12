@@ -1,3 +1,5 @@
+import { z } from 'zod';
+
 import { sqlIdentifier, sqlQualifiedName } from '../util/sql';
 import { resolveMetric, table, column, logicalTypes, TOP_VALUES_OPTIONS } from '../util/profile';
 
@@ -30,10 +32,12 @@ export type DuckDBMetricExpression = (context: ExpressionContext) => string;
 export type DuckDBMetric = Metric<DuckDBMetricExpression>;
 
 /** Build an aggregate for valid values. */
-function aggregate(fn: string, { column, field }: ExpressionContext): string {
+function aggregate(fn: string, { column, field }: ExpressionContext, argument?: string): string {
   if (!field) throw new Error(`${fn} requires a column`);
   const finite = field.logicalType === 'date' || /^(FLOAT|DOUBLE|REAL)$/i.test(field.type);
-  return `${fn}(${column})${finite ? ` FILTER (WHERE isfinite(${column}))` : ''}`;
+  return `${fn}(${column}${argument === undefined ? '' : `, ${argument}`})${
+    finite ? ` FILTER (WHERE isfinite(${column}))` : ''
+  }`;
 }
 
 function range(fn: string, context: ExpressionContext): string {
@@ -121,6 +125,25 @@ export const BUILTIN_METRICS: DuckDBMetric[] = [
     expression: (context) => aggregate('stddev_samp', context),
   },
   { id: 'median', enable: logicalTypes('numeric'), expression: (context) => aggregate('median', context) },
+  {
+    id: 'quantiles',
+    enable: logicalTypes('numeric'),
+    options: {
+      probabilities: {
+        validate: (value) => {
+          z.array(z.number().min(0).max(1)).nonempty().parse(value);
+        },
+      },
+    },
+    expression: (context) => {
+      const probabilities = `[${(
+        (context.metric.probabilities as number[] | undefined) ?? [0.05, 0.25, 0.5, 0.75, 0.95]
+      ).join(', ')}]`;
+      return `list_transform(list_zip(${probabilities}::DOUBLE[],
+        CAST(${aggregate('quantile_cont', context, probabilities)} AS DOUBLE[])),
+        pair -> struct_pack(probability := pair[1], value := pair[2]))`;
+    },
+  },
   ...['zero', 'negative', 'infinite', 'nan', 'finite'].flatMap((kind): DuckDBMetric[] => [
     {
       id: `${kind}_count`,

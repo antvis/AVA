@@ -306,7 +306,7 @@ export interface ChartTypeDefinition {
  */
 export type MetricOption = {
   /** Throws if the value is not allowed. */
-  validate(value: number): void;
+  validate(value: unknown): void;
 };
 
 /**

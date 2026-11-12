@@ -223,6 +223,8 @@ await ava.profile({
 | `limit` | `number` | `top_values` only. Default `3`; a non-negative safe integer. |
 | `maxDistinctRatio` | `number` | `top_values` only. Default `0.5`; a finite number from `0` to `1`. |
 
+DuckDB's `quantiles` metric accepts `probabilities`, a non-empty array of numbers between `0` and `1` (default `[0.05, 0.25, 0.5, 0.75, 0.95]`). It uses linear interpolation over finite numeric values and returns `[{ probability, value }]` in the requested order. Values are `null` when there are no finite observations. One list aggregate calculates all requested probabilities; raw rows are not transferred to JavaScript.
+
 Other built-in metrics accept no additional options. Unknown metrics and unknown option names are rejected when the engine computes the profile. Availability depends on the engine and field type.
 
 `metrics: []` produces empty metric objects. A new profile replaces previous statistics; metrics are not accumulated.

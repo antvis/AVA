@@ -225,6 +225,8 @@ await ava.profile({
 | `limit` | `number` | 仅用于 `top_values`，默认 `3`，必须是非负安全整数。 |
 | `maxDistinctRatio` | `number` | 仅用于 `top_values`，默认 `0.5`，必须是 `0`—`1` 之间的有限数值。 |
 
+DuckDB 的 `quantiles` 指标接受 `probabilities`：元素介于 `0`—`1` 的非空数组，默认 `[0.05, 0.25, 0.5, 0.75, 0.95]`。指标对有限数值做线性插值，按请求顺序返回 `[{ probability, value }]`；没有有限值时，`value` 为 `null`。所有分位点在同一次列表聚合中计算，不向 JavaScript 传输原始行。
+
 其他内置指标没有额外选项。引擎计算 profile 时会拒绝未知指标与未知选项名。指标是否可用取决于引擎及字段类型。
 
 `metrics: []` 会生成空的指标对象。新 profile 替换旧统计信息，不会累加之前的指标。

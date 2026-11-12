@@ -42,6 +42,7 @@ Additional metrics:
   DuckDB: valid_count, null_ratio, distinct_ratio, unique_count, unique_ratio, is_unique
   DuckDB numeric: zero_count/ratio, negative_count/ratio, infinite_count/ratio,
                   nan_count/ratio, finite_count/ratio (e.g. zero_count, zero_ratio)
+  DuckDB quantiles: quantiles (5%, 25%, 50%, 75%, 95%; finite numeric values)
   unique_count counts non-null values occurring exactly once; distinct_count counts different values.
   Metrics apply only to compatible fields.
 
