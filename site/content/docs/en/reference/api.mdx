@@ -370,7 +370,7 @@ const comparison = compareProfiles(beforeProfile, afterProfile);
 
 ### renderProfileHtml
 
-`renderProfileHtml(profile, { title })` renders a saved profile as standalone HTML. The report includes tables, distributions, correlations and quality alerts when those observations are present. It can open offline and does not rerun the profile.
+`renderProfileHtml(profile, { title, theme, transparent, fullWidth })` renders a saved profile as standalone HTML. The report includes tables, distributions, correlations and quality alerts when those observations are present. `theme` accepts `light`, `dark` or `auto`. The report opens offline using the saved observations.
 
 ### profileExpectations
 

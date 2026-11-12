@@ -89,7 +89,7 @@ All commands accept `-h` / `--help` (boolean; optional). Every positional argume
 | `schema` | `dataset-id` | Optional `--file`: path to an existing schema JSON file. |
 | `profile` | `dataset-id` | `--file` imports a profile, `--metrics` selects comma-separated metric names, and `--options` accepts a JSON options file. The default is the [standard metric set](/documentation/reference/api/#profile). An empty metric list computes no statistics. |
 | `profile-compare` | `before.json after.json` | Compare saved profiles by model, column and metric name. Use `-` for one input and `-o comparison.html` to save the HTML comparison. |
-| `profile-report` | `profile.json` or `-` | Save a standalone HTML report using `-o report.html`. `--title` sets the report title. |
+| `profile-report` | `profile.json` or `-` | Save a standalone HTML report using `-o report.html`. Appearance options include `--title`, `--theme light\|dark\|auto`, `--transparent` and `--full-width`. |
 | `profile-expectations` | `profile.json` or `-` | Generate JSON expectation suites from a saved profile. `--name` sets the suite name. |
 | `profile-validate` | `profile.json suites.json` | Validate generated expectation suites against saved observations. Use `-` for one input. |
 | `quality` | `dataset-id` | Evaluates the saved profile. Optional `--rules` accepts comma-separated [quality rules](/documentation/reference/api/#quality). |

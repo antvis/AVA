@@ -295,11 +295,17 @@ function missingBar(model: Profile['models'][number], referenceSemantics: boolea
     : '';
 }
 
+const darkTheme =
+  'color-scheme:dark; --paper:#18201c; --ink:#e8eee8; --muted:#b1c3b7; --line:#425247; --green:#a7d8b9; --alert:#f0a78f; --head:#28362c; --hover:#222d26; --chart:#202a24;';
 const css = `
-  :root { color-scheme: light; --paper:#f6f3eb; --ink:#202a24; --muted:#536259; --line:#cfcec0; --green:#235943; --alert:#933b24; }
+  :root { color-scheme: light; --paper:#f6f3eb; --ink:#202a24; --muted:#536259; --line:#cfcec0; --green:#235943; --alert:#933b24; --head:#e7eadf; --hover:#eeece2; --chart:#fdfbf4; }
+  :root[data-theme=dark] { ${darkTheme} }
+  @media (prefers-color-scheme:dark) { :root[data-theme=auto] { ${darkTheme} } }
   * { box-sizing:border-box; }
   body { margin:0; background:var(--paper); color:var(--ink); font:16px/1.55 "Instrument Sans", Verdana, sans-serif; }
+  body.transparent { background:transparent; }
   header, main { max-width:85rem; margin:auto; padding:2.5rem clamp(1rem,4vw,4rem); }
+  .full-width header, .full-width main { max-width:none; }
   header { border-bottom:1px solid var(--line); }
   h1, h2 { font-family:"Instrument Serif", Georgia, serif; font-weight:400; line-height:1; margin:0 0 1.25rem; }
   h1 { font-size:clamp(2.8rem,7vw,6rem); max-width:19ch; overflow-wrap:anywhere; }
@@ -313,8 +319,8 @@ const css = `
   table { border-collapse:collapse; width:100%; font-size:.88rem; font-variant-numeric:tabular-nums; }
   th, td { border-bottom:1px solid var(--line); padding:.55rem .75rem; text-align:left; vertical-align:top; overflow-wrap:anywhere; }
   th { font-weight:600; }
-  thead { background:#e7eadf; }
-  tbody tr:hover { background:#eeece2; }
+  thead { background:var(--head); }
+  tbody tr:hover { background:var(--hover); }
   details { max-width:100%; }
   summary { cursor:pointer; }
   .column { border-top:1px solid var(--line); padding:.75rem 0; }
@@ -323,33 +329,45 @@ const css = `
   .column > div { margin:.6rem 0 0 1rem; }
   .alert th { color:var(--alert); }
   meter { width:clamp(4rem,18vw,12rem); accent-color:var(--green); }
-  .coefficient { background:rgba(35,89,67,var(--strength)); display:block; min-width:4.5rem; padding:.15rem .3rem; text-align:right; }
-  .coefficient.negative { background:rgba(147,59,36,var(--strength)); }
+  .coefficient { --tint:var(--green); background:color-mix(in srgb, var(--tint) calc(var(--strength)*100%), transparent); display:block; min-width:4.5rem; padding:.15rem .3rem; text-align:right; }
+  .coefficient.negative { --tint:var(--alert); }
   .missing-bands tbody th, .missing-bands tbody td { padding:0; border:0; line-height:0; }
-  .band-cell { display:block; height:4px; background:rgba(35,89,67,var(--coverage)); border-right:1px solid var(--paper); }
+  .band-cell { display:block; height:4px; background:color-mix(in srgb, var(--green) calc(var(--coverage)*100%), transparent); border-right:1px solid var(--paper); }
   .visually-hidden { position:absolute; width:1px; height:1px; overflow:hidden; clip-path:inset(50%); white-space:nowrap; }
   .scatter { margin:1rem 0; min-width:12rem; max-width:35rem; }
-  .scatter-chart { position:relative; aspect-ratio:3/2; background:#fdfbf4; overflow:hidden; border:1px solid var(--line); }
+  .scatter-chart { position:relative; aspect-ratio:3/2; background:var(--chart); overflow:hidden; border:1px solid var(--line); }
   .scatter-chart span { position:absolute; transform:translate(-50%,50%); background:var(--green); }
   .scatter-chart .point { width:.4rem; height:.4rem; border-radius:50%; opacity:.7; }
   .scatter-chart .hexagon { clip-path:polygon(50% 0,100% 25%,100% 75%,50% 100%,0 75%,0 25%); }
   .scatter-bounds { display:flex; flex-wrap:wrap; justify-content:space-between; gap:.2rem .8rem; color:var(--muted); }
   .line-figure { margin:1rem 0; max-width:42rem; }
-  .line-figure svg { display:block; width:100%; min-width:12rem; border:1px solid var(--line); background:#fdfbf4; }
+  .line-figure svg { display:block; width:100%; min-width:12rem; border:1px solid var(--line); background:var(--chart); }
   .line-figure path { fill:none; stroke:var(--green); stroke-width:2; stroke-linecap:round; stroke-linejoin:round; }
   @media (max-width:40rem) { th,td { padding:.45rem; } .column > div { margin-left:0; } }
-  @media print { body { background:white; } header, main { padding:1rem 0; } nav { display:none; } }
+  @media print { body { background:var(--paper); } header, main { padding:1rem 0; } nav { display:none; } }
 `;
 
-function documentHtml(title: string, modelNames: string[], models: string): string {
+export const profileReportOptions = z.object({
+  title: z.string().optional(),
+  theme: z.enum(['light', 'dark', 'auto']).optional(),
+  transparent: z.boolean().optional(),
+  fullWidth: z.boolean().optional(),
+});
+type ProfileReportOptions = z.input<typeof profileReportOptions>;
+
+function documentHtml(title: string, modelNames: string[], models: string, options: ProfileReportOptions): string {
   const navigation = modelNames.map((name, i) => `<a href="#model-${i}">${escape(name)}</a>`).join('');
-  return `<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-    <title>${escape(title)}</title><style>${css}</style></head><body><header><h1>${escape(title)}</h1>
+  const { theme = 'light', transparent, fullWidth } = profileReportOptions.parse(options);
+  const classes = [transparent && 'transparent', fullWidth && 'full-width'].filter(Boolean).join(' ');
+  return `<!doctype html><html lang="en" data-theme="${theme}"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>${escape(title)}</title><style>${css}</style></head><body class="${classes}"><header><h1>${escape(
+    title
+  )}</h1>
     <nav aria-label="Models">${navigation}</nav></header><main>${models}</main></body></html>`;
 }
 
 /** Render a standalone report from saved observations. */
-export function renderProfileHtml(input: unknown, { title = 'Data profile' }: { title?: string } = {}): string {
+export function renderProfileHtml(input: unknown, options: ProfileReportOptions = {}): string {
   const profile = profileOutputSchema.parse(input);
   const quality = assessQuality(profile, {});
   const models = profile.models
@@ -384,16 +402,17 @@ export function renderProfileHtml(input: unknown, { title = 'Data profile' }: { 
     })
     .join('');
   return documentHtml(
-    title,
+    options.title ?? 'Data profile',
     profile.models.map(({ name }) => name),
-    models
+    models,
+    options
   );
 }
 
 export function renderProfileComparisonHtml(
   before: unknown,
   after: unknown,
-  { title = 'Profile comparison' }: { title?: string } = {}
+  options: ProfileReportOptions = {}
 ): string {
   const comparison = compareProfiles(before, after);
   const metricsTable = (metrics: ProfileComparison['models'][number]['metrics']) =>
@@ -424,8 +443,9 @@ export function renderProfileComparisonHtml(
     })
     .join('');
   return documentHtml(
-    title,
+    options.title ?? 'Profile comparison',
     comparison.models.map(({ name }) => name),
-    models
+    models,
+    options
   );
 }

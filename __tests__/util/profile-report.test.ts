@@ -23,9 +23,11 @@ it('escapes saved values and renders nested tables, distributions and alerts', (
         },
       ],
     },
-    { title: 'Before & after' }
+    { title: 'Before & after', theme: 'dark', fullWidth: true, transparent: true }
   );
   expect(html).toContain('<title>Before &amp; after</title>');
+  expect(html).toContain('data-theme="dark"');
+  expect(html).toContain('<body class="transparent full-width">');
   expect(html).toContain('&lt;dataset&gt;');
   expect(html).toContain('&lt;img src=x onerror=alert(1)&gt;');
   expect(html).not.toContain('<script>');
