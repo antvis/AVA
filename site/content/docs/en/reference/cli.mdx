@@ -63,7 +63,7 @@ ava viz --spec @chart.json --output chart.html
 ava visualize --query "Plot revenue by region" --data @rows.json
 ```
 
-`recommend` and `visualize` require the model. `viz` renders a spec without an API key and requires a new output file; existing files are not overwritten. Check that recommendation returned a spec rather than `null` before rendering it.
+`recommend` and `visualize` require the model. `viz` needs no API key: without `--output`, it validates the spec and returns `{ chartType, config }`, filling in a missing `config.type`, for direct rendering in a page. With `--output`, it writes HTML to a new file; existing files are not overwritten. Check that recommendation returned a spec rather than `null` before rendering it.
 
 ## Command parameters
 
@@ -81,7 +81,7 @@ All commands accept `-h` / `--help` (boolean; optional). Every positional argume
 | `query`     | `dataset-id`                           | Required `--dsl`: code, `@file`, or `-`; non-empty and at most 512 KiB. Optional `--max-rows` and `--max-result-bytes` below.                                                                         |
 | `visualize` | None                                   | Required `--query`: text; required `--data`: JSON array of objects, `@file`, or `-`; optional `-o` / `--output`: new HTML file path.                                                                  |
 | `recommend` | None                                   | Required `--query`: text; required `--data`: JSON array of objects, `@file`, or `-`.                                                                                                                  |
-| `viz`       | None                                   | Required `--spec`: JSON, `@file`, or `-`, containing `chartType` and a `config` object; required `-o` / `--output`: new HTML file path.                                                              |
+| `viz`       | None                                   | Required `--spec`: JSON, `@file`, or `-`, containing `chartType` and a `config` object; optional `-o` / `--output`: new HTML file path. Without it, returns the validated spec.                                                              |
 | `dispose`   | `dataset-id`                           | No additional flags.                                                                                                                                                                                  |
 
 | Shared execution flag | Type    | Default   | Accepted range         |

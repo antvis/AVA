@@ -90,4 +90,4 @@ For result rows `[{"region":"East","total":25},{"region":"West","total":20}]`, m
 ava viz --spec @chart.json --output chart.html
 ```
 
-`viz` needs no dataset ID. It returns an absolute `output` path and does not overwrite existing files. Charts load GPT-Vis from the internet. The CLI validates the Spec wrapper and type name, not browser rendering. Preview labels, ordering, units, values, and theme when a browser is available; otherwise disclose that no preview was performed. On failure, correct the cause or deliver the table with the error explained.
+`viz` needs no dataset ID. With `--output`, it writes HTML, returns an absolute `output` path and does not overwrite existing files. Without `--output`, it returns the validated `{ chartType, config }`, filling in a missing `config.type`, for direct rendering in a page. The CLI validates the native chart contract; it does not execute browser rendering. Charts load GPT-Vis from the internet. Preview labels, ordering, units, values, and theme when a browser is available; otherwise disclose that no preview was performed. On failure, correct the cause or deliver the table with the error explained.
