@@ -21,8 +21,8 @@ import CopyCode from '../../../components/docs/CopyCode';
 ```text
 请在当前项目安装 AVA Agent Skill，让你可以帮我分析数据、生成图表。
 
-1. 检查当前环境是否为 macOS 或 Linux，是否具备 Node.js 22.13 或更高版本以及 npm。需要升级时，优先使用已有的 Node 版本管理器；无法满足要求时，说明缺少什么。
-2. 运行 `npm install -g @antv/ava@4` 安装 CLI，并确认 `ava --help`、`ava source --help` 可以正常执行。
+1. 检查当前环境是否为 macOS、Linux 或原生 Windows，是否具备 Node.js 22.13 或更高版本以及 npm。需要升级时，优先使用已有的 Node 版本管理器；无法满足要求时，说明缺少什么。
+2. 运行 `npm install -g @antv/ava@latest` 安装 CLI，并确认 `ava --help`、`ava source --help` 可以正常执行。
 3. 为当前项目检测到的 Agent 安装 Skill：`npx --yes skills add antvis/AVA --skill ava --yes`。
 4. 阅读安装后的 ava/SKILL.md 及其环境配置参考，使用 `npx --yes skills list` 确认安装结果。
 5. 在新建的临时目录中，用一份很小的 CSV 验证 CLI：通过 `ava source` 加载，使用 `ava schema` 查看结构，再运行 `ava query` 完成一次简单聚合。使用实际返回的数据集 ID 和 schema 中的表名，验证后释放测试会话。
@@ -118,10 +118,10 @@ ava viz --spec @chart.json --output revenue-change.html
 
 <Heading as="h2" id="manual-installation">手动安装</Heading>
 
-CLI 需要 **Node.js 22.13 或更高版本** 、 **macOS 或 Linux** ，以及支持后台进程和 Unix socket 的环境。分别安装 CLI 和 Skill：
+CLI 支持 **macOS、Linux 和原生 Windows**，需要 **Node.js 22.13 或更高版本**，运行环境需允许后台进程和本机进程间通信。分别安装 CLI 和 Skill：
 
 ```bash
-npm install -g @antv/ava@4
+npm install -g @antv/ava@latest
 npx --yes skills add antvis/AVA --skill ava --yes
 ```
 

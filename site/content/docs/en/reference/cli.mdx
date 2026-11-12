@@ -1,6 +1,6 @@
 ## Start a session
 
-After installing `@antv/ava`, use the `ava` binary (or `npx ava` for a local npm installation). Persistent sessions require macOS or Linux.
+After installing `@antv/ava`, use the `ava` binary (or `npx ava` for a local npm installation). Persistent sessions work on macOS/Linux via Unix sockets and on native Windows via named pipes.
 
 ```bash
 ava source sales.csv > session.json

@@ -1,5 +1,4 @@
 import { AVA } from '../..';
-import { describeSchema } from '../dataset';
 
 import type { DataSourceConfig, Schema, EngineConfig, LLMConfig } from '../../types';
 
@@ -55,5 +54,14 @@ export function withDataset<T>(operation: (instance: AVA) => Promise<T>): Promis
 }
 
 export async function describeDataset(schema?: Schema) {
-  return withDataset((instance) => describeSchema(instance, schema));
+  return withDataset(async (instance) => {
+    const engine = instance.engine!;
+    const language = engine.dialect.id;
+    if (!language) throw new Error('Query dialect must provide a non-empty id');
+    return {
+      ...(await instance.schema(undefined, schema === undefined ? undefined : () => schema)),
+      language,
+      ...(engine.dialect.rules ? { instructions: engine.dialect.rules } : {}),
+    };
+  });
 }

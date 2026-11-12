@@ -2,7 +2,7 @@ import { Heading } from '../../../../mdx-components';
 
 <Heading as="h2" id="start-a-session">开始一个会话</Heading>
 
-安装 `@antv/ava` 后，使用 `ava` 命令；本地 npm 安装也可通过 `npx ava` 运行。持久会话需要 macOS 或 Linux。
+安装 `@antv/ava` 后，使用 `ava` 命令；本地 npm 安装也可通过 `npx ava` 运行。持久会话在 macOS/Linux 上使用 Unix socket，在原生 Windows 上使用命名管道。
 
 ```bash
 ava source sales.csv > session.json

@@ -72,10 +72,10 @@
 
 ## 🚀 Getting started
 
-Install AVA 4.0 with Node.js 22.13+:
+Install the latest AVA with Node.js 22.13+:
 
 ```bash
-npm install @antv/ava@4
+npm install @antv/ava@latest
 ```
 
 ## 💻 Usage
@@ -221,7 +221,7 @@ We evaluate AVA on established benchmarks to measure the accuracy and efficiency
 
 ## 🧩 More ways to use AVA
 
-The CLI requires Node.js 22.13+. Persistent dataset sessions require macOS or Linux.
+The CLI runs on Node.js 22.13+ on macOS, Linux, and native Windows. Dataset sessions need background processes and use Unix sockets on macOS/Linux or named pipes on Windows.
 
 ### Use with an Agent
 
@@ -241,16 +241,6 @@ Load and analyze data from your terminal:
 ava source ./sales.csv
 ava analyze '<dataset-id>' 'Compare January and February 2025 sales by product.'
 ```
-
-For a local CSV on native Windows or in an environment without background processes, run:
-
-```powershell
-ava schema --local ".\sales.csv"
-ava query --local ".\sales.csv" --dsl "@query.sql" --semantic-file "semantic.json"
-```
-
-The foreground commands use DuckDB and expose the CSV as `data`. The Semantic file is optional and
-loaded for this query only. The SQL in `query.sql` must implement the business definitions explicitly.
 
 See the [CLI guide](https://ava.antv.vision/documentation/reference/cli/) for setup and commands.
 

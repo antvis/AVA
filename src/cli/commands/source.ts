@@ -124,7 +124,7 @@ Environment:
 In a terminal, shows the dataset ID and suggested next commands.
 When piped or redirected, returns JSON containing datasetId.
 IDs use a sanitized source name plus a random suffix.
-Requires Node.js 22.13+ on macOS or Linux.
+Requires Node.js 22.13+ and a host that allows background processes (macOS, Linux, or Windows).
 Sessions expire after 30 idle minutes; dispose releases them immediately.
 Python requires python3 and pandas; local Python execution is not sandboxed.
 JavaScript accepts inline csv/json/text configs. Use ava schema to inspect the query language.
