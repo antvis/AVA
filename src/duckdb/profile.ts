@@ -162,32 +162,72 @@ function duplicateRows(context: ExpressionContext): string {
     FROM (SELECT ${key} AS row_key, COUNT(*) AS n FROM ${table} GROUP BY 1) grouped)), ${empty})`;
 }
 
-function pearson(context: ExpressionContext): string {
+function numericCorrelationFields(context: ExpressionContext): MetricField[] {
   const fields = selectFields(context).filter(({ logicalType }) => logicalType === 'numeric');
   if (context.metric.columns && fields.length !== (context.metric.columns as string[]).length) {
-    throw new Error('Pearson correlation requires numeric columns');
+    const method = context.metric.id;
+    throw new Error(`${method[0].toUpperCase()}${method.slice(1)} correlation requires numeric columns`);
   }
-  if (!fields.length) return 'struct_pack(columns := []::VARCHAR[], matrix := COALESCE(first(NULL), []::DOUBLE[][]))';
+  return fields;
+}
 
+const emptyCorrelation = 'struct_pack(columns := []::VARCHAR[], matrix := COALESCE(first(NULL), []::DOUBLE[][]))';
+
+function correlationMatrix(fields: MetricField[], coefficient: (i: number, j: number) => string): string {
   const columns = fields.map(({ name }) => sqlStringLiteral(name));
-  const values = fields.map(({ name }) => `TRY_CAST(${sqlQualifiedName(name, context.sourceAlias)} AS DOUBLE)`);
-  const rows = values.map(
-    (_, i) =>
-      `[${values
-        .map((_, j) => {
-          // Use the same expression for both halves so DuckDB aggregates each pair once.
-          const left = values[Math.min(i, j)];
-          const right = values[Math.max(i, j)];
-          if (i === j) {
-            const finite = `FILTER (WHERE isfinite(${left}))`;
-            return `CASE WHEN min(${left}) ${finite} < max(${left}) ${finite} THEN 1::DOUBLE END`;
-          }
-          return `corr(${left}, ${right}) FILTER (WHERE isfinite(${left}) AND isfinite(${right}))`;
-        })
-        .join(', ')}]`
+  const rows = fields.map(
+    (_, i) => `[${fields.map((_, j) => coefficient(Math.min(i, j), Math.max(i, j))).join(', ')}]`
   );
   return `struct_pack(columns := [${columns.join(', ')}], matrix := list_transform([${rows.join(', ')}],
     lambda r: list_transform(r, lambda v: CASE WHEN isfinite(v) THEN greatest(-1, least(1, v)) END)))`;
+}
+
+function pearson(context: ExpressionContext): string {
+  const fields = numericCorrelationFields(context);
+  if (!fields.length) return emptyCorrelation;
+  const values = fields.map(({ name }) => `TRY_CAST(${sqlQualifiedName(name, context.sourceAlias)} AS DOUBLE)`);
+  return correlationMatrix(fields, (i, j) => {
+    const left = values[i];
+    const right = values[j];
+    if (i === j) {
+      const finite = `FILTER (WHERE isfinite(${left}))`;
+      return `CASE WHEN min(${left}) ${finite} < max(${left}) ${finite} THEN 1::DOUBLE END`;
+    }
+    return `corr(${left}, ${right}) FILTER (WHERE isfinite(${left}) AND isfinite(${right}))`;
+  });
+}
+
+function spearman(context: ExpressionContext): string {
+  const fields = numericCorrelationFields(context);
+  if (!fields.length) return emptyCorrelation;
+  const input = context.table.toLowerCase().startsWith('"__ava_rank_rows"') ? '__ava_rank_rows_2' : '__ava_rank_rows';
+  const projection = fields.map(
+    ({ name }, i) => `TRY_CAST(${sqlQualifiedName(name, context.sourceAlias)} AS DOUBLE) AS c${i}`
+  );
+  const pairs: string[] = [];
+  for (let i = 0; i < fields.length; i += 1) {
+    for (let j = i; j < fields.length; j += 1) {
+      const left = `c${i}`;
+      const right = `c${j}`;
+      let query: string;
+      if (i === j) {
+        query = `SELECT CASE WHEN min(${left}) < max(${left}) THEN 1::DOUBLE END FROM ${input} WHERE isfinite(${left})`;
+      } else {
+        // Rank each pair after removing its missing observations and average ranks within ties.
+        const rank = (column: string) => `rank() OVER (ORDER BY ${column}) +
+          (count(*) OVER (ORDER BY ${column} RANGE BETWEEN CURRENT ROW AND CURRENT ROW) - 1) / 2.0`;
+        query = `SELECT corr(rank_left, rank_right) FROM (
+          SELECT ${rank(left)} AS rank_left, ${rank(right)} AS rank_right
+          FROM ${input} WHERE isfinite(${left}) AND isfinite(${right})
+        ) ranks`;
+      }
+      pairs.push(`(${query}) AS p${i}_${j}`);
+    }
+  }
+  const matrix = correlationMatrix(fields, (i, j) => `p${i}_${j}`);
+  const empty = correlationMatrix(fields, () => 'NULL::DOUBLE');
+  return `COALESCE(first((WITH ${input} AS MATERIALIZED (SELECT ${projection.join(', ')} FROM ${context.table})
+    SELECT ${matrix} FROM (SELECT ${pairs.join(', ')}) coefficients)), ${empty})`;
 }
 
 const shapeMetrics = ['skewness', 'kurtosis'] as const;
@@ -255,6 +295,7 @@ export const BUILTIN_METRICS: DuckDBMetric[] = [
     expression: duplicateRows,
   },
   { id: 'pearson', enable: table, options: { columns: columnNamesOption }, expression: pearson },
+  { id: 'spearman', enable: table, options: { columns: columnNamesOption }, expression: spearman },
   { id: 'valid_count', enable: column, expression: ({ column }) => `COUNT(${column})` },
   { id: 'null_count', enable: column, expression: ({ column }) => `COUNT(*) - COUNT(${column})` },
   {

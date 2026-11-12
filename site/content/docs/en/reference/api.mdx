@@ -235,6 +235,7 @@ await ava.profile({
 | `table_summary` | Table | Row and column counts, NULL cell count and ratio, columns with NULLs, all-NULL columns, and counts by logical type. An empty table has no all-NULL columns. |
 | `row_duplicates` | Table | Repeated group count, group count / total rows, rows in repeated groups, rows removable by deduplication, and samples sorted by count and key. |
 | `pearson` | Table, numeric columns | Symmetric `{ columns, matrix }`. Each pair uses rows where both values are finite. Constant columns and insufficient pairs yield `null`. |
+| `spearman` | Table, numeric columns | Symmetric rank correlation matrix. Each pair is ranked over its finite observations, with averaged ranks for ties. |
 | `valid_count` | Column | Number of non-NULL values. |
 | `null_ratio` | Column | SQL NULL count / total rows. |
 | `distinct_ratio` | Numeric, text, boolean, date | Different non-NULL values / non-NULL count. |
@@ -270,6 +271,7 @@ Table completeness shares the scan with column NULL counts, frequency metrics sh
 | `row_duplicates` | `columns` | All profile columns | Non-empty list of distinct column names used as the group key. |
 | `row_duplicates` | `limit` | `10` | Maximum sample count. Use `0` for counts alone. |
 | `pearson` | `columns` | All numeric columns | Non-empty list of distinct numeric column names. |
+| `spearman` | `columns` | All numeric columns | Non-empty list of distinct numeric column names. Pairwise sorts reuse a single materialized projection. |
 | `quantiles` | `probabilities` | `[0.05, 0.25, 0.5, 0.75, 0.95]` | Non-empty array of numbers in `[0, 1]`. |
 | `histogram` | `bins` | `50` | Non-negative integer. Use `0` for automatic Sturges/Freedman–Diaconis selection. |
 | `histogram` | `maxBins` | `250` | Positive integer cap on the number of bins. |
