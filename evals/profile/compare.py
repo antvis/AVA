@@ -120,7 +120,7 @@ def cli(*args, payload=None):
 
 
 def compare(path, types):
-    metrics = [*TABLE_METRICS, *COLUMN_METRICS, "value_counts", "histogram", "quantiles", "nan_count", "word_counts", "character_counts",
+    metrics = [*TABLE_METRICS, *COLUMN_METRICS, "value_counts", "histogram", "quantiles", "nan_count", "word_counts", "character_counts", "monotonicity",
                {"id": "row_duplicates", "limit": 0}, {"id": "row_sample", "head": 3, "tail": 3}]
     dataset = cli("source", str(path), "--engine", "duckdb")["datasetId"]
     try:
@@ -173,6 +173,12 @@ def compare(path, types):
         for native, source in COLUMN_METRICS.items():
             if source in reference:
                 check(f"{name}.{native}", observed.get(native, MISSING), reference[source])
+        if "monotonic" in reference:
+            check(f"{name}.monotonicity", observed.get("monotonicity", MISSING), {
+                "increasing": reference["monotonic_increase"], "decreasing": reference["monotonic_decrease"],
+                "strictly_increasing": reference["monotonic_increase_strict"],
+                "strictly_decreasing": reference["monotonic_decrease_strict"], "direction": reference["monotonic"],
+            })
         if "histogram" in reference:
             counts, edges = reference["histogram"]
             if reference["type"] == "DateTime":

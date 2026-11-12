@@ -34,6 +34,7 @@ interface ExpressionContext {
   readonly sourceAlias?: string;
   readonly center?: string;
   readonly histogram?: { edges: string; limits: string };
+  readonly monotonic?: string;
   readonly wordLowercase?: string;
   readonly metric: ParsedProfileOptions['metrics'][number];
 }
@@ -44,6 +45,18 @@ export type DuckDBMetric = Metric<DuckDBMetricExpression>;
 type ColumnContext = Pick<ExpressionContext, 'column' | 'field'>;
 
 const floatingPoint = /^(FLOAT|DOUBLE|REAL)$/i;
+
+function monotonicity(column: string, previous: string): string {
+  const compare = (op: string) => `coalesce(bool_and(${column} ${op} ${previous}), true)`;
+  const increasing = compare('>=');
+  const decreasing = compare('<=');
+  const strictlyIncreasing = compare('>');
+  const strictlyDecreasing = compare('<');
+  return `struct_pack(increasing := ${increasing}, decreasing := ${decreasing},
+    strictly_increasing := ${strictlyIncreasing}, strictly_decreasing := ${strictlyDecreasing},
+    direction := CASE WHEN ${strictlyIncreasing} THEN 2 WHEN ${strictlyDecreasing} THEN -2
+      WHEN ${increasing} THEN 1 WHEN ${decreasing} THEN -1 ELSE 0 END)`;
+}
 
 function finiteFilter({ column, field }: ColumnContext): string {
   return field && (field.logicalType === 'date' || floatingPoint.test(field.type))
@@ -500,6 +513,13 @@ export const BUILTIN_METRICS: DuckDBMetric[] = [
     expression: (context) => `COALESCE(-struct_extract(list_min(${frequencyRanks(context)}), 'rank')::DOUBLE, 0)`,
   },
   { id: 'imbalance', enable: logicalTypes('string', 'boolean', 'numeric'), expression: imbalance },
+  {
+    id: 'monotonicity',
+    enable: logicalTypes('numeric'),
+    expression: ({ monotonic }) =>
+      `COALESCE(first(${monotonic}), struct_pack(increasing := true, decreasing := true,
+      strictly_increasing := true, strictly_decreasing := true, direction := 2))`,
+  },
   { id: 'min', enable: logicalTypes('numeric', 'date'), expression: (context) => range('min', context) },
   { id: 'max', enable: logicalTypes('numeric', 'date'), expression: (context) => range('max', context) },
   {
@@ -687,6 +707,7 @@ export async function profileTables(
 ): Promise<Profile> {
   const metrics = options.metrics.map((metric) => ({ metric, definition: resolveMetric(metric, BUILTIN_METRICS) }));
   const needsCenters = metrics.some(({ metric }) => metric.id === 'skewness' || metric.id === 'kurtosis');
+  const needsMonotonicity = metrics.some(({ metric }) => metric.id === 'monotonicity');
   const wordLowercase = metrics.some(({ metric }) => metric.id === 'word_counts')
     ? registerWordLowercase(connection)
     : undefined;
@@ -702,6 +723,8 @@ export async function profileTables(
     );
     const statistics: string[] = [];
     const axes: string[] = [];
+    const windows: string[] = [];
+    const usedNames = new Set(fields.map(({ name }) => name.toLowerCase()));
     const addParameter = (expression: string, stage: 'statistic' | 'axis' = 'statistic') => {
       const list = stage === 'statistic' ? statistics : axes;
       const alias = sqlIdentifier(`${stage}${list.length}`);
@@ -715,8 +738,17 @@ export async function profileTables(
           needsCenters && field.logicalType === 'numeric'
             ? `${centerTable}.${addParameter(aggregate('favg', { column, field }))}`
             : undefined;
+        let monotonic: string | undefined;
+        if (needsMonotonicity && field.logicalType === 'numeric') {
+          let alias = `__ava_previous${windows.length}`;
+          while (usedNames.has(alias)) alias += '_';
+          const previous = sqlIdentifier(alias);
+          const value = floatingPoint.test(field.type) ? `CASE WHEN NOT isnan(${column}) THEN ${column} END` : column;
+          windows.push(`lag(${value} IGNORE NULLS) OVER () AS ${previous}`);
+          monotonic = `${centerTable}.${addParameter(monotonicity(value, previous))}`;
+        }
         if (!histogram || (field.logicalType !== 'numeric' && field.logicalType !== 'date'))
-          return [field.name, { center }];
+          return [field.name, { center, monotonic }];
 
         const value = histogramValue({ column, field });
         const finite = `FILTER (WHERE isfinite(${value}))`;
@@ -747,7 +779,7 @@ export async function profileTables(
         );
         return [
           field.name,
-          { center, histogram: { edges: `${centerTable}.${edges}`, limits: `${centerTable}.${limits}` } },
+          { center, monotonic, histogram: { edges: `${centerTable}.${edges}`, limits: `${centerTable}.${limits}` } },
         ];
       })
     );
@@ -795,8 +827,9 @@ export async function profileTables(
 
     if (!pending.length) continue;
 
-    // Bin edges and moment centers share the same preliminary scan.
-    const preliminary = `SELECT ${statistics.join(', ')} FROM ${reference}`;
+    // Ordered comparisons, bin edges and moment centers share the same preliminary scan.
+    const parameterSource = windows.length ? `(SELECT *, ${windows.join(', ')} FROM ${reference})` : reference;
+    const preliminary = `SELECT ${statistics.join(', ')} FROM ${parameterSource}`;
     const withParameters = statistics.length
       ? `WITH ${centerTable} AS (${
           axes.length ? `SELECT *, ${axes.join(', ')} FROM (${preliminary}) bounds` : preliminary
