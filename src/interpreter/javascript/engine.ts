@@ -37,7 +37,12 @@ export class JavaScriptEngine implements AnalysisEngine {
     this.dialect = new JavaScriptDialect(llmConfig);
   }
 
-  async load(config: DataSourceConfig): Promise<void> {
+  async load(configs: DataSourceConfig | DataSourceConfig[]): Promise<void> {
+    const sources = Array.isArray(configs) ? configs : [configs];
+    if (sources.length !== 1) {
+      throw new Error(`JavaScriptEngine currently supports exactly one data source, received ${sources.length}`);
+    }
+    const config = sources[0];
     this.data = null;
     if (!['csv', 'json', 'text'].includes(config.type)) {
       throw new Error(`JavaScriptEngine only supports csv/json/text sources, got: ${config.type}`);

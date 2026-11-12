@@ -109,7 +109,12 @@ export class DuckDBEngine implements AnalysisEngine {
     await conn.run('SET lock_configuration = true');
   }
 
-  async load(config: DataSourceConfig): Promise<void> {
+  async load(configs: DataSourceConfig | DataSourceConfig[]): Promise<void> {
+    const sources = Array.isArray(configs) ? configs : [configs];
+    if (sources.length !== 1) {
+      throw new Error(`DuckDBEngine currently supports exactly one data source, received ${sources.length}`);
+    }
+    const config = sources[0];
     await this.dispose();
     this.allowCommunityExtensions = config.type === 'mongodb';
     try {

@@ -219,8 +219,10 @@ export type EngineConfig =
 export interface AnalysisEngine {
   /** Query language, generation rules and validation supplied by every engine. */
   readonly dialect: QueryDialect;
-  /** Load a data source and prepare it for execution. */
-  load(configs: ParsedDataSourceConfig[]): Promise<void>;
+  /**
+   * Prepare the supplied source configurations for execution.
+   */
+  load(configs: DataSourceConfig | DataSourceConfig[]): Promise<void>;
   /** Discover the loaded source structure. */
   schema(): Promise<Schema>;
   /** Compute statistics for the loaded data. */
