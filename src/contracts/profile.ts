@@ -31,6 +31,7 @@ export const profileInputSchema = z
   .object({
     metrics: z.array(metricConfigSchema).optional(),
     semantics,
+    sensitive: z.boolean().optional(),
     typeSchema: z.record(z.string(), z.record(z.string(), profileTypeSchema)).optional(),
     inferTypes: z
       .object({
@@ -42,4 +43,6 @@ export const profileInputSchema = z
       .optional(),
   })
   .strict();
-export const profileOutputSchema = z.object({ models: z.array(modelSchema), semantics }).strict();
+export const profileOutputSchema = z
+  .object({ models: z.array(modelSchema), semantics, sensitive: z.literal(true).optional() })
+  .strict();

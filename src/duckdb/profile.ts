@@ -1000,6 +1000,55 @@ export const BUILTIN_METRICS: DuckDBMetric[] = [
 
 export { DEFAULT_METRICS } from '../util/profile';
 
+const sensitiveMetrics = new Set([
+  'row_count',
+  'table_summary',
+  'valid_count',
+  'null_count',
+  'null_ratio',
+  'distinct_count',
+  'distinct_ratio',
+  'unique_count',
+  'unique_ratio',
+  'is_unique',
+  'duplicate_count',
+  'mode_count',
+  'imbalance',
+  'min',
+  'max',
+  'mean',
+  'sum',
+  'stddev',
+  'median',
+  'variance',
+  'mad',
+  'iqr',
+  'cv',
+  'range',
+  'skewness',
+  'kurtosis',
+  'quantiles',
+  'histogram',
+  'monotonicity',
+  'chi_squared',
+  'date_validation',
+  'min_length',
+  'max_length',
+  'mean_length',
+  'median_length',
+  'length_histogram',
+  'pearson',
+  'spearman',
+  'kendall',
+  'cramers',
+  'auto',
+  'missing_correlation',
+  'missing_matrix',
+  'autocorrelation',
+  'adf',
+  ...['zero', 'negative', 'infinite', 'nan', 'finite'].flatMap((kind) => [`${kind}_count`, `${kind}_ratio`]),
+]);
+
 /** Decode aggregate values into profile metrics. */
 async function postProcessMetrics(
   row: Record<string, unknown>,
@@ -1055,7 +1104,9 @@ export async function profileTables(
   schema: Schema,
   options: ParsedProfileOptions
 ): Promise<Profile> {
-  const metrics = options.metrics.map((metric) => ({ metric, definition: resolveMetric(metric, BUILTIN_METRICS) }));
+  const metrics = options.metrics
+    .map((metric) => ({ metric, definition: resolveMetric(metric, BUILTIN_METRICS) }))
+    .filter(({ metric }) => !options.sensitive || sensitiveMetrics.has(metric.id));
   const nanAsNull = options.semantics === 'data-profiling';
   const needsCenters = metrics.some(({ metric }) => metric.id === 'skewness' || metric.id === 'kurtosis');
   const needsMonotonicity = metrics.some(({ metric }) => metric.id === 'monotonicity');
@@ -1274,5 +1325,9 @@ export async function profileTables(
     }
   }
 
-  return options.semantics ? { models: profiles, semantics: options.semantics } : { models: profiles };
+  return {
+    models: profiles,
+    ...(options.semantics && { semantics: options.semantics }),
+    ...(options.sensitive && { sensitive: true as const }),
+  };
 }

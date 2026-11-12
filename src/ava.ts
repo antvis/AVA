@@ -193,10 +193,10 @@ export class AVA extends EventEmitter {
     }
     if (
       !setter &&
-      (options.semantics || options.typeSchema || options.inferTypes) &&
+      (options.semantics || options.typeSchema || options.inferTypes || options.sensitive) &&
       this.engineConfig.type !== 'duckdb'
     ) {
-      throw new Error('Profile semantics and type configuration are supported only by DuckDB.');
+      throw new Error('Profile semantics, type configuration and sensitive mode are supported only by DuckDB.');
     }
 
     emit(this, new LifecycleEvent(LifecycleEventType.PROFILE_START));
