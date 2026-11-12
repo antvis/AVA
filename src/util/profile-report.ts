@@ -1,9 +1,11 @@
+import { z } from 'zod';
+
 import { profileOutputSchema } from '../contracts';
 
 import { assessQuality } from './quality';
 import { compareProfiles } from './profile-compare';
 
-import type { JsonValue } from '../types';
+import type { JsonValue, Profile } from '../types';
 import type { ProfileComparison } from './profile-compare';
 
 const htmlEntities: Record<string, string> = { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' };
@@ -12,18 +14,47 @@ function escape(value: string): string {
   return value.replace(/[&<>"']/g, (char) => htmlEntities[char]);
 }
 
-function table(headers: string[], rows: string[][]): string {
+function table(headers: string[], rows: string[][], className = ''): string {
   const head = headers.map((value) => `<th scope="col">${escape(value)}</th>`).join('');
   const body = rows
     .map(
       ([first, ...rest]) => `<tr><th scope="row">${first}</th>${rest.map((cell) => `<td>${cell}</td>`).join('')}</tr>`
     )
     .join('');
-  return `<div class="table-scroll"><table><thead><tr>${head}</tr></thead><tbody>${body}</tbody></table></div>`;
+  return `<div class="table-scroll"><table class="${className}"><thead><tr>${head}</tr></thead><tbody>${body}</tbody></table></div>`;
 }
 
 function record(value: JsonValue): value is Record<string, JsonValue> {
   return value !== null && typeof value === 'object' && !Array.isArray(value);
+}
+
+const bandsSchema = z.object({
+  columns: z.array(z.string()),
+  bands: z.array(z.object({ start: z.number(), end: z.number(), present: z.array(z.number().min(0).max(1)) })),
+});
+
+function missingBandMarkup(value: Record<string, JsonValue>): string | undefined {
+  if (!Array.isArray(value.bands)) return undefined;
+  const parsed = bandsSchema.safeParse(value);
+  if (!parsed.success || !parsed.data.bands.every(({ present }) => present.length === parsed.data.columns.length))
+    return undefined;
+  const { columns, bands } = parsed.data;
+  const rows = bands.map(({ start, end, present }) => [
+    `<span class="visually-hidden">Rows ${start + 1}–${end}</span>`,
+    ...present.map(
+      (coverage) =>
+        `<span class="band-cell" style="--coverage:${coverage}" role="img" aria-label="${
+          coverage * 100
+        }% present" title="Rows ${start + 1}–${end}, ${coverage * 100}% present"></span>`
+    ),
+  ]);
+  return `<details><summary>${
+    bands.length
+  } row bands</summary><p class="missing">Darker cells indicate more present values.</p>${table(
+    ['Rows', ...columns],
+    rows,
+    'missing-bands'
+  )}</details>`;
 }
 
 function valueMarkup(value: JsonValue | undefined): string {
@@ -44,6 +75,8 @@ function valueMarkup(value: JsonValue | undefined): string {
     )}</details>`;
   }
   if (record(value)) {
+    const bandMarkup = missingBandMarkup(value);
+    if (bandMarkup) return bandMarkup;
     const { counts, bin_edges: edges, columns, matrix } = value;
     if (
       Array.isArray(counts) &&
@@ -106,6 +139,33 @@ function metricTable(metrics: Record<string, JsonValue>): string {
   );
 }
 
+function missingBar(model: Profile['models'][number], referenceSemantics: boolean): string {
+  const summary = model.metrics.table_summary;
+  const rows = model.metrics.row_count ?? (summary && record(summary) ? summary.row_count : undefined);
+  if (typeof rows !== 'number' || rows <= 0) return '';
+  const values = model.columns.flatMap(({ name, metrics }) => {
+    if (typeof metrics.null_count !== 'number') return [];
+    const missing =
+      metrics.null_count + (!referenceSemantics && typeof metrics.nan_count === 'number' ? metrics.nan_count : 0);
+    const present = rows - missing;
+    if (present < 0 || present > rows) return [];
+    return [
+      [
+        escape(name),
+        String(present),
+        String(missing),
+        `<meter min="0" max="${rows}" value="${present}" aria-label="${present} of ${rows} rows present"></meter>`,
+      ],
+    ];
+  });
+  return values.length
+    ? `<details><summary>Column coverage</summary>${table(
+        ['Column', 'Present', 'Missing', 'Share present'],
+        values
+      )}</details>`
+    : '';
+}
+
 const css = `
   :root { color-scheme: light; --paper:#f6f3eb; --ink:#202a24; --muted:#536259; --line:#cfcec0; --green:#235943; --alert:#933b24; }
   * { box-sizing:border-box; }
@@ -136,6 +196,9 @@ const css = `
   meter { width:clamp(4rem,18vw,12rem); accent-color:var(--green); }
   .coefficient { background:rgba(35,89,67,var(--strength)); display:block; min-width:4.5rem; padding:.15rem .3rem; text-align:right; }
   .coefficient.negative { background:rgba(147,59,36,var(--strength)); }
+  .missing-bands tbody th, .missing-bands tbody td { padding:0; border:0; line-height:0; }
+  .band-cell { display:block; height:4px; background:rgba(35,89,67,var(--coverage)); border-right:1px solid var(--paper); }
+  .visually-hidden { position:absolute; width:1px; height:1px; overflow:hidden; clip-path:inset(50%); white-space:nowrap; }
   @media (max-width:40rem) { th,td { padding:.45rem; } .column > div { margin-left:0; } }
   @media print { body { background:white; } header, main { padding:1rem 0; } nav { display:none; } }
 `;
@@ -152,7 +215,8 @@ export function renderProfileHtml(input: unknown, { title = 'Data profile' }: { 
   const profile = profileOutputSchema.parse(input);
   const quality = assessQuality(profile, {});
   const models = profile.models
-    .map(({ name, metrics, columns }, i) => {
+    .map((model, i) => {
+      const { name, metrics, columns } = model;
       const alerts = quality.models[i].alerts;
       const alertTable = alerts.length
         ? `<div class="alert"><h3>Quality alerts</h3>${table(
@@ -176,7 +240,9 @@ export function renderProfileHtml(input: unknown, { title = 'Data profile' }: { 
         .join('');
       return `<section id="model-${i}"><h2>${escape(name)}</h2>${
         Object.keys(metrics).length ? metricTable(metrics) : ''
-      }${alertTable}${variables ? `<h3>Columns</h3>${variables}` : ''}</section>`;
+      }${missingBar(model, profile.semantics === 'data-profiling')}${alertTable}${
+        variables ? `<h3>Columns</h3>${variables}` : ''
+      }</section>`;
     })
     .join('');
   return documentHtml(

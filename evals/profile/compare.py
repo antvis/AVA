@@ -20,11 +20,12 @@ from data_profiling import ProfileReport, __version__
 from data_profiling.config import Settings
 from data_profiling.model.pandas.describe_timeseries_pandas import compute_gap_stats, get_fft, get_fft_peaks, stationarity_test
 from data_profiling.model.pandas.timeseries_index_pandas import pandas_get_time_index_description
-from data_profiling.visualisation.charts.builders import acf_pacf
+from data_profiling.visualisation.charts.builders import acf_pacf, missing_matrix
 
 
 ROOT = Path(__file__).resolve().parents[2]
-TABLE_METRICS = ["row_count", "table_summary", "pearson", "spearman", "kendall", "cramers", "auto", "missing_correlation", "missing_matrix"]
+TABLE_METRICS = ["row_count", "table_summary", "pearson", "spearman", "kendall", "cramers", "auto", "missing_correlation",
+                 "missing_matrix", "missing_bands"]
 COLUMN_METRICS = {
     "valid_count": "count",
     "null_count": "n_missing",
@@ -287,6 +288,21 @@ def compare(path, types, infer_types=False, file_root=None, phik=False):
         "columns": list(frame.columns), "row_count": len(frame),
         "rows": ["".join("1" if item else "0" for item in row) for row in missing.itertuples(index=False, name=None)],
     })
+    bands = actual["metrics"]["missing_bands"]
+    rendered = missing_matrix(config, (~missing).to_numpy(), list(frame.columns), len(frame))
+    compressed = []
+    for i in range(len(bands["columns"])):
+        runs = []
+        for band in bands["bands"]:
+            fraction = band["present"][i]
+            coverage = fraction if fraction in (0, 1) else round(min(max(fraction, 0.05), 0.95), 1)
+            if runs and runs[-1][2] == coverage:
+                runs[-1][1] = band["end"]
+            else:
+                runs.append([band["start"], band["end"], coverage])
+        compressed.append(runs)
+    check("table.missing_bands", {"columns": bands["columns"], "rows": bands["row_count"], "bands": compressed},
+          {"columns": rendered.columns, "rows": rendered.nrows, "bands": rendered.bands})
     partial = [name for name in frame if 0 < missing[name].sum() < len(frame)]
     check("table.missing_correlation", actual["metrics"]["missing_correlation"],
           {"columns": partial, "matrix": missing[partial].corr().to_numpy()} if len(partial) >= 2 else None)

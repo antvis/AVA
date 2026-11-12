@@ -25,7 +25,11 @@ describe('profile/missingness correlation', () => {
       (1,NULL,NULL,'Infinity'), (NULL,'A',NULL,1), ('NaN','B',NULL,1), (1,NULL,NULL,1)`);
     const schema = await getDuckDBSchema(connection);
     const result = await profileTables(connection, schema, {
-      metrics: [{ id: 'missing_correlation' }, { id: 'missing_matrix', columns: ['b', 'a'], limit: 2 }],
+      metrics: [
+        { id: 'missing_correlation' },
+        { id: 'missing_matrix', columns: ['b', 'a'], limit: 2 },
+        { id: 'missing_bands', columns: ['a', 'b'], bands: 2 },
+      ],
     });
     const negative = expect.closeTo(-1, 12);
     expect(result.models[0].metrics.missing_correlation).toEqual({
@@ -36,6 +40,14 @@ describe('profile/missingness correlation', () => {
       ],
     });
     expect(result.models[0].metrics.missing_matrix).toEqual({ columns: ['b', 'a'], row_count: 4, rows: ['10', '01'] });
+    expect(result.models[0].metrics.missing_bands).toEqual({
+      columns: ['a', 'b'],
+      row_count: 4,
+      bands: [
+        { start: 0, end: 2, present: [0.5, 0.5] },
+        { start: 2, end: 4, present: [0.5, 0.5] },
+      ],
+    });
     const single = await profileTables(connection, schema, {
       metrics: [{ id: 'missing_correlation', columns: ['a', 'complete'] }],
     });

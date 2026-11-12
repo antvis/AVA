@@ -417,6 +417,25 @@ function missingMatrix(context: ExpressionContext): string {
   return `struct_pack(columns := ${columns}, row_count := count(*)::DOUBLE, rows := ${rows})`;
 }
 
+function missingBands(context: ExpressionContext): string {
+  const fields = selectFields(context);
+  const columns = `[${fields.map(({ name }) => sqlStringLiteral(name)).join(', ')}]::VARCHAR[]`;
+  if (!fields.length) return `struct_pack(columns := ${columns}, row_count := count(*)::DOUBLE, bands := [])`;
+  const { bands = 200 } = context.metric;
+  const masks = fields.map((field, i) => `NOT ${missingMask(field, context.sourceAlias)} AS present${i}`);
+  const present = `[${fields.map((_, i) => `avg(present${i}::DOUBLE)`).join(', ')}]`;
+  const candidate = 'floor(position * segments / total)';
+  const bucket = `(${candidate} + (position >= round_even((total / segments) * (${candidate} + 1), 0))::INTEGER)`;
+  return `first((SELECT struct_pack(columns := ${columns}, row_count := coalesce(first(total), 0),
+      bands := coalesce(list(struct_pack(start := start, "end" := finish, present := present) ORDER BY bucket), []))
+    FROM (SELECT ${bucket} AS bucket, total, min(position)::DOUBLE AS start,
+      (max(position) + 1)::DOUBLE AS finish, ${present} AS present
+      FROM (SELECT row_number() OVER () - 1 AS position, ${masks.join(', ')} FROM ${context.table}) positions
+      CROSS JOIN (SELECT count(*)::DOUBLE AS total, greatest(1, least(${bands}, count(*)))::DOUBLE AS segments
+        FROM ${context.table}) cardinality
+      GROUP BY bucket, total) grouped))`;
+}
+
 function missingCorrelation(context: ExpressionContext): string {
   const fields = selectFields(context);
   if (fields.length < 2) return 'first(NULL)';
@@ -691,6 +710,19 @@ export const BUILTIN_METRICS: DuckDBMetric[] = [
       },
     },
     expression: missingMatrix,
+  },
+  {
+    id: 'missing_bands',
+    enable: table,
+    options: {
+      columns: columnNamesOption,
+      bands: {
+        validate: (value) => {
+          z.number().int().positive().parse(value);
+        },
+      },
+    },
+    expression: missingBands,
   },
   ...['cramers', 'auto', 'phi_k'].map(
     (id): DuckDBMetric => ({
@@ -1157,6 +1189,7 @@ const sensitiveMetrics = new Set([
   'phi_k',
   'missing_correlation',
   'missing_matrix',
+  'missing_bands',
   'autocorrelation',
   'adf',
   ...['zero', 'negative', 'infinite', 'nan', 'finite'].flatMap((kind) => [`${kind}_count`, `${kind}_ratio`]),
