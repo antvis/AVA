@@ -17,7 +17,7 @@ import { timeGapsSql } from './profile-time-gaps';
 import { dateValidationSql, parseDateSql } from './profile-dates';
 import { frequencySpectrum } from './profile-spectrum';
 import { augmentedDickeyFuller } from './profile-adf';
-import { booleanSql, inferColumnTypes } from './profile-inference';
+import { booleanSql, inferColumnTypes, numericTextSql } from './profile-inference';
 import { fileSummary } from './profile-files';
 import { imageSummary } from './profile-images';
 import {
@@ -49,6 +49,7 @@ export function logicalType(nativeType: string): LogicalType {
 
 type ProfileField = MetricField & {
   profileType?: ProfileType;
+  sourceType?: string;
   booleanValues?: { mappings?: Record<string, boolean>; lowercase?: string };
 };
 
@@ -94,10 +95,12 @@ function withoutNaN(column: string): string {
 }
 
 function profileValue(field: ProfileField, sourceAlias?: string, nanAsNull?: boolean, raw = false): string {
-  const column = sqlQualifiedName(field.name, sourceAlias);
+  let column = sqlQualifiedName(field.name, sourceAlias);
   if (!raw && field.booleanValues)
     return booleanSql(column, field.booleanValues.mappings, field.booleanValues.lowercase);
-  return nanAsNull && floatingPoint.test(field.type) ? withoutNaN(column) : column;
+  if (!raw && field.sourceType) column = numericTextSql(column, field.type);
+  const type = raw ? field.sourceType ?? field.type : field.type;
+  return nanAsNull && floatingPoint.test(type) ? withoutNaN(column) : column;
 }
 
 function monotonicity(column: string, previous: string): string {
@@ -342,7 +345,7 @@ function rowSample(context: ExpressionContext): string {
 
 function numericCorrelationFields(context: ExpressionContext): MetricField[] {
   const fields = selectFields(context).filter(
-    (field) => (context.nanAsNull ? logicalType(field.type) : field.logicalType) === 'numeric'
+    (field) => (context.nanAsNull ? logicalType(field.sourceType ?? field.type) : field.logicalType) === 'numeric'
   );
   if (context.metric.columns && fields.length !== (context.metric.columns as string[]).length) {
     const method = context.metric.id;
@@ -378,9 +381,11 @@ function filterCorrelation(matrix: string, flags: string): string {
           lambda r: list_filter(r, lambda v, j: item.flags[j]))) END)[1]`;
 }
 
-function missingMask(field: MetricField, sourceAlias?: string): string {
+function missingMask(field: ProfileField, sourceAlias?: string): string {
   const column = sqlQualifiedName(field.name, sourceAlias);
-  return floatingPoint.test(field.type) ? `(${column} IS NULL OR isnan(${column}))` : `(${column} IS NULL)`;
+  return floatingPoint.test(field.sourceType ?? field.type)
+    ? `(${column} IS NULL OR isnan(${column}))`
+    : `(${column} IS NULL)`;
 }
 
 function missingMatrix(context: ExpressionContext): string {
@@ -415,7 +420,9 @@ function missingCorrelation(context: ExpressionContext): string {
 function pearson(context: ExpressionContext): string {
   const fields = numericCorrelationFields(context);
   if (!fields.length) return emptyCorrelation;
-  const values = fields.map(({ name }) => `TRY_CAST(${sqlQualifiedName(name, context.sourceAlias)} AS DOUBLE)`);
+  const values = fields.map(
+    (field) => `TRY_CAST(${profileValue(field, context.sourceAlias, false, context.nanAsNull)} AS DOUBLE)`
+  );
   return correlationMatrix(fields, (i, j) => {
     const left = values[i];
     const right = values[j];
@@ -442,7 +449,7 @@ function rankCorrelation(context: ExpressionContext): string {
   if (!fields.length) return emptyCorrelation;
   const input = context.table.toLowerCase().startsWith('"__ava_rank_rows"') ? '__ava_rank_rows_2' : '__ava_rank_rows';
   const projection = fields.map(
-    ({ name }, i) => `TRY_CAST(${sqlQualifiedName(name, context.sourceAlias)} AS DOUBLE) AS c${i}`
+    (field, i) => `TRY_CAST(${profileValue(field, context.sourceAlias, false, context.nanAsNull)} AS DOUBLE) AS c${i}`
   );
   const pairs: string[] = [];
   const kendall = context.metric.id === 'kendall';
@@ -491,21 +498,22 @@ function categoryCorrelation(context: ExpressionContext): string {
   const input = context.table.toLowerCase().startsWith('"__ava_category_rows"')
     ? '__ava_category_rows_2'
     : '__ava_category_rows';
-  const projection = fields.map(({ name, type }, i) => {
-    const value = sqlQualifiedName(name, context.sourceAlias);
-    const category = floatingPoint.test(type) ? withoutNaN(value) : value;
-    return `${category} AS c${i}`;
-  });
+  const projection = fields.map((field, i) => `${profileValue(field, context.sourceAlias, true, true)} AS c${i}`);
   const numeric = fields.map(({ logicalType }) => (automatic || phik) && logicalType === 'numeric');
-  const needsBins = numeric.some(Boolean) && (phik || !numeric.every(Boolean));
-  const eligibility = fields.map(({ booleanValues }, i) => {
-    const value = booleanValues ? booleanSql(`c${i}`, booleanValues.mappings, booleanValues.lowercase) : `c${i}`;
+  const binnedNumeric = numeric.map((selected, i) => selected && !(context.nanAsNull && fields[i].sourceType));
+  const needsBins = binnedNumeric.some(Boolean) && (phik || !numeric.every(Boolean));
+  const eligibility = fields.map(({ booleanValues, sourceType, type }, i) => {
+    const value = booleanValues
+      ? booleanSql(`c${i}`, booleanValues.mappings, booleanValues.lowercase)
+      : sourceType
+      ? numericTextSql(`c${i}`, type)
+      : `c${i}`;
     return numeric[i] ? `count(DISTINCT ${value}) > 1` : `count(DISTINCT ${value}) BETWEEN 2 AND ${maxCategories}`;
   });
   const bounds: string[] = [];
   const buckets: string[] = [];
   for (let i = 0; i < fields.length; i += 1) {
-    if (!numeric[i] || !needsBins) continue;
+    if (!binnedNumeric[i] || !needsBins) continue;
     const value = `c${i}::DOUBLE`;
     const min = `min(${value}) FILTER (WHERE isfinite(${value}))`;
     const lower = phik ? `(${min}) - greatest(1e-14 * abs(${min}), 2.2250738585072014e-308)` : min;
@@ -520,9 +528,14 @@ function categoryCorrelation(context: ExpressionContext): string {
           WHEN bucket < ${bins} - 1 AND ${value} > ${edge('bucket + 1')} THEN 1 ELSE 0 END)[1] END AS b${i}`);
   }
   const binned = `${input}_binned`;
-  const bin = (i: number) => `${needsBins && numeric[i] ? 'b' : 'c'}${i}`;
+  const bin = (i: number) => `${needsBins && binnedNumeric[i] ? 'b' : 'c'}${i}`;
   const checks = numeric.flatMap((yes, i) => (yes ? [`count(*) FILTER (WHERE isinf(c${i}::DOUBLE)) = 0`] : []));
-  const supported = checks.length ? checks.join(' AND ') : 'TRUE';
+  const supported =
+    phik && context.nanAsNull && fields.some(({ sourceType }) => sourceType)
+      ? 'FALSE'
+      : checks.length
+      ? checks.join(' AND ')
+      : 'TRUE';
   const categories = needsBins ? binned : input;
   const pairs: string[] = [];
   for (let i = 0; i < fields.length; i += 1) {
@@ -817,7 +830,11 @@ export const BUILTIN_METRICS: DuckDBMetric[] = [
         else if (index.logicalType === 'numeric') position = column;
         else throw new Error('time_series_gaps requires a numeric or date order column');
       }
-      return timeGapsSql(table, `NOT ${missingMask(field!, sourceAlias)}`, position);
+      const value = context.column!;
+      const observed = floatingPoint.test(field!.type)
+        ? `(${value} IS NOT NULL AND NOT isnan(${value}))`
+        : `${value} IS NOT NULL`;
+      return timeGapsSql(table, observed, position);
     },
   },
   {
@@ -1247,12 +1264,17 @@ export async function profileTables(
         options.inferTypes.booleanMappings ? wordLowercase : undefined
       );
       for (const field of candidates) {
-        field.profileType = inferred.get(field.name)!;
+        const { profileType, cast } = inferred.get(field.name)!;
+        field.profileType = profileType;
         if (field.profileType === 'Boolean' && field.logicalType === 'string') {
           field.booleanValues = {
             mappings: options.inferTypes.booleanMappings,
             lowercase: options.inferTypes.booleanMappings ? wordLowercase : undefined,
           };
+        }
+        if (cast) {
+          field.sourceType = field.type;
+          field.type = cast;
         }
         field.logicalType = logicalProfileTypes[field.profileType];
       }
@@ -1272,7 +1294,7 @@ export async function profileTables(
     };
     const parameters = new Map(
       fields.map((field) => {
-        const column = sqlIdentifier(field.name);
+        const column = profileValue(field);
         const center =
           needsCenters && field.logicalType === 'numeric'
             ? `${centerTable}.${addParameter(aggregate('favg', { column, field }))}`
@@ -1353,7 +1375,7 @@ export async function profileTables(
     const expressions = new Map<string, string>();
 
     const addMetrics = (output: Record<string, unknown>, field?: MetricField) => {
-      const raw = field ? sqlQualifiedName(field.name, sourceAlias) : undefined;
+      const raw = field ? profileValue(field, sourceAlias) : undefined;
       const column = field ? profileValue(field, sourceAlias, nanAsNull) : undefined;
       for (const { metric, definition } of metrics) {
         const target = field ? 'column' : 'table';

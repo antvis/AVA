@@ -188,6 +188,8 @@ await ava.profile(undefined, () => savedProfile);
 | `options.sensitive` | Boolean | No | `true` limits DuckDB computation to aggregate metrics. Raw rows, duplicate groups, values and text frequencies, file metadata, and time-series points are omitted. |
 | `setter` | `(options: ProfileOptions) => Profile` | No | Returns the profile to save instead of computing it through the engine. |
 
+Text that parses as numbers and exceeds `numericCategoryThreshold` is profiled as numeric. Integral text uses a 64-bit integer type when the values fit.
+
 A setter receives the options object (default `{}`) and returns a `Profile` synchronously. It does not require engine profiling support. AVA validates and copies its result; invalid results or thrown errors reject the call without changing previous metadata. The options are passed to the setter; AVA does not calculate or filter metrics on its behalf.
 
 Requires a loaded source. Both paths replace the saved profile, which analysis, translation, and suggestions can reuse. Setting a profile does not replace the saved schema.

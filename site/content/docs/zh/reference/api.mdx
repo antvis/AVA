@@ -190,6 +190,8 @@ await ava.profile(undefined, () => savedProfile);
 | `options.sensitive` | 布尔 | 否 | `true` 时 DuckDB 仅计算允许的汇总指标，省略原始行、重复组、原值和文本频数、文件元数据及时序点。 |
 | `setter` | `(options: ProfileOptions) => Profile` | 否 | 返回要保存的 profile，替代引擎计算。 |
 
+可解析为数值且不同值数超过 `numericCategoryThreshold` 的文本按数值画像。整数字符串在取值范围允许时使用 64 位整数类型。
+
 Setter 接收选项对象（默认 `{}`），同步返回 `Profile`，不要求引擎支持统计。AVA 会验证并复制结果；无效结果或 setter 抛错会让调用失败，并保留原有元数据。选项直接传给 setter，AVA 不会代替它计算或过滤指标。
 
 需要先加载数据源。两条路径都会替换已保存的 profile，供分析、翻译和推荐问题复用。设置 profile 不会替换 schema。
