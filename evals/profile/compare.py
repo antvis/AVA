@@ -121,7 +121,7 @@ def cli(*args, payload=None):
 
 def compare(path, types):
     metrics = [*TABLE_METRICS, *COLUMN_METRICS, "value_counts", "histogram", "quantiles", "nan_count", "word_counts", "character_counts",
-               {"id": "row_duplicates", "limit": 0}]
+               {"id": "row_duplicates", "limit": 0}, {"id": "row_sample", "head": 3, "tail": 3}]
     dataset = cli("source", str(path), "--engine", "duckdb")["datasetId"]
     try:
         actual = cli("profile", dataset, "--options", "-", payload={"metrics": metrics})["models"][0]
@@ -130,7 +130,7 @@ def compare(path, types):
 
     config = Settings(
         progress_bar=False, pool_size=1, infer_dtypes=False, missing_diagrams={"bar": False, "matrix": False, "heatmap": False},
-        interactions={"continuous": False}, samples={"head": 0, "tail": 0, "random": 0},
+        interactions={"continuous": False}, samples={"head": 3, "tail": 3, "random": 0},
         vars={"num": {"low_categorical_threshold": 0, "chi_squared_threshold": 0},
               "cat": {"length": True, "characters": True, "words": True}},
         correlations={method: {"calculate": True} for method in ("pearson", "spearman", "kendall", "cramers")},
@@ -153,6 +153,14 @@ def compare(path, types):
                            "all_null_columns": "n_vars_all_missing"}.items():
         check(f"table.{native}", summary[native], expected.table[source])
     check("table.row_duplicates.group_count", actual["metrics"]["row_duplicates"]["group_count"], expected.table["n_duplicates"])
+    for sample in expected.sample:
+        received = actual["metrics"]["row_sample"][sample.id]
+        for row in received:
+            for name, value in row["row_values"].items():
+                if types[name] == "DateTime" and value is not None:
+                    row["row_values"][name] = json_value(pd.Timestamp(value))
+        check(f"table.row_sample.{sample.id}", received,
+              [{"index": int(index), "row_values": row.to_dict()} for index, row in sample.data.iterrows()])
     missing = frame.isna()
     partial = [name for name in frame if 0 < missing[name].sum() < len(frame)]
     check("table.missing_correlation", actual["metrics"]["missing_correlation"],

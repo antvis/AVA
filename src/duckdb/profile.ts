@@ -143,17 +143,21 @@ function selectFields({ fields = [], metric }: ExpressionContext): MetricField[]
   });
 }
 
+function rowStruct(fields: MetricField[], sourceAlias?: string): string {
+  return `struct_pack(${fields
+    .map(({ name }) => `${sqlIdentifier(name)} := ${sqlQualifiedName(name, sourceAlias)}`)
+    .join(', ')})`;
+}
+
 function duplicateRows(context: ExpressionContext): string {
   const { table, sourceAlias, metric } = context;
   const { limit = 10 } = metric;
-  const names = selectFields(context).map(({ name }) => name);
+  const fields = selectFields(context);
   const empty =
     'struct_pack(group_count := 0, group_ratio := 0, duplicate_row_count := 0, excess_row_count := 0, samples := [])';
-  if (!names.length) return `COALESCE(first(NULL), ${empty})`;
+  if (!fields.length) return `COALESCE(first(NULL), ${empty})`;
 
-  const key = `struct_pack(${names
-    .map((name) => `${sqlIdentifier(name)} := ${sqlQualifiedName(name, sourceAlias)}`)
-    .join(', ')})`;
+  const key = rowStruct(fields, sourceAlias);
   const duplicates = 'COUNT(*) FILTER (WHERE n > 1)';
   const samples =
     limit === 0
@@ -166,6 +170,31 @@ function duplicateRows(context: ExpressionContext): string {
     duplicate_row_count := COALESCE(sum(n) FILTER (WHERE n > 1), 0)::DOUBLE,
     excess_row_count := COALESCE(sum(n - 1), 0)::DOUBLE, samples := ${samples})
     FROM (SELECT ${key} AS row_key, COUNT(*) AS n FROM ${table} GROUP BY 1) grouped)), ${empty})`;
+}
+
+function rowSample(context: ExpressionContext): string {
+  const { table, sourceAlias, metric } = context;
+  const { head = 10, tail = 10, random = 0, seed } = metric;
+  const fields = selectFields(context);
+  const empty = 'struct_pack(head := [], tail := [], random := [])';
+  if (!fields.length || (head === 0 && tail === 0 && random === 0)) return `COALESCE(first(NULL), ${empty})`;
+
+  const rows = `SELECT row_number() OVER () - 1 AS position, ${rowStruct(
+    fields,
+    sourceAlias
+  )} AS row_values FROM ${table}`;
+  const row = 'struct_pack(index := position::DOUBLE, row_values := row_values)';
+  const headRows = head === 0 ? '[]' : `COALESCE(arg_min(${row}, position, ${head}), [])`;
+  const tailRows = tail === 0 ? '[]' : `COALESCE(list_reverse(arg_max(${row}, position, ${tail})), [])`;
+  const randomKey = seed === undefined ? 'random()' : `hash(position, ${seed})`;
+  const randomRows =
+    random === 0
+      ? '[]'
+      : `CASE WHEN count(*) BETWEEN 1 AND ${random} - 1
+    THEN error('Cannot sample more rows than the source without replacement')
+    ELSE COALESCE(arg_min(${row}, ${randomKey}, ${random}), []) END`;
+  return `COALESCE(first((SELECT struct_pack(head := ${headRows}, tail := ${tailRows}, random := ${randomRows})
+    FROM (${rows}) ordered_rows)), ${empty})`;
 }
 
 function numericCorrelationFields(context: ExpressionContext): MetricField[] {
@@ -349,6 +378,29 @@ function histogramExpression(context: ExpressionContext): string {
 export const BUILTIN_METRICS: DuckDBMetric[] = [
   { id: 'row_count', enable: table, expression: () => 'COUNT(*)' },
   { id: 'table_summary', enable: table, expression: tableSummary },
+  {
+    id: 'row_sample',
+    enable: table,
+    options: {
+      columns: columnNamesOption,
+      ...Object.fromEntries(
+        ['head', 'tail', 'random'].map((name) => [
+          name,
+          {
+            validate: (value: unknown) => {
+              z.number().int().nonnegative().parse(value);
+            },
+          },
+        ])
+      ),
+      seed: {
+        validate: (value) => {
+          z.number().int().parse(value);
+        },
+      },
+    },
+    expression: rowSample,
+  },
   {
     id: 'row_duplicates',
     enable: table,
