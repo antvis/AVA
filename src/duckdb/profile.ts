@@ -60,12 +60,31 @@ function numericCondition(id: string, { column, field }: ExpressionContext): str
   return `${id === 'infinite' ? 'isinf' : id === 'nan' ? 'isnan' : 'isfinite'}(${column})`;
 }
 
-function singletons({ column, field }: ColumnContext): string {
-  const isFloat = field && floatingPoint.test(field.type);
+function frequencyHistogram({ column, field }: ColumnContext): string {
   // NaN is unordered in DuckDB's histogram map and must be counted separately.
-  const histogram = `histogram(${column})${isFloat ? ` FILTER (WHERE NOT isnan(${column}))` : ''}`;
-  const count = `COALESCE(list_count(list_filter(map_values(${histogram}), n -> n = 1)), 0)`;
-  return isFloat ? `(${count} + (COUNT(*) FILTER (WHERE isnan(${column})) = 1)::BIGINT)` : count;
+  return `histogram(${column})${field && floatingPoint.test(field.type) ? ` FILTER (WHERE NOT isnan(${column}))` : ''}`;
+}
+
+function singletons(context: ColumnContext): string {
+  const count = `COALESCE(list_count(list_filter(map_values(${frequencyHistogram(context)}), n -> n = 1)), 0)`;
+  return context.field && floatingPoint.test(context.field.type)
+    ? `(${count} + (COUNT(*) FILTER (WHERE isnan(${context.column})) = 1)::BIGINT)`
+    : count;
+}
+
+function frequencyRanks(context: ColumnContext): string {
+  let entries = `map_entries(${frequencyHistogram(context)})`;
+  if (context.field && floatingPoint.test(context.field.type)) {
+    const nanCount = `COUNT(*) FILTER (WHERE isnan(${context.column}))`;
+    entries = `list_concat(${entries}, CASE WHEN ${nanCount} > 0
+      THEN [struct_pack(key := 'NaN'::DOUBLE, value := (${nanCount})::UBIGINT)] ELSE [] END)`;
+  }
+  return `list_transform(${entries}, lambda entry: struct_pack(
+    rank := -struct_extract(entry, 'value')::HUGEINT, value := struct_extract(entry, 'key')))`;
+}
+
+function frequencyValue(value: string, field?: MetricField): string {
+  return field?.logicalType === 'date' ? `CAST(${value} AS VARCHAR)` : value;
 }
 
 const shapeMetrics = ['skewness', 'kurtosis'] as const;
@@ -139,6 +158,24 @@ export const BUILTIN_METRICS: DuckDBMetric[] = [
     id: 'duplicate_count',
     enable: column,
     expression: ({ column }) => `COUNT(${column}) - COUNT(DISTINCT ${column})`,
+  },
+  {
+    id: 'value_counts',
+    enable: logicalTypes('numeric', 'string', 'boolean', 'date'),
+    expression: (context) => `COALESCE(list_transform(list_sort(${frequencyRanks(context)}), lambda entry:
+      struct_pack(value := ${frequencyValue("struct_extract(entry, 'value')", context.field)},
+        count := -struct_extract(entry, 'rank')::DOUBLE)), [])`,
+  },
+  {
+    id: 'mode',
+    enable: logicalTypes('numeric', 'string', 'boolean', 'date'),
+    expression: (context) =>
+      frequencyValue(`struct_extract(list_min(${frequencyRanks(context)}), 'value')`, context.field),
+  },
+  {
+    id: 'mode_count',
+    enable: logicalTypes('numeric', 'string', 'boolean', 'date'),
+    expression: (context) => `COALESCE(-struct_extract(list_min(${frequencyRanks(context)}), 'rank')::DOUBLE, 0)`,
   },
   { id: 'min', enable: logicalTypes('numeric', 'date'), expression: (context) => range('min', context) },
   { id: 'max', enable: logicalTypes('numeric', 'date'), expression: (context) => range('max', context) },
@@ -239,8 +276,8 @@ function postProcessMetrics(
     const raw = row[`m${i}`];
     delete output[metricId];
     if (metricId === 'top_values' && raw == null) continue;
-    if (Array.isArray(raw) || typeof raw === 'boolean') {
-      output[metricId] = raw;
+    if (Array.isArray(raw) || typeof raw === 'boolean' || metricId === 'mode') {
+      output[metricId] = raw ?? null;
     } else {
       // Profile numbers use JavaScript precision, including BIGINT and DECIMAL results.
       const number = raw == null ? null : Number(raw);

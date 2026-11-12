@@ -45,6 +45,7 @@ Additional metrics:
   DuckDB quantiles: quantiles (5%, 25%, 50%, 75%, 95%; finite numeric values)
   DuckDB dispersion: variance, mad, iqr, cv, range
   DuckDB distribution shape: skewness, kurtosis
+  DuckDB frequencies: value_counts, mode, mode_count
   unique_count counts non-null values occurring exactly once; distinct_count counts different values.
   Metrics apply only to compatible fields.
 
