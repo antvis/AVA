@@ -3,6 +3,8 @@ import { z } from 'zod';
 import { sqlIdentifier, sqlQualifiedName, sqlStringLiteral } from '../util/sql';
 import { resolveMetric, table, column, logicalTypes, TOP_VALUES_OPTIONS } from '../util/profile';
 
+import { kendallPair } from './profile-kendall';
+
 import type { MetricField } from '../util/profile';
 import type { Metric, DuckDBConnection, Schema, ParsedProfileOptions, LogicalType, MetricId, Profile } from '../types';
 
@@ -197,7 +199,7 @@ function pearson(context: ExpressionContext): string {
   });
 }
 
-function spearman(context: ExpressionContext): string {
+function rankCorrelation(context: ExpressionContext): string {
   const fields = numericCorrelationFields(context);
   if (!fields.length) return emptyCorrelation;
   const input = context.table.toLowerCase().startsWith('"__ava_rank_rows"') ? '__ava_rank_rows_2' : '__ava_rank_rows';
@@ -205,13 +207,17 @@ function spearman(context: ExpressionContext): string {
     ({ name }, i) => `TRY_CAST(${sqlQualifiedName(name, context.sourceAlias)} AS DOUBLE) AS c${i}`
   );
   const pairs: string[] = [];
+  const kendall = context.metric.id === 'kendall';
   for (let i = 0; i < fields.length; i += 1) {
     for (let j = i; j < fields.length; j += 1) {
       const left = `c${i}`;
       const right = `c${j}`;
       let query: string;
       if (i === j) {
-        query = `SELECT CASE WHEN min(${left}) < max(${left}) THEN 1::DOUBLE END FROM ${input} WHERE isfinite(${left})`;
+        const defined = kendall ? 'count(*) > 0' : `min(${left}) < max(${left})`;
+        query = `SELECT CASE WHEN ${defined} THEN 1::DOUBLE END FROM ${input} WHERE isfinite(${left})`;
+      } else if (kendall) {
+        query = kendallPair(input, left, right);
       } else {
         // Rank each pair after removing its missing observations and average ranks within ties.
         const rank = (column: string) => `rank() OVER (ORDER BY ${column}) +
@@ -295,7 +301,8 @@ export const BUILTIN_METRICS: DuckDBMetric[] = [
     expression: duplicateRows,
   },
   { id: 'pearson', enable: table, options: { columns: columnNamesOption }, expression: pearson },
-  { id: 'spearman', enable: table, options: { columns: columnNamesOption }, expression: spearman },
+  { id: 'spearman', enable: table, options: { columns: columnNamesOption }, expression: rankCorrelation },
+  { id: 'kendall', enable: table, options: { columns: columnNamesOption }, expression: rankCorrelation },
   { id: 'valid_count', enable: column, expression: ({ column }) => `COUNT(${column})` },
   { id: 'null_count', enable: column, expression: ({ column }) => `COUNT(*) - COUNT(${column})` },
   {

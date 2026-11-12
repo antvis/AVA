@@ -238,6 +238,7 @@ await ava.profile({
 | `row_duplicates` | 表 | 重复组数、重复组数占总行数的比例、组内总行数、去重后会移除的行数，以及按频次和键排序的样本。 |
 | `pearson` | 表中的数值列 | 对称相关矩阵 `{ columns, matrix }`。每对列使用两边均为有限值的行。常量列或样本不足时返回 `null`。 |
 | `spearman` | 表中的数值列 | 对称秩相关矩阵。每对列在各自的有限观测上排序，并列值取平均秩。 |
+| `kendall` | 表中的数值列 | 有限值对的 Kendall tau-b 矩阵，分母包含并列值校正。 |
 | `valid_count` | 列 | 非 NULL 值数量。 |
 | `null_ratio` | 列 | SQL NULL 数量除以总行数。 |
 | `distinct_ratio` | 数值、文本、布尔、日期 | 不同非空值数除以非空值数。 |
@@ -274,6 +275,7 @@ DuckDB 中，分母为零时比例返回 `0`。SQL NULL、NaN 和无穷值分别
 | `row_duplicates` | `limit` | `10` | 样本数上限，设为 `0` 时只返回计数。 |
 | `pearson` | `columns` | 所有数值列 | 非空且不重复的数值列名列表。 |
 | `spearman` | `columns` | 所有数值列 | 非空且不重复的数值列名列表。各列对排序共用同一份选定列的数据。 |
+| `kendall` | `columns` | 所有数值列 | 非空且不重复的数值列名列表。通过分组秩统计观测对。 |
 | `quantiles` | `probabilities` | `[0.05, 0.25, 0.5, 0.75, 0.95]` | 非空数组，元素在 `[0, 1]` 范围内。 |
 | `histogram` | `bins` | `50` | 非负整数，`0` 表示按 Sturges/Freedman–Diaconis 规则自动选桶。 |
 | `histogram` | `maxBins` | `250` | 正整数，限制最大桶数。 |
