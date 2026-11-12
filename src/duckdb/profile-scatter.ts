@@ -15,7 +15,7 @@ export function scatterPairSql(
 ): string {
   const x = `(${normalized('x', 'x_min', 'x_max')}) * ${grid}`;
   const y = `(1 - (${normalized('y', 'y_min', 'y_max')})) * ${grid} * 2 / 3`;
-  return `WITH paired AS (
+  return `WITH paired AS NOT MATERIALIZED (
     SELECT ${left.alias} AS x, ${right.alias} AS y, position FROM ${source}
     WHERE isfinite(${left.alias}) AND isfinite(${right.alias})
   ), bounds AS (
