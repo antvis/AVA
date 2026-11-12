@@ -1,5 +1,6 @@
 /** Bias-corrected Cramér's V with Yates correction for 2 × 2 tables. */
-export function cramersPair(input: string, left: string, right: string, active: string): string {
+export function cramersPair(input: string, left: string, right: string, active: string, emptyIsZero = false): string {
+  const coefficient = 'SELECT CASE WHEN denominator = 0 THEN 1 ELSE sqrt(phi / denominator) END FROM corrected';
   return `WITH cells AS MATERIALIZED (
     SELECT ${left} AS x, ${right} AS y, count(*)::DOUBLE AS weight FROM ${input}
     WHERE ${left} IS NOT NULL AND ${right} IS NOT NULL AND ${active} GROUP BY 1, 2
@@ -22,5 +23,5 @@ export function cramersPair(input: string, left: string, right: string, active: 
       least(r - 1 - pow(r - 1, 2) / (n - 1), k - 1 - pow(k - 1, 2) / (n - 1)) AS denominator
     FROM statistics WHERE n > 1
   )
-  SELECT CASE WHEN denominator = 0 THEN 1 ELSE sqrt(phi / denominator) END FROM corrected`;
+  ${emptyIsZero ? `SELECT CASE WHEN n = 0 THEN 0 ELSE (${coefficient}) END FROM totals` : coefficient}`;
 }

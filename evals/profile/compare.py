@@ -19,7 +19,7 @@ from data_profiling.config import Settings
 
 
 ROOT = Path(__file__).resolve().parents[2]
-TABLE_METRICS = ["row_count", "table_summary", "pearson", "spearman", "kendall", "cramers", "missing_correlation"]
+TABLE_METRICS = ["row_count", "table_summary", "pearson", "spearman", "kendall", "cramers", "auto", "missing_correlation"]
 COLUMN_METRICS = {
     "valid_count": "count",
     "null_count": "n_missing",
@@ -134,7 +134,7 @@ def compare(path, types):
         interactions={"continuous": False}, samples={"head": 3, "tail": 3, "random": 0},
         vars={"num": {"low_categorical_threshold": 0, "chi_squared_threshold": 0.99},
               "cat": {"length": True, "characters": True, "words": True}},
-        correlations={method: {"calculate": True} for method in ("pearson", "spearman", "kendall", "cramers")},
+        correlations={method: {"calculate": True} for method in ("pearson", "spearman", "kendall", "cramers", "auto")},
     )
     frame = pd.read_parquet(path)
     expected = ProfileReport(frame, config=config, type_schema=types).get_description()
@@ -198,7 +198,7 @@ def compare(path, types):
                 received = sorted(observed[native], key=key) if native in observed else MISSING
                 check(f"{name}.{native}", received, sorted(frequencies, key=key))
 
-    for method in ("pearson", "spearman", "kendall", "cramers"):
+    for method in ("pearson", "spearman", "kendall", "cramers", "auto"):
         native = actual["metrics"].get(method)
         reference = expected.correlations.get(method)
         if native is not None and reference is not None and set(native["columns"]) == set(reference.columns):

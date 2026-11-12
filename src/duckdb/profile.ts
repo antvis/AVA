@@ -291,6 +291,16 @@ function pearson(context: ExpressionContext): string {
   });
 }
 
+function spearmanPair(input: string, left: string, right: string, active = 'TRUE'): string {
+  // Average ties over the observations shared by this pair.
+  const rank = (column: string) => `rank() OVER (ORDER BY ${column}) +
+    (count(*) OVER (ORDER BY ${column} RANGE BETWEEN CURRENT ROW AND CURRENT ROW) - 1) / 2.0`;
+  return `SELECT corr(rank_left, rank_right) FROM (
+    SELECT ${rank(left)} AS rank_left, ${rank(right)} AS rank_right
+    FROM ${input} WHERE isfinite(${left}) AND isfinite(${right}) AND ${active}
+  ) ranks`;
+}
+
 function rankCorrelation(context: ExpressionContext): string {
   const fields = numericCorrelationFields(context);
   if (!fields.length) return emptyCorrelation;
@@ -311,13 +321,7 @@ function rankCorrelation(context: ExpressionContext): string {
       } else if (kendall) {
         query = kendallPair(input, left, right);
       } else {
-        // Rank each pair after removing its missing observations and average ranks within ties.
-        const rank = (column: string) => `rank() OVER (ORDER BY ${column}) +
-          (count(*) OVER (ORDER BY ${column} RANGE BETWEEN CURRENT ROW AND CURRENT ROW) - 1) / 2.0`;
-        query = `SELECT corr(rank_left, rank_right) FROM (
-          SELECT ${rank(left)} AS rank_left, ${rank(right)} AS rank_right
-          FROM ${input} WHERE isfinite(${left}) AND isfinite(${right})
-        ) ranks`;
+        query = spearmanPair(input, left, right);
       }
       pairs.push(`(${query}) AS p${i}_${j}`);
     }
@@ -328,14 +332,19 @@ function rankCorrelation(context: ExpressionContext): string {
     SELECT ${matrix} FROM (SELECT ${pairs.join(', ')}) coefficients)), ${empty})`;
 }
 
-function cramers(context: ExpressionContext): string {
-  const { columns, maxCategories = 100 } = context.metric;
+function categoryCorrelation(context: ExpressionContext): string {
+  const { columns, maxCategories = 100, bins = 10 } = context.metric;
+  const automatic = context.metric.id === 'auto';
   const fields = selectFields(context).filter(
     ({ logicalType }) =>
-      logicalType === 'string' || logicalType === 'boolean' || (columns !== undefined && logicalType === 'numeric')
+      logicalType === 'string' ||
+      logicalType === 'boolean' ||
+      ((automatic || columns !== undefined) && logicalType === 'numeric')
   );
   if (columns && fields.length !== (columns as string[]).length) {
-    throw new Error("Cramér's V requires text, boolean or numeric category columns");
+    throw new Error(
+      `${automatic ? 'Automatic correlation' : "Cramér's V"} requires text, boolean or numeric category columns`
+    );
   }
   if (fields.length < 2) return 'first(NULL)';
 
@@ -344,22 +353,55 @@ function cramers(context: ExpressionContext): string {
     : '__ava_category_rows';
   const projection = fields.map(({ name, type }, i) => {
     const value = sqlQualifiedName(name, context.sourceAlias);
-    const category = floatingPoint.test(type) ? `CASE WHEN NOT isnan(${value}) THEN ${value} END` : value;
+    const category = floatingPoint.test(type) ? withoutNaN(value) : value;
     return `${category} AS c${i}`;
   });
-  const eligibility = fields.map((_, i) => `count(DISTINCT c${i}) BETWEEN 2 AND ${maxCategories}`);
+  const numeric = fields.map(({ logicalType }) => automatic && logicalType === 'numeric');
+  const mixed = numeric.some(Boolean) && !numeric.every(Boolean);
+  const eligibility = fields.map((_, i) =>
+    numeric[i] ? `count(DISTINCT c${i}) > 1` : `count(DISTINCT c${i}) BETWEEN 2 AND ${maxCategories}`
+  );
+  const bounds: string[] = [];
+  const buckets: string[] = [];
+  for (let i = 0; i < fields.length; i += 1) {
+    if (!numeric[i] || !mixed) continue;
+    const value = `c${i}::DOUBLE`;
+    bounds.push(`min(${value}) FILTER (WHERE isfinite(${value})) AS lo${i},
+      max(${value}) FILTER (WHERE isfinite(${value})) AS hi${i}`);
+    const span = `(hi${i} - lo${i})`;
+    const edge = (offset: string) => `(lo${i} + ${span} / ${bins} * (${offset}))`;
+    // pandas.cut uses right-closed bins. The minimum belongs to the first bin.
+    buckets.push(`CASE WHEN ${value} IS NULL OR NOT isfinite(${value}) THEN NULL WHEN ${span} = 0 THEN 0
+      ELSE list_transform([least(${bins} - 1, trunc((${value} - lo${i}) / ${span} * ${bins})::BIGINT)], lambda bucket:
+        bucket + CASE WHEN bucket > 0 AND ${value} <= ${edge('bucket')} THEN -1
+          WHEN bucket < ${bins} - 1 AND ${value} > ${edge('bucket + 1')} THEN 1 ELSE 0 END)[1] END AS b${i}`);
+  }
+  const binned = `${input}_binned`;
+  const bin = (i: number) => `${mixed && numeric[i] ? 'b' : 'c'}${i}`;
+  const checks = numeric.flatMap((yes, i) => (yes ? [`count(*) FILTER (WHERE isinf(c${i}::DOUBLE)) = 0`] : []));
+  const supported = checks.length ? checks.join(' AND ') : 'TRUE';
   const pairs: string[] = [];
   for (let i = 0; i < fields.length; i += 1) {
     for (let j = i + 1; j < fields.length; j += 1) {
-      const active = `(SELECT flags[${i + 1}] AND flags[${j + 1}] FROM eligibility)`;
-      pairs.push(`(${cramersPair(input, `c${i}`, `c${j}`, active)}) AS p${i}_${j}`);
+      const active = `(SELECT supported AND flags[${i + 1}] AND flags[${j + 1}] FROM eligibility)`;
+      const pair =
+        numeric[i] && numeric[j]
+          ? spearmanPair(input, `c${i}::DOUBLE`, `c${j}::DOUBLE`, active)
+          : cramersPair(mixed ? binned : input, bin(i), bin(j), active, automatic);
+      pairs.push(`(${pair}) AS p${i}_${j}`);
     }
   }
   const matrix = correlationMatrix(fields, (i, j) => (i === j ? '1::DOUBLE' : `p${i}_${j}`));
   return `first((WITH ${input} AS MATERIALIZED (SELECT ${projection.join(', ')} FROM ${context.table}),
-    eligibility AS (SELECT [${eligibility.join(', ')}] AS flags FROM ${input}),
-    coefficients AS (SELECT flags, ${pairs.join(', ')} FROM eligibility)
-    SELECT ${filterCorrelation(matrix, 'flags')} FROM coefficients))`;
+    eligibility AS (SELECT [${eligibility.join(', ')}] AS flags, ${supported} AS supported
+      ${bounds.length ? `, ${bounds.join(', ')}` : ''} FROM ${input}),
+    ${
+      mixed
+        ? `${binned} AS MATERIALIZED (SELECT ${input}.*, ${buckets.join(', ')} FROM ${input} CROSS JOIN eligibility),`
+        : ''
+    }
+    coefficients AS (SELECT flags, supported, ${pairs.join(', ')} FROM eligibility)
+    SELECT CASE WHEN supported THEN ${filterCorrelation(matrix, 'flags')} END FROM coefficients))`;
 }
 
 const shapeMetrics = ['skewness', 'kurtosis'] as const;
@@ -458,19 +500,30 @@ export const BUILTIN_METRICS: DuckDBMetric[] = [
   { id: 'spearman', enable: table, options: { columns: columnNamesOption }, expression: rankCorrelation },
   { id: 'kendall', enable: table, options: { columns: columnNamesOption }, expression: rankCorrelation },
   { id: 'missing_correlation', enable: table, options: { columns: columnNamesOption }, expression: missingCorrelation },
-  {
-    id: 'cramers',
-    enable: table,
-    options: {
-      columns: columnNamesOption,
-      maxCategories: {
-        validate: (value) => {
-          z.number().int().nonnegative().parse(value);
+  ...['cramers', 'auto'].map(
+    (id): DuckDBMetric => ({
+      id,
+      enable: table,
+      options: {
+        columns: columnNamesOption,
+        maxCategories: {
+          validate: (value) => {
+            z.number().int().nonnegative().parse(value);
+          },
         },
+        ...(id === 'auto'
+          ? {
+              bins: {
+                validate: (value: unknown) => {
+                  z.number().int().positive().parse(value);
+                },
+              },
+            }
+          : {}),
       },
-    },
-    expression: cramers,
-  },
+      expression: categoryCorrelation,
+    })
+  ),
   { id: 'valid_count', enable: column, expression: ({ column }) => `COUNT(${column})` },
   { id: 'null_count', enable: column, expression: ({ column }) => `COUNT(*) - COUNT(${column})` },
   {

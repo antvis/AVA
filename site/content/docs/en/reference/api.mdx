@@ -239,6 +239,7 @@ await ava.profile({
 | `spearman` | Table, numeric columns | Symmetric rank correlation matrix. Each pair is ranked over its finite observations, with averaged ranks for ties. |
 | `kendall` | Table, numeric columns | Kendall tau-b matrix over finite pairs. Tied observations are included in the denominator correction. |
 | `cramers` | Table, category columns | Bias-corrected Cramér's V with Yates correction for 2 × 2 pairs. NULL and NaN are excluded. Returns `null` when fewer than two columns qualify. |
+| `auto` | Table, numeric and category columns | Spearman for numeric pairs, Cramér's V for pairs involving categories. Mixed pairs use right-closed equal-width bins. |
 | `missing_correlation` | Table | Pearson correlations of missing-value masks. SQL NULL and NaN count as missing. Columns with constant masks are excluded. |
 | `valid_count` | Column | Number of non-NULL values. |
 | `null_ratio` | Column | SQL NULL count / total rows. |
@@ -285,6 +286,9 @@ Table completeness shares the scan with column NULL counts, frequency metrics sh
 | `kendall` | `columns` | All numeric columns | Non-empty list of distinct numeric column names. Counts pairs using grouped ranks. |
 | `cramers` | `columns` | Text and boolean columns | Non-empty list of distinct category column names. Explicit selections can also include numeric category codes. |
 | `cramers` | `maxCategories` | `100` | Upper bound on the number of distinct categories per column. Constant and all-missing columns are excluded. |
+| `auto` | `columns` | Numeric, text and boolean columns | Non-empty list of distinct column names. |
+| `auto` | `maxCategories` | `100` | Upper bound on distinct values for text and boolean columns. |
+| `auto` | `bins` | `10` | Number of equal-width bins for mixed pairs. |
 | `missing_correlation` | `columns` | All columns | Non-empty list of distinct column names. Returns `null` when fewer than two columns have both missing and present values. |
 | `quantiles` | `probabilities` | `[0.05, 0.25, 0.5, 0.75, 0.95]` | Non-empty array of numbers in `[0, 1]`. |
 | `histogram` | `bins` | `50` | Non-negative integer. Use `0` for automatic Sturges/Freedman–Diaconis selection. |
