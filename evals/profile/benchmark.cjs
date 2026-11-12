@@ -18,6 +18,7 @@ const { values } = parseArgs({
     threads: { type: 'string', default: '1' },
     memory: { type: 'string', default: '512MB' },
     baseline: { type: 'string' },
+    workloads: { type: 'string', default: 'scan,default,completeness,distribution,associations' },
   },
 });
 const rowCounts = values.rows.split(',').map(Number);
@@ -26,6 +27,7 @@ const threads = Number(values.threads);
 assert([...rowCounts, runs, threads].every((n) => Number.isSafeInteger(n) && n > 0));
 
 const workloads = {
+  scan: ['table_summary'],
   default: DEFAULT_METRICS,
   completeness: [
     'table_summary',
@@ -38,7 +40,15 @@ const workloads = {
     'finite_count',
   ],
   distribution: ['min', 'max', 'mean', 'stddev', 'quantiles', 'histogram', 'skewness', 'kurtosis', 'chi_squared'],
+  associations: [
+    'pearson',
+    'missing_correlation',
+    'missing_bands',
+    { id: 'scatter_pairs', columns: ['amount', 'units'], targets: ['amount'] },
+  ],
 };
+const selected = values.workloads.split(',');
+for (const workload of selected) assert(Object.hasOwn(workloads, workload), `Unknown workload: ${workload}`);
 
 function revision(directory) {
   return execFileSync('git', ['rev-parse', 'HEAD'], { cwd: directory, encoding: 'utf8' }).trim();
@@ -76,7 +86,7 @@ async function measure(profile, path, metricIds) {
   return withDuckDB(async (connection) => {
     await connection.run(`CREATE VIEW observations AS SELECT * FROM read_parquet(${sqlStringLiteral(path)})`);
     const schema = await getDuckDBSchema(connection);
-    const options = { metrics: metricIds.map((id) => ({ id })) };
+    const options = { metrics: metricIds.map((metric) => (typeof metric === 'string' ? { id: metric } : metric)) };
     const query = connection.runAndReadAll.bind(connection);
     const queries = new Set();
     connection.runAndReadAll = (sql, ...params) => {
@@ -123,7 +133,8 @@ async function main() {
       ) TO ${sqlStringLiteral(path)} (FORMAT PARQUET, ROW_GROUP_SIZE 122880)`)
       );
       const input = { rows, columns: 12, parquet_bytes: (await stat(path)).size };
-      for (const [workload, metrics] of Object.entries(workloads)) {
+      for (const workload of selected) {
+        const metrics = workloads[workload];
         const entry = { ...input, workload, metrics };
         try {
           const { result, ...measurement } = await measure(profileTables, path, metrics);
