@@ -770,46 +770,28 @@ See the [reproducible sales example](https://github.com/antvis/AVA/tree/oss-camp
 
 ## GitHub
 
-Analyze a repository's issue backlog and pull request merge times. AVA reads one repository's issues and pull requests through the [GitHub REST API](https://docs.github.com/rest/issues/issues#list-repository-issues), read-only, into two DuckDB tables: `issues` and `pull_requests`. Node.js SDK and CLI with the DuckDB engine only.
+AVA reads issues and pull requests from one GitHub repository into DuckDB. This read-only source is available in the Node.js SDK and CLI.
 
-```typescript
-await ava.source({
-  type: 'github',
-  options: { repository: 'antvis/AVA', token: process.env.GITHUB_TOKEN },
-});
-```
-
-| Field | Type | Required / default |
-| --- | --- | --- |
-| `repository` | `string` | Required; `owner/name` or a github.com repository link. |
-| `token` | `string` | Optional for public repositories, which then share 60 requests per hour per IP address. A token allows 5,000 per hour and reads the private repositories it can access. |
-| `since` | `string` | Optional ISO 8601 date or timestamp, UTC without an offset. Every open item is still loaded, so the backlog stays complete; closed items are limited to those updated since then. |
-| `maxRecords` | `number` | 1–100,000; default 10,000 distinct issues and pull requests. Exceeding the limit fails the load. |
-| `timeoutMs` | `number` | 1–110,000; default 60,000 ms for the whole load, including retries and rate-limit waits. |
-
-| Table | Columns |
+| Table | Fields |
 | --- | --- |
-| `issues` | `number` (primary key), `title`, `state`, `state_reason`, `author`, `author_association`, `author_is_bot`, `assignees`, `labels`, `comments`, `created_at`, `updated_at`, `closed_at`, `html_url` |
-| `pull_requests` | The same columns without `state_reason`, plus `is_draft`, `is_merged`, and `merged_at` |
+| Both tables | `number`, `title`, `state`, `author`, `author_association`, `author_is_bot`, `assignees`, `labels`, `comments`, `created_at`, `updated_at`, `closed_at`, `html_url` |
+| `issues` | `state_reason` |
+| `pull_requests` | `is_draft`, `is_merged`, `merged_at` |
 
-As on GitHub, a merged pull request is `closed`; `is_merged` tells it apart from one closed without merging. `state`, `state_reason`, and `author_association` are `ENUM`s of GitHub's documented values plus any other value returned, so the schema lists them. Times are UTC `TIMESTAMP`s, the same time zone as GitHub search qualifiers such as `created:2026-10-01..2026-10-31`. `assignees` and `labels` are `VARCHAR[]`: use `list_contains(labels, 'bug')`, `len(assignees) = 0`, or `unnest(labels)`. `comments` counts conversation comments. The loader keeps the listed fields and discards issue and PR bodies after reading each page.
-
-For private repositories, create a [fine-grained personal access token](https://github.com/settings/personal-access-tokens/new) for the repository with read-only **Issues** and **Pull requests** permissions; a classic token needs no scope for public repositories and `repo` for private ones. Organizations that enforce SAML single sign-on also require authorizing the token. The loader does not read environment variables; the CLI reads `GH_TOKEN`, then `GITHUB_TOKEN`.
-
-Each request returns up to 100 items, following `Link` pagination on `api.github.com` only. Each decoded response is capped at 16 MiB and the full load at 64 MiB, including retries. Exceeding either limit cancels the read and fails the load. Duplicate numbers count once, and the last record read wins. When GitHub gives both `Retry-After` and a quota reset, AVA waits until both have elapsed. For a secondary limit without a wait hint, backoff starts at one minute. A wait beyond `timeoutMs` fails immediately. Network errors, cut-off responses, and 5xx responses are retried three times. Other errors, such as 401, 403 (including SAML single sign-on) and 404, keep GitHub's message and are not retried. A malformed item fails the load. Rows are bound as a JSON parameter, without temporary files.
-
-The CLI detects repository links, including their `/issues` and `/pulls` pages, and reads `owner/name` with `--type github`. Use an `@file` config for `since` and limits; CLI sessions must finish loading within two minutes.
-
-### Analyze a repository
-
-Set your model configuration before loading the dataset. Set `DATASET_ID` to the ID printed by `ava source`.
+`number` is the primary key in both tables. Timestamps are UTC. `assignees` and `labels` are string lists, and `comments` is a count.
 
 ```sh
 ava source https://github.com/antvis/AVA
-ava analyze "$DATASET_ID" "How many issues are open, and how many of them have no labels or no assignees?"
-ava analyze "$DATASET_ID" "How many pull requests merged in October 2026, and what was the median time from creation to merge in hours?"
 ```
 
-For the backlog, filter `issues` to `state = 'open'` and count rows with `len(labels) = 0` and `len(assignees) = 0`. For merge times, filter `pull_requests.merged_at` to the UTC month and compute `median(date_diff('second', created_at, merged_at)) / 3600.0`. A month with zero merges returns a count of `0` and a median of `null`.
+Use `--type github` for `owner/name` in the CLI. For the SDK or a CLI `@file`, use `type: 'github'` with the options below. The CLI reads `GH_TOKEN` first, then `GITHUB_TOKEN`, when `token` is omitted.
 
-Codex assisted with the import changes and regression tests. The verification used GLM-5.1 to generate SQL and checked DuckDB results against GitHub Search.
+| Option | Description |
+| --- | --- |
+| `repository` | Required. An `owner/name` pair or a GitHub repository URL. |
+| `token` | A token with read access to the repository. Optional for public repositories. |
+| `since` | An ISO 8601 date or timestamp, interpreted as UTC when no offset is given. Keeps every open item and closed items updated since that time. |
+| `maxRecords` | Maximum distinct items across both tables. Defaults to 10,000, with a range of 1–100,000. |
+| `timeoutMs` | Time limit for reading, including retries. Defaults to 60,000 ms, with a range of 1–110,000. |
+
+AVA caps decoded responses at 16 MiB each and 64 MiB per load. Exceeding a size or record limit fails the load.
