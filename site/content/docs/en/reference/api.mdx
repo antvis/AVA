@@ -256,6 +256,7 @@ await ava.profile({
 | `unicode_summary` | Text | Total and distinct Unicode code points, grouped by general category, block alias, and script. Each group includes its total and per-character frequencies. |
 | `url_summary` | Text | URL scheme, authority, path, query, and fragment frequencies. Empty components are counted as empty strings. |
 | `path_summary` | Text | POSIX path stem, suffix, name, parent and anchor frequencies with distinct counts and the common character prefix. |
+| `date_validation` | Text, date | Distinct invalid dates, invalid rows, and their share of total rows. Text accepts ISO, common numeric, and English month-name formats within the pandas nanosecond date range. |
 | `monotonicity` | Numeric | Compares adjacent observations in DuckDB scan order, skipping NULL and NaN. Returns increasing, decreasing and strict flags, with `direction` of `2` for strictly increasing, `-2` for strictly decreasing, `1` for increasing, `-1` for decreasing, or `0`. |
 | `autocorrelation` | Numeric | ACF and unadjusted Yule–Walker PACF with 95% confidence intervals on the finite observations. |
 | `time_series_gaps` | Numeric | Gaps larger than twice the mean positive interval between observed rows, including the endpoints and gap statistics. Date indexes and durations use milliseconds. |

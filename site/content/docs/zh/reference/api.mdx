@@ -262,6 +262,7 @@ await ava.profile({
 | `unicode_summary` | 文本 | Unicode 码点总数、不同码点数，以及按通用类别、区块别名和文字系统分组的总频数与字符频数。 |
 | `url_summary` | 文本 | URL 协议、授权部分、路径、查询和片段的频数。缺省部分计为空字符串。 |
 | `path_summary` | 文本 | POSIX 路径的主干、后缀、名称、父目录和锚点频数与去重计数，以及字符级公共前缀。 |
+| `date_validation` | 文本、日期 | 无效日期的去重计数、行数和占比。文本支持 pandas 纳秒日期范围内的 ISO、常见数字和英文月份格式。 |
 | `zero_count`、`zero_ratio` | 数值 | 零值数量及其占总行数的比例。 |
 | `negative_count`、`negative_ratio` | 数值 | 负值数量及其占总行数的比例，包含负无穷。 |
 | `infinite_count`、`infinite_ratio` | 数值 | 正负无穷值数量及其占总行数的比例。 |

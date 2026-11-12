@@ -342,6 +342,23 @@ def main():
             path = Path(directory) / f"{name}.parquet"
             pq.write_table(table, path)
             results[name], reference_warnings[name] = compare(path, types)
+        path = Path(directory) / "date_validation.parquet"
+        pq.write_table(pa.table({"date": [
+            "2026/01/02", "Jan 3, 2026", "31/01/2026", "20260405", "2026", "2026-02",
+            "2026-02-30", "bad", "bad", "NaT", "1600-01-01", None,
+        ]}), path)
+        dataset = cli("source", str(path), "--engine", "duckdb")["datasetId"]
+        try:
+            actual = cli("profile", dataset, "--metrics", "date_validation")["models"][0]["columns"][0]["metrics"]["date_validation"]
+        finally:
+            cli("dispose", dataset)
+        with warnings.catch_warnings(record=True) as emitted:
+            profile = ProfileReport(pd.read_parquet(path), minimal=True, progress_bar=False,
+                                    type_schema={"date": "DateTime"}).get_description()
+        expected = {key: json_value(profile.variables["date"][key]) for key in actual}
+        results["date_validation"] = [{"metric": "date.date_validation", "ava": actual, "reference": expected,
+                                       "status": "match" if equal(actual, expected) else "different"}]
+        reference_warnings["date_validation"] = sorted({f"{warning.category.__name__}: {warning.message}" for warning in emitted})
     print(json.dumps({"reference": {"data_profiling": __version__, "pandas": pd.__version__,
                                    "numpy": np.__version__, "scipy": scipy.__version__}, "fixtures": results,
                      "reference_warnings": reference_warnings},

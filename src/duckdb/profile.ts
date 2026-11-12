@@ -11,6 +11,7 @@ import { unicodeSummary } from './profile-unicode';
 import { pathSummarySql, urlSummarySql } from './profile-text-parts';
 import { autocorrelationResult, autocorrelationSql } from './profile-autocorrelation';
 import { timeGapsSql } from './profile-time-gaps';
+import { dateValidationSql } from './profile-dates';
 import {
   characterCountsSql,
   lengthCountsSql,
@@ -752,6 +753,11 @@ export const BUILTIN_METRICS: DuckDBMetric[] = [
     id: 'path_summary',
     enable: logicalTypes('string'),
     expression: ({ table, column }) => pathSummarySql(table, column!),
+  },
+  {
+    id: 'date_validation',
+    enable: logicalTypes('string', 'date'),
+    expression: ({ column, field }) => dateValidationSql(column!, field?.logicalType === 'date'),
   },
   { id: 'mean', enable: logicalTypes('numeric'), expression: (context) => withInfinity('avg', context) },
   { id: 'sum', enable: logicalTypes('numeric'), expression: (context) => withInfinity('sum', context) },
