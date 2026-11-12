@@ -189,6 +189,23 @@ export const BUILTIN_METRICS: DuckDBMetric[] = [
     enable: logicalTypes('string'),
     expression: ({ column }) => `MAX(length(CAST(${column} AS VARCHAR)))`,
   },
+  {
+    id: 'mean_length',
+    enable: logicalTypes('string'),
+    expression: ({ column }) => `AVG(length(CAST(${column} AS VARCHAR)))`,
+  },
+  {
+    id: 'median_length',
+    enable: logicalTypes('string'),
+    expression: ({ column }) => `MEDIAN(length(CAST(${column} AS VARCHAR)))`,
+  },
+  {
+    id: 'length_histogram',
+    enable: logicalTypes('string'),
+    expression: ({ column }) => `COALESCE(list_transform(map_entries(histogram(length(CAST(${column} AS VARCHAR)))),
+      lambda entry: struct_pack(length := struct_extract(entry, 'key')::DOUBLE,
+        count := struct_extract(entry, 'value')::DOUBLE)), [])`,
+  },
   { id: 'mean', enable: logicalTypes('numeric'), expression: (context) => aggregate('avg', context) },
   { id: 'sum', enable: logicalTypes('numeric'), expression: (context) => aggregate('sum', context) },
   {

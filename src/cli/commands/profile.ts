@@ -46,6 +46,7 @@ Additional metrics:
   DuckDB dispersion: variance, mad, iqr, cv, range
   DuckDB distribution shape: skewness, kurtosis
   DuckDB frequencies: value_counts, mode, mode_count
+  DuckDB text lengths: mean_length, median_length, length_histogram
   unique_count counts non-null values occurring exactly once; distinct_count counts different values.
   Metrics apply only to compatible fields.
 
