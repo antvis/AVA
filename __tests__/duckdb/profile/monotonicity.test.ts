@@ -9,7 +9,7 @@ it('compares ordered numeric values across missing observations without rounding
   const connection = await db.connect();
   try {
     await connection.run(
-      `CREATE TABLE sequence(rising DOUBLE, falling BIGINT, tied INTEGER, "__AVA_PREVIOUS0" VARCHAR)`
+      'CREATE TABLE sequence(rising DOUBLE, falling BIGINT, tied INTEGER, "__AVA_PREVIOUS0" VARCHAR)'
     );
     await connection.run(`INSERT INTO sequence VALUES
       ('-Infinity', 9007199254740994, 1, NULL), (NULL, NULL, 1, NULL),
