@@ -57,7 +57,7 @@ Additional metrics:
   DuckDB distribution shape: skewness, kurtosis
   DuckDB numeric and date histogram: histogram
   DuckDB frequencies: value_counts, mode, mode_count, imbalance
-  DuckDB text: mean_length, median_length, length_histogram, word_counts
+  DuckDB text: mean_length, median_length, length_histogram, word_counts, character_counts
   DuckDB table metrics: table_summary, row_duplicates, pearson, spearman, kendall, cramers
   DuckDB missingness: missing_correlation
   unique_count counts non-null values occurring exactly once; distinct_count counts different values.

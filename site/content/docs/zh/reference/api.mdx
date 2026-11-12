@@ -252,6 +252,7 @@ await ava.profile({
 | `mean_length`、`median_length` | 文本 | 按 Unicode 码点计算的长度均值和中位数，重复值按出现次数加权。 |
 | `length_histogram` | 文本 | 按长度排列的 `{ length, count }`。排除 NULL，空字符串长度为零。 |
 | `word_counts` | 文本 | 使用 Unicode 小写、空白切词和 ASCII 标点修剪后的 `{ value, count }`。重复字符串按频数加权。 |
+| `character_counts` | 文本 | 各 Unicode 码点的 `{ value, count }` 频数，保留空白和大小写。 |
 | `zero_count`、`zero_ratio` | 数值 | 零值数量及其占总行数的比例。 |
 | `negative_count`、`negative_ratio` | 数值 | 负值数量及其占总行数的比例，包含负无穷。 |
 | `infinite_count`、`infinite_ratio` | 数值 | 正负无穷值数量及其占总行数的比例。 |

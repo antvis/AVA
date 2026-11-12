@@ -250,6 +250,7 @@ await ava.profile({
 | `mean_length`, `median_length` | Text | Mean and median length in Unicode code points, weighted by occurrence. |
 | `length_histogram` | Text | `{ length, count }` entries ordered by length. NULLs are excluded and an empty string has length zero. |
 | `word_counts` | Text | `{ value, count }` entries after Unicode lowercasing, whitespace splitting and ASCII punctuation trimming. Repeated strings contribute by frequency. |
+| `character_counts` | Text | Frequency of each Unicode code point as `{ value, count }` entries. Counts preserve whitespace and case. |
 | `zero_count`, `zero_ratio` | Numeric | Zero values and their share of all rows. |
 | `negative_count`, `negative_ratio` | Numeric | Negative values, including negative infinity, and their share of all rows. |
 | `infinite_count`, `infinite_ratio` | Numeric | Positive and negative infinity and their share of all rows. |

@@ -40,6 +40,22 @@ export function registerWordLowercase(connection: DuckDBConnection): string {
   return name;
 }
 
+function textCountsSql(
+  table: string,
+  column: string,
+  { tokens, value, filter = '', limit }: { tokens: string; value: string; filter?: string; limit?: number }
+): string {
+  if (limit === 0) return 'COALESCE(first(NULL), [])';
+  const top = limit === undefined ? '' : `ORDER BY n DESC, symbol LIMIT ${limit}`;
+  // Count identical strings once and carry their weights through token aggregation.
+  return `COALESCE(first((SELECT list(struct_pack(value := symbol, count := n) ORDER BY n DESC, symbol)
+    FROM (SELECT ${value} AS symbol, sum(weight)::DOUBLE AS n
+      FROM (SELECT CAST(${column} AS VARCHAR) AS text, count(*) AS weight
+        FROM ${table} WHERE ${column} IS NOT NULL GROUP BY 1) weighted
+      CROSS JOIN unnest(${tokens}) tokens(token)
+      WHERE token <> '' ${filter} GROUP BY symbol ${top}) frequencies)), [])`;
+}
+
 export function wordCountsSql(
   table: string,
   column: string,
@@ -47,18 +63,19 @@ export function wordCountsSql(
   stopWords: string[],
   limit?: number
 ): string {
-  if (limit === 0) return 'COALESCE(first(NULL), [])';
-  const word = `trim(token, ${punctuation})`;
+  const value = `trim(token, ${punctuation})`;
   const normalized = `CASE WHEN strlen(text) = length(text) THEN lower(text) ELSE ${lowercase}(text) END`;
-  const stops = stopWords.length
-    ? `AND ${word} NOT IN (${stopWords.map((value) => sqlStringLiteral(value.toLowerCase())).join(', ')})`
+  const filter = stopWords.length
+    ? `AND ${value} NOT IN (${stopWords.map((word) => sqlStringLiteral(word.toLowerCase())).join(', ')})`
     : '';
-  const top = limit === undefined ? '' : `ORDER BY n DESC, word LIMIT ${limit}`;
-  // Count identical strings once and carry their weights through token aggregation.
-  return `COALESCE(first((SELECT list(struct_pack(value := word, count := n) ORDER BY n DESC, word)
-    FROM (SELECT ${word} AS word, sum(weight)::DOUBLE AS n
-      FROM (SELECT CAST(${column} AS VARCHAR) AS text, count(*) AS weight
-        FROM ${table} WHERE ${column} IS NOT NULL GROUP BY 1) weighted
-      CROSS JOIN unnest(regexp_split_to_array(${normalized}, ${whitespace})) tokens(token)
-      WHERE token <> '' ${stops} GROUP BY word ${top}) frequencies)), [])`;
+  return textCountsSql(table, column, {
+    tokens: `regexp_split_to_array(${normalized}, ${whitespace})`,
+    value,
+    filter,
+    limit,
+  });
+}
+
+export function characterCountsSql(table: string, column: string): string {
+  return textCountsSql(table, column, { tokens: "string_split(text, '')", value: 'token' });
 }

@@ -120,7 +120,7 @@ def cli(*args, payload=None):
 
 
 def compare(path, types):
-    metrics = [*TABLE_METRICS, *COLUMN_METRICS, "value_counts", "histogram", "quantiles", "nan_count", "word_counts",
+    metrics = [*TABLE_METRICS, *COLUMN_METRICS, "value_counts", "histogram", "quantiles", "nan_count", "word_counts", "character_counts",
                {"id": "row_duplicates", "limit": 0}]
     dataset = cli("source", str(path), "--engine", "duckdb")["datasetId"]
     try:
@@ -132,7 +132,7 @@ def compare(path, types):
         progress_bar=False, pool_size=1, infer_dtypes=False, missing_diagrams={"bar": False, "matrix": False, "heatmap": False},
         interactions={"continuous": False}, samples={"head": 0, "tail": 0, "random": 0},
         vars={"num": {"low_categorical_threshold": 0, "chi_squared_threshold": 0},
-              "cat": {"length": True, "characters": False, "words": True}},
+              "cat": {"length": True, "characters": True, "words": True}},
         correlations={method: {"calculate": True} for method in ("pearson", "spearman", "kendall", "cramers")},
     )
     frame = pd.read_parquet(path)
@@ -174,7 +174,8 @@ def compare(path, types):
             check(f"{name}.quantiles", observed.get("quantiles", MISSING), [
                 {"probability": p, "value": reference[f"{p:.0%}"]} for p in (0.05, 0.25, 0.5, 0.75, 0.95)
             ])
-        for native, source in (("value_counts", "value_counts_without_nan"), ("word_counts", "word_counts")):
+        for native, source in (("value_counts", "value_counts_without_nan"), ("word_counts", "word_counts"),
+                               ("character_counts", "character_counts")):
             if source in reference and reference["type"] != "DateTime":
                 frequencies = [{"value": json_value(value), "count": int(count)}
                                for value, count in reference[source].items()]

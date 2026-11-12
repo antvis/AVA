@@ -5,7 +5,7 @@ import { resolveMetric, table, column, logicalTypes, TOP_VALUES_OPTIONS } from '
 
 import { kendallPair } from './profile-kendall';
 import { cramersPair } from './profile-cramers';
-import { registerWordLowercase, wordCountsSql } from './profile-words';
+import { characterCountsSql, registerWordLowercase, wordCountsSql } from './profile-words';
 
 import type { DuckDBConnection } from '@duckdb/node-api';
 import type { MetricField } from '../util/profile';
@@ -500,6 +500,11 @@ export const BUILTIN_METRICS: DuckDBMetric[] = [
         (metric.stopWords as string[] | undefined) ?? [],
         metric.limit as number | undefined
       ),
+  },
+  {
+    id: 'character_counts',
+    enable: logicalTypes('string'),
+    expression: ({ table, column }) => characterCountsSql(table, column!),
   },
   { id: 'mean', enable: logicalTypes('numeric'), expression: (context) => aggregate('avg', context) },
   { id: 'sum', enable: logicalTypes('numeric'), expression: (context) => aggregate('sum', context) },
