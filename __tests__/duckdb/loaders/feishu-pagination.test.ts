@@ -5,6 +5,13 @@ import { readTable } from '../../../src/duckdb/loaders/feishu/read';
 afterEach(() => vi.unstubAllGlobals());
 
 describe('readTable pagination', () => {
+  it('rejects missing credentials before making API requests', async () => {
+    const fetch = vi.fn();
+    vi.stubGlobal('fetch', fetch);
+    await expect(readTable({ appToken: 'app', tableId: 'tbl' })).rejects.toThrow('appId and appSecret');
+    expect(fetch).not.toHaveBeenCalled();
+  });
+
   it('follows has_more and page_token until the last page', async () => {
     const requests: string[] = [];
     vi.stubGlobal(

@@ -6,7 +6,8 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { createSession } from '../src/cli/session/client';
 import { buildDataModel } from '../src/util/data-model';
-import { sessionDirectory, startupSchema, requestSchema } from '../src/cli/session/protocol';
+import { startupSchema, requestSchema } from '../src/cli/session/protocol';
+import { sessionDirectory } from '../src/cli/session/transport';
 
 import type { DataSourceConfig, EngineConfig, Schema } from '../src/types';
 
@@ -28,13 +29,18 @@ const sqlserverSource = {
 };
 
 describe('session startup protocol', () => {
-  const platform = Object.getOwnPropertyDescriptor(process, 'platform')!;
-  afterEach(() => {
-    Object.defineProperty(process, 'platform', platform);
-    vi.clearAllMocks();
+  it.each(['mysql', 'postgresql'])('requires and preserves the SSH host fingerprint for %s', (type) => {
+    const ssh = { host: 'bastion', user: 'reader', password: 'test-password' };
+    const source = { type, options: { host: 'database', database: 'sales', ssh } };
+    expect(() => startupSchema.parse({ source, llm })).toThrow(/hostKeyFingerprint/);
+    const pinnedSource = {
+      ...source,
+      options: { ...source.options, ssh: { ...ssh, hostKeyFingerprint: `SHA256:${'A'.repeat(43)}` } },
+    };
+    expect(startupSchema.parse({ source: pinnedSource, llm })).toEqual({ source: pinnedSource, llm });
   });
+
   it('keeps engine selection through the child-process startup message', async () => {
-    Object.defineProperty(process, 'platform', { ...platform, value: 'linux' });
     const worker = Object.assign(new EventEmitter(), {
       connected: true,
       disconnect: vi.fn(),
@@ -51,12 +57,6 @@ describe('session startup protocol', () => {
     } finally {
       await rm(sessionDirectory(datasetId), { recursive: true, force: true });
     }
-  });
-
-  it('rejects Windows before creating a dataset process', async () => {
-    Object.defineProperty(process, 'platform', { ...platform, value: 'win32' });
-    await expect(createSession(source, llm)).rejects.toThrow('Dataset sessions currently require macOS or Linux.');
-    expect(fork).not.toHaveBeenCalled();
   });
 
   it('accepts legacy startup messages and rejects custom engine configuration', () => {
@@ -112,14 +112,32 @@ describe('dataset engine and language', () => {
     vi.restoreAllMocks();
   });
 
-  it.each<{ source: DataSourceConfig; engine: EngineConfig['type']; explicit?: EngineConfig['type'] }>([
-    { source, engine: 'duckdb' },
-    { source, engine: 'python', explicit: 'python' },
-    { source, engine: 'javascript', explicit: 'javascript' },
-    { source: { type: 'supabase', options: { accessToken: 'test', projectRef: 'test' } }, engine: 'supabase' },
-    { source: { type: 'clickhouse', options: { host: 'localhost', database: 'sales' } }, engine: 'clickhouse' },
-    { source: sqlserverSource, engine: 'sqlserver' },
-  ])('selects $engine and exposes its language without changing the schema', async ({ source, engine, explicit }) => {
+  it.each<{
+    source: DataSourceConfig;
+    engine: EngineConfig['type'];
+    language: string;
+    explicit?: EngineConfig['type'];
+  }>([
+    { source, engine: 'duckdb', language: 'duckdb-sql' },
+    { source, engine: 'python', language: 'python', explicit: 'python' },
+    { source, engine: 'javascript', language: 'javascript', explicit: 'javascript' },
+    {
+      source: { type: 'supabase', options: { accessToken: 'test', projectRef: 'test' } },
+      engine: 'supabase',
+      language: 'postgresql',
+    },
+    {
+      source: { type: 'clickhouse', options: { host: 'localhost', database: 'sales' } },
+      engine: 'clickhouse',
+      language: 'clickhouse-sql',
+    },
+    { source: sqlserverSource, engine: 'sqlserver', language: 'tsql' },
+    {
+      source: { type: 'snowflake', options: { account: 'myorg-myaccount', database: 'ANALYTICS' } },
+      engine: 'snowflake',
+      language: 'snowflake-sql',
+    },
+  ])('selects $engine and exposes language id $language', async ({ source, engine, language, explicit }) => {
     const { getEngineClass } = await import('../src/engines');
     const Engine = getEngineClass(engine);
     const load = vi.spyOn(Engine.prototype, 'load').mockResolvedValue(undefined);
@@ -130,18 +148,31 @@ describe('dataset engine and language', () => {
     expect(instance).toBeInstanceOf(Engine);
     expect(load).toHaveBeenCalledExactlyOnceWith(source);
     expect(discover).not.toHaveBeenCalled();
-    expect(await datasets.describeDataset()).toEqual({ ...schema, language: instance!.language });
+    const instructions = instance!.dialect.rules;
+    const description = await datasets.describeDataset();
+    expect(description).toEqual({
+      ...schema,
+      language,
+      ...(instructions ? { instructions } : {}),
+    });
+    if (language.endsWith('sql')) {
+      expect(description.instructions).toContain('read-only SELECT');
+      expect(description.instructions).not.toContain('Return only SQL text');
+    }
     expect(discover).toHaveBeenCalledOnce();
     if (engine === 'python') {
-      expect(instance!.language.fence).toBe('python');
-      expect(instance!.language.instructions).toContain('tables');
-      expect(instance!.language.instructions).toContain('result');
+      expect(instance!.dialect.rules).toContain('tables');
+      expect(instance!.dialect.rules).toContain('result');
+    }
+    if (engine === 'javascript') {
+      expect(instance!.dialect.rules).toContain('data');
+      expect(instance!.dialect.rules).toContain('stat');
     }
   });
 
   it('executes JavaScript through the selected session without an API key', async () => {
     await datasets.createDataset(source, llm, 'javascript');
-    expect((await datasets.describeDataset()).language.fence).toBe('javascript');
+    expect((await datasets.describeDataset()).language).toBe('javascript');
     const result = await datasets.withDataset((ava) => ava.query('const result = [{ total: data[0].sales * 2 }];'));
     expect(result.data).toEqual([{ total: 20 }]);
     expect(result.rowCount).toBe(1);

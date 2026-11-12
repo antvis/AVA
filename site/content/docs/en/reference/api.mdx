@@ -63,7 +63,7 @@ String model names use OpenAI-compatible **Chat Completions** by default. A supp
 
 #### Engine options
 
-`config.engine.type` is required when `engine` is supplied. Supported values are `duckdb`, `python`, `javascript`, `supabase`, `clickhouse`, and `sqlserver`, plus names registered through `registerEngine()`. Omitting `engine` selects DuckDB. JavaScript, Supabase, ClickHouse, and SQL Server accept no additional engine fields; connection credentials belong to `source()`.
+`config.engine.type` is required when `engine` is supplied. Supported values are `duckdb`, `python`, `javascript`, `supabase`, `clickhouse`, `sqlserver`, and `snowflake`, plus names registered through `registerEngine()`. Omitting `engine` selects DuckDB. JavaScript, Supabase, ClickHouse, SQL Server, and Snowflake accept no additional engine fields; connection credentials belong to `source()`.
 
 ##### DuckDB
 
@@ -83,8 +83,8 @@ Set `engine.type` to `python`. These are all additional fields accepted on `engi
 
 | Field            | Type                                         | Required | Meaning / default                                                                                                                                                                                                                                                                         |
 | ---------------- | -------------------------------------------- | -------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `execute`        | `(code: string) => Promise<ExecutionResult>` | No       | Override local python3 execution with a custom environment. Local execution is not sandboxed. Run the complete Python script and return its JSON output as ExecutionResult. Source loading and result limits are included in the script; configure remote execution deadlines separately. |
-| `queryTimeoutMs` | `number`                                     | No       | Client wait limit and local process execution deadline. Default 30000 ms.                                                                                                                                                                                                                 |
+| `execute`        | `(code: string) => Promise<ExecutionResult>` | No       | Override local python3 execution with a custom environment. Local execution is not sandboxed. Run the complete Python script and return its JSON output as ExecutionResult. Each query first sends a compile-only validation script, then the data execution script with source loading and result limits. Configure remote execution deadlines separately. |
+| `queryTimeoutMs` | `number`                                     | No       | Wait and local process deadline for each validation or execution call. Default 30000 ms.                                                                                                                                                                                                                 |
 
 ##### Registered engines
 
@@ -115,7 +115,7 @@ await ava.source({ type: 'json', options: { data: [{ revenue: 120 }] } });
 | `config.type` | `SourceType` | Yes | [Source type](/documentation/data/sources/#connect-a-source), such as `json` or `csv-file`. |
 | `config.options` | Source-specific object | Yes | [Reader or connection settings](/documentation/data/sources/#connect-a-source) for that type. |
 
-Loading a source disposes the previous engine and clears the saved schema, profile, and semantic definitions. A failed load leaves no active source. Await pending operations before replacing a source.
+Source configuration is validated before replacing the active dataset; an invalid configuration preserves the current source and metadata. Once validation succeeds, loading disposes the previous engine and clears the saved schema, profile, and semantic definitions. A later loading failure leaves no active source. Await pending operations before replacing a source.
 
 ### schema
 
@@ -347,9 +347,9 @@ Requires a loaded source. Returns suggestions sorted by descending score, each w
 
 ### visualize and recommend
 
-`visualize(analysisResult): Promise<VisualizeResponse | null>`
+`visualize(analysisResult: Pick<AnalysisResponse, 'query' | 'data'>): Promise<VisualizeResponse | null>`
 
-`recommend(analysisResult): Promise<ChartSpec | null>`
+`recommend(analysisResult: Pick<AnalysisResponse, 'query' | 'data'>): Promise<ChartSpec | null>`
 
 Both methods accept the same input:
 
@@ -357,23 +357,65 @@ Both methods accept the same input:
 | ---------------------- | ------------------------------------------- | -------- | ---------------------------------------------------------------- |
 | `analysisResult`       | `Pick<AnalysisResponse, 'query' \| 'data'>` | Yes      | An analysis result or an object containing the two fields below. |
 | `analysisResult.query` | `string`                                    | Yes      | Question or visualization intent.                                |
-| `analysisResult.data`  | `Record<string, unknown>[]`                 | Yes      | Rows to visualize.                                               |
+| `analysisResult.data`  | `AnalysisResponse['data']`                 | Yes      | Rows to visualize.                                               |
 
 Neither requires a loaded source. Both use the model and return `null` for empty data or when no chart is recommended. Generation errors propagate. `recommend()` returns a `ChartSpec`; `visualize()` additionally returns `html: string` containing a standalone chart page.
 
 ### viz
 
-`viz(spec: ChartSpec): Promise<string>`
+`viz(spec: ChartSpecInput): Promise<string>`
 
 | Parameter        | Type        | Required | Meaning                                                                                             |
 | ---------------- | ----------- | -------- | --------------------------------------------------------------------------------------------------- |
-| `spec`           | `ChartSpec` | Yes      | Chart specification.                                                                                |
-| `spec.chartType` | `ChartType` | Yes      | One of the chart types below. Part of the shared spec; the current renderer uses `config` directly. |
-| `spec.config`    | `ChartConfig` | Yes    | GPT-Vis JSON config to embed in HTML; `config.type` matches `chartType`.                            |
+| `spec`           | `ChartSpecInput` | Yes      | Chart specification before defaults are applied. |
+| `spec.chartType` | `ChartType` | Yes      | One of the types below; must match `config.type` for JSON charts. |
+| `spec.config`    | `ChartSpecInput['config']` | Yes    | Native GPT-Vis config; a missing `config.type` is filled from `chartType`. For `summary`, pass a T8 Syntax string. |
 
 `ChartType` values: `line`, `column`, `bar`, `pie`, `area`, `scatter`, `dual-axes`, `histogram`, `boxplot`, `radar`, `funnel`, `waterfall`, `liquid`, `word-cloud`, `violin`, `venn`, `treemap`, `sankey`, `table`, `summary`.
 
+GPT-Vis supports 26 visualization types. AVA recommends the 19 JSON chart types above and additionally accepts native summary strings through `viz({ chartType: 'summary', config: '# Sales report' })`. The six relationship graph types are outside AVA's current contract. `ChartSpec` describes the normalized result, with `config.type` filled for JSON charts.
+
+`spec.html?: string` accepts the complete result from `visualize()`. Rendering always uses `config` to generate fresh HTML; an existing `html` value is not reused. Other unknown envelope fields are rejected.
+
 Returns a standalone HTML string. Does not require a loaded source or call a model. See [chart specifications](/documentation/visualization/overview/#recommend).
+
+## Runtime contracts
+
+AVA pins `@antv/gpt-vis` to 1.3.1. The generated HTML loads that exact version from the CDN; its types also check the native chart contracts. Category, name and group labels follow the native string types; time labels can also be numbers. Treemap nodes require `value`. Chart themes accept built-in names and native theme objects, and native options include subtitles, waterfall intermediate totals and Venn string sets.
+
+The Node and browser entry points export shared runtime schemas. SDK `source()`, `recommend()`, `viz()` and the CLI use these contracts at their input boundaries.
+
+MCP and other integrations import API schemas and data types from the SDK entry point. Use `@antv/ava` in Node and `@antv/ava/browser` in browser code:
+
+```typescript
+import { queryInputSchema, queryOutputSchema } from '@antv/ava';
+import type { ExecutionResult } from '@antv/ava';
+
+const input = queryInputSchema.parse({ dsl: 'SELECT * FROM data', options: { maxRows: 10 } });
+const output: ExecutionResult<unknown> = queryOutputSchema.parse(await ava.query(input.dsl, input.options));
+```
+
+API types are derived with `z.input<typeof inputSchema>` and `z.output<typeof outputSchema>`, so runtime validation and TypeScript share one field definition, including structure, profile, semantic, analysis and suggestions. Source types describe input before normalization (for example, Excel's `header` remains optional). `ExecutionResult<Row>` preserves your query's row type; runtime validation checks the result envelope, not the caller's generic row fields. ClickHouse options retain the official client's native types, including TLS buffers, agents and callbacks; those native options pass through to the client.
+
+Public schemas follow API input/output names. Multi-argument methods use named argument objects; single-argument methods use the argument directly. Omitted options still use SDK defaults. Setter callbacks remain SDK functions and are excluded from the data schemas; metadata passed to setters can be validated with the corresponding output schema. CLI session fields and stricter transport limits belong to the adapter.
+
+| API | Input schema and shape | Output schema |
+| --- | --- | --- |
+| `source` | `sourceInputSchema`: source config | No result (`void`) |
+| `schema` | `schemaInputSchema`: options `{}` | `schemaOutputSchema` |
+| `profile` | `profileInputSchema`: `{ metrics? }` | `profileOutputSchema` |
+| `semantic` | `semanticInputSchema`: options `{}` | `semanticOutputSchema` |
+| `query` | `queryInputSchema`: `{ dsl, options? }` | `queryOutputSchema` |
+| `analyze` | `analyzeInputSchema`: `{ query, config? }` | `analyzeOutputSchema` |
+| `translate` | `translateInputSchema`: question string | `translateOutputSchema`: DSL string |
+| `suggest` | `suggestInputSchema`: count | `suggestOutputSchema`: suggestion array |
+| `recommend` | `recommendInputSchema`: `{ query, data }` | `recommendOutputSchema`: chart spec or `null` |
+| `visualize` | `visualizeInputSchema`: `{ query, data }` | `visualizeOutputSchema`: chart spec with required HTML, or `null` |
+| `viz` | `vizInputSchema`: chart spec before defaults | `vizOutputSchema`: HTML string |
+
+The Node and browser entry points export the same API input/output schemas. Type names remain unchanged, including `DataSourceConfig`, `SchemaOptions`, `ExecutionResult` and `AnalysisResponse`. `ExecutionResult<Row>` and `AnalysisResponse<Row>` retain row generics and default to object rows. `dispose()` has neither input data nor a return value, so it needs no data schema.
+
+For MCP or other JSON Schema tools, use `z.toJSONSchema(inputSchema, { io: 'input' })` for inputs and `z.toJSONSchema(outputSchema, { io: 'output' })` for outputs. Input mode describes values before normalization; output mode includes required normalized fields such as chart `config.type`.
 
 ## Cleanup
 
@@ -564,7 +606,7 @@ When an operation needs its data model, AVA combines the inputs in this order:
 
 Omitting a section retains the corresponding schema context. If adding a relationship alongside discovered foreign keys, include the discovered relationships you want to keep in the supplied list. Reading `schema()`, `profile()`, or `semantic()` still returns that input, not the combined model; there is no public method to read the merged `DataModel`.
 
-Changing the schema clears the saved profile and retains semantic definitions. Profiling replaces observations and retains semantic definitions. Loading another source or calling `dispose()` clears all three. Reapply your saved definition after loading a new source, and review mappings if its structure changed. Calls require a loaded source; a failed source replacement leaves no active source.
+Changing the schema clears the saved profile and retains semantic definitions. Profiling replaces observations and retains semantic definitions. Loading another source or calling `dispose()` clears all three. Reapply your saved definition after loading a new source, and review mappings if its structure changed. Calls require a loaded source; invalid source configurations preserve the current dataset, while failures after replacement starts leave no active source.
 
 The setter validates and copies its returned object. A validation failure or thrown error leaves the previous semantic definition in place.
 

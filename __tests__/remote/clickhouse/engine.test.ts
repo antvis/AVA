@@ -1,3 +1,5 @@
+import { Agent } from 'node:http';
+
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { createClient } from '@clickhouse/client';
 
@@ -15,7 +17,6 @@ const mockedCreateClient = vi.mocked(createClient);
 function result(rows: unknown[]) {
   return {
     json: vi.fn().mockResolvedValue(rows),
-    text: vi.fn().mockResolvedValue('SelectWithUnionQuery (children 1)'),
   };
 }
 
@@ -45,6 +46,33 @@ afterEach(() => {
 });
 
 describe('ClickHouseEngine', () => {
+  it('passes native resources and callbacks through SDK source validation without copying them', async () => {
+    stubClient(() => []);
+    const agent = new Agent();
+    const certificate = Buffer.from('test CA');
+    const parse = vi.fn(JSON.parse);
+    const ava = new AVA({ llm: { model: 'unused' }, engine: { type: 'clickhouse' } });
+    try {
+      await ava.source({
+        type: 'clickhouse',
+        options: {
+          url: 'http://localhost:8123',
+          database: 'sales',
+          http_agent: agent,
+          tls: { ca_cert: certificate },
+          json: { parse },
+        },
+      });
+      const config = mockedCreateClient.mock.calls[0][0]!;
+      expect(config.http_agent).toBe(agent);
+      expect(config.tls?.ca_cert).toBe(certificate);
+      expect(config.json?.parse).toBe(parse);
+    } finally {
+      await ava.dispose();
+      agent.destroy();
+    }
+  });
+
   it('requires a loaded source for schema discovery', async () => {
     const engine = new ClickHouseEngine(getLLMConfig());
     try {
@@ -129,9 +157,6 @@ describe('ClickHouseEngine', () => {
     const client = stubClient((query) => {
       if (query.includes('FROM system.tables')) return TABLE_ROWS;
       if (query.includes('FROM system.columns')) return COLUMN_ROWS;
-      if (query.startsWith('EXPLAIN AST')) return [{ explain: 'SelectWithUnionQuery (children 1)' }];
-      if (query.includes('formatQuery'))
-        return [{ query: 'SELECT * FROM (SELECT customer_id, name FROM customers ORDER BY customer_id)' }];
       if (query.includes('LIMIT 3')) {
         return [
           { customer_id: 101, name: 'Alice' },
@@ -152,6 +177,7 @@ describe('ClickHouseEngine', () => {
         'SELECT customer_id, name FROM customers ORDER BY customer_id; -- trailing comment',
         { maxRows: 2 }
       );
+      expect(client.query).toHaveBeenCalledTimes(1);
       expect(result.data).toEqual([
         { customer_id: 101, name: 'Alice' },
         { customer_id: 102, name: 'Bob' },
@@ -160,13 +186,24 @@ describe('ClickHouseEngine', () => {
       expect(client.query).toHaveBeenLastCalledWith(
         expect.objectContaining({
           format: 'JSONEachRow',
-          query:
-            'SELECT * FROM (\nSELECT * FROM (SELECT customer_id, name FROM customers ORDER BY customer_id)\n) AS __ava_query LIMIT 3',
+          query: expect.stringContaining('AS __ava_query LIMIT 3'),
           clickhouse_settings: { readonly: '1' },
         })
       );
     } finally {
       await ava.dispose();
+    }
+  });
+
+  it('rejects restricted SQL before contacting ClickHouse', async () => {
+    const client = stubClient(() => []);
+    const engine = new ClickHouseEngine(getLLMConfig());
+    await engine.load({ type: 'clickhouse', options: { url: 'http://localhost:8123', database: 'default' } });
+    try {
+      await expect(engine.execute('SELECT * FROM (SELECT 1 SETTINGS readonly=0)')).rejects.toThrow();
+      expect(client.query).not.toHaveBeenCalled();
+    } finally {
+      await engine.dispose();
     }
   });
 

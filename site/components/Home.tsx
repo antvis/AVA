@@ -1,4 +1,5 @@
 import { getTranslator, type Locale } from '../lib/i18n';
+import { getLatestPost, postHref } from '../lib/blog';
 import Link from './LocaleLink';
 import Header from './Header';
 import Banner from './Banner';
@@ -44,6 +45,7 @@ function Arrow() {
 
 export default function Home({ locale }: { locale: Locale }) {
   const t = getTranslator(locale, 'Home');
+  const latestPost = getLatestPost();
 
   return (
     <PageShell>
@@ -54,11 +56,29 @@ export default function Home({ locale }: { locale: Locale }) {
         <Header />
         <div className={styles.hero}>
           <div className={styles.heroIntro}>
-            <Banner />
+            <Banner latestPost={latestPost && { title: latestPost.title[locale], href: postHref(latestPost, locale) }} />
           </div>
           <div className={styles.demo} aria-label={t('interactiveDemoUsingSampleData')}>
             <DemoChat />
           </div>
+          <aside className={styles.campaign} aria-labelledby="campaign-title">
+            <span className={styles.campaignIcon} aria-hidden="true">
+              🎟️
+            </span>
+            <div className={styles.campaignCopy}>
+              <strong id="campaign-title">{t('campaignTitle')}</strong>
+              <p>{t('campaignDescription')}</p>
+            </div>
+            <a
+              href="https://github.com/antvis/AVA/issues/1035"
+              target="_blank"
+              rel="noopener noreferrer"
+              className={styles.campaignLink}
+            >
+              {t('campaignAction')}
+              <Arrow />
+            </a>
+          </aside>
         </div>
 
         <section id="analytics" className={styles.features} aria-labelledby="features-title">

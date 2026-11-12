@@ -1,8 +1,9 @@
+import { githubOptionsSchema } from '../../contracts/source/github';
 import { sqlIdentifier, sqlStringLiteral } from '../../util/sql';
 import { getDuckDBSchema } from '../util/schema';
 
 import { GitHubClient } from './github/client';
-import { githubOptionsSchema, githubSince, parseRepository } from './github/config';
+import { githubSince, parseRepository } from './github/config';
 import { convertItem, issuesTable, pullRequestsTable } from './github/convert';
 
 import type { GitHubColumn, GitHubRow, GitHubTable } from './github/convert';
@@ -70,7 +71,7 @@ export async function loadGitHub(input: GitHubSourceOptions): Promise<LoadedSour
       return [issuesTable.name, pullRequestsTable.name];
     },
     getSchema: (conn) => getDuckDBSchema(conn, [issuesTable.name, pullRequestsTable.name]),
-    allowedDirectories: [],
+    allowedPaths: [],
     cleanup: async () => {},
   };
 }

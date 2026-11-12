@@ -2,7 +2,7 @@ import { sqlIdentifier } from '../util/sql';
 import { resolveMetric, table, column, logicalTypes, TOP_VALUES_OPTIONS } from '../util/profile';
 
 import type { MetricField } from '../util/profile';
-import type { DuckDBConnection, Schema, ParsedProfileOptions, LogicalType, Metric, MetricId, Profile } from '../types';
+import type { Metric, DuckDBConnection, Schema, ParsedProfileOptions, LogicalType, MetricId, Profile } from '../types';
 
 /** Map a database type to a profile type. */
 export function logicalType(nativeType: string): LogicalType {

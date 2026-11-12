@@ -3,7 +3,7 @@ import { afterEach, describe, expect, it, vi } from 'vitest';
 import { AVA } from '../../../src';
 import { run as runSource } from '../../../src/cli/commands/source';
 import { createSession } from '../../../src/cli/session/client';
-import { sourceConfig } from '../../../src/cli/session/protocol';
+import { sourceInputSchema } from '../../../src/contracts';
 import { loadGitHub } from '../../../src/duckdb/loaders/github';
 import { GitHubClient, GitHubError, nextLink } from '../../../src/duckdb/loaders/github/client';
 import { githubSince, isGitHubRepositoryUrl, parseRepository } from '../../../src/duckdb/loaders/github/config';
@@ -574,7 +574,13 @@ describe('GitHub CLI source', () => {
       type: 'github',
       options: { repository: 'antvis/AVA', token: 'config-token', since: '2026-01-01' },
     };
-    expect(sourceConfig.parse(config)).toEqual(config);
+    expect(sourceInputSchema.parse(config)).toEqual(config);
+  });
+
+  it('keeps GitHub raw CSV links as file sources', async () => {
+    const path = 'https://github.com/antvis/AVA/raw/oss-camp2026/data/companies.csv';
+    await runSource([path], {});
+    expect(sessionConfig()).toEqual({ type: 'csv-file', options: { path } });
   });
 
   it('rejects other GitHub links, --type with a link, and engines other than DuckDB', async () => {

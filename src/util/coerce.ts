@@ -8,7 +8,8 @@ function trimDecimalZeros(value: string): string {
   return value.replace(/(\.\d*?)0+$/, '$1').replace(/\.$/, '');
 }
 
-function coerceNumericString(value: string): string | number {
+/** Convert an exact decimal string to a number only when the conversion loses nothing. */
+export function coerceNumericString(value: string): string | number {
   const number = Number(value);
   if (!Number.isFinite(number)) return value;
 
@@ -26,11 +27,12 @@ function coerceNumericString(value: string): string | number {
 export function coerceNumbers(rows: any[], schema: QueryColumn[]): any[] {
   const numericColumns = new Set(schema.filter(({ type }) => NUMERIC_TYPE.test(type ?? '')).map(({ name }) => name));
 
-  return rows.map((row) => {
-    const out: Record<string, any> = {};
-    for (const [key, value] of Object.entries(row)) {
-      out[key] = typeof value === 'string' && numericColumns.has(key) ? coerceNumericString(value) : value;
-    }
-    return out;
-  });
+  return rows.map((row) =>
+    Object.fromEntries(
+      Object.entries(row).map(([key, value]) => [
+        key,
+        typeof value === 'string' && numericColumns.has(key) ? coerceNumericString(value) : value,
+      ])
+    )
+  );
 }

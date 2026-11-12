@@ -50,7 +50,7 @@ describe('AVA', () => {
     await ava.source({ type: 'json', options: { data: [{ second: 'value' }] } });
     expect((await ava.schema()).models[0].columns.map((field) => field.name)).toEqual(['second']);
     await expect(ava.source({ type: 'json', options: { data: null } })).rejects.toThrow();
-    await expect(ava.schema()).rejects.toThrow(message);
+    expect((await ava.schema()).models[0].columns.map((field) => field.name)).toEqual(['second']);
 
     await ava.source({ type: 'json', options: { data: [{ third: true }] } });
     await ava.dispose();

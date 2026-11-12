@@ -1,8 +1,10 @@
-import { mkdtemp, readFile, rm, writeFile } from 'fs/promises';
+import { mkdtemp, readFile, rm, stat, symlink, writeFile } from 'fs/promises';
+import { Readable } from 'stream';
 import { tmpdir } from 'os';
 import { join, resolve } from 'path';
 
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import { ZodError } from 'zod';
 
 import { AVA } from '../src/ava';
 import { run } from '../src/cli';
@@ -90,7 +92,49 @@ describe('help and validation', () => {
   });
 });
 
-describe('metadata files', () => {
+describe('metadata input', () => {
+  describe.each(['schema', 'profile', 'semantic'])('%s from stdin', (kind) => {
+    const args = [kind, datasetId, '--file', '-'];
+
+    function mockStdin(input: string): void {
+      const stream = Readable.from([input], { objectMode: false });
+      vi.spyOn(process, 'stdin', 'get').mockReturnValue(stream as typeof process.stdin);
+    }
+
+    it('imports valid metadata', async () => {
+      const value = kind === 'semantic' ? { description: 'Revenue excludes refunds.' } : { models: [] };
+      mockStdin(JSON.stringify(value));
+
+      const output = await execute(args);
+
+      expect(JSON.parse(output)).toEqual({ ok: true });
+      expect(request).toHaveBeenCalledExactlyOnceWith(
+        datasetId,
+        kind === 'profile' ? { command: kind, metrics: undefined, profile: value } : { command: kind, [kind]: value }
+      );
+    });
+
+    it('rejects malformed JSON before sending a request or writing a result', async () => {
+      const write = vi.fn();
+      mockStdin('invalid JSON');
+
+      await expect(run(args, write)).rejects.toThrow('Cannot read JSON');
+
+      expect(request).not.toHaveBeenCalled();
+      expect(write).not.toHaveBeenCalled();
+    });
+
+    it('rejects invalid metadata before sending a request or writing a result', async () => {
+      const write = vi.fn();
+      mockStdin('{"models":null}');
+
+      await expect(run(args, write)).rejects.toThrow(ZodError);
+
+      expect(request).not.toHaveBeenCalled();
+      expect(write).not.toHaveBeenCalled();
+    });
+  });
+
   it.each(['schema', 'profile', 'semantic'])('sets %s from a plain file path', async (kind) => {
     const directory = await mkdtemp(join(tmpdir(), 'ava-cli-test-'));
     try {
@@ -175,7 +219,7 @@ describe('source', () => {
     }
   });
 
-  it.each(['duckdb', 'python', 'javascript', 'supabase', 'clickhouse', 'sqlserver'])(
+  it.each(['duckdb', 'python', 'javascript', 'supabase', 'clickhouse', 'sqlserver', 'snowflake'])(
     'passes an explicit %s engine with a source config',
     async (engine) => {
       const directory = await mkdtemp(join(tmpdir(), 'ava-cli-test-'));
@@ -190,6 +234,49 @@ describe('source', () => {
       }
     }
   );
+
+  it('loads a Snowflake config file and forwards driver options unchanged', async () => {
+    const directory = await mkdtemp(join(tmpdir(), 'ava-cli-test-'));
+    try {
+      const file = join(directory, 'snowflake.json');
+      const config = {
+        type: 'snowflake',
+        options: {
+          account: 'myorg-myaccount',
+          username: 'AVA_READER_SVC',
+          authenticator: 'SNOWFLAKE_JWT',
+          privateKeyPath: '/keys/rsa_key.p8',
+          warehouse: 'AVA_WH',
+          role: 'AVA_READER',
+          database: 'SNOWFLAKE_SAMPLE_DATA',
+          schema: 'TPCH_SF1',
+          queryTimeoutMs: 60000,
+          proxyHost: 'proxy.internal',
+        },
+      };
+      await writeFile(file, JSON.stringify(config));
+      await execute(['source', `@${file}`]);
+      expect(createSession).toHaveBeenCalledExactlyOnceWith(config, { model: 'gpt-4o-mini' }, undefined);
+    } finally {
+      await rm(directory, { recursive: true, force: true });
+    }
+  });
+
+  it.each([
+    [{ database: 'ANALYTICS' }, 'account'],
+    [{ account: 'myorg-myaccount' }, 'database'],
+    [{ account: 'myorg-myaccount', database: 'ANALYTICS', queryTimeoutMs: 0 }, 'queryTimeoutMs'],
+  ])('rejects an invalid Snowflake config before creating a session %#', async (options, field) => {
+    const directory = await mkdtemp(join(tmpdir(), 'ava-cli-test-'));
+    try {
+      const file = join(directory, 'snowflake.json');
+      await writeFile(file, JSON.stringify({ type: 'snowflake', options }));
+      await expect(run(['source', `@${file}`])).rejects.toThrow(field);
+      expect(createSession).not.toHaveBeenCalled();
+    } finally {
+      await rm(directory, { recursive: true, force: true });
+    }
+  });
 
   it('selects Python for a file without changing its source type', async () => {
     await execute(['source', 'sales.csv', '--engine', 'python']);
@@ -386,6 +473,23 @@ describe('chart commands', () => {
     expect(AVA).not.toHaveBeenCalled();
   });
 
+  it.each([{ data: [{ month: 'Jan', revenue: 10 }] }, { data: [{ category: 'Jan', value: '10' }] }])(
+    'rejects invalid native chart data before creating output: %j',
+    async (config) => {
+      const directory = await mkdtemp(join(tmpdir(), 'ava-cli-test-'));
+      const output = join(directory, 'invalid.html');
+      try {
+        await expect(
+          run(['viz', '--spec', JSON.stringify({ chartType: 'column', config }), '-o', output])
+        ).rejects.toThrow();
+        expect(AVA).not.toHaveBeenCalled();
+        await expect(stat(output)).rejects.toMatchObject({ code: 'ENOENT' });
+      } finally {
+        await rm(directory, { recursive: true, force: true });
+      }
+    }
+  );
+
   it('renders a spec without an API key and never overwrites an existing output file', async () => {
     const directory = await mkdtemp(join(tmpdir(), 'ava-cli-test-'));
     const viz = vi.fn().mockResolvedValue(html);
@@ -398,7 +502,12 @@ describe('chart commands', () => {
       expect(JSON.parse(await execute(args))).toEqual({ output });
       expect(viz).toHaveBeenCalledExactlyOnceWith(spec);
       expect(await readFile(output, 'utf8')).toBe(html);
+      expect((await stat(output)).mode & 0o777).toBe(0o600);
       await expect(run(args)).rejects.toThrow('EEXIST');
+      expect(await readFile(output, 'utf8')).toBe(html);
+      const link = join(directory, 'link.html');
+      await symlink(output, link);
+      await expect(run(['viz', '--spec', JSON.stringify(spec), '-o', link])).rejects.toThrow('EEXIST');
       expect(await readFile(output, 'utf8')).toBe(html);
     } finally {
       await rm(directory, { recursive: true, force: true });

@@ -8,10 +8,7 @@
  * browser bundles.
  */
 
-import type { AnalysisEngine, EngineConfig, LLMConfig } from './types';
-
-/** Constructor signature every engine class must satisfy. */
-export type EngineClass = new (llmConfig: LLMConfig, options?: Record<string, unknown>) => AnalysisEngine;
+import type { EngineClass, EngineConfig } from './types';
 
 const registry = new Map<EngineConfig['type'], EngineClass>();
 
@@ -35,7 +32,7 @@ export function getEngineClass(type: EngineConfig['type']): EngineClass {
     throw new Error(
       `Engine type "${type}" is not available in this environment. ` +
         'The browser build of @antv/ava only includes the javascript engine; ' +
-        'use the Node.js build for DuckDB, Supabase, ClickHouse, or Python.'
+        'use the Node.js build for DuckDB, Supabase, ClickHouse, Snowflake, or Python.'
     );
   }
 

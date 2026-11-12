@@ -1,6 +1,6 @@
 {
   "name": "@antv/ava",
-  "version": "4.0.0",
+  "version": "4.0.2",
   "description": "A framework for AI-native Visual Analytics",
   "author": {
     "name": "AntV",
@@ -12,9 +12,9 @@
     "url": "git+https://github.com/antvis/AVA.git"
   },
   "sideEffects": [
-    "./esm/index.js",
+    "./esm/index.mjs",
     "./lib/index.js",
-    "./esm/index.browser.js",
+    "./esm/index.browser.mjs",
     "./lib/index.browser.js"
   ],
   "keywords": [
@@ -32,23 +32,18 @@
     "ava": "lib/cli/index.js"
   },
   "types": "lib/index.d.ts",
-  "module": "esm/index.js",
+  "module": "esm/index.mjs",
   "exports": {
     ".": {
       "browser": {
-        "types": "./esm/index.browser.d.ts",
-        "import": "./esm/index.browser.js",
+        "import": "./esm/index.browser.mjs",
         "require": "./lib/index.browser.js"
       },
-      "default": {
-        "types": "./lib/index.d.ts",
-        "import": "./esm/index.js",
-        "require": "./lib/index.js"
-      }
+      "import": "./esm/index.mjs",
+      "require": "./lib/index.js"
     },
     "./browser": {
-      "types": "./esm/index.browser.d.ts",
-      "import": "./esm/index.browser.js",
+      "import": "./esm/index.browser.mjs",
       "require": "./lib/index.browser.js"
     },
     "./package.json": "./package.json"
@@ -66,7 +61,7 @@
     "format": "prettier --write \"src/**/*.{ts,tsx}\" && npm run lint-fix",
     "clean": "rimraf lib esm",
     "build:cjs": "tsc --module commonjs --outDir lib",
-    "build:esm": "tsc --module es2020 --outDir esm --declarationDir esm",
+    "build:esm": "vite build",
     "build": "npm run clean && npm run build:cjs && npm run build:esm",
     "prepublishOnly": "npm run build",
     "test": "vitest run",
@@ -78,6 +73,7 @@
     "@ai-sdk/openai": "^4.0.73",
     "@antv/event-emitter": "^0.1.3",
     "@clickhouse/client": "^1.23.1",
+    "@clickhouse/parser": "0.3.0",
     "@duckdb/node-api": "^1.5.5-r.5",
     "@supabase/pg-parser": "^0.1.7",
     "adm-zip": "^0.6.1",
@@ -88,6 +84,7 @@
     "jsonrepair": "^3.15.0",
     "mssql": "12.7.13",
     "saxes": "^6.0.0",
+    "snowflake-sdk": "^3.4.1",
     "ssh2": "^1.17.0",
     "tslib": "^2.3.1",
     "zod": "^4.6.7"

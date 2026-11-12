@@ -59,6 +59,9 @@ export async function loadSource(config: DataSourceConfig, llmConfig: LLMConfig)
       throw new Error('ClickHouse sources are handled by ClickHouseEngine, not the DuckDB engine');
     case 'sqlserver':
       throw new Error("SQL Server sources require engine: { type: 'sqlserver' }");
+    case 'snowflake':
+      // Snowflake runs queries in its own warehouse through SnowflakeEngine.
+      throw new Error('Snowflake sources are handled by SnowflakeEngine, not the DuckDB engine');
     case 'feishu-bitable':
       return loadFeishuBitable(config.options);
     case 'tencent-smartsheet':

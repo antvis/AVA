@@ -5,23 +5,49 @@
 
 import { DuckDBEngine } from './duckdb';
 import { JavaScriptEngine, PythonEngine } from './interpreter';
-import { ClickHouseEngine, SQLServerEngine, SupabaseEngine } from './remote';
+import { ClickHouseEngine, SnowflakeEngine, SQLServerEngine, SupabaseEngine } from './remote';
 import { registerEngine } from './engines';
 
 registerEngine('duckdb', DuckDBEngine);
 registerEngine('clickhouse', ClickHouseEngine);
 registerEngine('sqlserver', SQLServerEngine);
+registerEngine('snowflake', SnowflakeEngine);
 registerEngine('supabase', SupabaseEngine);
 registerEngine('javascript', JavaScriptEngine);
 registerEngine('python', PythonEngine);
 
+export {
+  sourceInputSchema,
+  schemaInputSchema,
+  schemaOutputSchema,
+  profileInputSchema,
+  profileOutputSchema,
+  semanticInputSchema,
+  semanticOutputSchema,
+  queryInputSchema,
+  queryOutputSchema,
+  analyzeInputSchema,
+  analyzeOutputSchema,
+  translateInputSchema,
+  translateOutputSchema,
+  suggestInputSchema,
+  suggestOutputSchema,
+  recommendInputSchema,
+  recommendOutputSchema,
+  visualizeInputSchema,
+  visualizeOutputSchema,
+  vizInputSchema,
+  vizOutputSchema,
+} from './contracts';
+
 export { AVA } from './ava';
 export { registerEngine } from './engines';
-export type { EngineClass } from './engines';
+
 export { executionResult } from './util/result';
 
-export type { JavaScriptEngine } from './interpreter';
 export type {
+  EngineClass,
+  JavaScriptEngine,
   DataModel,
   Semantic,
   Model,
@@ -53,6 +79,7 @@ export type {
   JSONReadOptions,
   ClickHouseSourceOptions,
   SQLServerSourceOptions,
+  SnowflakeSourceOptions,
   AnalysisEngine,
   TranslationResult,
   ExecutionOptions,
@@ -67,6 +94,7 @@ export type {
   VisualizeResponse,
   ChartConfig,
   ChartSpec,
+  ChartSpecInput,
   SuggestResult,
   ChartType,
   ProfileOptions,

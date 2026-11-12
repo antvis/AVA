@@ -1,7 +1,7 @@
 import { request } from '../session/client';
 import { list, option } from '../options';
-import { readJSON } from '../io';
-import { profileMetadataSchema } from '../../util/profile';
+import { readJSONFile } from '../io';
+import { profileOutputSchema } from '../../contracts';
 
 import type { Options } from '../options';
 
@@ -15,7 +15,7 @@ export const definition = {
 export async function run([datasetId]: string[], options: Options): Promise<unknown> {
   const file = option(options, 'file');
   if (file !== undefined && options.metrics !== undefined) throw new Error('--file cannot be combined with --metrics.');
-  const profile = file === undefined ? undefined : profileMetadataSchema.parse(await readJSON(`@${file}`));
+  const profile = file === undefined ? undefined : profileOutputSchema.parse(await readJSONFile(file));
   return request(datasetId, { command: 'profile', metrics: list(options, 'metrics'), profile });
 }
 
@@ -28,7 +28,7 @@ Use the datasetId returned by ava source.
 Returns a JSON profile and retains it for subsequent analysis commands.
 
 Options:
-  --file <path>    Set the profile from a JSON file instead of computing it.
+  --file <path|->    Set the profile from a JSON file (or - for stdin) instead of computing it.
                    Cannot be combined with --metrics. Does not replace schema.
   --metrics <list>  Comma-separated metric names; replaces the defaults.
                    Use --metrics "" for structure without statistics.

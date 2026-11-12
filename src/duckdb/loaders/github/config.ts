@@ -1,5 +1,3 @@
-import { z } from 'zod';
-
 export interface GitHubRepository {
   owner: string;
   name: string;
@@ -62,13 +60,3 @@ export function githubSince(value: string): string {
   if (Number.isNaN(time)) throw invalid;
   return new Date(time).toISOString().replace(/\.\d{3}Z$/, 'Z');
 }
-
-export const githubOptionsSchema = z
-  .object({
-    repository: z.string().trim().min(1),
-    token: z.string().trim().min(1).optional(),
-    since: z.string().trim().min(1).optional(),
-    maxRecords: z.number().int().min(1).max(100000).optional(),
-    timeoutMs: z.number().int().min(1).max(110000).optional(),
-  })
-  .strict();

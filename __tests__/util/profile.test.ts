@@ -1,7 +1,8 @@
 import { describe, expect, it } from 'vitest';
 
 import { BUILTIN_METRICS } from '../../src/duckdb/profile';
-import { resolveMetric, profileMetadataSchema } from '../../src/util/profile';
+import { resolveMetric } from '../../src/util/profile';
+import { profileOutputSchema } from '../../src/contracts';
 
 import type { Profile, Schema } from '../../src/types';
 
@@ -38,30 +39,30 @@ describe('resolveMetric', () => {
   });
 });
 
-describe('profileMetadataSchema', () => {
+describe('profileOutputSchema', () => {
   it('round trips profiles and snapshots nested metric values', () => {
-    const parsed = profileMetadataSchema.parse(JSON.parse(JSON.stringify(profile)));
+    const parsed = profileOutputSchema.parse(JSON.parse(JSON.stringify(profile)));
     expect(parsed).toEqual(profile);
-    const snapshot = profileMetadataSchema.parse(profile);
+    const snapshot = profileOutputSchema.parse(profile);
     expect(snapshot).toEqual(profile);
     expect(snapshot.models[0].columns[0].metrics.custom).not.toBe(profile.models[0].columns[0].metrics.custom);
   });
 
   it('requires models and rejects unknown profile properties', () => {
-    expect(() => profileMetadataSchema.parse({ tables: [] })).toThrow();
-    expect(() => profileMetadataSchema.parse({ ...profile, generatedAt: 0 })).toThrow();
+    expect(() => profileOutputSchema.parse({ tables: [] })).toThrow();
+    expect(() => profileOutputSchema.parse({ ...profile, generatedAt: 0 })).toThrow();
   });
 
   it.each([Infinity, undefined, () => 1, BigInt(1)])('rejects non-JSON metric values %#', (value) => {
     const input = structuredClone(profile);
     input.models[0].metrics.custom = value;
-    expect(() => profileMetadataSchema.parse(input)).toThrow();
+    expect(() => profileOutputSchema.parse(input)).toThrow();
   });
 
   it('accepts omitted statistics without inventing observations', () => {
     const input = structuredClone(profile);
     input.models[0].metrics = {};
     input.models[0].columns[0].metrics = {};
-    expect(profileMetadataSchema.parse(input)).toEqual(input);
+    expect(profileOutputSchema.parse(input)).toEqual(input);
   });
 });

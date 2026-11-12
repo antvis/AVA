@@ -7,20 +7,26 @@
 | Source                                                                                         | Responsibility                                        |
 | ---------------------------------------------------------------------------------------------- | ----------------------------------------------------- |
 | [`ava.ts`](https://github.com/antvis/AVA/blob/ai/src/ava.ts)                                   | Public API, source state, and lifecycle               |
-| [`types.ts`](https://github.com/antvis/AVA/blob/ai/src/types.ts)                               | Configuration, engine, and result contracts           |
-| [`engines.ts`](https://github.com/antvis/AVA/blob/ai/src/engines.ts)                           | Internal engine registry                              |
+| [`types.ts`](https://github.com/antvis/AVA/blob/ai/src/types.ts) | Public type definitions and schema-derived types |
+| [`contracts/`](https://github.com/antvis/AVA/tree/ai/src/contracts/) | API contracts for source, schema, profile, semantic, query, analyze, suggest and visualization |
+| [`engines.ts`](https://github.com/antvis/AVA/blob/ai/src/engines.ts) | Engine selection and registry |
 | [`analysis/`](https://github.com/antvis/AVA/tree/ai/src/analysis/)                             | Direct and loop strategies                   |
 | [`duckdb/`](https://github.com/antvis/AVA/tree/ai/src/duckdb/)                                 | SQL engine, source loaders, and profiling             |
 | [`interpreter/javascript/`](https://github.com/antvis/AVA/tree/ai/src/interpreter/javascript/) | In-memory data and JavaScript execution               |
 | [`interpreter/python/`](https://github.com/antvis/AVA/tree/ai/src/interpreter/python/)         | pandas execution and source validation                |
 | [`remote/supabase/`](https://github.com/antvis/AVA/tree/ai/src/remote/supabase/)               | Management API, schema, and profiling                 |
 | [`remote/clickhouse/`](https://github.com/antvis/AVA/tree/ai/src/remote/clickhouse/)           | Remote SQL, schema, and profiling                     |
+| [`remote/snowflake/`](https://github.com/antvis/AVA/tree/ai/src/remote/snowflake/)             | Snowflake driver session, schema, and profiling       |
 | [`query/`](https://github.com/antvis/AVA/tree/ai/src/query/)                                   | Query generation and dialect validation               |
 | [`visualization/`](https://github.com/antvis/AVA/tree/ai/src/visualization/)                   | Chart advice, GPT-Vis config, and HTML generation     |
 | [`suggest/`](https://github.com/antvis/AVA/tree/ai/src/suggest/)                               | Suggested analysis questions                          |
 | [`event/`](https://github.com/antvis/AVA/tree/ai/src/event/)                                   | Event types and payloads                              |
 | [`cli/`](https://github.com/antvis/AVA/tree/ai/src/cli/)                                       | Commands and local dataset sessions                   |
-| [`util/`](https://github.com/antvis/AVA/tree/ai/src/util/)                                     | Model resolution, schemas, metrics, and result limits |
+| [`util/`](https://github.com/antvis/AVA/tree/ai/src/util/) | Catalog assembly, model formatting, metric execution rules and result bounds |
+
+Contracts follow the public API. `source/` keeps each source type's runtime schema in its own file, including CSV/JSON/Excel reader options; `source/index.ts` assembles the source union and `source/shared.ts` holds common file and connection fields. `schema.ts`, `profile.ts`, `semantic.ts`, `query.ts`, `analyze.ts`, `translate.ts` and `suggest.ts` define each API's runtime input and output schemas. `visualize.ts` holds the chart specification shared by `recommend()`, `viz()` and `visualize()`. Cross-API JSON values and data-model building blocks live in `shared/`.
+
+`types.ts` defines public configuration, engine, strategy and data types; data types are inferred from the runtime schemas. The data-model builder owns its stricter assembly input validation, derived from the public metadata fields. Modules import API schemas through `contracts/index.ts`, internal schemas from their owning modules and types from `types.ts`; contract definitions reference each other directly to avoid circular dependencies. `index.ts` and `index.browser.ts` export API input/output schemas and types with their existing names. CLI wire messages, AI-stage response formats and interpreter-specific restrictions remain local to their modules.
 
 ## Method to module
 
@@ -39,7 +45,7 @@
 
 An AVA instance owns one active engine and its schema/profile cache. `source()` loads data; `schema()` discovers structure on first use. `profile()` computes and retains fresh observations; the data model is assembled from cached metadata when needed. Reloading or disposal clears both caches.
 
-Engines retain data and connections. Their `load()` returns no metadata; `schema()` discovers it, `profile(schema, options?)` computes observations, and `getDSL(query, dataModel)` consumes AVA's data model. Shared validators live in `util/schema.ts` and `util/profile.ts`.
+Engines retain data and connections. Their `load()` returns no metadata; `schema()` discovers it, `profile(schema, options?)` computes observations, and `getDSL(query, dataModel)` consumes AVA's data model. Shared data validators live in `contracts/`; catalog assembly and metric execution helpers stay in `util/`.
 
 Analysis strategies share a runtime containing the engine, model configuration, data model, and event emitter. Query result limits are normalized through shared utilities.
 

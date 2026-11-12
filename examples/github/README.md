@@ -33,7 +33,7 @@ CLI 自动识别仓库链接（包括其 `/issues`、`/pulls` 页面）；`owner
     node lib/cli/index.js analyze <datasetId> "2026 年 10 月合并的 PR 从创建到合并的中位时长是多少小时？"
     node lib/cli/index.js dispose <datasetId>
 
-加载、schema 和直接 SQL 不调用模型。CLI 会话要求 Linux/macOS，Windows 请使用 SDK 或 WSL。
+加载、schema 和直接 SQL 不调用模型。
 
 ## 表与字段语义
 

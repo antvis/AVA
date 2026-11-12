@@ -54,6 +54,11 @@
     <strong>ClickHouse</strong>
     <span>Analytics database</span>
   </a>
+  <a href="#snowflake">
+    <img src="/logos/snowflake.svg" alt="" width="28" height="28" />
+    <strong>Snowflake</strong>
+    <span>Cloud data warehouse</span>
+  </a>
   <a href="/documentation/engines/custom/">
     <img src="/logos/contribute.svg" alt="" width="28" height="28" />
     <strong>Custom extension</strong>
@@ -76,7 +81,13 @@ const ava = new AVA({
 
 await ava.source({
   type: 'json',
-  options: { data: [{ city: 'Hangzhou', revenue: 120 }] },
+  options: {
+    data: [
+      { city: 'Hangzhou', revenue: 120 },
+      { city: 'Shanghai', revenue: 200 },
+      { city: 'Beijing', revenue: 160 },
+    ],
+  },
 });
 
 const schema = await ava.schema();
@@ -84,12 +95,12 @@ const schema = await ava.schema();
 
 | Parameter | Type                   | Required | Meaning                                                                                                                                      |
 | --------- | ---------------------- | -------- | -------------------------------------------------------------------------------------------------------------------------------------------- |
-| `type`    | `SourceType`           | Yes      | `csv`, `csv-file`, `json`, `json-file`, `parquet`, `excel`, `text`, `sqlite`, `mysql`, `postgresql`, `mongodb`, `supabase`, `clickhouse`, `sqlserver`, `feishu-bitable`, or `github`. |
+| `type`    | `SourceType`           | Yes      | `csv`, `csv-file`, `json`, `json-file`, `parquet`, `excel`, `text`, `sqlite`, `mysql`, `postgresql`, `mongodb`, `supabase`, `clickhouse`, `sqlserver`, `snowflake`, `feishu-bitable`, `tencent-smartsheet`, or `github`. |
 | `options` | Source-specific object | Yes      | Use the matching table below. Field names are relative to `options`.                                                                         |
 
 `source()` returns no value and prepares the data for execution. Schema discovery is deferred until `schema()` or another operation needs it. Calling `source()` again replaces the current source and clears its cached metadata. Use `schema()` to inspect table and field names, and call `await ava.dispose()` when finished.
 
-The examples use Node.js. Supabase, ClickHouse, and SQL Server include their required constructor settings alongside the source call. For frontend applications, see [browser usage](/documentation/browser/).
+The examples use Node.js. Supabase, ClickHouse, SQL Server, and Snowflake include their required constructor settings alongside the source call. For frontend applications, see [browser usage](/documentation/browser/).
 
 ## CSV
 
@@ -100,7 +111,7 @@ Pass the CSV content as a string with `type: 'csv'`.
 ```typescript
 await ava.source({
   type: 'csv',
-  options: { csv: 'city,revenue\nHangzhou,120\nShanghai,200' },
+  options: { csv: 'city,revenue\nHangzhou,120\nShanghai,200\nBeijing,160' },
 });
 ```
 
@@ -112,6 +123,8 @@ await ava.source({
 ### CSV files
 
 Use `type: 'csv-file'` with a local path or HTTP(S) URL. For a protected URL, supply request headers in `options.headers`.
+
+For remote CSV, JSON, Parquet, and Excel files, a nonempty `headers` object restricts redirects to the same origin (scheme, hostname, and effective port), with a limit of 20 redirects. This applies to both DuckDB and Python, including custom Python executors. Cross-origin redirects fail before the next request, even when the only header is `Accept` or the redirect upgrades HTTP to HTTPS. Downloads without headers, or with `headers: {}`, retain the underlying downloader's redirect behavior. Use the final trusted URL when a protected download requires a different origin.
 
 ```typescript
 await ava.source({
@@ -397,6 +410,40 @@ await ava.source({
 | `schema`   | `string`     | No       | Schema the tables live in (defaults to `public`) |
 | `ssh`      | `SSHOptions` | No       | Optional [SSH tunnel](#ssh-options).             |
 
+## SSH options
+
+To reach MySQL or PostgreSQL through a bastion, add `ssh` under `options`. The database `host` and `port` must be reachable from the bastion.
+
+First, obtain the SSH server's host key fingerprint from its administrator over a trusted channel. The administrator can read it on the server with `ssh-keygen -lf /etc/ssh/ssh_host_ed25519_key.pub -E sha256`. Use the `SHA256:...` value in your connection configuration:
+
+```typescript
+await ava.source({
+  type: 'mysql', // PostgreSQL: 'postgresql'
+  options: {
+    host: 'db.internal',
+    database: 'analytics',
+    user: 'reader',
+    password: process.env.DB_PASSWORD,
+    ssh: {
+      host: 'bastion.example.com',
+      user: 'ssh-user',
+      password: process.env.SSH_PASSWORD,
+      hostKeyFingerprint: 'SHA256:REPLACE_WITH_SERVER_FINGERPRINT',
+    },
+  },
+});
+```
+
+Fields inside `options.ssh`:
+
+| Field | Type | Required | Meaning / default |
+| --- | --- | --- | --- |
+| `host` | `string` | Yes | SSH server hostname. |
+| `port` | `number` | No | Default: `22`. |
+| `user` | `string` | Yes | SSH login user. |
+| `password` | `string` | No | SSH login password. |
+| `hostKeyFingerprint` | `string` | Yes | Expected host key fingerprint, `SHA256:<base64>` without padding. |
+
 ## MongoDB
 
 Load collections from the specified database. Use structured connection fields or supply `connection`, which takes precedence over them.
@@ -430,6 +477,8 @@ await ava.source({
 
 Use `type: 'feishu-bitable'` with the DuckDB engine in Node.js. Rows are exposed as one read-only view named `data`.
 
+For first-time setup, follow the illustrated [Lark Base setup guide](/documentation/data/feishu-bitable/) to create an app, grant access, bind credentials, and verify the data with CLI / SDK examples and troubleshooting.
+
 ```typescript
 await ava.source({
   type: 'feishu-bitable',
@@ -443,7 +492,7 @@ await ava.source({
 
 Provide `url`, or both `appToken` and `tableId`, along with `appId` and `appSecret`. The CLI also reads credentials from `AVA_FEISHU_APP_ID` / `AVA_FEISHU_APP_SECRET` or `~/.ava/feishu.json`.
 
-Both `/base/` and wiki-hosted `/wiki/` links are supported. Wiki links require wiki read access and wiki space membership so the app can resolve the Bitable. The `view` query parameter is ignored. Complex cells (people, attachments, links, formulas, locations, and groups) are flattened to comma-separated text.
+Both `/base/` and wiki-hosted `/wiki/` links are supported. Wiki links require wiki read access and wiki space membership so the app can resolve the Bitable. The `view` query parameter is ignored. Complex cells (people, attachments, links, locations, and groups) become text, usually with multiple values separated by commas; formula and lookup fields are converted according to their returned value types.
 
 ## SQL Server
 
@@ -591,9 +640,90 @@ All forwarded fields are optional. Server settings are an extensible, server-ver
 
 Zstd compression requires Node.js 22.15 or newer in this client. Response compression may conflict with the engine's enforced read-only server settings; leave it disabled unless the server permits it.
 
+## Snowflake
+
+Use the `snowflake` source and engine in Node.js to analyze tables and views on your Snowflake warehouse. Each source discovers one schema and returns query results to AVA.
+
+### Permissions
+
+Prepare a warehouse, database and schema. The connection role needs `USAGE` on each, plus `SELECT` on the tables and views to analyze. For a shared database such as `SNOWFLAKE_SAMPLE_DATA`, grant `IMPORTED PRIVILEGES`. Keep procedure, external function and integration privileges out of this role.
+
+The following example creates a read-only service user with [key-pair authentication](https://docs.snowflake.com/en/developer-guide/node-js/nodejs-driver-authenticate). Replace `<public-key-body>` with your public key; the connection below uses the corresponding private key file.
+
+```sql
+CREATE ROLE AVA_READER;
+GRANT USAGE ON WAREHOUSE AVA_WH TO ROLE AVA_READER;
+GRANT USAGE ON DATABASE ANALYTICS TO ROLE AVA_READER;
+GRANT USAGE ON SCHEMA ANALYTICS.SALES TO ROLE AVA_READER;
+GRANT SELECT ON ALL TABLES IN SCHEMA ANALYTICS.SALES TO ROLE AVA_READER;
+GRANT SELECT ON ALL VIEWS IN SCHEMA ANALYTICS.SALES TO ROLE AVA_READER;
+CREATE USER AVA_READER_SVC TYPE = SERVICE DEFAULT_ROLE = AVA_READER DEFAULT_WAREHOUSE = AVA_WH
+  RSA_PUBLIC_KEY = '<public-key-body>';
+GRANT ROLE AVA_READER TO USER AVA_READER_SVC;
+```
+
+Queries consume warehouse credits. Enable auto-suspend and a resource monitor to control usage.
+
+### Connection fields
+
+Set both the engine and source type to `snowflake`, then provide your account, credentials and warehouse:
+
+```typescript
+const ava = new AVA({
+  llm: { model: 'YOUR_MODEL', apiKey: process.env.OPENAI_API_KEY },
+  engine: { type: 'snowflake' },
+});
+await ava.source({
+  type: 'snowflake',
+  options: {
+    account: 'myorg-myaccount',
+    username: 'AVA_READER_SVC',
+    authenticator: 'SNOWFLAKE_JWT',
+    privateKeyPath: '/secure/ava_reader_key.p8',
+    warehouse: 'AVA_WH',
+    role: 'AVA_READER',
+    database: 'ANALYTICS',
+    schema: 'SALES',
+  },
+});
+```
+
+| Field                       | Type     | Required             | Meaning / default                                                                                                                                                   |
+| --------------------------- | -------- | -------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `account`                   | `string` | Yes                  | Account identifier, `orgname-accountname`.                                                                                                                          |
+| `database`                  | `string` | Yes                  | Database to discover and query.                                                                                                                                     |
+| `schema`                    | `string` | No                   | Schema whose tables and views are exposed; also the session's default schema. Default `PUBLIC`.                                                                     |
+| `warehouse`                 | `string` | No                   | Warehouse that runs the queries; defaults to the user's `DEFAULT_WAREHOUSE`.                                                                                        |
+| `role`                      | `string` | No                   | Role for the session; defaults to the user's `DEFAULT_ROLE`. Use a read-only role.                                                                                  |
+| `username`                  | `string` | For most methods     | Login name.                                                                                                                                                         |
+| `authenticator`             | `string` | No                   | Driver authentication method, such as `SNOWFLAKE_JWT`, `PROGRAMMATIC_ACCESS_TOKEN` or `OAUTH`. Default `SNOWFLAKE` (password).                                       |
+| `privateKey`                | `string` | For `SNOWFLAKE_JWT`  | PEM private key; or set `privateKeyPath` to read it from a file, and `privateKeyPass` for an encrypted key.                                                         |
+| `token`                     | `string` | For token methods    | Programmatic access token or OAuth access token; or set `tokenFilePath`.                                                                                            |
+| `password`                  | `string` | For `SNOWFLAKE`      | Password. Snowflake is phasing out single-factor password sign-in, so prefer key pairs or tokens.                                                                   |
+| `queryTimeoutMs`            | `number` | No                   | Limit for each statement in milliseconds. Snowflake enforces it (statement and queue timeouts) and the client cancels the statement when it expires. Default `30000`. |
+
+Other [driver connection options](https://docs.snowflake.com/en/developer-guide/node-js/nodejs-driver-options), including `host`, proxy settings and `queryTag` (default `AVA`), are forwarded. AVA manages result formats and session cleanup. Loading fails if the database, schema or warehouse is missing or unauthorized.
+
+### Query execution
+
+Use `schema()` to inspect authorized tables, views and declared keys, `query()` to execute Snowflake SQL, or `analyze()` to ask a question. `analyze()` sends the question and dataset metadata to your configured model to generate SQL. By default, it also sends query results to the model for a summary; pass `{ includeSummary: false }` to skip that summary.
+
+```typescript
+try {
+  const result = await ava.analyze('What is the total order amount for each month?');
+  console.log(result.data, result.text);
+} finally {
+  await ava.dispose();
+}
+```
+
+- Write a single read-only `SELECT` (`WITH` is allowed), quoting table and column names exactly as listed by `schema()`. Procedures, `SYSTEM$` functions, and dynamic function calls such as `IDENTIFIER(name)(...)` are rejected.
+- Use `maxRows` and `maxResultBytes` to limit the number of rows and size of returned results.
+- `NUMBER` values become JavaScript numbers when conversion preserves their digits; larger or more precise values stay decimal strings. Float `NaN` and infinities stay strings. Dates use `YYYY-MM-DD`; times and timestamps have nine fractional digits, with an offset for time-zone types. `VARIANT`, `OBJECT` and `ARRAY` are parsed JSON; `BINARY` is hexadecimal text.
+
 ## Tencent Docs SmartSheet
 
-Load one explicitly selected, authorized SmartSheet subtable through Tencent Docs' native OpenAPI (`fetch`, no MCP SDK), then analyze a complete local snapshot in DuckDB. Node.js SDK only, not browser/Python/JavaScript engines. Existing CLI sessions require Linux/macOS; Windows users can use the SDK or WSL.
+Load one explicitly selected, authorized SmartSheet subtable through Tencent Docs' native OpenAPI (`fetch`, no MCP SDK), then analyze a complete local snapshot in DuckDB. Supported by the Node.js SDK and CLI with the DuckDB engine.
 
 ```typescript
 await ava.source({
@@ -678,14 +808,3 @@ ava analyze <datasetId> "What was the median time to merge, in hours, of pull re
 ```
 
 See the [GitHub example](https://github.com/antvis/AVA/tree/oss-camp2026/examples/github) for two business questions checked against GitHub search.
-
-## SSH options
-
-Nested under `options.ssh` for MySQL and PostgreSQL.
-
-| Field      | Type     | Required | Meaning / default                                      |
-| ---------- | -------- | -------- | ------------------------------------------------------ |
-| `host`     | `string` | Yes      | SSH server hostname.                                   |
-| `port`     | `number` | No       | Default: `22`.                                         |
-| `user`     | `string` | Yes      | SSH login user.                                        |
-| `password` | `string` | No       | SSH login password; no password supplied when omitted. |

@@ -2,13 +2,12 @@
  * DuckDB engine: LLM generates SQL, executed against an in-memory DuckDB instance.
  */
 
+import { mkdtemp, rm } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 
-import { DuckDBInstance } from '@duckdb/node-api';
-
-import { DuckDBQueryDialect } from '../query/duckdb';
-import { executionResult, limitedQuery, maxRows } from '../util/result';
+import { DuckDBSQLDialect } from '../query/duckdb-sql';
+import { executionResult, maxRows } from '../util/result';
 import { coerceNumbers } from '../util/coerce';
 import { sqlStringLiteral } from '../util/sql';
 import { parseProfileOptions } from '../util/profile';
@@ -17,7 +16,7 @@ import { runWithTimeout } from '../util/timeout';
 import { DEFAULT_METRICS, profileTables } from './profile';
 import { loadSource } from './loaders';
 
-import type { DuckDBConnection } from '@duckdb/node-api';
+import type { DuckDBConnection, DuckDBInstance } from '@duckdb/node-api';
 import type {
   TranslationResult,
   AnalysisEngine,
@@ -25,12 +24,12 @@ import type {
   ProfileOptions,
   DataModel,
   DataSourceConfig,
-  LoadedSource,
-  DuckDBEngineOptions,
   Schema,
-  LLMConfig,
   ExecutionOptions,
   ExecutionResult,
+  LoadedSource,
+  DuckDBEngineOptions,
+  LLMConfig,
 } from '../types';
 
 /**
@@ -61,19 +60,15 @@ export class QueryTimeoutError extends Error {
 }
 
 export class DuckDBEngine implements AnalysisEngine {
-  readonly language = {
-    name: 'DuckDB SQL dialect',
-    fence: 'sql',
-  };
-
   private instance: DuckDBInstance | null = null;
   private connection: DuckDBConnection | null = null;
   private source: LoadedSource | null = null;
-  private readonly queryDialect: DuckDBQueryDialect;
+  private tempDirectory: string | null = null;
+  readonly dialect: DuckDBSQLDialect;
   private allowCommunityExtensions = false;
 
   constructor(private readonly llmConfig: LLMConfig, private readonly engineOptions: DuckDBEngineOptions = {}) {
-    this.queryDialect = new DuckDBQueryDialect(llmConfig);
+    this.dialect = new DuckDBSQLDialect(llmConfig);
   }
 
   /**
@@ -82,6 +77,7 @@ export class DuckDBEngine implements AnalysisEngine {
   private async getConnection(): Promise<DuckDBConnection> {
     if (this.connection) return this.connection;
 
+    const { DuckDBInstance } = await import('@duckdb/node-api');
     this.instance = await DuckDBInstance.create(':memory:', {
       ...EXTENSION_LOCKDOWN,
       allow_community_extensions:
@@ -92,11 +88,11 @@ export class DuckDBEngine implements AnalysisEngine {
   }
 
   /**
-   * Harden the session after the data view is registered: whitelist the data
-   * file's directories, then disable further external access and lock the
+   * Harden the session after the data view is registered: allow only source
+   * files and private spill storage, then disable external access and lock the
    * configuration so LLM-generated SQL cannot read arbitrary files or undo it.
    */
-  private async restrictAccess(conn: DuckDBConnection, allowedDirectories: string[]): Promise<void> {
+  private async restrictAccess(conn: DuckDBConnection, allowedPaths: string[]): Promise<void> {
     // Resource limits must be set before lock_configuration (which freezes all
     // settings). They bound a runaway LLM-generated query's memory/CPU/disk.
     await conn.run(`SET memory_limit = ${sqlStringLiteral(this.engineOptions.memoryLimit ?? DEFAULT_MEMORY_LIMIT)}`);
@@ -104,20 +100,11 @@ export class DuckDBEngine implements AnalysisEngine {
     if (this.engineOptions.maxTempDirectorySize) {
       await conn.run(`SET max_temp_directory_size = ${sqlStringLiteral(this.engineOptions.maxTempDirectorySize)}`);
     }
-    if (allowedDirectories.length > 0) {
-      await conn.run(`SET allowed_directories = [${allowedDirectories.map(sqlStringLiteral).join(', ')}]`);
-    }
-    // Confine spill files (from out-of-memory sorts/joins) to a known directory
-    // instead of the default `.tmp` in the process working directory.
-    const tempBase = allowedDirectories[0] ?? tmpdir();
-    await conn.run(`SET temp_directory = ${sqlStringLiteral(join(tempBase, '.dbtmp'))}`);
-    // en Postgres catalog, external access must be disabled before disabling the local filesystem; configuration lock must be set last.
-    // The data view is already registered, so external access is no longer needed.
+    await conn.run(`SET allowed_paths = [${allowedPaths.map(sqlStringLiteral).join(', ')}]`);
+    // Spill files need directory access, but must never share it with other sources.
+    this.tempDirectory = await mkdtemp(join(tmpdir(), 'ava-duckdb-'));
+    await conn.run(`SET temp_directory = ${sqlStringLiteral(this.tempDirectory)}`);
     await conn.run('SET enable_external_access = false');
-    if (allowedDirectories.length === 0) {
-      // No local data file to read — disable the local filesystem entirely.
-      await conn.run("SET disabled_filesystems = 'LocalFileSystem'");
-    }
     // Lock last so the settings above cannot be changed again.
     await conn.run('SET lock_configuration = true');
   }
@@ -129,7 +116,7 @@ export class DuckDBEngine implements AnalysisEngine {
       this.source = await loadSource(config, this.llmConfig);
       const conn = await this.getConnection();
       await this.source.register(conn);
-      await this.restrictAccess(conn, this.source.allowedDirectories);
+      await this.restrictAccess(conn, this.source.allowedPaths);
     } catch (error) {
       await this.dispose();
       throw error;
@@ -156,16 +143,18 @@ export class DuckDBEngine implements AnalysisEngine {
   async getDSL(query: string, dataModel: DataModel): Promise<TranslationResult> {
     if (!this.source) throw new Error('No data loaded. Please call source() first.');
 
-    return this.queryDialect.getDSL(query, dataModel);
+    return this.dialect.getDSL(query, dataModel);
   }
 
   async execute<T = Record<string, unknown>>(sql: string, options?: ExecutionOptions): Promise<ExecutionResult<T>> {
     if (!this.source || !this.connection) throw new Error('No data loaded. Please call source() first.');
 
     const conn = this.connection;
-    const query = await this.queryDialect.validateDSL(sql, conn);
+    const query = await this.dialect.validateDSL(sql);
     const timeoutMs = this.engineOptions.queryTimeoutMs ?? DEFAULT_QUERY_TIMEOUT_MS;
-    const operation = conn.runAndReadAll(limitedQuery(query, maxRows(options)));
+    // query() parses the original source; a quoted constant keeps its own parameters unbound.
+    // https://duckdb.org/docs/1.5/guides/sql_features/query_and_query_table_functions
+    const operation = conn.runAndReadAll(`SELECT * FROM query(${sqlStringLiteral(query)}) LIMIT ${maxRows(options) + 1}`);
     const reader = await runWithTimeout(operation, timeoutMs, {
       onTimeout: () => {
         conn.interrupt();
@@ -185,7 +174,12 @@ export class DuckDBEngine implements AnalysisEngine {
       name: reader.columnName(index),
       type: reader.columnType(index).toString(),
     }));
-    return executionResult(coerceNumbers(reader.getRowObjectsJson(), schema) as T[], schema, options);
+    const names = reader.deduplicatedColumnNames();
+    // The driver's object conversion assigns __proto__ through the prototype setter.
+    const rows = reader
+      .getRowsJson()
+      .map((row) => Object.fromEntries(row.map((value, index) => [names[index], value])));
+    return executionResult(coerceNumbers(rows, schema) as T[], schema, options);
   }
 
   /**
@@ -205,8 +199,18 @@ export class DuckDBEngine implements AnalysisEngine {
 
   async dispose(): Promise<void> {
     const source = this.source;
+    const tempDirectory = this.tempDirectory;
     this.source = null;
+    this.tempDirectory = null;
     this.close();
-    await source?.cleanup();
+    try {
+      await this.dialect.dispose();
+    } finally {
+      try {
+        await source?.cleanup();
+      } finally {
+        if (tempDirectory) await rm(tempDirectory, { recursive: true, force: true });
+      }
+    }
   }
 }

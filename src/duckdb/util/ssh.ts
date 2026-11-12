@@ -7,6 +7,8 @@ import { createServer, type Server, type Socket } from 'node:net';
 
 import { Client } from 'ssh2';
 
+import { createSshHostVerifier } from '../../util/ssh';
+
 import type { SSHOptions } from '../../types';
 
 const SSH_CONNECT_TIMEOUT_MS = 10000;
@@ -17,6 +19,7 @@ export interface SSHTunnel {
 }
 
 function connectSshClient(ssh: SSHOptions): Promise<Client> {
+  const hostVerifier = createSshHostVerifier(ssh.hostKeyFingerprint);
   const client = new Client();
   return new Promise((resolve, reject) => {
     client
@@ -27,6 +30,8 @@ function connectSshClient(ssh: SSHOptions): Promise<Client> {
         port: ssh.port ?? 22,
         username: ssh.user,
         password: ssh.password,
+        hostHash: 'sha256',
+        hostVerifier,
         readyTimeout: SSH_CONNECT_TIMEOUT_MS,
       });
   });
