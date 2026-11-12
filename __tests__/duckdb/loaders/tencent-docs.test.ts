@@ -14,7 +14,7 @@ import { tencentDocsOptionsSchema } from '../../../src/contracts/source/tencent-
 import { columnTypes, createRecordConverter, supportedFields } from '../../../src/duckdb/loaders/tencent/convert';
 import { readFields, readRecords, readTencentTable } from '../../../src/duckdb/loaders/tencent/read';
 import { createSnapshotBuilder } from '../../../src/duckdb/loaders/tencent/snapshot';
-import sales from '../../../examples/tencent-docs/sales.json';
+import sales from '../../fixtures/tencent-sales.json';
 
 import type { TencentField } from '../../../src/duckdb/loaders/tencent/convert';
 
