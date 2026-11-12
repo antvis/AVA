@@ -21,7 +21,12 @@ const formats = [
 
 export function parseDateSql(column: string): string {
   const text = `trim(CAST(${column} AS VARCHAR))`;
-  const parsed = `coalesce(try_cast(${text} AS TIMESTAMPTZ),
+  const zone = sqlStringLiteral(
+    '(?i)[T ][0-9]{1,2}:[0-9]{2}.*(?:Z|[+-][0-9]{2}(?::?[0-9]{2})?| (?:UTC|GMT|[a-z_]+/[a-z_]+))$'
+  );
+  const timestamp = `CASE WHEN regexp_matches(${text}, ${zone}) THEN try_cast(${text} AS TIMESTAMPTZ)
+    ELSE timezone('UTC', try_cast(${text} AS TIMESTAMP)) END`;
+  const parsed = `coalesce(${timestamp},
     timezone('UTC', try_strptime(${text}, [${formats.map(sqlStringLiteral).join(', ')}])))`;
   return `list_transform([${parsed}], lambda parsed:
     CASE WHEN parsed BETWEEN TIMESTAMPTZ '1677-09-21 00:12:43.145225+00'

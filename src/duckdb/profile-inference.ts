@@ -1,14 +1,24 @@
 import { sqlStringLiteral } from '../util/sql';
 
+import { parseDateSql } from './profile-dates';
+
 import type { DuckDBConnection } from '@duckdb/node-api';
 import type { LogicalType, ProfileOptions, ProfileType } from '../types';
 
 type Field = { name: string; value: string; logicalType: LogicalType };
-type InferredType = { profileType: ProfileType; cast?: 'BIGINT' | 'UBIGINT' | 'DOUBLE' };
+type InferredType = { profileType: ProfileType; cast?: 'BIGINT' | 'UBIGINT' | 'DOUBLE' | 'TIMESTAMPTZ' };
 
 export function numericTextSql(value: string, type: string): string {
   const text = `CAST(${value} AS VARCHAR)`;
   return `(CASE WHEN NOT contains(${text}, '_') THEN try_cast(${text} AS ${type}) END)`;
+}
+
+function dateTextCondition(value: string): string {
+  const text = `trim(CAST(${value} AS VARCHAR))`;
+  const parsed = `(CASE WHEN regexp_matches(${text}, '[0-9]') THEN ${parseDateSql(text)} END)`;
+  const invalid = `${value} IS NOT NULL AND ${parsed} IS NULL AND lower(${text}) NOT IN ('', 'nat', 'nan')`;
+  return `count(*) FILTER (WHERE ${invalid}) = 0
+    AND count(*) FILTER (WHERE ${parsed} IS NOT NULL AND try_cast(${text} AS DOUBLE) IS NULL) > 0`;
 }
 
 export function booleanSql(value: string, mappings?: Record<string, boolean>, lowercase?: string): string {
@@ -55,6 +65,7 @@ export async function inferColumnTypes(
             OR try_cast(${value} AS BIGINT) IS NULL)) = 0 AS i${i}`,
           `count(*) FILTER (WHERE ${value} IS NOT NULL AND (NOT regexp_full_match(trim(CAST(${value} AS VARCHAR)), '[+]?[0-9]+')
             OR try_cast(${value} AS UBIGINT) IS NULL)) = 0 AS u${i}`,
+          `(${dateTextCondition(value)}) AS t${i}`,
         ]
       : []),
   ]);
@@ -74,6 +85,8 @@ export async function inferColumnTypes(
         profileType: 'Numeric',
         cast: row[`i${i}`] ? 'BIGINT' : row[`u${i}`] ? 'UBIGINT' : 'DOUBLE',
       });
+    } else if (row[`t${i}`]) {
+      inferred.set(name, { profileType: 'DateTime', cast: 'TIMESTAMPTZ' });
     } else {
       const categorical =
         distinct <= textCategoryThreshold && (textCategoryRatio > 1 || distinct / count < textCategoryRatio);

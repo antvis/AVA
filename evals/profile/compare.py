@@ -123,8 +123,11 @@ def fixtures():
         "description": [f"Reference description {i}" for i in range(12)],
         "amount": [0., 4., 3., 5., 10., 7., -8., 2., 10., 11., 12., -12.],
         "price": ["1.0", "2.3", "3e0", "1.0", "-2.5", "7.01", "8.7", "4.2", "-6.04", "5.2", None, "6.9"],
+        "event_date": ["2026-01-01", "2 Jan 2026", None, "2026/01/03", "2026-02", "Jan 4, 2026", "NaT",
+                       "2026-01-06", "2026-02-03", "2026-02-04", "2026-02-05", "2026-02-06"],
         "flag": ["True", "NO", "T", "false", "y", "f", "YES", "n", "True", "f", "y", "no"],
-    }), {"code": "Categorical", "name": "Categorical", "description": "Text", "amount": "Numeric", "price": "Numeric", "flag": "Boolean"}
+    }), {"code": "Categorical", "name": "Categorical", "description": "Text", "amount": "Numeric",
+         "price": "Numeric", "event_date": "DateTime", "flag": "Boolean"}
     yield "phi_k", pa.table({
         "amount": [float(i % 80 + 20 * (i % 3)) for i in range(240)],
         "segment": ["A", "B", "C"] * 80,
@@ -222,7 +225,9 @@ def compare(path, types, infer_types=False, file_root=None, phik=False):
         correlations={method: {"calculate": True, "threshold": 0.9} for method in methods},
     )
     frame = pd.read_parquet(path)
-    integer_columns = {field.name for field in pq.read_schema(path) if pa.types.is_integer(field.type)}
+    source_schema = pq.read_schema(path)
+    integer_columns = {field.name for field in source_schema if pa.types.is_integer(field.type)}
+    date_columns = {field.name for field in source_schema if pa.types.is_date(field.type) or pa.types.is_timestamp(field.type)}
     with warnings.catch_warnings(record=True) as emitted:
         warnings.simplefilter("always")
         expected = ProfileReport(frame, config=config, tsmode="TimeSeries" in types.values(),
@@ -263,7 +268,7 @@ def compare(path, types, infer_types=False, file_root=None, phik=False):
             return None
         if name in integer_columns:
             return int(value)
-        if types[name] == "DateTime":
+        if name in date_columns:
             return json_value(pd.Timestamp(value))
         return value
 

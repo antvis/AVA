@@ -98,7 +98,9 @@ function profileValue(field: ProfileField, sourceAlias?: string, nanAsNull?: boo
   let column = sqlQualifiedName(field.name, sourceAlias);
   if (!raw && field.booleanValues)
     return booleanSql(column, field.booleanValues.mappings, field.booleanValues.lowercase);
-  if (!raw && field.sourceType) column = numericTextSql(column, field.type);
+  if (!raw && field.sourceType) {
+    column = field.logicalType === 'date' ? parseDateSql(column) : numericTextSql(column, field.type);
+  }
   const type = raw ? field.sourceType ?? field.type : field.type;
   return nanAsNull && floatingPoint.test(type) ? withoutNaN(column) : column;
 }
@@ -502,11 +504,13 @@ function categoryCorrelation(context: ExpressionContext): string {
   const numeric = fields.map(({ logicalType }) => (automatic || phik) && logicalType === 'numeric');
   const binnedNumeric = numeric.map((selected, i) => selected && !(context.nanAsNull && fields[i].sourceType));
   const needsBins = binnedNumeric.some(Boolean) && (phik || !numeric.every(Boolean));
-  const eligibility = fields.map(({ booleanValues, sourceType, type }, i) => {
+  const eligibility = fields.map(({ booleanValues, sourceType, type, logicalType }, i) => {
     const value = booleanValues
       ? booleanSql(`c${i}`, booleanValues.mappings, booleanValues.lowercase)
       : sourceType
-      ? numericTextSql(`c${i}`, type)
+      ? logicalType === 'date'
+        ? parseDateSql(`c${i}`)
+        : numericTextSql(`c${i}`, type)
       : `c${i}`;
     return numeric[i] ? `count(DISTINCT ${value}) > 1` : `count(DISTINCT ${value}) BETWEEN 2 AND ${maxCategories}`;
   });
@@ -531,7 +535,7 @@ function categoryCorrelation(context: ExpressionContext): string {
   const bin = (i: number) => `${needsBins && binnedNumeric[i] ? 'b' : 'c'}${i}`;
   const checks = numeric.flatMap((yes, i) => (yes ? [`count(*) FILTER (WHERE isinf(c${i}::DOUBLE)) = 0`] : []));
   const supported =
-    phik && context.nanAsNull && fields.some(({ sourceType }) => sourceType)
+    phik && context.nanAsNull && fields.some(({ sourceType, logicalType }) => sourceType && logicalType === 'numeric')
       ? 'FALSE'
       : checks.length
       ? checks.join(' AND ')

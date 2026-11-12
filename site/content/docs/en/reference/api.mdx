@@ -189,6 +189,7 @@ await ava.profile(undefined, () => savedProfile);
 | `setter` | `(options: ProfileOptions) => Profile` | No | Returns the profile to save instead of computing it through the engine. |
 
 Text that parses as numbers and exceeds `numericCategoryThreshold` is profiled as numeric. Integral text uses a 64-bit integer type when the values fit.
+Text with a consistent date format or compatible mixed date formats is profiled as `DateTime`. Empty strings and `NaT` markers are treated as missing for date statistics.
 
 A setter receives the options object (default `{}`) and returns a `Profile` synchronously. It does not require engine profiling support. AVA validates and copies its result; invalid results or thrown errors reject the call without changing previous metadata. The options are passed to the setter; AVA does not calculate or filter metrics on its behalf.
 
