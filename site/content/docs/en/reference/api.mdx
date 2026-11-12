@@ -303,6 +303,7 @@ Table completeness shares the scan with column NULL counts, frequency metrics sh
 | `row_duplicates` | `limit` | `10` | Maximum sample count. Use `0` for counts alone. |
 | `row_sample` | `head`, `tail`, `random` | `10`, `10`, `0` | Non-negative row counts. Zero disables that sample. On nonempty tables, `random` cannot exceed the row count. |
 | `row_sample` | `columns`, `seed` | All columns, unset | Select sample columns and optionally seed random selection with an integer. |
+| `row_sample` | `custom` | — | Caller-supplied `{ name, caption?, data }` sample, with `data` as a JSON row array. Replaces generated samples. |
 | `pearson` | `columns` | All numeric columns | Non-empty list of distinct numeric column names. |
 | `spearman` | `columns` | All numeric columns | Non-empty list of distinct numeric column names. Pairwise sorts reuse a single materialized projection. |
 | `kendall` | `columns` | All numeric columns | Non-empty list of distinct numeric column names. Counts pairs using grouped ranks. |

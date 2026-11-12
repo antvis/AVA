@@ -3,6 +3,7 @@ import { isAbsolute } from 'node:path';
 import { z } from 'zod';
 
 import { sqlIdentifier, sqlQualifiedName, sqlStringLiteral } from '../util/sql';
+import { jsonValue } from '../contracts/shared/json';
 import { resolveMetric, table, column, logicalTypes, TOP_VALUES_OPTIONS } from '../util/profile';
 
 import { kendallPair } from './profile-kendall';
@@ -247,6 +248,14 @@ const orderByOption = {
     z.string().min(1).parse(value);
   },
 };
+
+const customSample = z
+  .object({
+    name: z.string().min(1),
+    caption: z.string().optional(),
+    data: z.array(z.record(z.string(), jsonValue)),
+  })
+  .strict();
 
 function orderField({ fields, metric }: ExpressionContext): ProfileField | undefined {
   if (metric.orderBy === undefined) return undefined;
@@ -630,6 +639,11 @@ export const BUILTIN_METRICS: DuckDBMetric[] = [
     enable: table,
     options: {
       columns: columnNamesOption,
+      custom: {
+        validate: (value) => {
+          customSample.parse(value);
+        },
+      },
       ...Object.fromEntries(
         ['head', 'tail', 'random'].map((name) => [
           name,
@@ -1384,6 +1398,10 @@ export async function profileTables(
       for (const { metric, definition } of metrics) {
         const target = field ? 'column' : 'table';
         if (!definition.enable({ target, field }) || (metric.id === 'histogram' && metric !== histogram)) {
+          continue;
+        }
+        if (metric.id === 'row_sample' && metric.custom !== undefined) {
+          output.row_sample = { custom: metric.custom };
           continue;
         }
 

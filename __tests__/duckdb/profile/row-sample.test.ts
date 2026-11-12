@@ -1,4 +1,4 @@
-import { afterEach, beforeEach, describe, expect, it } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { DuckDBInstance } from '@duckdb/node-api';
 
 import { profileTables } from '../../../src/duckdb/profile';
@@ -51,5 +51,14 @@ describe('profile/row samples', () => {
       metrics: [{ id: 'row_sample', head: 0, tail: 0, random: 0 }],
     });
     expect(disabled.models[0].metrics.row_sample).toEqual({ head: [], tail: [], random: [] });
+  });
+
+  it('uses a supplied sample without scanning rows', async () => {
+    const schema = await getDuckDBSchema(connection);
+    const query = vi.spyOn(connection, 'runAndReadAll');
+    const custom = { name: 'Selected records', caption: 'Reviewed manually', data: [{ id: 2, label: 'B' }] };
+    const { models } = await profileTables(connection, schema, { metrics: [{ id: 'row_sample', custom }] });
+    expect(models[0].metrics.row_sample).toEqual({ custom });
+    expect(query).not.toHaveBeenCalled();
   });
 });

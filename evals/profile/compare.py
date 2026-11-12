@@ -476,16 +476,21 @@ def main():
             "2026-02-30", "bad", "bad", "NaT", "1600-01-01", None,
         ]}), path)
         dataset = cli("source", str(path), "--engine", "duckdb")["datasetId"]
+        custom = {"name": "Selected records", "caption": "Reviewed manually", "data": [{"date": "2026-01-02"}]}
         try:
             profile = cli("profile", dataset, "--options", "-", payload={
                 "metrics": ["date_validation", "valid_count", "min", "max", "range"],
                 "typeSchema": {"data": {"date": "DateTime"}},
             })
             actual = profile["models"][0]["columns"][0]["metrics"]
+            sample = cli("profile", dataset, "--options", "-", payload={
+                "metrics": [{"id": "row_sample", "custom": custom}],
+            })["models"][0]["metrics"]["row_sample"]["custom"]
         finally:
             cli("dispose", dataset)
         with warnings.catch_warnings(record=True) as emitted:
             profile = ProfileReport(pd.read_parquet(path), minimal=True, progress_bar=False,
+                                    sample={**custom, "data": pd.DataFrame(custom["data"])},
                                     type_schema={"date": "DateTime"}).get_description()
         reference = profile.variables["date"]
         expected = {key: json_value(reference[key]) for key in ("min", "max", "range")}
@@ -494,6 +499,11 @@ def main():
         results["date_validation"] = [{"metric": f"date.{key}", "ava": value, "reference": expected[key],
                                        "status": "match" if equal(value, expected[key]) else "different"}
                                       for key, value in actual.items()]
+        sample_reference = {"name": profile.sample[0].name, "caption": profile.sample[0].caption,
+                            "data": profile.sample[0].data.to_dict(orient="records")}
+        results["date_validation"].append({"metric": "table.row_sample.custom", "ava": sample,
+                                           "reference": sample_reference,
+                                           "status": "match" if equal(sample, sample_reference) else "different"})
         reference_warnings["date_validation"] = sorted({f"{warning.category.__name__}: {warning.message}" for warning in emitted})
     print(json.dumps({"reference": {"data_profiling": __version__, "pandas": pd.__version__,
                                    "numpy": np.__version__, "scipy": scipy.__version__}, "fixtures": results,

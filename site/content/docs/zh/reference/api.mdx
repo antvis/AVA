@@ -305,6 +305,7 @@ DuckDB 中，分母为零时比例返回 `0`。默认分别统计 SQL NULL、NaN
 | `row_duplicates` | `limit` | `10` | 样本数上限，设为 `0` 时只返回计数。 |
 | `row_sample` | `head`、`tail`、`random` | `10`、`10`、`0` | 非负样本行数。`0` 关闭对应采样。非空表的随机样本数不能超过总行数。 |
 | `row_sample` | `columns`、`seed` | 全部列、未设置 | 选择样本列，可指定整数随机种子。 |
+| `row_sample` | `custom` | — | 调用方提供的 `{ name, caption?, data }` 样本，其中 `data` 为 JSON 行数组。提供后使用该样本。 |
 | `pearson` | `columns` | 所有数值列 | 非空且不重复的数值列名列表。 |
 | `spearman` | `columns` | 所有数值列 | 非空且不重复的数值列名列表。各列对排序共用同一份选定列的数据。 |
 | `kendall` | `columns` | 所有数值列 | 非空且不重复的数值列名列表。通过分组秩统计观测对。 |
