@@ -49,7 +49,14 @@ export function wrapConfigInHTML(config: ChartConfig): string {
 
       const visConfig = JSON.parse(${serialized});
 
-      gptVis.render(visConfig);
+      (async () => {
+        try {
+          await gptVis.render(visConfig);
+        } catch (error) {
+          gptVis.destroy();
+          document.getElementById('container').textContent = 'Chart rendering failed: ' + error.message;
+        }
+      })();
     </script>
   </body>
 </html>`;
