@@ -54,7 +54,7 @@ Additional metrics:
                   nan_count/ratio, finite_count/ratio (e.g. zero_count, zero_ratio)
   DuckDB quantiles: quantiles (5%, 25%, 50%, 75%, 95%; finite numeric values)
   DuckDB dispersion: variance, mad, iqr, cv, range
-  DuckDB distribution shape: skewness, kurtosis
+  DuckDB distribution shape: skewness, kurtosis, monotonicity, chi_squared
   DuckDB numeric and date histogram: histogram
   DuckDB frequencies: value_counts, mode, mode_count, imbalance
   DuckDB text: mean_length, median_length, length_histogram, word_counts, character_counts

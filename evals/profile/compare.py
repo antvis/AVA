@@ -53,6 +53,7 @@ COLUMN_METRICS = {
     "mean_length": "mean_length",
     "median_length": "median_length",
     "imbalance": "imbalance",
+    "chi_squared": "chi_squared",
 }
 REFERENCE_TYPES = {"Numeric": "numeric", "Categorical": "string", "Boolean": "boolean", "DateTime": "date"}
 MISSING = object()
@@ -131,7 +132,7 @@ def compare(path, types):
     config = Settings(
         progress_bar=False, pool_size=1, infer_dtypes=False, missing_diagrams={"bar": False, "matrix": False, "heatmap": False},
         interactions={"continuous": False}, samples={"head": 3, "tail": 3, "random": 0},
-        vars={"num": {"low_categorical_threshold": 0, "chi_squared_threshold": 0},
+        vars={"num": {"low_categorical_threshold": 0, "chi_squared_threshold": 0.99},
               "cat": {"length": True, "characters": True, "words": True}},
         correlations={method: {"calculate": True} for method in ("pearson", "spearman", "kendall", "cramers")},
     )

@@ -251,6 +251,7 @@ await ava.profile({
 | `mode`、`mode_count` | 数值、文本、布尔、日期 | 频数排序中第一位的值及其计数。 |
 | `imbalance` | 文本、布尔、数值类别编码 | 一减去归一化的 Shannon 熵，排除 NULL 和 NaN。均匀分布或少于两个类别时返回零。 |
 | `monotonicity` | 数值 | 按 DuckDB 扫描顺序比较相邻有效值，跳过 NULL 和 NaN。返回递增、递减及各自严格单调的标志，`direction` 为严格递增 `2`、严格递减 `-2`、非严格递增 `1`、非严格递减 `-1` 或 `0`。 |
+| `chi_squared` | 数值、日期、文本 | 检验频数是否符合均匀分布，返回 `{ statistic, pvalue }`。文本按类别计数，数值和日期对有限值自动等宽分箱。 |
 | `mean_length`、`median_length` | 文本 | 按 Unicode 码点计算的长度均值和中位数，重复值按出现次数加权。 |
 | `length_histogram` | 文本 | 按长度排列的 `{ length, count }`。排除 NULL，空字符串长度为零。 |
 | `word_counts` | 文本 | 使用 Unicode 小写、空白切词和 ASCII 标点修剪后的 `{ value, count }`。重复字符串按频数加权。 |

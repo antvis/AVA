@@ -5,6 +5,7 @@ import { resolveMetric, table, column, logicalTypes, TOP_VALUES_OPTIONS } from '
 
 import { kendallPair } from './profile-kendall';
 import { cramersPair } from './profile-cramers';
+import { chiSquareBins, chiSquareCounts, chiSquareResult, chiSquareSql } from './profile-chi-square';
 import { characterCountsSql, registerWordLowercase, wordCountsSql } from './profile-words';
 
 import type { DuckDBConnection } from '@duckdb/node-api';
@@ -34,6 +35,7 @@ interface ExpressionContext {
   readonly sourceAlias?: string;
   readonly center?: string;
   readonly histogram?: { edges: string; limits: string };
+  readonly chiSquare?: { lo: string; hi: string; bins: string };
   readonly monotonic?: string;
   readonly wordLowercase?: string;
   readonly metric: ParsedProfileOptions['metrics'][number];
@@ -364,6 +366,11 @@ function histogramValue({ column, field }: ColumnContext): string {
   return field?.logicalType === 'date' ? `epoch_ms(${column})::DOUBLE` : `TRY_CAST(${column} AS DOUBLE)`;
 }
 
+function chiSquareValue(context: ColumnContext): string {
+  const value = histogramValue(context);
+  return context.field?.logicalType === 'date' ? `floor(${value} / 1000.0)` : value;
+}
+
 function histogramEdges(lo: string, hi: string, bins: string): string {
   const span = `(${hi} - ${lo})`;
   const fraction = `(i::DOUBLE / ${bins})`;
@@ -513,6 +520,16 @@ export const BUILTIN_METRICS: DuckDBMetric[] = [
     expression: (context) => `COALESCE(-struct_extract(list_min(${frequencyRanks(context)}), 'rank')::DOUBLE, 0)`,
   },
   { id: 'imbalance', enable: logicalTypes('string', 'boolean', 'numeric'), expression: imbalance },
+  {
+    id: 'chi_squared',
+    enable: logicalTypes('numeric', 'date', 'string'),
+    expression: (context) => {
+      const bounds = context.chiSquare;
+      return bounds
+        ? chiSquareSql(chiSquareCounts(chiSquareValue(context), bounds.lo, bounds.hi, bounds.bins), bounds.bins)
+        : chiSquareSql(`map_values(${frequencyHistogram(context)})`);
+    },
+  },
   {
     id: 'monotonicity',
     enable: logicalTypes('numeric'),
@@ -687,7 +704,9 @@ function postProcessMetrics(
     const raw = row[`m${i}`];
     delete output[metricId];
     if (metricId === 'top_values' && raw == null) continue;
-    if (typeof raw === 'object' || typeof raw === 'boolean' || metricId === 'mode') {
+    if (metricId === 'chi_squared') {
+      output[metricId] = chiSquareResult(raw as Parameters<typeof chiSquareResult>[0]);
+    } else if (typeof raw === 'object' || typeof raw === 'boolean' || metricId === 'mode') {
       output[metricId] = raw ?? null;
     } else {
       // Profile numbers use JavaScript precision, including BIGINT and DECIMAL results.
@@ -708,6 +727,7 @@ export async function profileTables(
   const metrics = options.metrics.map((metric) => ({ metric, definition: resolveMetric(metric, BUILTIN_METRICS) }));
   const needsCenters = metrics.some(({ metric }) => metric.id === 'skewness' || metric.id === 'kurtosis');
   const needsMonotonicity = metrics.some(({ metric }) => metric.id === 'monotonicity');
+  const needsChiSquare = metrics.some(({ metric }) => metric.id === 'chi_squared');
   const wordLowercase = metrics.some(({ metric }) => metric.id === 'word_counts')
     ? registerWordLowercase(connection)
     : undefined;
@@ -747,8 +767,21 @@ export async function profileTables(
           windows.push(`lag(${value} IGNORE NULLS) OVER () AS ${previous}`);
           monotonic = `${centerTable}.${addParameter(monotonicity(value, previous))}`;
         }
-        if (!histogram || (field.logicalType !== 'numeric' && field.logicalType !== 'date'))
-          return [field.name, { center, monotonic }];
+        if (field.logicalType !== 'numeric' && field.logicalType !== 'date') return [field.name, { center, monotonic }];
+
+        let chiSquare: ExpressionContext['chiSquare'];
+        if (needsChiSquare) {
+          const value = chiSquareValue({ column, field });
+          const finite = `FILTER (WHERE isfinite(${value}))`;
+          const lo = addParameter(`min(${value}) ${finite}`);
+          const hi = addParameter(`max(${value}) ${finite}`);
+          const count = addParameter(`count(${value}) ${finite}`);
+          const quartiles = addParameter(`quantile_cont(${value}, [0.25, 0.75]) ${finite}`);
+          const integral = field.logicalType === 'date' || /INT/i.test(field.type);
+          const bins = addParameter(chiSquareBins(lo, hi, count, quartiles, integral), 'axis');
+          chiSquare = { lo: `${centerTable}.${lo}`, hi: `${centerTable}.${hi}`, bins: `${centerTable}.${bins}` };
+        }
+        if (!histogram) return [field.name, { center, monotonic, chiSquare }];
 
         const value = histogramValue({ column, field });
         const finite = `FILTER (WHERE isfinite(${value}))`;
@@ -779,7 +812,12 @@ export async function profileTables(
         );
         return [
           field.name,
-          { center, monotonic, histogram: { edges: `${centerTable}.${edges}`, limits: `${centerTable}.${limits}` } },
+          {
+            center,
+            monotonic,
+            chiSquare,
+            histogram: { edges: `${centerTable}.${edges}`, limits: `${centerTable}.${limits}` },
+          },
         ];
       })
     );
