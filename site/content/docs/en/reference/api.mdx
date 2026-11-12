@@ -263,6 +263,8 @@ await ava.profile({
 | `unique_count`, `unique_ratio` | Numeric, text, boolean, date | Number of values occurring exactly once, and that count divided by the non-NULL count. |
 | `is_unique` | Numeric, text, boolean, date | Whether all non-NULL values occur once. Returns `false` when no non-NULL values exist. |
 | `value_counts` | Numeric, text, boolean, date | All non-NULL frequencies as `{ value, count }`, sorted by count descending and then value. Output grows with the number of distinct values. |
+| `extreme_values` | Numeric | Lowest and highest distinct values with counts, in value order. |
+| `text_examples` | Text | First non-NULL text values in scan order, including repeats. |
 | `mode`, `mode_count` | Numeric, text, boolean, date | First value in frequency order and its count. |
 | `imbalance` | Text, boolean, numeric category codes | One minus normalized Shannon entropy, excluding NULL and NaN. Returns zero for uniform distributions or fewer than two classes. |
 | `mean_length`, `median_length` | Text | Mean and median length in Unicode code points, weighted by occurrence. In `data-profiling` mode, the median follows the reference's separately sorted length weights. |
@@ -303,6 +305,7 @@ Table completeness shares the scan with column NULL counts, frequency metrics sh
 | --- | --- | --- | --- |
 | `top_values` | `limit` | `3` | Non-negative safe integer. |
 | `top_values` | `maxDistinctRatio` | `0.5` | Finite number in `[0, 1]`. |
+| `extreme_values`, `text_examples` | `limit` | `5` | Non-negative number of entries per list. |
 | `row_duplicates` | `columns` | All profile columns | Non-empty list of distinct column names used as the group key. |
 | `row_duplicates` | `limit` | `10` | Maximum sample count. Use `0` for counts alone. |
 | `row_sample` | `head`, `tail`, `random` | `10`, `10`, `0` | Non-negative row counts. Zero disables that sample. On nonempty tables, `random` cannot exceed the row count. |

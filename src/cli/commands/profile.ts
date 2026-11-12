@@ -57,8 +57,8 @@ Additional metrics:
   DuckDB distribution shape: skewness, kurtosis, monotonicity, chi_squared
   DuckDB time series: time_index, autocorrelation, time_series_gaps, frequency_spectrum, adf
   DuckDB numeric and date histogram: histogram
-  DuckDB frequencies: value_counts, mode, mode_count, imbalance
-  DuckDB text: mean_length, median_length, length_histogram, word_counts, character_counts, unicode_summary
+  DuckDB frequencies: value_counts, mode, mode_count, imbalance, extreme_values
+  DuckDB text: text_examples, mean_length, median_length, length_histogram, word_counts, character_counts, unicode_summary
   DuckDB structured text: url_summary, path_summary, file_summary, image_summary, date_validation
   DuckDB table metrics: table_summary, row_duplicates, row_sample, pearson, spearman, kendall, cramers, auto, phi_k
   DuckDB pairwise plots: scatter_pairs

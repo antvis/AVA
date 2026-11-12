@@ -21,6 +21,7 @@ from data_profiling.config import Settings
 from data_profiling.model.pandas.describe_timeseries_pandas import compute_gap_stats, get_fft, get_fft_peaks, stationarity_test
 from data_profiling.model.pandas.timeseries_index_pandas import pandas_get_time_index_description
 from data_profiling.model.pairwise import get_scatter_tasks
+from data_profiling.report.presentation.frequency_table_utils import extreme_obs_table
 from data_profiling.visualisation.charts.builders import acf_pacf, missing_matrix, scatter
 
 
@@ -185,6 +186,7 @@ def cli(*args, payload=None):
 def compare(path, types, infer_types=False, file_root=None, phik=False):
     metrics = [*TABLE_METRICS, *COLUMN_METRICS, "value_counts", "histogram", "quantiles", "nan_count", "word_counts",
                "character_counts", "unicode_summary", "monotonicity", "duplicate_count", "length_histogram", "mode", "mode_count",
+               "extreme_values", "text_examples",
                {"id": "row_duplicates", "limit": 0}, {"id": "row_sample", "head": 3, "tail": 3}]
     if "URL" in types.values():
         metrics.append("url_summary")
@@ -348,6 +350,16 @@ def compare(path, types, infer_types=False, file_root=None, phik=False):
         if "n_distinct" in reference:
             check(f"{name}.duplicate_count", observed.get("duplicate_count", MISSING),
                   reference["count"] - reference["n_distinct"])
+        if "first_rows" in reference:
+            check(f"{name}.text_examples", observed.get("text_examples", MISSING), reference["first_rows"].tolist())
+        if "extreme_values" in observed:
+            frequencies = reference["value_counts_index_sorted"]
+            check(f"{name}.extreme_values", {
+                side: [{"value": decoded(name, item["value"]), "count": item["count"]} for item in values]
+                for side, values in observed["extreme_values"].items()
+            }, {side: [{"value": row["label"], "count": row["count"]}
+                       for row in extreme_obs_table(freqs, 5, len(frame))[0]]
+                for side, freqs in (("lowest", frequencies), ("highest", frequencies[::-1]))})
         if "length_histogram" in reference:
             check(f"{name}.length_histogram", observed.get("length_histogram", MISSING),
                   [{"length": length, "count": count} for length, count in reference["length_histogram"].sort_index().items()])

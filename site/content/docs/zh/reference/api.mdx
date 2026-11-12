@@ -265,6 +265,8 @@ await ava.profile({
 | `unique_count`、`unique_ratio` | 数值、文本、布尔、日期 | 仅出现一次的值数，以及该数量占非空值数的比例。 |
 | `is_unique` | 数值、文本、布尔、日期 | 所有非空值是否都仅出现一次。无非空值时返回 `false`。 |
 | `value_counts` | 数值、文本、布尔、日期 | 全部非空值的 `{ value, count }` 频数，按计数降序和原值排序。结果大小随不同值的数量增长。 |
+| `extreme_values` | 数值 | 按值返回最小和最大的不同值及其频数。 |
+| `text_examples` | 文本 | 按扫描顺序返回最前面的非空文本，可含重复值。 |
 | `mode`、`mode_count` | 数值、文本、布尔、日期 | 频数排序中第一位的值及其计数。 |
 | `imbalance` | 文本、布尔、数值类别编码 | 一减去归一化的 Shannon 熵，排除 NULL 和 NaN。均匀分布或少于两个类别时返回零。 |
 | `monotonicity` | 数值 | 按 DuckDB 扫描顺序比较相邻有效值，跳过 NULL 和 NaN。返回递增、递减及各自严格单调的标志，`direction` 为严格递增 `2`、严格递减 `-2`、非严格递增 `1`、非严格递减 `-1` 或 `0`。 |
@@ -305,6 +307,7 @@ DuckDB 中，分母为零时比例返回 `0`。默认分别统计 SQL NULL、NaN
 | --- | --- | --- | --- |
 | `top_values` | `limit` | `3` | 非负安全整数。 |
 | `top_values` | `maxDistinctRatio` | `0.5` | `[0, 1]` 范围内的有限数值。 |
+| `extreme_values`、`text_examples` | `limit` | `5` | 每个列表返回的条目数，须为非负整数。 |
 | `row_duplicates` | `columns` | 画像中的全部列 | 非空且不重复的分组键列名列表。 |
 | `row_duplicates` | `limit` | `10` | 样本数上限，设为 `0` 时只返回计数。 |
 | `row_sample` | `head`、`tail`、`random` | `10`、`10`、`0` | 非负样本行数。`0` 关闭对应采样。非空表的随机样本数不能超过总行数。 |

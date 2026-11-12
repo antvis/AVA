@@ -250,6 +250,12 @@ const orderByOption = {
   },
 };
 
+const nonnegativeLimit = {
+  validate(value: unknown): void {
+    z.number().int().nonnegative().parse(value);
+  },
+};
+
 const customSample = z
   .object({
     name: z.string().min(1),
@@ -872,6 +878,26 @@ export const BUILTIN_METRICS: DuckDBMetric[] = [
     expression: (context) => `COALESCE(list_transform(list_sort(${frequencyRanks(context)}), lambda entry:
       struct_pack(value := ${frequencyValue("struct_extract(entry, 'value')", context.field)},
         count := -struct_extract(entry, 'rank')::DOUBLE)), [])`,
+  },
+  {
+    id: 'extreme_values',
+    enable: logicalTypes('numeric'),
+    options: { limit: nonnegativeLimit },
+    expression: (context) => {
+      const { limit = 5 } = context.metric;
+      const entries = `list_transform(${frequencyRanks(context)}, lambda entry:
+        struct_pack(value := entry.value, count := -entry.rank::DOUBLE))`;
+      const side = (order: string) => `coalesce(list_slice(list_sort(${entries}, '${order}'), 1, ${limit}), [])`;
+      return `struct_pack(lowest := ${side('ASC')}, highest := ${side('DESC')})`;
+    },
+  },
+  {
+    id: 'text_examples',
+    enable: logicalTypes('string'),
+    options: { limit: nonnegativeLimit },
+    expression: ({ column, table, metric }) => `coalesce(first((SELECT list(value ORDER BY position)
+      FROM (SELECT CAST(${column} AS VARCHAR) AS value, row_number() OVER () AS position FROM ${table}
+        WHERE ${column} IS NOT NULL LIMIT ${metric.limit ?? 5}) sample_values)), [])`,
   },
   {
     id: 'mode',
