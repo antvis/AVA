@@ -138,3 +138,7 @@ Instead of `url`, a base table accepts `appToken` and `tableId`. When both forms
 ### Cell Values
 
 Complex cells flatten to text, lists join with commas, and dates use ISO strings. People/chats use names, attachments use filenames, and record links use IDs. Unsupported fields are omitted; unsupported formula/lookup results become null.
+
+## GitHub
+
+Load GitHub issues and pull requests with the DuckDB engine. See the [GitHub source documentation](https://ava.antv.vision/documentation/data/sources/#github) for available data and connection options.

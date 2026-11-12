@@ -31,7 +31,7 @@ describe('public source contracts', () => {
 
   it('uses the same source contract in SDK and CLI without erasing the discriminant', async () => {
     const schema = z.toJSONSchema(sourceInputSchema, { io: 'input' });
-    expect(schema.oneOf).toHaveLength(16);
+    expect(schema.oneOf).toHaveLength(17);
     const json = schema.oneOf!.find((source) => source.properties?.type.const === 'json');
     expect(json?.properties?.options.properties?.data.items).toMatchObject({
       type: 'object',

@@ -138,6 +138,7 @@ export type PostgreSQLSourceOptions = Extract<SourceConfigInput, { type: 'postgr
 export type SupabaseSourceOptions = Extract<SourceConfigInput, { type: 'supabase' }>['options'];
 export type SQLServerSourceOptions = Extract<SourceConfigInput, { type: 'sqlserver' }>['options'];
 export type FeishuBitableSourceOptions = Extract<SourceConfigInput, { type: 'feishu-bitable' }>['options'];
+export type GitHubSourceOptions = Extract<SourceConfigInput, { type: 'github' }>['options'];
 export type CSVReadOptions = z.input<typeof csvReadOptionsSchema>;
 export type JSONReadOptions = z.input<typeof jsonReadOptionsSchema>;
 export type ExcelSheetOptions = z.input<typeof excelSheetSchema>;
@@ -150,7 +151,7 @@ export type SSHOptions = NonNullable<MySQLSourceOptions['ssh']>;
  * declared here so the shared types never import the Node-only package.
  */
 export interface DuckDBConnection {
-  run(sql: string): Promise<unknown>;
+  run(sql: string, values?: string[]): Promise<unknown>;
   runAndReadAll(sql: string): Promise<{ getRowObjectsJson(): Record<string, unknown>[] }>;
 }
 
