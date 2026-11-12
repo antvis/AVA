@@ -42,3 +42,43 @@ jobs:
           node -e "require('@antv/ava').sourceInputSchema.parse({ type: 'json', options: { data: [] } })"
           node --input-type=module -e "const { sourceInputSchema } = await import('@antv/ava/browser'); sourceInputSchema.parse({ type: 'json', options: { data: [] } })"
           node -e "require('@antv/ava/browser').sourceInputSchema.parse({ type: 'json', options: { data: [] } })"
+
+  windows-local-cli:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22.x
+
+      - run: npm install --legacy-peer-deps
+      - run: npm run build
+      - run: npm test -- __tests__/cli-local.test.ts
+
+      - name: Run the installed CLI in PowerShell
+        shell: pwsh
+        run: |
+          $PSNativeCommandUseErrorActionPreference = $true
+          $package = npm pack --json | ConvertFrom-Json
+          $tarball = Join-Path $PWD $package.filename
+          $prefix = Join-Path $env:RUNNER_TEMP 'ava-local-cli'
+          npm install --prefix $prefix --no-audit --no-fund $tarball
+          $ava = Join-Path $prefix 'node_modules/.bin/ava.cmd'
+          $csv = Join-Path $prefix '销售 明细.csv'
+          $semantic = Join-Path $prefix '销售 口径.json'
+          $sql = Join-Path $prefix 'GMV total.sql'
+          @('status,amount', 'paid,150.50', 'cancelled,999.00') | Set-Content -Encoding utf8 $csv
+          '{"description":"Only paid orders count toward GMV."}' | Set-Content -Encoding utf8 $semantic
+          "SELECT sum(amount)::DOUBLE AS gmv FROM data WHERE status = 'paid'" | Set-Content -Encoding utf8 $sql
+
+          $schema = & $ava schema --local $csv | ConvertFrom-Json
+          if ($schema.language -ne 'duckdb-sql' -or $schema.models[0].columns[1].name -ne 'amount') {
+            throw 'Unexpected foreground schema'
+          }
+          for ($i = 0; $i -lt 2; $i++) {
+            $result = & $ava query --local $csv --dsl "@$sql" --semantic-file $semantic | ConvertFrom-Json
+            if ($result.semanticLoaded -ne $true -or $result.rowCount -ne 1 -or $result.data[0].gmv -ne 150.50) {
+              throw 'Unexpected foreground query result'
+            }
+          }
