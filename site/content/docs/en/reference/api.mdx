@@ -207,6 +207,8 @@ The default metrics are `row_count`, `null_count`, `distinct_count`, `top_values
 
 DuckDB also supports `valid_count` (non-null count), `null_ratio` (nulls / rows), `distinct_ratio` (different non-null values / non-null count), `unique_count` (values occurring exactly once), `unique_ratio` (singletons / non-null count), and `is_unique` (all non-null values occur once). Empty denominators produce `0`; `is_unique` is `false` when there are no non-null values. These metrics use SQL null semantics; NaN is a non-null value.
 
+Numeric DuckDB columns also support `zero_count`, `negative_count`, `infinite_count`, `nan_count`, and `finite_count`, and their `_ratio` counterparts (for example `zero_ratio`). Ratios divide by all rows, including nulls, and return `0` for an empty table. Negative infinity counts as both negative and infinite. NaN, infinity, and SQL NULL remain separate observations. These optional metrics share the aggregate scan and do not change the default metric set.
+
 Each entry is a metric name or an object with an `id` and metric-specific options:
 
 ```typescript

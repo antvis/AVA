@@ -209,6 +209,8 @@ Profile 通过名称，将统计信息附加到已有的 schema 模型和列上�
 
 DuckDB 还支持 `valid_count`（非空值数）、`null_ratio`（空值数 / 行数）、`distinct_ratio`（不同非空值数 / 非空值数）、`unique_count`（仅出现一次的值数）、`unique_ratio`（仅出现一次的值数 / 非空值数）与 `is_unique`（所有非空值是否都仅出现一次）。分母为零时比例返回 `0`；没有非空值时 `is_unique` 为 `false`。这些指标沿用 SQL 空值语义，NaN 不属于 NULL。
 
+DuckDB 数值列还支持 `zero_count`、`negative_count`、`infinite_count`、`nan_count`、`finite_count`，以及对应的 `_ratio` 指标（例如 `zero_ratio`）。比例以包含空值的总行数为分母，空表返回 `0`。负无穷同时计入负值与无穷值；NaN、无穷值和 SQL NULL 分别统计。这些可选指标共用聚合扫描，不改变默认指标集。
+
 每项可以是指标名称，也可以是包含 `id` 和该指标专用选项的对象：
 
 ```typescript

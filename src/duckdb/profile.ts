@@ -41,6 +41,13 @@ function range(fn: string, context: ExpressionContext): string {
   return context.field?.logicalType === 'date' ? `epoch_ms(${expression})` : expression;
 }
 
+function numericCondition(id: string, { column, field }: ExpressionContext): string {
+  if (id === 'zero') return `${column} = 0`;
+  if (id === 'negative') return `${column} < 0`;
+  if (!/^(FLOAT|DOUBLE|REAL)$/i.test(field!.type)) return id === 'finite' ? `${column} IS NOT NULL` : 'FALSE';
+  return `${id === 'infinite' ? 'isinf' : id === 'nan' ? 'isnan' : 'isfinite'}(${column})`;
+}
+
 export const BUILTIN_METRICS: DuckDBMetric[] = [
   { id: 'row_count', enable: table, expression: () => 'COUNT(*)' },
   { id: 'valid_count', enable: column, expression: ({ column }) => `COUNT(${column})` },
@@ -114,6 +121,19 @@ export const BUILTIN_METRICS: DuckDBMetric[] = [
     expression: (context) => aggregate('stddev_samp', context),
   },
   { id: 'median', enable: logicalTypes('numeric'), expression: (context) => aggregate('median', context) },
+  ...['zero', 'negative', 'infinite', 'nan', 'finite'].flatMap((kind): DuckDBMetric[] => [
+    {
+      id: `${kind}_count`,
+      enable: logicalTypes('numeric'),
+      expression: (context) => `COUNT(*) FILTER (WHERE ${numericCondition(kind, context)})`,
+    },
+    {
+      id: `${kind}_ratio`,
+      enable: logicalTypes('numeric'),
+      expression: (context) =>
+        `COALESCE((COUNT(*) FILTER (WHERE ${numericCondition(kind, context)}))::DOUBLE / NULLIF(COUNT(*), 0), 0)`,
+    },
+  ]),
 ];
 
 export { DEFAULT_METRICS } from '../util/profile';
