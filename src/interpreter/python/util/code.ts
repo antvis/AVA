@@ -116,6 +116,7 @@ const protectedFileCode = `def _download_file(path, headers):
 export function executionCode(code: string, source: DataSourceConfig, limits: ExecutionOptions): string {
   const protectedFile =
     'path' in source.options &&
+    typeof source.options.path === 'string' &&
     'headers' in source.options &&
     /^https?:\/\//i.test(source.options.path) &&
     Object.keys(source.options.headers ?? {}).length > 0;

@@ -9,10 +9,44 @@ import * as browser from '../src/index.browser';
 import * as contracts from '../src/contracts';
 import { startupSchema } from '../src/cli/session/protocol';
 import { resultSchema as pythonResultSchema } from '../src/interpreter/python/util/schema';
+import { parseSourceConfigs } from '../src/util/source';
 
 import type { DataSourceConfig } from '../src/types';
 
 const source = { type: 'json' as const, options: { data: [{ sales: 10 }] } };
+
+describe('parseSourceConfigs', () => {
+  const orders = { type: 'csv-file' as const, name: 'orders', options: { path: 'orders.csv' } };
+
+  it('normalizes single inputs and keeps each source in a mixed batch', () => {
+    const defaultSource = { ...source, name: 'data1' };
+    expect(parseSourceConfigs(source)).toEqual([defaultSource]);
+    expect(parseSourceConfigs([source])).toEqual([defaultSource]);
+    expect(parseSourceConfigs(orders)).toEqual([orders]);
+
+    const customers = { type: 'excel', name: 'customers', options: { path: 'customers.xlsx' } };
+    expect(parseSourceConfigs([orders, { ...customers, name: ' customers ' }])).toEqual([orders, customers]);
+  });
+
+  it('assigns fallback names to missing, invalid, and duplicate names', () => {
+    expect(parseSourceConfigs([source, source]).map(({ name }) => name)).toEqual(['data1', 'data2']);
+    const sources = parseSourceConfigs([
+      source,
+      { ...orders, name: ' DATA1 ' },
+      { ...source, name: 'data1' },
+      { ...source, name: ' ' },
+      { ...source, name: 42 },
+    ]);
+    expect(sources.map(({ name }) => name)).toEqual(['data2', 'DATA1', 'data3', 'data4', 'data5']);
+  });
+
+  it.each([
+    [[], /at least one data source/i],
+    [[orders, { ...source, name: 'customers', options: { data: null } }], /data/],
+  ])('rejects invalid source input %j', (input, message) => {
+    expect(() => parseSourceConfigs(input)).toThrow(message);
+  });
+});
 
 describe('public source contracts', () => {
   it.each([null, [], 1, 'row', new Date()])('rejects non-record JSON rows: %j', (row) => {
@@ -26,7 +60,7 @@ describe('public source contracts', () => {
     { type: 'json-file', options: { path: 'sales.json', options: { format: 'csv' } } },
   ])('rejects malformed native reader options before loading: %j', (config) => {
     expect(() => sourceInputSchema.parse(config)).toThrow(z.ZodError);
-    expect(() => startupSchema.parse({ source: config, llm: { model: 'unused' } })).toThrow(z.ZodError);
+    expect(() => startupSchema.parse({ sources: [config], llm: { model: 'unused' } })).toThrow(z.ZodError);
   });
 
   it('uses the same source contract in SDK and CLI without erasing the discriminant', async () => {
@@ -39,7 +73,7 @@ describe('public source contracts', () => {
     });
     const parsed = sourceInputSchema.parse(source);
     if (parsed.type === 'json') expect(parsed.options.data).toEqual(source.options.data);
-    expect(startupSchema.parse({ source, llm: { model: 'unused' } }).source).toEqual(parsed);
+    expect(startupSchema.parse({ sources: [source], llm: { model: 'unused' } }).sources).toEqual([parsed]);
     const ava = new AVA({ llm: { model: 'unused' }, engine: { type: 'javascript' } });
     try {
       await ava.source(source);
@@ -58,7 +92,7 @@ describe('public source contracts', () => {
           options: { account: 'org-account', database: 42 },
         } as unknown as DataSourceConfig)
       ).rejects.toThrow();
-      expect((await ava.query('const result = data;')).data).toEqual(source.options.data);
+      await expect(ava.query('const result = data;')).rejects.toThrow('No data loaded');
     } finally {
       await ava.dispose();
     }
@@ -99,7 +133,7 @@ describe('source-to-chart contract flow', () => {
       const data = JSON.parse('[{"__proto__":"A","constructor":"B","prototype":"C","value":10}]');
       const source = { type: 'json' as const, options: { data } };
       expect(sourceInputSchema.parse(source)).toEqual(source);
-      expect(startupSchema.parse({ source, llm: { model: 'unused' } }).source).toEqual(source);
+      expect(startupSchema.parse({ sources: [source], llm: { model: 'unused' } }).sources).toEqual([source]);
       const ava = new node.AVA({ llm: { model: 'unused' }, engine: { type } });
       try {
         await ava.source(source);

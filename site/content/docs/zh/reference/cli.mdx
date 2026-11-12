@@ -16,9 +16,17 @@ ava schema "$DATASET_ID" > schema.json
 
 <Heading as="h2" id="source-inputs-and-engines">数据源输入与引擎</Heading>
 
-`ava source` 接受文件或 URL、包含数据源配置的 `@file`，或用 `-` 读取标准输入。CSV、JSON、Parquet、Excel、SQLite 可根据扩展名推断类型，GitHub 仓库链接会被自动识别；路径输入可用 `--type` 覆盖类型，`owner/name` 用 `--type github`。配置文件和标准输入本身已包含类型。
+`ava source` 接受一个或多个输入。每个输入可以是文件路径、URL、包含数据源配置的 `@file`，或用 `-` 从标准输入读取一份配置。文件类型根据扩展名推断，GitHub 仓库链接会自动识别。`--type` 可为文件路径或文件 URL 统一指定类型。使用 `owner/name` 传入仓库时，指定 `--type github`。
 
-使用 `--engine` 选择执行引擎。CLI 会为匹配的数据源配置推断 Supabase、ClickHouse、Snowflake，其余情况默认 DuckDB；这与 JavaScript 构造函数的行为不同。引擎在会话期间固定。连接和读取配置见[数据源配置](/documentation/data/sources/)。
+把多个输入放在同一条命令里，就能在同一个会话中分析这些数据。
+
+```bash
+ava source sales.csv customers.json costs.xlsx
+```
+
+用返回的 `datasetId` 执行 `ava schema <datasetId>` 查看查询时使用的表名。支持一起分析的数据源见[接入多个数据源](/documentation/data/sources/#connect-multiple-sources)。
+
+使用 `--engine` 选择执行引擎。CLI 会为匹配的数据源配置推断 Supabase、ClickHouse、SQL Server、Snowflake，其余情况默认 DuckDB。引擎在会话期间固定，多源会话使用 DuckDB。连接和读取配置见[数据源配置](/documentation/data/sources/)。
 
 <Heading as="h2" id="reuse-saved-metadata">复用已有元数据</Heading>
 
@@ -73,7 +81,7 @@ ava visualize --query "Plot revenue by region" --data @rows.json
 
 | 命令 | 位置参数 | 标志与默认值 |
 | ----------- | -------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `source` | `dataset`：路径、URL、`@file` 或 `-` | `-t` / `--type`：`csv-file`、`json-file`、`parquet`、`excel`、`sqlite`、`github`，文件类型按扩展名推断。`--engine`：`duckdb`、`python`、`javascript`、`supabase`、`clickhouse`、`snowflake`，推断规则见上文。 |
+| `source` | 一个或多个 `dataset`：路径、URL、`@file` 或 `-` | `-t` / `--type`：`csv-file`、`json-file`、`parquet`、`excel`、`sqlite`、`github`，文件类型按扩展名推断。`--engine`：`duckdb`、`python`、`javascript`、`supabase`、`clickhouse`、`sqlserver`、`snowflake`，推断规则见上文。 |
 | `schema` | `dataset-id` | 可选 `--file`：已有 schema JSON 文件的路径。 |
 | `profile` | `dataset-id` | 可选 `--file`：已有 profile JSON 文件的路径；否则可用 `--metrics` 指定逗号分隔的指标名，默认[标准指标集](/documentation/reference/api/#profile)。传入空字符串则不计算统计项。 |
 | `semantic` | `dataset-id` | 可选 `--file`：Semantic JSON 文件的路径，用于替换会话中的完整定义；不提供时读取当前定义。 |

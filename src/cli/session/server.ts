@@ -125,7 +125,7 @@ process.once('message', (message) => {
   void (async () => {
     const startup = startupSchema.parse(message);
     hasModel = Boolean(startup.llm.apiKey);
-    await createDataset(startup.source, { ...startup.llm, model: startup.llm.model }, startup.engine);
+    await createDataset(startup.sources, { ...startup.llm, model: startup.llm.model }, startup.engine);
     if (closing) return;
 
     server = await createSessionServer(id, handleConnection);

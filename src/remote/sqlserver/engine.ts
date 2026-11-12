@@ -60,7 +60,12 @@ export class SQLServerEngine implements AnalysisEngine {
     this.dialect = new TSQLDialect(llmConfig);
   }
 
-  async load(config: DataSourceConfig): Promise<void> {
+  async load(configs: DataSourceConfig | DataSourceConfig[]): Promise<void> {
+    const sources = Array.isArray(configs) ? configs : [configs];
+    if (sources.length !== 1) {
+      throw new Error(`SQLServerEngine currently supports exactly one data source, received ${sources.length}`);
+    }
+    const config = sources[0];
     await this.dispose();
     if (config.type !== 'sqlserver') {
       throw new Error(`SQLServerEngine only supports 'sqlserver' data sources, got '${config.type}'`);

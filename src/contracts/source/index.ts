@@ -1,4 +1,3 @@
-/** Tool schemas should use z.toJSONSchema(schema, { io: 'input' }) to describe input before normalization. */
 import { z } from 'zod';
 
 import { csvFileSourceSchema } from './csv-file';
@@ -19,44 +18,35 @@ import { snowflakeSourceSchema } from './snowflake';
 import { feishuBitableSourceSchema } from './feishu-bitable';
 import { githubSourceSchema } from './github';
 
-/** Engines reuse these shapes and narrow only the options they can execute. */
-export const sourceSchemas = {
-  'csv-file': csvFileSourceSchema,
-  'json-file': jsonFileSourceSchema,
-  parquet: parquetSourceSchema,
-  excel: excelSourceSchema,
-  sqlite: sqliteSourceSchema,
-  csv: csvSourceSchema,
-  json: jsonSourceSchema,
-  text: textSourceSchema,
-  mysql: mysqlSourceSchema,
-  mongodb: mongodbSourceSchema,
-  postgresql: postgresqlSourceSchema,
-  supabase: supabaseSourceSchema,
-  clickhouse: clickhouseSourceSchema,
-  sqlserver: sqlserverSourceSchema,
-  snowflake: snowflakeSourceSchema,
-  'feishu-bitable': feishuBitableSourceSchema,
-  github: githubSourceSchema,
+const sourceFields = {
+  name: z
+    .string()
+    .trim()
+    .min(1)
+    .refine((name) => !name.includes('\0'))
+    .optional()
+    .catch(undefined),
 };
 
-/** Shared runtime contract for built-in source configurations. */
+/**
+ * Shared runtime contract for built-in source configurations.
+ */
 export const sourceInputSchema = z.discriminatedUnion('type', [
-  sourceSchemas['csv-file'],
-  sourceSchemas['json-file'],
-  sourceSchemas.parquet,
-  sourceSchemas.excel,
-  sourceSchemas.sqlite,
-  sourceSchemas.csv,
-  sourceSchemas.json,
-  sourceSchemas.text,
-  sourceSchemas.mysql,
-  sourceSchemas.mongodb,
-  sourceSchemas.postgresql,
-  sourceSchemas.supabase,
-  sourceSchemas.clickhouse,
-  sourceSchemas.sqlserver,
-  sourceSchemas.snowflake,
-  sourceSchemas['feishu-bitable'],
-  sourceSchemas.github,
+  csvFileSourceSchema.extend(sourceFields),
+  jsonFileSourceSchema.extend(sourceFields),
+  parquetSourceSchema.extend(sourceFields),
+  excelSourceSchema.extend(sourceFields),
+  sqliteSourceSchema.extend(sourceFields),
+  csvSourceSchema.extend(sourceFields),
+  jsonSourceSchema.extend(sourceFields),
+  textSourceSchema.extend(sourceFields),
+  mysqlSourceSchema.extend(sourceFields),
+  mongodbSourceSchema.extend(sourceFields),
+  postgresqlSourceSchema.extend(sourceFields),
+  supabaseSourceSchema.extend(sourceFields),
+  clickhouseSourceSchema.extend(sourceFields),
+  sqlserverSourceSchema.extend(sourceFields),
+  snowflakeSourceSchema.extend(sourceFields),
+  feishuBitableSourceSchema.extend(sourceFields),
+  githubSourceSchema.extend(sourceFields),
 ]);

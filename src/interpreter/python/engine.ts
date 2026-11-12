@@ -54,7 +54,12 @@ export class PythonEngine implements AnalysisEngine {
     );
   }
 
-  async load(config: DataSourceConfig): Promise<void> {
+  async load(configs: DataSourceConfig | DataSourceConfig[]): Promise<void> {
+    const sources = Array.isArray(configs) ? configs : [configs];
+    if (sources.length !== 1) {
+      throw new Error(`PythonEngine currently supports exactly one data source, received ${sources.length}`);
+    }
+    const config = sources[0];
     this.source = null;
     this.source = sourceSchema.parse(config);
   }

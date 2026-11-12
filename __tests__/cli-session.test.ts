@@ -32,12 +32,12 @@ describe('session startup protocol', () => {
   it.each(['mysql', 'postgresql'])('requires and preserves the SSH host fingerprint for %s', (type) => {
     const ssh = { host: 'bastion', user: 'reader', password: 'test-password' };
     const source = { type, options: { host: 'database', database: 'sales', ssh } };
-    expect(() => startupSchema.parse({ source, llm })).toThrow(/hostKeyFingerprint/);
+    expect(() => startupSchema.parse({ sources: [source], llm })).toThrow(/hostKeyFingerprint/);
     const pinnedSource = {
       ...source,
       options: { ...source.options, ssh: { ...ssh, hostKeyFingerprint: `SHA256:${'A'.repeat(43)}` } },
     };
-    expect(startupSchema.parse({ source: pinnedSource, llm })).toEqual({ source: pinnedSource, llm });
+    expect(startupSchema.parse({ sources: [pinnedSource], llm })).toEqual({ sources: [pinnedSource], llm });
   });
 
   it('keeps engine selection through the child-process startup message', async () => {
@@ -49,9 +49,10 @@ describe('session startup protocol', () => {
     });
     worker.send.mockImplementation(() => queueMicrotask(() => worker.emit('message', { ok: true, result: null })));
     vi.mocked(fork).mockReturnValueOnce(worker as unknown as ReturnType<typeof fork>);
-    const { datasetId } = await createSession(source, llm, 'python');
+    const { datasetId } = await createSession([source], llm, 'python');
     try {
-      expect(startupSchema.parse(worker.send.mock.calls[0][0])).toEqual({ source, llm, engine: 'python' });
+      expect(datasetId).toMatch(/^ds_[a-f0-9]{24}$/);
+      expect(startupSchema.parse(worker.send.mock.calls[0][0])).toEqual({ sources: [source], llm, engine: 'python' });
       expect(worker.disconnect).toHaveBeenCalledOnce();
       expect(worker.unref).toHaveBeenCalledOnce();
     } finally {
@@ -59,10 +60,12 @@ describe('session startup protocol', () => {
     }
   });
 
-  it('accepts legacy startup messages and rejects custom engine configuration', () => {
-    expect(startupSchema.parse({ source, llm })).toEqual({ source, llm });
+  it('accepts a source list with an optional engine type', () => {
+    const startup = { sources: [source], llm };
+    expect(startupSchema.parse(startup)).toEqual(startup);
+    expect(() => startupSchema.parse({ ...startup, sources: [] })).toThrow();
     for (const engine of ['invalid', { type: 'python', execute: 'custom' }]) {
-      expect(() => startupSchema.parse({ source, llm, engine })).toThrow();
+      expect(() => startupSchema.parse({ ...startup, engine })).toThrow();
     }
   });
 
@@ -79,7 +82,7 @@ describe('session startup protocol', () => {
         semantic: { models: [{ name: 'data', tableReference: { table: 'data' }, metrics: { row_count: 1 } }] },
       })
     ).toThrow();
-    expect(() => startupSchema.parse({ source, llm, metadata: { schema } })).toThrow();
+    expect(() => startupSchema.parse({ sources: [source], llm, metadata: { schema } })).toThrow();
   });
 
   it('preserves SQL Server source fields and engine through the startup protocol', () => {
@@ -95,7 +98,8 @@ describe('session startup protocol', () => {
         requestTimeoutMs: 12000,
       },
     };
-    expect(startupSchema.parse({ source, llm, engine: 'sqlserver' })).toEqual({ source, llm, engine: 'sqlserver' });
+    const startup = { sources: [source], llm, engine: 'sqlserver' };
+    expect(startupSchema.parse(startup)).toEqual(startup);
   });
 });
 
@@ -143,10 +147,10 @@ describe('dataset engine and language', () => {
     const load = vi.spyOn(Engine.prototype, 'load').mockResolvedValue(undefined);
     const discover = vi.spyOn(Engine.prototype, 'schema').mockResolvedValue(schema);
 
-    await datasets.createDataset(source, llm, explicit);
+    await datasets.createDataset([source], llm, explicit);
     const instance = await datasets.withDataset((ava) => Promise.resolve(ava.engine));
     expect(instance).toBeInstanceOf(Engine);
-    expect(load).toHaveBeenCalledExactlyOnceWith(source);
+    expect(load).toHaveBeenCalledExactlyOnceWith([source]);
     expect(discover).not.toHaveBeenCalled();
     const instructions = instance!.dialect.rules;
     const description = await datasets.describeDataset();
@@ -171,7 +175,7 @@ describe('dataset engine and language', () => {
   });
 
   it('executes JavaScript through the selected session without an API key', async () => {
-    await datasets.createDataset(source, llm, 'javascript');
+    await datasets.createDataset([source], llm, 'javascript');
     expect((await datasets.describeDataset()).language).toBe('javascript');
     const result = await datasets.withDataset((ava) => ava.query('const result = [{ total: data[0].sales * 2 }];'));
     expect(result.data).toEqual([{ total: 20 }]);
@@ -194,7 +198,7 @@ describe('dataset engine and language', () => {
         },
       ],
     };
-    await datasets.createDataset(source, llm, 'javascript');
+    await datasets.createDataset([source], llm, 'javascript');
     const semantic = { description: 'Sales are in USD.', properties: { confirmedBy: 'user' } };
     expect(await datasets.withDataset((ava) => ava.semantic())).toEqual({});
     await datasets.withDataset((ava) => ava.semantic(undefined, () => semantic));

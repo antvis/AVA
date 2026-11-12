@@ -141,4 +141,4 @@ Complex cells flatten to text, lists join with commas, and dates use ISO strings
 
 ## GitHub
 
-Load GitHub issues and pull requests with the DuckDB engine. See the [GitHub source documentation](https://ava.antv.vision/documentation/data/sources/#github) for available data and connection options.
+Pass a GitHub repository URL to `ava source` to load its issues and pull requests. Include other inputs in the same command to analyze them together, for example `ava source https://github.com/OWNER/REPO labels.csv`. See the [GitHub source documentation](https://ava.antv.vision/documentation/data/sources/#github) for fields and connection options.

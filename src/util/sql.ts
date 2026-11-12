@@ -31,6 +31,13 @@ export function sqlIdentifier(name: string): string {
   return `"${name.replace(/"/g, '""')}"`;
 }
 
+/**
+ * Quote the object name and optional schema as separate SQL identifiers.
+ */
+export function sqlQualifiedName(name: string, schema?: string): string {
+  return schema === undefined ? sqlIdentifier(name) : `${sqlIdentifier(schema)}.${sqlIdentifier(name)}`;
+}
+
 /** Serialize a single DuckDB reader option value (string/number/boolean/array/map) */
 function serializeOptionValue(value: unknown): string | null {
   if (typeof value === 'string') return sqlStringLiteral(value);

@@ -1,4 +1,4 @@
-import { sqlIdentifier } from '../util/sql';
+import { sqlIdentifier, sqlQualifiedName } from '../util/sql';
 import { resolveMetric, table, column, logicalTypes, TOP_VALUES_OPTIONS } from '../util/profile';
 
 import type { MetricField } from '../util/profile';
@@ -111,7 +111,9 @@ function postProcessMetrics(
   }
 }
 
-/** Compute requested metrics for each model and column. */
+/**
+ * Compute requested metrics for each model and column.
+ */
 export async function profileTables(
   connection: DuckDBConnection,
   schema: Schema,
@@ -121,7 +123,8 @@ export async function profileTables(
   const profiles: Profile['models'] = [];
 
   for (const table of schema.models) {
-    const { name } = table;
+    const { name, tableReference } = table;
+    const reference = sqlQualifiedName(tableReference.table, tableReference.schema);
     const profile: Profile['models'][number] = {
       name,
       metrics: {},
@@ -140,7 +143,7 @@ export async function profileTables(
 
         pending.push({
           expression: definition.expression({
-            table: sqlIdentifier(name),
+            table: reference,
             column: field ? sqlIdentifier(field.name) : undefined,
             field,
             metric,
@@ -163,7 +166,7 @@ export async function profileTables(
 
     const sql = `SELECT ${pending
       .map(({ expression }, i) => `${expression} AS ${sqlIdentifier(`m${i}`)}`)
-      .join(', ')} FROM ${sqlIdentifier(name)}`;
+      .join(', ')} FROM ${reference}`;
     const row = (await connection.runAndReadAll(sql)).getRowObjectsJson()[0];
     postProcessMetrics(row, pending);
   }

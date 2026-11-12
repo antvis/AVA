@@ -4,7 +4,7 @@
  * https://duckdb.org/docs/lts/core_extensions/mysql
  */
 
-import { escapeSql, sqlIdentifier, sqlStringLiteral, sqlUnionAll } from '../../util/sql';
+import { escapeSql, sqlIdentifier, sqlStringLiteral, sqlQualifiedName, sqlUnionAll } from '../../util/sql';
 import { rowObjects2Schema } from '../../util/schema';
 import { createSshTunnel } from '../util/ssh';
 
@@ -86,13 +86,13 @@ function buildConnectionString(options: MySQLSourceOptions): string {
   return parts.map(([key, value]) => `${key}=${value}`).join(' ');
 }
 
-export async function loadMySQL(options: MySQLSourceOptions): Promise<LoadedSource> {
+export async function loadMySQL(options: MySQLSourceOptions, alias = ATTACH_ALIAS): Promise<LoadedSource> {
   // Open the SSH tunnel first; ATTACH then targets the local forwarded port
   const tunnel = options.ssh ? await createSshTunnel(options.ssh, options.host, options.port ?? 3306) : undefined;
   const attachOptions = tunnel ? { ...options, host: '127.0.0.1', port: tunnel.localPort, ssh: undefined } : options;
 
   return {
-    register: async (conn) => {
+    register: async (conn, namespace) => {
       try {
         await conn.run('LOAD mysql');
         // Workaround for https://github.com/duckdb/duckdb-mysql/issues/266: DuckDB 1.5's aggregate
@@ -100,13 +100,15 @@ export async function loadMySQL(options: MySQLSourceOptions): Promise<LoadedSour
         await conn.run('SET mysql_aggregate_pushdown_enabled = FALSE');
         // READ_ONLY keeps the analysis read-only against the source database
         await conn.run(
-          `ATTACH '${escapeSql(buildConnectionString(attachOptions))}' AS ${ATTACH_ALIAS} (TYPE mysql, READ_ONLY)`
+          `ATTACH '${escapeSql(buildConnectionString(attachOptions))}' AS ${sqlIdentifier(
+            alias
+          )} (TYPE mysql, READ_ONLY)`
         );
 
         // Discover every table in the attached database and expose each as a view
         const tablesReader = await conn.runAndReadAll(
           `SELECT table_name FROM information_schema.tables
-           WHERE table_catalog = ${sqlStringLiteral(ATTACH_ALIAS)}
+           WHERE table_catalog = ${sqlStringLiteral(alias)}
              AND table_schema = ${sqlStringLiteral(options.database)}
            ORDER BY table_name`
         );
@@ -114,8 +116,8 @@ export async function loadMySQL(options: MySQLSourceOptions): Promise<LoadedSour
 
         for (const table of tableNames) {
           await conn.run(
-            `CREATE OR REPLACE VIEW ${sqlIdentifier(table)} AS SELECT * FROM ${sqlIdentifier(
-              ATTACH_ALIAS
+            `CREATE OR REPLACE VIEW ${sqlQualifiedName(table, namespace)} AS SELECT * FROM ${sqlIdentifier(
+              alias
             )}.${sqlIdentifier(options.database)}.${sqlIdentifier(table)}`
           );
         }
@@ -125,7 +127,7 @@ export async function loadMySQL(options: MySQLSourceOptions): Promise<LoadedSour
         throw error;
       }
     },
-    getSchema: async (conn) => {
+    getSchema: async (conn, namespace) => {
       const sql = sqlUnionAll([
         tablesSQL(options.database),
         columnsSQL(options.database),
@@ -134,9 +136,9 @@ export async function loadMySQL(options: MySQLSourceOptions): Promise<LoadedSour
       ]);
 
       const reader = await conn.runAndReadAll(
-        `SELECT * FROM mysql_query(${sqlStringLiteral(ATTACH_ALIAS)}, ${sqlStringLiteral(sql)})`
+        `SELECT * FROM mysql_query(${sqlStringLiteral(alias)}, ${sqlStringLiteral(sql)})`
       );
-      return rowObjects2Schema(reader.getRowObjectsJson());
+      return rowObjects2Schema(reader.getRowObjectsJson(), namespace);
     },
     // Pure remote source — no local file access needed after ATTACH
     allowedPaths: [],

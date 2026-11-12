@@ -3,13 +3,7 @@
  */
 import EventEmitter from '@antv/event-emitter';
 
-import {
-  sourceInputSchema,
-  schemaOutputSchema,
-  profileOutputSchema,
-  semanticOutputSchema,
-  vizInputSchema,
-} from './contracts';
+import { schemaOutputSchema, profileOutputSchema, semanticOutputSchema, vizInputSchema } from './contracts';
 import { getEngineClass } from './engines';
 import { extractDataSchema } from './util/schema';
 import { buildDataModel, stringifyDataModel } from './util/data-model';
@@ -130,20 +124,19 @@ export class AVA extends EventEmitter {
   }
 
   /**
-   * Load a data source config into the engine.
-   * Reloading disposes the previous engine and its resources.
+   * Load one or more data sources.
+   *
+   * Reloading releases the active engine before loading the new sources.
    */
-  async source(config: DataSourceConfig): Promise<void> {
-    // Reject invalid replacements before disposing the current dataset.
-    config = sourceInputSchema.parse(config);
-    emit(this, new LifecycleEvent(LifecycleEventType.SOURCE_START, { type: config.type }));
+  async source(configs: DataSourceConfig | DataSourceConfig[]): Promise<void> {
+    emit(this, new LifecycleEvent(LifecycleEventType.SOURCE_START));
 
     try {
       await this.dispose();
 
       this.engine = await this.createEngine();
       try {
-        await this.engine.load(config);
+        await this.engine.load(configs);
       } catch (error) {
         await this.dispose();
         throw error;

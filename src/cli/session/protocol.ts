@@ -52,7 +52,7 @@ export type Request = z.infer<typeof requestSchema>;
 
 export const startupSchema = z
   .object({
-    source: sourceInputSchema,
+    sources: z.array(sourceInputSchema).nonempty(),
     llm: modelSchema,
     engine: engineTypeSchema.optional(),
   })

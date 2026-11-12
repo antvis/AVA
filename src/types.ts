@@ -1,8 +1,6 @@
 /** Public type definitions, inferred from runtime schemas where applicable. */
 import type { z } from 'zod';
 import type { LanguageModel, LanguageModelUsage } from 'ai';
-import type { ClickHouseClientConfigOptions } from '@clickhouse/client';
-import type { ConnectionOptions as SnowflakeConnectionOptions } from 'snowflake-sdk';
 import type { AnalysisEvent } from './event';
 import type {
   sourceInputSchema,
@@ -20,7 +18,6 @@ import type {
   visualizeOutputSchema,
   vizInputSchema,
 } from './contracts';
-import type { sourceSchemas } from './contracts/source';
 import type { csvReadOptionsSchema } from './contracts/source/csv';
 import type { jsonReadOptionsSchema } from './contracts/source/json';
 import type { excelSheetSchema } from './contracts/source/excel';
@@ -101,44 +98,28 @@ export type Measure = Cube['measures'][number];
 export type CubeDimension = Measure;
 export type TimeDimension = CubeDimension;
 
-// Native driver options supplement the fields validated by AVA's source schemas.
-type SourceConfigInput = z.input<typeof sourceInputSchema>;
-type ClickHouseInput = Extract<SourceConfigInput, { type: 'clickhouse' }>;
-type SnowflakeInput = Extract<SourceConfigInput, { type: 'snowflake' }>;
-type ClickHouseFields = z.input<ReturnType<typeof sourceSchemas.clickhouse.shape.options.strip>>;
-type SnowflakeFields = z.input<ReturnType<typeof sourceSchemas.snowflake.shape.options.strip>>;
-export type ClickHouseSourceOptions = ClickHouseFields & Omit<ClickHouseClientConfigOptions, keyof ClickHouseFields>;
-export type SnowflakeSourceOptions = SnowflakeFields &
-  Omit<
-    SnowflakeConnectionOptions,
-    | keyof SnowflakeFields
-    | 'rowMode'
-    | 'streamResult'
-    | 'fetchAsString'
-    | 'jsTreatIntegerAsBigInt'
-    | 'representNullAsStringNull'
-    | 'serverSessionKeepAlive'
-  >;
-export type DataSourceConfig =
-  | Exclude<SourceConfigInput, ClickHouseInput | SnowflakeInput>
-  | (Omit<ClickHouseInput, 'options'> & { options: ClickHouseSourceOptions })
-  | (Omit<SnowflakeInput, 'options'> & { options: SnowflakeSourceOptions });
-export type SourceType = DataSourceConfig['type'];
-export type CSVFileSourceOptions = Extract<SourceConfigInput, { type: 'csv-file' }>['options'];
-export type JsonFileSourceOptions = Extract<SourceConfigInput, { type: 'json-file' }>['options'];
-export type ParquetSourceOptions = Extract<SourceConfigInput, { type: 'parquet' }>['options'];
-export type ExcelSourceOptions = Extract<SourceConfigInput, { type: 'excel' }>['options'];
-export type SQLiteSourceOptions = Extract<SourceConfigInput, { type: 'sqlite' }>['options'];
-export type CSVSourceOptions = Extract<SourceConfigInput, { type: 'csv' }>['options'];
-export type JsonSourceOptions = Extract<SourceConfigInput, { type: 'json' }>['options'];
-export type TextSourceOptions = Extract<SourceConfigInput, { type: 'text' }>['options'];
-export type MySQLSourceOptions = Extract<SourceConfigInput, { type: 'mysql' }>['options'];
-export type MongoDBSourceOptions = Extract<SourceConfigInput, { type: 'mongodb' }>['options'];
-export type PostgreSQLSourceOptions = Extract<SourceConfigInput, { type: 'postgresql' }>['options'];
-export type SupabaseSourceOptions = Extract<SourceConfigInput, { type: 'supabase' }>['options'];
-export type SQLServerSourceOptions = Extract<SourceConfigInput, { type: 'sqlserver' }>['options'];
-export type FeishuBitableSourceOptions = Extract<SourceConfigInput, { type: 'feishu-bitable' }>['options'];
-export type GitHubSourceOptions = Extract<SourceConfigInput, { type: 'github' }>['options'];
+export type DataSourceConfig = z.input<typeof sourceInputSchema>;
+export type ParsedDataSourceConfig = z.output<typeof sourceInputSchema> & { name: string };
+export type DataSourceOptions<T extends DataSourceConfig['type']> = Extract<DataSourceConfig, { type: T }>['options'];
+
+export type CSVFileSourceOptions = DataSourceOptions<'csv-file'>;
+export type JsonFileSourceOptions = DataSourceOptions<'json-file'>;
+export type ParquetSourceOptions = DataSourceOptions<'parquet'>;
+export type ExcelSourceOptions = DataSourceOptions<'excel'>;
+export type SQLiteSourceOptions = DataSourceOptions<'sqlite'>;
+export type CSVSourceOptions = DataSourceOptions<'csv'>;
+export type JsonSourceOptions = DataSourceOptions<'json'>;
+export type TextSourceOptions = DataSourceOptions<'text'>;
+export type MySQLSourceOptions = DataSourceOptions<'mysql'>;
+export type MongoDBSourceOptions = DataSourceOptions<'mongodb'>;
+export type PostgreSQLSourceOptions = DataSourceOptions<'postgresql'>;
+export type SupabaseSourceOptions = DataSourceOptions<'supabase'>;
+export type ClickHouseSourceOptions = DataSourceOptions<'clickhouse'>;
+export type SQLServerSourceOptions = DataSourceOptions<'sqlserver'>;
+export type SnowflakeSourceOptions = DataSourceOptions<'snowflake'>;
+export type FeishuBitableSourceOptions = DataSourceOptions<'feishu-bitable'>;
+export type GitHubSourceOptions = DataSourceOptions<'github'>;
+
 export type CSVReadOptions = z.input<typeof csvReadOptionsSchema>;
 export type JSONReadOptions = z.input<typeof jsonReadOptionsSchema>;
 export type ExcelSheetOptions = z.input<typeof excelSheetSchema>;
@@ -184,10 +165,14 @@ export type FileFormat = 'csv' | 'json' | 'parquet';
  * register one view per discovered table.
  */
 export interface LoadedSource {
-  /** Register the source's table(s)/view(s) and return their exposed names. */
-  register: (conn: DuckDBConnection) => Promise<string[]>;
-  /** */
-  getSchema: (conn: DuckDBConnection) => Promise<Schema>;
+  /**
+   * Register tables or views in the given DuckDB schema and return their names.
+   */
+  register: (conn: DuckDBConnection, namespace?: string) => Promise<string[]>;
+  /**
+   * Describe the source using its exposed table references.
+   */
+  getSchema: (conn: DuckDBConnection, namespace?: string) => Promise<Schema>;
   /**
    * Exact files the engine allows after registering (empty for sources without local files).
    */
@@ -239,8 +224,10 @@ export type EngineConfig =
 export interface AnalysisEngine {
   /** Query language, generation rules and validation supplied by every engine. */
   readonly dialect: QueryDialect;
-  /** Load a data source and prepare it for execution. */
-  load(config: DataSourceConfig): Promise<void>;
+  /**
+   * Prepare the supplied source configurations for execution.
+   */
+  load(configs: DataSourceConfig | DataSourceConfig[]): Promise<void>;
   /** Discover the loaded source structure. */
   schema(): Promise<Schema>;
   /** Compute statistics for the loaded data. */
