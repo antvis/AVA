@@ -28,6 +28,7 @@ interface ExpressionContext {
   readonly fields?: MetricField[];
   readonly sourceAlias?: string;
   readonly center?: string;
+  readonly histogram?: { edges: string; limits: string };
   readonly metric: ParsedProfileOptions['metrics'][number];
 }
 
@@ -153,6 +154,34 @@ function shape(metric: (typeof shapeMetrics)[number], context: ExpressionContext
   const numerator = `${count} * (${count} + 1) * (${count} - 1) * (${centralSum(4)})`;
   return `CASE WHEN ${count} < 4 THEN NULL WHEN abs(${denominator}) < 1e-14 THEN 0
     ELSE ${zeroSmall(numerator)} / ${denominator} - 3 * pow(${count} - 1, 2) / (${correction}) END`;
+}
+
+function histogramValue({ column, field }: ColumnContext): string {
+  return field?.logicalType === 'date' ? `epoch_ms(${column})::DOUBLE` : `TRY_CAST(${column} AS DOUBLE)`;
+}
+
+function histogramEdges(lo: string, hi: string, bins: string): string {
+  const span = `(${hi} - ${lo})`;
+  const fraction = `(i::DOUBLE / ${bins})`;
+  const padding = `(CASE WHEN ${lo} = 0 THEN 0.5 ELSE greatest(5e-324, abs(${lo}) * 0.1) END)`;
+  return `CASE WHEN ${lo} IS NULL THEN []::DOUBLE[]
+    WHEN ${lo} = ${hi} THEN [greatest(-1.7976931348623157e308, ${lo} - ${padding}),
+      least(1.7976931348623157e308, ${hi} + ${padding})]
+    ELSE list_sort(list_distinct(list_transform(range(${bins} + 1), lambda i: CASE WHEN i = ${bins} THEN ${hi}
+      WHEN isfinite(${span}) THEN ${lo} + (${span} / ${bins}) * i
+      ELSE ${lo} * (1 - ${fraction}) + ${hi} * ${fraction} END))) END`;
+}
+
+function histogramExpression(context: ExpressionContext): string {
+  const { edges, limits } = context.histogram!;
+  const value = histogramValue(context);
+  const counts = `map_values(histogram(${value}, ${limits}) FILTER (WHERE isfinite(${value})))`;
+  const summary = `struct_pack(bin_edges := COALESCE(first(${edges}), []),
+    counts := COALESCE(list_transform(${counts}, lambda n: n::DOUBLE), []))`;
+  if (!context.metric.density) return summary;
+  return `list_transform([${summary}], lambda h: struct_pack(bin_edges := h.bin_edges,
+    counts := list_transform(h.counts, lambda n, i: n /
+      NULLIF(list_sum(h.counts) * (h.bin_edges[i + 1] - h.bin_edges[i]), 0))))[1]`;
 }
 
 export const BUILTIN_METRICS: DuckDBMetric[] = [
@@ -291,6 +320,28 @@ export const BUILTIN_METRICS: DuckDBMetric[] = [
       expression: (context) => shape(id, context),
     })
   ),
+  {
+    id: 'histogram',
+    enable: logicalTypes('numeric', 'date'),
+    options: {
+      bins: {
+        validate: (value) => {
+          z.number().int().nonnegative().parse(value);
+        },
+      },
+      maxBins: {
+        validate: (value) => {
+          z.number().int().positive().parse(value);
+        },
+      },
+      density: {
+        validate: (value) => {
+          z.boolean().parse(value);
+        },
+      },
+    },
+    expression: histogramExpression,
+  },
   { id: 'mad', enable: logicalTypes('numeric'), expression: (context) => aggregate('mad', context) },
   {
     id: 'iqr',
@@ -382,18 +433,68 @@ export async function profileTables(
 ): Promise<Profile> {
   const metrics = options.metrics.map((metric) => ({ metric, definition: resolveMetric(metric, BUILTIN_METRICS) }));
   const needsCenters = metrics.some(({ metric }) => metric.id === 'skewness' || metric.id === 'kurtosis');
+  const histogram = metrics.filter(({ metric }) => metric.id === 'histogram').pop()?.metric;
   const profiles: Profile['models'] = [];
 
   for (const table of schema.models) {
     const { name, tableReference } = table;
     const reference = sqlQualifiedName(tableReference.table, tableReference.schema);
     const fields = table.columns.map((field) => ({ ...field, logicalType: logicalType(field.type) }));
-    const numeric = needsCenters ? fields.filter((field) => field.logicalType === 'numeric') : [];
-    const centers = new Map(numeric.map((field, i) => [field.name, sqlIdentifier(`center${i}`)]));
     const centerTable = sqlIdentifier(
       tableReference.table.toLowerCase() === '__ava_centers' ? '__ava_centers_2' : '__ava_centers'
     );
-    const sourceAlias = numeric.length ? '__ava_source' : undefined;
+    const statistics: string[] = [];
+    const axes: string[] = [];
+    const addParameter = (expression: string, stage: 'statistic' | 'axis' = 'statistic') => {
+      const list = stage === 'statistic' ? statistics : axes;
+      const alias = sqlIdentifier(`${stage}${list.length}`);
+      list.push(`${expression} AS ${alias}`);
+      return alias;
+    };
+    const parameters = new Map(
+      fields.map((field) => {
+        const column = sqlIdentifier(field.name);
+        const center =
+          needsCenters && field.logicalType === 'numeric'
+            ? `${centerTable}.${addParameter(aggregate('favg', { column, field }))}`
+            : undefined;
+        if (!histogram || (field.logicalType !== 'numeric' && field.logicalType !== 'date'))
+          return [field.name, { center }];
+
+        const value = histogramValue({ column, field });
+        const finite = `FILTER (WHERE isfinite(${value}))`;
+        const lo = addParameter(`min(${value}) ${finite}`);
+        const hi = addParameter(`max(${value}) ${finite}`);
+        const { bins = 50, maxBins = 250 } = histogram;
+        let requested: string;
+        if (bins === 0) {
+          // Numeric bin selection uses distinct observations, as in the reference profile.
+          const input = field.logicalType === 'numeric' ? `DISTINCT ${value}` : value;
+          const count = addParameter(`count(${input}) ${finite}`);
+          const quartiles = addParameter(`quantile_cont(${input}, [0.25, 0.75]) ${finite}`);
+          const iqr = `(${quartiles}[2] - ${quartiles}[1])`;
+          const sturges = `(log2(NULLIF(${count}, 0)) + 1)`;
+          const fd = `((${hi} - ${lo}) * cbrt(${count}) / NULLIF(2 * ${iqr}, 0))`;
+          requested = `ceil(greatest(${sturges}, ${fd}))`;
+        } else {
+          const distinct = addParameter(`count(DISTINCT ${value}) FILTER (WHERE NOT isnan(${value}))`);
+          requested = `least(${bins}, ${distinct})`;
+        }
+        const count = `greatest(1, least(${maxBins}, ${requested}))::BIGINT`;
+        const edges = addParameter(histogramEdges(lo, hi, count), 'axis');
+        // DuckDB's buckets are right-closed. Shift interior limits to count NumPy's left-closed buckets.
+        const limits = addParameter(
+          `list_transform(list_slice(${edges}, 2, -1), lambda edge, i:
+        CASE WHEN i = len(${edges}) - 1 THEN edge ELSE nextafter(edge, '-Infinity'::DOUBLE) END)`,
+          'axis'
+        );
+        return [
+          field.name,
+          { center, histogram: { edges: `${centerTable}.${edges}`, limits: `${centerTable}.${limits}` } },
+        ];
+      })
+    );
+    const sourceAlias = statistics.length ? '__ava_source' : undefined;
     const source = sourceAlias ? `${reference} AS ${sqlIdentifier(sourceAlias)}` : reference;
     const profile: Profile['models'][number] = {
       name,
@@ -405,10 +506,9 @@ export async function profileTables(
     const pending: Array<{ expression: string; metricId: MetricId; output: Record<string, unknown> }> = [];
 
     const addMetrics = (output: Record<string, unknown>, field?: MetricField) => {
-      const center = field && centers.get(field.name);
       for (const { metric, definition } of metrics) {
         const target = field ? 'column' : 'table';
-        if (!definition.enable({ target, field })) {
+        if (!definition.enable({ target, field }) || (metric.id === 'histogram' && metric !== histogram)) {
           continue;
         }
 
@@ -416,7 +516,7 @@ export async function profileTables(
           expression: definition.expression({
             table: source,
             column: field ? sqlQualifiedName(field.name, sourceAlias) : undefined,
-            center: center ? `${centerTable}.${center}` : undefined,
+            ...(field && parameters.get(field.name)),
             field,
             fields,
             sourceAlias,
@@ -437,18 +537,16 @@ export async function profileTables(
 
     if (!pending.length) continue;
 
-    // All shape metrics share one pass for centers and one pass for centered moments.
-    const withCenters = numeric.length
-      ? `WITH ${centerTable} AS (SELECT ${numeric
-          .map(
-            (field) =>
-              `${aggregate('favg', { column: sqlIdentifier(field.name), field })} AS ${centers.get(field.name)}`
-          )
-          .join(', ')} FROM ${reference}) `
+    // Bin edges and moment centers share the same preliminary scan.
+    const preliminary = `SELECT ${statistics.join(', ')} FROM ${reference}`;
+    const withParameters = statistics.length
+      ? `WITH ${centerTable} AS (${
+          axes.length ? `SELECT *, ${axes.join(', ')} FROM (${preliminary}) bounds` : preliminary
+        }) `
       : '';
-    const sql = `${withCenters}SELECT ${pending
+    const sql = `${withParameters}SELECT ${pending
       .map(({ expression }, i) => `${expression} AS ${sqlIdentifier(`m${i}`)}`)
-      .join(', ')} FROM ${source}${numeric.length ? ` CROSS JOIN ${centerTable}` : ''}`;
+      .join(', ')} FROM ${source}${statistics.length ? ` CROSS JOIN ${centerTable}` : ''}`;
     const row = (await connection.runAndReadAll(sql)).getRowObjectsJson()[0];
     postProcessMetrics(row, pending);
   }

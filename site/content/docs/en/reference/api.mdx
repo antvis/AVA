@@ -221,6 +221,8 @@ DuckDB dispersion metrics are `variance` (sample variance), `mad` (median absolu
 
 `skewness` and `kurtosis` are the sample-adjusted skewness and excess kurtosis of finite numeric observations. They require at least three and four values, respectively. Requesting either adds one pass to compute column means, shared across all requested columns, so the moments can be calculated around their means in the aggregate scan.
 
+`histogram` returns `{ bin_edges, counts }` for finite numeric and date values. Options are `bins` (default `50`, or `0` for automatic Sturges/Freedman–Diaconis selection), `maxBins` (default `250`), and `density` (default `false`). Date edges are epoch milliseconds. Interior edges belong to the bin on their right. Constant values use one padded bin. Histogram bounds and moment centers share one preliminary scan across columns.
+
 Each entry is a metric name or an object with an `id` and metric-specific options:
 
 ```typescript

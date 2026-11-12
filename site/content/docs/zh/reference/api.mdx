@@ -223,6 +223,8 @@ DuckDB 的离散程度指标包括 `variance`（样本方差）、`mad`（中位
 
 `skewness` 与 `kurtosis` 分别计算有限数值的样本偏度和超额峰度，至少需要三个和四个值。请求任一指标时，DuckDB 增加一次扫描来计算各列均值，再在聚合扫描中计算中心矩。所有请求的列共用这两次扫描。
 
+`histogram` 对有限的数值和日期返回 `{ bin_edges, counts }`。`bins` 默认 `50`，设为 `0` 时按 Sturges/Freedman–Diaconis 规则选桶。`maxBins` 默认 `250`，`density` 默认 `false`。日期边界使用 Unix 毫秒，落在内部分界线上的值归右侧桶。常量列用一个加宽的桶。所有列的直方图边界和中心矩均值共用一次预扫描。
+
 每项可以是指标名称，也可以是包含 `id` 和该指标专用选项的对象：
 
 ```typescript
