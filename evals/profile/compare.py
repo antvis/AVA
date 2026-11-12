@@ -172,6 +172,43 @@ def equal(left, right, abs_tol=1e-12):
     return left == right
 
 
+def scale_checks(path, rows):
+    positions = np.arange(rows)
+    types = {"id": "Numeric", "amount": "Numeric", "region": "Categorical", "flag": "Boolean"}
+    pq.write_table(pa.table({
+        "id": positions,
+        "amount": pa.array((positions % 4093 - 2046) / 8, mask=positions % 17 == 0),
+        "region": pa.array(["North", "South", "West"]).take(pa.array((positions * 13) % 3)),
+        "flag": positions % 5 == 0,
+    }), path)
+    metrics = {key: COLUMN_METRICS[key] for key in (
+        "valid_count", "null_count", "distinct_count", "unique_count", "min", "max", "mean", "median", "sum", "stddev",
+    )}
+    dataset = cli("source", str(path), "--engine", "duckdb")["datasetId"]
+    try:
+        actual = cli("profile", dataset, "--options", "-", payload={
+            "metrics": ["table_summary", *metrics], "semantics": "data-profiling", "typeSchema": {"data": types},
+        })["models"][0]
+    finally:
+        cli("dispose", dataset)
+
+    with warnings.catch_warnings(record=True) as emitted:
+        warnings.simplefilter("always")
+        expected = ProfileReport(pd.read_parquet(path), minimal=True, type_schema=types,
+                                 progress_bar=False, pool_size=1).get_description()
+    comparisons = [("table.row_count", actual["metrics"]["table_summary"]["row_count"], expected.table["n"]),
+                   ("table.null_cell_count", actual["metrics"]["table_summary"]["null_cell_count"], expected.table["n_cells_missing"])]
+    for column in actual["columns"]:
+        name = column["name"]
+        reference = expected.variables[name]
+        comparisons.extend((f"{name}.{key}", column["metrics"].get(key, MISSING), reference[source])
+                           for key, source in metrics.items() if source in reference)
+    checks = [{"metric": name, "ava": None if value is MISSING else value, "reference": json_value(reference),
+               "status": "missing_ava" if value is MISSING else "match" if equal(value, json_value(reference)) else "different"}
+              for name, value, reference in comparisons]
+    return checks, sorted({f"{warning.category.__name__}: {warning.message}" for warning in emitted})
+
+
 def cli(*args, payload=None):
     result = subprocess.run(
         ["node", str(ROOT / "lib/cli/index.js"), *args], cwd=ROOT, text=True,
@@ -505,6 +542,9 @@ def main():
             path = Path(directory) / f"{name}.parquet"
             pq.write_table(table, path)
             results[name], reference_warnings[name] = compare(path, types, infer_types=name in {"inferred", "urls", "paths", "seasonal"}, phik=name == "phi_k")
+        for rows in (10_000, 1_000_000):
+            name = f"scale_{rows}"
+            results[name], reference_warnings[name] = scale_checks(Path(directory) / f"{name}.parquet", rows)
         file_root = Path(directory).resolve() / "profile-files"
         file_root.mkdir()
         files = [file_root / name for name in ("first.txt", "second.csv", "third.bin")]

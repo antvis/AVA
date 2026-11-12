@@ -11,7 +11,7 @@ Python 环境需要安装该源码版本的 `fg-data-profiling[arrow]`。输出�
 
 浮点值使用相对容差 `1e-10`、绝对容差 `1e-12`。计数精确比较。时间单位转换为 Unix 毫秒，频数按值对齐，相关矩阵按列名对齐。对照使用 `semantics: 'data-profiling'`，让 DuckDB 和 pandas 都把 NaN 算作缺失。统计口径差异保留在结果中。
 
-对照覆盖数值、类别、布尔、日期、Unicode、稀疏及非有限值、类型推断、相关和散点、缺失模式、重复分组和样本、时序、文件和图片。Phi-k 使用 `1e-5` 的绝对容差，以容纳两种求根实现的差异。AVA 保留空表画像，参考库拒绝空 DataFrame。两者的内存指标使用各自的数据表示。
+对照覆盖数值、类别、布尔、日期、Unicode、稀疏及非有限值、类型推断、相关和散点、缺失模式、重复分组和样本、时序、文件和图片。另对 1 万和 100 万行的 Parquet 验证计数及数值统计。Phi-k 使用 `1e-5` 的绝对容差，以容纳两种求根实现的差异。AVA 保留空表画像，参考库拒绝空 DataFrame。两者的内存指标使用各自的数据表示。
 
 Unicode 分类表由 [Unicode Character Database 13.0.0](https://www.unicode.org/Public/13.0.0/) 生成，对齐 `tangled_up_in_unicode` 0.2.0 实际使用的字符属性。用 `python3 evals/profile/generate_unicode_properties.py /path/to/UCD.zip` 重建，脚本会核验源归档的 SHA-256。
 
