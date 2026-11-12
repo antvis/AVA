@@ -29,7 +29,7 @@ Options:
 
 Rules:
   constant, duplicates, empty, high_cardinality, high_correlation, imbalance,
-  infinite, missing, non_stationary, seasonal, skewed, uniform, unique, unsupported, zeros
+  infinite, missing, non_stationary, rejected, seasonal, skewed, uniform, unique, unsupported, zeros
 
 Example:
   ava quality ds_... --rules missing,duplicates`;

@@ -46,6 +46,7 @@ export function assessQuality(profile: Profile, options: QualityOptions): Qualit
         compare('missing', missing, thresholds.ratioThreshold);
         if (logicalType === 'unknown') {
           add({ rule: 'unsupported', column });
+          add({ rule: 'rejected', column });
           continue;
         }
 
@@ -58,7 +59,9 @@ export function assessQuality(profile: Profile, options: QualityOptions): Qualit
         }
         compare('zeros', observation(stats.zero_ratio), thresholds.ratioThreshold);
         compare('infinite', observation(stats.infinite_ratio), thresholds.ratioThreshold);
-        compare('imbalance', observation(stats.imbalance), thresholds.imbalanceThreshold);
+        if (profile.semantics !== 'data-profiling' || categorical || logicalType === 'boolean') {
+          compare('imbalance', observation(stats.imbalance), thresholds.imbalanceThreshold);
+        }
         if (logicalType === 'numeric' || categorical) {
           compare('uniform', observation(property(stats.chi_squared, 'pvalue')), thresholds.uniformThreshold);
         }

@@ -10,6 +10,7 @@ const rule = z.enum([
   'infinite',
   'missing',
   'non_stationary',
+  'rejected',
   'seasonal',
   'skewed',
   'uniform',

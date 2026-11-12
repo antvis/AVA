@@ -402,7 +402,7 @@ const quality = await ava.quality({ rules: ['missing', 'constant'] });
 | `skewed` | `skewness` | 偏度绝对值超过 `skewnessThreshold: 20` |
 | `uniform` | 数值和文本列的 `chi_squared.pvalue` | `uniformThreshold: 0.999` |
 | `non_stationary`、`seasonal` | 时序列的 `adf` 和 `frequency_spectrum` | ADF 检验未通过或检测到季节性峰时判为非平稳。 |
-| `unsupported` | 列逻辑类型 | `unknown` |
+| `unsupported`、`rejected` | 列逻辑类型 | `unknown` |
 
 省略 `rules` 时检查所有具有对应指标的规则。默认画像支持基础检查，其他检查需要先计算相应指标。
 
