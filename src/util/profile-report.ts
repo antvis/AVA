@@ -1,8 +1,10 @@
 import { profileOutputSchema } from '../contracts';
 
 import { assessQuality } from './quality';
+import { compareProfiles } from './profile-compare';
 
 import type { JsonValue } from '../types';
+import type { ProfileComparison } from './profile-compare';
 
 const htmlEntities: Record<string, string> = { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' };
 
@@ -138,11 +140,17 @@ const css = `
   @media print { body { background:white; } header, main { padding:1rem 0; } nav { display:none; } }
 `;
 
+function documentHtml(title: string, modelNames: string[], models: string): string {
+  const navigation = modelNames.map((name, i) => `<a href="#model-${i}">${escape(name)}</a>`).join('');
+  return `<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>${escape(title)}</title><style>${css}</style></head><body><header><h1>${escape(title)}</h1>
+    <nav aria-label="Models">${navigation}</nav></header><main>${models}</main></body></html>`;
+}
+
 /** Render a standalone report from saved observations. */
 export function renderProfileHtml(input: unknown, { title = 'Data profile' }: { title?: string } = {}): string {
   const profile = profileOutputSchema.parse(input);
   const quality = assessQuality(profile, {});
-  const navigation = profile.models.map(({ name }, i) => `<a href="#model-${i}">${escape(name)}</a>`).join('');
   const models = profile.models
     .map(({ name, metrics, columns }, i) => {
       const alerts = quality.models[i].alerts;
@@ -171,9 +179,49 @@ export function renderProfileHtml(input: unknown, { title = 'Data profile' }: { 
       }${alertTable}${variables ? `<h3>Columns</h3>${variables}` : ''}</section>`;
     })
     .join('');
-  return `<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-    <title>${escape(title)}</title><style>${css}</style></head><body><header><h1>${escape(
-    title
-  )}</h1><nav aria-label="Models">${navigation}</nav></header>
-    <main>${models}</main></body></html>`;
+  return documentHtml(
+    title,
+    profile.models.map(({ name }) => name),
+    models
+  );
+}
+
+export function renderProfileComparisonHtml(
+  before: unknown,
+  after: unknown,
+  { title = 'Profile comparison' }: { title?: string } = {}
+): string {
+  const comparison = compareProfiles(before, after);
+  const metricsTable = (metrics: ProfileComparison['models'][number]['metrics']) =>
+    table(
+      ['Metric', 'Before', 'After', 'Change'],
+      metrics.map((metric) => [
+        escape(metric.name),
+        valueMarkup(metric.before),
+        valueMarkup(metric.after),
+        valueMarkup(metric.delta),
+      ])
+    );
+  const models = comparison.models
+    .map(({ name, metrics, columns }, i) => {
+      const variables = columns
+        .map((column) => {
+          const left = column.before?.profileType ?? column.before?.logicalType;
+          const right = column.after?.profileType ?? column.after?.logicalType;
+          const types = left === right ? valueMarkup(left) : `${valueMarkup(left)} → ${valueMarkup(right)}`;
+          return `<details class="column"><summary>${escape(column.name)} <span>${types}</span></summary>${metricsTable(
+            column.metrics
+          )}</details>`;
+        })
+        .join('');
+      return `<section id="model-${i}"><h2>${escape(name)}</h2>${metrics.length ? metricsTable(metrics) : ''}${
+        variables ? `<h3>Columns</h3>${variables}` : ''
+      }</section>`;
+    })
+    .join('');
+  return documentHtml(
+    title,
+    comparison.models.map(({ name }) => name),
+    models
+  );
 }

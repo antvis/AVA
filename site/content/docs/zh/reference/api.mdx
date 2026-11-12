@@ -349,6 +349,8 @@ import { compareProfiles } from '@antv/ava';
 const comparison = compareProfiles(beforeProfile, afterProfile);
 ```
 
+`renderProfileComparisonHtml(before, after, { title })` 将两侧观测和变化量渲染为可离线查看的并排表格。
+
 <Heading as="h3" id="renderprofilehtml">renderProfileHtml</Heading>
 
 `renderProfileHtml(profile, { title })` 将保存的画像渲染成可离线打开的 HTML。报告展示已有的指标表格、分布、相关矩阵和质量告警，读取报告无需重新计算画像。

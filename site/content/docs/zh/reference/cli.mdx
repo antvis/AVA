@@ -90,7 +90,7 @@ ava visualize --query "Plot revenue by region" --data @rows.json
 | `source` | 一个或多个 `dataset`：路径、URL、`@file` 或 `-` | `-t` / `--type`：`csv-file`、`json-file`、`parquet`、`excel`、`sqlite`、`github`，文件类型按扩展名推断。`--engine`：`duckdb`、`python`、`javascript`、`supabase`、`clickhouse`、`sqlserver`、`snowflake`，推断规则见上文。 |
 | `schema` | `dataset-id` | 可选 `--file`：已有 schema JSON 文件的路径。 |
 | `profile` | `dataset-id` | `--file` 导入画像，`--metrics` 指定逗号分隔的指标名，`--options` 读取 JSON 选项文件。默认使用[标准指标集](/documentation/reference/api/#profile)。空指标列表不计算统计项。 |
-| `profile-compare` | `before.json after.json` | 按模型、列和指标名称对照两份已保存的画像。可用 `-` 从标准输入读取其中一份。 |
+| `profile-compare` | `before.json after.json` | 按模型、列和指标名称对照画像。用 `-` 从标准输入读取其中一份，用 `-o comparison.html` 保存 HTML。 |
 | `profile-report` | `profile.json` 或 `-` | 用 `-o report.html` 保存可离线查看的 HTML 报告。`--title` 设置标题。 |
 | `quality` | `dataset-id` | 检查已保存的画像。可用 `--rules` 传入逗号分隔的[质量规则](/documentation/reference/api/#quality)。 |
 | `semantic` | `dataset-id` | 可选 `--file`：Semantic JSON 文件的路径，用于替换会话中的完整定义；不提供时读取当前定义。 |
