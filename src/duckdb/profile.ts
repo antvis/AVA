@@ -12,6 +12,7 @@ import { pathSummarySql, urlSummarySql } from './profile-text-parts';
 import { autocorrelationResult, autocorrelationSql } from './profile-autocorrelation';
 import { timeGapsSql } from './profile-time-gaps';
 import { dateValidationSql, parseDateSql } from './profile-dates';
+import { frequencySpectrum } from './profile-spectrum';
 import {
   characterCountsSql,
   lengthCountsSql,
@@ -22,7 +23,7 @@ import {
 
 import type { DuckDBConnection } from '@duckdb/node-api';
 import type { MetricField } from '../util/profile';
-import type { Metric, Schema, ParsedProfileOptions, LogicalType, MetricId, Profile } from '../types';
+import type { Metric, Schema, ParsedProfileOptions, LogicalType, Profile } from '../types';
 
 /** Map a database type to a profile type. */
 export function logicalType(nativeType: string): LogicalType {
@@ -705,6 +706,24 @@ export const BUILTIN_METRICS: DuckDBMetric[] = [
       return timeGapsSql(table, `NOT ${missingMask(field!, sourceAlias)}`, position);
     },
   },
+  {
+    id: 'frequency_spectrum',
+    enable: logicalTypes('numeric'),
+    options: {
+      orderBy: orderByOption,
+      madThreshold: {
+        validate: (value) => {
+          z.number().nonnegative().parse(value);
+        },
+      },
+    },
+    expression: (context) => {
+      const index = orderField(context);
+      const order = index ? ` ORDER BY ${sqlQualifiedName(index.name, context.sourceAlias)} NULLS LAST` : '';
+      const value = `TRY_CAST(${context.column} AS DOUBLE)`;
+      return `coalesce(list(${value}${order}) FILTER (WHERE isfinite(${value})), [])`;
+    },
+  },
   { id: 'min', enable: logicalTypes('numeric', 'date'), expression: (context) => range('min', context) },
   { id: 'max', enable: logicalTypes('numeric', 'date'), expression: (context) => range('max', context) },
   {
@@ -906,11 +925,12 @@ export { DEFAULT_METRICS } from '../util/profile';
 /** Decode aggregate values into profile metrics. */
 function postProcessMetrics(
   row: Record<string, unknown>,
-  pending: { alias: string; metricId: MetricId; output: Record<string, unknown> }[],
+  pending: { alias: string; metric: ParsedProfileOptions['metrics'][number]; output: Record<string, unknown> }[],
   referenceSemantics: boolean,
   unicodeProperties?: Parameters<typeof unicodeSummary>[1]
 ): void {
-  for (const { alias, metricId, output } of pending) {
+  for (const { alias, metric, output } of pending) {
+    const metricId = metric.id;
     const raw = row[alias];
     delete output[metricId];
     if (metricId === 'top_values' && raw == null) continue;
@@ -918,6 +938,8 @@ function postProcessMetrics(
       output[metricId] = chiSquareResult(raw as Parameters<typeof chiSquareResult>[0]);
     } else if (metricId === 'autocorrelation') {
       output[metricId] = autocorrelationResult(raw as Parameters<typeof autocorrelationResult>[0]);
+    } else if (metricId === 'frequency_spectrum') {
+      output[metricId] = frequencySpectrum(raw as number[], (metric.madThreshold as number | undefined) ?? 6);
     } else if (metricId === 'unicode_summary') {
       output[metricId] = unicodeSummary(raw as Parameters<typeof unicodeSummary>[0], unicodeProperties!);
     } else if (metricId === 'median_length' && referenceSemantics) {
@@ -1076,7 +1098,7 @@ export async function profileTables(
     };
     profiles.push(profile);
 
-    const pending: Array<{ alias: string; metricId: MetricId; output: Record<string, unknown> }> = [];
+    const pending: Parameters<typeof postProcessMetrics>[1] = [];
     const expressions = new Map<string, string>();
 
     const addMetrics = (output: Record<string, unknown>, field?: MetricField) => {
@@ -1102,7 +1124,7 @@ export async function profileTables(
         });
         const alias = expressions.get(expression) ?? `m${expressions.size}`;
         expressions.set(expression, alias);
-        pending.push({ alias, metricId: metric.id, output });
+        pending.push({ alias, metric, output });
       }
     };
 

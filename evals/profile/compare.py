@@ -17,7 +17,7 @@ import pyarrow.parquet as pq
 import scipy
 from data_profiling import ProfileReport, __version__
 from data_profiling.config import Settings
-from data_profiling.model.pandas.describe_timeseries_pandas import compute_gap_stats
+from data_profiling.model.pandas.describe_timeseries_pandas import compute_gap_stats, get_fft, get_fft_peaks
 from data_profiling.visualisation.charts.builders import acf_pacf
 
 
@@ -107,6 +107,12 @@ def fixtures():
                          type=pa.timestamp("ns")),
         "signal": [values[i] for i in order],
     }), {"time": "DateTime", "signal": "Numeric"}
+    t = np.arange(101)
+    signal = 20 * np.sin(2 * np.pi * 13 * t / len(t)) + np.sin(2 * np.pi * 29 * t / len(t)) + 8 * (t * 17 % 23) / 23
+    yield "seasonal", pa.table({
+        "time": pa.array([datetime(2026, 1, 1) + timedelta(hours=int(i)) for i in t], type=pa.timestamp("ns")),
+        "signal": signal,
+    }), {"time": "DateTime", "signal": "Numeric"}
 
 
 def json_value(value):
@@ -165,6 +171,7 @@ def compare(path, types):
     if "time" in types:
         metrics.append({"id": "autocorrelation", "orderBy": "time", "lags": 4})
         metrics.append({"id": "time_series_gaps", "orderBy": "time"})
+        metrics.append({"id": "frequency_spectrum", "orderBy": "time"})
     dataset = cli("source", str(path), "--engine", "duckdb")["datasetId"]
     try:
         actual = cli("profile", dataset, "--options", "-", payload={
@@ -300,6 +307,24 @@ def compare(path, types):
                 **{key: gaps[key] for key in ("n_gaps", "min", "max", "mean", "std")},
                 "gaps": [[pd.Timestamp(endpoint) for endpoint in interval] for interval in gaps["gaps"]],
             })
+        if "frequency_spectrum" in observed:
+            spectrum = observed["frequency_spectrum"]
+            with warnings.catch_warnings(record=True) as spectrum_warnings:
+                fft = get_fft(frame.sort_values("time")[name].dropna())
+                threshold, peaks, selected = get_fft_peaks(fft)
+            emitted.extend(spectrum_warnings)
+
+            def power(points):
+                return [{"frequency": frequency, "power": 0.0 if amplitude == "-Infinity" else 10 ** (amplitude / 10)}
+                        for frequency, amplitude in points]
+
+            for key, dataframe in (("points", fft), ("peaks", peaks), ("selected_peaks", selected)):
+                check(f"{name}.frequency_spectrum.{key}", power((point["frequency"], point["decibels"])
+                                                                for point in spectrum[key]),
+                      power(dataframe[["freq", "ampl"]].itertuples(index=False, name=None)))
+            check(f"{name}.frequency_spectrum.threshold", spectrum["threshold"], threshold)
+            check(f"{name}.frequency_spectrum.periods", spectrum["periods"], (1 / selected["freq"]).tolist())
+            check(f"{name}.frequency_spectrum.seasonal", spectrum["seasonal"], not selected.empty)
         if "n_characters" in reference:
             unicode = observed["unicode_summary"]
             check(f"{name}.character_count", unicode["character_count"], reference["n_characters"])

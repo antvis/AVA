@@ -55,7 +55,7 @@ Additional metrics:
   DuckDB quantiles: quantiles (5%, 25%, 50%, 75%, 95%; finite numeric values)
   DuckDB dispersion: variance, mad, iqr, cv, range
   DuckDB distribution shape: skewness, kurtosis, monotonicity, chi_squared
-  DuckDB time series: autocorrelation, time_series_gaps
+  DuckDB time series: autocorrelation, time_series_gaps, frequency_spectrum
   DuckDB numeric and date histogram: histogram
   DuckDB frequencies: value_counts, mode, mode_count, imbalance
   DuckDB text: mean_length, median_length, length_histogram, word_counts, character_counts, unicode_summary
