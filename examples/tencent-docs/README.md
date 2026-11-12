@@ -55,7 +55,7 @@ CLI 将模板复制到被 Git 忽略的 .debug/tencent-source.json，在本地�
     node lib/cli/index.js analyze <datasetId> "按地区统计销售额"
     node lib/cli/index.js dispose <datasetId>
 
-加载、schema 和直接 SQL 不调用模型；自然语言分析使用配置模型。仅支持 Node.js / DuckDB。CLI 会话要求 Linux/macOS；Windows 使用 SDK 或 WSL。
+加载、schema 和直接 SQL 不调用模型；自然语言分析使用配置模型。仅支持 Node.js / DuckDB。
 
 ## 字段与数据语义
 

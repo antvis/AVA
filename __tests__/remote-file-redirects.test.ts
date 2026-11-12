@@ -205,10 +205,13 @@ describe('download response cleanup', () => {
   );
 
   it('releases an HTTP error response without writing a temporary file', async () => {
-    const response = new Response('unavailable', { status: 503 });
+    const response = new Response('unavailable', { status: 503, statusText: 'status-secret' });
     const cancel = vi.spyOn(response.body!, 'cancel');
     vi.spyOn(global, 'fetch').mockResolvedValue(response);
-    await expect(downloadToTempFile('https://example.com/data.csv', 'csv', credentials)).rejects.toThrow('503');
+    const url = 'https://user:url-password@example.com/data.csv?signature=url-signature';
+    await expect(downloadToTempFile(url, 'csv', credentials)).rejects.toEqual(
+      new Error('Failed to fetch remote file (HTTP 503).')
+    );
     expect(cancel).toHaveBeenCalledOnce();
   });
 

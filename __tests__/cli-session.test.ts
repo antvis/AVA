@@ -6,7 +6,8 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { createSession } from '../src/cli/session/client';
 import { buildDataModel } from '../src/util/data-model';
-import { sessionDirectory, startupSchema, requestSchema } from '../src/cli/session/protocol';
+import { startupSchema, requestSchema } from '../src/cli/session/protocol';
+import { sessionDirectory } from '../src/cli/session/transport';
 
 import type { DataSourceConfig, EngineConfig, Schema } from '../src/types';
 
@@ -28,12 +29,6 @@ const sqlserverSource = {
 };
 
 describe('session startup protocol', () => {
-  const platform = Object.getOwnPropertyDescriptor(process, 'platform')!;
-  afterEach(() => {
-    Object.defineProperty(process, 'platform', platform);
-    vi.clearAllMocks();
-  });
-
   it.each(['mysql', 'postgresql'])('requires and preserves the SSH host fingerprint for %s', (type) => {
     const ssh = { host: 'bastion', user: 'reader', password: 'test-password' };
     const source = { type, options: { host: 'database', database: 'sales', ssh } };
@@ -46,7 +41,6 @@ describe('session startup protocol', () => {
   });
 
   it('keeps engine selection through the child-process startup message', async () => {
-    Object.defineProperty(process, 'platform', { ...platform, value: 'linux' });
     const worker = Object.assign(new EventEmitter(), {
       connected: true,
       disconnect: vi.fn(),
@@ -63,12 +57,6 @@ describe('session startup protocol', () => {
     } finally {
       await rm(sessionDirectory(datasetId), { recursive: true, force: true });
     }
-  });
-
-  it('rejects Windows before creating a dataset process', async () => {
-    Object.defineProperty(process, 'platform', { ...platform, value: 'win32' });
-    await expect(createSession(source, llm)).rejects.toThrow('Dataset sessions currently require macOS or Linux.');
-    expect(fork).not.toHaveBeenCalled();
   });
 
   it('accepts legacy startup messages and rejects custom engine configuration', () => {

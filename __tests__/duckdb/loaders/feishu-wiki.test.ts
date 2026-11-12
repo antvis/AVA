@@ -2,6 +2,8 @@ import { afterEach, describe, expect, it, vi } from 'vitest';
 
 import { readTable } from '../../../src/duckdb/loaders/feishu/read';
 import { resolveBitableTable } from '../../../src/duckdb/loaders/feishu/resolve';
+import { feishuGet } from '../../../src/duckdb/loaders/feishu/api';
+import { parseBitableUrl } from '../../../src/duckdb/loaders/feishu/url';
 
 afterEach(() => vi.unstubAllGlobals());
 
@@ -39,6 +41,32 @@ function stubFetch(routes: Routes = {}) {
 }
 
 describe('wiki-hosted Bitable', () => {
+  it('preserves the original Feishu transport error without adding the request URL', async () => {
+    const failure = Object.assign(new Error('upstream token=original-secret'), { code: 'ECONNRESET' });
+    vi.stubGlobal('fetch', vi.fn().mockRejectedValue(failure));
+    await expect(feishuGet('https://example.com/api?token=url-secret', 'header-secret')).rejects.toBe(failure);
+  });
+
+  it('does not echo source URLs or tokens in its own validation errors', async () => {
+    const signed = 'https://user:url-password@my.feishu.cn';
+    const invalid = `${signed}/unsupported?signature=url-signature`;
+    expect(() => parseBitableUrl(invalid)).toThrow(new Error('Invalid Feishu Bitable URL.'));
+    stubFetch();
+    for (const options of [
+      { url: invalid },
+      { url: `${signed}/base/link-secret?signature=url-signature&table=tbl123`, appToken: 'other' },
+    ]) {
+      await expect(resolveBitableTable(options, api)).rejects.toHaveProperty(
+        'message',
+        expect.not.stringMatching(/url-password|url-signature|link-secret/)
+      );
+    }
+    stubFetch({ tables: [] });
+    await expect(resolveBitableTable({ url: `${signed}/base/link-secret` }, api)).rejects.toEqual(
+      new Error('Feishu Bitable has no tables.')
+    );
+  });
+
   it('resolves a wiki node token to the Bitable it hosts', async () => {
     const fetch = stubFetch();
 
@@ -102,11 +130,11 @@ describe('wiki-hosted Bitable', () => {
   it('keeps rejecting an appToken that disagrees with the link', async () => {
     stubFetch();
 
-    await expect(resolveBitableTable({ url: wikiUrl, appToken: 'other' }, api)).rejects.toThrow(
-      'appToken does not match the wiki node'
+    await expect(resolveBitableTable({ url: wikiUrl, appToken: 'other' }, api)).rejects.toEqual(
+      new Error("Feishu Bitable appToken does not match the wiki node's table.")
     );
-    await expect(resolveBitableTable({ url: wikiUrl, tableId: 'tbl999' }, api)).rejects.toThrow(
-      'tableId does not match url'
+    await expect(resolveBitableTable({ url: wikiUrl, tableId: 'tbl999' }, api)).rejects.toEqual(
+      new Error('Feishu Bitable tableId does not match url.')
     );
   });
 
@@ -122,8 +150,8 @@ describe('wiki-hosted Bitable', () => {
   it('reports a wiki node that no longer points at a document', async () => {
     stubFetch({ node: { code: 0, data: { node: { obj_type: 'bitable' } } } });
 
-    await expect(readTable({ url: wikiUrl, appId: 'id', appSecret: 'secret' })).rejects.toThrow(
-      'does not point at a document'
+    await expect(readTable({ url: wikiUrl, appId: 'id', appSecret: 'secret' })).rejects.toEqual(
+      new Error('Feishu wiki node does not point at a document.')
     );
   });
 });

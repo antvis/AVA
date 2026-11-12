@@ -1,7 +1,7 @@
 import { column, logicalTypes, table, TOP_VALUES_OPTIONS, resolveMetric } from '../../util/profile';
 
 import type { MetricField } from '../../util/profile';
-import type { JsonValue, LogicalType, Metric, ParsedProfileOptions, Profile, Schema } from '../../types';
+import type { Metric, JsonValue, LogicalType, ParsedProfileOptions, Profile, Schema } from '../../types';
 
 interface Context {
   rowCount: number;

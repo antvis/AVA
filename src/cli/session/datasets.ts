@@ -1,6 +1,6 @@
-import { AVA } from '../../index';
+import { AVA } from '../..';
 
-import type { DataSourceConfig, EngineConfig, LLMConfig, Schema } from '../../types';
+import type { DataSourceConfig, Schema, EngineConfig, LLMConfig } from '../../types';
 
 // One server process owns one dataset. The socket path supplies its external ID.
 let ava: AVA | undefined;

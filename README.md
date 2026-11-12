@@ -1,3 +1,5 @@
+**English** | [简体中文](./README.zh-CN.md)
+
 <div align="center">
   <h1>AVA, AI-native Visual Analytics</h1>
   <img width="200" height="120" src="https://mdn.alipayobjects.com/huamei_qa8qxu/afts/img/A*yOHIQ48aRwgAAAAAAAAAAAAADmJ7AQ/original" alt="AVA logo">
@@ -25,6 +27,10 @@
 </p>
 
 [AVA](https://github.com/antvis/AVA) (<img src="https://mdn.alipayobjects.com/huamei_qa8qxu/afts/img/A*QzIsSrfsCW0AAAAAAAAAAAAADmJ7AQ/original" width="16" alt="AVA examples"> Visual Analytics) is a technology framework designed for more convenient visual analytics. **A** stands for AI-native, Automated, and Augmented; **VA** stands for Visual Analytics.
+
+<p align="center">
+  <img src="https://mdn.alipayobjects.com/huamei_aphk1k/afts/img/A*MMXYTJ0KhukAAAAAgEAAAAgAegfkAQ/original" width="100%" alt="AVA agent workflow: data access, schema inspection, profiling, metric definitions, analysis, visualization, and follow-up questions, with verifiable SQL and results." />
+</p>
 
 > [!NOTE]
 > **Think of AVA as PandasAI for JavaScript. 💬📊🤖**
@@ -72,10 +78,10 @@
 
 ## 🚀 Getting started
 
-Install AVA 4.0 with Node.js 22.13+:
+Install AVA with Node.js 22.13+:
 
 ```bash
-npm install @antv/ava@4
+npm install @antv/ava
 ```
 
 ## 💻 Usage
@@ -220,8 +226,6 @@ We evaluate AVA on established benchmarks to measure the accuracy and efficiency
 [Evaluation setup and reports →](https://ava.antv.vision/documentation/reference/benchmarks/)
 
 ## 🧩 More ways to use AVA
-
-The agent and CLI workflows run on Node.js 22.13+ on macOS or Linux.
 
 ### Use with an Agent
 

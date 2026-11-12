@@ -1,5 +1,6 @@
+import { tencentDocsOptionsSchema } from '../../../contracts/source/tencent-smartsheet';
+
 import { TencentDocsClient, TencentDocsError, isObject } from './client';
-import { tencentDocsOptionsSchema } from './config';
 import { supportedFields } from './convert';
 import { createSnapshotBuilder } from './snapshot';
 

@@ -46,7 +46,7 @@ export function parseTableLink(input: string): FeishuTableLink | undefined {
 export function parseBitableUrl(input: string): BitableRef {
   const link = parseTableLink(input);
   if (!link || link.kind !== 'base' || !link.tableId) {
-    throw new Error(`Invalid Feishu Bitable URL: ${input}`);
+    throw new Error('Invalid Feishu Bitable URL.');
   }
   return { appToken: link.token, tableId: link.tableId };
 }

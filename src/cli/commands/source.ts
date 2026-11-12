@@ -1,7 +1,9 @@
-import { extname, resolve } from 'path';
+import { resolve } from 'path';
 
+import { inferFileSourceType } from '../../util/source';
 import { createSession } from '../session/client';
-import { engineTypeSchema, sourceConfig } from '../session/protocol';
+import { engineTypeSchema } from '../session/protocol';
+import { sourceInputSchema } from '../../contracts';
 import { isFeishuBitableUrl, isFeishuHostUrl, feishuCredentials } from '../feishu';
 import { llmConfig } from '../config';
 import { readJSON } from '../io';
@@ -9,16 +11,6 @@ import { option } from '../options';
 import { accent, badge, muted } from '../util';
 
 import type { Options } from '../options';
-
-const sourceTypes: Record<string, string> = {
-  '.csv': 'csv-file',
-  '.json': 'json-file',
-  '.parquet': 'parquet',
-  '.xlsx': 'excel',
-  '.sqlite': 'sqlite',
-  '.sqlite3': 'sqlite',
-  '.db': 'sqlite',
-};
 
 export const description = 'Load a source and return a dataset ID';
 
@@ -45,18 +37,21 @@ export async function run([dataset]: string[], options: Options): Promise<{ data
       'Only Feishu Bitable links are supported: /base/<appToken>?table=<tableId> or /wiki/<nodeToken>?table=<tableId>. Docx, Sheets, and other Feishu links cannot be loaded.'
     );
   } else {
-    const pathname = /^https?:\/\//i.test(dataset) ? new URL(dataset).pathname : dataset;
-    const type = option(options, 'type') ?? sourceTypes[extname(pathname).toLowerCase()];
+    const type = option(options, 'type') ?? inferFileSourceType(dataset);
     if (!type) throw new Error('Cannot infer the source type. Pass --type.');
     input = { type, options: { path: dataset } };
   }
 
-  const config = sourceConfig.parse(input);
+  const config = sourceInputSchema.parse(input);
   if (config.type === 'tencent-smartsheet' && engine !== undefined && engine !== 'duckdb') {
     throw new Error('Tencent Docs SmartSheet sources require the duckdb engine.');
   }
 
-  if ('path' in config.options && !/^https?:\/\//i.test(config.options.path)) {
+  if (
+    'path' in config.options &&
+    typeof config.options.path === 'string' &&
+    !/^https?:\/\//i.test(config.options.path)
+  ) {
     config.options.path = resolve(config.options.path);
   }
 
@@ -132,7 +127,7 @@ Environment:
 In a terminal, shows the dataset ID and suggested next commands.
 When piped or redirected, returns JSON containing datasetId.
 IDs use a sanitized source name plus a random suffix.
-Requires Node.js 22.13+ on macOS or Linux.
+Requires Node.js 22.13+.
 Sessions expire after 30 idle minutes; dispose releases them immediately.
 Python requires python3 and pandas; local Python execution is not sandboxed.
 JavaScript accepts inline csv/json/text configs. Use ava schema to inspect the query language.
@@ -171,7 +166,6 @@ Tencent Docs SmartSheet (Node.js / DuckDB):
   Pass all three OpenAPI credentials explicitly in options; environment variables are not resolved. fileId must be a native API ID.
   Reads a complete, bounded snapshot into data; _record_id preserves source identity.
   Explicit IDs are required; document sharing URLs are not auto-detected.
-  Dataset sessions require macOS/Linux; on Windows use the SDK or WSL.
 
 snowflake.json:
 {

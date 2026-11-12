@@ -3,7 +3,7 @@ import { generateText } from 'ai';
 import { languageModel } from '../util/model';
 import { stringifyDataModel } from '../util/data-model';
 
-import type { TranslationResult, DataModel, LLMConfig, QueryDialect } from '../types';
+import type { TranslationResult, QueryDialect, DataModel, LLMConfig } from '../types';
 
 export class ClickHouseSQLDialect implements QueryDialect {
   readonly id = 'clickhouse-sql';

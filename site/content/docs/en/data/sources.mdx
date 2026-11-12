@@ -95,7 +95,7 @@ const schema = await ava.schema();
 
 | Parameter | Type                   | Required | Meaning                                                                                                                                      |
 | --------- | ---------------------- | -------- | -------------------------------------------------------------------------------------------------------------------------------------------- |
-| `type`    | `SourceType`           | Yes      | `csv`, `csv-file`, `json`, `json-file`, `parquet`, `excel`, `text`, `sqlite`, `mysql`, `postgresql`, `mongodb`, `supabase`, `clickhouse`, `sqlserver`, `snowflake`, or `feishu-bitable`. |
+| `type`    | `SourceType`           | Yes      | `csv`, `csv-file`, `json`, `json-file`, `parquet`, `excel`, `text`, `sqlite`, `mysql`, `postgresql`, `mongodb`, `supabase`, `clickhouse`, `sqlserver`, `snowflake`, `feishu-bitable`, or `tencent-smartsheet`. |
 | `options` | Source-specific object | Yes      | Use the matching table below. Field names are relative to `options`.                                                                         |
 
 `source()` returns no value and prepares the data for execution. Schema discovery is deferred until `schema()` or another operation needs it. Calling `source()` again replaces the current source and clears its cached metadata. Use `schema()` to inspect table and field names, and call `await ava.dispose()` when finished.
@@ -723,7 +723,7 @@ try {
 
 ## Tencent Docs SmartSheet
 
-Load one explicitly selected, authorized SmartSheet subtable through Tencent Docs' native OpenAPI (`fetch`, no MCP SDK), then analyze a complete local snapshot in DuckDB. Node.js SDK only, not browser/Python/JavaScript engines. Existing CLI sessions require Linux/macOS; Windows users can use the SDK or WSL.
+Load one explicitly selected, authorized SmartSheet subtable through Tencent Docs' native OpenAPI (`fetch`, no MCP SDK), then analyze a complete local snapshot in DuckDB. Supported by the Node.js SDK and CLI with the DuckDB engine.
 
 ```typescript
 await ava.source({

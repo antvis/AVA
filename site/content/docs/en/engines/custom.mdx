@@ -18,7 +18,7 @@ Here `model` is a configured AI SDK model; the complete example below shows its 
 
 Registration returns no value and applies to the loaded SDK module in the current process. It does not register an engine in a separate CLI process. An unregistered name fails when `source()` tries to create the engine.
 
-AVA creates a new instance on each `source()` call. It disposes the previous engine before replacement, disposes an engine whose `load()` fails, and releases the active engine on `ava.dispose()`. Open connections in `load()` so failed loads can be cleaned up.
+After source configuration passes validation, AVA creates a new instance for `source()`; an invalid configuration preserves the current dataset. It disposes the previous engine before replacement, disposes an engine whose `load()` fails, and releases the active engine on `ava.dispose()`. Open connections in `load()` so failed loads can be cleaned up.
 
 The browser SDK exports the same `registerEngine` API from `@antv/ava/browser`; the supplied engine and its dependencies must support the browser runtime. Use a build that exports this API; older package versions with an internal-only registry need to be upgraded.
 

@@ -1,7 +1,7 @@
 import { request } from '../session/client';
 import { readJSONFile } from '../io';
 import { option } from '../options';
-import { semanticMetadataSchema } from '../../util/data-model';
+import { semanticOutputSchema } from '../../contracts';
 
 import type { Options } from '../options';
 
@@ -14,7 +14,7 @@ export const definition = {
 
 export async function run([datasetId]: string[], options: Options): Promise<unknown> {
   const file = option(options, 'file');
-  const semantic = file === undefined ? undefined : semanticMetadataSchema.parse(await readJSONFile(file));
+  const semantic = file === undefined ? undefined : semanticOutputSchema.parse(await readJSONFile(file));
   return request(datasetId, { command: 'semantic', semantic });
 }
 

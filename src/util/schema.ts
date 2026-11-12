@@ -1,38 +1,9 @@
-/** Catalog discovery and structural validation. */
-import { z } from 'zod';
+/** Catalog discovery and structural assembly. */
+import { schemaOutputSchema } from '../contracts';
 
 import { sqlIdentifier } from './sql';
 
-import type { JsonValue, Schema } from '../types';
-
-export const jsonValue: z.ZodType<JsonValue> = z.lazy(() =>
-  z.union([z.string(), z.number().finite(), z.boolean(), z.null(), z.array(jsonValue), z.record(z.string(), jsonValue)])
-);
-const name = z.string();
-const key = z.union([name, z.array(name).nonempty()]);
-export const schemaStructure = z.object({
-  models: z.array(
-    z.object({
-      name,
-      tableReference: z.object({ catalog: name.optional(), schema: name.optional(), table: name }),
-      columns: z.array(z.object({ name, type: name, notNull: z.boolean().optional() })),
-      primaryKey: key.optional(),
-      uniqueKeys: z.array(key).optional(),
-    })
-  ),
-  relationships: z
-    .array(
-      z.object({
-        name,
-        models: z.tuple([name, name]),
-        joinType: z.enum(['ONE_TO_ONE', 'MANY_TO_ONE']),
-        condition: name,
-      })
-    )
-    .optional(),
-  views: z.array(z.object({ name, statement: name })).optional(),
-});
-export const schemaMetadataSchema = schemaStructure as unknown as z.ZodType<Schema>;
+import type { Schema } from '../types';
 
 function inferType(values: any[]): 'number' | 'string' | 'date' | 'boolean' | 'unknown' {
   const nonNullValues = values.filter((v) => v != null && v !== '');
@@ -244,7 +215,7 @@ export function rowObjects2Schema(rows: Record<string, unknown>[]): Schema {
     });
   }
 
-  return schemaMetadataSchema.parse({
+  return schemaOutputSchema.parse({
     models: [...models.values()].sort((a, b) => a.name.localeCompare(b.name)),
     relationships,
     views,
