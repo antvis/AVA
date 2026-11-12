@@ -42,3 +42,29 @@ jobs:
           node -e "require('@antv/ava').sourceInputSchema.parse({ type: 'json', options: { data: [] } })"
           node --input-type=module -e "const { sourceInputSchema } = await import('@antv/ava/browser'); sourceInputSchema.parse({ type: 'json', options: { data: [] } })"
           node -e "require('@antv/ava/browser').sourceInputSchema.parse({ type: 'json', options: { data: [] } })"
+
+  windows-cli-session:
+    runs-on: windows-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22.x
+      - run: npm install --legacy-peer-deps
+      - run: npm run build:cjs
+      - name: Smoke test a dataset session
+        shell: pwsh
+        run: |
+          $PSNativeCommandUseErrorActionPreference = $true
+          $cli = './lib/cli/index.js'
+          $csv = Join-Path $env:RUNNER_TEMP 'ava-smoke.csv'
+          @('amount', '42') | Set-Content -Encoding utf8 $csv
+          $id = (node $cli source $csv | ConvertFrom-Json).datasetId
+          if (!$id) { throw 'Missing datasetId' }
+          try {
+            $result = node $cli query $id --dsl 'SELECT amount FROM data' | ConvertFrom-Json
+            if ($result.data[0].amount -ne 42) { throw 'Unexpected query result' }
+          } finally {
+            node $cli dispose $id | Out-Null
+          }

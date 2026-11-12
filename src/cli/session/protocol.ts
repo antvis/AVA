@@ -1,6 +1,3 @@
-import { tmpdir } from 'os';
-import { join } from 'path';
-
 import { z } from 'zod';
 
 import { sourceInputSchema, profileOutputSchema, schemaOutputSchema, semanticOutputSchema } from '../../contracts';
@@ -65,13 +62,3 @@ export const responseSchema = z.union([
   z.object({ ok: z.literal(true), result: z.unknown() }).strict(),
   z.object({ ok: z.literal(false), error: z.string() }).strict(),
 ]);
-
-export function sessionDirectory(id: string): string {
-  if (!/^ds_(?:[a-f0-9]{24}|[a-z0-9][a-z0-9-]{0,15}_[a-f0-9]{12})$/.test(id)) throw new Error('Invalid dataset ID.');
-
-  return join(tmpdir(), `ava-${id}`);
-}
-
-export function socketPath(id: string): string {
-  return join(sessionDirectory(id), 'ipc');
-}

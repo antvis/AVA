@@ -6,7 +6,8 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { createSession } from '../src/cli/session/client';
 import { buildDataModel } from '../src/util/data-model';
-import { sessionDirectory, startupSchema, requestSchema } from '../src/cli/session/protocol';
+import { startupSchema, requestSchema } from '../src/cli/session/protocol';
+import { sessionDirectory } from '../src/cli/session/transport';
 
 import type { DataSourceConfig, EngineConfig, Schema } from '../src/types';
 

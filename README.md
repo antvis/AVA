@@ -72,10 +72,10 @@
 
 ## 🚀 Getting started
 
-Install AVA 4.0 with Node.js 22.13+:
+Install AVA with Node.js 22.13+:
 
 ```bash
-npm install @antv/ava@4
+npm install @antv/ava
 ```
 
 ## 💻 Usage
@@ -220,8 +220,6 @@ We evaluate AVA on established benchmarks to measure the accuracy and efficiency
 [Evaluation setup and reports →](https://ava.antv.vision/documentation/reference/benchmarks/)
 
 ## 🧩 More ways to use AVA
-
-The agent and CLI workflows run on Node.js 22.13+ on macOS or Linux.
 
 ### Use with an Agent
 

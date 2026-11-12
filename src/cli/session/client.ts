@@ -1,8 +1,7 @@
 import { fork } from 'child_process';
 import { randomBytes } from 'crypto';
 import { once } from 'events';
-import { mkdir, rm } from 'fs/promises';
-import { connect } from 'net';
+import { rm } from 'fs/promises';
 import { basename, extname, join } from 'path';
 
 import {
@@ -10,20 +9,12 @@ import {
   IPC_MAX_REQUEST_BYTES,
   IPC_MAX_RESPONSE_BYTES,
   responseSchema,
-  sessionDirectory,
-  socketPath,
   startupSchema,
 } from './protocol';
+import { connectSession, prepareSession, readMessage } from './transport';
 
 import type { Request } from './protocol';
 import type { DataSourceConfig, EngineConfig, LLMConfig } from '../../types';
-
-/**
- * Require a platform where Unix sockets inherit the private directory's access restrictions.
- */
-function checkEnvironment(): void {
-  if (process.platform === 'win32') throw new Error('Dataset sessions currently require macOS or Linux.');
-}
 
 /**
  * Combine a sanitized source name with a random suffix to identify a dataset session.
@@ -46,17 +37,16 @@ export async function createSession(
   llm: LLMConfig,
   engine?: EngineConfig['type']
 ): Promise<{ datasetId: string }> {
-  checkEnvironment();
   const startup = startupSchema.parse({ source: config, llm, engine });
 
   const datasetId = createDatasetId(config);
-  const directory = sessionDirectory(datasetId);
-  await mkdir(directory, { mode: 0o700 });
+  const directory = await prepareSession(datasetId);
   let child: ReturnType<typeof fork> | undefined;
 
   try {
     child = fork(join(__dirname, 'server.js'), [datasetId], {
       detached: true,
+      windowsHide: true,
       stdio: ['ignore', 'ignore', 'ignore', 'ipc'],
       execArgv: [],
     });
@@ -135,18 +125,22 @@ export async function createSession(
   }
 }
 
+function sessionError(id: string, error: Error & { code?: string }): Error {
+  return ['ENOENT', 'ECONNREFUSED'].includes(error.code ?? '')
+    ? new Error(`Dataset "${id}" is unavailable. Load it again with ava source.`)
+    : error;
+}
+
 export async function request(id: string, message: Request): Promise<unknown> {
-  const path = socketPath(id);
   const body = JSON.stringify(message);
 
   if (Buffer.byteLength(body) > IPC_MAX_REQUEST_BYTES) throw new Error('Dataset request exceeds 1 MiB.');
 
-  return new Promise((resolve, reject) => {
-    const socket = connect(path);
-    let response = '';
-    let bytes = 0;
+  const socket = await connectSession(id, body).catch((error: Error) => {
+    throw sessionError(id, error);
+  });
 
-    socket.setEncoding('utf8');
+  return new Promise((resolve, reject) => {
     const timer = setTimeout(
       () => socket.destroy(new Error('Dataset request timed out; the operation may still be running.')),
       IPC_TIMEOUT_MS
@@ -155,35 +149,27 @@ export async function request(id: string, message: Request): Promise<unknown> {
       clearTimeout(timer);
       reject(new Error('Dataset connection closed before a complete response was received.'));
     });
-    socket.on('connect', () => socket.end(body));
+    socket.on('error', (error) => reject(sessionError(id, error)));
 
-    socket.on('data', (chunk: string) => {
-      bytes += Buffer.byteLength(chunk);
-      if (bytes > IPC_MAX_RESPONSE_BYTES) socket.destroy(new Error('Dataset response exceeds 16 MiB.'));
-      else response += chunk;
-    });
+    readMessage(
+      socket,
+      IPC_MAX_RESPONSE_BYTES,
+      (response) => {
+        socket.destroy();
+        if (!response) {
+          reject(new Error('Dataset connection ended without a response.'));
+          return;
+        }
 
-    socket.on('error', (error: Error & { code?: string }) => {
-      reject(
-        ['ENOENT', 'ECONNREFUSED'].includes(error.code ?? '')
-          ? new Error(`Dataset "${id}" is unavailable. Load it again with ava source.`)
-          : error
-      );
-    });
-
-    socket.on('end', () => {
-      if (!response) {
-        reject(new Error('Dataset connection ended without a response.'));
-        return;
-      }
-
-      try {
-        const parsed = responseSchema.parse(JSON.parse(response));
-        if (parsed.ok === false) reject(new Error(parsed.error));
-        else resolve(parsed.result);
-      } catch {
-        reject(new Error('Dataset returned an invalid or incomplete response.'));
-      }
-    });
+        try {
+          const parsed = responseSchema.parse(JSON.parse(response));
+          if (parsed.ok === false) reject(new Error(parsed.error));
+          else resolve(parsed.result);
+        } catch {
+          reject(new Error('Dataset returned an invalid or incomplete response.'));
+        }
+      },
+      new Error('Dataset response exceeds 16 MiB.')
+    );
   });
 }

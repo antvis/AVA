@@ -2,8 +2,8 @@
 // Report assembly; upstream attribution and MIT terms are in ../assets/LICENSE.
 import { createHash } from 'node:crypto';
 import { spawn } from 'node:child_process';
-import { mkdir, mkdtemp, open, readFile, readdir, rm } from 'node:fs/promises';
-import { basename, extname, join, resolve } from 'node:path';
+import { access, mkdir, mkdtemp, open, readFile, readdir, rm } from 'node:fs/promises';
+import { basename, delimiter, dirname, extname, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { parseArgs } from 'node:util';
 
@@ -47,10 +47,30 @@ async function writeNew(path, value) {
   }
 }
 
-// Use argv and stdin, preserving exact DSL without shell interpolation.
-export function runAVA(args, input) {
+async function windowsAvaEntry() {
+  for (const item of (process.env.PATH ?? '').split(delimiter)) {
+    if (!item) continue;
+    const directory = resolve(item.replace(/^"|"$/g, ''));
+    // npm places local shims in node_modules/.bin and global shims in the npm prefix.
+    const modules = basename(directory).toLowerCase() === '.bin' ? dirname(directory) : join(directory, 'node_modules');
+    const entry = join(modules, '@antv', 'ava', 'lib', 'cli', 'index.js');
+    try {
+      await access(join(directory, 'ava.cmd'));
+      await access(entry);
+      return entry;
+    } catch {
+      // Continue looking for the scoped AVA package.
+    }
+  }
+  throw new Error('Could not find the @antv/ava npm CLI on PATH. Install it with npm install -g @antv/ava.');
+}
+
+// Keep argv and stdin separate even on Windows, where npm's launcher is a .cmd file.
+export async function runAVA(args, input) {
+  const windows = process.platform === 'win32';
+  const argv = windows ? [await windowsAvaEntry(), ...args] : args;
   return new Promise((resolveResult, reject) => {
-    const child = spawn('ava', args, { stdio: ['pipe', 'pipe', 'pipe'] });
+    const child = spawn(windows ? process.execPath : 'ava', argv, { stdio: ['pipe', 'pipe', 'pipe'] });
     const output = [];
     const errors = [];
     child.stdout.on('data', (chunk) => output.push(chunk));
@@ -390,7 +410,7 @@ export async function renderReport({ evidence, spec, output, previous, template 
   }
 }
 
-const help = `AVA Skill reports (Node.js 22.13+, AVA CLI 4.x on PATH)
+const help = `AVA Skill reports (Node.js 22.13+, AVA CLI on PATH)
 
   node report.mjs query <datasetId> --dsl query.sql --source sales.csv --evidence /task/evidence
       [--max-rows 10000] [--max-result-bytes 1048576]

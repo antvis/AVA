@@ -11,7 +11,7 @@ description: >-
 
 # AVA
 
-Use AVA (`@antv/ava` 4.x) to execute SQL and render charts; the agent handles semantics, SQL, and chart selection. No model API key is needed.
+Use AVA (`@antv/ava`) to execute SQL and render charts; the agent handles semantics, SQL, and chart selection. No model API key is needed.
 
 ## First Use
 
@@ -20,9 +20,9 @@ node --version
 ava --help
 ```
 
-Requires Node.js ≥22.13 on macOS or Linux. `ava --help` should list `source`, `schema`, and `query`. For installation or runtime problems, read [Setup](references/setup.md).
+Requires Node.js ≥22.13. `ava --help` should list `source`, `schema`, and `query`. For installation or runtime problems, read [Setup](references/setup.md).
 
-Reuse available sessions and results. For a new file source, work in a task-specific directory:
+Reuse available sessions and results. For a new file source, work in a task-specific directory. Use the PowerShell commands in [Setup](references/setup.md) on Windows:
 
 ```sh
 ava source /absolute/path/sales.csv > session.json
