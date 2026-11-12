@@ -38,10 +38,11 @@ try {
     }
 
     $sid = [Security.Principal.WindowsIdentity]::GetCurrent().User.Value
+    $directoryAcl = Get-Acl (Split-Path $key)
     $acl = Get-Acl $key
     $grants = $acl.GetAccessRules($true, $true, [Security.Principal.SecurityIdentifier])
-    if ($grants.Count -ne 1 -or $grants[0].IdentityReference.Value -ne $sid) {
-        throw 'The pipe key is accessible beyond the current user'
+    if (!$directoryAcl.AreAccessRulesProtected -or $grants.Count -ne 1 -or $grants[0].IdentityReference.Value -ne $sid) {
+        throw "Unexpected key ACL (directory protected: $($directoryAcl.AreAccessRulesProtected), key rules: $($grants.Count))"
     }
 
     # A client with an incorrect key must not receive a dataset response.
