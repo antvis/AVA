@@ -37,6 +37,7 @@ export {
 export { AVA } from './ava';
 export { compareProfiles } from './util/profile-compare';
 export type { ProfileComparison } from './util/profile-compare';
+export { renderProfileHtml } from './util/profile-report';
 export { registerEngine } from './engines';
 
 export type {

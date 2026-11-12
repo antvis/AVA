@@ -336,6 +336,10 @@ import { compareProfiles } from '@antv/ava';
 const comparison = compareProfiles(beforeProfile, afterProfile);
 ```
 
+### renderProfileHtml
+
+`renderProfileHtml(profile, { title })` renders a saved profile as standalone HTML. The report includes tables, distributions, correlations and quality alerts when those observations are present. It can open offline and does not rerun the profile.
+
 ### quality
 
 ```typescript

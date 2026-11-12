@@ -89,6 +89,7 @@ All commands accept `-h` / `--help` (boolean; optional). Every positional argume
 | `schema` | `dataset-id` | Optional `--file`: path to an existing schema JSON file. |
 | `profile` | `dataset-id` | `--file` imports a profile, `--metrics` selects comma-separated metric names, and `--options` accepts a JSON options file. The default is the [standard metric set](/documentation/reference/api/#profile). An empty metric list computes no statistics. |
 | `profile-compare` | `before.json after.json` | Compare saved profiles by model, column and metric name. Use `-` for one input to read from stdin. |
+| `profile-report` | `profile.json` or `-` | Save a standalone HTML report using `-o report.html`. `--title` sets the report title. |
 | `quality` | `dataset-id` | Evaluates the saved profile. Optional `--rules` accepts comma-separated [quality rules](/documentation/reference/api/#quality). |
 | `semantic` | `dataset-id` | Optional `--file`: path to a Semantic JSON file that replaces the complete session definition. Without it, reads the current definition. |
 | `suggest`   | `dataset-id`                           | `--count`: integer `1`–`100`; default `3`.                                                                                                                                                            |
