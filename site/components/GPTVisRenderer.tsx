@@ -1,5 +1,5 @@
 'use client';
-import { useEffect, useEffectEvent, useRef } from 'react';
+import { useEffect, useRef } from 'react';
 import { GPTVis } from '@antv/gpt-vis';
 
 interface GPTVisRendererProps {
@@ -12,22 +12,14 @@ interface GPTVisRendererProps {
   onError?: (error: Error) => void;
 }
 
-const GPTVisRenderer: React.FC<GPTVisRendererProps> = ({
-  config,
-  width,
-  height,
-  wrapper = false,
-  onRender,
-  onError,
-}) => {
+const GPTVisRenderer: React.FC<GPTVisRendererProps> = ({ config, width, height, wrapper = false, onRender, onError }) => {
   const containerRef = useRef<HTMLDivElement>(null);
-  const notifyRender = useEffectEvent(() => onRender?.());
-  const notifyError = useEffectEvent((error: Error) => onError?.(error));
+  const instanceRef = useRef<GPTVis | null>(null);
 
+  // Mount: create instance once. Unmount: destroy.
   useEffect(() => {
-    if (!containerRef.current || !config) return;
+    if (!containerRef.current) return;
 
-    let active = true;
     const instance = new GPTVis({
       container: containerRef.current,
       width,
@@ -35,20 +27,31 @@ const GPTVisRenderer: React.FC<GPTVisRendererProps> = ({
       theme: 'light',
       wrapper,
     });
+    instanceRef.current = instance;
+
+    return () => {
+      instance.destroy();
+      instanceRef.current = null;
+    };
+  }, [width, height]);
+
+  // Update: re-render when config or dimensions change.
+  useEffect(() => {
+    const instance = instanceRef.current;
+    if (!instance || !config) return;
+    let active = true;
     void (async () => {
       try {
         await instance.render(config);
-        if (active) notifyRender();
+        if (active) onRender?.();
       } catch (err) {
-        if (active) notifyError(err instanceof Error ? err : new Error(String(err)));
+        if (active) onError?.(err instanceof Error ? err : new Error(String(err)));
       }
     })();
-
     return () => {
       active = false;
-      instance.destroy();
     };
-  }, [config, width, height, wrapper]);
+  }, [config, width, height]);
 
   return <div ref={containerRef} className="w-full h-full" />;
 };
