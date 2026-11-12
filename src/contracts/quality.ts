@@ -9,6 +9,8 @@ const rule = z.enum([
   'imbalance',
   'infinite',
   'missing',
+  'non_stationary',
+  'seasonal',
   'skewed',
   'uniform',
   'unique',

@@ -66,6 +66,14 @@ export function assessQuality(profile: Profile, options: QualityOptions): Qualit
         if (skewness !== undefined && Math.abs(skewness) > thresholds.skewnessThreshold) {
           add({ rule: 'skewed', column, value: skewness, threshold: thresholds.skewnessThreshold });
         }
+        if (profileType === 'TimeSeries') {
+          const seasonal = property(stats.frequency_spectrum, 'seasonal') === true;
+          if (seasonal) add({ rule: 'seasonal', column });
+          if (seasonal || property(stats.adf, 'stationary') === false) {
+            const value = observation(property(stats.adf, 'pvalue'));
+            add({ rule: 'non_stationary', column, ...(value === undefined ? {} : { value }) });
+          }
+        }
       }
 
       if (!rules || rules.has('high_correlation')) {

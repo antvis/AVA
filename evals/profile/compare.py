@@ -208,7 +208,7 @@ def compare(path, types, infer_types=False, file_root=None, phik=False):
         actual = cli("profile", dataset, "--options", "-", payload={
             "metrics": metrics, "semantics": "data-profiling", **type_options,
         })["models"][0]
-        quality = cli("quality", dataset, "--rules", "uniform,high_correlation")["models"][0]["alerts"]
+        quality = cli("quality", dataset, "--rules", "uniform,high_correlation,non_stationary,seasonal")["models"][0]["alerts"]
     finally:
         cli("dispose", dataset)
 
@@ -257,6 +257,9 @@ def compare(path, types, infer_types=False, file_root=None, phik=False):
     check("table.row_duplicates.group_count", actual["metrics"]["row_duplicates"]["group_count"], expected.table["n_duplicates"])
     check("quality.uniform", sorted(alert["column"] for alert in quality if alert["rule"] == "uniform"),
           sorted(alert.column_name for alert in expected.alerts if alert.alert_type.name == "UNIFORM"))
+    for rule in ("non_stationary", "seasonal"):
+        check(f"quality.{rule}", sorted(alert["column"] for alert in quality if alert["rule"] == rule),
+              sorted(alert.column_name for alert in expected.alerts if alert.alert_type.name == rule.upper()))
     check("quality.high_correlation", sorted(sorted([alert["column"], alert["relatedColumn"]])
                                              for alert in quality if alert["rule"] == "high_correlation"),
           [list(pair) for pair in sorted({tuple(sorted([alert.column_name, other]))
