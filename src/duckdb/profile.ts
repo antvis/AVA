@@ -5,9 +5,11 @@ import { resolveMetric, table, column, logicalTypes, TOP_VALUES_OPTIONS } from '
 
 import { kendallPair } from './profile-kendall';
 import { cramersPair } from './profile-cramers';
+import { registerWordLowercase, wordCountsSql } from './profile-words';
 
+import type { DuckDBConnection } from '@duckdb/node-api';
 import type { MetricField } from '../util/profile';
-import type { Metric, DuckDBConnection, Schema, ParsedProfileOptions, LogicalType, MetricId, Profile } from '../types';
+import type { Metric, Schema, ParsedProfileOptions, LogicalType, MetricId, Profile } from '../types';
 
 /** Map a database type to a profile type. */
 export function logicalType(nativeType: string): LogicalType {
@@ -32,6 +34,7 @@ interface ExpressionContext {
   readonly sourceAlias?: string;
   readonly center?: string;
   readonly histogram?: { edges: string; limits: string };
+  readonly wordLowercase?: string;
   readonly metric: ParsedProfileOptions['metrics'][number];
 }
 
@@ -474,6 +477,30 @@ export const BUILTIN_METRICS: DuckDBMetric[] = [
       lambda entry: struct_pack(length := struct_extract(entry, 'key')::DOUBLE,
         count := struct_extract(entry, 'value')::DOUBLE)), [])`,
   },
+  {
+    id: 'word_counts',
+    enable: logicalTypes('string'),
+    options: {
+      stopWords: {
+        validate: (value) => {
+          z.array(z.string()).parse(value);
+        },
+      },
+      limit: {
+        validate: (value) => {
+          z.number().int().nonnegative().parse(value);
+        },
+      },
+    },
+    expression: ({ table, column, wordLowercase, metric }) =>
+      wordCountsSql(
+        table,
+        column!,
+        wordLowercase!,
+        (metric.stopWords as string[] | undefined) ?? [],
+        metric.limit as number | undefined
+      ),
+  },
   { id: 'mean', enable: logicalTypes('numeric'), expression: (context) => aggregate('avg', context) },
   { id: 'sum', enable: logicalTypes('numeric'), expression: (context) => aggregate('sum', context) },
   {
@@ -603,6 +630,9 @@ export async function profileTables(
 ): Promise<Profile> {
   const metrics = options.metrics.map((metric) => ({ metric, definition: resolveMetric(metric, BUILTIN_METRICS) }));
   const needsCenters = metrics.some(({ metric }) => metric.id === 'skewness' || metric.id === 'kurtosis');
+  const wordLowercase = metrics.some(({ metric }) => metric.id === 'word_counts')
+    ? registerWordLowercase(connection)
+    : undefined;
   const histogram = metrics.filter(({ metric }) => metric.id === 'histogram').pop()?.metric;
   const profiles: Profile['models'] = [];
 
@@ -690,6 +720,7 @@ export async function profileTables(
             field,
             fields,
             sourceAlias,
+            wordLowercase,
             metric,
           }),
           metricId: metric.id,

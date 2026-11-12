@@ -251,6 +251,7 @@ await ava.profile({
 | `imbalance` | 文本、布尔、数值类别编码 | 一减去归一化的 Shannon 熵，排除 NULL 和 NaN。均匀分布或少于两个类别时返回零。 |
 | `mean_length`、`median_length` | 文本 | 按 Unicode 码点计算的长度均值和中位数，重复值按出现次数加权。 |
 | `length_histogram` | 文本 | 按长度排列的 `{ length, count }`。排除 NULL，空字符串长度为零。 |
+| `word_counts` | 文本 | 使用 Unicode 小写、空白切词和 ASCII 标点修剪后的 `{ value, count }`。重复字符串按频数加权。 |
 | `zero_count`、`zero_ratio` | 数值 | 零值数量及其占总行数的比例。 |
 | `negative_count`、`negative_ratio` | 数值 | 负值数量及其占总行数的比例，包含负无穷。 |
 | `infinite_count`、`infinite_ratio` | 数值 | 正负无穷值数量及其占总行数的比例。 |
@@ -285,6 +286,8 @@ DuckDB 中，分母为零时比例返回 `0`。SQL NULL、NaN 和无穷值分别
 | `histogram` | `bins` | `50` | 非负整数，`0` 表示按 Sturges/Freedman–Diaconis 规则自动选桶。 |
 | `histogram` | `maxBins` | `250` | 正整数，限制最大桶数。 |
 | `histogram` | `density` | `false` | 开启后 `counts` 返回概率密度。 |
+| `word_counts` | `stopWords` | `[]` | 排除的词，忽略大小写。 |
+| `word_counts` | `limit` | 全部词 | 返回词数上限，按频数降序和词排序。 |
 
 对象形式的指标必须提供字符串 `id`。引擎会拒绝未知指标或未列出的参数。`metrics: []` 返回结构和空的指标对象。每次计算都会替换上一次的画像。
 
