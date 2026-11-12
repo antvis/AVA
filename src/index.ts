@@ -49,7 +49,7 @@ export { executionResult } from './util/result';
 export { compareProfiles } from './util/profile-compare';
 export type { ProfileComparison } from './util/profile-compare';
 export { renderProfileHtml, renderProfileComparisonHtml } from './util/profile-report';
-export { profileExpectations } from './util/profile-expectations';
+export { profileExpectations, validateProfileExpectations } from './util/profile-expectations';
 export type { ProfileExpectationSuite } from './util/profile-expectations';
 
 export type {

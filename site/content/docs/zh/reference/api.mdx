@@ -362,6 +362,8 @@ const comparison = compareProfiles(beforeProfile, afterProfile);
 
 `profileExpectations(profile, { name })` 根据已保存的画像生成旧版 Great Expectations 风格的规则集，每个模型一份。非空、唯一、数值和日期范围、单调性及允许值规则取自对应的已保存指标。
 
+`validateProfileExpectations(profile, suites)` 用传入的画像验证已生成的规则集。每条规则返回 `passed`、`failed` 或 `missing_evidence`。
+
 <Heading as="h3" id="quality">quality</Heading>
 
 ```typescript

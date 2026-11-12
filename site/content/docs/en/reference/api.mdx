@@ -360,6 +360,8 @@ const comparison = compareProfiles(beforeProfile, afterProfile);
 
 `profileExpectations(profile, { name })` derives legacy Great Expectations-style suites from saved observations. Request the corresponding metrics for non-null, uniqueness, numeric and date bounds, monotonicity, and allowed-value rules. The return value contains one suite per model.
 
+`validateProfileExpectations(profile, suites)` evaluates generated suites against the supplied profile. Each rule reports `passed`, `failed` or `missing_evidence`.
+
 ### quality
 
 ```typescript

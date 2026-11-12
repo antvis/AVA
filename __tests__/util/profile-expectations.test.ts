@@ -1,6 +1,6 @@
 import { expect, it } from 'vitest';
 
-import { profileExpectations } from '../../src/util/profile-expectations';
+import { profileExpectations, validateProfileExpectations } from '../../src/util/profile-expectations';
 
 it('generates bounds, order and allowed sets only from saved observations', () => {
   const [suite] = profileExpectations(
@@ -57,5 +57,25 @@ it('generates bounds, order and allowed sets only from saved observations', () =
   );
   expect(suite.expectations.filter(({ kwargs }) => kwargs.column === 'note')).toEqual([
     { expectation_type: 'expect_column_to_exist', kwargs: { column: 'note' } },
+  ]);
+});
+
+it('distinguishes failing expectations and absent evidence', () => {
+  const profile = (metrics: Record<string, unknown>) => ({
+    models: [
+      { name: 'data', metrics: {}, columns: [{ name: 'amount', properties: { logicalType: 'numeric' }, metrics }] },
+    ],
+  });
+  const suites = profileExpectations(
+    profile({ min: 1, max: 3, null_count: 0, monotonicity: { increasing: true, strictly_increasing: true } })
+  );
+  const result = validateProfileExpectations(profile({ min: 1, max: 'Infinity', null_count: 0 }), suites);
+  expect(result.success).toBe(false);
+  expect(result.results[0].expectations).toEqual([
+    { column: 'amount', expectation_type: 'expect_column_to_exist', status: 'passed' },
+    { column: 'amount', expectation_type: 'expect_column_values_to_not_be_null', status: 'passed' },
+    { column: 'amount', expectation_type: 'expect_column_values_to_be_in_type_list', status: 'passed' },
+    { column: 'amount', expectation_type: 'expect_column_values_to_be_increasing', status: 'missing_evidence' },
+    { column: 'amount', expectation_type: 'expect_column_values_to_be_between', status: 'failed' },
   ]);
 });

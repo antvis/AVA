@@ -1,4 +1,7 @@
+import { z } from 'zod';
+
 import { profileOutputSchema } from '../contracts';
+import { jsonValue } from '../contracts/shared/json';
 
 import type { JsonValue } from '../types';
 
@@ -160,3 +163,111 @@ export function profileExpectations(input: unknown, { name = 'ava_profile' }: { 
 }
 
 export type ProfileExpectationSuite = ReturnType<typeof profileExpectations>[number];
+
+const suiteInput = z.array(
+  z.object({
+    model: z.string(),
+    expectation_suite_name: z.string(),
+    expectations: z.array(
+      z.object({
+        expectation_type: z.string(),
+        kwargs: z.record(z.string(), jsonValue).and(z.object({ column: z.string() })),
+      })
+    ),
+  })
+);
+
+function validateExpectation(
+  expectation: z.output<typeof suiteInput>[number]['expectations'][number],
+  column: z.output<typeof profileOutputSchema>['models'][number]['columns'][number] | undefined,
+  referenceSemantics: boolean
+): boolean | undefined {
+  const { expectation_type: rule, kwargs } = expectation;
+  if (rule === 'expect_column_to_exist') return column !== undefined;
+  if (!column) return false;
+  const { metrics, properties } = column;
+  switch (rule) {
+    case 'expect_column_values_to_not_be_null': {
+      const missing = metrics.null_count ?? metrics.null_ratio;
+      if (typeof missing !== 'number') return undefined;
+      return missing === 0 && (referenceSemantics || !metrics.nan_count);
+    }
+    case 'expect_column_values_to_be_unique':
+      return typeof metrics.is_unique === 'boolean'
+        ? metrics.is_unique
+        : typeof metrics.unique_ratio === 'number'
+        ? metrics.unique_ratio === 1
+        : undefined;
+    case 'expect_column_values_to_be_in_type_list': {
+      const types = z.array(z.string()).parse(kwargs.type_list);
+      if (!numericTypes.every((type) => types.includes(type))) return undefined;
+      return properties.logicalType === 'numeric';
+    }
+    case 'expect_column_values_to_be_increasing':
+    case 'expect_column_values_to_be_decreasing': {
+      const direction = rule.endsWith('increasing') ? 'increasing' : 'decreasing';
+      const flag = property(metrics.monotonicity, kwargs.strictly === true ? `strictly_${direction}` : direction);
+      return typeof flag === 'boolean' ? flag : undefined;
+    }
+    case 'expect_column_values_to_be_between': {
+      const parseBound = (value: JsonValue | undefined) => {
+        if (value == null) return undefined;
+        const parsed =
+          kwargs.parse_strings_as_datetimes === true ? Date.parse(z.string().parse(value)) : z.number().parse(value);
+        if (!Number.isFinite(parsed)) throw new Error('Invalid expectation bound');
+        return parsed;
+      };
+      const low = parseBound(kwargs.min_value);
+      const high = parseBound(kwargs.max_value);
+      const observed = (value: JsonValue | undefined) =>
+        typeof value === 'number'
+          ? value
+          : value === 'Infinity'
+          ? Infinity
+          : value === '-Infinity'
+          ? -Infinity
+          : undefined;
+      const min = observed(metrics.min);
+      const max = observed(metrics.max);
+      if ((low !== undefined && min === undefined) || (high !== undefined && max === undefined)) return undefined;
+      return (low === undefined || min! >= low) && (high === undefined || max! <= high);
+    }
+    case 'expect_column_values_to_be_in_set': {
+      const allowed = new Set(z.array(z.union([z.string(), z.number(), z.boolean()])).parse(kwargs.value_set));
+      if (!Array.isArray(metrics.value_counts)) return undefined;
+      return metrics.value_counts.every((entry) => {
+        const value = property(entry, 'value');
+        return (
+          (typeof value === 'string' || typeof value === 'number' || typeof value === 'boolean') && allowed.has(value)
+        );
+      });
+    }
+    case 'expect_file_to_exist':
+      return Array.isArray(property(metrics.file_summary, 'files')) ? true : undefined;
+    default:
+      throw new Error(`Unknown profile expectation: ${rule}`);
+  }
+}
+
+export function validateProfileExpectations(input: unknown, suites: unknown) {
+  const profile = profileOutputSchema.parse(input);
+  const models = new Map(profile.models.map((model) => [model.name, model]));
+  const results = suiteInput.parse(suites).map((suite) => {
+    const model = models.get(suite.model);
+    const columns = new Map(model?.columns.map((column) => [column.name, column]));
+    const expectations = suite.expectations.map((expectation) => {
+      const column = expectation.kwargs.column;
+      const passes = validateExpectation(expectation, columns.get(column), profile.semantics === 'data-profiling');
+      return {
+        column,
+        expectation_type: expectation.expectation_type,
+        status: passes === undefined ? 'missing_evidence' : passes ? 'passed' : 'failed',
+      };
+    });
+    return { model: suite.model, expectation_suite_name: suite.expectation_suite_name, expectations };
+  });
+  return {
+    success: results.every(({ expectations }) => expectations.every(({ status }) => status === 'passed')),
+    results,
+  };
+}

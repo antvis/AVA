@@ -6,6 +6,7 @@ import * as profile from './commands/profile';
 import * as profileCompare from './commands/profile-compare';
 import * as profileReport from './commands/profile-report';
 import * as profileExpectations from './commands/profile-expectations';
+import * as profileValidate from './commands/profile-validate';
 import * as quality from './commands/quality';
 import * as semantic from './commands/semantic';
 import * as suggest from './commands/suggest';
@@ -26,6 +27,7 @@ const commands = {
   'profile-compare': profileCompare,
   'profile-report': profileReport,
   'profile-expectations': profileExpectations,
+  'profile-validate': profileValidate,
   quality,
   semantic,
   suggest,
