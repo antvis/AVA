@@ -20,7 +20,7 @@ node --version
 ava --help
 ```
 
-Requires Node.js ≥22.13 on macOS, Linux, or native Windows. `ava --help` should list `source`, `schema`, and `query`. For installation or runtime problems, read [Setup](references/setup.md).
+Requires Node.js ≥22.13. `ava --help` should list `source`, `schema`, and `query`. For installation or runtime problems, read [Setup](references/setup.md).
 
 Reuse available sessions and results. For a new file source, work in a task-specific directory. Use the PowerShell commands in [Setup](references/setup.md) on Windows:
 

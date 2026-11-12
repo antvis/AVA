@@ -46,7 +46,7 @@ ${accent('Options:')}
 Run "ava <command> --help" for command-specific usage.
 Commands return JSON; source shows a guide in terminals and JSON when piped.
 Errors go to stderr with exit code 1.
-Sessions expire after 30 idle minutes and support macOS, Linux, and Windows.`;
+Sessions expire after 30 idle minutes.`;
 
 type Write = (value: string) => void;
 

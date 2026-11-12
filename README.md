@@ -221,8 +221,6 @@ We evaluate AVA on established benchmarks to measure the accuracy and efficiency
 
 ## 🧩 More ways to use AVA
 
-The CLI runs on Node.js 22.13+ on macOS, Linux, and native Windows. Dataset sessions need background processes and use Unix sockets on macOS/Linux or named pipes on Windows.
-
 ### Use with an Agent
 
 Ask your AI agent:
