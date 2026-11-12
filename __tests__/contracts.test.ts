@@ -60,7 +60,7 @@ describe('public source contracts', () => {
     { type: 'json-file', options: { path: 'sales.json', options: { format: 'csv' } } },
   ])('rejects malformed native reader options before loading: %j', (config) => {
     expect(() => sourceInputSchema.parse(config)).toThrow(z.ZodError);
-    expect(() => startupSchema.parse({ source: config, llm: { model: 'unused' } })).toThrow(z.ZodError);
+    expect(() => startupSchema.parse({ sources: [config], llm: { model: 'unused' } })).toThrow(z.ZodError);
   });
 
   it('uses the same source contract in SDK and CLI without erasing the discriminant', async () => {
@@ -73,7 +73,7 @@ describe('public source contracts', () => {
     });
     const parsed = sourceInputSchema.parse(source);
     if (parsed.type === 'json') expect(parsed.options.data).toEqual(source.options.data);
-    expect(startupSchema.parse({ source, llm: { model: 'unused' } }).source).toEqual(parsed);
+    expect(startupSchema.parse({ sources: [source], llm: { model: 'unused' } }).sources).toEqual([parsed]);
     const ava = new AVA({ llm: { model: 'unused' }, engine: { type: 'javascript' } });
     try {
       await ava.source(source);
@@ -133,7 +133,7 @@ describe('source-to-chart contract flow', () => {
       const data = JSON.parse('[{"__proto__":"A","constructor":"B","prototype":"C","value":10}]');
       const source = { type: 'json' as const, options: { data } };
       expect(sourceInputSchema.parse(source)).toEqual(source);
-      expect(startupSchema.parse({ source, llm: { model: 'unused' } }).source).toEqual(source);
+      expect(startupSchema.parse({ sources: [source], llm: { model: 'unused' } }).sources).toEqual([source]);
       const ava = new node.AVA({ llm: { model: 'unused' }, engine: { type } });
       try {
         await ava.source(source);

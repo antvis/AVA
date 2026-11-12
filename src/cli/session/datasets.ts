@@ -20,15 +20,15 @@ export function disposeDataset(): Promise<void> {
 }
 
 export async function createDataset(
-  source: DataSourceConfig,
+  sources: DataSourceConfig[],
   llm: LLMConfig,
   engine?: EngineConfig['type']
 ): Promise<void> {
   if (ava || disposal) throw new Error('Dataset process has already been initialized.');
 
-  const remote = ['supabase', 'clickhouse', 'sqlserver', 'snowflake'].includes(source.type);
-  ava = new AVA({ llm, engine: { type: engine ?? (remote ? source.type : 'duckdb') } });
-  const loading = ava.source(source);
+  const remote = sources.find(({ type }) => ['supabase', 'clickhouse', 'sqlserver', 'snowflake'].includes(type));
+  ava = new AVA({ llm, engine: { type: engine ?? remote?.type ?? 'duckdb' } });
+  const loading = ava.source(sources);
   queue = loading.catch(() => undefined);
   try {
     await loading;

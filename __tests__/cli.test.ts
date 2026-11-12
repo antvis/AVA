@@ -180,7 +180,21 @@ describe('source', () => {
   ])('loads %s and returns the dataset ID as JSON', async (path, options, type, expectedPath) => {
     expect(JSON.parse(await execute(['source', path, ...options]))).toEqual({ datasetId });
     expect(createSession).toHaveBeenCalledExactlyOnceWith(
-      { type, options: { path: expectedPath } },
+      [{ type, options: { path: expectedPath } }],
+      { model: 'gpt-4o-mini' },
+      undefined
+    );
+  });
+
+  it('loads CSV, JSON, and Excel together in one session', async () => {
+    const url = 'https://example.com/customers.json';
+    expect(JSON.parse(await execute(['source', 'sales.csv', url, 'costs.xlsx']))).toEqual({ datasetId });
+    expect(createSession).toHaveBeenCalledExactlyOnceWith(
+      [
+        { type: 'csv-file', options: { path: resolve('sales.csv') } },
+        { type: 'json-file', options: { path: url } },
+        { type: 'excel', options: { path: resolve('costs.xlsx') } },
+      ],
       { model: 'gpt-4o-mini' },
       undefined
     );
@@ -209,7 +223,7 @@ describe('source', () => {
       const file = join(directory, 'source.json');
       await writeFile(file, JSON.stringify(config));
       await execute(['source', `@${file}`]);
-      expect(createSession).toHaveBeenCalledExactlyOnceWith(config, { model: 'gpt-4o-mini' }, undefined);
+      expect(createSession).toHaveBeenCalledExactlyOnceWith([config], { model: 'gpt-4o-mini' }, undefined);
       await expect(run(['source', `@${file}`, '--type', 'json-file'])).rejects.toThrow(
         '--type cannot be combined with a source config.'
       );
@@ -228,7 +242,7 @@ describe('source', () => {
         const config = { type: 'json', options: { data: [{ sales: 10 }] } };
         await writeFile(file, JSON.stringify(config));
         await execute(['source', `@${file}`, '--engine', engine]);
-        expect(createSession).toHaveBeenCalledExactlyOnceWith(config, { model: 'gpt-4o-mini' }, engine);
+        expect(createSession).toHaveBeenCalledExactlyOnceWith([config], { model: 'gpt-4o-mini' }, engine);
       } finally {
         await rm(directory, { recursive: true, force: true });
       }
@@ -256,7 +270,7 @@ describe('source', () => {
       };
       await writeFile(file, JSON.stringify(config));
       await execute(['source', `@${file}`]);
-      expect(createSession).toHaveBeenCalledExactlyOnceWith(config, { model: 'gpt-4o-mini' }, undefined);
+      expect(createSession).toHaveBeenCalledExactlyOnceWith([config], { model: 'gpt-4o-mini' }, undefined);
     } finally {
       await rm(directory, { recursive: true, force: true });
     }
@@ -281,7 +295,7 @@ describe('source', () => {
   it('selects Python for a file without changing its source type', async () => {
     await execute(['source', 'sales.csv', '--engine', 'python']);
     expect(createSession).toHaveBeenCalledExactlyOnceWith(
-      { type: 'csv-file', options: { path: resolve('sales.csv') } },
+      [{ type: 'csv-file', options: { path: resolve('sales.csv') } }],
       { model: 'gpt-4o-mini' },
       'python'
     );
@@ -314,7 +328,7 @@ describe('source', () => {
 
     expect(JSON.parse(await execute(['source', url]))).toEqual({ datasetId });
     expect(createSession).toHaveBeenCalledExactlyOnceWith(
-      { type: 'feishu-bitable', options: { url, appId: 'cli_test_app', appSecret: 'test-secret' } },
+      [{ type: 'feishu-bitable', options: { url, appId: 'cli_test_app', appSecret: 'test-secret' } }],
       { model: 'gpt-4o-mini' },
       undefined
     );
@@ -331,7 +345,7 @@ describe('source', () => {
 
       await execute(['source', `@${file}`]);
       expect(createSession).toHaveBeenCalledExactlyOnceWith(
-        { type: 'feishu-bitable', options: { url, appId: 'cli_test_app', appSecret: 'test-secret' } },
+        [{ type: 'feishu-bitable', options: { url, appId: 'cli_test_app', appSecret: 'test-secret' } }],
         { model: 'gpt-4o-mini' },
         undefined
       );
@@ -354,7 +368,7 @@ describe('source', () => {
 
     expect(JSON.parse(await execute(['source', url]))).toEqual({ datasetId });
     expect(createSession).toHaveBeenCalledExactlyOnceWith(
-      { type: 'feishu-bitable', options: { url, appId: 'cli_test_app', appSecret: 'test-secret' } },
+      [{ type: 'feishu-bitable', options: { url, appId: 'cli_test_app', appSecret: 'test-secret' } }],
       { model: 'gpt-4o-mini' },
       undefined
     );

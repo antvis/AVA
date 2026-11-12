@@ -101,14 +101,16 @@ await ava.source({
 
 ### Connect multiple sources
 
-Use `ava.source([...])` to connect multiple data sources in one call. A batch can combine [CSV](#csv), [JSON](#json), [Parquet](#parquet), [Excel](#excel), [text](#text), [SQLite](#sqlite), [MySQL](#mysql), [PostgreSQL](#postgresql), [MongoDB](#mongodb), and [Feishu Bitable](#feishu-bitable) sources.
+AVA can analyze data from [CSV](#csv), [JSON](#json), [Parquet](#parquet), [Excel](#excel), [text](#text), [SQLite](#sqlite), [MySQL](#mysql), [PostgreSQL](#postgresql), [MongoDB](#mongodb), and [Feishu Bitable](#feishu-bitable) together.
+
+In the Node.js SDK, use `ava.source([...])` to connect multiple data sources in one call.
 
 - Use a unique **`name`** for each source.
 - With two or more sources, `ava.schema()` lists tables as **`sourceName.tableName`**. A CSV source exposes one table named `data`, and an Excel workbook exposes one table per selected sheet.
 - **A single source** keeps its original table names whether passed as an object or a one-entry array.
 
 <Callout>
-  The default engine in the Node.js SDK supports batch loading. Each CLI session takes one source configuration.
+  Use the default engine to analyze multiple sources together. In the CLI, run `ava source A B C` to load sources into one session. See [CLI source inputs](/documentation/reference/cli/#source-inputs-and-engines).
 </Callout>
 
 ```typescript

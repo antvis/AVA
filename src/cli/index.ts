@@ -65,14 +65,16 @@ export async function run(argv: string[], write: Write = (value) => process.stdo
   }
 
   const handler = commands[command as keyof typeof commands];
-  const { values: args, options } = parse(input, handler.definition.options);
+  const { positionals, options: optionDefinitions } = handler.definition;
+  const { values: args, options } = parse(input, optionDefinitions);
 
   if (options.help) {
     write(handler.help);
     return;
   }
 
-  if (args.length !== handler.definition.positionals || args.some((arg) => !arg.trim())) {
+  const invalidCount = typeof positionals === 'number' ? args.length !== positionals : args.length < positionals.min;
+  if (invalidCount || args.some((arg) => !arg.trim())) {
     throw new Error(`Invalid arguments for "${command}".\n\n${handler.help}`);
   }
 

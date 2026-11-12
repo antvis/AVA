@@ -22,7 +22,7 @@ ava --help
 
 Requires Node.js ≥22.13. `ava --help` should list `source`, `schema`, and `query`. For installation or runtime problems, read [Setup](references/setup.md).
 
-Reuse available sessions and results. For a new file source, work in a task-specific directory. Use the PowerShell commands in [Setup](references/setup.md) on Windows:
+Reuse available sessions and results. For a new session, work in a task-specific directory. Use the PowerShell commands in [Setup](references/setup.md) on Windows:
 
 ```sh
 ava source /absolute/path/sales.csv > session.json
@@ -31,6 +31,8 @@ ava schema "$DATASET_ID" > schema.json
 # Read schema.json and establish Semantic below before writing query.sql.
 ava query "$DATASET_ID" --dsl @query.sql > result.json
 ```
+
+To analyze multiple sources together, pass their paths in the same `ava source` command, such as `ava source sales.csv customers.json`.
 
 Use `ava <command> --help` for flags. For reports, read [Reports](references/reports.md) before running queries so the recorder captures their evidence.
 

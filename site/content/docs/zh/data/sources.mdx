@@ -101,14 +101,16 @@ await ava.source({
 
 <Heading as="h3" id="connect-multiple-sources">接入多个数据源</Heading>
 
-用 `ava.source([...])` 一次接入多个数据源。同一批配置可以混合接入 [CSV](#csv)、[JSON](#json)、[Parquet](#parquet)、[Excel](#excel)、[文本](#text)、[SQLite](#sqlite)、[MySQL](#mysql)、[PostgreSQL](#postgresql)、[MongoDB](#mongodb) 和[飞书多维表格](#feishu-bitable)。
+AVA 支持同时分析来自 [CSV](#csv)、[JSON](#json)、[Parquet](#parquet)、[Excel](#excel)、[文本](#text)、[SQLite](#sqlite)、[MySQL](#mysql)、[PostgreSQL](#postgresql)、[MongoDB](#mongodb) 和[飞书多维表格](#feishu-bitable)的数据。
+
+在 Node.js SDK 中，使用 `ava.source([...])` 一次接入多个数据源。
 
 - 为每个数据源设置唯一的 **`name`**。
 - 接入两个或更多数据源时，`ava.schema()` 按 **`源名.表名`** 列出表。CSV 提供一张名为 `data` 的表，Excel 工作簿中的每张选定工作表各对应一张表。
 - **只接入一个数据源**时，配置对象和单元素数组都沿用原表名。
 
 <Callout>
-  批量接入适用于 Node.js SDK 的默认引擎。CLI 每个会话接收一份数据源配置。
+  多源分析使用默认引擎。CLI 可通过 `ava source A B C` 一次接入多个数据源。详见[命令行的数据源输入](/documentation/reference/cli/#source-inputs-and-engines)。
 </Callout>
 
 ```typescript
