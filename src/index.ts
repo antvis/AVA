@@ -46,6 +46,8 @@ export { AVA } from './ava';
 export { registerEngine } from './engines';
 
 export { executionResult } from './util/result';
+export { compareProfiles } from './util/profile-compare';
+export type { ProfileComparison } from './util/profile-compare';
 
 export type {
   EngineClass,

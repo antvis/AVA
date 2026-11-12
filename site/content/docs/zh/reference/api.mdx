@@ -311,6 +311,16 @@ DuckDB 中，分母为零时比例返回 `0`。默认分别统计 SQL NULL、NaN
 
 对象形式的指标必须提供字符串 `id`。引擎会拒绝未知指标或未列出的参数。`metrics: []` 返回结构和空的指标对象。每次计算都会替换上一次的画像。
 
+<Heading as="h3" id="compareprofiles">compareProfiles</Heading>
+
+`compareProfiles(before, after)` 校验两份已保存的画像，按名称对齐模型、列和指标，并返回两侧观测值与有限数值差。两份画像需使用相同统计口径，仅出现在一侧的模型和列也会保留。
+
+```typescript
+import { compareProfiles } from '@antv/ava';
+
+const comparison = compareProfiles(beforeProfile, afterProfile);
+```
+
 <Heading as="h3" id="quality">quality</Heading>
 
 ```typescript

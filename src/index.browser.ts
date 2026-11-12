@@ -35,6 +35,8 @@ export {
 } from './contracts';
 
 export { AVA } from './ava';
+export { compareProfiles } from './util/profile-compare';
+export type { ProfileComparison } from './util/profile-compare';
 export { registerEngine } from './engines';
 
 export type {

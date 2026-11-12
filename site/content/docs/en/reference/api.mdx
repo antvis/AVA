@@ -311,6 +311,16 @@ Table completeness shares the scan with column NULL counts, frequency metrics sh
 
 Metric objects require a string `id`. Engines reject unknown metrics and undocumented options. Use `metrics: []` to return the structure with empty metric objects. Each new profile replaces the previous observations.
 
+### compareProfiles
+
+`compareProfiles(before, after)` validates two saved profiles, aligns models, columns and metrics by name, and returns both observations and finite numeric deltas. The inputs must use matching metric semantics. Models and columns present in only one input remain visible in the comparison.
+
+```typescript
+import { compareProfiles } from '@antv/ava';
+
+const comparison = compareProfiles(beforeProfile, afterProfile);
+```
+
 ### quality
 
 ```typescript
