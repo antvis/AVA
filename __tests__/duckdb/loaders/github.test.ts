@@ -377,28 +377,25 @@ describe('transport', () => {
   });
 
   it.each([
-    [401, {}, 'Check that the token is valid and has not expired.'],
-    [
-      403,
-      { 'x-github-sso': 'required; url=https://github.com/orgs/acme/sso?r=1' },
-      'https://github.com/orgs/acme/sso?r=1',
-    ],
-    [403, {}, 'Check that the token can read this repository.'],
-    [404, {}, 'Check the repository name; private repositories need a token with read access.'],
-    [422, {}, 'See https://docs.github.com/rest'],
-  ])('explains HTTP %i without retrying or exposing the token', async (status, headers, hint) => {
+    [401, 'Bad credentials'],
+    [403, 'Resource not accessible by personal access token'],
+    [404, 'Not Found'],
+    [422, 'Validation Failed'],
+  ])('forwards the GitHub message and status for HTTP %i without retrying', async (status, message) => {
     const { fetch, list } = client(
-      [page({ message: 'Denied', documentation_url: 'https://docs.github.com/rest' }, status, headers)],
+      [page({ message, documentation_url: 'https://docs.github.com/rest' }, status)],
       'secret'
     );
-    const error = await list().catch((caught) => caught);
-    expect(error).toMatchObject({ name: 'GitHubError', status });
-    expect(error.message).toContain(
-      `GitHub rejected GET /repos/acme/widgets/issues?per_page=100&state=all (${status} Denied)`
-    );
-    expect(error.message).toContain(hint);
-    expect(error.message).not.toContain('secret');
-    expect(fetch).toHaveBeenCalledTimes(1);
+    await expect(list()).rejects.toMatchObject({ name: 'Error', message, status });
+    expect(fetch).toHaveBeenCalledOnce();
+  });
+
+  it.each([
+    ['Forbidden', 'Forbidden'],
+    ['', 'HTTP 403'],
+  ])('uses the HTTP status when an error response is not JSON (%s)', async (statusText, message) => {
+    const { list } = client([new Response('<html>', { status: 403, statusText })]);
+    await expect(list()).rejects.toMatchObject({ name: 'Error', message, status: 403 });
   });
 
   it('rejects invalid JSON and stops at the whole-load deadline', async () => {
@@ -621,9 +618,10 @@ describe('GitHub HTTP → loader → DuckDB', () => {
 
   it('reports a repository that does not exist or is not accessible', async () => {
     serveRepository();
-    await expect(load({ repository: 'acme/missing' })).rejects.toThrow(
-      'GitHub rejected GET /repos/acme/missing/issues?per_page=100&state=all (404 Not Found). Check the repository name'
-    );
+    await expect(load({ repository: 'acme/missing' })).rejects.toMatchObject({
+      message: 'Not Found',
+      status: 404,
+    });
   });
 });
 

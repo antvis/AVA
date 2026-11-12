@@ -39,15 +39,13 @@ export function nextLink(header: string | null): string | undefined {
   return undefined;
 }
 
-function detail(response: Response, text: string): { message: string; docs?: string } {
+function responseMessage(response: Response, text: string): string {
+  const fallback = response.statusText || `HTTP ${response.status}`;
   try {
-    const body = JSON.parse(text);
-    return {
-      message: typeof body?.message === 'string' && body.message ? body.message : response.statusText,
-      docs: typeof body?.documentation_url === 'string' ? body.documentation_url : undefined,
-    };
+    const { message } = JSON.parse(text) ?? {};
+    return typeof message === 'string' && message ? message : fallback;
   } catch {
-    return { message: response.statusText };
+    return fallback;
   }
 }
 
@@ -156,7 +154,7 @@ export class GitHubClient {
         }
       }
 
-      const { message, docs } = detail(response, text);
+      const message = responseMessage(response, text);
       const retryAfter = response.headers.get('retry-after');
       const rateLimited =
         response.status === 429 ||
@@ -176,7 +174,7 @@ export class GitHubClient {
         await this.wait(1000 * 2 ** transient++, url);
         continue;
       }
-      throw this.httpError(response, url, message, docs);
+      throw Object.assign(new Error(message), { status: response.status });
     }
   }
 
@@ -207,23 +205,6 @@ export class GitHubClient {
       `GitHub rate limit reached before GET ${describe(url)}${
         message ? ` (${status} ${message})` : ''
       }.${reset}${advice}`,
-      status
-    );
-  }
-
-  private httpError(response: Response, url: URL, message: string, docs?: string): GitHubError {
-    const { status } = response;
-    const context = `GET ${describe(url)} (${status} ${message})`;
-    const sso = /url=(\S+)/.exec(response.headers.get('x-github-sso') ?? '')?.[1];
-    const hints: Record<number, string> = {
-      401: 'Check that the token is valid and has not expired.',
-      403: sso
-        ? `Authorize the token for the organization's SAML single sign-on: ${sso}`
-        : 'Check that the token can read this repository.',
-      404: 'Check the repository name; private repositories need a token with read access.',
-    };
-    return new GitHubError(
-      `GitHub rejected ${context}. ${hints[status] ?? (docs ? `See ${docs}` : '')}`.trim(),
       status
     );
   }
