@@ -61,6 +61,7 @@ COLUMN_METRICS = {
 REFERENCE_TYPES = {"Numeric": "numeric", "Categorical": "string", "Text": "string", "Boolean": "boolean",
                    "DateTime": "date", "URL": "string", "Path": "string", "File": "string", "Unsupported": "unknown"}
 MISSING = object()
+os.environ.setdefault("LOKY_MAX_CPU_COUNT", "1")
 
 
 def fixtures():
@@ -120,6 +121,11 @@ def fixtures():
         "amount": [0., 4., 3., 5., 10., 7., -8., 2., 10., 11., 12., -12.],
         "flag": [True, False] * 6,
     }), {"code": "Categorical", "name": "Categorical", "description": "Text", "amount": "Numeric", "flag": "Boolean"}
+    yield "phi_k", pa.table({
+        "amount": [float(i % 80 + 20 * (i % 3)) for i in range(240)],
+        "segment": ["A", "B", "C"] * 80,
+        "flag": [i % 7 < 2 + (i % 3) for i in range(240)],
+    }), {"amount": "Numeric", "segment": "Categorical", "flag": "Boolean"}
 
 
 def json_value(value):
@@ -142,16 +148,16 @@ def json_value(value):
     return value
 
 
-def equal(left, right):
+def equal(left, right, abs_tol=1e-12):
     if isinstance(left, dict) and isinstance(right, dict):
-        return left.keys() == right.keys() and all(equal(left[key], right[key]) for key in left)
+        return left.keys() == right.keys() and all(equal(left[key], right[key], abs_tol) for key in left)
     if isinstance(left, list) and isinstance(right, list):
-        return len(left) == len(right) and all(equal(a, b) for a, b in zip(left, right))
+        return len(left) == len(right) and all(equal(a, b, abs_tol) for a, b in zip(left, right))
     if type(left) is bool or type(right) is bool:
         return type(left) is type(right) and left == right
     if isinstance(left, (int, float)) and isinstance(right, (int, float)):
         return left == right if isinstance(left, int) and isinstance(right, int) else math.isclose(
-            left, right, rel_tol=1e-10, abs_tol=1e-12,
+            left, right, rel_tol=1e-10, abs_tol=abs_tol,
         )
     return left == right
 
@@ -167,12 +173,16 @@ def cli(*args, payload=None):
     return json.loads(result.stdout)
 
 
-def compare(path, types, infer_types=False, file_root=None):
+def compare(path, types, infer_types=False, file_root=None, phik=False):
     metrics = [*TABLE_METRICS, *COLUMN_METRICS, "value_counts", "histogram", "quantiles", "nan_count", "word_counts",
                "character_counts", "unicode_summary", "monotonicity", "duplicate_count", "length_histogram", "mode", "mode_count",
                {"id": "row_duplicates", "limit": 0}, {"id": "row_sample", "head": 3, "tail": 3}]
     if "URL" in types.values():
         metrics.append("url_summary")
+    methods = ["pearson", "spearman", "kendall", "cramers", "auto"]
+    if phik:
+        metrics.append("phi_k")
+        methods.append("phi_k")
     if {"Path", "File"} & set(types.values()):
         metrics.append("path_summary")
     if file_root is not None:
@@ -201,8 +211,7 @@ def compare(path, types, infer_types=False, file_root=None):
               "url": {"active": "URL" in types.values()}, "path": {"active": bool({"Path", "File"} & set(types.values()))},
               "file": {"active": file_root is not None},
               "timeseries": {"pacf_acf_lag": 4}},
-        correlations={method: {"calculate": True, "threshold": 0.9}
-                      for method in ("pearson", "spearman", "kendall", "cramers", "auto")},
+        correlations={method: {"calculate": True, "threshold": 0.9} for method in methods},
     )
     frame = pd.read_parquet(path)
     integer_columns = {field.name for field in pq.read_schema(path) if pa.types.is_integer(field.type)}
@@ -211,12 +220,12 @@ def compare(path, types, infer_types=False, file_root=None):
         expected = ProfileReport(frame, config=config, type_schema=None if infer_types else types).get_description()
     checks = []
 
-    def check(name, received, reference):
+    def check(name, received, reference, abs_tol=1e-12):
         reference = json_value(reference)
         if received is MISSING:
             checks.append({"metric": name, "status": "missing_ava", "reference": reference})
             return
-        checks.append({"metric": name, "status": "match" if equal(received, reference) else "different",
+        checks.append({"metric": name, "status": "match" if equal(received, reference, abs_tol) else "different",
                        "ava": received, "reference": reference})
 
     summary = actual["metrics"]["table_summary"]
@@ -390,12 +399,13 @@ def compare(path, types, infer_types=False, file_root=None):
                                        for item in received], key=key)
                 check(f"{name}.{native}", received, sorted(frequencies, key=key))
 
-    for method in ("pearson", "spearman", "kendall", "cramers", "auto"):
+    for method in methods:
         native = actual["metrics"].get(method)
         reference = expected.correlations.get(method)
         if native is not None and reference is not None and set(native["columns"]) == set(reference.columns):
             columns = native["columns"]
-            check(f"table.{method}", native, {"columns": columns, "matrix": reference.loc[columns, columns].to_numpy()})
+            check(f"table.{method}", native, {"columns": columns, "matrix": reference.loc[columns, columns].to_numpy()},
+                  abs_tol=1e-5 if method == "phi_k" else 1e-12)
         else:
             check(f"table.{method}.columns", sorted(native["columns"]) if native and native["columns"] else None,
                   sorted(reference.columns) if reference is not None else None)
@@ -412,7 +422,7 @@ def main():
         for name, table, types in fixtures():
             path = Path(directory) / f"{name}.parquet"
             pq.write_table(table, path)
-            results[name], reference_warnings[name] = compare(path, types, infer_types=name == "inferred")
+            results[name], reference_warnings[name] = compare(path, types, infer_types=name == "inferred", phik=name == "phi_k")
         file_root = Path(directory).resolve() / "profile-files"
         file_root.mkdir()
         files = [file_root / name for name in ("first.txt", "second.csv", "third.bin")]

@@ -245,6 +245,7 @@ await ava.profile({
 | `kendall` | Table, numeric columns | Kendall tau-b matrix over finite pairs. Tied observations are included in the denominator correction. |
 | `cramers` | Table, category columns | Bias-corrected Cramér's V with Yates correction for 2 × 2 pairs. NULL and NaN are excluded. Returns `null` when fewer than two columns qualify. |
 | `auto` | Table, numeric and category columns | Spearman for numeric pairs, Cramér's V for pairs involving categories. Mixed pairs use right-closed equal-width bins. |
+| `phi_k` | Table | Phi-k correlation from contingency tables, with equal-width bins for numeric columns and bivariate normal calibration. |
 | `missing_correlation` | Table | Pearson correlations of missing-value masks. SQL NULL and NaN count as missing. Columns with constant masks are excluded. |
 | `missing_matrix` | Table | One string per row in scan order. Each selected column contributes `1` for SQL NULL or NaN and `0` for a present value. Includes column names and total row count. |
 | `valid_count` | Column | Number of non-NULL values. |
@@ -304,6 +305,10 @@ Table completeness shares the scan with column NULL counts, frequency metrics sh
 | `auto` | `columns` | Numeric, text and boolean columns | Non-empty list of distinct column names. |
 | `auto` | `maxCategories` | `100` | Upper bound on distinct values for text and boolean columns. |
 | `auto` | `bins` | `10` | Number of equal-width bins for mixed pairs. |
+| `phi_k` | `columns` | Supported columns | Non-empty list of distinct column names. |
+| `phi_k` | `maxCategories` | `100` | Upper bound on distinct values for nonnumeric columns. |
+| `phi_k` | `bins` | `10` | Number of equal-width bins for numeric columns. |
+| `phi_k` | `noiseCorrection` | `true` | Subtract the estimated contingency-table noise. |
 | `autocorrelation` | `orderBy` | DuckDB scan order | Column used to sort observations in ascending order. |
 | `autocorrelation` | `lags` | `100` | Requested maximum lag from 0 to 2048. The output is capped at half the finite sample size minus one, with lag zero retained. |
 | `time_series_gaps` | `orderBy` | Zero-based row positions | Numeric or date index column. |

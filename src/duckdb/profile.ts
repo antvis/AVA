@@ -6,7 +6,8 @@ import { sqlIdentifier, sqlQualifiedName, sqlStringLiteral } from '../util/sql';
 import { resolveMetric, table, column, logicalTypes, TOP_VALUES_OPTIONS } from '../util/profile';
 
 import { kendallPair } from './profile-kendall';
-import { cramersPair } from './profile-cramers';
+import { cramersPair, phiKPair } from './profile-cramers';
+import { phiKMatrix } from './profile-phik';
 import { chiSquareBins, chiSquareCounts, chiSquareResult, chiSquareSql } from './profile-chi-square';
 import { referenceQuantiles } from './profile-quantiles';
 import { unicodeSummary } from './profile-unicode';
@@ -309,13 +310,21 @@ function numericCorrelationFields(context: ExpressionContext): MetricField[] {
 
 const emptyCorrelation = 'struct_pack(columns := []::VARCHAR[], matrix := COALESCE(first(NULL), []::DOUBLE[][]))';
 
-function correlationMatrix(fields: MetricField[], coefficient: (i: number, j: number) => string): string {
+function correlationMatrix(
+  fields: MetricField[],
+  coefficient: (i: number, j: number) => string,
+  normalize = true
+): string {
   const columns = fields.map(({ name }) => sqlStringLiteral(name));
   const rows = fields.map(
     (_, i) => `[${fields.map((_, j) => coefficient(Math.min(i, j), Math.max(i, j))).join(', ')}]`
   );
-  return `struct_pack(columns := [${columns.join(', ')}], matrix := list_transform([${rows.join(', ')}],
-    lambda r: list_transform(r, lambda v: CASE WHEN isfinite(v) THEN greatest(-1, least(1, v)) END)))`;
+  const matrix = `[${rows.join(', ')}]`;
+  return `struct_pack(columns := [${columns.join(', ')}], matrix := ${
+    normalize
+      ? `list_transform(${matrix}, lambda r: list_transform(r, lambda v: CASE WHEN isfinite(v) THEN greatest(-1, least(1, v)) END))`
+      : matrix
+  })`;
 }
 
 function filterCorrelation(matrix: string, flags: string): string {
@@ -419,15 +428,19 @@ function rankCorrelation(context: ExpressionContext): string {
 function categoryCorrelation(context: ExpressionContext): string {
   const { columns, maxCategories = 100, bins = 10 } = context.metric;
   const automatic = context.metric.id === 'auto';
+  const phik = context.metric.id === 'phi_k';
   const fields = selectFields(context).filter(
     ({ logicalType, profileType }) =>
+      (phik && logicalType !== 'unknown') ||
       (logicalType === 'string' && (!profileType || profileType === 'Categorical')) ||
       logicalType === 'boolean' ||
       ((automatic || columns !== undefined) && logicalType === 'numeric')
   );
   if (columns && fields.length !== (columns as string[]).length) {
     throw new Error(
-      `${automatic ? 'Automatic correlation' : "Cramér's V"} requires text, boolean or numeric category columns`
+      phik
+        ? 'Phi-k requires supported columns'
+        : `${automatic ? 'Automatic correlation' : "Cramér's V"} requires text, boolean or numeric category columns`
     );
   }
   if (fields.length < 2) return 'first(NULL)';
@@ -440,17 +453,19 @@ function categoryCorrelation(context: ExpressionContext): string {
     const category = floatingPoint.test(type) ? withoutNaN(value) : value;
     return `${category} AS c${i}`;
   });
-  const numeric = fields.map(({ logicalType }) => automatic && logicalType === 'numeric');
-  const mixed = numeric.some(Boolean) && !numeric.every(Boolean);
+  const numeric = fields.map(({ logicalType }) => (automatic || phik) && logicalType === 'numeric');
+  const needsBins = numeric.some(Boolean) && (phik || !numeric.every(Boolean));
   const eligibility = fields.map((_, i) =>
     numeric[i] ? `count(DISTINCT c${i}) > 1` : `count(DISTINCT c${i}) BETWEEN 2 AND ${maxCategories}`
   );
   const bounds: string[] = [];
   const buckets: string[] = [];
   for (let i = 0; i < fields.length; i += 1) {
-    if (!numeric[i] || !mixed) continue;
+    if (!numeric[i] || !needsBins) continue;
     const value = `c${i}::DOUBLE`;
-    bounds.push(`min(${value}) FILTER (WHERE isfinite(${value})) AS lo${i},
+    const min = `min(${value}) FILTER (WHERE isfinite(${value}))`;
+    const lower = phik ? `(${min}) - greatest(1e-14 * abs(${min}), 2.2250738585072014e-308)` : min;
+    bounds.push(`${lower} AS lo${i},
       max(${value}) FILTER (WHERE isfinite(${value})) AS hi${i}`);
     const span = `(hi${i} - lo${i})`;
     const edge = (offset: string) => `(lo${i} + ${span} / ${bins} * (${offset}))`;
@@ -461,26 +476,28 @@ function categoryCorrelation(context: ExpressionContext): string {
           WHEN bucket < ${bins} - 1 AND ${value} > ${edge('bucket + 1')} THEN 1 ELSE 0 END)[1] END AS b${i}`);
   }
   const binned = `${input}_binned`;
-  const bin = (i: number) => `${mixed && numeric[i] ? 'b' : 'c'}${i}`;
+  const bin = (i: number) => `${needsBins && numeric[i] ? 'b' : 'c'}${i}`;
   const checks = numeric.flatMap((yes, i) => (yes ? [`count(*) FILTER (WHERE isinf(c${i}::DOUBLE)) = 0`] : []));
   const supported = checks.length ? checks.join(' AND ') : 'TRUE';
+  const categories = needsBins ? binned : input;
   const pairs: string[] = [];
   for (let i = 0; i < fields.length; i += 1) {
     for (let j = i + 1; j < fields.length; j += 1) {
       const active = `(SELECT supported AND flags[${i + 1}] AND flags[${j + 1}] FROM eligibility)`;
-      const pair =
-        numeric[i] && numeric[j]
-          ? spearmanPair(input, `c${i}::DOUBLE`, `c${j}::DOUBLE`, active)
-          : cramersPair(mixed ? binned : input, bin(i), bin(j), active, automatic);
+      const pair = phik
+        ? phiKPair(categories, bin(i), bin(j), active)
+        : numeric[i] && numeric[j]
+        ? spearmanPair(input, `c${i}::DOUBLE`, `c${j}::DOUBLE`, active)
+        : cramersPair(categories, bin(i), bin(j), active, automatic);
       pairs.push(`(${pair}) AS p${i}_${j}`);
     }
   }
-  const matrix = correlationMatrix(fields, (i, j) => (i === j ? '1::DOUBLE' : `p${i}_${j}`));
+  const matrix = correlationMatrix(fields, (i, j) => (i === j ? (phik ? 'NULL' : '1::DOUBLE') : `p${i}_${j}`), !phik);
   return `first((WITH ${input} AS MATERIALIZED (SELECT ${projection.join(', ')} FROM ${context.table}),
     eligibility AS (SELECT [${eligibility.join(', ')}] AS flags, ${supported} AS supported
       ${bounds.length ? `, ${bounds.join(', ')}` : ''} FROM ${input}),
     ${
-      mixed
+      needsBins
         ? `${binned} AS MATERIALIZED (SELECT ${input}.*, ${buckets.join(', ')} FROM ${input} CROSS JOIN eligibility),`
         : ''
     }
@@ -599,7 +616,7 @@ export const BUILTIN_METRICS: DuckDBMetric[] = [
     },
     expression: missingMatrix,
   },
-  ...['cramers', 'auto'].map(
+  ...['cramers', 'auto', 'phi_k'].map(
     (id): DuckDBMetric => ({
       id,
       enable: table,
@@ -610,11 +627,20 @@ export const BUILTIN_METRICS: DuckDBMetric[] = [
             z.number().int().nonnegative().parse(value);
           },
         },
-        ...(id === 'auto'
+        ...(id !== 'cramers'
           ? {
               bins: {
                 validate: (value: unknown) => {
                   z.number().int().positive().parse(value);
+                },
+              },
+            }
+          : {}),
+        ...(id === 'phi_k'
+          ? {
+              noiseCorrection: {
+                validate: (value: unknown) => {
+                  z.boolean().parse(value);
                 },
               },
             }
@@ -1042,6 +1068,7 @@ const sensitiveMetrics = new Set([
   'kendall',
   'cramers',
   'auto',
+  'phi_k',
   'missing_correlation',
   'missing_matrix',
   'autocorrelation',
@@ -1063,6 +1090,8 @@ async function postProcessMetrics(
     if (metricId === 'top_values' && raw == null) continue;
     if (metricId === 'chi_squared') {
       output[metricId] = chiSquareResult(raw as Parameters<typeof chiSquareResult>[0]);
+    } else if (metricId === 'phi_k') {
+      output[metricId] = phiKMatrix(raw as Parameters<typeof phiKMatrix>[0], metric.noiseCorrection !== false);
     } else if (metricId === 'autocorrelation') {
       output[metricId] = autocorrelationResult(raw as Parameters<typeof autocorrelationResult>[0]);
     } else if (metricId === 'frequency_spectrum') {

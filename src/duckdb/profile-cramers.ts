@@ -1,6 +1,4 @@
-/** Bias-corrected Cramér's V with Yates correction for 2 × 2 tables. */
-export function cramersPair(input: string, left: string, right: string, active: string, emptyIsZero = false): string {
-  const coefficient = 'SELECT CASE WHEN denominator = 0 THEN 1 ELSE sqrt(phi / denominator) END FROM corrected';
+function contingency(input: string, left: string, right: string, active: string): string {
   return `WITH cells AS MATERIALIZED (
     SELECT ${left} AS x, ${right} AS y, count(*)::DOUBLE AS weight FROM ${input}
     WHERE ${left} IS NOT NULL AND ${right} IS NOT NULL AND ${active} GROUP BY 1, 2
@@ -18,10 +16,22 @@ export function cramersPair(input: string, left: string, right: string, active: 
       SELECT sum(weight * weight * n / (nx * ny)) - n
       FROM cells JOIN left_counts USING (x) JOIN right_counts USING (y)
     ) END AS chi_squared FROM totals
-  ), corrected AS (
+  )`;
+}
+
+/** Bias-corrected Cramér's V with Yates correction for 2 × 2 tables. */
+export function cramersPair(input: string, left: string, right: string, active: string, emptyIsZero = false): string {
+  const coefficient = 'SELECT CASE WHEN denominator = 0 THEN 1 ELSE sqrt(phi / denominator) END FROM corrected';
+  return `${contingency(input, left, right, active)}, corrected AS (
     SELECT n, greatest(0, chi_squared / n - (r - 1) * (k - 1) / (n - 1)) AS phi,
       least(r - 1 - pow(r - 1, 2) / (n - 1), k - 1 - pow(k - 1, 2) / (n - 1)) AS denominator
     FROM statistics WHERE n > 1
   )
   ${emptyIsZero ? `SELECT CASE WHEN n = 0 THEN 0 ELSE (${coefficient}) END FROM totals` : coefficient}`;
+}
+
+export function phiKPair(input: string, left: string, right: string, active: string): string {
+  return `${contingency(input, left, right, active)}
+    SELECT struct_pack(n := n, rows := r, columns := k, chi_squared := greatest(0, chi_squared))
+    FROM statistics WHERE r > 1 AND k > 1`;
 }

@@ -70,7 +70,7 @@ export function assessQuality(profile: Profile, options: QualityOptions): Qualit
 
       if (!rules || rules.has('high_correlation')) {
         const correlated = new Map<string, Alert>();
-        for (const method of ['pearson', 'spearman', 'kendall', 'cramers', 'auto']) {
+        for (const method of ['pearson', 'spearman', 'kendall', 'cramers', 'auto', 'phi_k']) {
           const correlation = correlationMatrix.safeParse(metrics[method]);
           if (!correlation.success) continue;
           const { columns: names, matrix } = correlation.data;
