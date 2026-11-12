@@ -30,7 +30,7 @@ export function chiSquareSql(counts: string, bins?: string): string {
 }
 
 // Regularized upper incomplete gamma, using the series below a+1 and a continued fraction above it.
-function gammaSurvival(a: number, x: number, logGamma: number): number {
+export function gammaSurvival(a: number, x: number, logGamma: number): number {
   if (x === 0) return 1;
   const scale = Math.exp(a * Math.log(x) - x - logGamma);
   const tolerance = 2e-15;

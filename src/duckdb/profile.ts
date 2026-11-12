@@ -13,6 +13,7 @@ import { autocorrelationResult, autocorrelationSql } from './profile-autocorrela
 import { timeGapsSql } from './profile-time-gaps';
 import { dateValidationSql, parseDateSql } from './profile-dates';
 import { frequencySpectrum } from './profile-spectrum';
+import { augmentedDickeyFuller } from './profile-adf';
 import {
   characterCountsSql,
   lengthCountsSql,
@@ -221,6 +222,13 @@ function orderField({ fields, metric }: ExpressionContext): MetricField | undefi
   const field = fields?.find(({ name }) => name === metric.orderBy);
   if (!field) throw new Error(`Unknown ${metric.id} order column: ${metric.orderBy}`);
   return field;
+}
+
+function orderedValuesSql(context: ExpressionContext): string {
+  const index = orderField(context);
+  const order = index ? ` ORDER BY ${sqlQualifiedName(index.name, context.sourceAlias)} NULLS LAST` : '';
+  const value = `TRY_CAST(${context.column} AS DOUBLE)`;
+  return `coalesce(list(${value}${order}) FILTER (WHERE isfinite(${value})), [])`;
 }
 
 function selectFields({ fields = [], metric }: ExpressionContext): ProfileField[] {
@@ -717,12 +725,30 @@ export const BUILTIN_METRICS: DuckDBMetric[] = [
         },
       },
     },
-    expression: (context) => {
-      const index = orderField(context);
-      const order = index ? ` ORDER BY ${sqlQualifiedName(index.name, context.sourceAlias)} NULLS LAST` : '';
-      const value = `TRY_CAST(${context.column} AS DOUBLE)`;
-      return `coalesce(list(${value}${order}) FILTER (WHERE isfinite(${value})), [])`;
+    expression: orderedValuesSql,
+  },
+  {
+    id: 'adf',
+    enable: logicalTypes('numeric'),
+    options: {
+      orderBy: orderByOption,
+      maxLag: {
+        validate: (value) => {
+          z.number().int().nonnegative().parse(value);
+        },
+      },
+      autolag: {
+        validate: (value) => {
+          z.enum(['AIC', 'BIC', 't-stat']).nullable().parse(value);
+        },
+      },
+      significance: {
+        validate: (value) => {
+          z.number().min(0).max(1).parse(value);
+        },
+      },
     },
+    expression: orderedValuesSql,
   },
   { id: 'min', enable: logicalTypes('numeric', 'date'), expression: (context) => range('min', context) },
   { id: 'max', enable: logicalTypes('numeric', 'date'), expression: (context) => range('max', context) },
@@ -940,6 +966,14 @@ function postProcessMetrics(
       output[metricId] = autocorrelationResult(raw as Parameters<typeof autocorrelationResult>[0]);
     } else if (metricId === 'frequency_spectrum') {
       output[metricId] = frequencySpectrum(raw as number[], (metric.madThreshold as number | undefined) ?? 6);
+    } else if (metricId === 'adf') {
+      const { maxLag, autolag = 'AIC', significance = 0.05 } = metric;
+      output[metricId] = augmentedDickeyFuller(
+        raw as number[],
+        maxLag as number | undefined,
+        autolag as Parameters<typeof augmentedDickeyFuller>[2],
+        significance as number
+      );
     } else if (metricId === 'unicode_summary') {
       output[metricId] = unicodeSummary(raw as Parameters<typeof unicodeSummary>[0], unicodeProperties!);
     } else if (metricId === 'median_length' && referenceSemantics) {

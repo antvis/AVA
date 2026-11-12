@@ -17,7 +17,7 @@ import pyarrow.parquet as pq
 import scipy
 from data_profiling import ProfileReport, __version__
 from data_profiling.config import Settings
-from data_profiling.model.pandas.describe_timeseries_pandas import compute_gap_stats, get_fft, get_fft_peaks
+from data_profiling.model.pandas.describe_timeseries_pandas import compute_gap_stats, get_fft, get_fft_peaks, stationarity_test
 from data_profiling.visualisation.charts.builders import acf_pacf
 
 
@@ -172,6 +172,7 @@ def compare(path, types):
         metrics.append({"id": "autocorrelation", "orderBy": "time", "lags": 4})
         metrics.append({"id": "time_series_gaps", "orderBy": "time"})
         metrics.append({"id": "frequency_spectrum", "orderBy": "time"})
+        metrics.append({"id": "adf", "orderBy": "time"})
     dataset = cli("source", str(path), "--engine", "duckdb")["datasetId"]
     try:
         actual = cli("profile", dataset, "--options", "-", payload={
@@ -325,6 +326,12 @@ def compare(path, types):
             check(f"{name}.frequency_spectrum.threshold", spectrum["threshold"], threshold)
             check(f"{name}.frequency_spectrum.periods", spectrum["periods"], (1 / selected["freq"]).tolist())
             check(f"{name}.frequency_spectrum.seasonal", spectrum["seasonal"], not selected.empty)
+        if "adf" in observed:
+            with warnings.catch_warnings(record=True) as adf_warnings:
+                stationary, probability = stationarity_test(config, frame.sort_values("time")[name])
+            emitted.extend(adf_warnings)
+            check(f"{name}.adf.pvalue", observed["adf"]["pvalue"], probability)
+            check(f"{name}.adf.stationary", observed["adf"]["stationary"], stationary)
         if "n_characters" in reference:
             unicode = observed["unicode_summary"]
             check(f"{name}.character_count", unicode["character_count"], reference["n_characters"])

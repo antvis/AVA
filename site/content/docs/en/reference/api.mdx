@@ -264,6 +264,7 @@ await ava.profile({
 | `autocorrelation` | Numeric | ACF and unadjusted Yule–Walker PACF with 95% confidence intervals on the finite observations. |
 | `time_series_gaps` | Numeric | Gaps larger than twice the mean positive interval between observed rows, including the endpoints and gap statistics. Date indexes and durations use milliseconds. |
 | `frequency_spectrum` | Numeric | Positive FFT frequencies and power in decibels, detected peaks, selected seasonal peaks, and periods in observations. |
+| `adf` | Numeric | Augmented Dickey–Fuller statistic with constant, MacKinnon p-value, used lag, effective observations, and stationarity by the p-value threshold. Short or singular series return `null`. |
 | `chi_squared` | Numeric, date, text | Chi-square goodness-of-fit `{ statistic, pvalue }` against uniform frequencies. Text uses category counts. Numeric and date columns use automatic equal-width bins over finite observations. |
 | `zero_count`, `zero_ratio` | Numeric | Zero values and their share of all rows. |
 | `negative_count`, `negative_ratio` | Numeric | Negative values, including negative infinity, and their share of all rows. |
@@ -304,6 +305,10 @@ Table completeness shares the scan with column NULL counts, frequency metrics sh
 | `time_series_gaps` | `orderBy` | Zero-based row positions | Numeric or date index column. |
 | `frequency_spectrum` | `orderBy` | DuckDB scan order | Column used to sort observations in ascending order. |
 | `frequency_spectrum` | `madThreshold` | `6` | Mean absolute deviation multiplier for the spectral peak threshold. |
+| `adf` | `orderBy` | DuckDB scan order | Column used to sort observations in ascending order. |
+| `adf` | `maxLag` | Sample-dependent | Maximum lag for regression. |
+| `adf` | `autolag` | `AIC` | Lag selection with `AIC`, `BIC`, or `t-stat`. Use `null` to fit the maximum lag. |
+| `adf` | `significance` | `0.05` | P-value threshold for the stationarity test. |
 | `missing_correlation` | `columns` | All columns | Non-empty list of distinct column names. Returns `null` when fewer than two columns have both missing and present values. |
 | `quantiles` | `probabilities` | `[0.05, 0.25, 0.5, 0.75, 0.95]` | Non-empty array of numbers in `[0, 1]`. |
 | `histogram` | `bins` | `50` | Non-negative integer. Use `0` for automatic Sturges/Freedman–Diaconis selection. |
