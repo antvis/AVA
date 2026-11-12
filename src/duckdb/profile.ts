@@ -58,6 +58,7 @@ const logicalProfileTypes: Record<ProfileType, LogicalType> = {
   Text: 'string',
   Boolean: 'boolean',
   DateTime: 'date',
+  TimeSeries: 'numeric',
   URL: 'string',
   Path: 'string',
   File: 'string',
@@ -242,11 +243,33 @@ const orderByOption = {
   },
 };
 
-function orderField({ fields, metric }: ExpressionContext): MetricField | undefined {
+function orderField({ fields, metric }: ExpressionContext): ProfileField | undefined {
   if (metric.orderBy === undefined) return undefined;
   const field = fields?.find(({ name }) => name === metric.orderBy);
   if (!field) throw new Error(`Unknown ${metric.id} order column: ${metric.orderBy}`);
   return field;
+}
+
+function timeIndex(context: ExpressionContext): string {
+  const { fields = [], sourceAlias, nanAsNull } = context;
+  const index = orderField(context);
+  const series = fields
+    .filter(({ profileType }) => profileType === 'TimeSeries')
+    .map((field) => `(count(${profileValue(field, sourceAlias, nanAsNull)}) > 0)::INTEGER`);
+  const seriesCount = series.length ? series.join(' + ') : '0';
+  if (!index)
+    return `struct_pack(n_series := ${seriesCount}, length := count(*)::DOUBLE,
+    start := CASE WHEN count(*) > 0 THEN 0 END, "end" := CASE WHEN count(*) > 0 THEN (count(*) - 1)::DOUBLE END,
+    period := CASE WHEN count(*) > 1 THEN 1 END)`;
+  const column = profileValue(index, sourceAlias, nanAsNull);
+  let position = column;
+  if (index.logicalType === 'date') position = `epoch_ms(${dateValue({ column, field: index })})`;
+  else if (index.logicalType !== 'numeric') throw new Error('time_index requires a numeric or date order column');
+  const valid = `FILTER (WHERE isfinite(${position}))`;
+  const lo = `(min(${position}) ${valid})::DOUBLE`;
+  const hi = `(max(${position}) ${valid})::DOUBLE`;
+  return `struct_pack(n_series := ${seriesCount}, length := count(*)::DOUBLE, start := ${lo}, "end" := ${hi},
+    period := CASE WHEN count(*) > 1 AND count(${position}) ${valid} = count(*) THEN (${hi} - ${lo}) / (count(*) - 1) END)`;
 }
 
 function orderedValuesSql(context: ExpressionContext): string {
@@ -584,6 +607,7 @@ function histogramExpression(context: ExpressionContext): string {
 export const BUILTIN_METRICS: DuckDBMetric[] = [
   { id: 'row_count', enable: table, expression: () => 'COUNT(*)' },
   { id: 'table_summary', enable: table, expression: tableSummary },
+  { id: 'time_index', enable: table, options: { orderBy: orderByOption }, expression: timeIndex },
   {
     id: 'row_sample',
     enable: table,
@@ -1055,6 +1079,7 @@ export { DEFAULT_METRICS } from '../util/profile';
 const sensitiveMetrics = new Set([
   'row_count',
   'table_summary',
+  'time_index',
   'valid_count',
   'null_count',
   'null_ratio',

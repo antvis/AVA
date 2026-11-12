@@ -19,6 +19,7 @@ from PIL import Image
 from data_profiling import ProfileReport, __version__
 from data_profiling.config import Settings
 from data_profiling.model.pandas.describe_timeseries_pandas import compute_gap_stats, get_fft, get_fft_peaks, stationarity_test
+from data_profiling.model.pandas.timeseries_index_pandas import pandas_get_time_index_description
 from data_profiling.visualisation.charts.builders import acf_pacf
 
 
@@ -61,7 +62,7 @@ COLUMN_METRICS = {
 }
 REFERENCE_TYPES = {"Numeric": "numeric", "Categorical": "string", "Text": "string", "Boolean": "boolean",
                    "DateTime": "date", "URL": "string", "Path": "string", "File": "string", "Image": "string",
-                   "Unsupported": "unknown"}
+                   "TimeSeries": "numeric", "Unsupported": "unknown"}
 MISSING = object()
 os.environ.setdefault("LOKY_MAX_CPU_COUNT", "1")
 
@@ -115,7 +116,7 @@ def fixtures():
     yield "seasonal", pa.table({
         "time": pa.array([datetime(2026, 1, 1) + timedelta(hours=int(i)) for i in t], type=pa.timestamp("ns")),
         "signal": signal,
-    }), {"time": "DateTime", "signal": "Numeric"}
+    }), {"time": "DateTime", "signal": "TimeSeries"}
     yield "inferred", pa.table({
         "code": [1, 3, 3, 1, 2, 2, 3, 3, 2, 1, 1, 3],
         "name": ["North", "South", "East", "North", "North", "South", "East", "North", "North", "South", "North", "South"],
@@ -192,6 +193,7 @@ def compare(path, types, infer_types=False, file_root=None, phik=False):
         metrics.append({"id": "image_summary", "root": str(file_root), "exif": True}
                        if has_image else {"id": "file_summary", "root": str(file_root)})
     if "time" in types:
+        metrics.append({"id": "time_index", "orderBy": "time"})
         metrics.append({"id": "autocorrelation", "orderBy": "time", "lags": 4})
         metrics.append({"id": "time_series_gaps", "orderBy": "time"})
         metrics.append({"id": "frequency_spectrum", "orderBy": "time"})
@@ -215,14 +217,15 @@ def compare(path, types, infer_types=False, file_root=None, phik=False):
               "url": {"active": "URL" in types.values()},
               "path": {"active": bool({"Path", "File", "Image"} & set(types.values()))},
               "file": {"active": file_root is not None}, "image": {"active": has_image, "exif": has_image},
-              "timeseries": {"pacf_acf_lag": 4}},
+              "timeseries": {"pacf_acf_lag": 4, "active": "TimeSeries" in types.values()}},
         correlations={method: {"calculate": True, "threshold": 0.9} for method in methods},
     )
     frame = pd.read_parquet(path)
     integer_columns = {field.name for field in pq.read_schema(path) if pa.types.is_integer(field.type)}
     with warnings.catch_warnings(record=True) as emitted:
         warnings.simplefilter("always")
-        expected = ProfileReport(frame, config=config, type_schema=None if infer_types else types).get_description()
+        expected = ProfileReport(frame, config=config, tsmode="TimeSeries" in types.values(),
+                                 type_schema=None if infer_types else types).get_description()
     checks = []
 
     def check(name, received, reference, abs_tol=1e-12):
@@ -242,6 +245,9 @@ def compare(path, types, infer_types=False, file_root=None, phik=False):
         logical: sum(REFERENCE_TYPES[description["type"]] == logical for description in expected.variables.values())
         for logical in set(REFERENCE_TYPES.values())
     })
+    if "time_index" in actual["metrics"]:
+        expected_index = pandas_get_time_index_description(config, frame.sort_values("time").set_index("time"), expected.table)
+        check("table.time_index", actual["metrics"]["time_index"], expected_index)
     check("table.row_duplicates.group_count", actual["metrics"]["row_duplicates"]["group_count"], expected.table["n_duplicates"])
     check("quality.uniform", sorted(alert["column"] for alert in quality if alert["rule"] == "uniform"),
           sorted(alert.column_name for alert in expected.alerts if alert.alert_type.name == "UNIFORM"))

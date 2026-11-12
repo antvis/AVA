@@ -196,7 +196,7 @@ Requires a loaded source. Both paths replace the saved profile, which analysis, 
 
 A profile attaches observations to existing schema models and columns by name:
 
-DuckDB type overrides use `Numeric`, `Categorical`, `Text`, `Boolean`, `DateTime`, `URL`, `Path`, `File`, `Image`, or `Unsupported`. Overridden columns include `properties.profileType` in the profile output.
+DuckDB type overrides use `Numeric`, `Categorical`, `Text`, `Boolean`, `DateTime`, `TimeSeries`, `URL`, `Path`, `File`, `Image`, or `Unsupported`. Overridden columns include `properties.profileType` in the profile output.
 
 | Field | Meaning |
 | --- | --- |
@@ -239,6 +239,7 @@ await ava.profile({
 | Metric | Applies to | Result |
 | --- | --- | --- |
 | `table_summary` | Table | Row and column counts, NULL cell count and ratio, columns with NULLs, all-NULL columns, and counts by logical type. An empty table has no all-NULL columns. Under `data-profiling` semantics, columns with no observed values have logical type `unknown`. |
+| `time_index` | Table | Number of time-series columns, index length, endpoints and mean interval. Date values and durations use milliseconds. |
 | `row_duplicates` | Table | Repeated group count, group count / total rows, rows in repeated groups, rows removable by deduplication, and samples sorted by count and key. |
 | `row_sample` | Table | First, last, and random rows with zero-based positions in DuckDB's scan order. Random selection is without replacement. |
 | `pearson` | Table, numeric columns | Symmetric `{ columns, matrix }`. Each pair uses rows where both values are finite. Constant columns and insufficient pairs yield `null`. |
@@ -314,6 +315,7 @@ Table completeness shares the scan with column NULL counts, frequency metrics sh
 | `autocorrelation` | `orderBy` | DuckDB scan order | Column used to sort observations in ascending order. |
 | `autocorrelation` | `lags` | `100` | Requested maximum lag from 0 to 2048. The output is capped at half the finite sample size minus one, with lag zero retained. |
 | `time_series_gaps` | `orderBy` | Zero-based row positions | Numeric or date index column. |
+| `time_index` | `orderBy` | Zero-based row positions | Numeric or date index column. |
 | `frequency_spectrum` | `orderBy` | DuckDB scan order | Column used to sort observations in ascending order. |
 | `frequency_spectrum` | `madThreshold` | `6` | Mean absolute deviation multiplier for the spectral peak threshold. |
 | `adf` | `orderBy` | DuckDB scan order | Column used to sort observations in ascending order. |

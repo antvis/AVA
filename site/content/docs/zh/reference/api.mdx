@@ -196,7 +196,7 @@ Setter 接收选项对象（默认 `{}`），同步返回 `Profile`，不要求�
 
 <h4 id="profile-format">Profile 格式</h4>
 
-DuckDB 类型覆写支持 `Numeric`、`Categorical`、`Text`、`Boolean`、`DateTime`、`URL`、`Path`、`File`、`Image` 和 `Unsupported`。已覆写的列会返回 `properties.profileType`。
+DuckDB 类型覆写支持 `Numeric`、`Categorical`、`Text`、`Boolean`、`DateTime`、`TimeSeries`、`URL`、`Path`、`File`、`Image` 和 `Unsupported`。已覆写的列会返回 `properties.profileType`。
 
 Profile 通过名称，将统计信息附加到已有的 schema 模型和列上：
 
@@ -241,6 +241,7 @@ await ava.profile({
 | 指标 | 适用范围 | 含义 |
 | --- | --- | --- |
 | `table_summary` | 表 | 行列数、SQL NULL 单元格数与占比、含 NULL 的列数、全 NULL 列数及各逻辑类型的列数。空表的全 NULL 列数为零。`data-profiling` 模式中，没有有效观测的列的逻辑类型为 `unknown`。 |
+| `time_index` | 表 | 时序列数量、索引长度、端点和平均间隔。日期和时长使用毫秒。 |
 | `row_duplicates` | 表 | 重复组数、重复组数占总行数的比例、组内总行数、去重后会移除的行数，以及按频次和键排序的样本。 |
 | `row_sample` | 表 | 首部、尾部和随机样本，含按 DuckDB 扫描顺序计算的零起始行号。随机样本无放回。 |
 | `pearson` | 表中的数值列 | 对称相关矩阵 `{ columns, matrix }`。每对列使用两边均为有限值的行。常量列或样本不足时返回 `null`。 |
@@ -316,6 +317,7 @@ DuckDB 中，分母为零时比例返回 `0`。默认分别统计 SQL NULL、NaN
 | `autocorrelation` | `orderBy` | DuckDB 扫描顺序 | 对观测值作升序排序的列。 |
 | `autocorrelation` | `lags` | `100` | 请求的最大滞后阶数，范围为 0 到 2048。输出上限为有限样本数的一半减一，至少保留 0 阶。 |
 | `time_series_gaps` | `orderBy` | 零起始行号 | 数值或日期索引列。 |
+| `time_index` | `orderBy` | 零起始行号 | 数值或日期索引列。 |
 | `frequency_spectrum` | `orderBy` | DuckDB 扫描顺序 | 对观测值作升序排序的列。 |
 | `frequency_spectrum` | `madThreshold` | `6` | 计算频谱峰值阈值的平均绝对偏差倍数。 |
 | `adf` | `orderBy` | DuckDB 扫描顺序 | 对观测值作升序排序的列。 |

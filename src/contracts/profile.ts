@@ -9,6 +9,7 @@ const profileTypeSchema = z.enum([
   'Text',
   'Boolean',
   'DateTime',
+  'TimeSeries',
   'URL',
   'Path',
   'File',
