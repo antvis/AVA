@@ -1,4 +1,6 @@
-AVA reads fields and records from one Tencent Docs SmartSheet subtable. It supports common field types such as text, numbers, dates, and single select.
+AVA reads records from one Tencent Docs SmartSheet subtable. It supports text, numbers, checkboxes, dates, creation and modification times, progress, phone numbers, email, single select, currency, and percentages. Other fields, such as images and multiple select, are skipped. Loading fails if an integer's absolute value exceeds 9,007,199,254,740,991.
+
+The Tencent Docs OpenAPI returns records in pages and provides no parameter to pin them to one version. If someone edits the table during loading, pages may reflect different points in time. For results you need to reconcile, load the table after edits have stopped. [Tencent Docs pagination parameters](https://docs.qq.com/open/document/app/openapi/v2/smartsheet/record/params.html#getrecordsrequest)
 
 ## Connect Tencent Docs
 
@@ -39,7 +41,7 @@ To analyze the subtable alongside other sources, add `"name": "tencent"` at the 
 | `clientId` | Yes | The `client_id` from the Open Platform. |
 | `openId` | Yes | The `open_id` from the Open Platform. |
 | `accessToken` | Yes | The `access_token` from the Open Platform. |
-| `maxRecords` | No | Maximum records per load. Defaults to 10,000 and accepts 1–100,000. Exceeding the limit fails the load. |
+| `maxRecords` | No | Maximum records per load. Defaults to 10,000 and accepts 1–100,000. Wide tables may reach the cell or data size limit first. |
 | `timeoutMs` | No | Time limit for the whole load in milliseconds. Defaults to 60,000 and accepts 1–110,000. |
 | `pageSize` | No | Fields or records per request. Defaults to 100 and accepts 1–100. |
 | `maxRetries` | No | Retries for transient errors. Defaults to 2 and accepts 0–5. |

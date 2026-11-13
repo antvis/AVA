@@ -313,14 +313,17 @@ describe('Tencent Docs read limits and orchestration', () => {
 
   it('aborts a stalled request, clears its timer and does not expose a partial engine', async () => {
     vi.useFakeTimers();
-    const requestStarted = Promise.withResolvers<void>();
+    let signalRequestStarted: () => void;
+    const requestStarted = new Promise<void>((resolve) => {
+      signalRequestStarted = resolve;
+    });
     vi.stubGlobal(
       'fetch',
       vi.fn(
         (_url, init) =>
           new Promise((_resolve, reject) => {
             init.signal.addEventListener('abort', () => reject(new Error('aborted')), { once: true });
-            requestStarted.resolve();
+            signalRequestStarted();
           })
       )
     );
@@ -329,7 +332,7 @@ describe('Tencent Docs read limits and orchestration', () => {
       const rejected = expect(
         ava.source({ type: 'tencent-smartsheet', options: { ...options, timeoutMs: 50 } })
       ).rejects.toThrow('deadline exceeded');
-      await requestStarted.promise;
+      await requestStarted;
       await vi.advanceTimersByTimeAsync(50);
       await rejected;
       expect(ava.engine).toBeNull();
@@ -472,6 +475,36 @@ describe('Tencent Docs HTTP → loader → DuckDB', () => {
     const ava = new AVA({ llm: { model: 'offline' } });
     try {
       await expect(ava.source({ type: 'tencent-smartsheet', options })).rejects.toThrow('Invalid value');
+      expect(ava.engine).toBeNull();
+    } finally {
+      await ava.dispose();
+    }
+  });
+
+  it('rejects an unsafe integer from the OpenAPI response without exposing partial data', async () => {
+    const getFields = { fields: [field('amount', 2)], total: 1, hasMore: false };
+    const getRecords = {
+      records: [record('a', { amount: Number.MAX_SAFE_INTEGER })],
+      total: 2,
+      hasMore: true,
+      next: 1,
+    };
+    const fetch = vi
+      .fn()
+      .mockResolvedValueOnce(Response.json({ ret: 0, data: { getFields } }))
+      .mockResolvedValueOnce(Response.json({ ret: 0, data: { getRecords } }))
+      .mockResolvedValueOnce(
+        new Response(
+          '{"ret":0,"data":{"getRecords":{"records":[{"recordID":"b","values":{"amount":9007199254740993}}],"total":2,"hasMore":false}}}'
+        )
+      );
+    vi.stubGlobal('fetch', fetch);
+    const ava = new AVA({ llm: { model: 'offline' } });
+    try {
+      await expect(ava.source({ type: 'tencent-smartsheet', options: { ...options, pageSize: 1 } })).rejects.toThrow(
+        'safe integer range'
+      );
+      expect(fetch).toHaveBeenCalledTimes(3);
       expect(ava.engine).toBeNull();
     } finally {
       await ava.dispose();

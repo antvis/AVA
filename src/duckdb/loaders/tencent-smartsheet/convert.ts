@@ -73,7 +73,13 @@ function convertCell(field: TencentSmartsheetField, value: unknown): TencentSmar
     case 14:
     case 26:
     case 28:
-      return typeof value === 'number' && Number.isFinite(value) ? value : invalidCell();
+      if (typeof value !== 'number' || !Number.isFinite(value)) return invalidCell();
+      if (Number.isInteger(value) && !Number.isSafeInteger(value)) {
+        throw new TencentSmartsheetError(
+          'Integer outside the JavaScript safe integer range; no partial snapshot was loaded.'
+        );
+      }
+      return value;
     case 3:
       return typeof value === 'boolean' ? value : invalidCell();
     case 4:
