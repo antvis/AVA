@@ -29,7 +29,9 @@
 [AVA](https://github.com/antvis/AVA) (<img src="https://mdn.alipayobjects.com/huamei_qa8qxu/afts/img/A*QzIsSrfsCW0AAAAAAAAAAAAADmJ7AQ/original" width="16" alt="AVA examples"> Visual Analytics) is a technology framework designed for more convenient visual analytics. **A** stands for AI-native, Automated, and Augmented; **VA** stands for Visual Analytics.
 
 <p align="center">
-  <img src="https://mdn.alipayobjects.com/huamei_aphk1k/afts/img/A*MMXYTJ0KhukAAAAAgEAAAAgAegfkAQ/original" width="100%" alt="AVA agent workflow: data access, schema inspection, profiling, metric definitions, analysis, visualization, and follow-up questions, with verifiable SQL and results." />
+  <a href="https://ava.antv.vision/">
+    <img src="https://mdn.alipayobjects.com/huamei_aphk1k/afts/img/A*MMXYTJ0KhukAAAAAgEAAAAgAegfkAQ/original" width="100%" alt="AVA agent workflow: data access, schema inspection, profiling, metric definitions, analysis, visualization, and follow-up questions, with verifiable SQL and results." />
+  </a>
 </p>
 
 > [!NOTE]
