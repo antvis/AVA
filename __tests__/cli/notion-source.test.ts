@@ -1,0 +1,53 @@
+import { mkdtemp, rm, writeFile } from 'node:fs/promises';
+import { tmpdir } from 'node:os';
+import { join } from 'node:path';
+
+import { afterEach, describe, expect, it, vi } from 'vitest';
+
+import { run } from '../../src/cli/commands/source';
+import { createSession } from '../../src/cli/session/client';
+import { startupSchema } from '../../src/cli/session/protocol';
+
+vi.mock('../../src/cli/session/client', () => ({ createSession: vi.fn() }));
+afterEach(() => {
+  vi.clearAllMocks();
+});
+const config = { type: 'notion', options: { databaseId: 'db-id' } };
+const startup = { source: config, llm: { model: 'gpt-4o-mini' } };
+
+describe('Notion CLI source config', () => {
+  it('accepts a token-free config so the loader can use the inherited environment', async () => {
+    expect(startupSchema.parse(startup).source).toEqual(config);
+    const directory = await mkdtemp(join(tmpdir(), 'ava-notion-cli-'));
+    try {
+      const file = join(directory, 'source.json');
+      await writeFile(file, JSON.stringify(config));
+      await run([`@${file}`], {});
+      expect(createSession).toHaveBeenCalledWith(config, expect.any(Object), undefined);
+      expect(config.options).not.toHaveProperty('token');
+    } finally {
+      await rm(directory, { recursive: true, force: true });
+    }
+  });
+
+  it('rejects unsupported engines before starting a session', async () => {
+    const directory = await mkdtemp(join(tmpdir(), 'ava-notion-cli-'));
+    try {
+      const file = join(directory, 'source.json');
+      await writeFile(file, JSON.stringify(config));
+      await expect(run([`@${file}`], { engine: 'python' })).rejects.toThrow('require the duckdb engine');
+      expect(createSession).not.toHaveBeenCalled();
+    } finally {
+      await rm(directory, { recursive: true, force: true });
+    }
+  });
+
+  it.each([
+    { options: { databaseId: 'db', pageSize: 101 } },
+    { options: { databaseId: 'db', version: '2025-09-03' } },
+    { options: { databaseId: 'db', endpoint: 'https://other-host.invalid' } },
+    { options: {} },
+  ])('rejects invalid or unknown options', ({ options }) => {
+    expect(() => startupSchema.parse({ ...startup, source: { type: config.type, options } })).toThrow();
+  });
+});

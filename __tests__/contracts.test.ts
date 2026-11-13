@@ -7,6 +7,7 @@ import { AVA, queryOutputSchema, sourceInputSchema } from '../src/index.browser'
 import * as node from '../src';
 import * as browser from '../src/index.browser';
 import * as contracts from '../src/contracts';
+import { sourceSchemas } from '../src/contracts/source';
 import { startupSchema } from '../src/cli/session/protocol';
 import { resultSchema as pythonResultSchema } from '../src/interpreter/python/util/schema';
 
@@ -31,7 +32,9 @@ describe('public source contracts', () => {
 
   it('uses the same source contract in SDK and CLI without erasing the discriminant', async () => {
     const schema = z.toJSONSchema(sourceInputSchema, { io: 'input' });
-    expect(schema.oneOf).toHaveLength(18);
+    expect(schema.oneOf?.map((source) => source.properties?.type.const).sort()).toEqual(
+      Object.keys(sourceSchemas).sort()
+    );
     const json = schema.oneOf!.find((source) => source.properties?.type.const === 'json');
     expect(json?.properties?.options.properties?.data.items).toMatchObject({
       type: 'object',

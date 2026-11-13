@@ -1,0 +1,10 @@
+{
+  "type": "notion",
+  "options": {
+    "databaseId": "<database-id>",
+    "pageSize": 100,
+    "maxRecords": 10000,
+    "timeoutMs": 60000,
+    "maxRetries": 2
+  }
+}

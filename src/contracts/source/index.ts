@@ -19,6 +19,7 @@ import { snowflakeSourceSchema } from './snowflake';
 import { feishuBitableSourceSchema } from './feishu-bitable';
 import { tencentDocsSourceSchema } from './tencent-smartsheet';
 import { githubSourceSchema } from './github';
+import { notionSourceSchema } from './notion';
 
 /** Engines reuse these shapes and narrow only the options they can execute. */
 export const sourceSchemas = {
@@ -40,6 +41,7 @@ export const sourceSchemas = {
   'feishu-bitable': feishuBitableSourceSchema,
   'tencent-smartsheet': tencentDocsSourceSchema,
   github: githubSourceSchema,
+  notion: notionSourceSchema,
 };
 
 /** Shared runtime contract for built-in source configurations. */
@@ -62,4 +64,5 @@ export const sourceInputSchema = z.discriminatedUnion('type', [
   sourceSchemas['feishu-bitable'],
   sourceSchemas['tencent-smartsheet'],
   sourceSchemas.github,
+  sourceSchemas.notion,
 ]);
