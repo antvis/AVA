@@ -1,0 +1,32 @@
+AVA reads the records from one Tencent Docs SmartSheet subtable into a read-only DuckDB table named `data`. Field names become column names, and `_record_id` holds the original record ID. Supported fields include text, numbers, checkboxes, dates, created and modified times, progress, phone numbers, email, single select, currency, and percentages.
+
+## Connect Tencent Docs
+
+Sign in with an account that can access the document. For personal use, copy `client_id`, `open_id`, and `access_token` from the [Tencent Docs Open Platform](https://docs.qq.com/open#/). You can use these credentials directly in AVA without setting up a callback. For your own OAuth app, request the `scope.smartsheet` permission. [Tencent Docs OAuth setup](https://docs.qq.com/open/document/app/oauth2/)
+
+Save this configuration as `tencent-source.json`, fill in the values, and keep the file out of version control. Run `ava source @tencent-source.json` in the CLI, or pass the same configuration object to `ava.source(config)` in the Node.js SDK.
+
+```json
+{
+  "type": "tencent-smartsheet",
+  "options": {
+    "fileId": "<native-file-id>",
+    "sheetId": "<sheet-id>",
+    "clientId": "<client-id>",
+    "openId": "<open-id>",
+    "accessToken": "<access-token>"
+  }
+}
+```
+
+| Option | Type | Description |
+| --- | --- | --- |
+| `fileId` | `string` | Required. The OpenAPI file ID. Convert a sharing-link ID if needed. [File ID conversion](https://docs.qq.com/open/document/app/openapi/v2/file/util/converter.html) |
+| `sheetId` | `string` | Required. The subtable ID. [List subtables](https://docs.qq.com/open/document/app/openapi/v2/smartsheet/sheet/get_sheet.html) |
+| `clientId` | `string` | Required. The Tencent Docs app's client ID. |
+| `openId` | `string` | Required. The authorized user's Open ID. |
+| `accessToken` | `string` | Required. The user’s Tencent Docs OpenAPI access token. |
+| `pageSize` | `number` | Fields or records per request. Range 1–100, default 100. |
+| `maxRecords` | `number` | Maximum records per load. Range 1–100,000, default 10,000. Exceeding the limit fails the load. |
+| `timeoutMs` | `number` | Time limit for the whole load in milliseconds. Range 1–110,000, default 60,000. |
+| `maxRetries` | `number` | Retries for transient errors. Range 0–5, default 2. |

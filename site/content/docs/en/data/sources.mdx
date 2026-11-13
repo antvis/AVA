@@ -1,3 +1,5 @@
+import { Heading } from '../../../../mdx-components';
+
 <nav className="docs-source-grid" aria-label="Choose a data source">
   <a href="#csv">
     <img src="/logos/csv.svg" alt="" width="28" height="28" />
@@ -66,7 +68,7 @@
   </a>
 </nav>
 
-Choose a data source above, then use its example and parameter table below. CSV and JSON each support inline content and files.
+Choose a data source above, then use its example and parameter table below. CSV and JSON each support inline content and files. For Lark Base, Tencent Docs SmartSheet, and GitHub, see [Online services](#online-services).
 
 ## Connect a source
 
@@ -473,27 +475,6 @@ await ava.source({
 | `tlsCAFile`                   | `string`  | No       | Path to CA certificate file for TLS.                                                                                                                            |
 | `tlsAllowInvalidCertificates` | `boolean` | No       | Allow invalid certificates (testing only, default false).                                                                                                       |
 
-## Feishu Bitable
-
-Use `type: 'feishu-bitable'` with the DuckDB engine in Node.js. Rows are exposed as one read-only view named `data`.
-
-For first-time setup, follow the illustrated [Lark Base setup guide](/documentation/data/feishu-bitable/) to create an app, grant access, bind credentials, and verify the data with CLI / SDK examples and troubleshooting.
-
-```typescript
-await ava.source({
-  type: 'feishu-bitable',
-  options: {
-    url: 'https://my.feishu.cn/base/APP_TOKEN?table=TABLE_ID',
-    appId: process.env.AVA_FEISHU_APP_ID,
-    appSecret: process.env.AVA_FEISHU_APP_SECRET,
-  },
-});
-```
-
-Provide `url`, or both `appToken` and `tableId`, along with `appId` and `appSecret`. The CLI also reads credentials from `AVA_FEISHU_APP_ID` / `AVA_FEISHU_APP_SECRET` or `~/.ava/feishu.json`.
-
-Both `/base/` and wiki-hosted `/wiki/` links are supported. Wiki links require wiki read access and wiki space membership so the app can resolve the Bitable. The `view` query parameter is ignored. Complex cells (people, attachments, links, locations, and groups) become text, usually with multiple values separated by commas; formula and lookup fields are converted according to their returned value types.
-
 ## SQL Server
 
 Provide a server hostname and database. Use SQL authentication.
@@ -721,61 +702,16 @@ try {
 - Use `maxRows` and `maxResultBytes` to limit the number of rows and size of returned results.
 - `NUMBER` values become JavaScript numbers when conversion preserves their digits; larger or more precise values stay decimal strings. Float `NaN` and infinities stay strings. Dates use `YYYY-MM-DD`; times and timestamps have nine fractional digits, with an offset for time-zone types. `VARIANT`, `OBJECT` and `ARRAY` are parsed JSON; `BINARY` is hexadecimal text.
 
-## Tencent Docs SmartSheet
+## Online services
 
-AVA reads the records from one Tencent Docs SmartSheet subtable into a read-only DuckDB table named `data`. Field names become column names, and `_record_id` holds the original record ID. Supported fields include text, numbers, checkboxes, dates, created and modified times, progress, phone numbers, email, single select, currency, and percentages.
+<Heading as="h3" id="feishu-bitable">Lark Base</Heading>
 
-### Connect Tencent Docs
+Read records from a Base table. [Set up Lark Base](/documentation/data/online-services/feishu-bitable/).
 
-Sign in with an account that can access the document. For personal use, copy `client_id`, `open_id`, and `access_token` from the [Tencent Docs Open Platform](https://docs.qq.com/open#/). You can use these credentials directly in AVA without setting up a callback. For your own OAuth app, request the `scope.smartsheet` permission. [Tencent Docs OAuth setup](https://docs.qq.com/open/document/app/oauth2/)
+<Heading as="h3" id="tencent-docs-smartsheet">Tencent Docs SmartSheet</Heading>
 
-Save this configuration as `tencent-source.json`, fill in the values, and keep the file out of version control. Run `ava source @tencent-source.json` in the CLI, or pass the same configuration object to `ava.source(config)` in the Node.js SDK.
+Read fields and records from a SmartSheet subtable. [Connect Tencent Docs](/documentation/data/online-services/tencent-smartsheet/).
 
-```json
-{
-  "type": "tencent-smartsheet",
-  "options": {
-    "fileId": "<native-file-id>",
-    "sheetId": "<sheet-id>",
-    "clientId": "<client-id>",
-    "openId": "<open-id>",
-    "accessToken": "<access-token>"
-  }
-}
-```
+<Heading as="h3" id="github">GitHub</Heading>
 
-| Option | Type | Description |
-| --- | --- | --- |
-| `fileId` | `string` | Required. The OpenAPI file ID. Convert a sharing-link ID if needed. [File ID conversion](https://docs.qq.com/open/document/app/openapi/v2/file/util/converter.html) |
-| `sheetId` | `string` | Required. The subtable ID. [List subtables](https://docs.qq.com/open/document/app/openapi/v2/smartsheet/sheet/get_sheet.html) |
-| `clientId` | `string` | Required. The Tencent Docs app's client ID. |
-| `openId` | `string` | Required. The authorized user's Open ID. |
-| `accessToken` | `string` | Required. The user’s Tencent Docs OpenAPI access token. |
-| `pageSize` | `number` | Fields or records per request. Range 1–100, default 100. |
-| `maxRecords` | `number` | Maximum records per load. Range 1–100,000, default 10,000. Exceeding the limit fails the load. |
-| `timeoutMs` | `number` | Time limit for the whole load in milliseconds. Range 1–110,000, default 60,000. |
-| `maxRetries` | `number` | Retries for transient errors. Range 0–5, default 2. |
-
-## GitHub
-
-AVA can read issues and pull requests from a single GitHub repository.
-
-| Data | What you can read |
-| --- | --- |
-| Issues and pull requests | Number, title, status, author (including their relationship to the repository and whether they are a bot), assignees, labels, comment count, creation, update and closure times, and the link. |
-| Issues | Closure reason or an indication that the issue was reopened. |
-| Pull requests | Draft status, whether it was merged, and when it was merged. |
-
-Public repositories can be read directly. For a private repository, use a GitHub token with read access.
-
-### Connection options
-
-In the SDK or a CLI `@file` configuration, set `type` to `github` and put these parameters in `options`.
-
-| Option | Type | Description |
-| --- | --- | --- |
-| `repository` | `string` | Required. Use `owner/name` or a GitHub repository URL. |
-| `token` | `string` | GitHub token. If omitted, the CLI checks `GH_TOKEN` first, then `GITHUB_TOKEN`. |
-| `since` | `string` | Optional ISO 8601 date or timestamp. Keeps all open items and closed items updated since that time. Without an offset, the time is UTC. |
-| `maxRecords` | `number` | Maximum number of distinct issues and pull requests combined. Defaults to 10,000 and accepts integers from 1 to 100,000. |
-| `timeoutMs` | `number` | Time limit for reading, including retries and rate-limit waits. Defaults to 60,000 ms and accepts integers from 1 to 110,000. |
+Read issues and pull requests. [Connect GitHub](/documentation/data/online-services/github/).

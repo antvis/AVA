@@ -1,0 +1,34 @@
+import { Heading } from '../../../../../mdx-components';
+
+AVA 可以读取腾讯文档中一个智能子表的记录，并加载到 DuckDB 的只读表 `data` 中。原字段名作为列名，`_record_id` 保存原记录 ID。支持文本、数字、复选框、日期、创建和修改时间、进度、电话、邮箱、单选、货币和百分比字段。
+
+<Heading as="h2" id="connect-tencent-docs">连接腾讯文档</Heading>
+
+请使用有权访问目标文档的账号。个人使用时，可登录[腾讯文档开放平台](https://docs.qq.com/open#/)，复制 `client_id`、`open_id` 和 `access_token`，直接填入 AVA，无需配置回调地址。若使用自建 OAuth 应用，请申请 `scope.smartsheet` 权限。[腾讯文档 OAuth 授权流程](https://docs.qq.com/open/document/app/oauth2/)
+
+将下方配置保存为 `tencent-source.json`，填入实际值，凭证文件请留在本地。使用 CLI 时运行 `ava source @tencent-source.json`，使用 Node.js SDK 时将同一个配置对象传给 `ava.source(config)`。
+
+```json
+{
+  "type": "tencent-smartsheet",
+  "options": {
+    "fileId": "<native-file-id>",
+    "sheetId": "<sheet-id>",
+    "clientId": "<client-id>",
+    "openId": "<open-id>",
+    "accessToken": "<access-token>"
+  }
+}
+```
+
+| 参数 | 类型 | 说明 |
+| --- | --- | --- |
+| `fileId` | `string` | 必填。OpenAPI 文件 ID。如果手头只有分享链接，先[转换链接中的 ID](https://docs.qq.com/open/document/app/openapi/v2/file/util/converter.html)。 |
+| `sheetId` | `string` | 必填。智能子表 ID，可通过[查询子表](https://docs.qq.com/open/document/app/openapi/v2/smartsheet/sheet/get_sheet.html)获取。 |
+| `clientId` | `string` | 必填。腾讯文档应用的 Client ID。 |
+| `openId` | `string` | 必填。授权用户的 Open ID。 |
+| `accessToken` | `string` | 必填。用户的腾讯文档 OpenAPI 访问令牌。 |
+| `pageSize` | `number` | 每次请求的字段数或记录数，范围 1–100，默认 100。 |
+| `maxRecords` | `number` | 一次加载的最大记录数，范围 1–100,000，默认 10,000。超限时加载失败。 |
+| `timeoutMs` | `number` | 整次加载的超时时间，单位为毫秒。范围 1–110,000，默认 60,000。 |
+| `maxRetries` | `number` | 临时错误的重试次数，范围 0–5，默认 2。 |

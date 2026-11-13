@@ -1,0 +1,21 @@
+AVA can read issues and pull requests from a single GitHub repository.
+
+| Data | What you can read |
+| --- | --- |
+| Issues and pull requests | Number, title, status, author (including their relationship to the repository and whether they are a bot), assignees, labels, comment count, creation, update and closure times, and the link. |
+| Issues | Closure reason or an indication that the issue was reopened. |
+| Pull requests | Draft status, whether it was merged, and when it was merged. |
+
+Public repositories can be read directly. For a private repository, use a GitHub token with read access.
+
+## Connection options
+
+In the SDK or a CLI `@file` configuration, set `type` to `github` and put these parameters in `options`.
+
+| Option | Type | Description |
+| --- | --- | --- |
+| `repository` | `string` | Required. Use `owner/name` or a GitHub repository URL. |
+| `token` | `string` | GitHub token. If omitted, the CLI checks `GH_TOKEN` first, then `GITHUB_TOKEN`. |
+| `since` | `string` | Optional ISO 8601 date or timestamp. Keeps all open items and closed items updated since that time. Without an offset, the time is UTC. |
+| `maxRecords` | `number` | Maximum number of distinct issues and pull requests combined. Defaults to 10,000 and accepts integers from 1 to 100,000. |
+| `timeoutMs` | `number` | Time limit for reading, including retries and rate-limit waits. Defaults to 60,000 ms and accepts integers from 1 to 110,000. |
