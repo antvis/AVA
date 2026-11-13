@@ -12,7 +12,7 @@ export default function DocsToc() {
   const [active, setActive] = useState('');
 
   useEffect(() => {
-    const elements = Array.from(document.querySelectorAll<HTMLElement>('.docs-prose h2, .docs-prose h3'));
+    const elements = Array.from(document.querySelectorAll<HTMLElement>('.docs-prose :is(h2, h3, h4)'));
     setHeadings(
       elements.map((element) => ({
         id: element.id,
@@ -51,7 +51,8 @@ export default function DocsToc() {
           <a
             key={heading.id}
             href={`#${heading.id}`}
-            className={heading.level === 3 ? 'docs-toc-nested' : undefined}
+            className={heading.level > 2 ? 'docs-toc-nested' : undefined}
+            data-level={heading.level}
             aria-current={active === heading.id ? 'location' : undefined}
           >
             {heading.text}

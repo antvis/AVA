@@ -5,66 +5,95 @@ import { Heading } from '../../../../mdx-components';
     <img src="/logos/csv.svg" alt="" width="28" height="28" />
     <strong>CSV</strong>
     <span>内存数据与文件</span>
+    <span className="docs-source-type" data-type="file">文件</span>
   </a>
   <a href="#json">
     <img src="/logos/json.svg" alt="" width="28" height="28" />
     <strong>JSON</strong>
     <span>内存数据与文件</span>
+    <span className="docs-source-type" data-type="file">文件</span>
   </a>
   <a href="#parquet">
     <img src="/logos/parquet.svg" alt="" width="28" height="28" />
     <strong>Parquet</strong>
     <span>列式文件</span>
+    <span className="docs-source-type" data-type="file">文件</span>
   </a>
   <a href="#excel">
     <img src="/logos/excel.svg" alt="" width="28" height="28" />
     <strong>Excel</strong>
     <span>工作簿与工作表</span>
+    <span className="docs-source-type" data-type="file">文件</span>
   </a>
   <a href="#text">
     <img src="/logos/text.svg" alt="" width="28" height="28" />
     <strong>文本</strong>
     <span>模型提取</span>
+    <span className="docs-source-type" data-type="text">非结构化</span>
   </a>
   <a href="#sqlite">
     <img src="/logos/sqlite.svg" alt="" width="28" height="28" />
     <strong>SQLite</strong>
     <span>本地数据库</span>
+    <span className="docs-source-type" data-type="database">数据库</span>
   </a>
   <a href="#mysql">
     <img src="/logos/mysql.svg" alt="" width="28" height="28" />
     <strong>MySQL</strong>
-    <span>数据库</span>
+    <span className="docs-source-type" data-type="database">数据库</span>
   </a>
   <a href="#postgresql">
     <img src="/logos/postgresql.svg" alt="" width="28" height="28" />
     <strong>PostgreSQL</strong>
-    <span>数据库</span>
+    <span className="docs-source-type" data-type="database">数据库</span>
   </a>
   <a href="#mongodb">
     <img src="/logos/mongodb.svg" alt="" width="28" height="28" />
     <strong>MongoDB</strong>
     <span>文档数据库</span>
+    <span className="docs-source-type" data-type="database">数据库</span>
   </a>
   <a href="#supabase">
     <img src="/logos/supabase.svg" alt="" width="28" height="28" />
     <strong>Supabase</strong>
     <span>云数据库</span>
+    <span className="docs-source-type" data-type="database">数据库</span>
   </a>
   <a href="#clickhouse">
     <img src="/logos/clickhouse.svg" alt="" width="28" height="28" />
     <strong>ClickHouse</strong>
     <span>分析型数据库</span>
+    <span className="docs-source-type" data-type="database">数据库</span>
   </a>
   <a href="#snowflake">
     <img src="/logos/snowflake.svg" alt="" width="28" height="28" />
     <strong>Snowflake</strong>
     <span>云数据仓库</span>
+    <span className="docs-source-type" data-type="database">数据库</span>
+  </a>
+  <a href="/zh/documentation/data/online-services/feishu-bitable/">
+    <img src="/logos/feishu-bitable.svg" alt="" width="28" height="28" />
+    <strong>飞书多维表格</strong>
+    <span>多维表格记录</span>
+    <span className="docs-source-type" data-type="service">在线服务</span>
+  </a>
+  <a href="/zh/documentation/data/online-services/tencent-smartsheet/">
+    <img src="/logos/tencent-docs.png" alt="" width="28" height="28" />
+    <strong>腾讯文档智能表格</strong>
+    <span>智能表格记录</span>
+    <span className="docs-source-type" data-type="service">在线服务</span>
+  </a>
+  <a href="/zh/documentation/data/online-services/github/">
+    <img src="/logos/github.svg" alt="" width="28" height="28" />
+    <strong>GitHub</strong>
+    <span>Issue 和 Pull Request</span>
+    <span className="docs-source-type" data-type="service">在线服务</span>
   </a>
   <a href="/zh/documentation/engines/custom/">
     <img src="/logos/contribute.svg" alt="" width="28" height="28" />
     <strong>自定义扩展</strong>
     <span>注册自己的引擎</span>
+    <span className="docs-source-type" data-type="extension">扩展</span>
   </a>
 </nav>
 
@@ -101,7 +130,7 @@ await ava.source({
 
 <Heading as="h3" id="connect-multiple-sources">接入多个数据源</Heading>
 
-AVA 支持同时分析来自 [CSV](#csv)、[JSON](#json)、[Parquet](#parquet)、[Excel](#excel)、[文本](#text)、[SQLite](#sqlite)、[MySQL](#mysql)、[PostgreSQL](#postgresql)、[MongoDB](#mongodb)、[飞书多维表格](#feishu-bitable)和 [GitHub](#github) 的数据。
+AVA 支持同时分析来自 [CSV](#csv)、[JSON](#json)、[Parquet](#parquet)、[Excel](#excel)、[文本](#text)、[SQLite](#sqlite)、[MySQL](#mysql)、[PostgreSQL](#postgresql)、[MongoDB](#mongodb)、[飞书多维表格](#feishu-bitable)、[腾讯文档智能表格](#tencent-docs-smartsheet)和 [GitHub](#github) 的数据。
 
 在 Node.js SDK 中，使用 `ava.source([...])` 一次接入多个数据源。
 
@@ -122,9 +151,11 @@ await ava.source([
 const schema = await ava.schema();
 ```
 
-<Heading as="h2" id="csv">CSV</Heading>
+<Heading as="h2" id="files">文件</Heading>
 
-<Heading as="h3" id="inline-csv">直接传入 CSV</Heading>
+<Heading as="h3" id="csv">CSV</Heading>
+
+<Heading as="h4" id="inline-csv">直接传入 CSV</Heading>
 
 设置 `type: 'csv'`，以字符串传入 CSV 内容。
 
@@ -140,7 +171,7 @@ await ava.source({
 | `csv` | `string` | 是 | 原始 CSV 字符串。 |
 | `options` | `CSVReadOptions` | 否 | [CSV 读取选项](#csv-reader-options)。 |
 
-<Heading as="h3" id="csv-files">读取 CSV 文件</Heading>
+<Heading as="h4" id="csv-files">读取 CSV 文件</Heading>
 
 设置 `type: 'csv-file'`，传入本地路径或 HTTP(S) URL。URL 需要鉴权时，可在 `options.headers` 中提供请求头。
 
@@ -163,7 +194,7 @@ await ava.source({
 | `headers` | `Record<string, string>` | 否 | 远程数据源的 HTTP 请求头，例如 Authorization。 |
 | `options` | `CSVReadOptions` | 否 | [CSV 读取选项](#csv-reader-options)。 |
 
-<Heading as="h3" id="csv-reader-options">CSV 读取选项</Heading>
+<Heading as="h4" id="csv-reader-options">CSV 读取选项</Heading>
 
 DuckDB 引擎的 `csv`、`csv-file` 数据源可在 `options.options` 中使用以下字段，全部可选。AVA 将显式提供的值转发给 `read_csv`；省略时使用 DuckDB 的默认值或自动检测结果。下表说明各读取选项自身的默认值，实际表头、分隔符和类型也可能由自动检测确定。
 
@@ -208,9 +239,9 @@ DuckDB 引擎的 `csv`、`csv-file` 数据源可在 `options.options` 中使用�
 | `hive_partitioning` | `boolean` | 否 | 将路径解释为 Hive 分区路径，默认自动检测。 |
 | `filename` | `boolean` | 否 | 为每行添加保存来源文件路径的 `filename` 列，默认 false。 |
 
-<Heading as="h2" id="json">JSON</Heading>
+<Heading as="h3" id="json">JSON</Heading>
 
-<Heading as="h3" id="inline-json">直接传入 JSON</Heading>
+<Heading as="h4" id="inline-json">直接传入 JSON</Heading>
 
 设置 `type: 'json'`，传入对象数组。
 
@@ -226,7 +257,7 @@ await ava.source({
 | `data` | `any[]` | 是 | 待加载的数据行数组。 |
 | `options` | `JSONReadOptions` | 否 | 下方的 DuckDB 读取参数。 |
 
-<Heading as="h3" id="json-files">读取 JSON 文件</Heading>
+<Heading as="h4" id="json-files">读取 JSON 文件</Heading>
 
 设置 `type: 'json-file'`，传入本地路径或 HTTP(S) URL。
 
@@ -246,7 +277,7 @@ await ava.source({
 | `headers` | `Record<string, string>` | 否 | 远程数据源的 HTTP 请求头，例如 Authorization。 |
 | `options` | `JSONReadOptions` | 否 | 下方的 DuckDB 读取参数。 |
 
-<Heading as="h3" id="json-reader-options">JSON 读取选项</Heading>
+<Heading as="h4" id="json-reader-options">JSON 读取选项</Heading>
 
 使用 DuckDB 时，两种 JSON 数据源均接受 `options.options`，所有字段可选。
 `JSONReadOptions` 暴露完整的 [DuckDB JSON 读取参数](https://duckdb.org/docs/current/data/json/loading_json)：
@@ -274,7 +305,7 @@ await ava.source({
 内存数据会序列化为未压缩的 JSON 数组，请选择与此兼容的读取选项。
 远程文件会下载到临时路径，读取压缩 URL 时应显式设置 `compression`。
 
-<Heading as="h2" id="parquet">Parquet</Heading>
+<Heading as="h3" id="parquet">Parquet</Heading>
 
 从本地路径或 HTTP(S) URL 读取 Parquet 文件。
 
@@ -290,7 +321,7 @@ await ava.source({
 | `path` | `string` | 是 | 本地文件路径或 HTTP(S) URL。 |
 | `headers` | `Record<string, string>` | 否 | 远程数据源的 HTTP 请求头，例如 Authorization。 |
 
-<Heading as="h2" id="excel">Excel</Heading>
+<Heading as="h3" id="excel">Excel</Heading>
 
 从本地路径或 HTTP(S) URL 读取 `.xlsx` 工作簿。每个被选中的工作表会成为一张独立的表，以工作表名称命名。调用 `schema()` 可查看生成的表与列。
 
@@ -307,7 +338,7 @@ await ava.source({
 });
 ```
 
-<Heading as="h3" id="source-options">数据源选项</Heading>
+<Heading as="h4" id="source-options">数据源选项</Heading>
 
 | 字段 | 类型 | 必填 | 含义与默认值 |
 | --- | --- | --- | --- |
@@ -315,7 +346,7 @@ await ava.source({
 | `headers` | `Record<string, string>` | 否 | 远程数据源的 HTTP 请求头，例如 Authorization。 |
 | `sheets` | `ExcelSheetOptions[]` | 否 | 要加载的工作表及各自的读取设置；省略时加载全部工作表，并使用 `header: true`。 |
 
-<Heading as="h3" id="sheet-selection-and-reader-options">工作表选择与读取选项</Heading>
+<Heading as="h4" id="sheet-selection-and-reader-options">工作表选择与读取选项</Heading>
 
 `sheets` 中的每一项都包含必填的 `sheet`，以及可选的 `ExcelReadOptions` 字段。读取选项直接放在工作表项上，写法如上例所示。
 
@@ -331,7 +362,7 @@ await ava.source({
 
 提供 `sheets` 时，列表不能为空；每个工作表名必须存在且只能出现一次。范围必须是有效、有界的 A1 矩形。无效选择及不受支持的字段会被拒绝。
 
-<Heading as="h3" id="engine-behavior">引擎行为</Heading>
+<Heading as="h4" id="engine-behavior">引擎行为</Heading>
 
 两种引擎都支持 `sheet`、`range` 和 `header`。Python 引擎会拒绝上表中的四个 DuckDB 专用选项。
 
@@ -364,7 +395,9 @@ await ava.source({
 | ------ | -------- | -------- | -------------------------------------------------------- |
 | `text` | `string` | 是 | 使用已配置模型提取的非结构化文本。 |
 
-<Heading as="h2" id="sqlite">SQLite</Heading>
+<Heading as="h2" id="databases">数据库</Heading>
+
+<Heading as="h3" id="sqlite">SQLite</Heading>
 
 以只读模式打开本地 SQLite 数据库。
 
@@ -379,7 +412,7 @@ await ava.source({
 | ------ | -------- | -------- | -------------------------------- |
 | `path` | `string` | 是 | 本地 SQLite 数据库文件路径。 |
 
-<Heading as="h2" id="mysql">MySQL</Heading>
+<Heading as="h3" id="mysql">MySQL</Heading>
 
 连接数据库并发现其中的表。
 
@@ -404,7 +437,7 @@ await ava.source({
 | `password` | `string` | 否 | 数据库密码，不提供则省略。 |
 | `ssh` | `SSHOptions` | 否 | 可选的 [SSH 隧道](#ssh-options)。 |
 
-<Heading as="h2" id="postgresql">PostgreSQL</Heading>
+<Heading as="h3" id="postgresql">PostgreSQL</Heading>
 
 连接数据库并发现其中的表。
 
@@ -430,7 +463,7 @@ await ava.source({
 | `schema` | `string` | 否 | 表所属的数据库 schema，默认 `public`。 |
 | `ssh` | `SSHOptions` | 否 | 可选的 [SSH 隧道](#ssh-options)。 |
 
-<Heading as="h2" id="ssh-options">SSH 选项</Heading>
+<Heading as="h3" id="ssh-options">SSH 选项</Heading>
 
 通过跳板机访问 MySQL 或 PostgreSQL 时，在 `options` 中添加 `ssh`。数据库的 `host` 和 `port` 应填写跳板机能够访问的地址与端口。
 
@@ -464,7 +497,7 @@ await ava.source({
 | `password` | `string` | 否 | SSH 登录密码。 |
 | `hostKeyFingerprint` | `string` | 是 | 预期的主机密钥指纹，格式为 `SHA256:<base64>`，不带填充字符。 |
 
-<Heading as="h2" id="mongodb">MongoDB</Heading>
+<Heading as="h3" id="mongodb">MongoDB</Heading>
 
 加载指定数据库中的集合。可以使用结构化连接字段，也可以提供优先级更高的 `connection`。
 
@@ -493,28 +526,7 @@ await ava.source({
 | `tlsCAFile` | `string` | 否 | TLS 的 CA 证书文件路径。 |
 | `tlsAllowInvalidCertificates` | `boolean` | 否 | 允许无效证书，仅用于测试，默认 false。 |
 
-<Heading as="h2" id="feishu-bitable">飞书多维表格</Heading>
-
-在 Node.js 的 DuckDB 引擎中使用 `type: 'feishu-bitable'`。记录会暴露为名为 `data` 的只读视图。
-
-首次接入请按[飞书多维表格配置指南](/documentation/data/feishu-bitable/)完成应用创建、权限授权和凭证绑定，指南包含流程示意图、CLI / SDK 示例与常见问题。
-
-```typescript
-await ava.source({
-  type: 'feishu-bitable',
-  options: {
-    url: 'https://my.feishu.cn/base/APP_TOKEN?table=TABLE_ID',
-    appId: process.env.AVA_FEISHU_APP_ID,
-    appSecret: process.env.AVA_FEISHU_APP_SECRET,
-  },
-});
-```
-
-提供 `url`，或同时提供 `appToken` 与 `tableId`，并设置 `appId`、`appSecret`。CLI 也会从 `AVA_FEISHU_APP_ID`、`AVA_FEISHU_APP_SECRET` 或 `~/.ava/feishu.json` 读取凭证。
-
-支持 `/base/` 链接和知识库中的 `/wiki/` 链接。Wiki 链接要求应用具备知识库读取权限并加入相应知识空间，才能解析多维表格。URL 中的 `view` 参数会被忽略。人员、附件、链接、位置、群组等复杂单元格会转换为文本，多个值通常以逗号分隔；公式和查找引用字段按返回值类型转换。
-
-<Heading as="h2" id="supabase">Supabase</Heading>
+<Heading as="h3" id="supabase">Supabase</Heading>
 
 提供项目标识与 Supabase Management API 访问令牌；应用负责获取和刷新令牌。
 
@@ -537,7 +549,7 @@ await ava.source({
 | `accessToken` | `string` | 是 | Supabase Management API OAuth 流程返回的 OAuth 访问令牌。 |
 | `projectRef` | `string` | 是 | 项目标识，可从 GET https://api.supabase.com/v1/projects 的结果中获取。 |
 
-<Heading as="h2" id="clickhouse">ClickHouse</Heading>
+<Heading as="h3" id="clickhouse">ClickHouse</Heading>
 
 提供服务端点和数据库。使用 `url` 或 `host`；同时存在时 `url` 优先。
 
@@ -557,7 +569,7 @@ await ava.source({
 });
 ```
 
-<Heading as="h3" id="connection-fields">连接字段</Heading>
+<Heading as="h4" id="connection-fields">连接字段</Heading>
 
 | 字段 | 类型 | 必填 | 含义与默认值 |
 | ---------- | -------- | --------------- | ------------------------------------------------------------------------- |
@@ -571,7 +583,7 @@ await ava.source({
 
 虽然底层客户端默认可连接 localhost，AVA 仍要求显式提供端点。
 
-<Heading as="h3" id="forwarded-client-fields">透传的客户端字段</Heading>
+<Heading as="h4" id="forwarded-client-fields">透传的客户端字段</Heading>
 
 `ClickHouseSourceOptions` 也接受以下 `@clickhouse/client` 字段。下表基于已安装客户端的类型声明（1.23.1）；这些字段由该依赖定义，AVA 会在创建客户端时透传。
 
@@ -603,7 +615,7 @@ await ava.source({
 
 透传字段全部可选。服务端设置是可扩展、与服务端版本有关的映射，并非 AVA 固定定义的字段清单；可用键由依赖的 `ClickHouseSettings` 类型和实际服务端共同决定。Tracer、agent、logger 与 connection 对象需要实现相应的客户端接口，并非普通的 AVA 配置对象。
 
-<Heading as="h3" id="nested-client-options">嵌套客户端选项</Heading>
+<Heading as="h4" id="nested-client-options">嵌套客户端选项</Heading>
 
 | 字段 | 类型 | 必填与默认值 |
 | ------------------------------------------ | ------------------------------------------------ | --------------------------------------------------------------------------- |
@@ -625,11 +637,11 @@ await ava.source({
 
 此客户端的 Zstd 压缩需要 Node.js 22.15 或更高版本。响应压缩可能与引擎强制的服务端只读设置冲突；除非服务端允许，否则请保持关闭。
 
-<Heading as="h2" id="snowflake">Snowflake</Heading>
+<Heading as="h3" id="snowflake">Snowflake</Heading>
 
 在 Node.js 中使用 `snowflake` 数据源和引擎，分析 Snowflake 仓库中的表和视图。每个数据源对应一个 schema，查询结果返回 AVA。
 
-<Heading as="h3" id="snowflake-permissions">权限</Heading>
+<Heading as="h4" id="snowflake-permissions">权限</Heading>
 
 准备好仓库、数据库和 schema。连接角色需要三者的 `USAGE` 权限，以及待分析表和视图的 `SELECT` 权限。`SNOWFLAKE_SAMPLE_DATA` 这类共享数据库需要授予 `IMPORTED PRIVILEGES`。请勿向该角色授予存储过程、外部函数或集成的使用权限。
 
@@ -649,7 +661,7 @@ GRANT ROLE AVA_READER TO USER AVA_READER_SVC;
 
 查询会消耗仓库 credits，请开启自动挂起并配置资源监控来控制用量。
 
-<Heading as="h3" id="snowflake-connection-fields">连接字段</Heading>
+<Heading as="h4" id="snowflake-connection-fields">连接字段</Heading>
 
 将引擎和数据源类型均设为 `snowflake`，填入账号、凭证和仓库信息：
 
@@ -689,7 +701,7 @@ await ava.source({
 
 其他[驱动连接选项](https://docs.snowflake.com/en/developer-guide/node-js/nodejs-driver-options)，如 `host`、代理设置和 `queryTag`（默认 `AVA`），会透传给驱动。结果格式和会话清理由 AVA 管理。数据库、schema 或仓库不存在或未授权时，加载会报错。
 
-<Heading as="h3" id="snowflake-query-execution">查询执行</Heading>
+<Heading as="h4" id="snowflake-query-execution">查询执行</Heading>
 
 用 `schema()` 查看已授权的表、视图和声明的键，用 `query()` 执行 Snowflake SQL，或用 `analyze()` 以自然语言提问。`analyze()` 会将问题和数据集元数据发送给配置的模型来生成 SQL；默认还会将查询结果发送给模型生成摘要，传入 `{ includeSummary: false }` 可跳过摘要。
 
@@ -706,26 +718,16 @@ try {
 - `maxRows` 和 `maxResultBytes` 分别限制返回结果的行数和大小。
 - `NUMBER` 在转换不损失数字位数时转为 JavaScript 数字，更大或更精确的值保留为十进制字符串；浮点数的 `NaN` 和无穷大保留为字符串。日期使用 `YYYY-MM-DD`，时间和时间戳带九位小数，时区类型附带偏移量。`VARIANT`、`OBJECT` 和 `ARRAY` 是解析后的 JSON，`BINARY` 是十六进制文本。
 
-<Heading as="h2" id="github">GitHub</Heading>
+<Heading as="h2" id="online-services">在线服务</Heading>
 
-每个 GitHub 数据源读取一个仓库，提供 `issues` 和 `pull_requests` 两张表。
+<Heading as="h3" id="feishu-bitable">飞书多维表格</Heading>
 
-| 数据 | 可读取的信息 |
-| --- | --- |
-| Issue 和 Pull Request | 编号、标题、状态、作者（含与仓库的关系、是否为机器人）、负责人、标签、评论数、创建时间、更新时间、关闭时间和链接。 |
-| Issue | 关闭原因或重新打开的状态。 |
-| Pull Request | 是否为草稿、是否已合并、合并时间。 |
+读取多维表格记录。[查看飞书配置指南](/documentation/data/online-services/feishu-bitable/)。
 
-公开仓库可以直接读取。读取私有仓库需要有相应权限的 GitHub 令牌。
+<Heading as="h3" id="tencent-docs-smartsheet">腾讯文档智能表格</Heading>
 
-<Heading as="h3" id="github-options">连接参数</Heading>
+读取智能子表的字段和记录。[查看腾讯文档配置指南](/documentation/data/online-services/tencent-smartsheet/)。
 
-通过 SDK 或 CLI 的 `@file` 配置时，将 `type` 设为 `github`，把下列参数写在 `options` 中。
+<Heading as="h3" id="github">GitHub</Heading>
 
-| 参数 | 类型 | 说明 |
-| --- | --- | --- |
-| `repository` | `string` | 必填。填写 `owner/name` 或 GitHub 仓库链接。 |
-| `token` | `string` | GitHub 令牌。省略时，CLI 依次读取 `GH_TOKEN` 和 `GITHUB_TOKEN`。 |
-| `since` | `string` | 可选的 ISO 8601 日期或时间。不带时区偏移时按 UTC 处理。保留所有未关闭记录，以及从该时间起更新过的已关闭记录。 |
-| `maxRecords` | `number` | Issue 和 Pull Request 去重后的总数上限。默认 10,000，取值为 1 至 100,000 的整数。 |
-| `timeoutMs` | `number` | 读取时限，包含重试和限流等待。默认 60,000 毫秒，取值为 1 至 110,000 的整数。 |
+读取仓库中的 Issue 和 Pull Request。[查看 GitHub 配置指南](/documentation/data/online-services/github/)。

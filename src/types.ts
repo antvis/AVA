@@ -118,6 +118,7 @@ export type ClickHouseSourceOptions = DataSourceOptions<'clickhouse'>;
 export type SQLServerSourceOptions = DataSourceOptions<'sqlserver'>;
 export type SnowflakeSourceOptions = DataSourceOptions<'snowflake'>;
 export type FeishuBitableSourceOptions = DataSourceOptions<'feishu-bitable'>;
+export type TencentSmartsheetSourceOptions = DataSourceOptions<'tencent-smartsheet'>;
 export type GitHubSourceOptions = DataSourceOptions<'github'>;
 
 export type CSVReadOptions = z.input<typeof csvReadOptionsSchema>;

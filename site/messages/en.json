@@ -93,7 +93,11 @@
   "DocsNavigation": {
     "mobileDocumentation": "Mobile documentation",
     "documentationChapters": "Documentation chapters",
-    "browseDocumentation": "Browse documentation"
+    "browseDocumentation": "Browse documentation",
+    "onlineServices": "Online services",
+    "sourceOverview": "Overview",
+    "files": "Files",
+    "databases": "Databases"
   },
   "DocsToc": {
     "onThisPage": "On this page",
@@ -481,15 +485,23 @@
     },
     "data_sources": {
       "title": "Data sources",
-      "description": "Load inline data, local or remote files, and database tables."
+      "description": "Load inline data, files, database tables, and data from online services."
     },
     "data_schema": {
       "title": "Inspect your data",
       "description": "Let AVA discover the structure, inspect statistics when useful, then add business meaning."
     },
-    "data_feishu-bitable": {
-      "title": "Lark Base setup",
+    "data_online-services_feishu-bitable": {
+      "title": "Lark Base",
       "description": "Create an app, grant document access, and load data from Lark Base with an illustrated guide."
+    },
+    "data_online-services_tencent-smartsheet": {
+      "title": "Tencent Docs SmartSheet",
+      "description": "Connect a Tencent Docs SmartSheet to AVA."
+    },
+    "data_online-services_github": {
+      "title": "GitHub",
+      "description": "Connect a GitHub repository to AVA."
     },
     "data_semantic": {
       "title": "Define data semantics",

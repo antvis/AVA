@@ -88,8 +88,11 @@ export async function run(datasets: string[], options: Options): Promise<{ datas
     sources.push(await parseSourceArgument(dataset, options));
   }
 
-  if (engine !== undefined && engine !== 'duckdb' && sources.some(({ type }) => type === 'github')) {
-    throw new Error('GitHub sources require the duckdb engine.');
+  if (engine !== undefined && engine !== 'duckdb') {
+    if (sources.some(({ type }) => type === 'github')) throw new Error('GitHub sources require the duckdb engine.');
+    if (sources.some(({ type }) => type === 'tencent-smartsheet')) {
+      throw new Error('Tencent Docs SmartSheet sources require the duckdb engine.');
+    }
   }
 
   return createSession(sources, llmConfig(sources.some(({ type }) => type === 'text')), engine);
@@ -196,6 +199,14 @@ feishu.json:
 }
     Provide url or both appToken and tableId; they must name the same table.
     Keep appSecret out of version control and logs.
+
+Tencent Docs SmartSheet (Node.js / DuckDB):
+  tencent-source.json:
+    { "type": "tencent-smartsheet", "options": { "fileId": "<file-id>", "sheetId": "<sheet-id>", "clientId": "<client-id>", "openId": "<open-id>", "accessToken": "<access-token>" } }
+  Pass all three OpenAPI credentials explicitly in options; environment variables are not resolved. fileId must be a native API ID.
+  Reads records into data, or <sourceName>.data when loading multiple sources.
+  _record_id preserves source identity.
+  Explicit IDs are required; document sharing URLs are not auto-detected.
 
 snowflake.json:
 {
