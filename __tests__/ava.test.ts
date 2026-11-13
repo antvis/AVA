@@ -31,6 +31,63 @@ describe('AVA', () => {
     await ava?.dispose();
   });
 
+  it('analyzes CSV, JSON and multiple Excel sheets, then reloads a single source', async () => {
+    const labels = [
+      { order_id: 'ORD-0001', label: 'priority' },
+      { order_id: 'ORD-0002', label: 'standard' },
+    ];
+    const json: DataSourceConfig = { name: 'labels', type: 'json', options: { data: labels } };
+    await ava.source([
+      { name: 'orders', type: 'csv-file', options: { path: path.join(__dirname, 'datasets/sales.csv') } },
+      json,
+      { name: 'workbook', type: 'excel', options: { path: path.join(__dirname, 'datasets/sales.xlsx') } },
+    ]);
+
+    const schema = await ava.schema();
+    expect(schema.models.map(({ name }) => name)).toEqual([
+      'orders.data',
+      'labels.data',
+      'workbook.Costs',
+      'workbook.Sales',
+    ]);
+    expect(schema.models[2].tableReference).toEqual({ schema: 'workbook', table: 'Costs' });
+    const profile = await ava.profile({ metrics: ['row_count'] });
+    expect(profile.models.map(({ name, metrics }) => [name, metrics.row_count])).toEqual([
+      ['orders.data', 240],
+      ['labels.data', 2],
+      ['workbook.Costs', 240],
+      ['workbook.Sales', 240],
+    ]);
+
+    const sql = `SELECT o.order_id, l.label, ROUND(s.sales - c.cost, 2) AS profit
+      FROM orders.data o
+      JOIN labels.data l USING (order_id)
+      JOIN workbook."Sales" s USING (order_id)
+      JOIN workbook."Costs" c USING (order_id)
+      WHERE o.sales = s.sales
+      ORDER BY o.order_id`;
+    const generate = vi.spyOn(ava.engine!, 'getDSL').mockResolvedValue({ dsl: sql });
+    const result = await ava.analyze('前两笔订单的利润是多少？', { includeSummary: false });
+    expect(generate.mock.calls[0][1].models?.map(({ name }) => name)).toEqual(schema.models.map(({ name }) => name));
+    expect(result.data).toEqual([
+      { order_id: 'ORD-0001', label: 'priority', profit: 59.1 },
+      { order_id: 'ORD-0002', label: 'standard', profit: 260.2 },
+    ]);
+
+    await ava.source(json);
+    const singleSchema = await ava.schema();
+    expect(singleSchema.models.map(({ name }) => name)).toEqual(['data']);
+    expect((await ava.query('SELECT * FROM data ORDER BY order_id')).data).toEqual(labels);
+    await expect(ava.query('SELECT * FROM orders.data')).rejects.toThrow();
+
+    await ava.schema(undefined, () => ({
+      ...singleSchema,
+      models: [{ ...singleSchema.models[0], name: 'order_labels' }],
+    }));
+    const singleProfile = await ava.profile({ metrics: ['row_count'] });
+    expect(singleProfile.models).toMatchObject([{ name: 'order_labels', metrics: { row_count: 2 } }]);
+  });
+
   it('returns the current schema throughout the source lifecycle', async () => {
     const onEnd = vi.fn();
     ava.on(LifecycleEventType.SOURCE_END, onEnd);
@@ -49,10 +106,17 @@ describe('AVA', () => {
 
     await ava.source({ type: 'json', options: { data: [{ second: 'value' }] } });
     expect((await ava.schema()).models[0].columns.map((field) => field.name)).toEqual(['second']);
-    await expect(ava.source({ type: 'json', options: { data: null } })).rejects.toThrow();
-    expect((await ava.schema()).models[0].columns.map((field) => field.name)).toEqual(['second']);
+    await expect(
+      ava.source([
+        { type: 'json', options: { data: [{ third: true }] } },
+        { type: 'csv-file', options: { path: path.join(__dirname, 'datasets', 'missing.csv') } },
+      ])
+    ).rejects.toThrow('missing.csv');
+    await expect(ava.schema()).rejects.toThrow(message);
+    await expect(ava.query('SELECT * FROM data')).rejects.toThrow(message);
 
     await ava.source({ type: 'json', options: { data: [{ third: true }] } });
+    expect((await ava.query('SELECT * FROM data')).data).toEqual([{ third: true }]);
     await ava.dispose();
     await expect(ava.schema()).rejects.toThrow(message);
   });

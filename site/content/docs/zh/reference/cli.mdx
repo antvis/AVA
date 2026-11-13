@@ -16,9 +16,17 @@ ava schema "$DATASET_ID" > schema.json
 
 <Heading as="h2" id="source-inputs-and-engines">数据源输入与引擎</Heading>
 
-`ava source` 接受文件或 URL、包含数据源配置的 `@file`，或用 `-` 读取标准输入。CSV、JSON、Parquet、Excel、SQLite 可根据扩展名推断类型，GitHub 仓库链接会被自动识别；路径输入可用 `--type` 覆盖类型，`owner/name` 用 `--type github`。配置文件和标准输入本身已包含类型。
+`ava source` 接受一个或多个输入。每个输入可以是文件路径、URL、包含数据源配置的 `@file`，或用 `-` 从标准输入读取一份配置。文件类型根据扩展名推断，GitHub 仓库链接会自动识别。`--type` 可为文件路径或文件 URL 统一指定类型。使用 `owner/name` 传入仓库时，指定 `--type github`。
 
-使用 `--engine` 选择执行引擎。CLI 会为匹配的数据源配置推断 Supabase、ClickHouse、Snowflake，其余情况默认 DuckDB；这与 JavaScript 构造函数的行为不同。引擎在会话期间固定。连接和读取配置见[数据源配置](/documentation/data/sources/)。
+把多个输入放在同一条命令里，就能在同一个会话中分析这些数据。
+
+```bash
+ava source sales.csv customers.json costs.xlsx
+```
+
+用返回的 `datasetId` 执行 `ava schema <datasetId>` 查看查询时使用的表名。支持一起分析的数据源见[接入多个数据源](/documentation/data/sources/#connect-multiple-sources)。
+
+使用 `--engine` 选择执行引擎。CLI 会为匹配的数据源配置推断 Supabase、ClickHouse、SQL Server、Snowflake，其余情况默认 DuckDB。引擎在会话期间固定，多源会话使用 DuckDB。连接和读取配置见[数据源配置](/documentation/data/sources/)。
 
 <Heading as="h2" id="reuse-saved-metadata">复用已有元数据</Heading>
 
@@ -65,7 +73,7 @@ ava viz --spec @chart.json --output chart.html
 ava visualize --query "Plot revenue by region" --data @rows.json
 ```
 
-`recommend`、`visualize` 需要模型；`viz` 按配置渲染，不需要 API 密钥。`viz` 的输出路径必须是新文件，不会覆盖已有文件。渲染前先确认推荐结果是图表配置，而非 `null`。
+`recommend`、`visualize` 需要模型；`viz` 不需要 API 密钥。省略 `--output` 时，校验配置并返回 `{ chartType, config }`，补齐缺省的 `config.type`，可用于页面直接渲染；指定 `--output` 时，将 HTML 写入新文件，不会覆盖已有文件。渲染前先确认推荐结果是图表配置，而非 `null`。
 
 <Heading as="h2" id="command-parameters">命令参数</Heading>
 
@@ -73,7 +81,7 @@ ava visualize --query "Plot revenue by region" --data @rows.json
 
 | 命令 | 位置参数 | 标志与默认值 |
 | ----------- | -------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `source` | `dataset`：路径、URL、`@file` 或 `-` | `-t` / `--type`：`csv-file`、`json-file`、`parquet`、`excel`、`sqlite`、`github`，文件类型按扩展名推断。`--engine`：`duckdb`、`python`、`javascript`、`supabase`、`clickhouse`、`snowflake`，推断规则见上文。 |
+| `source` | 一个或多个 `dataset`：路径、URL、`@file` 或 `-` | `-t` / `--type`：`csv-file`、`json-file`、`parquet`、`excel`、`sqlite`、`github`，文件类型按扩展名推断。`--engine`：`duckdb`、`python`、`javascript`、`supabase`、`clickhouse`、`sqlserver`、`snowflake`，推断规则见上文。 |
 | `schema` | `dataset-id` | 可选 `--file`：已有 schema JSON 文件的路径。 |
 | `profile` | `dataset-id` | 可选 `--file`：已有 profile JSON 文件的路径；否则可用 `--metrics` 指定逗号分隔的指标名，默认[标准指标集](/documentation/reference/api/#profile)。传入空字符串则不计算统计项。 |
 | `semantic` | `dataset-id` | 可选 `--file`：Semantic JSON 文件的路径，用于替换会话中的完整定义；不提供时读取当前定义。 |
@@ -83,7 +91,7 @@ ava visualize --query "Plot revenue by region" --data @rows.json
 | `query` | `dataset-id` | 必填 `--dsl`：代码、`@file` 或 `-`，不能为空，最多 512 KiB；可选 `--max-rows`、`--max-result-bytes` 见下方。 |
 | `visualize` | 无 | 必填 `--query`：文本；必填 `--data`：JSON 对象数组、`@file` 或 `-`；可选 `-o` / `--output`：新的 HTML 文件路径。 |
 | `recommend` | 无 | 必填 `--query`：文本；必填 `--data`：JSON 对象数组、`@file` 或 `-`。 |
-| `viz` | 无 | 必填 `--spec`：JSON、`@file` 或 `-`，包含 `chartType` 和 `config` 对象；必填 `-o` / `--output`：新的 HTML 文件路径。 |
+| `viz` | 无 | 必填 `--spec`：JSON、`@file` 或 `-`，包含 `chartType` 和 `config` 对象；可选 `-o` / `--output`：新的 HTML 文件路径。省略时返回校验后的配置。 |
 | `dispose` | `dataset-id` | 无额外标志。 |
 
 | 共享执行标志 | 类型 | 默认值 | 范围 |

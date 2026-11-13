@@ -11,7 +11,7 @@ import { Heading } from '../../../../mdx-components';
 <tr><th scope="rowgroup" rowSpan={1}><a href="#initialization">初始化</a></th><td><a href="#constructor"><code>new AVA(config)</code></a></td><td>配置模型与执行引擎。</td></tr>
 </tbody>
 <tbody>
-<tr><th scope="rowgroup" rowSpan={4}><a href="#data">数据</a></th><td><a href="#source"><code>source(config)</code></a></td><td>加载或替换数据源。</td></tr>
+<tr><th scope="rowgroup" rowSpan={4}><a href="#data">数据</a></th><td><a href="#source"><code>source(configs)</code></a></td><td>加载或替换一个或多个数据源。</td></tr>
 <tr><td><a href="#schema"><code>schema(options?, setter?)</code></a></td><td>查看或设置数据结构。</td></tr>
 <tr><td><a href="#profile"><code>profile(options?, setter?)</code></a></td><td>计算或设置统计信息。</td></tr>
 <tr><td><a href="#semantic"><code>semantic(options?, setter?)</code></a></td><td>读取或设置业务定义。</td></tr>
@@ -102,10 +102,10 @@ import { Heading } from '../../../../mdx-components';
 <Heading as="h3" id="source">source</Heading>
 
 ```typescript
-source(config: DataSourceConfig): Promise<void>
+source(configs: DataSourceConfig | DataSourceConfig[]): Promise<void>
 ```
 
-通过引擎加载数据源，没有返回值，也不会发现 schema。
+通过配置的引擎加载数据源。AVA 在需要时读取数据结构。
 
 ```typescript
 await ava.source({ type: 'json', options: { data: [{ revenue: 120 }] } });
@@ -113,11 +113,11 @@ await ava.source({ type: 'json', options: { data: [{ revenue: 120 }] } });
 
 | 参数 | 类型 | 必填 | 含义 |
 | --- | --- | --- | --- |
-| `config` | `DataSourceConfig` | 是 | 待加载的数据源。 |
-| `config.type` | `SourceType` | 是 | [数据源类型](/documentation/data/sources/#connect-a-source)，例如 `json` 或 `csv-file`。 |
-| `config.options` | 数据源对应的对象 | 是 | 该类型的[读取或连接设置](/documentation/data/sources/#connect-a-source)。 |
+| `configs` | `DataSourceConfig \| DataSourceConfig[]` | 是 | 一份[数据源配置](/documentation/data/sources/#connect-a-source)，或非空的配置数组。 |
 
-数据源配置在替换前校验；无效配置会保留当前数据源和元数据。配置通过校验后，加载会释放旧引擎，清除保存的 schema、profile 和业务语义；此后加载失败则没有活动数据源。替换数据源前，请等待正在进行的操作完成。
+Node.js SDK 的 DuckDB 引擎支持一次加载多个数据源。批量配置和命名规则见[接入多个数据源](/documentation/data/sources/#connect-multiple-sources)。
+
+每次调用都会先释放当前引擎，清除保存的 schema、profile 和业务语义，再加载数据。加载失败后，实例没有活动数据集。调用 `source()` 前，请等待正在进行的操作完成。
 
 <Heading as="h3" id="schema">schema</Heading>
 

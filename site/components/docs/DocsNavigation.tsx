@@ -9,15 +9,15 @@ import { useEffect, useId, useRef, useState, type ReactNode } from 'react';
 import { docs as chapters, docHref, findDoc, localizedDoc } from '../../lib/docs';
 
 function revealActiveChapter(navigation: HTMLElement | null) {
-  const active = navigation?.querySelector<HTMLElement>('[aria-current="page"]');
-  const container = navigation?.closest<HTMLElement>('.docs-sidebar') ?? navigation;
-  if (!active || active.closest('[inert]') || !container?.clientHeight) return;
+  if (!navigation?.clientHeight) return;
+  const active = navigation.querySelector<HTMLElement>('[aria-current="page"]');
+  if (!active || active.closest('[inert]')) return;
 
   const item = active.getBoundingClientRect();
-  const viewport = container.getBoundingClientRect();
+  const viewport = navigation.getBoundingClientRect();
   // Scroll only the menu so the article and its hash target stay in place.
-  if (item.top < viewport.top + 16) container.scrollTop += item.top - viewport.top - 16;
-  else if (item.bottom > viewport.bottom - 16) container.scrollTop += item.bottom - viewport.bottom + 16;
+  if (item.top < viewport.top + 16) navigation.scrollTop += item.top - viewport.top - 16;
+  else if (item.bottom > viewport.bottom - 16) navigation.scrollTop += item.bottom - viewport.bottom + 16;
 }
 
 function ChapterGroup({

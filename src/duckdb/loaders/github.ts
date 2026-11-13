@@ -1,5 +1,5 @@
 import { githubOptionsSchema } from '../../contracts/source/github';
-import { sqlIdentifier, sqlStringLiteral } from '../../util/sql';
+import { sqlIdentifier, sqlQualifiedName, sqlStringLiteral } from '../../util/sql';
 import { getDuckDBSchema } from '../util/schema';
 
 import { GitHubClient, GitHubError } from './github/client';
@@ -20,8 +20,13 @@ function columnType(column: GitHubColumn, rows: GitHubRow[]): string {
   return `ENUM(${[...values].sort().map(sqlStringLiteral).join(', ')})`;
 }
 
-async function createTable(conn: DuckDBConnection, table: GitHubTable, rows: GitHubRow[]): Promise<void> {
-  const name = sqlIdentifier(table.name);
+async function createTable(
+  conn: DuckDBConnection,
+  table: GitHubTable,
+  rows: GitHubRow[],
+  namespace?: string
+): Promise<void> {
+  const name = sqlQualifiedName(table.name, namespace);
   const columns = table.columns.map(
     (column) => `${sqlIdentifier(column.name)} ${columnType(column, rows)}${column.notNull ? ' NOT NULL' : ''}`
   );
@@ -81,13 +86,14 @@ export async function loadGitHub(input: GitHubSourceOptions): Promise<LoadedSour
   const rows: Record<GitHubTable['name'], GitHubRow[]> = { issues: [], pull_requests: [] };
   for (const { table, row } of records.values()) rows[table].push(row);
 
+  const tableNames = [issuesTable.name, pullRequestsTable.name];
   return {
-    register: async (conn) => {
-      await createTable(conn, issuesTable, rows.issues);
-      await createTable(conn, pullRequestsTable, rows.pull_requests);
-      return [issuesTable.name, pullRequestsTable.name];
+    register: async (conn, namespace) => {
+      await createTable(conn, issuesTable, rows.issues, namespace);
+      await createTable(conn, pullRequestsTable, rows.pull_requests, namespace);
+      return tableNames;
     },
-    getSchema: (conn) => getDuckDBSchema(conn, [issuesTable.name, pullRequestsTable.name]),
+    getSchema: (conn, namespace) => getDuckDBSchema(conn, tableNames, namespace),
     allowedPaths: [],
     cleanup: async () => {},
   };

@@ -97,10 +97,10 @@ export default function Home({ locale }: { locale: Locale }) {
             <h2 id="data-title">
               {t('connectYourData')}
               <br />
-              {t('runAnywhere')}
+              {t('joinAcrossSources')}
             </h2>
-            <Link href="/documentation/data/sources/" className={styles.textLink}>
-              {t('allDataSources')}
+            <Link href="/documentation/data/sources/#connect-multiple-sources" className={styles.textLink}>
+              {t('connectMultipleSources')}
               <Arrow />
             </Link>
           </div>

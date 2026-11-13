@@ -30,6 +30,8 @@ AVA 可以读取腾讯文档中一张智能子表的字段和记录，支持文�
 }
 ```
 
+与其他数据源一起分析时，可以在配置顶层加上 `"name": "tencent"`。在 SDK 中把各数据源配置放入同一个数组，或在 CLI 中运行 `ava source @tencent-source.json orders.csv`。参见[多数据源接入](/documentation/data/sources/#connect-multiple-sources)。
+
 <Heading as="h2" id="options">配置参数</Heading>
 
 | 参数 | 必填 | 说明 |

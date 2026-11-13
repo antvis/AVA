@@ -6,6 +6,7 @@
  * browser-friendly, but only supports csv/json/text sources.
  */
 
+import { sourceInputSchema } from '../../contracts/source';
 import { JavaScriptDialect } from '../../query/javascript';
 import { extractDataSchema } from '../../util/schema';
 import { executionResult, inferQuerySchema } from '../../util/result';
@@ -37,13 +38,18 @@ export class JavaScriptEngine implements AnalysisEngine {
     this.dialect = new JavaScriptDialect(llmConfig);
   }
 
-  async load(config: DataSourceConfig): Promise<void> {
+  async load(configs: DataSourceConfig | DataSourceConfig[]): Promise<void> {
+    const sources = Array.isArray(configs) ? configs : [configs];
+    if (sources.length !== 1) {
+      throw new Error(`JavaScriptEngine currently supports exactly one data source, received ${sources.length}`);
+    }
     this.data = null;
-    if (!['csv', 'json', 'text'].includes(config.type)) {
+    const config = sourceInputSchema.parse(sources[0]);
+    if (config.type !== 'csv' && config.type !== 'json' && config.type !== 'text') {
       throw new Error(`JavaScriptEngine only supports csv/json/text sources, got: ${config.type}`);
     }
 
-    this.data = await loadSource(config as any, this.llmConfig);
+    this.data = await loadSource(config, this.llmConfig);
   }
 
   async schema(): Promise<Schema> {

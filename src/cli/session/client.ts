@@ -2,7 +2,7 @@ import { fork } from 'child_process';
 import { randomBytes } from 'crypto';
 import { once } from 'events';
 import { rm } from 'fs/promises';
-import { basename, extname, join } from 'path';
+import { join } from 'path';
 
 import {
   IPC_TIMEOUT_MS,
@@ -16,30 +16,14 @@ import { connectSession, prepareSession, readMessage } from './transport';
 import type { Request } from './protocol';
 import type { DataSourceConfig, EngineConfig, LLMConfig } from '../../types';
 
-/**
- * Combine a sanitized source name with a random suffix to identify a dataset session.
- */
-function createDatasetId(config: DataSourceConfig): string {
-  const source = 'path' in config.options ? config.options.path : config.type;
-  const path = /^https?:\/\//i.test(source) ? new URL(source).pathname : source;
-  const name =
-    basename(path, extname(path))
-      .toLowerCase()
-      .replace(/[^a-z0-9]+/g, '-')
-      .slice(0, 16)
-      .replace(/^-+|-+$/g, '') || 'dataset';
-
-  return `ds_${name}_${randomBytes(6).toString('hex')}`;
-}
-
 export async function createSession(
-  config: DataSourceConfig,
+  sources: DataSourceConfig[],
   llm: LLMConfig,
   engine?: EngineConfig['type']
 ): Promise<{ datasetId: string }> {
-  const startup = startupSchema.parse({ source: config, llm, engine });
+  const startup = startupSchema.parse({ sources, llm, engine });
 
-  const datasetId = createDatasetId(config);
+  const datasetId = `ds_${randomBytes(12).toString('hex')}`;
   const directory = await prepareSession(datasetId);
   let child: ReturnType<typeof fork> | undefined;
 

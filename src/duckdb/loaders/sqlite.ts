@@ -1,7 +1,7 @@
 /** Read a local SQLite database through DuckDB's official SQLite extension. */
 import { resolve } from 'node:path';
 
-import { sqlIdentifier, sqlStringLiteral, sqlUnionAll } from '../../util/sql';
+import { sqlIdentifier, sqlStringLiteral, sqlQualifiedName, sqlUnionAll } from '../../util/sql';
 import { rowObjects2Schema } from '../../util/schema';
 
 import type { LoadedSource, SQLiteSourceOptions } from '../../types';
@@ -13,8 +13,8 @@ type SQLiteColumn = { name: string; type: string; storageTypes: string[]; resolv
 const MIXED_BLOB_TYPE = 'UNION(integer_value BIGINT, real_value DOUBLE, text_value VARCHAR, blob_value BLOB)';
 
 /** Wrap native SQLite SQL as a DuckDB table function. */
-function sqliteQuerySQL(sql: string): string {
-  return `sqlite_query(${sqlStringLiteral(ATTACH_ALIAS)}, ${sqlStringLiteral(sql)})`;
+function sqliteQuerySQL(alias: string, sql: string): string {
+  return `sqlite_query(${sqlStringLiteral(alias)}, ${sqlStringLiteral(sql)})`;
 }
 
 /** Preserve native types, column order and SQLite's primary-key nullability. */
@@ -111,7 +111,7 @@ function resolvedType(declared: string, storageTypes: string[]): string {
 }
 
 /** Native queries bypass the extension's affinity casts, including for generated columns. */
-function tableSQL(table: string, fields: SQLiteColumn[]): string {
+function tableSQL(alias: string, table: string, fields: SQLiteColumn[]): string {
   const sourceColumns: string[] = [];
   const typedColumns = fields.map(({ name, resolvedType: type, storageTypes }, i) => {
     const column = sqlIdentifier(name);
@@ -135,21 +135,22 @@ function tableSQL(table: string, fields: SQLiteColumn[]): string {
     return `${type === 'BLOB' ? `unhex(${value})` : `CAST(${value} AS ${type})`} AS ${column}`;
   });
   const query = `SELECT ${sourceColumns.join(', ')} FROM ${sqlIdentifier(table)}`;
-  return `SELECT ${typedColumns.join(', ')} FROM ${sqliteQuerySQL(query)}`;
+  return `SELECT ${typedColumns.join(', ')} FROM ${sqliteQuerySQL(alias, query)}`;
 }
 
-export async function loadSQLite(options: SQLiteSourceOptions): Promise<LoadedSource> {
+export async function loadSQLite(options: SQLiteSourceOptions, alias = ATTACH_ALIAS): Promise<LoadedSource> {
   const filePath = resolve(options.path);
   let tableNames: string[] = [];
   const columnsByTable = new Map<string, SQLiteColumn[]>();
 
   return {
-    register: async (conn) => {
+    register: async (conn, namespace) => {
       await conn.run('INSTALL sqlite');
       await conn.run('LOAD sqlite');
-      await conn.run(`ATTACH ${sqlStringLiteral(filePath)} AS ${ATTACH_ALIAS} (TYPE sqlite, READ_ONLY)`);
+      await conn.run(`ATTACH ${sqlStringLiteral(filePath)} AS ${sqlIdentifier(alias)} (TYPE sqlite, READ_ONLY)`);
       const columnsReader = await conn.runAndReadAll(
         `SELECT * FROM ${sqliteQuerySQL(
+          alias,
           `SELECT t.name AS table_name, c.name, c.type, c.hidden
            FROM sqlite_schema t LEFT JOIN pragma_table_xinfo(t.name) c ON c.hidden != 1
            WHERE t.type IN ('table', 'view') AND lower(substr(t.name, 1, 7)) <> 'sqlite_'
@@ -171,7 +172,7 @@ export async function loadSQLite(options: SQLiteSourceOptions): Promise<LoadedSo
           .map(({ name }, i) => `group_concat(DISTINCT typeof(${sqlIdentifier(name)})) AS ${sqlIdentifier(`c${i}`)}`)
           .join(', ')} FROM ${sqlIdentifier(table)}`;
         const observed = (
-          await conn.runAndReadAll(`SELECT * FROM ${sqliteQuerySQL(storageQuery)}`)
+          await conn.runAndReadAll(`SELECT * FROM ${sqliteQuerySQL(alias, storageQuery)}`)
         ).getRowObjectsJson()[0];
         columns.forEach((column, i) => {
           column.storageTypes = String(observed[`c${i}`] ?? '')
@@ -179,16 +180,18 @@ export async function loadSQLite(options: SQLiteSourceOptions): Promise<LoadedSo
             .filter((type) => type && type !== 'null');
           column.resolvedType = resolvedType(column.type, column.storageTypes);
         });
-        await conn.run(`CREATE OR REPLACE VIEW ${sqlIdentifier(table)} AS ${tableSQL(table, columns)}`);
+        await conn.run(
+          `CREATE OR REPLACE VIEW ${sqlQualifiedName(table, namespace)} AS ${tableSQL(alias, table, columns)}`
+        );
       }
       return tableNames;
     },
-    getSchema: async (conn) => {
-      const reader = await conn.runAndReadAll(`SELECT * FROM ${sqliteQuerySQL(schemaSQL(tableNames))}`);
-      const schema = rowObjects2Schema(reader.getRowObjectsJson());
+    getSchema: async (conn, namespace) => {
+      const reader = await conn.runAndReadAll(`SELECT * FROM ${sqliteQuerySQL(alias, schemaSQL(tableNames))}`);
+      const schema = rowObjects2Schema(reader.getRowObjectsJson(), namespace);
       for (const table of schema.models) {
         for (const field of table.columns) {
-          const column = columnsByTable.get(table.name)!.find((column) => column.name === field.name)!;
+          const column = columnsByTable.get(table.tableReference.table)!.find((column) => column.name === field.name)!;
           // Retain native spelling only when it describes the exposed execution type.
           if (duckDBType(field.type) !== column.resolvedType) field.type = column.resolvedType;
         }

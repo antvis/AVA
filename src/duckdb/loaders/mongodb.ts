@@ -18,7 +18,7 @@
  */
 
 import { getDuckDBSchema } from '../util/schema';
-import { sqlIdentifier, sqlStringLiteral } from '../../util/sql';
+import { sqlIdentifier, sqlStringLiteral, sqlQualifiedName } from '../../util/sql';
 
 import type { LoadedSource, MongoDBSourceOptions } from '../../types';
 
@@ -64,19 +64,21 @@ function buildConnectionString(options: MongoDBSourceOptions): string {
   return buildKeyValueString(options);
 }
 
-export async function loadMongoDB(options: MongoDBSourceOptions): Promise<LoadedSource> {
+export async function loadMongoDB(options: MongoDBSourceOptions, alias = ATTACH_ALIAS): Promise<LoadedSource> {
   let tableNames: string[] = [];
 
   return {
-    register: async (conn) => {
+    register: async (conn, namespace) => {
       await conn.run('INSTALL mongo FROM community');
       await conn.run('LOAD mongo');
       await conn.run('SET mongo_enable_direct_scan = false');
-      await conn.run(`ATTACH ${sqlStringLiteral(buildConnectionString(options))} AS ${ATTACH_ALIAS} (TYPE MONGO)`);
+      await conn.run(
+        `ATTACH ${sqlStringLiteral(buildConnectionString(options))} AS ${sqlIdentifier(alias)} (TYPE MONGO)`
+      );
 
       const tablesReader = await conn.runAndReadAll(
         `SELECT table_name FROM information_schema.tables
-         WHERE table_catalog = ${sqlStringLiteral(ATTACH_ALIAS)}
+         WHERE table_catalog = ${sqlStringLiteral(alias)}
            AND table_schema = ${sqlStringLiteral(options.database)}
          ORDER BY table_name`
       );
@@ -84,14 +86,14 @@ export async function loadMongoDB(options: MongoDBSourceOptions): Promise<Loaded
 
       for (const table of tableNames) {
         await conn.run(
-          `CREATE OR REPLACE VIEW ${sqlIdentifier(table)} AS SELECT * FROM ${sqlIdentifier(
-            ATTACH_ALIAS
+          `CREATE OR REPLACE VIEW ${sqlQualifiedName(table, namespace)} AS SELECT * FROM ${sqlIdentifier(
+            alias
           )}.${sqlIdentifier(options.database)}.${sqlIdentifier(table)}`
         );
       }
       return tableNames;
     },
-    getSchema: (conn) => getDuckDBSchema(conn, tableNames),
+    getSchema: (conn, namespace) => getDuckDBSchema(conn, tableNames, namespace),
     allowedPaths: [],
     cleanup: noopCleanup,
   };

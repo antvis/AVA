@@ -141,8 +141,8 @@ Complex cells flatten to text, lists join with commas, and dates use ISO strings
 
 ## Tencent Docs SmartSheet
 
-Load one SmartSheet subtable into DuckDB with `type: 'tencent-smartsheet'`. Pass `fileId`, `sheetId`, `clientId`, `openId`, and `accessToken` in `options` via `@file` or stdin. Query the `data` table. See the [Tencent Docs source documentation](https://ava.antv.vision/documentation/data/online-services/tencent-smartsheet/) for authorization and connection options.
+Load one SmartSheet subtable into DuckDB with `type: 'tencent-smartsheet'`. Pass `fileId`, `sheetId`, `clientId`, `openId`, and `accessToken` in `options` via `@file` or stdin. Query `data` for a single source or `<sourceName>.data` with multiple sources. See the [Tencent Docs source documentation](https://ava.antv.vision/documentation/data/online-services/tencent-smartsheet/) for authorization and connection options.
 
 ## GitHub
 
-Load GitHub issues and pull requests with the DuckDB engine. See the [GitHub source documentation](https://ava.antv.vision/documentation/data/online-services/github/) for available data and connection options.
+Pass a GitHub repository URL to `ava source` to load its issues and pull requests. Include other inputs in the same command to analyze them together, for example `ava source https://github.com/OWNER/REPO labels.csv`. See the [GitHub source documentation](https://ava.antv.vision/documentation/data/online-services/github/) for fields and connection options.

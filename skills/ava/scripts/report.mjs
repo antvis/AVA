@@ -2,7 +2,7 @@
 // Report assembly; upstream attribution and MIT terms are in ../assets/LICENSE.
 import { createHash } from 'node:crypto';
 import { spawn } from 'node:child_process';
-import { access, mkdir, mkdtemp, open, readFile, readdir, rm } from 'node:fs/promises';
+import { access, mkdir, open, readFile, readdir, rm } from 'node:fs/promises';
 import { basename, delimiter, dirname, extname, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { parseArgs } from 'node:util';
@@ -134,85 +134,7 @@ export async function queryIndex(evidence) {
   return queries;
 }
 
-const label = (value) => typeof value === 'string' || (typeof value === 'number' && Number.isFinite(value));
 const numeric = (value) => typeof value === 'number' && Number.isFinite(value);
-const rowFields = {
-  column: ['category', 'value'],
-  bar: ['category', 'value'],
-  line: ['time', 'value'],
-  area: ['time', 'value'],
-  pie: ['category', 'value'],
-  scatter: ['x', 'y'],
-  boxplot: ['category', 'value'],
-  violin: ['category', 'value'],
-  radar: ['name', 'value'],
-  funnel: ['category', 'value'],
-  waterfall: ['category'],
-  'word-cloud': ['text', 'value'],
-  venn: ['sets', 'value'],
-  sankey: ['source', 'target', 'value'],
-};
-
-function validateChart(chart) {
-  const { chartType: type, config } = chart;
-  check(object(config), 'Chart config must be an object.');
-  if (type === 'liquid') {
-    check(
-      numeric(config.percent) && config.percent >= 0 && config.percent <= 1,
-      'liquid requires percent between 0 and 1.'
-    );
-  } else if (type === 'dual-axes') {
-    check(
-      Array.isArray(config.categories) && config.categories.length && config.categories.every(label),
-      'Invalid dual-axes categories.'
-    );
-    check(Array.isArray(config.series) && config.series.length, 'dual-axes requires series.');
-    check(
-      config.series.every(
-        (series) =>
-          ['column', 'line'].includes(series.type) &&
-          Array.isArray(series.data) &&
-          series.data.length === config.categories.length &&
-          series.data.every(numeric)
-      ),
-      'dual-axes series must align with categories.'
-    );
-  } else {
-    check(
-      type in rowFields || ['histogram', 'treemap', 'table'].includes(type),
-      `Unsupported report chartType: ${type}`
-    );
-    check(Array.isArray(config.data) && config.data.length, 'Chart data must be nonempty.');
-    if (type === 'histogram') check(config.data.every(numeric), 'histogram requires numeric observations.');
-    else if (type === 'treemap') {
-      const node = (item) =>
-        object(item) &&
-        label(item.name) &&
-        (item.value === undefined || (numeric(item.value) && item.value >= 0)) &&
-        (item.children === undefined || (Array.isArray(item.children) && item.children.every(node)));
-      check(config.data.every(node), 'Invalid treemap nodes.');
-    } else {
-      check(config.data.every(object), 'Chart data must contain objects.');
-      for (const row of config.data) {
-        for (const key of rowFields[type] ?? []) {
-          check(
-            key === 'sets'
-              ? Array.isArray(row[key]) && row[key].length && row[key].every(text)
-              : ['value', 'x', 'y'].includes(key)
-              ? numeric(row[key])
-              : label(row[key]),
-            `Invalid ${type} field: ${key}.`
-          );
-        }
-        if (type === 'waterfall')
-          check(row.isTotal === true || numeric(row.value), 'waterfall requires numeric changes.');
-        if (['pie', 'venn', 'sankey'].includes(type)) check(row.value >= 0, `${type} values must be nonnegative.`);
-        if (row.group !== undefined) check(label(row.group), 'Invalid chart group.');
-      }
-    }
-  }
-  return chart;
-}
 
 function bindChart(section, query) {
   const { chart, chartFields, chartConfigField } = section;
@@ -250,7 +172,7 @@ function bindChart(section, query) {
     );
     bound = query.result.data[0][chartConfigField];
   }
-  return validateChart({ chartType: chart.chartType, config: { ...chart.config, ...bound } });
+  return { chartType: chart.chartType, config: { ...chart.config, ...bound } };
 }
 
 function prepareReport(spec, previous, available) {
@@ -355,16 +277,12 @@ export async function renderReport({ evidence, spec, output, previous, template 
     dataFile = await open(dataOutput, 'wx', 0o600);
     const charts = [];
     for (const plan of plans) {
-      // AVA requires a new output file; use a task-local private directory.
-      const directory = await mkdtemp(join(resolve(evidence ?? join(destination, '..')), '.chart-'));
       try {
-        const path = join(directory, 'chart.html');
-        await invoke(['viz', '--spec', '-', '--output', path], JSON.stringify(plan.spec));
-        charts.push({ section: plan.section, html: await readFile(path, 'utf8') });
+        const { config } = await invoke(['viz', '--spec', '-'], JSON.stringify(plan.spec));
+        check(object(config) && config.type === plan.spec.chartType, 'AVA returned an invalid chart config.');
+        charts.push({ section: plan.section, config });
       } catch (error) {
         chartErrors.push({ section: plan.section, message: error.message });
-      } finally {
-        await rm(directory, { recursive: true, force: true });
       }
     }
     const payload = {

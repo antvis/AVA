@@ -345,14 +345,14 @@ describe('GitHub SDK source', () => {
 });
 
 describe('GitHub CLI source', () => {
-  const sessionConfig = () => vi.mocked(createSession).mock.calls.at(-1)?.[0];
+  const sessionSources = () => vi.mocked(createSession).mock.calls.at(-1)?.[0];
 
   it('detects a GitHub issues link and uses GH_TOKEN first', async () => {
     vi.stubEnv('GH_TOKEN', 'gh-token');
     vi.stubEnv('GITHUB_TOKEN', 'github-token');
     const url = 'https://github.com/antvis/AVA/issues?q=is%3Aopen';
     await runSource([url], {});
-    expect(sessionConfig()).toEqual({ type: 'github', options: { repository: url, token: 'gh-token' } });
+    expect(sessionSources()).toEqual([{ type: 'github', options: { repository: url, token: 'gh-token' } }]);
   });
 
   it('prefers a token from @file over environment variables', async () => {
@@ -363,7 +363,7 @@ describe('GitHub CLI source', () => {
       const path = join(directory, 'source.json');
       await writeFile(path, JSON.stringify(config));
       await runSource([`@${path}`], {});
-      expect(sessionConfig()).toEqual(config);
+      expect(sessionSources()).toEqual([config]);
     } finally {
       await rm(directory, { recursive: true, force: true });
     }
@@ -373,12 +373,12 @@ describe('GitHub CLI source', () => {
     vi.stubEnv('GH_TOKEN', '');
     vi.stubEnv('GITHUB_TOKEN', 'github-token');
     await runSource(['antvis/AVA'], { type: 'github' });
-    expect(sessionConfig()).toEqual({ type: 'github', options: { repository: 'antvis/AVA', token: 'github-token' } });
+    expect(sessionSources()).toEqual([{ type: 'github', options: { repository: 'antvis/AVA', token: 'github-token' } }]);
   });
 
   it('keeps GitHub raw CSV links as file sources', async () => {
     const path = 'https://github.com/antvis/AVA/raw/oss-camp2026/data/companies.csv';
     await runSource([path], {});
-    expect(sessionConfig()).toEqual({ type: 'csv-file', options: { path } });
+    expect(sessionSources()).toEqual([{ type: 'csv-file', options: { path } }]);
   });
 });

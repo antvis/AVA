@@ -125,15 +125,20 @@
   position: sticky;
   top: 72px;
   height: calc(100dvh - 72px);
-  overflow-y: auto;
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr) auto;
   padding: 20px 12px 16px 0;
   border-right: 1px solid var(--docs-border);
 }
-.docs-sidebar,
+.docs-sidebar > nav {
+  overflow-y: auto;
+  padding-bottom: 4px;
+}
+.docs-sidebar > nav,
 .docs-mobile-nav > nav {
   scrollbar-width: none;
 }
-.docs-sidebar::-webkit-scrollbar,
+.docs-sidebar > nav::-webkit-scrollbar,
 .docs-mobile-nav > nav::-webkit-scrollbar {
   display: none;
 }
@@ -237,7 +242,7 @@
   align-items: center;
   color: var(--docs-muted);
   font-size: 11px;
-  margin: 20px 12px 0;
+  margin: 12px 12px 0;
   padding-top: 12px;
   border-top: 1px solid var(--docs-border);
 }

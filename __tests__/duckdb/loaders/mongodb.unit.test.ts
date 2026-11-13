@@ -24,7 +24,7 @@ describe('loaders/mongodb (unit)', () => {
       'INSTALL mongo FROM community',
       'LOAD mongo',
       'SET mongo_enable_direct_scan = false',
-      "ATTACH 'host=localhost port=27017 dbname=sales' AS mongo_source (TYPE MONGO)",
+      'ATTACH \'host=localhost port=27017 dbname=sales\' AS "mongo_source" (TYPE MONGO)',
       'CREATE OR REPLACE VIEW "orders" AS SELECT * FROM "mongo_source"."sales"."orders"',
       'CREATE OR REPLACE VIEW "users" AS SELECT * FROM "mongo_source"."sales"."users"',
     ]);
@@ -37,7 +37,7 @@ describe('loaders/mongodb (unit)', () => {
     await source.register(conn);
 
     expect(conn.run).toHaveBeenCalledWith(
-      "ATTACH 'host=localhost port=27017 dbname=sales' AS mongo_source (TYPE MONGO)"
+      'ATTACH \'host=localhost port=27017 dbname=sales\' AS "mongo_source" (TYPE MONGO)'
     );
   });
 
@@ -58,7 +58,7 @@ describe('loaders/mongodb (unit)', () => {
     await source.register(conn);
 
     expect(conn.run).toHaveBeenCalledWith(
-      "ATTACH 'host=cluster0.xxxxx.mongodb.net port=27017 user=myuser password=mypass dbname=mydb authsource=admin srv=true tls=true tls_ca_file=/path/to/ca.pem' AS mongo_source (TYPE MONGO)"
+      'ATTACH \'host=cluster0.xxxxx.mongodb.net port=27017 user=myuser password=mypass dbname=mydb authsource=admin srv=true tls=true tls_ca_file=/path/to/ca.pem\' AS "mongo_source" (TYPE MONGO)'
     );
   });
 
@@ -74,7 +74,7 @@ describe('loaders/mongodb (unit)', () => {
     await source.register(conn);
 
     expect(conn.run).toHaveBeenCalledWith(
-      "ATTACH 'mongodb://user:pass@localhost:27017/customdb' AS mongo_source (TYPE MONGO)"
+      'ATTACH \'mongodb://user:pass@localhost:27017/customdb\' AS "mongo_source" (TYPE MONGO)'
     );
   });
 
@@ -88,7 +88,7 @@ describe('loaders/mongodb (unit)', () => {
     await source.register(conn);
 
     expect(conn.run).toHaveBeenCalledWith(
-      "ATTACH 'mongodb://localhost:27017/analytics?retryWrites=true' AS mongo_source (TYPE MONGO)"
+      'ATTACH \'mongodb://localhost:27017/analytics?retryWrites=true\' AS "mongo_source" (TYPE MONGO)'
     );
   });
 

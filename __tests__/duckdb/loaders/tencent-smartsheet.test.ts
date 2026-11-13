@@ -217,16 +217,20 @@ describe('Tencent Docs explicit configuration and CLI', () => {
   });
 
   it('passes a complete CLI config and rejects unsupported engines before session creation', async () => {
-    const config = { type: 'tencent-smartsheet', options };
+    const config = { type: 'tencent-smartsheet', name: 'tencent', options };
+    const localConfig = { type: 'json', name: 'local', options: { data: [{ label: 'local row' }] } };
     expect(sourceInputSchema.parse(config)).toEqual(config);
     const directory = await mkdtemp(join(tmpdir(), 'ava-tencent-cli-'));
     try {
       const file = join(directory, 'source.json');
+      const localFile = join(directory, 'local.json');
       await writeFile(file, JSON.stringify(config));
-      await expect(runSource([`@${file}`], { engine: 'python' })).rejects.toThrow('require the duckdb engine');
+      await writeFile(localFile, JSON.stringify(localConfig));
+      const inputs = [`@${localFile}`, `@${file}`];
+      await expect(runSource(inputs, { engine: 'python' })).rejects.toThrow('require the duckdb engine');
       expect(createSession).not.toHaveBeenCalled();
-      await runSource([`@${file}`], {});
-      expect(createSession).toHaveBeenCalledWith(config, expect.any(Object), undefined);
+      await runSource(inputs, {});
+      expect(createSession).toHaveBeenCalledWith([localConfig, config], expect.any(Object), undefined);
     } finally {
       await rm(directory, { recursive: true, force: true });
     }
@@ -309,12 +313,14 @@ describe('Tencent Docs read limits and orchestration', () => {
 
   it('aborts a stalled request, clears its timer and does not expose a partial engine', async () => {
     vi.useFakeTimers();
+    const requestStarted = Promise.withResolvers<void>();
     vi.stubGlobal(
       'fetch',
       vi.fn(
         (_url, init) =>
           new Promise((_resolve, reject) => {
             init.signal.addEventListener('abort', () => reject(new Error('aborted')), { once: true });
+            requestStarted.resolve();
           })
       )
     );
@@ -323,6 +329,7 @@ describe('Tencent Docs read limits and orchestration', () => {
       const rejected = expect(
         ava.source({ type: 'tencent-smartsheet', options: { ...options, timeoutMs: 50 } })
       ).rejects.toThrow('deadline exceeded');
+      await requestStarted.promise;
       await vi.advanceTimersByTimeAsync(50);
       await rejected;
       expect(ava.engine).toBeNull();
@@ -334,6 +341,26 @@ describe('Tencent Docs read limits and orchestration', () => {
 });
 
 describe('Tencent Docs HTTP → loader → DuckDB', () => {
+  it('registers and queries a named subtable alongside another source', async () => {
+    serveTable([field('amount', 2)], [record('r', { amount: 12 })]);
+    const ava = new AVA({ llm: { model: 'offline' } });
+    try {
+      await ava.source([
+        { type: 'tencent-smartsheet', name: 'tencent docs', options },
+        { type: 'json', name: 'labels', options: { data: [{ id: 'r', label: 'matched' }] } },
+      ]);
+      const { models } = await ava.schema();
+      expect(models.map(({ name }) => name)).toEqual(['tencent docs.data', 'labels.data']);
+      expect(models[0].tableReference).toEqual({ schema: 'tencent docs', table: 'data' });
+      const result = await ava.query(
+        'SELECT amount, label FROM "tencent docs".data JOIN labels.data ON _record_id = id'
+      );
+      expect(result.data).toEqual([{ amount: 12, label: 'matched' }]);
+    } finally {
+      await ava.dispose();
+    }
+  });
+
   it.each([true, false])('preserves an empty table/all-null column schema (empty=%s)', async (empty) => {
     serveTable([field('amount', 2)], empty ? [] : [record('r')]);
     const ava = new AVA({ llm: { model: 'offline' } });

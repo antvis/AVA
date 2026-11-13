@@ -12,7 +12,7 @@ import { SaxesParser } from 'saxes';
 import { excelOptionsSchema } from '../../contracts/source/excel';
 import { downloadToTempFile, removeTempFile } from '../util/file';
 import { getDuckDBSchema } from '../util/schema';
-import { escapeSql, serializeOptions, sqlIdentifier, sqlStringLiteral } from '../../util/sql';
+import { escapeSql, serializeOptions, sqlQualifiedName, sqlStringLiteral } from '../../util/sql';
 
 import type { ExcelSourceOptions, LoadedSource } from '../../types';
 
@@ -52,7 +52,7 @@ export async function loadExcel(options: ExcelSourceOptions): Promise<LoadedSour
 
   let sheetNames: string[] = [];
   return {
-    register: async (conn) => {
+    register: async (conn, namespace) => {
       // The excel extension is dynamically loaded, not statically linked like
       // mysql/postgres, so it must be installed explicitly. EXTENSION_LOCKDOWN
       // only blocks *auto*-install; an explicit INSTALL of a known official
@@ -76,14 +76,14 @@ export async function loadExcel(options: ExcelSourceOptions): Promise<LoadedSour
       }
       for (const { sheet, ...readOptions } of selected) {
         await conn.run(
-          `CREATE OR REPLACE VIEW ${sqlIdentifier(sheet)} AS SELECT * FROM read_xlsx('${escapeSql(
+          `CREATE OR REPLACE VIEW ${sqlQualifiedName(sheet, namespace)} AS SELECT * FROM read_xlsx('${escapeSql(
             filePath
           )}', sheet=${sqlStringLiteral(sheet)}${serializeOptions(readOptions)})`
         );
       }
       return sheetNames;
     },
-    getSchema: (conn) => getDuckDBSchema(conn, sheetNames),
+    getSchema: (conn, namespace) => getDuckDBSchema(conn, sheetNames, namespace),
     allowedPaths: [filePath],
     cleanup,
   };

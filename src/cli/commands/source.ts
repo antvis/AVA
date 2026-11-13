@@ -12,19 +12,19 @@ import { option } from '../options';
 import { accent, badge, muted } from '../util';
 
 import type { Options } from '../options';
+import type { DataSourceConfig } from '../../types';
 
-export const description = 'Load a source and return a dataset ID';
+export const description = 'Load one or more sources and return a dataset ID';
 
 export const definition = {
-  positionals: 1,
+  positionals: { min: 1 },
   options: {
     type: { type: 'string', short: 't' },
     engine: { type: 'string' },
   },
 } as const;
 
-export async function run([dataset]: string[], options: Options): Promise<{ datasetId: string }> {
-  const engine = engineTypeSchema.optional().parse(option(options, 'engine'));
+async function parseSourceArgument(dataset: string, options: Options): Promise<DataSourceConfig> {
   let input: unknown;
 
   if (dataset.startsWith('@') || dataset === '-') {
@@ -54,12 +54,6 @@ export async function run([dataset]: string[], options: Options): Promise<{ data
   }
 
   const config = sourceInputSchema.parse(input);
-  if (config.type === 'github' && engine !== undefined && engine !== 'duckdb') {
-    throw new Error('GitHub sources require the duckdb engine.');
-  }
-  if (config.type === 'tencent-smartsheet' && engine !== undefined && engine !== 'duckdb') {
-    throw new Error('Tencent Docs SmartSheet sources require the duckdb engine.');
-  }
 
   if (
     'path' in config.options &&
@@ -80,7 +74,28 @@ export async function run([dataset]: string[], options: Options): Promise<{ data
     if (token) config.options.token = token;
   }
 
-  return createSession(config, llmConfig(config.type === 'text'), engine);
+  return config;
+}
+
+export async function run(datasets: string[], options: Options): Promise<{ datasetId: string }> {
+  const engine = engineTypeSchema.optional().parse(option(options, 'engine'));
+  if (datasets.indexOf('-') !== datasets.lastIndexOf('-')) {
+    throw new Error('Use - at most once to read a source configuration from stdin.');
+  }
+
+  const sources: DataSourceConfig[] = [];
+  for (const dataset of datasets) {
+    sources.push(await parseSourceArgument(dataset, options));
+  }
+
+  if (engine !== undefined && engine !== 'duckdb') {
+    if (sources.some(({ type }) => type === 'github')) throw new Error('GitHub sources require the duckdb engine.');
+    if (sources.some(({ type }) => type === 'tencent-smartsheet')) {
+      throw new Error('Tencent Docs SmartSheet sources require the duckdb engine.');
+    }
+  }
+
+  return createSession(sources, llmConfig(sources.some(({ type }) => type === 'text')), engine);
 }
 
 /**
@@ -95,21 +110,23 @@ ${muted('View schema:')} ${accent(`ava schema ${datasetId}`)} ${muted('· More c
 export const help = `${description}.
 
 Usage:
-  ava source <dataset> [options]
+  ava source <dataset> [dataset...] [options]
 
 Arguments:
   dataset           File/URL, @file containing a source config, or - for stdin.
+                    Pass multiple inputs to load them into the same dataset.
+                    Use - at most once per command.
                     Config format: { "type": "json", "options": { "data": [] } }
                     Relative paths resolve from the current working directory.
 
 Options:
-  -t, --type <type>  Override the type inferred from the file extension.
+  -t, --type <type>  Set the type for all file paths, file URLs, or repository names.
                     Types: csv-file, json-file, parquet, excel, sqlite, github.
                     With github, dataset is owner/name.
                     Cannot be used with @file, stdin configs, Feishu or GitHub repository URLs.
   --engine <type>    duckdb, python, javascript, supabase, clickhouse, sqlserver, or snowflake.
                     Default: supabase/clickhouse/sqlserver/snowflake for those sources, otherwise duckdb.
-                    Fixed for the session; source support depends on the engine.
+                    Fixed for the session. Multiple sources require DuckDB.
                     feishu-bitable uses duckdb. The loaded view is named data.
   -h, --help         Show help.
 
@@ -147,7 +164,7 @@ Environment:
 
 In a terminal, shows the dataset ID and suggested next commands.
 When piped or redirected, returns JSON containing datasetId.
-IDs use a sanitized source name plus a random suffix.
+Each call creates a new session with a new dataset ID.
 Requires Node.js 22.13+.
 Sessions expire after 30 idle minutes; dispose releases them immediately.
 Python requires python3 and pandas; local Python execution is not sandboxed.
@@ -155,6 +172,7 @@ JavaScript accepts inline csv/json/text configs. Use ava schema to inspect the q
 
 Examples:
   ava source sales.csv
+  ava source sales.csv customers.json costs.xlsx
   ava source sales.csv --engine python
   ava source @source.json
   echo '{ "type": "json", "options": { "data": [{ "sales": 10 }] } }' | ava source -
@@ -183,10 +201,11 @@ feishu.json:
     Keep appSecret out of version control and logs.
 
 Tencent Docs SmartSheet (Node.js / DuckDB):
-  tencent-docs.json:
+  tencent-source.json:
     { "type": "tencent-smartsheet", "options": { "fileId": "<file-id>", "sheetId": "<sheet-id>", "clientId": "<client-id>", "openId": "<open-id>", "accessToken": "<access-token>" } }
   Pass all three OpenAPI credentials explicitly in options; environment variables are not resolved. fileId must be a native API ID.
-  Reads a complete, bounded snapshot into data; _record_id preserves source identity.
+  Reads records into data, or <sourceName>.data when loading multiple sources.
+  _record_id preserves source identity.
   Explicit IDs are required; document sharing URLs are not auto-detected.
 
 snowflake.json:

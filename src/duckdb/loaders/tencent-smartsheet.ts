@@ -1,3 +1,4 @@
+import { sqlQualifiedName } from '../../util/sql';
 import { getDuckDBSchema } from '../util/schema';
 
 import { columnTypes } from './tencent-smartsheet/convert';
@@ -9,16 +10,19 @@ export async function loadTencentSmartsheet(options: TencentSmartsheetSourceOpti
   const { fields, rows } = await readTencentSmartsheet(options);
   const structure = JSON.stringify([columnTypes(fields)]);
   return {
-    register: async (conn) => {
+    register: async (conn, namespace) => {
       // Bind both the data and its explicit schema: no temporary files or SQL interpolation.
       // A typed JSON list also preserves column types when there are no records.
       await conn.run(
-        'CREATE TABLE data AS SELECT item.* FROM (SELECT unnest(from_json_strict($1::JSON, $2)) AS item)',
+        `CREATE TABLE ${sqlQualifiedName(
+          'data',
+          namespace
+        )} AS SELECT item.* FROM (SELECT unnest(from_json_strict($1::JSON, $2)) AS item)`,
         [JSON.stringify(rows), structure]
       );
       return ['data'];
     },
-    getSchema: (conn) => getDuckDBSchema(conn, ['data']),
+    getSchema: (conn, namespace) => getDuckDBSchema(conn, ['data'], namespace),
     allowedPaths: [],
     cleanup: async () => {},
   };

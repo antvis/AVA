@@ -99,9 +99,21 @@ import { Heading } from '../../../../mdx-components';
 
 Choose a data source above, then use its example and parameter table below. CSV and JSON each support inline content and files.
 
-## Connect a source
+<Heading as="h2" id="connect-a-source">Connect data sources</Heading>
 
-Create an AVA instance, then call `source(config)` with the data location and reader settings:
+Pass one configuration object or a nonempty array of configurations to `ava.source()`. Each configuration describes where the data comes from and how to read it.
+
+| Field | Type | Required | Meaning |
+| --- | --- | --- | --- |
+| `type` | `string` | Yes | Source type. The sections below describe the supported values. |
+| `options` | Source-specific object | Yes | Reader or connection settings for that source type. |
+| `name` | `string` | No | Source name used to qualify table names in a batch of multiple sources. |
+
+Each call releases the current dataset and clears its metadata before loading. A failed load leaves the instance without an active dataset. After loading, use `ava.schema()` to inspect the table structure. Call `await ava.dispose()` when finished.
+
+### Connect one source
+
+Pass one configuration object. This example uses the default engine in the Node.js SDK.
 
 ```typescript
 import { AVA } from '@antv/ava';
@@ -112,26 +124,32 @@ const ava = new AVA({
 
 await ava.source({
   type: 'json',
-  options: {
-    data: [
-      { city: 'Hangzhou', revenue: 120 },
-      { city: 'Shanghai', revenue: 200 },
-      { city: 'Beijing', revenue: 160 },
-    ],
-  },
+  options: { data: [{ city: 'Hangzhou', revenue: 120 }] },
 });
+```
+
+### Connect multiple sources
+
+AVA can analyze data from [CSV](#csv), [JSON](#json), [Parquet](#parquet), [Excel](#excel), [text](#text), [SQLite](#sqlite), [MySQL](#mysql), [PostgreSQL](#postgresql), [MongoDB](#mongodb), [Lark Base](#feishu-bitable), [Tencent Docs SmartSheet](#tencent-docs-smartsheet), and [GitHub](#github) together.
+
+In the Node.js SDK, use `ava.source([...])` to connect multiple data sources in one call.
+
+- Use a unique **`name`** for each source.
+- With two or more sources, `ava.schema()` lists tables as **`sourceName.tableName`**. A CSV source exposes one table named `data`, and an Excel workbook exposes one table per selected sheet.
+- **A single source** keeps its original table names whether passed as an object or a one-entry array.
+
+<Callout>
+  Use the default engine to analyze multiple sources together. In the CLI, run `ava source A B C` to load sources into one session. See [CLI source inputs](/documentation/reference/cli/#source-inputs-and-engines).
+</Callout>
+
+```typescript
+await ava.source([
+  { name: 'orders', type: 'csv-file', options: { path: './sales.csv' } },
+  { name: 'workbook', type: 'excel', options: { path: './sales.xlsx' } },
+]);
 
 const schema = await ava.schema();
 ```
-
-| Parameter | Type                   | Required | Meaning                                                                                                                                      |
-| --------- | ---------------------- | -------- | -------------------------------------------------------------------------------------------------------------------------------------------- |
-| `type`    | `SourceType`           | Yes      | `csv`, `csv-file`, `json`, `json-file`, `parquet`, `excel`, `text`, `sqlite`, `mysql`, `postgresql`, `mongodb`, `supabase`, `clickhouse`, `sqlserver`, `snowflake`, `feishu-bitable`, `tencent-smartsheet`, or `github`. |
-| `options` | Source-specific object | Yes      | Use the matching table below. Field names are relative to `options`.                                                                         |
-
-`source()` returns no value and prepares the data for execution. Schema discovery is deferred until `schema()` or another operation needs it. Calling `source()` again replaces the current source and clears its cached metadata. Use `schema()` to inspect table and field names, and call `await ava.dispose()` when finished.
-
-The examples use Node.js. Supabase, ClickHouse, SQL Server, and Snowflake include their required constructor settings alongside the source call. For frontend applications, see [browser usage](/documentation/browser/).
 
 ## Files
 

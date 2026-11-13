@@ -4,7 +4,7 @@
  * https://duckdb.org/docs/lts/core_extensions/postgres
  */
 
-import { escapeSql, sqlIdentifier, sqlStringLiteral, sqlUnionAll } from '../../util/sql';
+import { escapeSql, sqlIdentifier, sqlStringLiteral, sqlQualifiedName, sqlUnionAll } from '../../util/sql';
 import { rowObjects2Schema } from '../../util/schema';
 import { createSshTunnel } from '../util/ssh';
 
@@ -107,25 +107,27 @@ function buildConnectionString(options: PostgreSQLSourceOptions): string {
   return parts.map(([key, value]) => `${key}=${value}`).join(' ');
 }
 
-export async function loadPostgreSQL(options: PostgreSQLSourceOptions): Promise<LoadedSource> {
+export async function loadPostgreSQL(options: PostgreSQLSourceOptions, alias = ATTACH_ALIAS): Promise<LoadedSource> {
   // Open the SSH tunnel first; ATTACH then targets the local forwarded port
   const tunnel = options.ssh ? await createSshTunnel(options.ssh, options.host, options.port ?? 5432) : undefined;
   const attachOptions = tunnel ? { ...options, host: '127.0.0.1', port: tunnel.localPort, ssh: undefined } : options;
   const schema = options.schema ?? 'public';
 
   return {
-    register: async (conn) => {
+    register: async (conn, namespace) => {
       try {
         await conn.run('LOAD postgres');
         // READ_ONLY keeps the analysis read-only against the source database
         await conn.run(
-          `ATTACH '${escapeSql(buildConnectionString(attachOptions))}' AS ${ATTACH_ALIAS} (TYPE postgres, READ_ONLY)`
+          `ATTACH '${escapeSql(buildConnectionString(attachOptions))}' AS ${sqlIdentifier(
+            alias
+          )} (TYPE postgres, READ_ONLY)`
         );
 
         // Discover every table in the attached schema and expose each as a view
         const tablesReader = await conn.runAndReadAll(
           `SELECT table_name FROM information_schema.tables
-           WHERE table_catalog = ${sqlStringLiteral(ATTACH_ALIAS)}
+           WHERE table_catalog = ${sqlStringLiteral(alias)}
              AND table_schema = ${sqlStringLiteral(schema)}
            ORDER BY table_name`
         );
@@ -133,8 +135,8 @@ export async function loadPostgreSQL(options: PostgreSQLSourceOptions): Promise<
 
         for (const table of tableNames) {
           await conn.run(
-            `CREATE OR REPLACE VIEW ${sqlIdentifier(table)} AS SELECT * FROM ${sqlIdentifier(
-              ATTACH_ALIAS
+            `CREATE OR REPLACE VIEW ${sqlQualifiedName(table, namespace)} AS SELECT * FROM ${sqlIdentifier(
+              alias
             )}.${sqlIdentifier(schema)}.${sqlIdentifier(table)}`
           );
         }
@@ -144,7 +146,7 @@ export async function loadPostgreSQL(options: PostgreSQLSourceOptions): Promise<
         throw error;
       }
     },
-    getSchema: async (conn) => {
+    getSchema: async (conn, namespace) => {
       const sql = `WITH exposed AS (\n${exposedSQL(schema)}\n)\n${sqlUnionAll([
         tablesSQL(),
         columnsSQL(),
@@ -153,9 +155,9 @@ export async function loadPostgreSQL(options: PostgreSQLSourceOptions): Promise<
       ])}`;
 
       const reader = await conn.runAndReadAll(
-        `SELECT * FROM postgres_query(${sqlStringLiteral(ATTACH_ALIAS)}, ${sqlStringLiteral(sql)})`
+        `SELECT * FROM postgres_query(${sqlStringLiteral(alias)}, ${sqlStringLiteral(sql)})`
       );
-      return rowObjects2Schema(reader.getRowObjectsJson());
+      return rowObjects2Schema(reader.getRowObjectsJson(), namespace);
     },
     // Pure remote source — no local file access needed after ATTACH
     allowedPaths: [],

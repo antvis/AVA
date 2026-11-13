@@ -47,7 +47,7 @@ export const jsonSourceSchema = z
     type: z.literal('json'),
     options: z
       .object({
-        data: z.array(dataRowSchema),
+        data: z.array(dataRowSchema, { error: 'Data must be an array' }),
         options: jsonReadOptionsSchema.optional(),
       })
       .strict(),
