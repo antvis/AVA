@@ -1,12 +1,21 @@
 import { Heading } from '../../../../../mdx-components';
 
-AVA 可以读取腾讯文档中一个智能子表的记录，并加载到 DuckDB 的只读表 `data` 中。原字段名作为列名，`_record_id` 保存原记录 ID。支持文本、数字、复选框、日期、创建和修改时间、进度、电话、邮箱、单选、货币和百分比字段。
+AVA 可以读取腾讯文档中一张智能子表的字段和记录，支持文本、数字、日期和单选等常用字段。
 
-<Heading as="h2" id="connect-tencent-docs">连接腾讯文档</Heading>
+<Heading as="h2" id="connect-tencent-docs">准备接入信息</Heading>
 
-请使用有权访问目标文档的账号。个人使用时，可登录[腾讯文档开放平台](https://docs.qq.com/open#/)，复制 `client_id`、`open_id` 和 `access_token`，直接填入 AVA，无需配置回调地址。若使用自建 OAuth 应用，请申请 `scope.smartsheet` 权限。[腾讯文档 OAuth 授权流程](https://docs.qq.com/open/document/app/oauth2/)
+个人使用时，用有权访问目标文档的账号登录腾讯文档开放平台，复制 `client_id`、`open_id` 和 `access_token`。[打开腾讯文档开放平台](https://docs.qq.com/open#/)
 
-将下方配置保存为 `tencent-source.json`，填入实际值，凭证文件请留在本地。使用 CLI 时运行 `ava source @tencent-source.json`，使用 Node.js SDK 时将同一个配置对象传给 `ava.source(config)`。
+<Heading as="h2" id="get-file-and-sheet-ids">从链接获取文件和子表 ID</Heading>
+
+打开要分析的子表，复制浏览器地址栏中的链接。例如 `https://docs.qq.com/smartsheet/EXAMPLE_ID?tab=TAB_ID`。
+
+1. **`fileId`** 取链接中 `/smartsheet/` 后面的 `EXAMPLE_ID`，在腾讯文档的 ID 转换接口中填入 `value=EXAMPLE_ID` 和 `type=2`，将返回的 `data.fileID` 填入 AVA。[文件 ID 转换](https://docs.qq.com/open/document/app/openapi/v2/file/util/converter.html)
+2. **`sheetId`** 取链接中 `tab` 的值 `TAB_ID`。如果链接没有 `tab`，可以用转换后的 `fileId` 查询文档中的子表。[查询子表](https://docs.qq.com/open/document/app/openapi/v2/smartsheet/sheet/get_sheet.html)
+
+## 加载数据
+
+填入下面五项配置，用 Node.js SDK 时将配置对象传给 `ava.source(config)`。用 CLI 时将配置保存到本地 `tencent-source.json`，运行 `ava source @tencent-source.json`。
 
 ```json
 {
@@ -21,14 +30,16 @@ AVA 可以读取腾讯文档中一个智能子表的记录，并加载到 DuckDB
 }
 ```
 
-| 参数 | 类型 | 说明 |
+<Heading as="h2" id="options">配置参数</Heading>
+
+| 参数 | 必填 | 说明 |
 | --- | --- | --- |
-| `fileId` | `string` | 必填。OpenAPI 文件 ID。如果手头只有分享链接，先[转换链接中的 ID](https://docs.qq.com/open/document/app/openapi/v2/file/util/converter.html)。 |
-| `sheetId` | `string` | 必填。智能子表 ID，可通过[查询子表](https://docs.qq.com/open/document/app/openapi/v2/smartsheet/sheet/get_sheet.html)获取。 |
-| `clientId` | `string` | 必填。腾讯文档应用的 Client ID。 |
-| `openId` | `string` | 必填。授权用户的 Open ID。 |
-| `accessToken` | `string` | 必填。用户的腾讯文档 OpenAPI 访问令牌。 |
-| `pageSize` | `number` | 每次请求的字段数或记录数，范围 1–100，默认 100。 |
-| `maxRecords` | `number` | 一次加载的最大记录数，范围 1–100,000，默认 10,000。超限时加载失败。 |
-| `timeoutMs` | `number` | 整次加载的超时时间，单位为毫秒。范围 1–110,000，默认 60,000。 |
-| `maxRetries` | `number` | 临时错误的重试次数，范围 0–5，默认 2。 |
+| `fileId` | 是 | 转换后得到的文件 ID。 |
+| `sheetId` | 是 | 要分析的子表 ID。 |
+| `clientId` | 是 | 开放平台中的 `client_id`。 |
+| `openId` | 是 | 开放平台中的 `open_id`。 |
+| `accessToken` | 是 | 开放平台中的 `access_token`。 |
+| `maxRecords` | 否 | 一次读取的记录上限。默认 10,000，范围 1–100,000。超出上限时加载失败。 |
+| `timeoutMs` | 否 | 整次读取的时限，单位为毫秒。默认 60,000，范围 1–110,000。 |
+| `pageSize` | 否 | 每次读取的字段数或记录数。默认 100，范围 1–100。 |
+| `maxRetries` | 否 | 遇到临时错误时的重试次数。默认 2，范围 0–5。 |

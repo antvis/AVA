@@ -58,24 +58,32 @@ function ChapterNavigation({ pathname, mobile }: { pathname: string; mobile: boo
   const slug = pathname.slice(docHref('introduction', locale).length).replace(/\/$/, '') || 'introduction';
   const active = findDoc(slug);
   const isOnlineService = (doc: (typeof docs)[number]) => doc.slug.startsWith('data/online-services/');
+  const sourcesHref = docHref('data/sources', locale);
   const [openGroup, setOpenGroup] = useState(
     active && active.slug !== 'introduction' ? localizedDoc(active, locale).group : null
   );
   const [servicesOpen, setServicesOpen] = useState(active ? isOnlineService(active) : false);
+  const [sourcesOpen, setSourcesOpen] = useState(active?.slug === 'data/sources' || servicesOpen);
   const navigationRef = useRef<HTMLElement>(null);
+  const mobileMenuRef = useRef<HTMLDetailsElement>(null);
 
   useEffect(() => {
     revealActiveChapter(navigationRef.current);
   }, []);
 
-  function renderLink(doc: (typeof docs)[number]) {
+  function closeMobileMenu() {
+    if (mobileMenuRef.current) mobileMenuRef.current.open = false;
+  }
+
+  function renderLink(doc: (typeof docs)[number], title = doc.title) {
     return (
       <Link
         key={doc.slug}
         href={docHref(doc.slug, locale)}
         aria-current={active?.slug === doc.slug ? 'page' : undefined}
+        onNavigate={closeMobileMenu}
       >
-        {doc.title}
+        {title}
       </Link>
     );
   }
@@ -92,16 +100,35 @@ function ChapterNavigation({ pathname, mobile }: { pathname: string; mobile: boo
             open={openGroup === group}
             onToggle={() => setOpenGroup(openGroup === group ? null : group)}
           >
-            {groupDocs.filter((doc) => !isOnlineService(doc)).map(renderLink)}
-            {services.length > 0 && (
-              <ChapterGroup
-                title={t('onlineServices')}
-                open={servicesOpen}
-                onToggle={() => setServicesOpen(!servicesOpen)}
-              >
-                {services.map(renderLink)}
-              </ChapterGroup>
-            )}
+            {groupDocs
+              .filter((doc) => !isOnlineService(doc))
+              .map((doc) =>
+                doc.slug === 'data/sources' ? (
+                  <ChapterGroup
+                    key={doc.slug}
+                    title={doc.title}
+                    open={sourcesOpen}
+                    onToggle={() => setSourcesOpen(!sourcesOpen)}
+                  >
+                    {renderLink(doc, t('sourceOverview'))}
+                    <Link href={`${sourcesHref}#files`} onNavigate={closeMobileMenu}>
+                      {t('files')}
+                    </Link>
+                    <Link href={`${sourcesHref}#databases`} onNavigate={closeMobileMenu}>
+                      {t('databases')}
+                    </Link>
+                    <ChapterGroup
+                      title={t('onlineServices')}
+                      open={servicesOpen}
+                      onToggle={() => setServicesOpen(!servicesOpen)}
+                    >
+                      {services.map((service) => renderLink(service))}
+                    </ChapterGroup>
+                  </ChapterGroup>
+                ) : (
+                  renderLink(doc)
+                )
+              )}
           </ChapterGroup>
         );
       })}
@@ -110,6 +137,7 @@ function ChapterNavigation({ pathname, mobile }: { pathname: string; mobile: boo
 
   return mobile ? (
     <details
+      ref={mobileMenuRef}
       className="docs-mobile-nav"
       onToggle={(event) => {
         if (event.currentTarget.open) revealActiveChapter(navigationRef.current);

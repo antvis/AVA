@@ -5,70 +5,99 @@ import { Heading } from '../../../../mdx-components';
     <img src="/logos/csv.svg" alt="" width="28" height="28" />
     <strong>CSV</strong>
     <span>Inline &amp; file</span>
+    <span className="docs-source-type" data-type="file">File</span>
   </a>
   <a href="#json">
     <img src="/logos/json.svg" alt="" width="28" height="28" />
     <strong>JSON</strong>
     <span>Inline &amp; file</span>
+    <span className="docs-source-type" data-type="file">File</span>
   </a>
   <a href="#parquet">
     <img src="/logos/parquet.svg" alt="" width="28" height="28" />
     <strong>Parquet</strong>
     <span>Columnar file</span>
+    <span className="docs-source-type" data-type="file">File</span>
   </a>
   <a href="#excel">
     <img src="/logos/excel.svg" alt="" width="28" height="28" />
     <strong>Excel</strong>
     <span>Workbook sheets</span>
+    <span className="docs-source-type" data-type="file">File</span>
   </a>
   <a href="#text">
     <img src="/logos/text.svg" alt="" width="28" height="28" />
     <strong>Text</strong>
     <span>LLM extraction</span>
+    <span className="docs-source-type" data-type="text">Unstructured</span>
   </a>
   <a href="#sqlite">
     <img src="/logos/sqlite.svg" alt="" width="28" height="28" />
     <strong>SQLite</strong>
     <span>Local database</span>
+    <span className="docs-source-type" data-type="database">Database</span>
   </a>
   <a href="#mysql">
     <img src="/logos/mysql.svg" alt="" width="28" height="28" />
     <strong>MySQL</strong>
-    <span>Database</span>
+    <span className="docs-source-type" data-type="database">Database</span>
   </a>
   <a href="#postgresql">
     <img src="/logos/postgresql.svg" alt="" width="28" height="28" />
     <strong>PostgreSQL</strong>
-    <span>Database</span>
+    <span className="docs-source-type" data-type="database">Database</span>
   </a>
   <a href="#mongodb">
     <img src="/logos/mongodb.svg" alt="" width="28" height="28" />
     <strong>MongoDB</strong>
     <span>Document database</span>
+    <span className="docs-source-type" data-type="database">Database</span>
   </a>
   <a href="#supabase">
     <img src="/logos/supabase.svg" alt="" width="28" height="28" />
     <strong>Supabase</strong>
     <span>Cloud database</span>
+    <span className="docs-source-type" data-type="database">Database</span>
   </a>
   <a href="#clickhouse">
     <img src="/logos/clickhouse.svg" alt="" width="28" height="28" />
     <strong>ClickHouse</strong>
     <span>Analytics database</span>
+    <span className="docs-source-type" data-type="database">Database</span>
   </a>
   <a href="#snowflake">
     <img src="/logos/snowflake.svg" alt="" width="28" height="28" />
     <strong>Snowflake</strong>
     <span>Cloud data warehouse</span>
+    <span className="docs-source-type" data-type="database">Database</span>
+  </a>
+  <a href="/documentation/data/online-services/feishu-bitable/">
+    <img src="/logos/feishu-bitable.svg" alt="" width="28" height="28" />
+    <strong>Lark Base</strong>
+    <span>Table records</span>
+    <span className="docs-source-type" data-type="service">Online service</span>
+  </a>
+  <a href="/documentation/data/online-services/tencent-smartsheet/">
+    <img src="/logos/tencent-docs.png" alt="" width="28" height="28" />
+    <strong>Tencent Docs SmartSheet</strong>
+    <span>SmartSheet records</span>
+    <span className="docs-source-type" data-type="service">Online service</span>
+  </a>
+  <a href="/documentation/data/online-services/github/">
+    <img src="/logos/github.svg" alt="" width="28" height="28" />
+    <strong>GitHub</strong>
+    <span>Issues and pull requests</span>
+    <span className="docs-source-type" data-type="service">Online service</span>
   </a>
   <a href="/documentation/engines/custom/">
     <img src="/logos/contribute.svg" alt="" width="28" height="28" />
     <strong>Custom extension</strong>
     <span>Register an engine</span>
+    <span className="docs-source-type" data-type="extension">Extension</span>
   </a>
 </nav>
 
-Choose a data source above, then use its example and parameter table below. CSV and JSON each support inline content and files. For Lark Base, Tencent Docs SmartSheet, and GitHub, see [Online services](#online-services).
+Choose a data source above, then use its example and parameter table below. CSV and JSON each support inline content and files.
 
 ## Connect a source
 
@@ -104,9 +133,11 @@ const schema = await ava.schema();
 
 The examples use Node.js. Supabase, ClickHouse, SQL Server, and Snowflake include their required constructor settings alongside the source call. For frontend applications, see [browser usage](/documentation/browser/).
 
-## CSV
+## Files
 
-### Inline CSV
+### CSV
+
+#### Inline CSV
 
 Pass the CSV content as a string with `type: 'csv'`.
 
@@ -122,7 +153,7 @@ await ava.source({
 | `csv`     | `string`         | Yes      | Raw CSV content string                     |
 | `options` | `CSVReadOptions` | No       | [CSV reader options](#csv-reader-options). |
 
-### CSV files
+#### CSV files
 
 Use `type: 'csv-file'` with a local path or HTTP(S) URL. For a protected URL, supply request headers in `options.headers`.
 
@@ -145,7 +176,7 @@ await ava.source({
 | `headers` | `Record<string, string>` | No       | HTTP headers for remote sources (e.g. Authorization) |
 | `options` | `CSVReadOptions`         | No       | [CSV reader options](#csv-reader-options).           |
 
-### CSV reader options
+#### CSV reader options
 
 Use these fields in `options.options` for `csv` and `csv-file` sources with DuckDB. Every field is optional. AVA forwards supplied values to `read_csv`; omitted values use DuckDB reader defaults or detection. Defaults below describe individual reader settings; automatic detection can determine the effective header, delimiter, and types.
 
@@ -190,9 +221,9 @@ Use these fields in `options.options` for `csv` and `csv-file` sources with Duck
 | `hive_partitioning`    | `boolean`                            | No       | Interpret the path as a Hive partitioned path. Default auto-detected                            |
 | `filename`             | `boolean`                            | No       | Add the source file path to each row as a `filename` column. Default false                      |
 
-## JSON
+### JSON
 
-### Inline JSON
+#### Inline JSON
 
 Pass an array of objects with `type: 'json'`.
 
@@ -208,7 +239,7 @@ await ava.source({
 | `data` | `any[]` | Yes      | Array of rows to load. |
 | `options` | `JSONReadOptions` | No | DuckDB reader parameters below. |
 
-### JSON files
+#### JSON files
 
 Use `type: 'json-file'` with a local path or HTTP(S) URL.
 
@@ -228,7 +259,7 @@ await ava.source({
 | `headers` | `Record<string, string>` | No       | HTTP headers for remote sources (e.g. Authorization) |
 | `options` | `JSONReadOptions` | No | DuckDB reader parameters below. |
 
-### JSON reader options
+#### JSON reader options
 
 Both JSON source types accept `options.options` when using the DuckDB engine. All fields are optional.
 The complete [DuckDB JSON reader parameter list](https://duckdb.org/docs/current/data/json/loading_json) is exposed as `JSONReadOptions`:
@@ -256,7 +287,7 @@ The complete [DuckDB JSON reader parameter list](https://duckdb.org/docs/current
 Inline data is serialized as an uncompressed JSON array; choose compatible reader options.
 Remote files are downloaded to temporary paths, so set `compression` explicitly for compressed URLs.
 
-## Parquet
+### Parquet
 
 Read a Parquet file from a local path or HTTP(S) URL.
 
@@ -272,7 +303,7 @@ await ava.source({
 | `path`    | `string`                 | Yes      | Local file path or http(s) URL                       |
 | `headers` | `Record<string, string>` | No       | HTTP headers for remote sources (e.g. Authorization) |
 
-## Excel
+### Excel
 
 Read an `.xlsx` workbook from a local path or HTTP(S) URL. Each selected worksheet becomes a separate table named after the sheet. Call `schema()` to inspect the resulting tables and columns.
 
@@ -289,7 +320,7 @@ await ava.source({
 });
 ```
 
-### Source options
+#### Source options
 
 | Field | Type | Required | Meaning / default |
 | --- | --- | --- | --- |
@@ -297,7 +328,7 @@ await ava.source({
 | `headers` | `Record<string, string>` | No | HTTP headers for remote sources, such as Authorization |
 | `sheets` | `ExcelSheetOptions[]` | No | Sheets to load and their individual read settings; omitted loads all sheets with `header: true` |
 
-### Sheet selection and reader options
+#### Sheet selection and reader options
 
 Each entry in `sheets` contains a required `sheet` and optional `ExcelReadOptions` fields. Set these fields directly on the sheet entry, as shown above.
 
@@ -313,7 +344,7 @@ Each entry in `sheets` contains a required `sheet` and optional `ExcelReadOption
 
 A supplied `sheets` list must be non-empty, and every name must exist in the workbook and appear only once. Ranges must be valid, bounded A1 rectangles. Invalid selections and unsupported fields are rejected.
 
-### Engine behavior
+#### Engine behavior
 
 Both engines support `sheet`, `range`, and `header`. The Python engine rejects the four DuckDB-only options in the table above.
 
@@ -346,7 +377,9 @@ await ava.source({
 | ------ | -------- | -------- | -------------------------------------------------------- |
 | `text` | `string` | Yes      | Unstructured text to extract using the configured model. |
 
-## SQLite
+## Databases
+
+### SQLite
 
 Open a local SQLite database in read-only mode.
 
@@ -361,7 +394,7 @@ await ava.source({
 | ------ | -------- | -------- | -------------------------------- |
 | `path` | `string` | Yes      | Local SQLite database file path. |
 
-## MySQL
+### MySQL
 
 Connect to a database and discover its tables.
 
@@ -386,7 +419,7 @@ await ava.source({
 | `password` | `string`     | No       | Database password; omitted if not supplied. |
 | `ssh`      | `SSHOptions` | No       | Optional [SSH tunnel](#ssh-options).        |
 
-## PostgreSQL
+### PostgreSQL
 
 Connect to a database and discover its tables.
 
@@ -412,7 +445,7 @@ await ava.source({
 | `schema`   | `string`     | No       | Schema the tables live in (defaults to `public`) |
 | `ssh`      | `SSHOptions` | No       | Optional [SSH tunnel](#ssh-options).             |
 
-## SSH options
+### SSH options
 
 To reach MySQL or PostgreSQL through a bastion, add `ssh` under `options`. The database `host` and `port` must be reachable from the bastion.
 
@@ -446,7 +479,7 @@ Fields inside `options.ssh`:
 | `password` | `string` | No | SSH login password. |
 | `hostKeyFingerprint` | `string` | Yes | Expected host key fingerprint, `SHA256:<base64>` without padding. |
 
-## MongoDB
+### MongoDB
 
 Load collections from the specified database. Use structured connection fields or supply `connection`, which takes precedence over them.
 
@@ -475,7 +508,7 @@ await ava.source({
 | `tlsCAFile`                   | `string`  | No       | Path to CA certificate file for TLS.                                                                                                                            |
 | `tlsAllowInvalidCertificates` | `boolean` | No       | Allow invalid certificates (testing only, default false).                                                                                                       |
 
-## SQL Server
+### SQL Server
 
 Provide a server hostname and database. Use SQL authentication.
 
@@ -510,7 +543,7 @@ await ava.source({
 
 Grant `SELECT` and `VIEW DEFINITION` permissions to the SQL login.
 
-## Supabase
+### Supabase
 
 Provide your project reference and a Supabase Management API access token. Your application obtains and refreshes the token.
 
@@ -533,7 +566,7 @@ await ava.source({
 | `accessToken` | `string` | Yes      | OAuth access token from the Supabase Management API OAuth flow              |
 | `projectRef`  | `string` | Yes      | Project reference (as returned by GET https://api.supabase.com/v1/projects) |
 
-## ClickHouse
+### ClickHouse
 
 Provide a server endpoint and database. Use `url` or `host`; `url` takes precedence when both are present.
 
@@ -553,7 +586,7 @@ await ava.source({
 });
 ```
 
-### Connection fields
+#### Connection fields
 
 | Field      | Type     | Required        | Meaning / default                                                         |
 | ---------- | -------- | --------------- | ------------------------------------------------------------------------- |
@@ -567,7 +600,7 @@ await ava.source({
 
 AVA requires an endpoint even though the underlying client has a localhost default.
 
-### Forwarded client fields
+#### Forwarded client fields
 
 `ClickHouseSourceOptions` also accepts the following fields from `@clickhouse/client`. This table follows the installed client type declarations (1.23.1); these fields are owned by that dependency. AVA forwards them when creating the client.
 
@@ -599,7 +632,7 @@ AVA requires an endpoint even though the underlying client has a localhost defau
 
 All forwarded fields are optional. Server settings are an extensible, server-version-dependent map rather than an AVA-defined finite list. The dependency's `ClickHouseSettings` type and your server determine accepted keys. Tracer, agent, logger, and connection objects implement the corresponding client contracts; they are not plain AVA configuration objects.
 
-### Nested client options
+#### Nested client options
 
 | Field                                      | Type                                             | Required / default                                                          |
 | ------------------------------------------ | ------------------------------------------------ | --------------------------------------------------------------------------- |
@@ -621,11 +654,11 @@ All forwarded fields are optional. Server settings are an extensible, server-ver
 
 Zstd compression requires Node.js 22.15 or newer in this client. Response compression may conflict with the engine's enforced read-only server settings; leave it disabled unless the server permits it.
 
-## Snowflake
+### Snowflake
 
 Use the `snowflake` source and engine in Node.js to analyze tables and views on your Snowflake warehouse. Each source discovers one schema and returns query results to AVA.
 
-### Permissions
+#### Permissions
 
 Prepare a warehouse, database and schema. The connection role needs `USAGE` on each, plus `SELECT` on the tables and views to analyze. For a shared database such as `SNOWFLAKE_SAMPLE_DATA`, grant `IMPORTED PRIVILEGES`. Keep procedure, external function and integration privileges out of this role.
 
@@ -645,7 +678,7 @@ GRANT ROLE AVA_READER TO USER AVA_READER_SVC;
 
 Queries consume warehouse credits. Enable auto-suspend and a resource monitor to control usage.
 
-### Connection fields
+#### Connection fields
 
 Set both the engine and source type to `snowflake`, then provide your account, credentials and warehouse:
 
@@ -685,7 +718,7 @@ await ava.source({
 
 Other [driver connection options](https://docs.snowflake.com/en/developer-guide/node-js/nodejs-driver-options), including `host`, proxy settings and `queryTag` (default `AVA`), are forwarded. AVA manages result formats and session cleanup. Loading fails if the database, schema or warehouse is missing or unauthorized.
 
-### Query execution
+#### Query execution
 
 Use `schema()` to inspect authorized tables, views and declared keys, `query()` to execute Snowflake SQL, or `analyze()` to ask a question. `analyze()` sends the question and dataset metadata to your configured model to generate SQL. By default, it also sends query results to the model for a summary; pass `{ includeSummary: false }` to skip that summary.
 

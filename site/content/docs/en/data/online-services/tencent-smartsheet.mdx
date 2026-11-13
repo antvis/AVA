@@ -1,10 +1,19 @@
-AVA reads the records from one Tencent Docs SmartSheet subtable into a read-only DuckDB table named `data`. Field names become column names, and `_record_id` holds the original record ID. Supported fields include text, numbers, checkboxes, dates, created and modified times, progress, phone numbers, email, single select, currency, and percentages.
+AVA reads fields and records from one Tencent Docs SmartSheet subtable. It supports common field types such as text, numbers, dates, and single select.
 
 ## Connect Tencent Docs
 
-Sign in with an account that can access the document. For personal use, copy `client_id`, `open_id`, and `access_token` from the [Tencent Docs Open Platform](https://docs.qq.com/open#/). You can use these credentials directly in AVA without setting up a callback. For your own OAuth app, request the `scope.smartsheet` permission. [Tencent Docs OAuth setup](https://docs.qq.com/open/document/app/oauth2/)
+For personal use, sign in to the Tencent Docs Open Platform with an account that can access the document. Copy `client_id`, `open_id`, and `access_token`. [Open the Tencent Docs Open Platform](https://docs.qq.com/open#/)
 
-Save this configuration as `tencent-source.json`, fill in the values, and keep the file out of version control. Run `ava source @tencent-source.json` in the CLI, or pass the same configuration object to `ava.source(config)` in the Node.js SDK.
+## Get the file and subtable IDs
+
+Open the subtable you want to analyze and copy the URL from your browser. For example, `https://docs.qq.com/smartsheet/EXAMPLE_ID?tab=TAB_ID`.
+
+1. **`fileId`** Take `EXAMPLE_ID` from the path after `/smartsheet/`. Send `value=EXAMPLE_ID` and `type=2` to the Tencent Docs ID converter, then use the returned `data.fileID` in AVA. [File ID conversion](https://docs.qq.com/open/document/app/openapi/v2/file/util/converter.html)
+2. **`sheetId`** Use `TAB_ID`, the value of `tab` in the URL. If the URL has no `tab` parameter, use the converted `fileId` to look up the subtables. [List subtables](https://docs.qq.com/open/document/app/openapi/v2/smartsheet/sheet/get_sheet.html)
+
+## Load the data
+
+Fill in the five values below. In the Node.js SDK, pass the configuration object to `ava.source(config)`. In the CLI, save the configuration locally as `tencent-source.json` and run `ava source @tencent-source.json`.
 
 ```json
 {
@@ -19,14 +28,16 @@ Save this configuration as `tencent-source.json`, fill in the values, and keep t
 }
 ```
 
-| Option | Type | Description |
+## Configuration options
+
+| Option | Required | Description |
 | --- | --- | --- |
-| `fileId` | `string` | Required. The OpenAPI file ID. Convert a sharing-link ID if needed. [File ID conversion](https://docs.qq.com/open/document/app/openapi/v2/file/util/converter.html) |
-| `sheetId` | `string` | Required. The subtable ID. [List subtables](https://docs.qq.com/open/document/app/openapi/v2/smartsheet/sheet/get_sheet.html) |
-| `clientId` | `string` | Required. The Tencent Docs app's client ID. |
-| `openId` | `string` | Required. The authorized user's Open ID. |
-| `accessToken` | `string` | Required. The user’s Tencent Docs OpenAPI access token. |
-| `pageSize` | `number` | Fields or records per request. Range 1–100, default 100. |
-| `maxRecords` | `number` | Maximum records per load. Range 1–100,000, default 10,000. Exceeding the limit fails the load. |
-| `timeoutMs` | `number` | Time limit for the whole load in milliseconds. Range 1–110,000, default 60,000. |
-| `maxRetries` | `number` | Retries for transient errors. Range 0–5, default 2. |
+| `fileId` | Yes | The file ID returned by the converter. |
+| `sheetId` | Yes | The ID of the subtable to analyze. |
+| `clientId` | Yes | The `client_id` from the Open Platform. |
+| `openId` | Yes | The `open_id` from the Open Platform. |
+| `accessToken` | Yes | The `access_token` from the Open Platform. |
+| `maxRecords` | No | Maximum records per load. Defaults to 10,000 and accepts 1–100,000. Exceeding the limit fails the load. |
+| `timeoutMs` | No | Time limit for the whole load in milliseconds. Defaults to 60,000 and accepts 1–110,000. |
+| `pageSize` | No | Fields or records per request. Defaults to 100 and accepts 1–100. |
+| `maxRetries` | No | Retries for transient errors. Defaults to 2 and accepts 0–5. |

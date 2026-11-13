@@ -94,7 +94,10 @@
     "mobileDocumentation": "移动端文档导航",
     "documentationChapters": "文档章节",
     "browseDocumentation": "浏览文档",
-    "onlineServices": "在线服务"
+    "onlineServices": "在线服务",
+    "sourceOverview": "总览",
+    "files": "文件",
+    "databases": "数据库"
   },
   "DocsToc": {
     "onThisPage": "本页目录",

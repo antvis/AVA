@@ -94,7 +94,10 @@
     "mobileDocumentation": "Mobile documentation",
     "documentationChapters": "Documentation chapters",
     "browseDocumentation": "Browse documentation",
-    "onlineServices": "Online services"
+    "onlineServices": "Online services",
+    "sourceOverview": "Overview",
+    "files": "Files",
+    "databases": "Databases"
   },
   "DocsToc": {
     "onThisPage": "On this page",
