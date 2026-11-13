@@ -15,6 +15,15 @@ Python 环境需要安装该源码版本的 `fg-data-profiling[arrow]`。输出�
 
 Unicode 分类表由 [Unicode Character Database 13.0.0](https://www.unicode.org/Public/13.0.0/) 生成，对齐 `tangled_up_in_unicode` 0.2.0 实际使用的字符属性。用 `python3 evals/profile/generate_unicode_properties.py /path/to/UCD.zip` 重建，脚本会核验源归档的 SHA-256。
 
+## 离线画像示例
+
+下载 [orders-profile.html](./examples/orders-profile.html) 并用浏览器打开。示例使用 76 条合成订单，包含缺失、重复、文本、数值和时序列。
+
+```sh
+npm run build:cjs
+node evals/profile/demo.cjs /tmp/orders-profile.html
+```
+
 ## 扫描性能复现
 
 ```sh
