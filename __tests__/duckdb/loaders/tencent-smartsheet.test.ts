@@ -262,7 +262,7 @@ describe('Tencent Docs scalar conversion', () => {
   });
 
   it('rejects column names that collide in DuckDB', () => {
-    expect(() => supportedFields([field('_record_id', 1)])).toThrow('reserved column name');
+    expect(() => supportedFields([field('_RECORD_ID', 1)])).toThrow('reserved column name');
     expect(() => supportedFields([field('amount', 2), field('AMOUNT', 2)])).toThrow('Duplicate');
   });
 });
@@ -376,14 +376,14 @@ describe('Tencent Docs HTTP → loader → DuckDB', () => {
     }
   });
 
-  it('loads quoted field names and values through DuckDB', async () => {
+  it('loads quoted names and preserves non-ASCII case distinctions in DuckDB', async () => {
     const title = 'quoted"column';
     const text = "O'Reilly \\ 中文";
-    serveTable([field(title, 1)], [record('r', { [title]: [{ text }] })]);
+    serveTable([field(title, 1), field('Å', 2), field('å', 2)], [record('r', { [title]: [{ text }], Å: 1, å: 2 })]);
     const ava = new AVA({ llm: { model: 'offline' } });
     try {
       await ava.source({ type: 'tencent-smartsheet', options });
-      expect((await ava.query('SELECT * FROM data')).data).toEqual([{ _record_id: 'r', [title]: text }]);
+      expect((await ava.query('SELECT * FROM data')).data).toEqual([{ _record_id: 'r', [title]: text, Å: 1, å: 2 }]);
     } finally {
       await ava.dispose();
     }

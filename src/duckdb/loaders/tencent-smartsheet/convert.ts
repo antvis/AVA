@@ -44,7 +44,8 @@ export function supportedFields(raw: unknown[]): TencentSmartsheetField[] {
     if (ids.has(field.fieldID)) throw new TencentSmartsheetError('Duplicate field ID; the table may have changed.');
     ids.add(field.fieldID);
     if (!Object.prototype.hasOwnProperty.call(SQL_TYPES, field.fieldType as number)) continue;
-    const name = field.fieldTitle.toLowerCase();
+    // DuckDB compares identifiers case-insensitively for ASCII letters only.
+    const name = field.fieldTitle.replace(/[A-Z]/g, (letter) => letter.toLowerCase());
     if (names.has(name)) throw new TencentSmartsheetError('Duplicate or reserved column name. Rename the source field.');
     names.add(name);
     fields.push({ fieldID: field.fieldID, fieldTitle: field.fieldTitle, fieldType: field.fieldType as number });
