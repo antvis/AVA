@@ -17,7 +17,7 @@ Unicode 分类表由 [Unicode Character Database 13.0.0](https://www.unicode.org
 
 ## 离线画像示例
 
-下载 [orders-profile.html](./examples/orders-profile.html) 并用浏览器打开。示例使用 76 条合成订单，包含缺失、重复、文本、数值和时序列。
+站点及其 Surge PR 预览通过 `/examples/profile/orders-profile.html` 提供这份报告。也可以下载 [orders-profile.html](../../site/public/examples/profile/orders-profile.html) 后离线打开。示例使用 76 条合成订单，包含缺失、重复、文本、数值和时序列。
 
 ```sh
 npm run build:cjs
