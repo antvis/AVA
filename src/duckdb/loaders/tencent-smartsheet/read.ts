@@ -1,14 +1,15 @@
 import { tencentSmartsheetOptionsSchema } from '../../../contracts/source/tencent-smartsheet';
 
 import { TencentSmartsheetClient, TencentSmartsheetError, isObject } from './client';
-import { supportedFields } from './convert';
-import { createSnapshotBuilder } from './snapshot';
+import { createRecordConverter, supportedFields } from './convert';
 
 import type { TencentSmartsheetCell, TencentSmartsheetField } from './convert';
 import type { TencentSmartsheetSourceOptions } from '../../../types';
 
 const MAX_FIELDS = 1000;
 const MAX_READ_BYTES = 16 * 1024 * 1024;
+const MAX_EXPANDED_BYTES = 16 * 1024 * 1024;
+const MAX_EXPANDED_CELLS = 1000000;
 
 export interface TencentSmartsheetSnapshot {
   fields: TencentSmartsheetField[];
@@ -94,6 +95,36 @@ export async function readRecords(
     for (const record of validatePage(page, 'records', state, limit, maximum)) append(record);
     if (!page.hasMore) return;
   }
+}
+
+/** Bound both serialized data and dense-object overhead, not just sparse API bytes. */
+export function createSnapshotBuilder(
+  fields: TencentSmartsheetField[],
+  limits = { maxBytes: MAX_EXPANDED_BYTES, maxCells: MAX_EXPANDED_CELLS }
+) {
+  const rows: Record<string, TencentSmartsheetCell>[] = [];
+  const convertRecord = createRecordConverter(fields);
+  const columns = fields.length + 1; // Include the source _record_id column.
+  const maxRecords = Math.floor(limits.maxCells / columns);
+  let bytes = 2; // JSON array brackets; commas are counted before each later row.
+  return {
+    rows,
+    maxRecords,
+    append(record: unknown): void {
+      // Check before allocating a dense row, including missing/null cells.
+      if (rows.length >= maxRecords) {
+        throw new TencentSmartsheetError(`Expanded snapshot exceeds the ${limits.maxCells}-cell read limit.`);
+      }
+      const row = convertRecord(record);
+      const nextBytes = bytes + (rows.length ? 1 : 0) + Buffer.byteLength(JSON.stringify(row), 'utf8');
+      if (nextBytes > limits.maxBytes) {
+        throw new TencentSmartsheetError(`Expanded snapshot exceeds the ${limits.maxBytes}-byte read limit.`);
+      }
+      // Retain only rows whose expanded representation is within both budgets.
+      rows.push(row);
+      bytes = nextBytes;
+    },
+  };
 }
 
 export async function readTencentSmartsheet(input: TencentSmartsheetSourceOptions): Promise<TencentSmartsheetSnapshot> {

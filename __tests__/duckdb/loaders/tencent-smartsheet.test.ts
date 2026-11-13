@@ -10,8 +10,7 @@ import { createSession } from '../../../src/cli/session/client';
 import { sourceInputSchema } from '../../../src/contracts';
 import { TencentSmartsheetClient } from '../../../src/duckdb/loaders/tencent-smartsheet/client';
 import { createRecordConverter, supportedFields } from '../../../src/duckdb/loaders/tencent-smartsheet/convert';
-import { readRecords, readTencentSmartsheet } from '../../../src/duckdb/loaders/tencent-smartsheet/read';
-import { createSnapshotBuilder } from '../../../src/duckdb/loaders/tencent-smartsheet/snapshot';
+import { createSnapshotBuilder, readRecords, readTencentSmartsheet } from '../../../src/duckdb/loaders/tencent-smartsheet/read';
 
 import type { TencentSmartsheetField } from '../../../src/duckdb/loaders/tencent-smartsheet/convert';
 
