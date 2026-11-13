@@ -55,6 +55,12 @@ ava query "$DATASET_ID" --dsl @query.sql --max-rows 100 > result.json
 
 不传 `--file` 时，每次 `profile` 调用都会重新计算。`--metrics` 替换默认指标列表；大型数据库只需要少量统计项时，建议使用针对性的查询。
 
+指标需要参数时，可通过 `--options` 传入 `ProfileOptions` JSON 文件，用 `-` 从标准输入读取。`--options`、`--file` 与 `--metrics` 只能选一个。
+
+```bash
+printf '%s\n' '{"metrics":[{"id":"quantiles","probabilities":[0.1,0.9]}]}' | ava profile "$DATASET_ID" --options -
+```
+
 创建会话时已配置模型后，可以用以下命令完成自然语言分析：
 
 ```bash
@@ -83,7 +89,12 @@ ava visualize --query "Plot revenue by region" --data @rows.json
 | ----------- | -------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `source` | 一个或多个 `dataset`：路径、URL、`@file` 或 `-` | `-t` / `--type`：`csv-file`、`json-file`、`parquet`、`excel`、`sqlite`、`github`，文件类型按扩展名推断。`--engine`：`duckdb`、`python`、`javascript`、`supabase`、`clickhouse`、`sqlserver`、`snowflake`，推断规则见上文。 |
 | `schema` | `dataset-id` | 可选 `--file`：已有 schema JSON 文件的路径。 |
-| `profile` | `dataset-id` | 可选 `--file`：已有 profile JSON 文件的路径；否则可用 `--metrics` 指定逗号分隔的指标名，默认[标准指标集](/documentation/reference/api/#profile)。传入空字符串则不计算统计项。 |
+| `profile` | `dataset-id` | `--file` 导入画像，`--metrics` 指定逗号分隔的指标名，`--options` 读取 JSON 选项文件。默认使用[标准指标集](/documentation/reference/api/#profile)。空指标列表不计算统计项。 |
+| `profile-compare` | `before.json after.json` | 按模型、列和指标名称对照画像。用 `-` 从标准输入读取其中一份，用 `-o comparison.html` 保存 HTML。 |
+| `profile-report` | `profile.json` 或 `-` | 用 `-o report.html` 保存离线 HTML。可用 `--title`、`--theme light\|dark\|auto`、`--transparent` 和 `--full-width` 设置外观。 |
+| `profile-expectations` | `profile.json` 或 `-` | 根据保存的画像生成 JSON 规则集。`--name` 设置规则集名称。 |
+| `profile-validate` | `profile.json suites.json` | 根据保存的观测验证生成的规则集。可用 `-` 从标准输入读取其中一份，也可用 `-o validation.html` 保存离线报告。 |
+| `quality` | `dataset-id` | 检查已保存的画像。可用 `--rules` 传入逗号分隔的[质量规则](/documentation/reference/api/#quality)。 |
 | `semantic` | `dataset-id` | 可选 `--file`：Semantic JSON 文件的路径，用于替换会话中的完整定义；不提供时读取当前定义。 |
 | `suggest` | `dataset-id` | `--count`：整数 `1`—`100`，默认 `3`。 |
 | `analyze` | `dataset-id`、自然语言 `query` | `--strategy`：`direct`（默认）或 `loop`；结果限制见下方。 |

@@ -4,6 +4,7 @@
 export { sourceInputSchema } from './source';
 export { schemaInputSchema, schemaOutputSchema } from './schema';
 export { profileInputSchema, profileOutputSchema } from './profile';
+export { qualityInputSchema, qualityOutputSchema } from './quality';
 export { semanticInputSchema, semanticOutputSchema } from './semantic';
 export { queryInputSchema, queryOutputSchema } from './query';
 export { analyzeInputSchema, analyzeOutputSchema } from './analyze';

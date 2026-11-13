@@ -22,6 +22,7 @@ const commands = [
   'source',
   'schema',
   'profile',
+  'quality',
   'semantic',
   'suggest',
   'analyze',
@@ -162,6 +163,36 @@ describe('metadata input', () => {
   it('rejects file import combined with metric computation', async () => {
     await expect(run(['profile', datasetId, '--file', 'profile.json', '--metrics', 'mean'])).rejects.toThrow(
       '--file cannot be combined with --metrics'
+    );
+    expect(request).not.toHaveBeenCalled();
+  });
+
+  it('loads metric-specific profile options from stdin', async () => {
+    const metrics = [
+      { id: 'quantiles', probabilities: [0.1, 0.9] },
+      { id: 'row_duplicates', limit: 0 },
+    ];
+    const input = Readable.from([JSON.stringify({ metrics })], { objectMode: false });
+    vi.spyOn(process, 'stdin', 'get').mockReturnValue(input as typeof process.stdin);
+
+    await execute(['profile', datasetId, '--options', '-']);
+    expect(request).toHaveBeenCalledExactlyOnceWith(datasetId, { command: 'profile', metrics, profile: undefined });
+  });
+
+  it('validates quality rules before sending the request', async () => {
+    await execute(['quality', datasetId, '--rules', 'missing, duplicates']);
+    expect(request).toHaveBeenCalledExactlyOnceWith(datasetId, {
+      command: 'quality',
+      rules: ['missing', 'duplicates'],
+    });
+    vi.mocked(request).mockClear();
+    await expect(run(['quality', datasetId, '--rules', 'unknown'])).rejects.toThrow(ZodError);
+    expect(request).not.toHaveBeenCalled();
+  });
+
+  it.each(['--file', '--metrics'])('rejects combining profile --options with %s', async (flag) => {
+    await expect(run(['profile', datasetId, '--options', '-', flag, 'input'])).rejects.toThrow(
+      '--options cannot be combined with --file or --metrics'
     );
     expect(request).not.toHaveBeenCalled();
   });

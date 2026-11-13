@@ -8,6 +8,8 @@ import type {
   schemaOutputSchema,
   profileInputSchema,
   profileOutputSchema,
+  qualityInputSchema,
+  qualityOutputSchema,
   semanticInputSchema,
   semanticOutputSchema,
   queryInputSchema,
@@ -55,6 +57,8 @@ export type SchemaOptions = z.input<typeof schemaInputSchema>;
 export type Schema = z.output<typeof schemaOutputSchema>;
 export type ProfileOptions = z.input<typeof profileInputSchema>;
 export type Profile = z.output<typeof profileOutputSchema>;
+export type QualityOptions = z.input<typeof qualityInputSchema>;
+export type Quality = z.output<typeof qualityOutputSchema>;
 export type SemanticOptions = z.input<typeof semanticInputSchema>;
 export type Semantic = z.output<typeof semanticOutputSchema>;
 export type ExecutionOptions = NonNullable<z.input<typeof queryInputSchema>['options']>;
@@ -79,9 +83,10 @@ export type ChartSpecInput = z.input<typeof vizInputSchema>;
 export type ChartType = ChartSpec['chartType'];
 export type VisualizeResponse = NonNullable<z.output<typeof visualizeOutputSchema>>;
 export type LogicalType = Profile['models'][number]['columns'][number]['properties']['logicalType'];
+export type ProfileType = NonNullable<Profile['models'][number]['columns'][number]['properties']['profileType']>;
 export type MetricConfig = NonNullable<ProfileOptions['metrics']>[number];
 export type MetricId = Exclude<MetricConfig, string>['id'];
-export type ParsedProfileOptions = { metrics: Exclude<MetricConfig, string>[] };
+export type ParsedProfileOptions = Omit<ProfileOptions, 'metrics'> & { metrics: Exclude<MetricConfig, string>[] };
 
 export type JsonValue = z.output<typeof jsonValue>;
 export type Properties = Record<string, JsonValue>;
@@ -306,7 +311,7 @@ export interface ChartTypeDefinition {
  */
 export type MetricOption = {
   /** Throws if the value is not allowed. */
-  validate(value: number): void;
+  validate(value: unknown): void;
 };
 
 /**
