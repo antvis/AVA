@@ -31,8 +31,9 @@ Files:
 | `examples.ts`         | `BIGQUERY_TABLE_SEED` sales seed used by docs and tests. |
 
 The dialect is registered in `src/query/bigquery.ts`, which also exports
-`validateReadOnlyBigQuery` (rejects multi-statement / non-SELECT input) and
-`limitedBigQuerySql` (wraps a query with `SELECT * FROM (…) LIMIT N`).
+`validateReadOnlyBigQuery` (rejects multi-statement / non-SELECT input). Public
+queries execute the normalized original statement; no outer SQL wrapper is
+added, so a top-level `ORDER BY` retains its semantics.
 
 Name→table mapping follows BigQuery's hierarchy exactly: `Model` /
 `tableReference` is `catalog` = project id, `schema` = dataset id, `table` =
@@ -61,12 +62,15 @@ await ava.source({
 ```
 
 Required: `projectId`. Optional: `dataset` (needed for `schema()`/
-`profile()`), `credentials` (service-account JSON object), `clientEmail` +
-`privateKey`, `location`, `maxBytesBilled` (dry-run-checked + server-side
-`maximumBytesBilled`), `timeoutMs`, `defaultRowLimit` (bounds the
-`getQueryResults` read), `adapter`, `tables`.
-When no credentials are passed, the client uses application-default
-credentials (ADC). See the [site docs][docs] for the full table.
+`profile()`), `credentials` (service-account JSON object or JSON object
+string), `clientEmail` + `privateKey`, `location`, `maxBytesBilled` (per-job
+dry-run check + server-side `maximumBytesBilled`), `timeoutMs`,
+`defaultRowLimit` (per-page `getQueryResults.maxResults`), `adapter`, `tables`.
+Malformed credential JSON is rejected while `ava.source()` loads the source.
+When no credentials are passed, the client uses application-default credentials
+(ADC). Loading a source is not a live connectivity check: GCP authentication and
+authorization are exercised by BigQuery API requests such as `schema()` and
+`query()`. See the [site docs][docs] for the full table.
 
 ### Real GCP run
 
@@ -96,10 +100,11 @@ SDK request mocks do not authenticate against or validate a real dataset.
   a query job created with `useLegacySql: false`. That flag only selects the
   GoogleSQL dialect — it is not read-proof by itself; real safety comes from
   the local validation plus a service account limited to reader roles.
-- **Budget.** When `maxBytesBilled` is configured, the connector first runs a
-  dry run and rejects the query up front if its estimated bytes exceed the
-  budget; the job itself is also created with `maximumBytesBilled` so the
-  server-side guard holds during execution.
+- **Per-job billing budget.** When `maxBytesBilled` is configured, the
+  connector first runs a dry run and rejects the query up front if its estimated
+  bytes exceed the budget; each real query job is also created with
+  `maximumBytesBilled` so the server-side guard holds during execution. This is
+  a BigQuery processing/billing guard, not a result-size limit.
 - **Schema discovery** reads `dataset.INFORMATION_SCHEMA.TABLES`,
   `.COLUMNS`, and `.KEY_COLUMN_USAGE` (only `BASE TABLE` rows; views and
   materialized views are out of scope, and cross-dataset relationships are
@@ -112,16 +117,28 @@ SDK request mocks do not authenticate against or validate a real dataset.
   (`2023-01-02T10:00:00.000Z`); `NUMERIC`/`BIGNUMERIC` → exact decimal string;
   `BYTES` → base64; `BOOLEAN`/`FLOAT64` keep native JS values;
   `STRUCT`/`ARRAY` are normalized recursively, while `JSON` stays a string.
-  Column names and types come from the driver schema — including for empty
-  results, whose schema falls back to the job metadata.
-- **Result caps.** Query results/profiles are bounded by `maxRows` (default
-  200) and `maxResultBytes` (default 1 MiB). Row limiting wraps the statement
-  server-side with `SELECT * FROM (…) LIMIT N` and the production connector
-  additionally bounds the read itself: `Job#getQueryResults` is called with
-  `maxResults` (from `defaultRowLimit`) and `autoPaginate: false`, so only the
-  first page is fetched — the full result is never pulled just to be
-  truncated locally. The per-query `timeoutMs` (default 60000) cancels the
-  running BigQuery job.
+  Column names and types come from successful `jobs.getQueryResults` responses,
+  including empty results. Ordinary job metadata is not a schema fallback; a
+  successful response without a schema fails explicitly.
+- **Paged reads and output caps.** Public queries are bounded by `maxRows`
+  (default 200 total rows) and `maxResultBytes` (default 1 MiB of serialized,
+  decoded output rows). The connector manually follows page tokens in server
+  order until either budget stops the read; page tokens and `totalRows` preserve
+  truncation information. The original SQL is not wrapped in an outer `LIMIT`,
+  so top-level ordering is preserved. `defaultRowLimit` only sets each request's
+  `maxResults` page size (the remaining row budget can reduce it); it is not a
+  total row limit. The SDK's automatic pagination is disabled in favor of this
+  explicit loop.
+- **Byte-limit boundary.** `maxResultBytes` is applied after the SDK has read a
+  page and AVA has decoded each row. It is not a wire-response cap and does not
+  limit BigQuery bytes processed. A page already returned by the SDK can contain
+  rows beyond the output budget; AVA decodes and measures the first row that
+  crosses the boundary, omits it, and does not request another page. Schema
+  discovery and profiling queries do not inherit public output budgets: they
+  exhaust every page or fail explicitly (for example, on a page error or the
+  per-query timeout). The
+  per-query `timeoutMs` (default 60000) covers polling and all pages, and
+  requests cancellation of the running BigQuery job.
 - **Profiling limits.** Metrics compile to one aggregate GoogleSQL query per
   table. `duplicate_count`-style metrics are generated only for columns whose
   type supports them (`numeric`, `string`, `boolean`, `date`); `JSON`,
@@ -146,9 +163,10 @@ npm install @google-cloud/bigquery@^9.6.0
 ```
 
 The connector is compiled against the SDK's published type declarations: job
-construction uses `Query`/`Job`, result reading goes through
-`Job#getQueryResults` (`maxResults`, `wrapIntegers`, `autoPaginate: false`),
-and `dryRun` estimates `totalBytesProcessed` before any billable job starts.
+construction uses `Query`/`Job`, result reading goes through manual
+`Job#getQueryResults` calls (`maxResults`, `wrapIntegers`,
+`autoPaginate: false`), and `dryRun` estimates `totalBytesProcessed` before any
+billable job starts.
 
 ### `'mock'`
 
@@ -188,15 +206,32 @@ const result2 = await ava.analyze('Which product sells the most units in the Nor
 
 `__tests__/remote/bigquery.test.ts` covers the mock adapter end-to-end (schema
 discovery, profile, read-only validation, bounded execution, error handling and
-`dispose`), plus the read-only/limiting helpers. The production connector is
-tested by stubbing the `@google-cloud/bigquery` request/response surface —
-job config vs `getQueryResults` bounds, dry-run budget rejection, lossless
-value decoding, empty-result schema fallback and timeout cancellation — with
-no live GCP project required either. Run with vitest:
+`dispose`). Public `ava.query()`/`ava.schema()` and the production connector are
+tested by stubbing the `@google-cloud/bigquery` request/response surface:
+native and empty-result schemas, ordered multi-page reads, row/byte truncation,
+complete `INFORMATION_SCHEMA` pagination, later-page failure, dry-run budget
+rejection, lossless value decoding, malformed credentials, and timeout
+cancellation. These are SDK contract tests, not live GCP validation. Run with
+vitest:
 
 ```bash
 npm test -- __tests__/remote/bigquery.test.ts
 ```
+
+## AI usage report
+
+Refs #1013; updated 2026-11-13. AI assistants helped inspect AVA's engine and
+CLI integration, the cached maintainer review, and the installed official SDK
+response types, and assisted with implementation, regression tests, and
+documentation. The delivery follows the repository's existing remote-engine
+patterns and includes no GCP credentials or private dataset content.
+
+Correctness claims are based on exact assertions over independently constructed
+SDK response stubs, TypeScript, ESLint, and Vitest rather than AI self-review.
+Maintainers should still review IAM, GoogleSQL coverage, pagination, and budget
+boundaries. No live GCP authentication, query execution, or natural-language
+versus direct-SQL comparison has been performed; mock and SDK-stub results are
+not presented as live validation.
 
 [bigquery]: https://cloud.google.com/bigquery
 [driver]: https://github.com/googleapis/nodejs-bigquery

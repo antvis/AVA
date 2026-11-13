@@ -3,7 +3,7 @@
  * `@google-cloud/bigquery` adapter; the mock adapter reproduces the same
  * contract in memory so unit tests and demos run without a live GCP project.
  */
-import type { BigQuerySourceOptions, ParsedProfileOptions, Profile, Schema } from '../../types';
+import type { BigQuerySourceOptions, ExecutionResult, ParsedProfileOptions, Profile, Schema } from '../../types';
 
 /** Shape of a query result row; column values are the driver's native values. */
 export type QueryResultRow = Record<string, unknown>;
@@ -15,16 +15,28 @@ export interface QueryColumnMeta {
   type: string;
 }
 
-/** Bounded result returned by a connector query. */
+/** Optional output budgets for a public query. Metadata queries omit both limits. */
+export interface QueryLimits {
+  /** Maximum decoded rows to return, not a per-page size. */
+  maxRows?: number;
+  /** Maximum serialized UTF-8 bytes of decoded rows. */
+  maxResultBytes?: number;
+}
+
+/** Result returned by a connector query, including server-native column metadata. */
 export interface QueryResult {
   columns: QueryColumnMeta[];
   rows: QueryResultRow[];
+  truncatedBy?: ExecutionResult['truncatedBy'];
 }
 
 /** Lifecycle: connect/dispose plus read-only statement execution. */
 export interface QueryConnector {
   connect(): Promise<void>;
-  query<T extends QueryResultRow = QueryResultRow>(sql: string): Promise<QueryResult & { rows: T[] }>;
+  query<T extends QueryResultRow = QueryResultRow>(
+    sql: string,
+    limits?: QueryLimits
+  ): Promise<QueryResult & { rows: T[] }>;
   close(): Promise<void>;
   /**
    * Optional in-memory profiling path. The mock connector evaluates metrics

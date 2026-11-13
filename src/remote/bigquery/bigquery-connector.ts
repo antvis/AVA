@@ -9,9 +9,10 @@
  *   - Budget: `maximumBytesBilled` is sent with the job (`IJobConfigurationQuery`,
  *     server-side guard) AND checked against a dry run before the billable job
  *     is created, so queries over the configured budget are rejected up front.
- *   - Rows: bounded at the result-read interface (`Job#getQueryResults` with
- *     `maxResults` and `autoPaginate: false`) — only the first page is read;
- *     the full result is never pulled just to be truncated locally.
+ *   - Rows/result bytes: bounded at the result-read interface. Pages are read
+ *     manually (`autoPaginate: false`) until a decoded-output budget stops the
+ *     read; `defaultRowLimit` only controls each request's `maxResults`.
+ *   - Metadata/profile queries have no output limit and exhaust every page.
  *   - `useLegacySql: false` only selects the GoogleSQL dialect; read-only is
  *     enforced by the local validator and a reader-role service account.
  *
@@ -19,18 +20,20 @@
  * (driver `BigQueryInt` wrappers), `DATE`, `DATETIME`, `TIME` surface the
  * server format string, `TIMESTAMP` becomes an ISO 8601 UTC string,
  * `NUMERIC`/`BIGNUMERIC` keep the full decimal string, and `BYTES` surface
- * base64. Column names and types come from the result schema — including for
- * empty results, whose schema falls back to the job metadata.
+ * base64. Column names and types come from successful `jobs.getQueryResults`
+ * responses, including empty results; ordinary job metadata is never used as a
+ * schema fallback.
  *
  * The optional driver is loaded through a deferred dynamic import so both the
  * CommonJS and ESM published builds can load it without a bare `require()`;
  * its types are imported statically (type-only, erased at runtime).
  */
 import { validateReadOnlyBigQuery } from '../../query/bigquery';
+import { resultRowBytes } from '../../util/result';
 import { runWithTimeout } from '../../util/timeout';
 
 import type { BigQuerySourceOptions } from '../../types';
-import type { QueryColumnMeta, QueryConnector, QueryResult, QueryResultRow } from './connector';
+import type { QueryColumnMeta, QueryConnector, QueryLimits, QueryResult, QueryResultRow } from './connector';
 import type {
   BigQuery,
   BigQueryDate,
@@ -73,11 +76,16 @@ function normalizeCredentials(options: BigQuerySourceOptions): Record<string, un
   const { credentials, clientEmail, privateKey } = options;
   if (credentials !== undefined) {
     if (typeof credentials === 'string') {
+      let parsed: unknown;
       try {
-        return JSON.parse(credentials) as Record<string, unknown>;
+        parsed = JSON.parse(credentials);
       } catch {
-        return { client_email: credentials, private_key: '' };
+        throw new Error('BigQuery credentials must be a valid service-account JSON object string');
       }
+      if (typeof parsed !== 'object' || parsed === null || Array.isArray(parsed)) {
+        throw new Error('BigQuery credentials JSON must contain a service-account object');
+      }
+      return parsed as Record<string, unknown>;
     }
     return credentials;
   }
@@ -240,16 +248,6 @@ async function enforceBudget(client: BigQuery, options: BigQuerySourceOptions, s
   }
 }
 
-/** First page of the result set, read at the results interface with exact integers. */
-const readOptions = (options: BigQuerySourceOptions): QueryResultsOptions => {
-  const maxResults = positiveInt(options.defaultRowLimit);
-  return {
-    ...(maxResults !== undefined ? { maxResults } : {}),
-    wrapIntegers: true,
-    autoPaginate: false,
-  };
-};
-
 interface ActiveQuery {
   job?: Job;
   cancelled: boolean;
@@ -262,31 +260,7 @@ function assertActive(active: ActiveQuery): void {
   throw new Error('BigQuery query was cancelled after its timeout');
 }
 
-/**
- * Wait for completion without auto-pagination. A page token means more rows
- * exist and is deliberately not followed; only job-completion polls are retried.
- */
-async function readFirstPage(
-  job: Job,
-  options: BigQuerySourceOptions,
-  active: ActiveQuery
-): Promise<QueryRowsResponse> {
-  let request: QueryResultsOptions = readOptions(options);
-  for (;;) {
-    assertActive(active);
-    const response = await job.getQueryResults(request);
-    assertActive(active);
-    if (response.length === 1) return response;
-
-    const apiResponse = response[2];
-    if (apiResponse.jobComplete !== false) return response;
-    const nextQuery = response[1];
-    if (!nextQuery) throw new Error('BigQuery returned an incomplete query without a continuation request');
-    request = { ...readOptions(options), ...nextQuery, autoPaginate: false, wrapIntegers: true };
-  }
-}
-
-/** Column metadata exactly as the driver reports it. */
+/** Column metadata exactly as the result API reports it. */
 function columnsFrom(fields: TableField[]): QueryColumnMeta[] {
   return fields.map((field) => ({ name: field.name ?? '', type: field.type ?? 'STRING' }));
 }
@@ -303,6 +277,126 @@ function rowsFrom(rows: Record<string, unknown>[], fields: TableField[]): QueryR
   );
 }
 
+function validateLimits(limits: QueryLimits | undefined): void {
+  if (limits?.maxRows !== undefined && (!Number.isSafeInteger(limits.maxRows) || limits.maxRows < 1)) {
+    throw new Error('BigQuery query maxRows must be a positive safe integer');
+  }
+  if (
+    limits?.maxResultBytes !== undefined &&
+    (!Number.isSafeInteger(limits.maxResultBytes) || limits.maxResultBytes < 1)
+  ) {
+    throw new Error('BigQuery query maxResultBytes must be a positive safe integer');
+  }
+}
+
+/** Build one manual page request. The remaining row budget can reduce, but never increase, the page size. */
+function readOptions(
+  options: BigQuerySourceOptions,
+  limits: QueryLimits | undefined,
+  rowsRead: number,
+  nextQuery?: QueryRowsResponse[1]
+): QueryResultsOptions {
+  const pageSize = positiveInt(options.defaultRowLimit);
+  const remaining = limits?.maxRows === undefined ? undefined : Math.max(limits.maxRows - rowsRead, 1);
+  const maxResults = remaining === undefined ? pageSize : Math.min(pageSize ?? remaining, remaining);
+  return {
+    ...nextQuery,
+    ...(maxResults !== undefined ? { maxResults } : {}),
+    wrapIntegers: true,
+    autoPaginate: false,
+  };
+}
+
+function hasMoreRows(
+  apiResponse: QueryRowsResponse[2],
+  nextQuery: QueryRowsResponse[1],
+  rowsRead: number
+): boolean {
+  if (nextQuery?.pageToken || apiResponse?.pageToken) return true;
+  const totalRows = apiResponse?.totalRows;
+  if (totalRows === undefined) return false;
+  try {
+    return BigInt(totalRows) > BigInt(rowsRead);
+  } catch {
+    throw new Error(`BigQuery returned an invalid totalRows value: ${totalRows}`);
+  }
+}
+
+/**
+ * Poll to completion and manually read result pages in server order. Public
+ * queries stop at decoded row/byte budgets; unbounded metadata/profile queries
+ * continue until no page token remains. A schema is required from a successful
+ * jobs.getQueryResults response, including when its rows array is empty.
+ */
+async function readPages(
+  job: Job,
+  options: BigQuerySourceOptions,
+  active: ActiveQuery,
+  limits?: QueryLimits
+): Promise<QueryResult> {
+  validateLimits(limits);
+  const rows: QueryResultRow[] = [];
+  let fields: TableField[] | undefined;
+  let bytes = 0;
+  let request = readOptions(options, limits, 0);
+
+  for (;;) {
+    assertActive(active);
+    const response = await job.getQueryResults(request);
+    assertActive(active);
+    const nextQuery = response[1];
+    const apiResponse = response[2];
+
+    if (apiResponse?.jobComplete === false) {
+      if (!nextQuery) throw new Error('BigQuery returned an incomplete query without a continuation request');
+      request = readOptions(options, limits, rows.length, nextQuery);
+      continue;
+    }
+
+    if (!fields) {
+      fields = apiResponse?.schema?.fields;
+      if (!fields?.length) {
+        throw new Error('BigQuery result schema is missing from the successful jobs.getQueryResults response');
+      }
+    }
+
+    const pageRows = (response[0] ?? []) as Record<string, unknown>[];
+    for (const row of pageRows) {
+      if (limits?.maxRows !== undefined && rows.length >= limits.maxRows) {
+        return { columns: columnsFrom(fields), rows, truncatedBy: 'maxRows' };
+      }
+      if (limits?.maxResultBytes !== undefined && bytes >= limits.maxResultBytes) {
+        return { columns: columnsFrom(fields), rows, truncatedBy: 'maxResultBytes' };
+      }
+
+      const decoded = rowsFrom([row], fields)[0];
+      if (limits?.maxResultBytes !== undefined) {
+        const rowBytes = resultRowBytes(decoded);
+        if (bytes + rowBytes > limits.maxResultBytes) {
+          return { columns: columnsFrom(fields), rows, truncatedBy: 'maxResultBytes' };
+        }
+        bytes += rowBytes;
+      }
+      rows.push(decoded);
+    }
+
+    const moreRows = hasMoreRows(apiResponse, nextQuery, rows.length);
+    if (limits?.maxRows !== undefined && rows.length >= limits.maxRows && moreRows) {
+      return { columns: columnsFrom(fields), rows, truncatedBy: 'maxRows' };
+    }
+    if (limits?.maxResultBytes !== undefined && bytes >= limits.maxResultBytes && moreRows) {
+      return { columns: columnsFrom(fields), rows, truncatedBy: 'maxResultBytes' };
+    }
+    if (!nextQuery?.pageToken) {
+      if (moreRows) {
+        throw new Error('BigQuery result is incomplete: more rows were reported without a page token');
+      }
+      return { columns: columnsFrom(fields), rows };
+    }
+    request = readOptions(options, limits, rows.length, nextQuery);
+  }
+}
+
 export class BigQueryQueryConnector implements QueryConnector {
   private readonly options: BigQuerySourceOptions;
   private readonly activeQueries = new Set<ActiveQuery>();
@@ -316,8 +410,10 @@ export class BigQueryQueryConnector implements QueryConnector {
   async connect(): Promise<void> {
     if (this.client) return;
     const generation = this.generation;
-    const { BigQuery } = await loadBigQuery();
+    // Validate explicit credentials before optional-driver loading so a bad
+    // JSON string is reported as a configuration error during ava.source().
     const credentials = normalizeCredentials(this.options);
+    const { BigQuery } = await loadBigQuery();
     const client = new BigQuery({
       projectId: this.options.projectId,
       ...(credentials !== undefined ? { credentials: credentials as ClientCredentials } : {}),
@@ -326,7 +422,10 @@ export class BigQueryQueryConnector implements QueryConnector {
     if (generation === this.generation) this.client = client;
   }
 
-  async query<T extends QueryResultRow = QueryResultRow>(sql: string): Promise<QueryResult & { rows: T[] }> {
+  async query<T extends QueryResultRow = QueryResultRow>(
+    sql: string,
+    limits?: QueryLimits
+  ): Promise<QueryResult & { rows: T[] }> {
     const query = validateReadOnlyBigQuery(sql);
     const timeoutMs = this.options.timeoutMs ?? DEFAULT_TIMEOUT_MS;
     const active: ActiveQuery = { cancelled: false };
@@ -346,21 +445,7 @@ export class BigQueryQueryConnector implements QueryConnector {
         if (active.cancelled) cancelJob(createdJob);
         assertActive(active);
 
-        const response = await readFirstPage(createdJob, this.options, active);
-        const rows = response[0] as Record<string, unknown>[];
-        const apiResponse = response.length === 3 ? response[2] : undefined;
-        let fields = apiResponse?.schema?.fields ?? [];
-        if (!fields.length) {
-          // Result pages can omit schema (especially for empty results). Do not
-          // hide metadata failures: without a schema, INT64/temporal decoding
-          // and empty-result columns would be unreliable.
-          const [jobMetadata] = await createdJob.getMetadata();
-          fields = jobMetadata.statistics?.query?.schema?.fields ?? [];
-        }
-        if (!fields.length) {
-          throw new Error('BigQuery result schema is missing from both the result page and job metadata');
-        }
-        return { columns: columnsFrom(fields), rows: rowsFrom(rows, fields) };
+        return readPages(createdJob, this.options, active, limits);
       })();
 
       const response = await runWithTimeout(operation, timeoutMs, {

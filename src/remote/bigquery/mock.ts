@@ -11,13 +11,14 @@
  * schema-discovery queries and simple data queries, not to be a SQL engine.
  */
 import { resolveMetric } from '../../util/profile';
+import { resultRowBytes } from '../../util/result';
 import { sqlIdentifier, sqlStringLiteral } from '../../util/sql';
 
 import { BUILTIN_METRICS, logicalType } from './profile';
 
 import type { BigQuerySourceOptions, JsonValue, ParsedProfileOptions, Profile, Schema } from '../../types';
 import type { MetricField } from '../../util/profile';
-import type { QueryConnector, QueryResult, QueryResultRow } from './connector';
+import type { QueryColumnMeta, QueryConnector, QueryLimits, QueryResult, QueryResultRow } from './connector';
 
 const DEFAULT_DATASET = 'demo';
 
@@ -288,7 +289,7 @@ interface ParsedSelect {
   limit?: number;
 }
 
-/** Unwrap the engine's `SELECT * FROM ( <inner> ) AS __ava_query LIMIT N` wrapper. */
+/** Accept the outer row-limit wrapper emitted by older engine versions when replaying persisted queries. */
 function unwrapWrapper(sql: string): { inner: string; limit?: number } {
   const m = sql.match(
     /^\s*SELECT\s+\*\s+FROM\s*\(\s*([\s\S]+?)\s*\)\s+AS\s+\w+\s*LIMIT\s+(\d+)\s*$/i
@@ -758,6 +759,31 @@ function profileMockTables(tables: Table[], schema: Schema, options: ParsedProfi
   };
 }
 
+function mockResultColumns(parsed: ParsedSelect, source?: Table): QueryColumnMeta[] {
+  const sourceColumns = source?.columns ?? [];
+  const sourceType = (name: string | undefined): string | undefined =>
+    sourceColumns.find((column) => column.name === name)?.type;
+
+  return parsed.items.flatMap((item): QueryColumnMeta[] => {
+    if (item.isStar) return sourceColumns.map(({ name, type }) => ({ name, type }));
+    const expr = item.expr;
+    const name = item.alias || (expr.kind === 'ident' ? expr.orig || expr.name! : expr.kind === 'call' ? expr.name!.toLowerCase() : 'value');
+    let type = 'STRING';
+    if (expr.kind === 'ident') type = sourceType(expr.name) ?? 'STRING';
+    if (expr.kind === 'literal') {
+      if (typeof expr.value === 'number') type = Number.isInteger(expr.value) ? 'INT64' : 'FLOAT64';
+      else if (typeof expr.value === 'boolean') type = 'BOOL';
+    }
+    if (expr.kind === 'call') {
+      const inputType = sourceType(expr.args?.find((arg) => arg.kind === 'ident')?.name);
+      if (expr.name === 'COUNT') type = 'INT64';
+      else if (expr.name === 'AVG' || expr.name === 'MEAN' || expr.name?.startsWith('STDDEV')) type = 'FLOAT64';
+      else if (expr.name === 'SUM' || expr.name === 'MIN' || expr.name === 'MAX') type = inputType ?? 'FLOAT64';
+    }
+    return [{ name, type }];
+  });
+}
+
 export class MockQueryConnector implements QueryConnector {
   private readonly options: BigQuerySourceOptions;
   private tables: Table[] = [];
@@ -789,9 +815,12 @@ export class MockQueryConnector implements QueryConnector {
     this.connected = true;
   }
 
-  async query<T extends QueryResultRow = QueryResultRow>(sql: string): Promise<QueryResult & { rows: T[] }> {
+  async query<T extends QueryResultRow = QueryResultRow>(
+    sql: string,
+    limits?: QueryLimits
+  ): Promise<QueryResult & { rows: T[] }> {
     await this.connect();
-    return this.run(sql) as QueryResult & { rows: T[] };
+    return this.run(sql, limits) as QueryResult & { rows: T[] };
   }
 
   async profile(schema: Schema, options: ParsedProfileOptions): Promise<Profile> {
@@ -804,20 +833,41 @@ export class MockQueryConnector implements QueryConnector {
     this.tables = [];
   }
 
-  private run(sql: string): QueryResult {
+  private run(sql: string, limits?: QueryLimits): QueryResult {
     const trimmed = sql.trim();
     if (!/^select\b/i.test(trimmed)) {
       throw new Error('Mock BigQuery connector only executes read-only SELECT statements');
     }
     const { inner, limit } = unwrapWrapper(trimmed.replace(/;+\s*$/, ''));
     const parsed = new Parser(tokenize(inner.replace(/;+\s*$/, ''))).parse();
-    if (parsed.limit !== undefined && limit === undefined) {
-      // The parser understands a LIMIT that the engine wrapper did not capture;
-      // only enforce the wrapper's explicit bound when present to match BigQuery.
-    }
     const result = this.executeSelect(parsed);
     const effective = Math.min(limit ?? result.rows.length, parsed.limit ?? result.rows.length);
-    return { columns: result.columns, rows: result.rows.slice(0, effective) };
+    const available = result.rows.slice(0, effective);
+    const rows: QueryResultRow[] = [];
+    let bytes = 0;
+    let truncatedBy: QueryResult['truncatedBy'];
+
+    for (const row of available) {
+      if (limits?.maxRows !== undefined && rows.length >= limits.maxRows) {
+        truncatedBy = 'maxRows';
+        break;
+      }
+      if (limits?.maxResultBytes !== undefined && bytes >= limits.maxResultBytes) {
+        truncatedBy = 'maxResultBytes';
+        break;
+      }
+      if (limits?.maxResultBytes !== undefined) {
+        const rowBytes = resultRowBytes(row);
+        if (bytes + rowBytes > limits.maxResultBytes) {
+          truncatedBy = 'maxResultBytes';
+          break;
+        }
+        bytes += rowBytes;
+      }
+      rows.push(row);
+    }
+
+    return { columns: result.columns, rows, ...(truncatedBy ? { truncatedBy } : {}) };
   }
 
   private resolve(from: string): Table {
@@ -927,7 +977,7 @@ export class MockQueryConnector implements QueryConnector {
     }
 
     const n = parsed.limit !== undefined ? Math.min(parsed.limit, resultRows.length) : resultRows.length;
-    return { columns: [], rows: resultRows.slice(0, n) };
+    return { columns: mockResultColumns(parsed, source), rows: resultRows.slice(0, n) };
   }
 }
 

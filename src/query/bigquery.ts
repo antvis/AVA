@@ -70,8 +70,8 @@ export function stripSqlComments(sql: string): string {
 /**
  * Remove trailing comments and statement terminators from a GoogleSQL
  * statement. Comments and string literals are scanned so a `;` or `--` inside
- * a literal is preserved; trailing comments never reach the derived-table
- * wrapper, where a semicolon would make the statement invalid.
+ * a literal is preserved. The normalized statement is executed directly,
+ * without a wrapper that could change top-level ORDER BY semantics.
  */
 export function normalizeBigQueryStatement(sql: string): string {
   let last = -1;
@@ -147,7 +147,12 @@ export function validateReadOnlyBigQuery(sql: string): string {
   return normalized;
 }
 
-export class BigQueryQueryDialect implements QueryDialect<void> {
+export class BigQueryQueryDialect implements QueryDialect {
+  readonly id = 'bigquery-sql';
+  readonly rules = `Use GoogleSQL (BigQuery) syntax and exactly one read-only SELECT query (WITH is allowed).
+  Reference the exact table and column names from the data model, joining tables when needed. Use backticks only where identifiers need quoting and single quotes for strings.
+  Do not use INSERT, UPDATE, DELETE, MERGE, TRUNCATE, DDL, stored procedures, temporary tables, scripting, EXPORT DATA, or OPTIONS clauses. Apply ORDER BY at the outermost level when result order matters.`;
+
   constructor(private readonly llmConfig: LLMConfig) {}
 
   async getDSL(query: string, dataModel: DataModel): Promise<TranslationResult> {
@@ -158,16 +163,21 @@ ${stringifyDataModel(dataModel)}
 
 User Query: ${query}
 
-Generate exactly one read-only SELECT query (WITH is allowed), without explanation or markdown formatting. Do not use INSERT, UPDATE, DELETE, MERGE, TRUNCATE, DDL, stored procedures, temporary tables, scripting, EXPORT DATA, or OPTIONS clauses. Reference the tables and fields by their exact names shown above (join tables when the question spans multiple tables). Use GoogleSQL syntax with backticks only where identifiers need quoting.`;
+${this.rules}
+Generate exactly one query. Return only SQL text, without explanation or Markdown.`;
 
-    const { text, usage } = await generateText({
+    const { text, usage, finishReason } = await generateText({
       model: languageModel(this.llmConfig),
       maxRetries: this.llmConfig.maxRetries ?? 3,
       prompt,
     });
 
+    if (finishReason !== 'stop' && finishReason !== 'other') {
+      throw new Error(`BigQuery SQL generation did not complete (${finishReason})`);
+    }
     const trimmed = text.trim();
     const dsl = (trimmed.match(/^```(?:sql)?[ \t]*\r?\n([\s\S]*?)\r?\n```$/i)?.[1] ?? trimmed).trim();
+    if (!dsl) throw new Error('BigQuery SQL generation returned an empty query');
     return { dsl, usage };
   }
 
@@ -175,15 +185,4 @@ Generate exactly one read-only SELECT query (WITH is allowed), without explanati
   async validateDSL(sql: string): Promise<string> {
     return validateReadOnlyBigQuery(sql);
   }
-}
-
-/**
- * Wrap a read-only GoogleSQL statement with a row bound. BigQuery has no
- * standard `LIMIT`; wrapping the query in a derived table and applying a
- * `LIMIT` keeps statement order while bounding the result (one extra row
- * signals truncation).
- */
-export function limitedBigQuerySql(sql: string, limit: number): string {
-  const query = normalizeBigQueryStatement(sql);
-  return `SELECT * FROM (\n${query}\n) AS __ava_query LIMIT ${limit + 1}`;
 }

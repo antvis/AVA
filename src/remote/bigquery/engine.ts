@@ -8,15 +8,15 @@
  * single SELECT, no writes/DDL/stored procedures) and is executed through a
  * service-account-scoped query job that the caller limits to reader roles.
  */
-import { BigQueryQueryDialect, limitedBigQuerySql, validateReadOnlyBigQuery } from '../../query/bigquery';
+import { BigQueryQueryDialect, validateReadOnlyBigQuery } from '../../query/bigquery';
 import { DEFAULT_METRICS, parseProfileOptions } from '../../util/profile';
-import { executionResult, inferQuerySchema, maxRows } from '../../util/result';
+import { executionResult, maxResultBytes, maxRows } from '../../util/result';
 
 import { createConnector } from './connector';
 import { profileTables } from './profile';
 import { getBigQuerySchema } from './schema';
 
-import type { QueryConnector } from './connector';
+import type { QueryConnector, QueryLimits, QueryResult } from './connector';
 import type {
   TranslationResult,
   AnalysisEngine,
@@ -31,18 +31,14 @@ import type {
 } from '../../types';
 
 export class BigQueryEngine implements AnalysisEngine {
-  readonly language = {
-    name: 'Google BigQuery SQL dialect (GoogleSQL)',
-    fence: 'sql',
-  };
+  readonly dialect: BigQueryQueryDialect;
 
   private connector: QueryConnector | null = null;
   private dataset: string | null = null;
-  private readonly queryDialect: BigQueryQueryDialect;
   private projectId = '';
 
   constructor(llmConfig: LLMConfig) {
-    this.queryDialect = new BigQueryQueryDialect(llmConfig);
+    this.dialect = new BigQueryQueryDialect(llmConfig);
   }
 
   async load(config: DataSourceConfig): Promise<void> {
@@ -70,7 +66,7 @@ export class BigQueryEngine implements AnalysisEngine {
     if (!this.connector || !this.dataset) {
       throw new Error('No data loaded. Please call source() first or provide a dataset option.');
     }
-    return getBigQuerySchema((sql) => this.runQuery(sql), this.dataset, this.projectId);
+    return getBigQuerySchema(async (sql) => (await this.runQuery(sql)).rows, this.dataset, this.projectId);
   }
 
   async profile(schema: Schema, options: ProfileOptions = {}): Promise<Profile> {
@@ -79,19 +75,24 @@ export class BigQueryEngine implements AnalysisEngine {
     // The mock connector profiles its seeded rows directly instead of running
     // production SQL it cannot fully evaluate.
     if (this.connector.profile) return this.connector.profile(schema, parsed);
-    return profileTables((sql) => this.runQuery(sql), schema, parsed);
+    return profileTables(async (sql) => (await this.runQuery(sql)).rows, schema, parsed);
   }
 
   async getDSL(query: string, dataModel: DataModel): Promise<TranslationResult> {
     if (!this.connector) throw new Error('No data loaded. Please call source() first.');
-    return this.queryDialect.getDSL(query, dataModel);
+    return this.dialect.getDSL(query, dataModel);
   }
 
   async execute<T = Record<string, unknown>>(dsl: string, options?: ExecutionOptions): Promise<ExecutionResult<T>> {
     if (!this.connector) throw new Error('No data loaded. Please call source() first.');
-    const query = validateReadOnlyBigQuery(dsl);
-    const rows = await this.runQuery<T>(limitedBigQuerySql(query, maxRows(options)));
-    return executionResult(rows, inferQuerySchema(rows), options);
+    const query = await this.dialect.validateDSL(dsl);
+    // Execute the original statement so its top-level ORDER BY keeps its meaning.
+    // The connector reads pages only until one of these decoded-output budgets stops it.
+    const result = await this.runQuery<T>(query, {
+      maxRows: maxRows(options),
+      maxResultBytes: maxResultBytes(options),
+    });
+    return executionResult(result.rows, result.columns, options, result.truncatedBy);
   }
 
   async dispose(): Promise<void> {
@@ -104,10 +105,14 @@ export class BigQueryEngine implements AnalysisEngine {
     }
   }
 
-  private async runQuery<T = Record<string, unknown>>(query: string): Promise<T[]> {
+  private async runQuery<T = Record<string, unknown>>(
+    query: string,
+    limits?: QueryLimits
+  ): Promise<QueryResult & { rows: T[] }> {
     if (!this.connector) throw new Error('No data loaded. Please call source() first.');
-    const result = await this.connector.query(query);
-    return result.rows as T[];
+    // Schema and profiling call this without limits: their result pages must be
+    // exhausted or the query must fail, never silently return partial metadata.
+    return this.connector.query(query, limits) as Promise<QueryResult & { rows: T[] }>;
   }
 }
 

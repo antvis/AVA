@@ -1,13 +1,14 @@
 /**
- * Unit and integration tests for the BigQuery remote engine. All tests run
- * against the built-in in-memory mock connector — no live GCP project or
- * network access is required. They cover schema discovery, read-only query
- * execution, row-limit handling, error handling, and resource disposal.
+ * Unit and integration tests for the BigQuery remote engine. They use the
+ * built-in in-memory connector plus stubbed SDK responses; no live GCP project,
+ * authentication, or network access is required. Coverage includes public
+ * schema propagation, manual pagination, output budgets, errors, and disposal.
  */
+import { BigQuery } from '@google-cloud/bigquery';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 
 import { AVA, BIGQUERY_TABLE_SEED } from '../../src';
-import { BigQueryEngine, MockQueryConnector, validateReadOnlyBigQuery, limitedBigQuerySql } from '../../src/remote/bigquery';
+import { BigQueryEngine, MockQueryConnector, validateReadOnlyBigQuery } from '../../src/remote/bigquery';
 import { BigQueryQueryConnector } from '../../src/remote/bigquery/bigquery-connector';
 import { BUILTIN_METRICS as BIGQUERY_METRICS, profileTables as bigQueryProfile } from '../../src/remote/bigquery/profile';
 import { getLLMConfig } from '../test-utils';
@@ -23,6 +24,36 @@ const MOCK_SOURCE = {
     tables: BIGQUERY_TABLE_SEED,
   },
 };
+
+type Field = { name: string; type: string };
+
+function resultPage(
+  rows: Record<string, unknown>[],
+  fields: Field[],
+  pageToken?: string,
+  totalRows = rows.length
+) {
+  return [
+    rows,
+    pageToken ? { pageToken } : null,
+    {
+      jobComplete: true,
+      schema: { fields },
+      totalRows: String(totalRows),
+      ...(pageToken ? { pageToken } : {}),
+    },
+  ];
+}
+
+function jobWithPages(pages: unknown[]) {
+  const getQueryResults = vi.fn();
+  for (const page of pages) getQueryResults.mockResolvedValueOnce(page);
+  return {
+    getQueryResults,
+    getMetadata: vi.fn(async () => [{ statistics: { query: {} } }]),
+    cancel: vi.fn(async () => ({ status: { state: 'DONE' } })),
+  };
+}
 
 afterEach(() => {
   vi.useRealTimers();
@@ -59,14 +90,6 @@ describe('validateReadOnlyBigQuery', () => {
     'TRUNCATE TABLE orders',
   ])('rejects %s', (sql) => {
     expect(() => validateReadOnlyBigQuery(sql)).toThrow();
-  });
-});
-
-describe('limitedBigQuerySql', () => {
-  it('wraps a SELECT in a derived table with LIMIT N', () => {
-    expect(limitedBigQuerySql('SELECT region FROM orders', 3)).toBe(
-      'SELECT * FROM (\nSELECT region FROM orders\n) AS __ava_query LIMIT 4'
-    );
   });
 });
 
@@ -267,7 +290,8 @@ describe('BigQueryEngine (mock adapter)', () => {
     const ava = new AVA({ llm: getLLMConfig(), engine: { type: 'bigquery' } });
     try {
       await ava.source(MOCK_SOURCE);
-      expect(ava.engine!.language).toEqual({ name: 'Google BigQuery SQL dialect (GoogleSQL)', fence: 'sql' });
+      expect(ava.engine!.dialect.id).toBe('bigquery-sql');
+      expect(ava.engine!.dialect.rules).toContain('ORDER BY at the outermost level');
 
       const schema = await ava.schema();
       expect(schema.models.some((m) => m.name === 'orders')).toBe(true);
@@ -401,26 +425,20 @@ describe('BigQueryQueryConnector (SDK mocked)', () => {
     createQueryJob: ReturnType<typeof vi.fn>;
   };
 
-  /**
-   * Stub the `@google-cloud/bigquery` client surface the connector uses:
-   * `createQueryJob` (dry-run + regular) and `Job#getQueryResults`/`getMetadata`.
-   */
+  /** Stub the SDK request/response surface, including manual result pages. */
   function stubClient(options: {
     dryRunBytes?: string;
     rows?: Record<string, unknown>[];
-    responseSchema?: { fields?: Array<{ name: string; type: string }> };
-    jobSchema?: { fields?: Array<{ name: string; type: string }> };
+    responseSchema?: { fields?: Field[] };
+    pages?: unknown[];
   }): Stub {
-    const { dryRunBytes = '0', rows = [], responseSchema, jobSchema } = options;
-    const job = {
-      getQueryResults: vi.fn(async () => [
-        rows,
-        null,
-        responseSchema === undefined ? {} : { schema: responseSchema },
-      ]),
-      getMetadata: vi.fn(async () => [{ statistics: { query: { schema: jobSchema ?? {} } } }]),
-      cancel: vi.fn(async () => ({ status: { state: 'DONE' } })),
-    };
+    const { dryRunBytes = '0', rows = [], responseSchema, pages } = options;
+    const defaultPage = [
+      rows,
+      null,
+      { jobComplete: true, totalRows: String(rows.length), ...(responseSchema ? { schema: responseSchema } : {}) },
+    ];
+    const job = jobWithPages(pages ?? [defaultPage]);
     const createQueryJob = vi.fn(async (queryOptions: Record<string, unknown>) => {
       if ('dryRun' in queryOptions) {
         return [job, { statistics: { query: { totalBytesProcessed: dryRunBytes } } }];
@@ -513,14 +531,39 @@ describe('BigQueryQueryConnector (SDK mocked)', () => {
     }
   });
 
-  it('exposes a schema for empty results from the job metadata', async () => {
-    const stub = stubClient({ rows: [], jobSchema: { fields: [{ name: 'n', type: 'INT64' }] } });
+  it('exposes empty-result columns from the successful result response without reading job metadata', async () => {
+    const stub = stubClient({ rows: [], responseSchema: { fields: [{ name: 'n', type: 'INT64' }] } });
     const connector = await connect({ projectId: 'demo-project' }, stub);
     try {
-      const result = await connector.query('SELECT COUNT(*) AS n FROM t');
+      const result = await connector.query('SELECT n FROM t WHERE FALSE');
       expect(result.rows).toEqual([]);
       expect(result.columns).toEqual([{ name: 'n', type: 'INT64' }]);
-      expect(stub.job.getMetadata).toHaveBeenCalledTimes(1);
+      expect(stub.job.getMetadata).not.toHaveBeenCalled();
+    } finally {
+      await connector.close();
+    }
+  });
+
+  it('fails explicitly when a successful result response has no schema', async () => {
+    const stub = stubClient({ rows: [{ n: { value: '1' } }] });
+    const connector = await connect({ projectId: 'demo-project' }, stub);
+    try {
+      await expect(connector.query('SELECT n FROM t')).rejects.toThrow('jobs.getQueryResults');
+      expect(stub.job.getMetadata).not.toHaveBeenCalled();
+    } finally {
+      await connector.close();
+    }
+  });
+
+  it('does not fall back to ordinary job metadata for an empty result without a result schema', async () => {
+    const stub = stubClient({ rows: [] });
+    stub.job.getMetadata.mockResolvedValue([
+      { statistics: { query: { schema: { fields: [{ name: 'n', type: 'INT64' }] } } } },
+    ]);
+    const connector = await connect({ projectId: 'demo-project' }, stub);
+    try {
+      await expect(connector.query('SELECT n FROM t WHERE FALSE')).rejects.toThrow('jobs.getQueryResults');
+      expect(stub.job.getMetadata).not.toHaveBeenCalled();
     } finally {
       await connector.close();
     }
@@ -568,14 +611,12 @@ describe('BigQueryQueryConnector (SDK mocked)', () => {
   });
 
   it('polls an incomplete job without enabling automatic result pagination', async () => {
-    const stub = stubClient({});
-    stub.job.getQueryResults
-      .mockResolvedValueOnce([[], { location: 'US' }, { jobComplete: false }])
-      .mockResolvedValueOnce([
-        [{ n: { value: '1' } }],
-        null,
-        { jobComplete: true, schema: { fields: [{ name: 'n', type: 'INT64' }] } },
-      ]);
+    const stub = stubClient({
+      pages: [
+        [[], { location: 'US' }, { jobComplete: false }],
+        resultPage([{ n: { value: '1' } }], [{ name: 'n', type: 'INT64' }]),
+      ],
+    });
     const connector = await connect({ projectId: 'demo-project', defaultRowLimit: 1 }, stub);
     try {
       const result = await connector.query('SELECT n FROM t');
@@ -589,18 +630,21 @@ describe('BigQueryQueryConnector (SDK mocked)', () => {
     }
   });
 
-  it('does not follow a result page token and pull the full result set', async () => {
-    const stub = stubClient({});
-    stub.job.getQueryResults.mockResolvedValue([
-      [{ n: { value: '1' } }],
-      { pageToken: 'more-rows' },
-      { jobComplete: true, schema: { fields: [{ name: 'n', type: 'INT64' }] } },
-    ]);
+  it('exhausts result pages in order when no output budget is supplied', async () => {
+    const fields = [{ name: 'n', type: 'INT64' }];
+    const stub = stubClient({
+      pages: [
+        resultPage([{ n: { value: '1' } }], fields, 'page-2', 2),
+        resultPage([{ n: { value: '2' } }], fields, undefined, 2),
+      ],
+    });
     const connector = await connect({ projectId: 'demo-project', defaultRowLimit: 1 }, stub);
     try {
-      const result = await connector.query('SELECT n FROM t');
-      expect(result.rows).toEqual([{ n: '1' }]);
-      expect(stub.job.getQueryResults).toHaveBeenCalledTimes(1);
+      const result = await connector.query('SELECT n FROM t ORDER BY n');
+      expect(result.rows).toEqual([{ n: '1' }, { n: '2' }]);
+      expect(result.truncatedBy).toBeUndefined();
+      expect(stub.job.getQueryResults).toHaveBeenCalledTimes(2);
+      expect(stub.job.getQueryResults).toHaveBeenLastCalledWith(expect.objectContaining({ pageToken: 'page-2' }));
     } finally {
       await connector.close();
     }
@@ -655,6 +699,317 @@ describe('BigQueryQueryConnector (SDK mocked)', () => {
   });
 });
 
+describe('BigQuery public API (SDK responses stubbed)', () => {
+  const source = {
+    type: 'bigquery' as const,
+    options: { projectId: 'demo-project', dataset: 'sales' },
+  };
+
+  function stubProductionPages(pages: unknown[]) {
+    const job = jobWithPages(pages);
+    const createQueryJob = vi
+      .spyOn(BigQuery.prototype, 'createQueryJob')
+      .mockImplementation(async () => [job, {}] as never);
+    return { job, createQueryJob };
+  }
+
+  it('returns native result column types through ava.query()', async () => {
+    const fields = [
+      { name: 'id', type: 'INT64' },
+      { name: 'at', type: 'TIMESTAMP' },
+    ];
+    stubProductionPages([
+      resultPage(
+        [{ id: { value: '9007199254740993' }, at: { value: '2023-01-02T10:00:00.000Z' } }],
+        fields
+      ),
+    ]);
+    const ava = new AVA({ llm: getLLMConfig(), engine: { type: 'bigquery' } });
+    try {
+      await ava.source(source);
+      const result = await ava.query('SELECT id, at FROM events');
+      expect(result.schema).toEqual(fields);
+      expect(result.data).toEqual([{ id: '9007199254740993', at: '2023-01-02T10:00:00.000Z' }]);
+    } finally {
+      await ava.dispose();
+    }
+  });
+
+  it('preserves the native schema for an empty public query result', async () => {
+    const fields = [{ name: 'n', type: 'INT64' }];
+    const { job } = stubProductionPages([resultPage([], fields)]);
+    const ava = new AVA({ llm: getLLMConfig(), engine: { type: 'bigquery' } });
+    try {
+      await ava.source(source);
+      const result = await ava.query('SELECT n FROM t WHERE FALSE');
+      expect(result).toMatchObject({ data: [], schema: fields, rowCount: 0 });
+      expect(job.getMetadata).not.toHaveBeenCalled();
+    } finally {
+      await ava.dispose();
+    }
+  });
+
+  it('paginates in server order, preserves the original ORDER BY, and reports maxRows truncation', async () => {
+    const fields = [{ name: 'n', type: 'INT64' }];
+    const { job, createQueryJob } = stubProductionPages([
+      resultPage([{ n: { value: '1' } }], fields, 'page-2', 3),
+      resultPage([{ n: { value: '2' } }], fields, 'page-3', 3),
+      resultPage([{ n: { value: '3' } }], fields, undefined, 3),
+    ]);
+    const ava = new AVA({ llm: getLLMConfig(), engine: { type: 'bigquery' } });
+    const sql = 'SELECT n FROM t ORDER BY n';
+    try {
+      await ava.source({
+        ...source,
+        options: { ...source.options, defaultRowLimit: 1 },
+      });
+      const result = await ava.query(sql, { maxRows: 2 });
+      expect(result.data).toEqual([{ n: '1' }, { n: '2' }]);
+      expect(result.schema).toEqual(fields);
+      expect(result).toMatchObject({ truncated: true, truncatedBy: 'maxRows' });
+      expect(result.rowCount).toBeUndefined();
+      expect(createQueryJob.mock.calls[0][0]).toEqual(expect.objectContaining({ query: sql }));
+      expect(createQueryJob.mock.calls[0][0].query).not.toContain('__ava_query');
+      expect(job.getQueryResults).toHaveBeenCalledTimes(2);
+      expect(job.getQueryResults).toHaveBeenNthCalledWith(
+        1,
+        expect.objectContaining({ maxResults: 1, autoPaginate: false })
+      );
+      expect(job.getQueryResults).toHaveBeenNthCalledWith(
+        2,
+        expect.objectContaining({ maxResults: 1, pageToken: 'page-2', autoPaginate: false })
+      );
+    } finally {
+      await ava.dispose();
+    }
+  });
+
+  it('stops reading pages when the decoded output byte budget is exhausted', async () => {
+    const fields = [{ name: 'n', type: 'INT64' }];
+    const { job } = stubProductionPages([
+      resultPage([{ n: { value: '1' } }], fields, 'page-2', 3),
+      resultPage([{ n: { value: '2' } }], fields, 'page-3', 3),
+      resultPage([{ n: { value: '3' } }], fields, undefined, 3),
+    ]);
+    const ava = new AVA({ llm: getLLMConfig(), engine: { type: 'bigquery' } });
+    const oneRowBytes = Buffer.byteLength(JSON.stringify({ n: '1' }), 'utf8');
+    try {
+      await ava.source({
+        ...source,
+        options: { ...source.options, defaultRowLimit: 1 },
+      });
+      const result = await ava.query('SELECT n FROM t ORDER BY n', {
+        maxRows: 10,
+        maxResultBytes: oneRowBytes + 1,
+      });
+      expect(result.data).toEqual([{ n: '1' }]);
+      expect(result).toMatchObject({ truncated: true, truncatedBy: 'maxResultBytes' });
+      expect(job.getQueryResults).toHaveBeenCalledTimes(2);
+    } finally {
+      await ava.dispose();
+    }
+  });
+
+  it('does not report truncation when a complete result exactly matches both output budgets', async () => {
+    const fields = [{ name: 'n', type: 'INT64' }];
+    const rows = [{ n: { value: '1' } }, { n: { value: '2' } }];
+    const { job } = stubProductionPages([resultPage(rows, fields)]);
+    const ava = new AVA({ llm: getLLMConfig(), engine: { type: 'bigquery' } });
+    const exactBytes = rows.reduce(
+      (total, row) => total + Buffer.byteLength(JSON.stringify({ n: (row.n as { value: string }).value }), 'utf8'),
+      0
+    );
+    try {
+      await ava.source(source);
+      const result = await ava.query('SELECT n FROM t ORDER BY n', {
+        maxRows: rows.length,
+        maxResultBytes: exactBytes,
+      });
+      expect(result.data).toEqual([{ n: '1' }, { n: '2' }]);
+      expect(result).toMatchObject({ rowCount: 2 });
+      expect(result.truncated).toBeUndefined();
+      expect(result.truncatedBy).toBeUndefined();
+      expect(job.getQueryResults).toHaveBeenCalledTimes(1);
+    } finally {
+      await ava.dispose();
+    }
+  });
+
+  it('omits the crossing row within a page without requesting another page', async () => {
+    const fields = [{ name: 'n', type: 'INT64' }];
+    const { job } = stubProductionPages([
+      resultPage([{ n: { value: '1' } }, { n: { value: '2' } }], fields),
+    ]);
+    const ava = new AVA({ llm: getLLMConfig(), engine: { type: 'bigquery' } });
+    const oneRowBytes = Buffer.byteLength(JSON.stringify({ n: '1' }), 'utf8');
+    try {
+      await ava.source(source);
+      const result = await ava.query('SELECT n FROM t ORDER BY n', {
+        maxRows: 10,
+        maxResultBytes: oneRowBytes,
+      });
+      expect(result.data).toEqual([{ n: '1' }]);
+      expect(result).toMatchObject({ truncated: true, truncatedBy: 'maxResultBytes' });
+      expect(job.getQueryResults).toHaveBeenCalledTimes(1);
+    } finally {
+      await ava.dispose();
+    }
+  });
+
+  it('rejects malformed credential JSON during ava.source() before any query job', async () => {
+    const createQueryJob = vi.spyOn(BigQuery.prototype, 'createQueryJob');
+    const ava = new AVA({ llm: getLLMConfig(), engine: { type: 'bigquery' } });
+    try {
+      await expect(
+        ava.source({
+          ...source,
+          options: { ...source.options, credentials: '{not-json' },
+        })
+      ).rejects.toThrow('BigQuery credentials must be a valid service-account JSON object string');
+      expect(createQueryJob).not.toHaveBeenCalled();
+    } finally {
+      await ava.dispose();
+    }
+  });
+
+  it('exhausts production profile pages beyond the public default row budget', async () => {
+    const fields = [{ name: 'm0', type: 'INT64' }];
+    // Synthetic multiple aggregate rows make an accidental public maxRows=200
+    // limit observable; profiling still consumes only the first decoded row.
+    const pages = Array.from({ length: 201 }, (_, index) =>
+      resultPage(
+        [{ m0: { value: String(index + 1) } }],
+        fields,
+        index < 200 ? `profile-${index + 2}` : undefined,
+        201
+      )
+    );
+    const { job } = stubProductionPages(pages);
+    const engine = new BigQueryEngine(getLLMConfig());
+    const profileSchema: Schema = {
+      models: [
+        {
+          name: 'events',
+          tableReference: { catalog: 'demo-project', schema: 'sales', table: 'events' },
+          columns: [],
+        },
+      ],
+    };
+    try {
+      await engine.load(source);
+      const profile = await engine.profile(profileSchema, { metrics: [{ id: 'row_count' }] });
+      expect(profile.models[0].metrics.row_count).toBe(1);
+      expect(job.getQueryResults).toHaveBeenCalledTimes(201);
+      expect(job.getQueryResults).toHaveBeenLastCalledWith(expect.objectContaining({ pageToken: 'profile-201' }));
+    } finally {
+      await engine.dispose();
+    }
+  });
+
+  const tableFields: Field[] = [
+    { name: 'table_catalog', type: 'STRING' },
+    { name: 'table_schema', type: 'STRING' },
+    { name: 'table_name', type: 'STRING' },
+  ];
+  const columnFields: Field[] = [
+    { name: 'table_catalog', type: 'STRING' },
+    { name: 'table_schema', type: 'STRING' },
+    { name: 'table_name', type: 'STRING' },
+    { name: 'column_name', type: 'STRING' },
+    { name: 'ordinal_position', type: 'INT64' },
+    { name: 'is_nullable', type: 'STRING' },
+    { name: 'data_type', type: 'STRING' },
+  ];
+
+  function stubSchema(columnPages: unknown[]) {
+    const tables = jobWithPages([
+      resultPage(
+        [{ table_catalog: 'demo-project', table_schema: 'sales', table_name: 'events' }],
+        tableFields
+      ),
+    ]);
+    const columns = jobWithPages(columnPages);
+    const keys = jobWithPages([
+      resultPage(
+        [],
+        ['table_name', 'column_name', 'constraint_name', 'ordinal_position'].map((name) => ({
+          name,
+          type: name === 'ordinal_position' ? 'INT64' : 'STRING',
+        }))
+      ),
+    ]);
+    const constraints = jobWithPages([
+      resultPage(
+        [],
+        ['table_name', 'constraint_name', 'constraint_type'].map((name) => ({ name, type: 'STRING' }))
+      ),
+    ]);
+    const createQueryJob = vi
+      .spyOn(BigQuery.prototype, 'createQueryJob')
+      .mockImplementation(async (options) => {
+        const sql = options.query ?? '';
+        if (sql.includes('INFORMATION_SCHEMA.COLUMNS')) return [columns, {}] as never;
+        if (sql.includes('INFORMATION_SCHEMA.KEY_COLUMN_USAGE')) return [keys, {}] as never;
+        if (sql.includes('INFORMATION_SCHEMA.TABLE_CONSTRAINTS')) return [constraints, {}] as never;
+        return [tables, {}] as never;
+      });
+    return { tables, columns, keys, constraints, createQueryJob };
+  }
+
+  function columnRow(name: string, position: number, type: string) {
+    return {
+      table_catalog: 'demo-project',
+      table_schema: 'sales',
+      table_name: 'events',
+      column_name: name,
+      ordinal_position: { value: String(position) },
+      is_nullable: 'YES',
+      data_type: type,
+    };
+  }
+
+  it('reads every INFORMATION_SCHEMA page instead of applying the public row budget', async () => {
+    const { tables, columns } = stubSchema([
+      resultPage([columnRow('id', 1, 'INT64')], columnFields, 'columns-2', 2),
+      resultPage([columnRow('at', 2, 'TIMESTAMP')], columnFields, undefined, 2),
+    ]);
+    const ava = new AVA({ llm: getLLMConfig(), engine: { type: 'bigquery' } });
+    try {
+      await ava.source({
+        ...source,
+        options: { ...source.options, defaultRowLimit: 1 },
+      });
+      const schema = await ava.schema();
+      expect(schema.models[0].columns).toEqual([
+        { name: 'id', type: 'INT64', notNull: false },
+        { name: 'at', type: 'TIMESTAMP', notNull: false },
+      ]);
+      expect(tables.getQueryResults).toHaveBeenCalledTimes(1);
+      expect(columns.getQueryResults).toHaveBeenCalledTimes(2);
+    } finally {
+      await ava.dispose();
+    }
+  });
+
+  it('fails schema discovery rather than returning partial columns when a later page fails', async () => {
+    const { columns } = stubSchema([
+      resultPage([columnRow('id', 1, 'INT64')], columnFields, 'columns-2', 2),
+    ]);
+    columns.getQueryResults.mockRejectedValueOnce(new Error('column page 2 failed'));
+    const ava = new AVA({ llm: getLLMConfig(), engine: { type: 'bigquery' } });
+    try {
+      await ava.source({
+        ...source,
+        options: { ...source.options, defaultRowLimit: 1 },
+      });
+      await expect(ava.schema()).rejects.toThrow('column page 2 failed');
+      expect(columns.getQueryResults).toHaveBeenCalledTimes(2);
+    } finally {
+      await ava.dispose();
+    }
+  });
+});
+
 describe('MockQueryConnector', () => {
   it('is the production-independent default when adapter is mock', async () => {
     const connector = new MockQueryConnector({
@@ -671,5 +1026,24 @@ describe('MockQueryConnector', () => {
     const again = await connector.query("SELECT region FROM orders WHERE region = 'North'");
     expect(again.rows.length).toBeGreaterThan(0);
     await connector.close();
+  });
+
+  it('retains selected column metadata when a mock query returns no rows', async () => {
+    const connector = new MockQueryConnector({
+      projectId: 'demo',
+      dataset: 'sales',
+      tables: BIGQUERY_TABLE_SEED,
+    } as never);
+    await connector.connect();
+    try {
+      const result = await connector.query("SELECT order_id, region FROM orders WHERE region = 'missing'");
+      expect(result.rows).toEqual([]);
+      expect(result.columns).toEqual([
+        { name: 'order_id', type: 'INT64' },
+        { name: 'region', type: 'STRING' },
+      ]);
+    } finally {
+      await connector.close();
+    }
   });
 });
