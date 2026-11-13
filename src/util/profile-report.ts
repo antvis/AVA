@@ -29,6 +29,101 @@ function record(value: JsonValue): value is Record<string, JsonValue> {
   return value !== null && typeof value === 'object' && !Array.isArray(value);
 }
 
+const numberFormat = new Intl.NumberFormat('en', { maximumSignificantDigits: 5 });
+const integerFormat = new Intl.NumberFormat('en');
+const percentageFormat = new Intl.NumberFormat('en', { style: 'percent', maximumFractionDigits: 2 });
+
+function chartNumber(value: number): string {
+  if (Number.isInteger(value) && Math.abs(value) < 1e12) return integerFormat.format(value);
+  return value !== 0 && (Math.abs(value) < 0.001 || Math.abs(value) >= 1e12)
+    ? value.toExponential(3)
+    : numberFormat.format(value);
+}
+
+function dateLabel(value: number): string {
+  if (Math.abs(value) > 8.64e15) return chartNumber(value);
+  const iso = new Date(value).toISOString();
+  const [day, time] = iso.split('T');
+  return time === '00:00:00.000Z' ? day : `${day} ${time.replace(/(?:\.000)?Z$/, ' UTC')}`;
+}
+
+function normalized(value: number, lo: number, hi: number): number {
+  if (hi === lo) return 0.5;
+  if (Number.isFinite(hi - lo)) return (value - lo) / (hi - lo);
+  return (value / 2 - lo / 2) / (hi / 2 - lo / 2);
+}
+
+const histogramSchema = z.object({ bin_edges: z.array(z.number()), counts: z.array(z.number().nonnegative()) });
+const frequencySchema = z.array(
+  z.object({ value: z.union([z.string(), z.number(), z.boolean()]), count: z.number().nonnegative() })
+);
+const lengthSchema = z.array(z.object({ length: z.number().nonnegative(), count: z.number().nonnegative() }));
+
+function histogramMarkup(value: unknown, title: string, date = false): string | undefined {
+  const parsed = histogramSchema.safeParse(value);
+  if (!parsed.success) return undefined;
+  const { bin_edges: edges, counts } = parsed.data;
+  if (!counts.length || edges.length !== counts.length + 1 || edges.some((edge, i) => i > 0 && edge <= edges[i - 1]))
+    return undefined;
+  const peak = counts.reduce((highest, count) => Math.max(highest, count), 0);
+  const format = date ? dateLabel : chartNumber;
+  const first = edges[0];
+  const last = edges[edges.length - 1];
+  const marks = counts.map((count, i) => {
+    const span = normalized(edges[i + 1], first, last) - normalized(edges[i], first, last);
+    return `<span style="--height:${peak ? (count / peak) * 100 : 0}%;--bin-width:${span * 100}%" title="${format(
+      edges[i]
+    )} to ${format(edges[i + 1])} · ${chartNumber(count)}"></span>`;
+  });
+  return `<figure class="report-chart histogram"><figcaption>${title}</figcaption>
+    <div class="histogram-layout"><div class="histogram-scale" aria-hidden="true"><span>${chartNumber(
+      peak
+    )}</span><span>0</span></div>
+    <div class="histogram-plot" role="img" aria-label="${title}, ${counts.length} bins, peak ${chartNumber(
+    peak
+  )}">${marks.join('')}</div></div>
+    <div class="histogram-axis"><span>${format(first)}</span><span>${format(last)}</span></div>
+    <details class="chart-data"><summary>Bin values</summary>${table(
+      ['From', 'To', 'Bin value'],
+      counts.map((count, i) => [
+        date ? dateLabel(edges[i]) : String(edges[i]),
+        date ? dateLabel(edges[i + 1]) : String(edges[i + 1]),
+        String(count),
+      ]),
+      'histogram-values'
+    )}</details></figure>`;
+}
+
+function frequencyMarkup(value: unknown, title: string, lengths = false): string | undefined {
+  const parsed = lengths ? lengthSchema.safeParse(value) : frequencySchema.safeParse(value);
+  if (!parsed.success || !parsed.data.length) return undefined;
+  const ranked = parsed.data.map((entry) => ({
+    value: String('length' in entry ? entry.length : entry.value),
+    count: entry.count,
+  }));
+  if (!lengths) ranked.sort((left, right) => right.count - left.count);
+  const shown = ranked.slice(0, 10);
+  if (ranked.length > shown.length) {
+    const rest = ranked.slice(shown.length);
+    shown.push({
+      value: `Other (${rest.length} ${lengths ? 'lengths' : 'values'})`,
+      count: rest.reduce((sum, row) => sum + row.count, 0),
+    });
+  }
+  const peak = shown.reduce((max, row) => Math.max(max, row.count), 1);
+  return `<figure class="report-chart"><figcaption>${title}</figcaption><ul class="chart-bars">${shown
+    .map(({ value, count }) => {
+      const label = escape(value || '(Empty string)');
+      return `<li><span>${label}</span><span class="chart-bar-track" aria-hidden="true"><span style="--share:${
+        (count / peak) * 100
+      }%"></span></span><span>${chartNumber(count)}</span></li>`;
+    })
+    .join('')}</ul><details class="chart-data"><summary>Frequency values</summary>${table(
+    [lengths ? 'Length' : 'Value', 'Count'],
+    ranked.map(({ value, count }) => [escape(value || '(Empty string)'), String(count)])
+  )}</details></figure>`;
+}
+
 const bandsSchema = z.object({
   columns: z.array(z.string()),
   bands: z.array(z.object({ start: z.number(), end: z.number(), present: z.array(z.number().min(0).max(1)) })),
@@ -49,13 +144,15 @@ function missingBandMarkup(value: Record<string, JsonValue>): string | undefined
         }% present" title="Rows ${start + 1}–${end}, ${coverage * 100}% present"></span>`
     ),
   ]);
-  return `<details><summary>${
+  if (!columns.length || !bands.length) return undefined;
+  return `<figure class="report-chart"><figcaption>Missingness matrix</figcaption>
+    <div class="missing-matrix-scroll">${table(
+      ['Rows', ...columns],
+      rows,
+      'missing-bands'
+    )}</div><div class="chart-note">${
     bands.length
-  } row bands</summary><p class="missing">Darker cells indicate more present values.</p>${table(
-    ['Rows', ...columns],
-    rows,
-    'missing-bands'
-  )}</details>`;
+  } row bands · darker cells indicate more present values</div></figure>`;
 }
 
 function valueMarkup(value: JsonValue | undefined): string {
@@ -78,26 +175,9 @@ function valueMarkup(value: JsonValue | undefined): string {
   if (record(value)) {
     const bandMarkup = missingBandMarkup(value);
     if (bandMarkup) return bandMarkup;
-    const { counts, bin_edges: edges, columns, matrix } = value;
-    if (
-      Array.isArray(counts) &&
-      counts.length &&
-      counts.every((n) => typeof n === 'number' && n >= 0) &&
-      Array.isArray(edges) &&
-      edges.length === counts.length + 1 &&
-      edges.every((n) => typeof n === 'number')
-    ) {
-      const max = (counts as number[]).reduce((highest, count) => Math.max(highest, count), 1);
-      return `<details open><summary>Distribution</summary>${table(
-        ['From', 'To', 'Count', 'Relative frequency'],
-        counts.map((count, i) => [
-          valueMarkup(edges[i]),
-          valueMarkup(edges[i + 1]),
-          valueMarkup(count),
-          `<meter min="0" max="${max}" value="${count}" aria-label="Bin ${i + 1}: ${count}"></meter>`,
-        ])
-      )}</details>`;
-    }
+    const histogram = histogramMarkup(value, 'Distribution');
+    if (histogram) return histogram;
+    const { columns, matrix } = value;
     if (
       Array.isArray(columns) &&
       columns.every((name) => typeof name === 'string') &&
@@ -109,7 +189,7 @@ function valueMarkup(value: JsonValue | undefined): string {
       )
     ) {
       const rows = matrix as (number | null)[][];
-      return `<details><summary>${columns.length} columns</summary>${table(
+      return table(
         ['Column', ...columns],
         rows.map((row, i) => [
           escape(columns[i]),
@@ -121,7 +201,7 @@ function valueMarkup(value: JsonValue | undefined): string {
                 }" title="${value}">${value.toFixed(3)}</span>`
           ),
         ])
-      )}</details>`;
+      );
     }
     const entries = Object.entries(value);
     if (!entries.length) return '<span class="missing">0 entries</span>';
@@ -153,12 +233,6 @@ const scatterSchema = z.object({
   points: z.array(pointSchema),
   hexagons: z.array(pointSchema.extend({ count: z.number().positive() })),
 });
-
-function normalized(value: number, lo: number, hi: number): number {
-  if (hi === lo) return 0.5;
-  if (Number.isFinite(hi - lo)) return (value - lo) / (hi - lo);
-  return (value / 2 - lo / 2) / (hi / 2 - lo / 2);
-}
 
 function scatterMarkup(chart: z.output<typeof scatterSchema>): string {
   const title = `${escape(chart.y_column)} vs ${escape(chart.x_column)}`;
@@ -212,21 +286,37 @@ function lineMarkup(title: string, points: z.output<typeof linePointSchema>[], d
       return `${command}${position(x, y)}`;
     })
     .join(' ');
-  const label = (value: number) =>
-    dateIndex && Math.abs(value) <= 8.64e15 ? new Date(value).toISOString() : String(value);
-  const bounds = `x ${label(xMin)}–${label(xMax)} · y ${yMin.toPrecision(5)}–${yMax.toPrecision(5)}`;
+  const label = dateIndex ? dateLabel : chartNumber;
+  const bounds = `x ${label(xMin)} – ${label(xMax)} · y ${chartNumber(yMin)} – ${chartNumber(yMax)}`;
   return `<figure class="line-figure"><figcaption>${title}</figcaption>
     <svg viewBox="0 0 600 160" role="img" aria-label="${title}, ${bounds}"><path d="${path}"/></svg>
     <div class="missing">${bounds}</div></figure>`;
 }
 
-function metricValueMarkup(name: string, value: JsonValue | undefined): string {
+function metricValueMarkup(
+  name: string,
+  value: JsonValue | undefined,
+  logicalType?: Profile['models'][number]['columns'][number]['properties']['logicalType']
+): string {
+  if (name === 'histogram') {
+    const chart = histogramMarkup(value, 'Distribution', logicalType === 'date');
+    if (chart) return chart;
+  }
+  if (
+    name === 'word_counts' ||
+    name === 'length_histogram' ||
+    name === 'top_values' ||
+    (name === 'value_counts' && logicalType !== 'numeric' && logicalType !== 'date')
+  ) {
+    const title =
+      name === 'word_counts' ? 'Word frequencies' : name === 'length_histogram' ? 'Text lengths' : 'Value frequencies';
+    const chart = frequencyMarkup(value, title, name === 'length_histogram');
+    if (chart) return chart;
+  }
   if (name === 'scatter_pairs') {
     const charts = z.array(scatterSchema).safeParse(value);
     if (charts.success && charts.data.length)
-      return `<details><summary>${charts.data.length} pairs</summary>${charts.data
-        .map(scatterMarkup)
-        .join('')}</details>`;
+      return `<div class="chart-grid">${charts.data.map(scatterMarkup).join('')}</div>`;
   }
   if (name === 'time_series') {
     const chart = lineSeriesSchema.safeParse(value);
@@ -262,16 +352,23 @@ function metricValueMarkup(name: string, value: JsonValue | undefined): string {
   return valueMarkup(value);
 }
 
-function metricTable(metrics: Record<string, JsonValue>): string {
+function metricTable(metrics: Record<string, JsonValue>, charts = true): string {
   return table(
     ['Metric', 'Value'],
-    Object.entries(metrics).map(([name, value]) => [escape(name), metricValueMarkup(name, value)])
+    Object.entries(metrics).map(([name, value]) => [
+      escape(name),
+      charts ? metricValueMarkup(name, value) : valueMarkup(value),
+    ])
   );
 }
 
-function missingBar(model: Profile['models'][number], referenceSemantics: boolean): string {
+function rowCount(model: Profile['models'][number]): JsonValue | undefined {
   const summary = model.metrics.table_summary;
-  const rows = model.metrics.row_count ?? (summary && record(summary) ? summary.row_count : undefined);
+  return model.metrics.row_count ?? (summary && record(summary) ? summary.row_count : undefined);
+}
+
+function missingBar(model: Profile['models'][number], referenceSemantics: boolean): string {
+  const rows = rowCount(model);
   if (typeof rows !== 'number' || rows <= 0) return '';
   const values = model.columns.flatMap(({ name, metrics }) => {
     if (typeof metrics.null_count !== 'number') return [];
@@ -279,72 +376,156 @@ function missingBar(model: Profile['models'][number], referenceSemantics: boolea
       metrics.null_count + (!referenceSemantics && typeof metrics.nan_count === 'number' ? metrics.nan_count : 0);
     const present = rows - missing;
     if (present < 0 || present > rows) return [];
-    return [
-      [
-        escape(name),
-        String(present),
-        String(missing),
-        `<meter min="0" max="${rows}" value="${present}" aria-label="${present} of ${rows} rows present"></meter>`,
-      ],
-    ];
+    return [{ name, present, missing }];
   });
-  return values.length
-    ? `<details><summary>Column coverage</summary>${table(
-        ['Column', 'Present', 'Missing', 'Share present'],
-        values
-      )}</details>`
-    : '';
+  if (!values.length) return '';
+  values.sort((left, right) => right.missing - left.missing);
+  return `<figure class="report-chart"><figcaption>Missing values by column</figcaption><ul class="chart-bars coverage-bars">${values
+    .map(({ name, present, missing }) => {
+      const detail = `${missing} missing · ${present} present`;
+      return `<li><span>${escape(name)}</span><span class="chart-bar-track" title="${detail}"><span style="--share:${
+        (missing / rows) * 100
+      }%"></span></span><span>${percentageFormat.format(missing / rows)}</span></li>`;
+    })
+    .join('')}</ul><details class="chart-data"><summary>Column counts</summary>${table(
+    ['Column', 'Present', 'Missing'],
+    values.map(({ name, present, missing }) => [escape(name), String(present), String(missing)])
+  )}</details></figure>`;
+}
+
+function overview(model: Profile['models'][number], alerts: number): string {
+  const summary = model.metrics.table_summary;
+  const duplicates = model.metrics.row_duplicates;
+  const rows = rowCount(model);
+  const missing = summary && record(summary) ? summary.null_cell_ratio : undefined;
+  const duplicateRows = duplicates && record(duplicates) ? duplicates.excess_row_count : undefined;
+  const stats = [
+    ['Rows', typeof rows === 'number' ? integerFormat.format(rows) : undefined],
+    ['Columns', integerFormat.format(model.columns.length)],
+    ['Missing cells', typeof missing === 'number' ? percentageFormat.format(missing) : undefined],
+    ['Extra duplicate rows', typeof duplicateRows === 'number' ? integerFormat.format(duplicateRows) : undefined],
+    ['Quality alerts', integerFormat.format(alerts)],
+  ];
+  return `<dl class="report-overview">${stats
+    .filter(([, value]) => value !== undefined)
+    .map(([label, value]) => `<div><dt>${label}</dt><dd>${value}</dd></div>`)
+    .join('')}</dl>`;
+}
+
+function columnMarkup(column: Profile['models'][number]['columns'][number], i: number, j: number): string {
+  const { name, properties, metrics } = column;
+  const { logicalType, profileType } = properties;
+  const charts = [
+    'histogram',
+    'value_counts',
+    'top_values',
+    'length_histogram',
+    'word_counts',
+    'time_series',
+    'autocorrelation',
+    'frequency_spectrum',
+  ];
+  const included = charts.filter((metric) => {
+    if (metrics[metric] == null) return false;
+    if (metric === 'value_counts')
+      return logicalType === 'boolean' || (logicalType === 'string' && profileType !== 'Text');
+    if (metric === 'top_values') return !metrics.value_counts;
+    return true;
+  });
+  const chartsMarkup = included.map((metric) => metricValueMarkup(metric, metrics[metric], logicalType)).join('');
+  const stats = Object.fromEntries(Object.entries(metrics).filter(([metric]) => !included.includes(metric)));
+  return `<details class="column" id="model-${i}-column-${j}"><summary>${escape(name)} <span>${escape(
+    profileType ?? logicalType
+  )}</span></summary>
+    ${chartsMarkup ? `<div class="chart-grid">${chartsMarkup}</div>` : ''}${
+    Object.keys(stats).length ? metricTable(stats, false) : ''
+  }</details>`;
 }
 
 const darkTheme =
-  'color-scheme:dark; --paper:#18201c; --ink:#e8eee8; --muted:#b1c3b7; --line:#425247; --green:#a7d8b9; --alert:#f0a78f; --head:#28362c; --hover:#222d26; --chart:#202a24;';
+  'color-scheme:dark; --paper:#181a1c; --ink:#efefef; --muted:#b1b4b8; --line:#3a3e43; --accent:#92b7f1; --alert:#f2a48e; --head:#2a2e33; --hover:#24272b; --chart:#202225;';
 const css = `
-  :root { color-scheme: light; --paper:#f6f3eb; --ink:#202a24; --muted:#536259; --line:#cfcec0; --green:#235943; --alert:#933b24; --head:#e7eadf; --hover:#eeece2; --chart:#fdfbf4; }
+  :root { color-scheme:light; --paper:#fff; --ink:#202020; --muted:#62666a; --line:#e8e8e8; --accent:#2c5792; --alert:#a4442d; --head:#f1f3f5; --hover:#f7f8f9; --chart:#fafafa; --mono:'SFMono-Regular',Consolas,monospace; }
   :root[data-theme=dark] { ${darkTheme} }
   @media (prefers-color-scheme:dark) { :root[data-theme=auto] { ${darkTheme} } }
   * { box-sizing:border-box; }
-  body { margin:0; background:var(--paper); color:var(--ink); font:16px/1.55 "Instrument Sans", Verdana, sans-serif; }
+  html { scroll-padding-top:1rem; }
+  body { margin:0; background:var(--paper); color:var(--ink); font:14px/1.65 "Instrument Sans","Avenir Next","PingFang SC",sans-serif; }
   body.transparent { background:transparent; }
-  header, main { max-width:85rem; margin:auto; padding:2.5rem clamp(1rem,4vw,4rem); }
+  header, main { max-width:70rem; margin:auto; padding:1.75rem clamp(1rem,4vw,2.5rem); }
   .full-width header, .full-width main { max-width:none; }
-  header { border-bottom:1px solid var(--line); }
-  h1, h2 { font-family:"Instrument Serif", Georgia, serif; font-weight:400; line-height:1; margin:0 0 1.25rem; }
-  h1 { font-size:clamp(2.8rem,7vw,6rem); max-width:19ch; overflow-wrap:anywhere; }
-  h2 { font-size:clamp(2.1rem,4vw,3.5rem); overflow-wrap:anywhere; }
-  h3 { margin:1.6rem 0 .6rem; font-size:1.02rem; }
-  nav { display:flex; flex-wrap:wrap; gap:.65rem 1.45rem; }
-  a, summary { color:var(--green); }
-  a:focus-visible, summary:focus-visible { outline:2px solid var(--green); outline-offset:3px; }
-  section + section { margin-top:3rem; padding-top:2.5rem; border-top:2px solid var(--ink); }
+  header { padding-bottom:.25rem; }
+  h1,h2,h3 { font-weight:600; letter-spacing:-.02em; overflow-wrap:anywhere; }
+  h1 { font-size:clamp(1.65rem,3vw,2rem); line-height:1.35; margin:0; }
+  h2 { font-size:1.2rem; margin:0 0 .55rem; }
+  h3 { margin:0 0 .65rem; font-size:1rem; }
+  nav { display:flex; flex-wrap:wrap; gap:.4rem 1rem; }
+  a, summary { color:inherit; }
+  a { text-decoration-thickness:1px; text-underline-offset:3px; }
+  a:focus-visible, summary:focus-visible { outline:2px solid var(--accent); outline-offset:3px; }
+  section + section { margin-top:2rem; padding-top:1.5rem; border-top:1px solid var(--line); }
   .table-scroll { max-width:100%; overflow:auto; }
-  table { border-collapse:collapse; width:100%; font-size:.88rem; font-variant-numeric:tabular-nums; }
-  th, td { border-bottom:1px solid var(--line); padding:.55rem .75rem; text-align:left; vertical-align:top; overflow-wrap:anywhere; }
-  th { font-weight:600; }
+  table { border-collapse:collapse; width:100%; font-size:.79rem; font-variant-numeric:tabular-nums; }
+  th, td { border-bottom:1px solid var(--line); padding:.46rem .7rem; text-align:left; vertical-align:top; overflow-wrap:anywhere; }
+  th { font-weight:500; }
   thead { background:var(--head); }
   tbody tr:hover { background:var(--hover); }
   details { max-width:100%; }
   summary { cursor:pointer; }
   .column { border-top:1px solid var(--line); padding:.75rem 0; }
-  .column > summary { font-size:1.08rem; font-weight:600; }
-  .column > summary span, .missing { color:var(--muted); font-weight:400; }
-  .column > div { margin:.6rem 0 0 1rem; }
+  .column > summary { font-size:.92rem; font-weight:600; }
+  .column > summary span { color:var(--muted); font: .72rem var(--mono); margin-left:.45rem; }
+  .missing { color:var(--muted); }
+  .column > div { margin:.65rem 0 0; }
+  .column:target { border-top-color:var(--accent); }
+  .column-links, .report-index { margin:0 0 .9rem; font-size:.78rem; color:var(--muted); }
+  .report-index { padding:.25rem 0 .8rem; border-bottom:1px solid var(--line); }
   .alert th { color:var(--alert); }
-  meter { width:clamp(4rem,18vw,12rem); accent-color:var(--green); }
-  .coefficient { --tint:var(--green); background:color-mix(in srgb, var(--tint) calc(var(--strength)*100%), transparent); display:block; min-width:4.5rem; padding:.15rem .3rem; text-align:right; }
+  .report-overview { display:grid; grid-template-columns:repeat(auto-fit,minmax(8rem,1fr)); gap:.65rem 0; padding:.95rem .25rem; margin:.4rem 0 .9rem; background:var(--chart); border-radius:1.1rem; }
+  .report-overview div { padding:0 .95rem; border-inline-end:1px solid var(--line); }
+  .report-overview div:last-child { border:0; }
+  .report-overview dt { color:var(--muted); font-size:.72rem; }
+  .report-overview dd { margin:.15rem 0 0; font-size:1.9rem; line-height:1.15; font-weight:500; font-variant-numeric:tabular-nums; letter-spacing:-.035em; }
+  .report-section { margin:0; padding:1.25rem 0; border-bottom:1px solid var(--line); }
+  .chart-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(min(100%,20rem),1fr)); gap:1rem; align-items:start; }
+  .chart-grid > * { min-width:0; }
+  .report-chart, .chart-grid > .scatter, .chart-grid > .line-figure { margin:0; border:1px solid var(--line); border-radius:1rem; background:var(--paper); padding:clamp(.65rem,2vw,1rem); max-width:none; }
+  figcaption { font-weight:600; margin-bottom:.55rem; overflow-wrap:anywhere; }
+  .chart-data, .chart-note { font-size:.8rem; color:var(--muted); margin-top:.6rem; }
+  .chart-data .table-scroll { max-height:16rem; }
+  .chart-data thead, .missing-matrix-scroll thead { position:sticky; top:0; }
+  .chart-bars { list-style:none; margin:0; padding:0; }
+  .chart-bars li { display:grid; grid-template-columns:minmax(4.4rem,30%) 1fr max-content; gap:.55rem; align-items:center; min-height:1.75rem; font-size:.82rem; overflow-wrap:anywhere; font-variant-numeric:tabular-nums; }
+  .chart-bar-track { background:var(--head); height:.58rem; border-radius:2px; overflow:hidden; }
+  .chart-bar-track > span { display:block; height:100%; width:var(--share); background:var(--accent); }
+  .coverage-bars .chart-bar-track > span { background:var(--alert); }
+  .histogram-layout { display:grid; grid-template-columns:minmax(2.5rem,max-content) 1fr; gap:.45rem; }
+  .histogram-scale { display:flex; justify-content:space-between; flex-direction:column; align-items:end; }
+  .histogram-scale, .histogram-axis { color:var(--muted); font-size:.76rem; font-variant-numeric:tabular-nums; }
+  .histogram-axis { display:flex; justify-content:space-between; gap:1rem; padding-left:2.95rem; overflow-wrap:anywhere; }
+  .histogram-axis span:last-child { text-align:right; }
+  .histogram-plot { min-width:0; display:flex; align-items:end; height:clamp(6rem,18vw,10rem); border:solid var(--line); border-width:0 0 1px 1px; background:repeating-linear-gradient(to top,transparent 0 calc(25% - 1px),var(--line) calc(25% - 1px) 25%); }
+  .histogram-plot > span { height:var(--height); width:var(--bin-width); background:var(--accent); box-shadow:inset -1px 0 var(--paper); }
+  .histogram-plot > span:hover { background:var(--alert); }
+  .histogram-values { font-family:var(--mono); font-size:.68rem; }
+  .coefficient { --tint:var(--accent); background:color-mix(in srgb, var(--tint) calc(var(--strength)*100%), transparent); display:block; min-width:3.5rem; padding:.15rem .3rem; text-align:right; }
   .coefficient.negative { --tint:var(--alert); }
   .missing-bands tbody th, .missing-bands tbody td { padding:0; border:0; line-height:0; }
-  .band-cell { display:block; height:4px; background:color-mix(in srgb, var(--green) calc(var(--coverage)*100%), transparent); border-right:1px solid var(--paper); }
+  .missing-matrix-scroll { max-height:19rem; overflow:auto; }
+  .missing-matrix-scroll th { min-width:2.5rem; font-size:.72rem; padding:.42rem .38rem; }
+  .missing-bands thead th { white-space:nowrap; }
+  .band-cell { display:block; height:3px; background:color-mix(in srgb, var(--accent) calc(var(--coverage)*100%), transparent); border-right:1px solid var(--paper); }
   .visually-hidden { position:absolute; width:1px; height:1px; overflow:hidden; clip-path:inset(50%); white-space:nowrap; }
   .scatter { margin:1rem 0; min-width:12rem; max-width:35rem; }
   .scatter-chart { position:relative; aspect-ratio:3/2; background:var(--chart); overflow:hidden; border:1px solid var(--line); }
-  .scatter-chart span { position:absolute; transform:translate(-50%,50%); background:var(--green); }
+  .scatter-chart span { position:absolute; transform:translate(-50%,50%); background:var(--accent); }
   .scatter-chart .point { width:.4rem; height:.4rem; border-radius:50%; opacity:.7; }
   .scatter-chart .hexagon { clip-path:polygon(50% 0,100% 25%,100% 75%,50% 100%,0 75%,0 25%); }
   .scatter-bounds { display:flex; flex-wrap:wrap; justify-content:space-between; gap:.2rem .8rem; color:var(--muted); }
   .line-figure { margin:1rem 0; max-width:42rem; }
   .line-figure svg { display:block; width:100%; min-width:12rem; border:1px solid var(--line); background:var(--chart); }
-  .line-figure path { fill:none; stroke:var(--green); stroke-width:2; stroke-linecap:round; stroke-linejoin:round; }
-  @media (max-width:40rem) { th,td { padding:.45rem; } .column > div { margin-left:0; } }
+  .line-figure path { fill:none; stroke:var(--accent); stroke-width:2; stroke-linecap:round; stroke-linejoin:round; }
+  @media (max-width:40rem) { header { padding-top:1.3rem; } main { padding-top:1rem; } th,td { padding:.4rem; } }
   @media print { body { background:var(--paper); } header, main { padding:1rem 0; } nav { display:none; } }
 `;
 
@@ -364,7 +545,9 @@ function documentHtml(title: string, modelNames: string[], models: string, optio
     <title>${escape(title)}</title><style>${css}</style></head><body class="${classes}"><header><h1>${escape(
     title
   )}</h1>
-    <nav aria-label="Models">${navigation}</nav></header><main>${models}</main></body></html>`;
+    ${
+      modelNames.length > 1 ? `<nav aria-label="Models">${navigation}</nav>` : ''
+    }</header><main>${models}</main></body></html>`;
 }
 
 /** Render a standalone report from saved observations. */
@@ -376,7 +559,7 @@ export function renderProfileHtml(input: unknown, options: ProfileReportOptions 
       const { name, metrics, columns } = model;
       const alerts = quality.models[i].alerts;
       const alertTable = alerts.length
-        ? `<div class="alert"><h3>Quality alerts</h3>${table(
+        ? `<div class="report-section alert" id="model-${i}-alerts"><h3>Quality alerts</h3>${table(
             ['Rule', 'Column', 'Related column', 'Value', 'Threshold'],
             alerts.map((alert) => [
               escape(alert.rule),
@@ -387,18 +570,82 @@ export function renderProfileHtml(input: unknown, options: ProfileReportOptions 
             ])
           )}</div>`
         : '';
-      const variables = columns
-        .map(
-          (column) => `<details class="column"><summary>${escape(column.name)}
-      <span>${escape(column.properties.profileType ?? column.properties.logicalType)}</span></summary>${metricTable(
-            column.metrics
-          )}</details>`
-        )
+      const variables = columns.map((column, j) => columnMarkup(column, i, j)).join('');
+      const columnLinks = columns
+        .map(({ name }, j) => `<a href="#model-${i}-column-${j}">${escape(name)}</a>`)
         .join('');
-      return `<section id="model-${i}"><h2>${escape(name)}</h2>${
-        Object.keys(metrics).length ? metricTable(metrics) : ''
-      }${missingBar(model, profile.semantics === 'data-profiling')}${alertTable}${
-        variables ? `<h3>Columns</h3>${variables}` : ''
+      const missingMatrix = metrics.missing_bands;
+      const matrix = missingMatrix && record(missingMatrix) ? missingBandMarkup(missingMatrix) : undefined;
+      const missing = missingBar(model, profile.semantics === 'data-profiling') + (matrix ?? '');
+      const methods = ['pearson', 'spearman', 'kendall', 'cramers', 'auto', 'phi_k', 'missing_correlation'];
+      const correlations = new Map(
+        methods.flatMap((method) => {
+          const value = metrics[method];
+          if (!value || !record(value) || !Array.isArray(value.columns) || !value.columns.length) return [];
+          const label =
+            method === 'missing_correlation'
+              ? 'Missingness correlation'
+              : method === 'phi_k'
+              ? 'Phi-k'
+              : method[0].toUpperCase() + method.slice(1);
+          return [
+            [method, `<figure class="report-chart"><figcaption>${label}</figcaption>${valueMarkup(value)}</figure>`],
+          ] as const;
+        })
+      );
+      const scatter = z.array(scatterSchema).safeParse(metrics.scatter_pairs);
+      const scatterPairs = scatter.success ? scatter.data : [];
+      const stats = Object.fromEntries(
+        Object.entries(metrics).filter(([metric]) => {
+          if (metric === 'scatter_pairs') return !scatterPairs.length;
+          if (metric === 'missing_bands') return !matrix;
+          return !correlations.has(metric);
+        })
+      );
+      const sections = [
+        [missing, 'missing', 'Missing values'],
+        [alertTable, 'alerts', 'Quality alerts'],
+        [correlations.size, 'correlations', 'Correlations'],
+        [scatterPairs.length, 'interactions', 'Interactions'],
+        [variables, 'columns', 'Columns'],
+        [Object.keys(stats).length, 'details', 'Table metrics and samples'],
+      ];
+      const sectionLinks = sections
+        .filter(([content]) => content)
+        .map(([, id, label]) => `<a href="#model-${i}-${id}">${label}</a>`)
+        .join('');
+      return `<section id="model-${i}"><h2>${escape(name)}</h2>${overview(model, alerts.length)}
+      ${sectionLinks ? `<nav class="report-index" aria-label="Report sections">${sectionLinks}</nav>` : ''}
+      ${
+        missing
+          ? `<div class="report-section" id="model-${i}-missing"><h3>Missing values</h3><div class="chart-grid">${missing}</div></div>`
+          : ''
+      }
+      ${alertTable}
+      ${
+        correlations.size
+          ? `<div class="report-section" id="model-${i}-correlations"><h3>Correlations</h3><div class="chart-grid">${[
+              ...correlations.values(),
+            ].join('')}</div></div>`
+          : ''
+      }
+      ${
+        scatterPairs.length
+          ? `<div class="report-section" id="model-${i}-interactions"><h3>Interactions</h3><div class="chart-grid">${scatterPairs
+              .map(scatterMarkup)
+              .join('')}</div></div>`
+          : ''
+      }
+      ${
+        variables
+          ? `<div class="report-section" id="model-${i}-columns"><h3>Columns</h3><nav class="column-links" aria-label="Jump to a column">${columnLinks}</nav>${variables}</div>`
+          : ''
+      }${
+        Object.keys(stats).length
+          ? `<details class="report-section" id="model-${i}-details"><summary>Table metrics and samples</summary>${metricTable(
+              stats
+            )}</details>`
+          : ''
       }</section>`;
     })
     .join('');
