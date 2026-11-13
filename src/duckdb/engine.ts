@@ -154,22 +154,17 @@ export class DuckDBEngine implements AnalysisEngine {
     const timeoutMs = this.engineOptions.queryTimeoutMs ?? DEFAULT_QUERY_TIMEOUT_MS;
     // query() parses the original source; a quoted constant keeps its own parameters unbound.
     // https://duckdb.org/docs/1.5/guides/sql_features/query_and_query_table_functions
-    const operation = conn.runAndReadAll(`SELECT * FROM query(${sqlStringLiteral(query)}) LIMIT ${maxRows(options) + 1}`);
-    const reader = await runWithTimeout(operation, timeoutMs, {
-      onTimeout: () => {
-        conn.interrupt();
-        return new QueryTimeoutError(timeoutMs);
-      },
-      unref: true,
-    }).catch(async (error: unknown) => {
-      if (error instanceof QueryTimeoutError) {
-        // interrupt() requests cancellation; the native query is still in flight.
-        // Drain it before exposing the timeout, otherwise a caller's dispose()
-        // can close/free the connection while native execution is using it.
-        await operation.catch(() => undefined);
+    const reader = await runWithTimeout(
+      conn.runAndReadAll(`SELECT * FROM query(${sqlStringLiteral(query)}) LIMIT ${maxRows(options) + 1}`),
+      timeoutMs,
+      {
+        onTimeout: () => {
+          conn.interrupt();
+          return new QueryTimeoutError(timeoutMs);
+        },
+        unref: true,
       }
-      throw error;
-    });
+    );
     const schema = Array.from({ length: reader.columnCount }, (_, index) => ({
       name: reader.columnName(index),
       type: reader.columnType(index).toString(),
