@@ -1,12 +1,12 @@
 import { getDuckDBSchema } from '../util/schema';
 
-import { columnTypes } from './tencent/convert';
-import { readTencentTable } from './tencent/read';
+import { columnTypes } from './tencent-smartsheet/convert';
+import { readTencentSmartsheet } from './tencent-smartsheet/read';
 
-import type { LoadedSource, TencentDocsSourceOptions } from '../../types';
+import type { LoadedSource, TencentSmartsheetSourceOptions } from '../../types';
 
-export async function loadTencentDocs(options: TencentDocsSourceOptions): Promise<LoadedSource> {
-  const { fields, rows } = await readTencentTable(options);
+export async function loadTencentSmartsheet(options: TencentSmartsheetSourceOptions): Promise<LoadedSource> {
+  const { fields, rows } = await readTencentSmartsheet(options);
   const structure = JSON.stringify([columnTypes(fields)]);
   return {
     register: async (conn) => {

@@ -1,9 +1,9 @@
 import { setTimeout as delay } from 'node:timers/promises';
 
-export class TencentDocsError extends Error {
+export class TencentSmartsheetError extends Error {
   constructor(message: string, readonly code?: number, readonly cause?: unknown, readonly status?: number) {
     super(`Tencent Docs: ${message}`);
-    this.name = 'TencentDocsError';
+    this.name = 'TencentSmartsheetError';
   }
 }
 
@@ -11,7 +11,7 @@ export function isObject(value: unknown): value is Record<string, unknown> {
   return value !== null && typeof value === 'object' && !Array.isArray(value);
 }
 
-export interface TencentCredentials {
+export interface TencentSmartsheetCredentials {
   clientId: string;
   openId: string;
   accessToken: string;
@@ -20,7 +20,7 @@ export interface TencentCredentials {
 /** Keep only documented string diagnostics, never an arbitrary response/error object.
  * Omit oversized fields whole instead of cutting through a credential or UTF-8 character.
  */
-function diagnosticText(value: unknown, credentials: TencentCredentials): string | undefined {
+function diagnosticText(value: unknown, credentials: TencentSmartsheetCredentials): string | undefined {
   if (typeof value !== 'string') return undefined;
   if (Buffer.byteLength(value, 'utf8') > 8192) return '[diagnostic omitted: exceeds 8 KiB]';
   let text = value;
@@ -28,7 +28,7 @@ function diagnosticText(value: unknown, credentials: TencentCredentials): string
   return Buffer.byteLength(text, 'utf8') <= 8192 ? text : '[diagnostic omitted: exceeds 8 KiB]';
 }
 
-function errorDetails(error: unknown, credentials: TencentCredentials) {
+function errorDetails(error: unknown, credentials: TencentSmartsheetCredentials) {
   if (!isObject(error)) return { message: diagnosticText(String(error), credentials) };
   return {
     name: diagnosticText(error.name, credentials),
@@ -38,29 +38,29 @@ function errorDetails(error: unknown, credentials: TencentCredentials) {
 }
 
 /** Only these two read operations are available; no discovery or remote writes. */
-export type TencentReadOperation = 'getFields' | 'getRecords';
+export type TencentSmartsheetReadOperation = 'getFields' | 'getRecords';
 
-export class TencentDocsClient {
+export class TencentSmartsheetClient {
   constructor(
-    private readonly credentials: TencentCredentials,
+    private readonly credentials: TencentSmartsheetCredentials,
     private readonly signal: AbortSignal,
     private readonly maxRetries: number
   ) {
     for (const key of ['clientId', 'openId', 'accessToken'] as const) {
       const value = credentials[key];
       if (typeof value !== 'string' || !value.trim() || /[^\x21-\x7e]/.test(value)) {
-        throw new TencentDocsError(`Set a valid ${key} in options.`);
+        throw new TencentSmartsheetError(`Set a valid ${key} in options.`);
       }
     }
   }
 
-  async call(operation: TencentReadOperation, args: Record<string, unknown>): Promise<Record<string, unknown>> {
+  async call(operation: TencentSmartsheetReadOperation, args: Record<string, unknown>): Promise<Record<string, unknown>> {
     if (operation !== 'getFields' && operation !== 'getRecords') {
-      throw new TencentDocsError('Only SmartSheet field and record read operations are allowed.');
+      throw new TencentSmartsheetError('Only SmartSheet field and record read operations are allowed.');
     }
     const { fileId, sheetId, ...params } = args;
     if (typeof fileId !== 'string' || !fileId || typeof sheetId !== 'string' || !sheetId) {
-      throw new TencentDocsError('Explicit native fileId and sheetId are required.');
+      throw new TencentSmartsheetError('Explicit native fileId and sheetId are required.');
     }
     const url = `https://docs.qq.com/openapi/smartbook/v2/files/${encodeURIComponent(
       fileId
@@ -119,7 +119,7 @@ export class TencentDocsClient {
         if (!response.ok || (isObject(body) && typeof body.ret === 'number' && body.ret !== 0)) {
           const code = isObject(body) && typeof body.ret === 'number' ? body.ret : undefined;
           const message = truncated ? undefined : diagnosticText(isObject(body) ? body.msg : undefined, credentials);
-          throw new TencentDocsError(
+          throw new TencentSmartsheetError(
             `OpenAPI request failed (HTTP ${response.status}${code === undefined ? '' : `, ret ${code}`}).${
               requestId ? ` Request ID: ${requestId}.` : ''
             }${message ? ` ${message}` : ''}`,
@@ -129,18 +129,18 @@ export class TencentDocsClient {
           );
         }
         if (!isObject(body) || body.ret !== 0 || !isObject(body.data) || !isObject(body.data[operation])) {
-          throw new TencentDocsError('Invalid OpenAPI response envelope.');
+          throw new TencentSmartsheetError('Invalid OpenAPI response envelope.');
         }
         return body.data[operation] as Record<string, unknown>;
       }
     } catch (error) {
-      if (error instanceof TencentDocsError) throw error;
+      if (error instanceof TencentSmartsheetError) throw error;
       const cause = {
         ...errorDetails(error, credentials),
         cause: isObject(error) && error.cause !== undefined ? errorDetails(error.cause, credentials) : undefined,
       };
-      if (this.signal.aborted) throw new TencentDocsError('Load deadline exceeded.', undefined, cause);
-      throw new TencentDocsError(
+      if (this.signal.aborted) throw new TencentSmartsheetError('Load deadline exceeded.', undefined, cause);
+      throw new TencentSmartsheetError(
         `OpenAPI transport failed.${cause.message ? ` ${cause.message}` : ''}`,
         undefined,
         cause
@@ -166,7 +166,7 @@ export class TencentDocsClient {
         if (done) return { text: text + decoder.decode(), truncated: false };
         const remaining = maximum - bytes;
         if (value.byteLength > remaining && response.ok)
-          throw new TencentDocsError('OpenAPI response exceeds the 16 MiB read limit.');
+          throw new TencentSmartsheetError('OpenAPI response exceeds the 16 MiB read limit.');
         text += decoder.decode(value.subarray(0, remaining), { stream: true });
         bytes += value.byteLength;
         // A partial/non-JSON error body is never included in diagnostics.

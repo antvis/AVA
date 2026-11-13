@@ -15,7 +15,7 @@ import { loadPostgreSQL } from './postgresql';
 import { loadSQLite } from './sqlite';
 import { loadText } from './text';
 import { loadFeishuBitable } from './feishu-bitable';
-import { loadTencentDocs } from './tencent-smartsheet';
+import { loadTencentSmartsheet } from './tencent-smartsheet';
 import { loadGitHub } from './github';
 
 import type { DataSourceConfig, LLMConfig, LoadedSource } from '../../types';
@@ -65,7 +65,7 @@ export async function loadSource(config: DataSourceConfig, llmConfig: LLMConfig)
     case 'feishu-bitable':
       return loadFeishuBitable(config.options);
     case 'tencent-smartsheet':
-      return loadTencentDocs(config.options);
+      return loadTencentSmartsheet(config.options);
     case 'github':
       return loadGitHub(config.options);
   }

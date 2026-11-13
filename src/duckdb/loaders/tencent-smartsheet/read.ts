@@ -1,18 +1,18 @@
-import { tencentDocsOptionsSchema } from '../../../contracts/source/tencent-smartsheet';
+import { tencentSmartsheetOptionsSchema } from '../../../contracts/source/tencent-smartsheet';
 
-import { TencentDocsClient, TencentDocsError, isObject } from './client';
+import { TencentSmartsheetClient, TencentSmartsheetError, isObject } from './client';
 import { supportedFields } from './convert';
 import { createSnapshotBuilder } from './snapshot';
 
-import type { TencentCell, TencentField } from './convert';
-import type { TencentDocsSourceOptions } from '../../../types';
+import type { TencentSmartsheetCell, TencentSmartsheetField } from './convert';
+import type { TencentSmartsheetSourceOptions } from '../../../types';
 
 const MAX_FIELDS = 1000;
 const MAX_READ_BYTES = 16 * 1024 * 1024;
 
-export interface TencentSnapshot {
-  fields: TencentField[];
-  rows: Record<string, TencentCell>[];
+export interface TencentSmartsheetSnapshot {
+  fields: TencentSmartsheetField[];
+  rows: Record<string, TencentSmartsheetCell>[];
 }
 
 interface PageState {
@@ -32,7 +32,7 @@ function validatePage(
   maximum: number
 ): unknown[] {
   state.bytes += Buffer.byteLength(JSON.stringify(page), 'utf8');
-  if (state.bytes > MAX_READ_BYTES) throw new TencentDocsError('Paginated response exceeds the 16 MiB read limit.');
+  if (state.bytes > MAX_READ_BYTES) throw new TencentSmartsheetError('Paginated response exceeds the 16 MiB read limit.');
   const batch = page[key];
   if (
     !Array.isArray(batch) ||
@@ -41,36 +41,36 @@ function validatePage(
     !Number.isSafeInteger(page.total) ||
     (page.total as number) < 0
   ) {
-    throw new TencentDocsError('Invalid pagination response.');
+    throw new TencentSmartsheetError('Invalid pagination response.');
   }
   if (state.total !== undefined && state.total !== page.total)
-    throw new TencentDocsError('Table changed during pagination; retry the snapshot.');
+    throw new TencentSmartsheetError('Table changed during pagination; retry the snapshot.');
   state.total = page.total as number;
   if (state.total > maximum || state.count + batch.length > maximum)
-    throw new TencentDocsError(`${key} exceed the configured read limit; no partial snapshot was loaded.`);
+    throw new TencentSmartsheetError(`${key} exceed the configured read limit; no partial snapshot was loaded.`);
   for (const item of batch) {
     const id = isObject(item) ? item[key === 'fields' ? 'fieldID' : 'recordID'] : undefined;
     if (typeof id !== 'string' || !id || state.ids.has(id))
-      throw new TencentDocsError('Missing or repeated item ID during pagination.');
+      throw new TencentSmartsheetError('Missing or repeated item ID during pagination.');
     state.ids.add(id);
   }
   state.count += batch.length;
-  if (state.count > state.total) throw new TencentDocsError('Pagination returned more items than its total.');
+  if (state.count > state.total) throw new TencentSmartsheetError('Pagination returned more items than its total.');
   if (!page.hasMore) {
     if (state.count !== state.total)
-      throw new TencentDocsError('Incomplete snapshot; returned item count differs from total.');
+      throw new TencentSmartsheetError('Incomplete snapshot; returned item count differs from total.');
   } else if (!batch.length || page.next !== state.offset + batch.length || state.count >= state.total) {
-    throw new TencentDocsError('Pagination did not advance consistently.');
+    throw new TencentSmartsheetError('Pagination did not advance consistently.');
   }
   state.offset = page.next as number;
   return batch;
 }
 
 export async function readFields(
-  client: Pick<TencentDocsClient, 'call'>,
+  client: Pick<TencentSmartsheetClient, 'call'>,
   args: { fileId: string; sheetId: string },
   limit: number
-): Promise<TencentField[]> {
+): Promise<TencentSmartsheetField[]> {
   const state: PageState = { offset: 0, count: 0, bytes: 0, ids: new Set() };
   const fields: unknown[] = [];
   for (;;) {
@@ -81,7 +81,7 @@ export async function readFields(
 }
 
 export async function readRecords(
-  client: Pick<TencentDocsClient, 'call'>,
+  client: Pick<TencentSmartsheetClient, 'call'>,
   args: { fileId: string; sheetId: string; fieldTitles: string[] },
   limit: number,
   maximum: number,
@@ -96,15 +96,15 @@ export async function readRecords(
   }
 }
 
-export async function readTencentTable(input: TencentDocsSourceOptions): Promise<TencentSnapshot> {
-  const options = tencentDocsOptionsSchema.parse(input);
+export async function readTencentSmartsheet(input: TencentSmartsheetSourceOptions): Promise<TencentSmartsheetSnapshot> {
+  const options = tencentSmartsheetOptionsSchema.parse(input);
   const credentials = {
     clientId: options.clientId,
     openId: options.openId,
     accessToken: options.accessToken,
   };
   const controller = new AbortController();
-  const client = new TencentDocsClient(credentials, controller.signal, options.maxRetries ?? 2);
+  const client = new TencentSmartsheetClient(credentials, controller.signal, options.maxRetries ?? 2);
   const timer = setTimeout(() => controller.abort(), options.timeoutMs ?? 60000);
   try {
     const args = { fileId: options.fileId, sheetId: options.sheetId };
@@ -119,7 +119,7 @@ export async function readTencentTable(input: TencentDocsSourceOptions): Promise
     );
     const latest = await readFields(client, args, options.pageSize ?? 100);
     if (JSON.stringify(fields) !== JSON.stringify(latest)) {
-      throw new TencentDocsError('Field metadata changed during loading; retry the snapshot.');
+      throw new TencentSmartsheetError('Field metadata changed during loading; retry the snapshot.');
     }
     return { fields, rows: snapshot.rows };
   } finally {

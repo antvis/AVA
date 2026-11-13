@@ -8,21 +8,21 @@ import { AVA } from '../../../src';
 import { run as runSource } from '../../../src/cli/commands/source';
 import { createSession } from '../../../src/cli/session/client';
 import { sourceInputSchema } from '../../../src/contracts';
-import { loadTencentDocs } from '../../../src/duckdb/loaders/tencent-smartsheet';
-import { TencentDocsClient, TencentDocsError } from '../../../src/duckdb/loaders/tencent/client';
-import { tencentDocsOptionsSchema } from '../../../src/contracts/source/tencent-smartsheet';
-import { columnTypes, createRecordConverter, supportedFields } from '../../../src/duckdb/loaders/tencent/convert';
-import { readFields, readRecords, readTencentTable } from '../../../src/duckdb/loaders/tencent/read';
-import { createSnapshotBuilder } from '../../../src/duckdb/loaders/tencent/snapshot';
+import { loadTencentSmartsheet } from '../../../src/duckdb/loaders/tencent-smartsheet';
+import { TencentSmartsheetClient, TencentSmartsheetError } from '../../../src/duckdb/loaders/tencent-smartsheet/client';
+import { tencentSmartsheetOptionsSchema } from '../../../src/contracts/source/tencent-smartsheet';
+import { columnTypes, createRecordConverter, supportedFields } from '../../../src/duckdb/loaders/tencent-smartsheet/convert';
+import { readFields, readRecords, readTencentSmartsheet } from '../../../src/duckdb/loaders/tencent-smartsheet/read';
+import { createSnapshotBuilder } from '../../../src/duckdb/loaders/tencent-smartsheet/snapshot';
 import sales from '../../fixtures/tencent-sales.json';
 
-import type { TencentField } from '../../../src/duckdb/loaders/tencent/convert';
+import type { TencentSmartsheetField } from '../../../src/duckdb/loaders/tencent-smartsheet/convert';
 
 // Mock only HTTP and CLI session creation, never the reader/converter/loader under test.
 vi.mock('../../../src/cli/session/client', () => ({ createSession: vi.fn() }));
 const credentials = { clientId: 'fake-client', openId: 'fake-open', accessToken: 'fake-secret' };
 const options = { fileId: 'file', sheetId: 'sheet', ...credentials, pageSize: 2 };
-const field = (fieldTitle: string, fieldType: number): TencentField => ({ fieldID: fieldTitle, fieldTitle, fieldType });
+const field = (fieldTitle: string, fieldType: number): TencentSmartsheetField => ({ fieldID: fieldTitle, fieldTitle, fieldType });
 const record = (recordID: string, values: Record<string, unknown> = {}) => ({ recordID, values });
 
 afterEach(() => {
@@ -32,7 +32,7 @@ afterEach(() => {
   vi.useRealTimers();
 });
 
-function serveTable(fields: TencentField[], records: unknown[]) {
+function serveTable(fields: TencentSmartsheetField[], records: unknown[]) {
   const requests: Record<string, any>[] = [];
   const fetch = vi.fn(async (_url, init) => {
     const request = JSON.parse(String(init.body));
@@ -63,7 +63,7 @@ describe('transport', () => {
   const args = { fileId: 'file', sheetId: 'sheet', offset: 0, limit: 2 };
   const success = () => Response.json({ ret: 0, data: { getFields: { fields: [], total: 0, hasMore: false } } });
   const client = (maxRetries = 0, signal = new AbortController().signal) =>
-    new TencentDocsClient(credentials, signal, maxRetries);
+    new TencentSmartsheetClient(credentials, signal, maxRetries);
 
   it('sends explicit credentials only to the fixed, encoded, read-only endpoint', async () => {
     const fetch = vi.fn().mockResolvedValue(success());
@@ -99,7 +99,7 @@ describe('transport', () => {
     const error = await client()
       .call('getFields', args)
       .catch((error) => error);
-    expect(error).toBeInstanceOf(TencentDocsError);
+    expect(error).toBeInstanceOf(TencentSmartsheetError);
     expect(error).toMatchObject({
       code: 123,
       status,
@@ -235,7 +235,7 @@ describe('transport', () => {
     const fetch = vi.fn();
     vi.stubGlobal('fetch', fetch);
     for (const value of ['', 'line\nbreak', 'non-ascii中'])
-      expect(() => new TencentDocsClient({ ...credentials, [key]: value }, new AbortController().signal, 0)).toThrow(
+      expect(() => new TencentSmartsheetClient({ ...credentials, [key]: value }, new AbortController().signal, 0)).toThrow(
         `valid ${key}`
       );
     expect(fetch).not.toHaveBeenCalled();
@@ -337,9 +337,9 @@ describe('Tencent Docs explicit configuration and CLI', () => {
       const fetch = vi.fn();
       vi.stubGlobal('fetch', fetch);
       const invalid = { ...options, [key]: undefined };
-      expect(tencentDocsOptionsSchema.safeParse(invalid).success).toBe(false);
+      expect(tencentSmartsheetOptionsSchema.safeParse(invalid).success).toBe(false);
       expect(sourceInputSchema.safeParse({ type: 'tencent-smartsheet', options: invalid }).success).toBe(false);
-      await expect(readTencentTable(invalid as never)).rejects.toThrow(key);
+      await expect(readTencentSmartsheet(invalid as never)).rejects.toThrow(key);
       expect(fetch).not.toHaveBeenCalled();
     }
   );
@@ -353,13 +353,13 @@ describe('Tencent Docs explicit configuration and CLI', () => {
     { fileId: '' },
     { endpoint: 'https://other-host.invalid' },
   ])('rejects invalid options %j', (change) => {
-    expect(tencentDocsOptionsSchema.safeParse({ ...options, ...change }).success).toBe(false);
+    expect(tencentSmartsheetOptionsSchema.safeParse({ ...options, ...change }).success).toBe(false);
   });
 
   it('uses explicit credentials rather than the inherited environment', async () => {
     vi.stubEnv('TENCENT_DOCS_ACCESS_TOKEN', 'env-token');
     const { fetch } = serveTable([field('amount', 2)], [record('r', { amount: 42 })]);
-    expect((await readTencentTable(options)).rows).toEqual([{ _record_id: 'r', amount: 42 }]);
+    expect((await readTencentSmartsheet(options)).rows).toEqual([{ _record_id: 'r', amount: 42 }]);
     expect(fetch.mock.calls[0][1].headers['Access-Token']).toBe(credentials.accessToken);
   });
 
@@ -498,7 +498,7 @@ describe('Tencent Docs read limits and orchestration', () => {
       Array.from({ length: 1000 }, (_, i) => field(`c${i}`, 2)),
       Array.from({ length: 1000 }, (_, i) => record(`r${i}`))
     );
-    await expect(readTencentTable({ ...options, pageSize: 100, maxRecords: 100000 })).rejects.toThrow('read limit');
+    await expect(readTencentSmartsheet({ ...options, pageSize: 100, maxRecords: 100000 })).rejects.toThrow('read limit');
     expect(requests.filter((r) => r.getRecords)).toHaveLength(1);
   });
 
@@ -513,7 +513,7 @@ describe('Tencent Docs read limits and orchestration', () => {
         Response.json({ ret: 0, data: { getFields: { fields: [field('renamed', 2)], total: 1, hasMore: false } } })
       );
     vi.stubGlobal('fetch', fetch);
-    await expect(readTencentTable(options)).rejects.toThrow('metadata changed');
+    await expect(readTencentSmartsheet(options)).rejects.toThrow('metadata changed');
   });
 
   it('aborts a stalled request, clears its timer and does not expose a partial engine', async () => {
@@ -605,7 +605,7 @@ describe('Tencent Docs HTTP → loader → DuckDB', () => {
     const title = 'quoted"column; DROP TABLE data; --';
     const text = "O'Reilly \\ 中文";
     serveTable([field(title, 1)], [record('r', { [title]: [{ text }] })]);
-    const source = await loadTencentDocs(options);
+    const source = await loadTencentSmartsheet(options);
     const run = vi.fn().mockResolvedValue(undefined);
     await source.register({ run } as never);
     expect(run).toHaveBeenCalledExactlyOnceWith(

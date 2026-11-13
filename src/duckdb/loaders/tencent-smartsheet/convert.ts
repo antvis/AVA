@@ -1,12 +1,12 @@
-import { isObject, TencentDocsError } from './client';
+import { isObject, TencentSmartsheetError } from './client';
 
-export interface TencentField {
+export interface TencentSmartsheetField {
   fieldID: string;
   fieldTitle: string;
   fieldType: number;
 }
 
-export type TencentCell = string | number | boolean | null;
+export type TencentSmartsheetCell = string | number | boolean | null;
 
 // Official numeric FieldType / Value contracts, not the MCP string enums.
 // The legacy v2 enum page is incomplete: currency 26 / percentage 28 have been
@@ -26,10 +26,10 @@ const SQL_TYPES: Record<number, string> = {
   28: 'DOUBLE',
 };
 
-export function supportedFields(raw: unknown[]): TencentField[] {
+export function supportedFields(raw: unknown[]): TencentSmartsheetField[] {
   const names = new Set(['_record_id']);
   const ids = new Set<string>();
-  const fields: TencentField[] = [];
+  const fields: TencentSmartsheetField[] = [];
   for (const field of raw) {
     if (
       !isObject(field) ||
@@ -39,29 +39,29 @@ export function supportedFields(raw: unknown[]): TencentField[] {
       !field.fieldTitle.trim() ||
       !Number.isSafeInteger(field.fieldType)
     ) {
-      throw new TencentDocsError('Invalid field metadata.');
+      throw new TencentSmartsheetError('Invalid field metadata.');
     }
-    if (ids.has(field.fieldID)) throw new TencentDocsError('Duplicate field ID; the table may have changed.');
+    if (ids.has(field.fieldID)) throw new TencentSmartsheetError('Duplicate field ID; the table may have changed.');
     ids.add(field.fieldID);
     if (!Object.prototype.hasOwnProperty.call(SQL_TYPES, field.fieldType as number)) continue;
     const name = field.fieldTitle.toLowerCase();
-    if (names.has(name)) throw new TencentDocsError('Duplicate or reserved column name. Rename the source field.');
+    if (names.has(name)) throw new TencentSmartsheetError('Duplicate or reserved column name. Rename the source field.');
     names.add(name);
     fields.push({ fieldID: field.fieldID, fieldTitle: field.fieldTitle, fieldType: field.fieldType as number });
   }
-  if (!fields.length) throw new TencentDocsError('The table has no supported fields.');
+  if (!fields.length) throw new TencentSmartsheetError('The table has no supported fields.');
   return fields;
 }
 
-export function columnTypes(fields: TencentField[]): Record<string, string> {
+export function columnTypes(fields: TencentSmartsheetField[]): Record<string, string> {
   return Object.fromEntries([['_record_id', 'VARCHAR'], ...fields.map((f) => [f.fieldTitle, SQL_TYPES[f.fieldType]])]);
 }
 
 function invalidCell(): never {
-  throw new TencentDocsError('Invalid value for a supported field type; no partial snapshot was loaded.');
+  throw new TencentSmartsheetError('Invalid value for a supported field type; no partial snapshot was loaded.');
 }
 
-function convertCell(field: TencentField, value: unknown): TencentCell {
+function convertCell(field: TencentSmartsheetField, value: unknown): TencentSmartsheetCell {
   if (value === null) return null;
   switch (field.fieldType) {
     case 1:
@@ -99,15 +99,15 @@ function convertCell(field: TencentField, value: unknown): TencentCell {
   }
 }
 
-export function createRecordConverter(fields: TencentField[]): (raw: unknown) => Record<string, TencentCell> {
+export function createRecordConverter(fields: TencentSmartsheetField[]): (raw: unknown) => Record<string, TencentSmartsheetCell> {
   const names = new Set(fields.map((field) => field.fieldTitle));
   return (raw) => {
     if (!isObject(raw) || typeof raw.recordID !== 'string' || !raw.recordID || !isObject(raw.values)) {
-      throw new TencentDocsError('Invalid record response.');
+      throw new TencentSmartsheetError('Invalid record response.');
     }
     const values = raw.values;
     if (Object.keys(values).some((name) => !names.has(name)))
-      throw new TencentDocsError('Invalid or unknown projected record field.');
+      throw new TencentSmartsheetError('Invalid or unknown projected record field.');
     return Object.fromEntries([
       ['_record_id', raw.recordID],
       ...fields.map((field) => {
