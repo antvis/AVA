@@ -29,7 +29,9 @@
 [AVA](https://github.com/antvis/AVA)（<img src="https://mdn.alipayobjects.com/huamei_qa8qxu/afts/img/A*QzIsSrfsCW0AAAAAAAAAAAAADmJ7AQ/original" width="16" alt="AVA 示例"> Visual Analytics）是一个面向应用和 AI 智能体的数据分析与可视化框架。**A** 代表 AI 原生（AI-native）、自动化（Automated）和增强（Augmented）；**VA** 代表数据分析与可视化（Visual Analytics）。
 
 <p align="center">
-  <img src="https://mdn.alipayobjects.com/huamei_aphk1k/afts/img/A*B1BzS7kiuSUAAAAAgEAAAAgAegfkAQ/original" width="100%" alt="AVA 智能体分析流程：接入数据、识别字段、检查质量、读取业务口径、执行分析、生成图表与推荐后续问题，并展示可核验的 SQL 和结果。" />
+  <a href="https://ava.antv.vision/">
+    <img src="https://mdn.alipayobjects.com/huamei_aphk1k/afts/img/A*B1BzS7kiuSUAAAAAgEAAAAgAegfkAQ/original" width="100%" alt="AVA 智能体分析流程：接入数据、识别字段、检查质量、读取业务口径、执行分析、生成图表与推荐后续问题，并展示可核验的 SQL 和结果。" />
+  </a>
 </p>
 
 > [!NOTE]
