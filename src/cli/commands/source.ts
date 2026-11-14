@@ -111,8 +111,8 @@ Options:
                     Types: csv-file, json-file, parquet, excel, sqlite, github.
                     With github, dataset is owner/name.
                     Cannot be used with @file, stdin configs, Feishu or GitHub repository URLs.
-  --engine <type>    duckdb, python, javascript, supabase, clickhouse, sqlserver, or snowflake.
-                    Default: supabase/clickhouse/sqlserver/snowflake for those sources, otherwise duckdb.
+  --engine <type>    duckdb, python, javascript, supabase, clickhouse, sqlserver, snowflake, or bigquery.
+                    Default: supabase/clickhouse/sqlserver/snowflake/bigquery for those sources, otherwise duckdb.
                     Fixed for the session; source support depends on the engine.
                     feishu-bitable uses duckdb. The loaded view is named data.
   -h, --help         Show help.
@@ -201,6 +201,19 @@ Tencent Docs SmartSheet (Node.js / DuckDB):
   Pass all three OpenAPI credentials explicitly in options; environment variables are not resolved. fileId must be a native API ID.
   Reads a complete, bounded snapshot into data; _record_id preserves source identity.
   Explicit IDs are required; document sharing URLs are not auto-detected.
+
+BigQuery (Node.js / BigQuery API):
+  bigquery.json:
+    {
+      "type": "bigquery",
+      "options": {
+        "projectId": "<project-id>",
+        "dataset": "<dataset>"
+      }
+    }
+  Uses application-default credentials when no credentials field is given,
+  or pass a service-account JSON object/string. For a mock, no credentials or
+  network are needed: set "adapter": "mock" and seed "tables".
 
 snowflake.json:
 {

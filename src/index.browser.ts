@@ -64,6 +64,8 @@ export type {
   SemanticOptions,
   JSONReadOptions,
   ClickHouseSourceOptions,
+  BigQuerySourceOptions,
+  MockTableSeed,
   AnalysisEngine,
   TranslationResult,
   ExecutionOptions,
