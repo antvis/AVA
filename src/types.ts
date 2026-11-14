@@ -137,6 +137,9 @@ export type MongoDBSourceOptions = Extract<SourceConfigInput, { type: 'mongodb' 
 export type PostgreSQLSourceOptions = Extract<SourceConfigInput, { type: 'postgresql' }>['options'];
 export type SupabaseSourceOptions = Extract<SourceConfigInput, { type: 'supabase' }>['options'];
 export type SQLServerSourceOptions = Extract<SourceConfigInput, { type: 'sqlserver' }>['options'];
+export type BigQuerySourceOptions = Extract<SourceConfigInput, { type: 'bigquery' }>['options'];
+export type MockTableSeed = NonNullable<BigQuerySourceOptions['tables']>[number];
+export type MockTableColumn = MockTableSeed['columns'][number];
 export type FeishuBitableSourceOptions = Extract<SourceConfigInput, { type: 'feishu-bitable' }>['options'];
 export type TencentDocsSourceOptions = Extract<SourceConfigInput, { type: 'tencent-smartsheet' }>['options'];
 export type GitHubSourceOptions = Extract<SourceConfigInput, { type: 'github' }>['options'];
@@ -230,6 +233,7 @@ export type EngineConfig =
   | { type: 'clickhouse' }
   | { type: 'sqlserver' }
   | { type: 'snowflake' }
+  | { type: 'bigquery' }
   | { type: string; [option: string]: unknown };
 
 /**

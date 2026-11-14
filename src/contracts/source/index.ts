@@ -16,6 +16,7 @@ import { supabaseSourceSchema } from './supabase';
 import { clickhouseSourceSchema } from './clickhouse';
 import { sqlserverSourceSchema } from './sqlserver';
 import { snowflakeSourceSchema } from './snowflake';
+import { bigquerySourceSchema } from './bigquery';
 import { feishuBitableSourceSchema } from './feishu-bitable';
 import { tencentDocsSourceSchema } from './tencent-smartsheet';
 import { githubSourceSchema } from './github';
@@ -38,6 +39,7 @@ export const sourceSchemas = {
   clickhouse: clickhouseSourceSchema,
   sqlserver: sqlserverSourceSchema,
   snowflake: snowflakeSourceSchema,
+  bigquery: bigquerySourceSchema,
   'feishu-bitable': feishuBitableSourceSchema,
   'tencent-smartsheet': tencentDocsSourceSchema,
   github: githubSourceSchema,
@@ -61,6 +63,7 @@ export const sourceInputSchema = z.discriminatedUnion('type', [
   sourceSchemas.clickhouse,
   sourceSchemas.sqlserver,
   sourceSchemas.snowflake,
+  sourceSchemas.bigquery,
   sourceSchemas['feishu-bitable'],
   sourceSchemas['tencent-smartsheet'],
   sourceSchemas.github,

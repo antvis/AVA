@@ -5,7 +5,7 @@
 
 import { DuckDBEngine } from './duckdb';
 import { JavaScriptEngine, PythonEngine } from './interpreter';
-import { ClickHouseEngine, SnowflakeEngine, SQLServerEngine, SupabaseEngine } from './remote';
+import { BigQueryEngine, ClickHouseEngine, SnowflakeEngine, SQLServerEngine, SupabaseEngine } from './remote';
 import { registerEngine } from './engines';
 
 registerEngine('duckdb', DuckDBEngine);
@@ -13,6 +13,7 @@ registerEngine('clickhouse', ClickHouseEngine);
 registerEngine('sqlserver', SQLServerEngine);
 registerEngine('snowflake', SnowflakeEngine);
 registerEngine('supabase', SupabaseEngine);
+registerEngine('bigquery', BigQueryEngine);
 registerEngine('javascript', JavaScriptEngine);
 registerEngine('python', PythonEngine);
 
@@ -44,6 +45,7 @@ export { AVA } from './ava';
 export { registerEngine } from './engines';
 
 export { executionResult } from './util/result';
+export { BIGQUERY_TABLE_SEED } from './remote';
 
 export type {
   EngineClass,
@@ -72,15 +74,17 @@ export type {
   DuckDBEngineOptions,
   PythonEngineOptions,
   DataSourceConfig,
-  NotionSourceOptions,
   TencentDocsSourceOptions,
   GitHubSourceOptions,
+  NotionSourceOptions,
   SchemaOptions,
   SemanticOptions,
   JSONReadOptions,
   ClickHouseSourceOptions,
   SQLServerSourceOptions,
   SnowflakeSourceOptions,
+  BigQuerySourceOptions,
+  MockTableSeed,
   AnalysisEngine,
   TranslationResult,
   ExecutionOptions,

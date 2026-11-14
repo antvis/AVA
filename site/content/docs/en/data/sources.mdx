@@ -54,14 +54,14 @@
     <strong>ClickHouse</strong>
     <span>Analytics database</span>
   </a>
-  <a href="#notion">
-    <img src="/logos/notion.svg" alt="" width="28" height="28" />
-    <strong>Notion</strong>
-    <span>Database</span>
-  </a>
   <a href="#snowflake">
     <img src="/logos/snowflake.svg" alt="" width="28" height="28" />
     <strong>Snowflake</strong>
+    <span>Cloud data warehouse</span>
+  </a>
+  <a href="#google-bigquery">
+    <img src="/logos/bigquery.svg" alt="" width="28" height="28" />
+    <strong>Google BigQuery</strong>
     <span>Cloud data warehouse</span>
   </a>
   <a href="/documentation/engines/custom/">
@@ -100,7 +100,7 @@ const schema = await ava.schema();
 
 | Parameter | Type                   | Required | Meaning                                                                                                                                      |
 | --------- | ---------------------- | -------- | -------------------------------------------------------------------------------------------------------------------------------------------- |
-| `type`    | `SourceType`           | Yes      | `csv`, `csv-file`, `json`, `json-file`, `parquet`, `excel`, `text`, `sqlite`, `mysql`, `postgresql`, `mongodb`, `supabase`, `clickhouse`, `sqlserver`, `snowflake`, `feishu-bitable`, `tencent-smartsheet`, `github`, or `notion`. |
+| `type`    | `SourceType`           | Yes      | `csv`, `csv-file`, `json`, `json-file`, `parquet`, `excel`, `text`, `sqlite`, `mysql`, `postgresql`, `mongodb`, `supabase`, `clickhouse`, `sqlserver`, `snowflake`, `bigquery`, `feishu-bitable`, `tencent-smartsheet`, or `github`. |
 | `options` | Source-specific object | Yes      | Use the matching table below. Field names are relative to `options`.                                                                         |
 
 `source()` returns no value and prepares the data for execution. Schema discovery is deferred until `schema()` or another operation needs it. Calling `source()` again replaces the current source and clears its cached metadata. Use `schema()` to inspect table and field names, and call `await ava.dispose()` when finished.
@@ -811,6 +811,142 @@ Fields and records are fully paginated; missing/repeated IDs, inconsistent offse
 Stop editing while loading: same-count changes cannot all be detected, and this is not a transactional remote snapshot or continuous sync. Multi-table JOIN, discovery, views/field selection, ordinary spreadsheet ranges and writes are outside this migration. Model analysis uses your configured provider; start with synthetic data.
 
 See the [reproducible sales example](https://github.com/antvis/AVA/tree/oss-camp2026/examples/tencent-docs) for authorization/configuration, native-ID conversion, manual fixture setup, two natural-language business examples, exact numerical assertions and current validation evidence.
+
+## Google BigQuery
+
+Connect to a Google Cloud [BigQuery][bq] data warehouse and execute read-only
+GoogleSQL against it. Schema discovery and query execution run through the
+official [`@google-cloud/bigquery`][bqdriver] client — data is never
+materialized locally. Use the `bigquery` source type with the `bigquery`
+engine in Node.js.
+
+```typescript
+import { AVA } from '@antv/ava';
+
+const ava = new AVA({
+  llm: { model: 'YOUR_MODEL', apiKey: process.env.OPENAI_API_KEY },
+  engine: { type: 'bigquery' },
+});
+await ava.source({
+  type: 'bigquery',
+  options: {
+    projectId: 'my-analytics-project',
+    dataset: 'sales',
+    credentials:
+      process.env.GOOGLE_APPLICATION_CREDENTIALS_JSON
+        ? JSON.parse(process.env.GOOGLE_APPLICATION_CREDENTIALS_JSON)
+        : undefined,
+  },
+});
+
+const schema = await ava.schema();
+const average = await ava.query(
+  "SELECT region, AVG(CAST(revenue AS FLOAT64)) AS avg_revenue FROM orders GROUP BY region"
+);
+```
+
+### Connection fields
+
+| Field | Type | Required | Meaning / default |
+| --- | --- | --- | --- |
+| `projectId` | `string` | Yes | GCP project to discover and query. |
+| `dataset` | `string` | No | Dataset scoping `schema()`/seed data. Required to discover tables. |
+| `credentials` | `object \| string` | No | Service-account JSON object or JSON object string. Malformed JSON fails during `ava.source()`. Defaults to application-default credentials (ADC). |
+| `clientEmail` + `privateKey` | `string` | No | Alternative service-account pair to `credentials`. |
+| `location` | `string` | No | Job location hint (`US`, `EU`, …). Let BigQuery infer when unset. |
+| `maxBytesBilled` | `number` | No | Per-job dry-run estimate limit and server-side `maximumBytesBilled` cap for bytes processed. Project default when unset. |
+| `timeoutMs` | `number` | No | Whole-query timeout in ms, including polling and all result pages; cancellation is requested on expiry. Default: `60000`. |
+| `defaultRowLimit` | `number` | No | Per-page `maxResults` for `Job#getQueryResults`, not a total row limit. AVA paginates manually. |
+| `adapter` | `string` | No | `'@google-cloud/bigquery'` (default) or `'mock'`. |
+| `tables` | array | No | Seed rows for `adapter: 'mock'`. |
+
+### Adapters
+
+`BigQuerySourceOptions.adapter` selects the connector:
+
+- `'@google-cloud/bigquery'` (default) — production driver, declared as an
+  optional dependency at `^9.6.0` and lazy-loaded. Every statement passes a
+  local single-SELECT guard and runs as a GoogleSQL query job.
+  `useLegacySql: false` selects the dialect only; it does not make a job
+  read-only. Use a service account with `roles/bigquery.dataViewer` and
+  `roles/bigquery.jobUser`, without write roles. If optional packages were
+  omitted, install the driver explicitly:
+
+  ```bash
+  npm install @google-cloud/bigquery@^9.6.0
+  ```
+
+- `'mock'` — an in-memory runner seeded from `options.tables`, requiring no
+  GCP project or network. Use it for demos, CI, and tests:
+
+  ```typescript
+  import { BIGQUERY_TABLE_SEED } from '@antv/ava';
+
+  await ava.source({
+    type: 'bigquery',
+    options: {
+      adapter: 'mock',
+      projectId: 'demo-project',
+      dataset: 'sales',
+      tables: BIGQUERY_TABLE_SEED,
+    },
+  });
+  ```
+
+### Real GCP execution and limits
+
+For ADC, run `gcloud auth application-default login`, or set
+`GOOGLE_APPLICATION_CREDENTIALS` to a service-account JSON file and omit
+`options.credentials`. The service account needs BigQuery Data Viewer on the
+project/dataset and BigQuery Job User on the project. After building or
+installing AVA, run the Node.js snippet above, call `ava.schema()` and then
+`ava.query(...)`; always call `await ava.dispose()` in `finally`. Configure
+`maxBytesBilled` before billable queries. `ava.source()` validates explicit
+credential JSON and constructs the client, but it is not a live connectivity
+check; GCP authentication and authorization occur when API requests such as
+`schema()` or `query()` run. These instructions do not imply that a live GCP run
+is bundled or has been performed in CI.
+
+- Execution options `maxRows` (default 200 total rows) and `maxResultBytes`
+  (default 1 MiB) independently bound returned data. AVA follows result page
+  tokens in server order until either budget stops the read, preserving page
+  information for truncation. It executes the original SQL without an outer
+  `LIMIT` wrapper, so top-level `ORDER BY` semantics are retained.
+  `defaultRowLimit` controls only each request's page size; the remaining total
+  row budget can make a page smaller.
+- `maxResultBytes` measures serialized rows **after SDK page reads and AVA value
+  decoding**. It is not a network-response limit or a BigQuery bytes-processed
+  limit. The first decoded row that crosses the boundary is measured and omitted;
+  no later page is requested. `maxBytesBilled` is separate and applies to each
+  query job's processing/billing budget.
+- Schema-discovery and profiling queries do not inherit `maxRows` or
+  `maxResultBytes`; they read every result page or fail explicitly rather than
+  returning partial metadata. `timeoutMs` covers their polling and pagination.
+- `INT64` is an exact decimal string, `NUMERIC`/`BIGNUMERIC` are exact decimal
+  strings, `DATE` is `YYYY-MM-DD`, `DATETIME`/`TIME` keep their server format,
+  `TIMESTAMP` is ISO 8601 UTC, and `BYTES` is base64. Driver column names and
+  types are retained from successful `jobs.getQueryResults` responses, including
+  empty results. Ordinary job metadata is not used as a schema fallback.
+- Discovery is limited to ordinary `BASE TABLE` rows in one configured
+  project/dataset. Views, materialized views, and relationship discovery are
+  unsupported. `JSON` stays a string; `ARRAY`/`STRUCT` are recursively
+  normalized only when their schema is available. Complex types do not receive
+  distinct, duplicate, top-value, or numeric profiling metrics; `RANGE` and
+  other unrecognized value wrappers have no lossless-conversion guarantee.
+
+### Natural-language examples (mock)
+
+```typescript
+// 1) Aggregate by region — the LLM emits a read-only GoogleSQL GROUP BY.
+const r1 = await ava.analyze('Average revenue per order by region, sorted highest first');
+// => bound rows, e.g. [{ region: 'South', avg_revenue: 82.25 }, ...]
+
+// 2) Filter + aggregate.
+const r2 = await ava.analyze('Which product sells the most units in the North region?');
+```
+
+[bq]: https://cloud.google.com/bigquery
+[bqdriver]: https://github.com/googleapis/nodejs-bigquery
 
 ## GitHub
 

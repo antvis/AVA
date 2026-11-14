@@ -69,6 +69,7 @@ Configurations have the form `{ "type": "…", "options": {…} }`:
 | `clickhouse` | `url`, `database`, `username`, `password` | HTTP(S), version ≥23.10 |
 | `sqlserver` | `host`, `database`, `user`, `password` | SQL authentication, verified TLS; grant `SELECT` and `VIEW DEFINITION` |
 | `supabase` | `accessToken`, `projectRef` | Management API token, not an anon/service-role key |
+| `bigquery` | `projectId`, `dataset` | ADC or service-account JSON; runs GoogleSQL through BigQuery |
 
 ### Snowflake
 
@@ -159,6 +160,40 @@ Options: `pageSize` 1–100 (default 100 for fields/records), `maxRecords` 1–1
 HTTP status and business `ret` are both checked. Retry only network errors and HTTP 429/500/502/503/504, with valid `Retry-After` up to 30 seconds and the overall deadline. No business error-code retries or MCP quota assumptions. Preserve upstream ret/msg, HTTP status, request IDs and selected network error name/message/code plus one cause level. Do not copy arbitrary response/error objects, stacks or headers. Exact configured credentials are replaced only in selected diagnostic strings; fields over 8 KiB are omitted whole. Non-JSON or incomplete HTTP error bodies are omitted while status/request ID remain available. Redirects are refused.
 
 Incomplete paging, repeated IDs, changed totals/supported metadata and resource overflow fail without partial data. Stop edits during import: it is not a transactionally consistent or continuously synchronized snapshot. Multi-table, discovery, views, field-selection and writes are outside this migration. Model calls are not needed for loading/schema/SQL. See `examples/tencent-docs/README.md` for OAuth/native-ID setup, manually entered synthetic fixtures, two real natural-language sales examples and opt-in live validation.
+
+## Google BigQuery
+
+Use `type: 'bigquery'` through an `@file` or stdin source config:
+
+```json
+{
+  "type": "bigquery",
+  "options": { "projectId": "<project-id>", "dataset": "<dataset>" }
+}
+```
+
+Credentials come from `options.credentials` (service-account JSON object or
+JSON object string), `options.clientEmail` + `options.privateKey`, or
+application-default credentials when omitted. Malformed credential JSON fails
+during `ava source`; loading a source is not a live connectivity check, and API
+requests perform GCP authentication/authorization. BigQuery is selected
+automatically and runs read-only GoogleSQL through the
+`@google-cloud/bigquery` driver (`optionalDependency`; `npm i
+@google-cloud/bigquery` for real runs). Without a live GCP project, set
+`"adapter": "mock"` and seed `options.tables` to run the same contract in
+memory. Any non-SELECT statement is rejected before execution.
+
+`maxBytesBilled` is a per-job processing budget: when set, it is dry-run checked
+and sent as `maximumBytesBilled`. `timeoutMs` covers the whole query, including
+polling and all result pages. `defaultRowLimit` is only the per-page
+`getQueryResults.maxResults`; AVA manually follows page tokens in server order.
+Public `maxRows` (default 200) and `maxResultBytes` (default 1 MiB) are total
+output budgets. They stop further page reads without wrapping the original SQL
+in an outer `LIMIT`, preserving top-level `ORDER BY`. The byte budget measures
+serialized rows after SDK page reads and AVA decoding, not network bytes or
+BigQuery bytes processed. Schema/profile queries omit these output budgets and
+exhaust every page or fail explicitly. Values are decoded losslessly: `INT64`
+digits, `NUMERIC` decimals and temporal types keep their exact string forms.
 
 ## GitHub
 

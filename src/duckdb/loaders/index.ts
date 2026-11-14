@@ -63,6 +63,10 @@ export async function loadSource(config: DataSourceConfig, llmConfig: LLMConfig)
     case 'snowflake':
       // Snowflake runs queries in its own warehouse through SnowflakeEngine.
       throw new Error('Snowflake sources are handled by SnowflakeEngine, not the DuckDB engine');
+    case 'bigquery':
+      // BigQuery is queried directly through BigQueryEngine, not through
+      // DuckDB ATTACH loaders.
+      throw new Error('BigQuery sources are handled by BigQueryEngine, not the DuckDB engine');
     case 'feishu-bitable':
       return loadFeishuBitable(config.options);
     case 'notion':

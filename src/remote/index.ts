@@ -6,3 +6,4 @@ export { SupabaseEngine } from './supabase';
 export { ClickHouseEngine } from './clickhouse';
 export { SQLServerEngine } from './sqlserver';
 export { SnowflakeEngine } from './snowflake';
+export { BigQueryEngine, BIGQUERY_TABLE_SEED } from './bigquery';

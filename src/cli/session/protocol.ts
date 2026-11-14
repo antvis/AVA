@@ -17,6 +17,7 @@ export const engineTypeSchema = z.enum([
   'clickhouse',
   'sqlserver',
   'snowflake',
+  'bigquery',
 ]);
 
 const execution = {

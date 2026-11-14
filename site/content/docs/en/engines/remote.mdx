@@ -36,6 +36,32 @@ await ava.source({
 
 Use `url` or `host`, with a required `database`. `username` takes precedence over the `user` alias. Queries use the official ClickHouse client with read-only settings.
 
+## Google BigQuery
+
+```typescript
+const ava = new AVA({
+  llm: { model: 'YOUR_MODEL', apiKey: process.env.OPENAI_API_KEY },
+  engine: { type: 'bigquery' },
+});
+await ava.source({
+  type: 'bigquery',
+  options: {
+    projectId: 'my-analytics-project',
+    dataset: 'sales',
+    credentials:
+      process.env.GOOGLE_APPLICATION_CREDENTIALS_JSON
+        ? JSON.parse(process.env.GOOGLE_APPLICATION_CREDENTIALS_JSON)
+        : undefined,
+  },
+});
+```
+
+Serves schema discovery and read-only GoogleSQL execution through the
+`@google-cloud/bigquery` driver, with `useLegacySql: false` and a local
+read-only guard on every statement. Without a live GCP project, pass
+`adapter: 'mock'` (plus `tables`) to run the same contract against an
+in-memory runner.
+
 ## SQL Server
 
 ```typescript
@@ -84,4 +110,4 @@ Queries run on your warehouse through the official Snowflake Node.js driver, usi
 
 All remote engines support `schema()`, `profile()`, `translate()`, `query()`, and `analyze()`. Set the matching source and engine types in the JavaScript API. Release resources with `await ava.dispose()` after use.
 
-See [Supabase parameters](/documentation/data/sources/#supabase), [ClickHouse options](/documentation/data/sources/#clickhouse), [SQL Server parameters](/documentation/data/sources/#sql-server), and [Snowflake options](/documentation/data/sources/#snowflake) for complete configuration tables.
+See [Supabase parameters](/documentation/data/sources/#supabase), [ClickHouse options](/documentation/data/sources/#clickhouse), [SQL Server parameters](/documentation/data/sources/#sql-server), [Snowflake options](/documentation/data/sources/#snowflake), and [BigQuery options](/documentation/data/sources/#google-bigquery) for complete configuration tables.
