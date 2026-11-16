@@ -15,6 +15,7 @@ import type {
   analyzeInputSchema,
   analyzeOutputSchema,
   suggestOutputSchema,
+  recommendOutputSchema,
   visualizeOutputSchema,
   vizInputSchema,
 } from './contracts';
@@ -77,6 +78,7 @@ export type SuggestResult = z.output<typeof suggestOutputSchema>[number];
 export type ChartSpec = z.output<typeof vizInputSchema>;
 export type ChartSpecInput = z.input<typeof vizInputSchema>;
 export type ChartType = ChartSpec['chartType'];
+export type RecommendedChartSpec = NonNullable<z.output<typeof recommendOutputSchema>>;
 export type VisualizeResponse = NonNullable<z.output<typeof visualizeOutputSchema>>;
 export type LogicalType = Profile['models'][number]['columns'][number]['properties']['logicalType'];
 export type MetricConfig = NonNullable<ProfileOptions['metrics']>[number];

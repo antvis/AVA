@@ -285,9 +285,10 @@ describe('API input and output contracts', () => {
       ...normalized,
       html: '<html></html>',
     });
-    expect(
-      contracts.visualizeOutputSchema.parse({ chartType: 'summary', config: '# Sales', html: '<html></html>' })
-    ).toMatchObject({ chartType: 'summary' });
+    const summary = { chartType: 'summary', config: '# Sales', html: '<html></html>' };
+    expect(contracts.vizInputSchema.parse(summary)).toEqual(summary);
+    expect(contracts.recommendOutputSchema.safeParse(summary).success).toBe(false);
+    expect(contracts.visualizeOutputSchema.safeParse(summary).success).toBe(false);
     expect(
       contracts.visualizeOutputSchema.safeParse({
         chartType: 'dual-axes',

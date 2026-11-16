@@ -10,9 +10,9 @@ import { generateText } from 'ai';
 import { z } from 'zod';
 
 import { languageModel } from '../util/model';
-import { vizInputSchema } from '../contracts';
+import { recommendedChartSchema } from '../contracts/visualize';
 
-import type { LLMConfig, ChartType, ChartConfig } from '../types';
+import type { LLMConfig, RecommendedChartSpec, ChartConfig } from '../types';
 
 /**
  * Wrap a GPT-Vis JSON config into a standalone HTML file that can be opened in any browser
@@ -59,12 +59,12 @@ export function wrapConfigInHTML(config: ChartConfig): string {
  * Generate a GPT-Vis JSON config for the chart type, data, and user query.
  */
 export async function generateVisualizationConfig(
-  chartType: ChartType,
+  chartType: RecommendedChartSpec['chartType'],
   data: any,
   query: string,
   llmConfig: LLMConfig
 ): Promise<Record<string, unknown>> {
-  const chartSchema = vizInputSchema.options.find((schema) => schema.shape.chartType.value === chartType)!;
+  const chartSchema = recommendedChartSchema.options.find((schema) => schema.shape.chartType.value === chartType)!;
   const prompt = `你是一个 GPT-Vis 可视化专家。根据图表类型、数据和用户查询，生成对应的 GPT-Vis JSON 配置。
 
 ## 任务信息

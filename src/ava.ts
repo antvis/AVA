@@ -3,7 +3,13 @@
  */
 import EventEmitter from '@antv/event-emitter';
 
-import { schemaOutputSchema, profileOutputSchema, semanticOutputSchema, vizInputSchema } from './contracts';
+import {
+  schemaOutputSchema,
+  profileOutputSchema,
+  semanticOutputSchema,
+  recommendOutputSchema,
+  vizInputSchema,
+} from './contracts';
 import { getEngineClass } from './engines';
 import { extractDataSchema } from './util/schema';
 import { buildDataModel, stringifyDataModel } from './util/data-model';
@@ -28,7 +34,7 @@ import type {
   AnalysisResponse,
   AnalysisConfig,
   VisualizeResponse,
-  ChartSpec,
+  RecommendedChartSpec,
   ChartSpecInput,
   SuggestResult,
   Profile,
@@ -341,7 +347,7 @@ export class AVA extends EventEmitter {
    * Recommend a chart specification for the analysis result.
    * Combine a suitable chart type with GPT-Vis JSON config for rendering.
    */
-  async recommend(analysisResult: Pick<AnalysisResponse, 'query' | 'data'>): Promise<ChartSpec | null> {
+  async recommend(analysisResult: Pick<AnalysisResponse, 'query' | 'data'>): Promise<RecommendedChartSpec | null> {
     const { data, query } = analysisResult;
     if (!hasData(data)) return null;
 
@@ -350,7 +356,7 @@ export class AVA extends EventEmitter {
     if (!chartType) return null;
 
     const config = await generateVisualizationConfig(chartType, data, query, this.llmConfig);
-    return vizInputSchema.parse({ chartType, config });
+    return recommendOutputSchema.parse({ chartType, config });
   }
 
   /**

@@ -2,9 +2,9 @@
  * Chart definitions metadata
  */
 
-import type { ChartTypeDefinition } from '../types';
+import type { ChartTypeDefinition, RecommendedChartSpec } from '../types';
 
-const chartDefinitions: ChartTypeDefinition[] = [
+const chartDefinitions: (ChartTypeDefinition & { type: RecommendedChartSpec['chartType'] })[] = [
   {
     type: 'line',
     name: '折线图',
