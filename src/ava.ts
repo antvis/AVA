@@ -322,14 +322,10 @@ export class AVA extends EventEmitter {
   async visualize(analysisResult: Pick<AnalysisResponse, 'query' | 'data'>): Promise<VisualizeResponse | null> {
     emit(this, new LifecycleEvent(LifecycleEventType.VISUALIZE_START, { query: analysisResult.query }));
 
-    let result: VisualizeResponse | null = null;
+    let result: VisualizeResponse | null;
     try {
       const spec = await this.recommend(analysisResult);
-      if (spec) {
-        const html = await this.viz(spec);
-        result =
-          spec.chartType === 'summary' ? { chartType: spec.chartType, text: spec.config, html } : { ...spec, html };
-      }
+      result = spec ? { ...spec, html: await this.viz(spec) } : null;
     } catch (error) {
       emit(this, new LifecycleEvent(LifecycleEventType.VISUALIZE_END, { error: serializeError(error) }));
 
@@ -345,7 +341,9 @@ export class AVA extends EventEmitter {
    * Recommend a chart specification for the analysis result.
    * Combine a suitable chart type with GPT-Vis JSON config for rendering.
    */
-  async recommend(analysisResult: Pick<AnalysisResponse, 'query' | 'data'>): Promise<ChartSpec | null> {
+  async recommend(
+    analysisResult: Pick<AnalysisResponse, 'query' | 'data'>
+  ): Promise<Exclude<ChartSpec, { chartType: 'summary' }> | null> {
     const { data, query } = analysisResult;
     if (!hasData(data)) return null;
 
@@ -354,7 +352,8 @@ export class AVA extends EventEmitter {
     if (!chartType) return null;
 
     const config = await generateVisualizationConfig(chartType, data, query, this.llmConfig);
-    return vizInputSchema.parse({ chartType, config });
+    // Parsing preserves the chart type selected by the advisor.
+    return vizInputSchema.parse({ chartType, config }) as Extract<ChartSpec, { chartType: typeof chartType }>;
   }
 
   /**

@@ -285,12 +285,9 @@ describe('API input and output contracts', () => {
       ...normalized,
       html: '<html></html>',
     });
-    const summary = { chartType: 'summary', text: '# Sales', html: '<html></html>' };
-    const summarySpec = { chartType: 'summary', config: '# Sales', html: summary.html };
-    expect(contracts.visualizeOutputSchema.parse(summary)).toEqual(summary);
-    expect(contracts.visualizeOutputSchema.safeParse(summarySpec).success).toBe(false);
-    expect(contracts.recommendOutputSchema.parse(summarySpec)).toEqual(summarySpec);
-    expect(contracts.vizInputSchema.parse(summary)).toEqual(summarySpec);
+    expect(
+      contracts.visualizeOutputSchema.parse({ chartType: 'summary', config: '# Sales', html: '<html></html>' })
+    ).toMatchObject({ chartType: 'summary' });
     expect(
       contracts.visualizeOutputSchema.safeParse({
         chartType: 'dual-axes',
@@ -316,7 +313,7 @@ describe('API input and output contracts', () => {
     }
     const input = z.toJSONSchema(contracts.vizInputSchema, { io: 'input' });
     const output = z.toJSONSchema(contracts.recommendOutputSchema, { io: 'output' });
-    const inputColumn = input.anyOf![0].oneOf!.find((schema) => schema.properties?.chartType.const === 'column');
+    const inputColumn = input.oneOf!.find((schema) => schema.properties?.chartType.const === 'column');
     const outputColumn = output.anyOf![0].oneOf!.find((schema) => schema.properties?.chartType.const === 'column');
     expect(inputColumn?.properties?.config.required).not.toContain('type');
     expect(outputColumn?.properties?.config.required).toContain('type');

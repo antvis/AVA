@@ -351,7 +351,7 @@ Setter 接收选项对象，同步返回 `Semantic`。AVA 验证并复制结果�
 
 `visualize(analysisResult: Pick<AnalysisResponse, 'query' | 'data'>): Promise<VisualizeResponse | null>`
 
-`recommend(analysisResult: Pick<AnalysisResponse, 'query' | 'data'>): Promise<ChartSpec | null>`
+`recommend(analysisResult: Pick<AnalysisResponse, 'query' | 'data'>): Promise<Exclude<ChartSpec, { chartType: 'summary' }> | null>`
 
 两种方法接受相同的输入：
 
@@ -361,9 +361,7 @@ Setter 接收选项对象，同步返回 `Semantic`。AVA 验证并复制结果�
 | `analysisResult.query` | `string` | 是 | 问题或可视化意图。 |
 | `analysisResult.data` | `AnalysisResponse['data']` | 是 | 待可视化的数据行。 |
 
-两种方法都不要求加载数据源，均调用模型；数据为空或没有推荐出图表时返回 `null`，生成错误则直接抛出。`recommend()` 返回 `ChartSpec`；`visualize()` 还返回 `html: string`，包含独立的图表页面。
-
-可以通过 `visualization?.config` 直接读取图表对象。结果为 `summary` 时，`visualize()` 将 T8 内容放在 `text` 字段。这个结果也可以直接传给 `viz()` 渲染。
+两种方法都不要求加载数据源，均调用模型；数据为空或没有推荐出图表时返回 `null`，生成错误则直接抛出。两种结果的 `config` 都是 JSON 图表对象。`visualize()` 还返回 `html: string`，包含独立的图表页面。
 
 <Heading as="h3" id="viz">viz</Heading>
 

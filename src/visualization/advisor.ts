@@ -9,7 +9,9 @@ import { languageModel } from '../util/model';
 
 import { chartDefinitions } from './vis';
 
-import type { LLMConfig, ChartType } from '../types';
+import type { LLMConfig } from '../types';
+
+type RecommendedChartType = (typeof chartDefinitions)[number]['type'];
 
 const allChartTypes = chartDefinitions.map((d) => d.type);
 const chartTypeSet = new Set(allChartTypes);
@@ -110,7 +112,7 @@ export async function adviseChartType(
   query: string,
   dataInfoStr: string,
   llmConfig: LLMConfig
-): Promise<ChartType | null> {
+): Promise<RecommendedChartType | null> {
   const prompt = buildAdvisorPrompt(query, dataInfoStr);
 
   const { text } = await generateText({
@@ -126,5 +128,5 @@ export async function adviseChartType(
 
   if (!raw || raw === 'none') return null;
 
-  return chartTypeSet.has(raw as ChartType) ? (raw as ChartType) : null;
+  return chartTypeSet.has(raw as RecommendedChartType) ? (raw as RecommendedChartType) : null;
 }

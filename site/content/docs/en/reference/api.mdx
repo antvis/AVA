@@ -349,7 +349,7 @@ Requires a loaded source. Returns suggestions sorted by descending score, each w
 
 `visualize(analysisResult: Pick<AnalysisResponse, 'query' | 'data'>): Promise<VisualizeResponse | null>`
 
-`recommend(analysisResult: Pick<AnalysisResponse, 'query' | 'data'>): Promise<ChartSpec | null>`
+`recommend(analysisResult: Pick<AnalysisResponse, 'query' | 'data'>): Promise<Exclude<ChartSpec, { chartType: 'summary' }> | null>`
 
 Both methods accept the same input:
 
@@ -359,9 +359,7 @@ Both methods accept the same input:
 | `analysisResult.query` | `string`                                    | Yes      | Question or visualization intent.                                |
 | `analysisResult.data`  | `AnalysisResponse['data']`                 | Yes      | Rows to visualize.                                               |
 
-Neither requires a loaded source. Both use the model and return `null` for empty data or when no chart is recommended. Generation errors propagate. `recommend()` returns a `ChartSpec`; `visualize()` additionally returns `html: string` containing a standalone chart page.
-
-Read `visualization?.config` to get a JSON chart object when available. For a `summary` result, `visualize()` returns the T8 content in `text`. `viz()` also accepts that result directly.
+Neither requires a loaded source. Both use the model and return `null` for empty data or when no chart is recommended. Generation errors propagate. Each result contains a JSON chart object in `config`. `visualize()` also returns `html: string` containing a standalone chart page.
 
 ### viz
 

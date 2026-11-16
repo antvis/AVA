@@ -96,15 +96,4 @@ describe('chart recommendation', () => {
     );
     expect(generateText).not.toHaveBeenCalled();
   });
-
-  it('returns T8 text separately from chart config and accepts the result in viz', async () => {
-    const summaryAva = new AVA({ llm: { model: 'test' } });
-    const text = '# Revenue\nHangzhou earned [100](metric_value, origin=100).';
-    const spec = { chartType: 'summary' as const, config: text };
-    vi.spyOn(summaryAva, 'recommend').mockResolvedValueOnce(spec);
-
-    const visualization = await summaryAva.visualize(result);
-    expect(visualization).toEqual({ chartType: 'summary', text, html: await summaryAva.viz(spec) });
-    expect(await summaryAva.viz(visualization!)).toBe(visualization!.html);
-  });
 });

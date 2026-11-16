@@ -12,7 +12,7 @@ import type { ChartSpec } from '../src/types';
 
 describe('native chart contracts', () => {
   it('covers every advisor chart and renders each native data shape through the SDK', async () => {
-    expect(z.toJSONSchema(vizInputSchema, { io: 'input' }).anyOf![0].oneOf).toHaveLength(20);
+    expect(z.toJSONSchema(vizInputSchema, { io: 'input' }).oneOf).toHaveLength(20);
     expect(Object.keys(fixtures).sort()).toEqual(chartDefinitions.map((chart) => chart.type).sort());
     const ava = new AVA({ llm: { model: 'unused' } });
     for (const [chartType, config] of Object.entries(fixtures)) {
@@ -31,7 +31,7 @@ describe('native chart contracts', () => {
     const spec = { chartType: 'summary' as const, config: '# Sales report\nRevenue increased by 10%.' };
     const html = await ava.viz(spec);
     expect(runInNewContext(`(${html.match(/const visConfig = (.+);/)![1]})`, {}, { timeout: 1000 })).toBe(spec.config);
-    expect(chartDefinitions.some((chart) => chart.type === 'summary')).toBe(false);
+    expect(chartDefinitions.map((chart) => chart.type)).not.toContain('summary');
     expect(() => vizInputSchema.parse({ ...spec, config: { type: 'summary', text: 'Report' } })).toThrow();
     for (const config of ['', '   ', 'vis column\ndata\n  - category A\n    value 1']) {
       expect(() => vizInputSchema.parse({ ...spec, config })).toThrow();

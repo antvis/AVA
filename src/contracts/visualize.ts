@@ -226,41 +226,34 @@ const chartSchemas = [
         .min(1),
       axisXTitle: z.string().optional(),
     })
-  ).superRefine(({ config }, context) => {
-    config.series.forEach((series, index) => {
-      if (series.data.length !== config.categories.length) {
-        context.addIssue({
-          code: 'custom',
-          path: ['config', 'series', index, 'data'],
-          message: 'Series must align with categories',
-        });
-      }
-    });
-  }),
+  ),
+  z
+    .object({
+      chartType: z.literal('summary'),
+      config: z.string().refine((text) => text.trim().length > 0 && !text.trim().startsWith('vis '), {
+        message: 'Summary requires nonempty T8 text, not vis chart syntax',
+      }),
+      html: z.string().optional(),
+    })
+    .strict(),
 ] as const;
-
-const summaryText = z.string().refine((text) => text.trim().length > 0 && !text.trim().startsWith('vis '), {
-  message: 'Summary requires nonempty T8 text, not vis chart syntax',
+export const vizInputSchema = z.discriminatedUnion('chartType', chartSchemas).superRefine((spec, context) => {
+  if (spec.chartType !== 'dual-axes') return;
+  const config = spec.config;
+  config.series.forEach((series, index) => {
+    if (series.data.length !== config.categories.length) {
+      context.addIssue({
+        code: 'custom',
+        path: ['config', 'series', index, 'data'],
+        message: 'Series must align with categories',
+      });
+    }
+  });
 });
-const summarySpecSchema = z
-  .object({ chartType: z.literal('summary'), config: summaryText, html: z.string().optional() })
-  .strict();
-const summaryResultSchema = summarySpecSchema.extend({ config: z.never().optional(), text: summaryText });
-
-export const chartSpecSchema = z.discriminatedUnion('chartType', [...chartSchemas, summarySpecSchema]);
-export const vizInputSchema = z.union([
-  chartSpecSchema,
-  summaryResultSchema
-    .transform(({ text, ...spec }) => ({ ...spec, config: text }))
-    .pipe(summarySpecSchema),
-]);
 
 /** Input is the query/data subset of an analysis result; full results may be passed directly. */
 export const recommendInputSchema = z.object({ query: z.string(), data: z.array(z.unknown()) });
-export const recommendOutputSchema = chartSpecSchema.nullable();
+export const recommendOutputSchema = vizInputSchema.nullable();
 export const visualizeInputSchema = recommendInputSchema;
-export const visualizeOutputSchema = z
-  .discriminatedUnion('chartType', [...chartSchemas, summaryResultSchema])
-  .and(z.object({ html: z.string() }))
-  .nullable();
+export const visualizeOutputSchema = vizInputSchema.and(z.object({ html: z.string() })).nullable();
 export const vizOutputSchema = z.string();

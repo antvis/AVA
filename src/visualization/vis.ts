@@ -4,7 +4,7 @@
 
 import type { ChartTypeDefinition } from '../types';
 
-const chartDefinitions: ChartTypeDefinition[] = [
+const chartDefinitions = [
   {
     type: 'line',
     name: '折线图',
@@ -162,6 +162,6 @@ const chartDefinitions: ChartTypeDefinition[] = [
     dataRequirements: ['任意结构化数据'],
     limitations: [],
   },
-];
+] satisfies ChartTypeDefinition[];
 
 export { chartDefinitions };
