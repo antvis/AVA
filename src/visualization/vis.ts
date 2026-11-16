@@ -4,7 +4,7 @@
 
 import type { ChartTypeDefinition } from '../types';
 
-const chartDefinitions = [
+const chartDefinitions: ChartTypeDefinition[] = [
   {
     type: 'line',
     name: '折线图',
@@ -162,6 +162,14 @@ const chartDefinitions = [
     dataRequirements: ['任意结构化数据'],
     limitations: [],
   },
-] satisfies ChartTypeDefinition[];
+  {
+    type: 'summary',
+    name: '文本摘要',
+    features: ['用 T8 文本展示关键指标和数据结论'],
+    useCases: ['用户明确请求 T8 摘要、数据简报或带指标标注的报告'],
+    dataRequirements: ['有可概括的数据或指标'],
+    limitations: ['普通问答和明确请求其他图表的场景'],
+  },
+];
 
 export { chartDefinitions };

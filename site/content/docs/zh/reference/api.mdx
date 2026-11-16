@@ -351,7 +351,7 @@ Setter 接收选项对象，同步返回 `Semantic`。AVA 验证并复制结果�
 
 `visualize(analysisResult: Pick<AnalysisResponse, 'query' | 'data'>): Promise<VisualizeResponse | null>`
 
-`recommend(analysisResult: Pick<AnalysisResponse, 'query' | 'data'>): Promise<Exclude<ChartSpec, { chartType: 'summary' }> | null>`
+`recommend(analysisResult: Pick<AnalysisResponse, 'query' | 'data'>): Promise<ChartSpec | null>`
 
 两种方法接受相同的输入：
 
@@ -361,7 +361,7 @@ Setter 接收选项对象，同步返回 `Semantic`。AVA 验证并复制结果�
 | `analysisResult.query` | `string` | 是 | 问题或可视化意图。 |
 | `analysisResult.data` | `AnalysisResponse['data']` | 是 | 待可视化的数据行。 |
 
-两种方法都不要求加载数据源，均调用模型；数据为空或没有推荐出图表时返回 `null`，生成错误则直接抛出。两种结果的 `config` 都是 JSON 图表对象。`visualize()` 还返回 `html: string`，包含独立的图表页面。
+两种方法都可以直接传入数据，均调用模型。数据为空或没有推荐出可视化方案时返回 `null`，生成错误则直接抛出。`config` 可以是 JSON 图表对象，也可以是 `summary` 的 T8 字符串。`visualize()` 还返回独立的 HTML 页面。只需要 JSON 图表对象时，可以调用 SDK 的 `getChartConfig(result)`。摘要或空结果会得到 `undefined`。
 
 <Heading as="h3" id="viz">viz</Heading>
 
@@ -375,7 +375,7 @@ Setter 接收选项对象，同步返回 `Semantic`。AVA 验证并复制结果�
 
 `ChartType` 可选值：`line`、`column`、`bar`、`pie`、`area`、`scatter`、`dual-axes`、`histogram`、`boxplot`、`radar`、`funnel`、`waterfall`、`liquid`、`word-cloud`、`violin`、`venn`、`treemap`、`sankey`、`table`、`summary`。
 
-GPT-Vis 支持 26 种可视化类型。AVA 自动推荐上述 19 种 JSON 图表，也允许通过 `viz({ chartType: 'summary', config: '# 销售报告' })` 渲染原生摘要字符串。6 种关系图暂不在 AVA 契约范围内。`ChartSpec` 描述规范化后的结果，其中 JSON 图表的 `config.type` 已补齐。
+AVA 可以推荐上述 20 种可视化类型，并在用户明确请求时生成 T8 摘要。已有 T8 文本可以通过 `viz({ chartType: 'summary', config: '# 销售报告' })` 渲染。`ChartSpec` 描述规范化后的结果，其中 JSON 图表的 `config.type` 已补齐。
 
 `spec.html?: string` 用于接收 `visualize()` 的完整返回值。渲染始终根据 `config` 生成新的 HTML，不复用已有 `html`；外层其他未知字段会被拒绝。
 

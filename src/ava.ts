@@ -313,11 +313,11 @@ export class AVA extends EventEmitter {
   }
 
   /**
-   * Visualize analysis data by recommending a chart type and generating chart HTML.
+   * Visualize analysis data as a chart or T8 summary with standalone HTML.
    * Accepts the result from analyze() — the query and data are read from it.
    *
    * @param analysisResult - The result returned from analyze()
-   * @returns VisualizeResponse, or null if no chart is needed. Generation errors propagate to the caller.
+   * @returns VisualizeResponse, or null if no visualization is recommended. Generation errors propagate to the caller.
    */
   async visualize(analysisResult: Pick<AnalysisResponse, 'query' | 'data'>): Promise<VisualizeResponse | null> {
     emit(this, new LifecycleEvent(LifecycleEventType.VISUALIZE_START, { query: analysisResult.query }));
@@ -338,12 +338,9 @@ export class AVA extends EventEmitter {
   }
 
   /**
-   * Recommend a chart specification for the analysis result.
-   * Combine a suitable chart type with GPT-Vis JSON config for rendering.
+   * Recommend a chart or T8 summary specification for the analysis result.
    */
-  async recommend(
-    analysisResult: Pick<AnalysisResponse, 'query' | 'data'>
-  ): Promise<Exclude<ChartSpec, { chartType: 'summary' }> | null> {
+  async recommend(analysisResult: Pick<AnalysisResponse, 'query' | 'data'>): Promise<ChartSpec | null> {
     const { data, query } = analysisResult;
     if (!hasData(data)) return null;
 
@@ -352,8 +349,7 @@ export class AVA extends EventEmitter {
     if (!chartType) return null;
 
     const config = await generateVisualizationConfig(chartType, data, query, this.llmConfig);
-    // Parsing preserves the chart type selected by the advisor.
-    return vizInputSchema.parse({ chartType, config }) as Extract<ChartSpec, { chartType: typeof chartType }>;
+    return vizInputSchema.parse({ chartType, config });
   }
 
   /**

@@ -49,7 +49,7 @@ export function createTools({ ava, dataset }: { ava: AVA; dataset: AIDataset }) 
 
     visualize: tool({
       description:
-        'Create or update a chart. Pass data directly when the user has supplied chart-ready records; otherwise omit data to reuse the latest analysis. Explicit data takes precedence. Never invent data; call analyze first when calculations or transformations are needed.',
+        'Create or update a chart or T8 summary. Pass data directly when the user has supplied chart-ready records; otherwise omit data to reuse the latest analysis. Explicit data takes precedence. Never invent data; call analyze first when calculations or transformations are needed.',
       inputSchema: z.object({
         instructions: z.string().max(4_000),
         data: z.array(z.record(z.string(), z.unknown())).optional(),

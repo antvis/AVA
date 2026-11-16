@@ -33,7 +33,7 @@ A successful response contains:
 | Field       | Meaning                                                              | How to use it                                                                   |
 | ----------- | -------------------------------------------------------------------- | ------------------------------------------------------------------------------- |
 | `chartType` | The recommended chart type.                                          | Inspect the selected visualization.                                             |
-| `config`    | GPT-Vis chart config as a JSON object.                               | Store or edit the specification, or render it in your application with GPT-Vis. |
+| `config`    | GPT-Vis chart object or T8 summary string.                           | Pass it directly to `gptVis.render()`, or call `getChartConfig(result)` for the chart object. |
 | `html`      | A standalone HTML document containing the config and renderer setup. | Save it as an HTML file and open it in a browser.                               |
 
 The generated HTML loads the pinned GPT-Vis 1.3.1 runtime from a CDN and calls its renderer. Viewing that HTML requires access to the CDN.
@@ -94,6 +94,6 @@ if (spec) {
 | Composition & flow           | `pie`, `treemap`, `sankey`, `waterfall`, `funnel`           |
 | Other                        | `radar`, `liquid`, `word-cloud`, `venn`, `table` |
 
-The table lists AVA's 19 recommended JSON chart types. GPT-Vis itself supports 26 types; AVA additionally accepts native summary strings through `viz({ chartType: 'summary', config: '# Sales report' })`. Its six relationship graph types are outside AVA's current contract. A chart's suitability depends on its data requirements and the user's question. The recommendation module supplies the 19 chart definitions to the model.
+AVA recommends the 19 JSON chart types above and can generate T8 for a request such as “Create a T8 summary of revenue.” Pass existing T8 text with `viz({ chartType: 'summary', config: '# Sales report' })`.
 
 See [recommend parameters](/documentation/reference/api/#visualize-and-recommend) and [viz parameters](/documentation/reference/api/#viz) for all fields and chart types.

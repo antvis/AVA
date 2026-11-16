@@ -34,6 +34,7 @@ export {
 
 export { AVA } from './ava';
 export { registerEngine } from './engines';
+export { getChartConfig } from './visualization';
 
 export type {
   JavaScriptEngine,

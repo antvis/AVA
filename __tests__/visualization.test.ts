@@ -5,6 +5,7 @@ import { generateText } from 'ai';
 
 import { dependencies } from '../package.json';
 import { AVA } from '../src/ava';
+import { getChartConfig } from '../src/visualization';
 
 vi.mock('ai', () => ({ generateText: vi.fn() }));
 vi.mock('../src/util/model', () => ({ languageModel: vi.fn() }));
@@ -56,6 +57,25 @@ describe('chart recommendation', () => {
     await expect(ava['recommend'](result)).rejects.toThrow('Model unavailable');
   });
 
+  it('recommends and renders T8 using the native string config', async () => {
+    const input = { ...result, query: 'Create a T8 summary of revenue by city' };
+    const config = '# Revenue\nHangzhou earned [100](metric_value, origin=100).';
+    const spec = { chartType: 'summary' as const, config };
+    reply('summary');
+    reply(config);
+    expect(await ava.recommend(input)).toEqual(spec);
+    expect(vi.mocked(generateText).mock.calls[1][0].prompt).toContain('metric_value');
+
+    reply('summary');
+    reply(`\`\`\`t8\n${config}\n\`\`\``);
+    const visualization = await ava.visualize(input);
+    const html = await ava.viz(spec);
+    expect(visualization).toEqual({ ...spec, html });
+    expect(getChartConfig(visualization)).toBeUndefined();
+    expect(getChartConfig(null)).toBeUndefined();
+    expect(await ava.viz(visualization!)).toBe(html);
+  });
+
   it('renders the recommended specification through visualize', async () => {
     const onEvent = vi.fn();
     ava.on('visualizestart', onEvent);
@@ -70,6 +90,7 @@ describe('chart recommendation', () => {
       { type: 'visualizeend', data: {} },
     ]);
     expect(visualization).toMatchObject({ chartType: 'column', config });
+    expect(getChartConfig(visualization)).toBe(visualization?.config);
     expect(visualization?.html).toContain('<!DOCTYPE html>');
     expect(
       runInNewContext(`(${visualization!.html.match(/const visConfig = (.+);/)![1]})`, {}, { timeout: 1000 })

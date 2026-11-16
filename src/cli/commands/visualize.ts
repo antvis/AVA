@@ -41,7 +41,8 @@ export const help = `${description}.
 Usage:
   ava visualize --query "<text>" --data <json|@file|-> [options]
 
-Returns { chartType, config, html } as JSON, or null if no chart is recommended.
+Returns { chartType, config, html } as JSON, or null if no visualization is recommended.
+Config is a chart object or a T8 string for chartType "summary".
 With --output, also writes HTML and includes its absolute path in output.
 
 Options:

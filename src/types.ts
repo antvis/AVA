@@ -77,7 +77,7 @@ export type SuggestResult = z.output<typeof suggestOutputSchema>[number];
 export type ChartSpec = z.output<typeof vizInputSchema>;
 export type ChartSpecInput = z.input<typeof vizInputSchema>;
 export type ChartType = ChartSpec['chartType'];
-export type VisualizeResponse = Exclude<NonNullable<z.output<typeof visualizeOutputSchema>>, { chartType: 'summary' }>;
+export type VisualizeResponse = NonNullable<z.output<typeof visualizeOutputSchema>>;
 export type LogicalType = Profile['models'][number]['columns'][number]['properties']['logicalType'];
 export type MetricConfig = NonNullable<ProfileOptions['metrics']>[number];
 export type MetricId = Exclude<MetricConfig, string>['id'];
@@ -279,7 +279,7 @@ export type AnalysisStrategy = (
 ) => Promise<AnalysisResponse>;
 
 /**
- * GPT-Vis JSON config
+ * GPT-Vis chart config or T8 summary string.
  */
 export type ChartConfig = ChartSpec['config'];
 
