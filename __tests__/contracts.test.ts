@@ -285,14 +285,12 @@ describe('API input and output contracts', () => {
       ...normalized,
       html: '<html></html>',
     });
-    const summary = { chartType: 'summary', text: '# Sales' };
-    expect(contracts.vizInputSchema.parse(summary)).toEqual(summary);
-    expect(contracts.recommendOutputSchema.parse(summary)).toEqual(summary);
-    expect(contracts.visualizeOutputSchema.parse({ ...summary, html: '' })).toEqual({ ...summary, html: '' });
-    expect(contracts.visualizeOutputSchema.safeParse(summary).success).toBe(false);
-    expect(contracts.visualizeOutputSchema.safeParse({ chartType: 'summary', config: '# Sales', html: '' }).success).toBe(
-      false
-    );
+    const summary = { chartType: 'summary', text: '# Sales', html: '<html></html>' };
+    const summarySpec = { chartType: 'summary', config: '# Sales', html: summary.html };
+    expect(contracts.visualizeOutputSchema.parse(summary)).toEqual(summary);
+    expect(contracts.visualizeOutputSchema.safeParse(summarySpec).success).toBe(false);
+    expect(contracts.recommendOutputSchema.parse(summarySpec)).toEqual(summarySpec);
+    expect(contracts.vizInputSchema.parse(summary)).toEqual(summarySpec);
     expect(
       contracts.visualizeOutputSchema.safeParse({
         chartType: 'dual-axes',

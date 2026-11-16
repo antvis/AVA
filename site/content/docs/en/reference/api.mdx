@@ -359,7 +359,9 @@ Both methods accept the same input:
 | `analysisResult.query` | `string`                                    | Yes      | Question or visualization intent.                                |
 | `analysisResult.data`  | `AnalysisResponse['data']`                 | Yes      | Rows to visualize.                                               |
 
-Both use the model, accept data directly and return `null` for empty data or when no visualization is recommended. Generation errors propagate. For charts, `config` contains the JSON object. For T8 summaries, `text` contains the narrative and `config` is undefined. Read `result?.config` to get the chart object when available. `visualize()` also returns `html: string` containing a standalone visualization.
+Neither requires a loaded source. Both use the model and return `null` for empty data or when no chart is recommended. Generation errors propagate. `recommend()` returns a `ChartSpec`; `visualize()` additionally returns `html: string` containing a standalone chart page.
+
+Read `visualization?.config` to get a JSON chart object when available. For a `summary` result, `visualize()` returns the T8 content in `text`. `viz()` also accepts that result directly.
 
 ### viz
 
@@ -369,14 +371,13 @@ Both use the model, accept data directly and return `null` for empty data or whe
 | ---------------- | ----------- | -------- | --------------------------------------------------------------------------------------------------- |
 | `spec`           | `ChartSpecInput` | Yes      | Chart specification before defaults are applied. |
 | `spec.chartType` | `ChartType` | Yes      | One of the types below; must match `config.type` for JSON charts. |
-| `spec.config`    | `ChartConfig` before defaults | For charts | Native GPT-Vis config. AVA fills a missing `config.type` from `chartType`. |
-| `spec.text`      | `string` | For `summary` | T8 text. Existing summary inputs with a string in `config` are also accepted. |
+| `spec.config`    | `ChartSpecInput['config']` | Yes    | Native GPT-Vis config; a missing `config.type` is filled from `chartType`. For `summary`, pass a T8 Syntax string. |
 
 `ChartType` values: `line`, `column`, `bar`, `pie`, `area`, `scatter`, `dual-axes`, `histogram`, `boxplot`, `radar`, `funnel`, `waterfall`, `liquid`, `word-cloud`, `violin`, `venn`, `treemap`, `sankey`, `table`, `summary`.
 
-AVA recommends the 20 visualization types listed above. Use `viz({ chartType: 'summary', text: '# Sales report' })` to render T8 text directly. `ChartSpec` describes the normalized result.
+GPT-Vis supports 26 visualization types. AVA recommends the 19 JSON chart types above and additionally accepts native summary strings through `viz({ chartType: 'summary', config: '# Sales report' })`. The six relationship graph types are outside AVA's current contract. `ChartSpec` describes the normalized result, with `config.type` filled for JSON charts.
 
-`spec.html?: string` accepts the complete result from `visualize()`. Rendering generates fresh HTML from the chart config or T8 text. Unknown fields on the spec are rejected.
+`spec.html?: string` accepts the complete result from `visualize()`. Rendering always uses `config` to generate fresh HTML; an existing `html` value is not reused. Other unknown envelope fields are rejected.
 
 Returns a standalone HTML string. Does not require a loaded source or call a model. See [chart specifications](/documentation/visualization/overview/#recommend).
 

@@ -1,7 +1,9 @@
 /**
  * GPT-Vis visualization generator
  *
- * The model generates a JSON chart config or T8 text. AVA supplies the HTML.
+ * Strategy: LLM only generates a GPT-Vis JSON config, then we wrap it
+ * into an HTML template locally. This avoids unreliable regex extraction
+ * from LLM-generated HTML and ensures the HTML is always well-formed.
  */
 
 import { generateText } from 'ai';
@@ -10,12 +12,12 @@ import { z } from 'zod';
 import { languageModel } from '../util/model';
 import { chartSpecSchema } from '../contracts/visualize';
 
-import type { LLMConfig, ChartType, ChartConfig, ChartSpec } from '../types';
+import type { LLMConfig, ChartType, ChartConfig } from '../types';
 
 /**
- * Wrap a GPT-Vis chart config or T8 string in standalone HTML.
+ * Wrap a GPT-Vis JSON config into a standalone HTML file that can be opened in any browser
  */
-export function wrapConfigInHTML(config: ChartConfig | string): string {
+export function wrapConfigInHTML(config: ChartConfig): string {
   // JSON.parse preserves __proto__ as data; escape script terminators and JS line separators.
   const serialized = JSON.stringify(JSON.stringify(config))
     .replace(/</g, '\\u003c')
@@ -54,20 +56,29 @@ export function wrapConfigInHTML(config: ChartConfig | string): string {
 }
 
 /**
- * Generate a visualization spec for the selected type, data, and query.
+ * Generate a GPT-Vis JSON config for the chart type, data, and user query.
  */
-export async function generateVisualizationSpec(
+export async function generateVisualizationConfig(
   chartType: ChartType,
-  data: unknown,
+  data: any,
   query: string,
   llmConfig: LLMConfig
-): Promise<ChartSpec> {
+): Promise<Record<string, unknown>> {
   const chartSchema = chartSpecSchema.options.find((schema) => schema.shape.chartType.value === chartType)!;
-  const rules =
-    chartType === 'summary'
-      ? `直接输出 T8 文本，可用 Markdown 标题和段落，以及 [120](metric_value, origin=120) 这样的指标标注。
-根据数据写简短摘要，保留原始数值和单位，不补造数据或推断原因。不要输出 JSON、HTML、代码块或 vis 图表语法。`
-      : `## JSON 配置规则
+  const prompt = `你是一个 GPT-Vis 可视化专家。根据图表类型、数据和用户查询，生成对应的 GPT-Vis JSON 配置。
+
+## 任务信息
+
+**图表类型**: ${chartType}
+
+**用户查询**: ${query}
+
+**数据**:
+\`\`\`json
+${JSON.stringify(data, null, 2)}
+\`\`\`
+
+## JSON 配置规则
 
 输出一个 JSON 对象。数值字段必须是 number，不要带单位或百分号；保留原始数值，单位写在标题或坐标轴标题中。
 下面的 JSON Schema 来自 AVA 使用的原生图表输入契约，字段形状、主题与展示选项以它为准：
@@ -83,27 +94,11 @@ ${JSON.stringify(z.toJSONSchema(chartSchema.shape.config, { io: 'input' }))}
 5. 不要生成 width height，图表会按照容器自适应大小
 6. 直接输出 JSON，不要用代码块包裹，不要有任何说明文字`;
 
-  const prompt = `你是一个 GPT-Vis 可视化专家。根据可视化类型、数据和用户查询，生成对应的内容。
-
-**可视化类型**: ${chartType}
-**用户查询**: ${query}
-**数据**:
-\`\`\`json
-${JSON.stringify(data, null, 2)}
-\`\`\`
-
-${rules}`;
-
   const { text } = await generateText({
     model: languageModel(llmConfig),
     maxRetries: llmConfig.maxRetries ?? 3,
     prompt,
   });
-
-  if (chartType === 'summary') {
-    const summary = text.trim().replace(/^```(?:markdown|md|t8)?[ \t]*\r?\n([\s\S]*?)\r?\n```$/i, '$1');
-    return chartSpecSchema.parse({ chartType, text: summary });
-  }
 
   // Remove possible markdown code block wrappers (LLM may still wrap in ```json ... ```)
   const json = text
@@ -117,5 +112,5 @@ ${rules}`;
     throw new Error('Generated GPT-Vis config must be a JSON object.');
   }
 
-  return chartSpecSchema.parse({ chartType, config: { ...config, type: chartType } });
+  return { ...(config as Record<string, unknown>), type: chartType };
 }

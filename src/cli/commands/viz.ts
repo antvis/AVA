@@ -5,7 +5,7 @@ import { option } from '../options';
 
 import type { Options } from '../options';
 
-export const description = 'Validate a chart or T8 summary specification or render it to HTML';
+export const description = 'Validate a chart specification or render it to HTML';
 
 export const definition = {
   positionals: 0,
@@ -24,11 +24,7 @@ export async function run(_args: string[], options: Options): Promise<unknown> {
 
   const spec = vizInputSchema.parse(await readJSON(raw));
 
-  if (output === undefined) {
-    return spec.chartType === 'summary'
-      ? { chartType: spec.chartType, text: spec.text }
-      : { chartType: spec.chartType, config: spec.config };
-  }
+  if (output === undefined) return { chartType: spec.chartType, config: spec.config };
 
   const ava = new AVA({ llm: { model: 'unused' } });
 
@@ -40,8 +36,8 @@ export const help = `${description}.
 Usage:
   ava viz --spec <json|@file|-> [--output <path>]
 
-Spec is { chartType, config } for a chart or { chartType: "summary", text } for a T8 summary.
-Without --output, returns the validated spec as JSON.
+Spec must contain chartType and config (GPT-Vis JSON config), as returned by ava recommend.
+Without --output, returns the validated { chartType, config } as JSON.
 With --output, writes HTML and returns { "output": "<absolute-path>" }.
 No API key is required.
 

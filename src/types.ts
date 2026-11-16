@@ -15,7 +15,6 @@ import type {
   analyzeInputSchema,
   analyzeOutputSchema,
   suggestOutputSchema,
-  recommendOutputSchema,
   visualizeOutputSchema,
   vizInputSchema,
 } from './contracts';
@@ -75,7 +74,7 @@ export type AnalysisResponse<T = Record<string, unknown>> = Omit<
   data: T[];
 };
 export type SuggestResult = z.output<typeof suggestOutputSchema>[number];
-export type ChartSpec = NonNullable<z.output<typeof recommendOutputSchema>>;
+export type ChartSpec = z.output<typeof vizInputSchema>;
 export type ChartSpecInput = z.input<typeof vizInputSchema>;
 export type ChartType = ChartSpec['chartType'];
 export type VisualizeResponse = NonNullable<z.output<typeof visualizeOutputSchema>>;
@@ -282,7 +281,7 @@ export type AnalysisStrategy = (
 /**
  * GPT-Vis JSON config
  */
-export type ChartConfig = NonNullable<ChartSpec['config']>;
+export type ChartConfig = ChartSpec['config'];
 
 /**
  * Chart type definition — structured metadata for prompt generation

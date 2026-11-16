@@ -56,25 +56,6 @@ describe('chart recommendation', () => {
     await expect(ava['recommend'](result)).rejects.toThrow('Model unavailable');
   });
 
-  it('recommends T8 summaries and returns their text and HTML through visualize', async () => {
-    const input = { ...result, query: 'Create a T8 summary of revenue by city' };
-    const text = '# Revenue\nHangzhou earned [100](metric_value, origin=100).';
-
-    reply('summary');
-    reply(text);
-    expect(await ava.recommend(input)).toEqual({ chartType: 'summary', text });
-    expect(vi.mocked(generateText).mock.calls[1][0].prompt).toContain('metric_value');
-
-    reply('summary');
-    reply(`\`\`\`t8\n${text}\n\`\`\``);
-    const visualization = await ava.visualize(input);
-    const html = await ava.viz({ chartType: 'summary', text });
-    expect(visualization).toEqual({ chartType: 'summary', text, html });
-    expect(visualization?.config).toBeUndefined();
-    expect(await ava.viz(visualization!)).toBe(html);
-    expect(generateText).toHaveBeenCalledTimes(4);
-  });
-
   it('renders the recommended specification through visualize', async () => {
     const onEvent = vi.fn();
     ava.on('visualizestart', onEvent);
@@ -114,5 +95,16 @@ describe('chart recommendation', () => {
       title
     );
     expect(generateText).not.toHaveBeenCalled();
+  });
+
+  it('returns T8 text separately from chart config and accepts the result in viz', async () => {
+    const summaryAva = new AVA({ llm: { model: 'test' } });
+    const text = '# Revenue\nHangzhou earned [100](metric_value, origin=100).';
+    const spec = { chartType: 'summary' as const, config: text };
+    vi.spyOn(summaryAva, 'recommend').mockResolvedValueOnce(spec);
+
+    const visualization = await summaryAva.visualize(result);
+    expect(visualization).toEqual({ chartType: 'summary', text, html: await summaryAva.viz(spec) });
+    expect(await summaryAva.viz(visualization!)).toBe(visualization!.html);
   });
 });

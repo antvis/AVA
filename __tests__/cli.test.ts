@@ -496,12 +496,6 @@ describe('chart commands', () => {
     expect(AVA).not.toHaveBeenCalled();
   });
 
-  it('normalizes legacy T8 specs to text in CLI output', async () => {
-    const text = '# Revenue';
-    const raw = JSON.stringify({ chartType: 'summary', config: text, html: 'stale HTML' });
-    expect(JSON.parse(await execute(['viz', '--spec', raw]))).toEqual({ chartType: 'summary', text });
-  });
-
   it.each([{ data: [{ month: 'Jan', revenue: 10 }] }, { data: [{ category: 'Jan', value: '10' }] }])(
     'rejects invalid native chart data before creating output: %j',
     async (config) => {

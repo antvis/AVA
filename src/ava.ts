@@ -7,7 +7,7 @@ import { schemaOutputSchema, profileOutputSchema, semanticOutputSchema, vizInput
 import { getEngineClass } from './engines';
 import { extractDataSchema } from './util/schema';
 import { buildDataModel, stringifyDataModel } from './util/data-model';
-import { adviseChartType, generateVisualizationSpec, wrapConfigInHTML } from './visualization';
+import { adviseChartType, generateVisualizationConfig, wrapConfigInHTML } from './visualization';
 import { generateSuggestions } from './suggest';
 import { analyze } from './analysis';
 import { LifecycleEventType, LifecycleEvent, AnalysisEventType, AnalysisEvent, emit } from './event';
@@ -313,19 +313,23 @@ export class AVA extends EventEmitter {
   }
 
   /**
-   * Visualize analysis data as a chart or T8 summary and generate standalone HTML.
+   * Visualize analysis data by recommending a chart type and generating chart HTML.
    * Accepts the result from analyze() — the query and data are read from it.
    *
    * @param analysisResult - The result returned from analyze()
-   * @returns VisualizeResponse, or null if no visualization is recommended. Generation errors propagate to the caller.
+   * @returns VisualizeResponse, or null if no chart is needed. Generation errors propagate to the caller.
    */
   async visualize(analysisResult: Pick<AnalysisResponse, 'query' | 'data'>): Promise<VisualizeResponse | null> {
     emit(this, new LifecycleEvent(LifecycleEventType.VISUALIZE_START, { query: analysisResult.query }));
 
-    let result: VisualizeResponse | null;
+    let result: VisualizeResponse | null = null;
     try {
       const spec = await this.recommend(analysisResult);
-      result = spec ? { ...spec, html: await this.viz(spec) } : null;
+      if (spec) {
+        const html = await this.viz(spec);
+        result =
+          spec.chartType === 'summary' ? { chartType: spec.chartType, text: spec.config, html } : { ...spec, html };
+      }
     } catch (error) {
       emit(this, new LifecycleEvent(LifecycleEventType.VISUALIZE_END, { error: serializeError(error) }));
 
@@ -338,7 +342,8 @@ export class AVA extends EventEmitter {
   }
 
   /**
-   * Recommend a chart specification or a T8 summary for the analysis result.
+   * Recommend a chart specification for the analysis result.
+   * Combine a suitable chart type with GPT-Vis JSON config for rendering.
    */
   async recommend(analysisResult: Pick<AnalysisResponse, 'query' | 'data'>): Promise<ChartSpec | null> {
     const { data, query } = analysisResult;
@@ -348,7 +353,8 @@ export class AVA extends EventEmitter {
     const chartType = await adviseChartType(query, dataInfo, this.llmConfig);
     if (!chartType) return null;
 
-    return generateVisualizationSpec(chartType, data, query, this.llmConfig);
+    const config = await generateVisualizationConfig(chartType, data, query, this.llmConfig);
+    return vizInputSchema.parse({ chartType, config });
   }
 
   /**
@@ -356,7 +362,7 @@ export class AVA extends EventEmitter {
    */
   async viz(spec: ChartSpecInput): Promise<string> {
     const parsed = vizInputSchema.parse(spec);
-    return wrapConfigInHTML(parsed.chartType === 'summary' ? parsed.text : parsed.config);
+    return wrapConfigInHTML(parsed.config);
   }
 
   /**

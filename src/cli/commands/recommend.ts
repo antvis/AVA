@@ -7,7 +7,7 @@ import { option } from '../options';
 
 import type { Options } from '../options';
 
-export const description = 'Recommend a chart specification or T8 summary';
+export const description = 'Recommend a chart specification';
 
 export const definition = {
   positionals: 0,
@@ -35,7 +35,7 @@ export const help = `${description}.
 Usage:
   ava recommend --query "<text>" --data <json|@file|->
 
-Returns { chartType, config } for a chart, { chartType: "summary", text } for a T8 summary, or null.
+Returns { "chartType": "...", "config": {...} }, or null if no chart is recommended.
 A non-null result can be passed to ava viz --spec.
 
 Options:

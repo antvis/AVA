@@ -226,31 +226,7 @@ const chartSchemas = [
         .min(1),
       axisXTitle: z.string().optional(),
     })
-  ),
-] as const;
-
-const summaryText = z.string().refine((text) => text.trim().length > 0 && !text.trim().startsWith('vis '), {
-  message: 'Summary requires nonempty T8 text, not vis chart syntax',
-});
-const summarySchema = z
-  .object({
-    chartType: z.literal('summary'),
-    config: z.never().optional(),
-    text: summaryText,
-    html: z.string().optional(),
-  })
-  .strict();
-const legacySummarySchema = summarySchema
-  .omit({ text: true })
-  .extend({ config: z.string() })
-  .transform(({ config, ...spec }) => ({ ...spec, text: config }))
-  .pipe(summarySchema);
-
-export const chartSpecSchema = z
-  .discriminatedUnion('chartType', [...chartSchemas, summarySchema])
-  .superRefine((spec, context) => {
-    if (spec.chartType !== 'dual-axes') return;
-    const config = spec.config;
+  ).superRefine(({ config }, context) => {
     config.series.forEach((series, index) => {
       if (series.data.length !== config.categories.length) {
         context.addIssue({
@@ -260,12 +236,31 @@ export const chartSpecSchema = z
         });
       }
     });
-  });
-export const vizInputSchema = z.union([chartSpecSchema, legacySummarySchema]);
+  }),
+] as const;
+
+const summaryText = z.string().refine((text) => text.trim().length > 0 && !text.trim().startsWith('vis '), {
+  message: 'Summary requires nonempty T8 text, not vis chart syntax',
+});
+const summarySpecSchema = z
+  .object({ chartType: z.literal('summary'), config: summaryText, html: z.string().optional() })
+  .strict();
+const summaryResultSchema = summarySpecSchema.extend({ config: z.never().optional(), text: summaryText });
+
+export const chartSpecSchema = z.discriminatedUnion('chartType', [...chartSchemas, summarySpecSchema]);
+export const vizInputSchema = z.union([
+  chartSpecSchema,
+  summaryResultSchema
+    .transform(({ text, ...spec }) => ({ ...spec, config: text }))
+    .pipe(summarySpecSchema),
+]);
 
 /** Input is the query/data subset of an analysis result; full results may be passed directly. */
 export const recommendInputSchema = z.object({ query: z.string(), data: z.array(z.unknown()) });
 export const recommendOutputSchema = chartSpecSchema.nullable();
 export const visualizeInputSchema = recommendInputSchema;
-export const visualizeOutputSchema = chartSpecSchema.and(z.object({ html: z.string() })).nullable();
+export const visualizeOutputSchema = z
+  .discriminatedUnion('chartType', [...chartSchemas, summaryResultSchema])
+  .and(z.object({ html: z.string() }))
+  .nullable();
 export const vizOutputSchema = z.string();
