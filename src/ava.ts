@@ -3,17 +3,11 @@
  */
 import EventEmitter from '@antv/event-emitter';
 
-import {
-  schemaOutputSchema,
-  profileOutputSchema,
-  semanticOutputSchema,
-  recommendOutputSchema,
-  vizInputSchema,
-} from './contracts';
+import { schemaOutputSchema, profileOutputSchema, semanticOutputSchema, vizInputSchema } from './contracts';
 import { getEngineClass } from './engines';
 import { extractDataSchema } from './util/schema';
 import { buildDataModel, stringifyDataModel } from './util/data-model';
-import { adviseChartType, generateVisualizationConfig, wrapConfigInHTML } from './visualization';
+import { adviseChartType, generateVisualizationSpec, wrapConfigInHTML } from './visualization';
 import { generateSuggestions } from './suggest';
 import { analyze } from './analysis';
 import { LifecycleEventType, LifecycleEvent, AnalysisEventType, AnalysisEvent, emit } from './event';
@@ -34,7 +28,7 @@ import type {
   AnalysisResponse,
   AnalysisConfig,
   VisualizeResponse,
-  RecommendedChartSpec,
+  ChartSpec,
   ChartSpecInput,
   SuggestResult,
   Profile,
@@ -319,11 +313,11 @@ export class AVA extends EventEmitter {
   }
 
   /**
-   * Visualize analysis data by recommending a chart type and generating chart HTML.
+   * Visualize analysis data as a chart or T8 summary and generate standalone HTML.
    * Accepts the result from analyze() — the query and data are read from it.
    *
    * @param analysisResult - The result returned from analyze()
-   * @returns VisualizeResponse, or null if no chart is needed. Generation errors propagate to the caller.
+   * @returns VisualizeResponse, or null if no visualization is recommended. Generation errors propagate to the caller.
    */
   async visualize(analysisResult: Pick<AnalysisResponse, 'query' | 'data'>): Promise<VisualizeResponse | null> {
     emit(this, new LifecycleEvent(LifecycleEventType.VISUALIZE_START, { query: analysisResult.query }));
@@ -344,10 +338,9 @@ export class AVA extends EventEmitter {
   }
 
   /**
-   * Recommend a chart specification for the analysis result.
-   * Combine a suitable chart type with GPT-Vis JSON config for rendering.
+   * Recommend a chart specification or a T8 summary for the analysis result.
    */
-  async recommend(analysisResult: Pick<AnalysisResponse, 'query' | 'data'>): Promise<RecommendedChartSpec | null> {
+  async recommend(analysisResult: Pick<AnalysisResponse, 'query' | 'data'>): Promise<ChartSpec | null> {
     const { data, query } = analysisResult;
     if (!hasData(data)) return null;
 
@@ -355,8 +348,7 @@ export class AVA extends EventEmitter {
     const chartType = await adviseChartType(query, dataInfo, this.llmConfig);
     if (!chartType) return null;
 
-    const config = await generateVisualizationConfig(chartType, data, query, this.llmConfig);
-    return recommendOutputSchema.parse({ chartType, config });
+    return generateVisualizationSpec(chartType, data, query, this.llmConfig);
   }
 
   /**
@@ -364,7 +356,7 @@ export class AVA extends EventEmitter {
    */
   async viz(spec: ChartSpecInput): Promise<string> {
     const parsed = vizInputSchema.parse(spec);
-    return wrapConfigInHTML(parsed.config);
+    return wrapConfigInHTML(parsed.chartType === 'summary' ? parsed.text : parsed.config);
   }
 
   /**

@@ -75,7 +75,6 @@ export type {
   AnalysisStrategyConfig,
   AnalysisRuntime,
   VisualizeResponse,
-  RecommendedChartSpec,
   ChartSpec,
   ChartSpecInput,
   SuggestResult,

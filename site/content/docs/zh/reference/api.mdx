@@ -351,7 +351,7 @@ Setter 接收选项对象，同步返回 `Semantic`。AVA 验证并复制结果�
 
 `visualize(analysisResult: Pick<AnalysisResponse, 'query' | 'data'>): Promise<VisualizeResponse | null>`
 
-`recommend(analysisResult: Pick<AnalysisResponse, 'query' | 'data'>): Promise<RecommendedChartSpec | null>`
+`recommend(analysisResult: Pick<AnalysisResponse, 'query' | 'data'>): Promise<ChartSpec | null>`
 
 两种方法接受相同的输入：
 
@@ -361,7 +361,7 @@ Setter 接收选项对象，同步返回 `Semantic`。AVA 验证并复制结果�
 | `analysisResult.query` | `string` | 是 | 问题或可视化意图。 |
 | `analysisResult.data` | `AnalysisResponse['data']` | 是 | 待可视化的数据行。 |
 
-两种方法都可以直接传入数据，均调用模型。数据为空或没有推荐出图表时返回 `null`，生成错误则直接抛出。只要结果非空，`config` 就是 JSON 图表对象，可以直接读取。`visualize()` 还返回 `html: string`，包含独立的图表页面。要渲染 T8 摘要，请用 `viz()`。
+两种方法都可以直接传入数据，均调用模型。数据为空或没有推荐出可视化方案时返回 `null`，生成错误则直接抛出。图表结果的 `config` 是 JSON 对象。T8 摘要的内容在 `text`，此时 `config` 为 `undefined`。只需要图表配置时，可以直接读取 `result?.config`。`visualize()` 还返回 `html: string`，包含独立的可视化页面。
 
 <Heading as="h3" id="viz">viz</Heading>
 
@@ -371,13 +371,14 @@ Setter 接收选项对象，同步返回 `Semantic`。AVA 验证并复制结果�
 | ---------------- | ----------- | -------- | --------------------------------------------------------------------------------------------------- |
 | `spec` | `ChartSpecInput` | 是 | 应用默认值之前的图表描述对象。 |
 | `spec.chartType` | `ChartType` | 是 | 下方类型之一；JSON 图表必须与 `config.type` 一致。 |
-| `spec.config` | `ChartSpecInput['config']` | 是 | 原生 GPT-Vis 配置；省略 `config.type` 时由 `chartType` 补齐。`summary` 使用 T8 Syntax 字符串。 |
+| `spec.config` | 应用默认值前的 `ChartConfig` | 图表必填 | 原生 GPT-Vis 配置。省略 `config.type` 时由 `chartType` 补齐。 |
+| `spec.text` | `string` | `summary` 必填 | T8 文本。已有摘要输入也可以把字符串放在 `config` 中。 |
 
 `ChartType` 可选值：`line`、`column`、`bar`、`pie`、`area`、`scatter`、`dual-axes`、`histogram`、`boxplot`、`radar`、`funnel`、`waterfall`、`liquid`、`word-cloud`、`violin`、`venn`、`treemap`、`sankey`、`table`、`summary`。
 
-GPT-Vis 支持 26 种可视化类型。AVA 自动推荐上述 19 种 JSON 图表，也允许通过 `viz({ chartType: 'summary', config: '# 销售报告' })` 渲染原生摘要字符串。6 种关系图暂不在 AVA 契约范围内。`ChartSpec` 描述规范化后的结果，其中 JSON 图表的 `config.type` 已补齐。
+AVA 可以推荐上述 20 种可视化类型。也可以通过 `viz({ chartType: 'summary', text: '# 销售报告' })` 直接渲染 T8 文本。`ChartSpec` 描述规范化后的结果。
 
-`spec.html?: string` 用于接收 `visualize()` 的完整返回值。渲染始终根据 `config` 生成新的 HTML，不复用已有 `html`；外层其他未知字段会被拒绝。
+`spec.html?: string` 用于接收 `visualize()` 的完整返回值。渲染始终根据图表配置或 T8 文本生成新的 HTML。配置对象外层的其他字段会被拒绝。
 
 返回独立 HTML 字符串，无需加载数据源，也不会调用模型。参见[图表配置](/documentation/visualization/overview/#recommend)。
 

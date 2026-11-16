@@ -45,7 +45,7 @@ describe('chart recommendation', () => {
     expect(generateText).not.toHaveBeenCalled();
   });
 
-  it.each(['none', 'summary', 'invalid-chart'])('skips config generation for %s', async (chartType) => {
+  it.each(['none', 'invalid-chart'])('skips config generation for %s', async (chartType) => {
     reply(chartType);
     expect(await ava['recommend'](result)).toBeNull();
     expect(generateText).toHaveBeenCalledOnce();
@@ -54,6 +54,25 @@ describe('chart recommendation', () => {
   it('propagates recommendation errors', async () => {
     vi.mocked(generateText).mockRejectedValueOnce(new Error('Model unavailable'));
     await expect(ava['recommend'](result)).rejects.toThrow('Model unavailable');
+  });
+
+  it('recommends T8 summaries and returns their text and HTML through visualize', async () => {
+    const input = { ...result, query: 'Create a T8 summary of revenue by city' };
+    const text = '# Revenue\nHangzhou earned [100](metric_value, origin=100).';
+
+    reply('summary');
+    reply(text);
+    expect(await ava.recommend(input)).toEqual({ chartType: 'summary', text });
+    expect(vi.mocked(generateText).mock.calls[1][0].prompt).toContain('metric_value');
+
+    reply('summary');
+    reply(`\`\`\`t8\n${text}\n\`\`\``);
+    const visualization = await ava.visualize(input);
+    const html = await ava.viz({ chartType: 'summary', text });
+    expect(visualization).toEqual({ chartType: 'summary', text, html });
+    expect(visualization?.config).toBeUndefined();
+    expect(await ava.viz(visualization!)).toBe(html);
+    expect(generateText).toHaveBeenCalledTimes(4);
   });
 
   it('renders the recommended specification through visualize', async () => {

@@ -3,4 +3,4 @@
  */
 
 export { adviseChartType } from './advisor';
-export { generateVisualizationConfig, wrapConfigInHTML } from './generator';
+export { generateVisualizationSpec, wrapConfigInHTML } from './generator';

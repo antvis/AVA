@@ -226,7 +226,31 @@ const chartSchemas = [
         .min(1),
       axisXTitle: z.string().optional(),
     })
-  ).superRefine(({ config }, context) => {
+  ),
+] as const;
+
+const summaryText = z.string().refine((text) => text.trim().length > 0 && !text.trim().startsWith('vis '), {
+  message: 'Summary requires nonempty T8 text, not vis chart syntax',
+});
+const summarySchema = z
+  .object({
+    chartType: z.literal('summary'),
+    config: z.never().optional(),
+    text: summaryText,
+    html: z.string().optional(),
+  })
+  .strict();
+const legacySummarySchema = summarySchema
+  .omit({ text: true })
+  .extend({ config: z.string() })
+  .transform(({ config, ...spec }) => ({ ...spec, text: config }))
+  .pipe(summarySchema);
+
+export const chartSpecSchema = z
+  .discriminatedUnion('chartType', [...chartSchemas, summarySchema])
+  .superRefine((spec, context) => {
+    if (spec.chartType !== 'dual-axes') return;
+    const config = spec.config;
     config.series.forEach((series, index) => {
       if (series.data.length !== config.categories.length) {
         context.addIssue({
@@ -236,25 +260,12 @@ const chartSchemas = [
         });
       }
     });
-  }),
-] as const;
-
-const summarySchema = z
-  .object({
-    chartType: z.literal('summary'),
-    config: z.string().refine((text) => text.trim().length > 0 && !text.trim().startsWith('vis '), {
-      message: 'Summary requires nonempty T8 text, not vis chart syntax',
-    }),
-    html: z.string().optional(),
-  })
-  .strict();
-
-export const recommendedChartSchema = z.discriminatedUnion('chartType', chartSchemas);
-export const vizInputSchema = z.discriminatedUnion('chartType', [...chartSchemas, summarySchema]);
+  });
+export const vizInputSchema = z.union([chartSpecSchema, legacySummarySchema]);
 
 /** Input is the query/data subset of an analysis result; full results may be passed directly. */
 export const recommendInputSchema = z.object({ query: z.string(), data: z.array(z.unknown()) });
-export const recommendOutputSchema = recommendedChartSchema.nullable();
+export const recommendOutputSchema = chartSpecSchema.nullable();
 export const visualizeInputSchema = recommendInputSchema;
-export const visualizeOutputSchema = recommendedChartSchema.and(z.object({ html: z.string() })).nullable();
+export const visualizeOutputSchema = chartSpecSchema.and(z.object({ html: z.string() })).nullable();
 export const vizOutputSchema = z.string();

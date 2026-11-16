@@ -75,10 +75,9 @@ export type AnalysisResponse<T = Record<string, unknown>> = Omit<
   data: T[];
 };
 export type SuggestResult = z.output<typeof suggestOutputSchema>[number];
-export type ChartSpec = z.output<typeof vizInputSchema>;
+export type ChartSpec = NonNullable<z.output<typeof recommendOutputSchema>>;
 export type ChartSpecInput = z.input<typeof vizInputSchema>;
 export type ChartType = ChartSpec['chartType'];
-export type RecommendedChartSpec = NonNullable<z.output<typeof recommendOutputSchema>>;
 export type VisualizeResponse = NonNullable<z.output<typeof visualizeOutputSchema>>;
 export type LogicalType = Profile['models'][number]['columns'][number]['properties']['logicalType'];
 export type MetricConfig = NonNullable<ProfileOptions['metrics']>[number];
@@ -283,7 +282,7 @@ export type AnalysisStrategy = (
 /**
  * GPT-Vis JSON config
  */
-export type ChartConfig = ChartSpec['config'];
+export type ChartConfig = NonNullable<ChartSpec['config']>;
 
 /**
  * Chart type definition — structured metadata for prompt generation

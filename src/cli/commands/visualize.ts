@@ -7,7 +7,7 @@ import { option } from '../options';
 
 import type { Options } from '../options';
 
-export const description = 'Generate a chart from query and data';
+export const description = 'Generate a chart or T8 summary from query and data';
 
 export const definition = {
   positionals: 0,
@@ -41,7 +41,7 @@ export const help = `${description}.
 Usage:
   ava visualize --query "<text>" --data <json|@file|-> [options]
 
-Returns { chartType, config, html } as JSON, or null if no chart is recommended.
+Returns { chartType, config, html } for a chart, { chartType: "summary", text, html } for a T8 summary, or null.
 With --output, also writes HTML and includes its absolute path in output.
 
 Options:

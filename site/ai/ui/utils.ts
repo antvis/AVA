@@ -32,14 +32,14 @@ export function toDisplayMessage(source: AIUIMessage, datasetName: string): Mess
         data: part.output.data,
       };
     } else if (part.type === 'tool-visualize' && part.state === 'output-available') {
-      const { result, config } = part.output;
+      const { result } = part.output;
       message.artifact = {
         id: `${source.id}:${part.toolCallId}`,
         title: 'visualization.html',
         description: result.query,
         code: result.sql,
         data: result.data,
-        config,
+        config: part.output.chartType === 'summary' ? part.output.text : part.output.config,
       };
     }
   }

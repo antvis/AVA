@@ -91,7 +91,6 @@ export type {
   AnalysisStrategyConfig,
   AnalysisRuntime,
   VisualizeResponse,
-  RecommendedChartSpec,
   ChartConfig,
   ChartSpec,
   ChartSpecInput,

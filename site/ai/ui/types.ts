@@ -1,4 +1,5 @@
-import type { ChartSpec, Semantic } from '@antv/ava/browser';
+import type { Semantic } from '@antv/ava/browser';
+import type { GPTVis } from '@antv/gpt-vis';
 import type { AIUIMessage } from '../core/session';
 export type ToolDetailLine = { text: string; tone?: 'add' | 'del' | 'ctx' };
 export type ToolStep = {
@@ -22,7 +23,7 @@ export interface AnalysisArtifact {
     insight: string;
     limitations: string;
   };
-  config?: ChartSpec['config'];
+  config?: Parameters<GPTVis['render']>[0];
   code?: string;
   data?: Record<string, unknown>[];
 }

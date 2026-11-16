@@ -9,9 +9,7 @@ import { languageModel } from '../util/model';
 
 import { chartDefinitions } from './vis';
 
-import type { LLMConfig } from '../types';
-
-type RecommendedChartType = (typeof chartDefinitions)[number]['type'];
+import type { LLMConfig, ChartType } from '../types';
 
 const allChartTypes = chartDefinitions.map((d) => d.type);
 const chartTypeSet = new Set(allChartTypes);
@@ -51,6 +49,7 @@ ${chartDescriptions}
 ### 第一步：识别可视化意图
 
 - 如果用户明确指定了图表类型：优先使用该类型；仅当数据明显无法支持时才改选更合适的类型。
+- 否则，如果用户明确要求 T8 摘要、可视化摘要、数据简报或带指标标注的报告：输出 "summary"。
 - 否则，如果查询包含可视化意图（绘制、画图、图表、可视化、趋势、占比、分布、对比、排名、关系、转化、流向等）：继续下一步。
 - 否则，如果只是查询具体数值、明细、单个结论或没有任何图表意图：输出 "none"。
 
@@ -112,7 +111,7 @@ export async function adviseChartType(
   query: string,
   dataInfoStr: string,
   llmConfig: LLMConfig
-): Promise<RecommendedChartType | null> {
+): Promise<ChartType | null> {
   const prompt = buildAdvisorPrompt(query, dataInfoStr);
 
   const { text } = await generateText({
@@ -128,5 +127,5 @@ export async function adviseChartType(
 
   if (!raw || raw === 'none') return null;
 
-  return chartTypeSet.has(raw as RecommendedChartType) ? (raw as RecommendedChartType) : null;
+  return chartTypeSet.has(raw as ChartType) ? (raw as ChartType) : null;
 }

@@ -1,12 +1,12 @@
 # Visualization
 
-Verified against the published `@antv/gpt-vis` **1.3.1** package (2026-11-09). Use the [official chart reference](https://gpt-vis.antv.vision/docs/charts) for native options. AVA accepts a JSON Spec; SDK Syntax strings and T8 Summary text are not CLI inputs.
+Verified against the published `@antv/gpt-vis` **1.3.1** package (2026-11-09). Use the [official chart reference](https://gpt-vis.antv.vision/docs/charts) for native options. AVA accepts a JSON spec for a chart or a T8 summary.
 
 ## Spec and Field Mapping
 
-A Spec has exactly two keys: `{ "chartType": "…", "config": {…} }`. Put the fields below directly in `config`; most types use `config.data` as an array of row objects. `value`, `x`, and `y` must be numbers. Map a second dimension to row field `group`.
+A chart spec uses `{ "chartType": "…", "config": {…} }`. Put the fields below directly in `config`; most types use `config.data` as an array of row objects. `value`, `x`, and `y` must be numbers. Map a second dimension to row field `group`.
 
-GPT-Vis supports 26 types; AVA currently accepts the 19 below. Its CLI does not register `flow-diagram`, `network-graph`, `mindmap`, `indented-tree`, `organization-chart`, `fishbone-diagram`, or `summary`.
+AVA accepts the 19 JSON chart types below and renders T8 summaries from `{ "chartType": "summary", "text": "# Sales report" }`.
 
 | `chartType` | Data fields or structure |
 | --- | --- |
@@ -90,4 +90,4 @@ For result rows `[{"region":"East","total":25},{"region":"West","total":20}]`, m
 ava viz --spec @chart.json --output chart.html
 ```
 
-`viz` needs no dataset ID. With `--output`, it writes HTML, returns an absolute `output` path and does not overwrite existing files. Without `--output`, it returns the validated `{ chartType, config }`, filling in a missing `config.type`, for direct rendering in a page. The CLI validates the native chart contract; it does not execute browser rendering. Charts load GPT-Vis from the internet. Preview labels, ordering, units, values, and theme when a browser is available; otherwise disclose that no preview was performed. On failure, correct the cause or deliver the table with the error explained.
+`viz` needs no dataset ID. With `--output`, it writes HTML, returns an absolute `output` path and does not overwrite existing files. Without `--output`, it returns the validated spec, filling in a missing `config.type` for a chart and returning `text` for a T8 summary. Charts load GPT-Vis from the internet. Preview labels, ordering, units, values, and theme when a browser is available; otherwise disclose that no preview was performed. On failure, correct the cause or deliver the table with the error explained.

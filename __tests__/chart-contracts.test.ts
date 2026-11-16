@@ -12,13 +12,13 @@ import type { ChartSpec } from '../src/types';
 
 describe('native chart contracts', () => {
   it('covers every advisor chart and renders each native data shape through the SDK', async () => {
-    expect(z.toJSONSchema(vizInputSchema, { io: 'input' }).oneOf).toHaveLength(20);
-    expect(Object.keys(fixtures).sort()).toEqual(chartDefinitions.map((chart) => chart.type).sort());
+    expect(z.toJSONSchema(vizInputSchema, { io: 'input' }).anyOf![0].oneOf).toHaveLength(20);
+    expect([...Object.keys(fixtures), 'summary'].sort()).toEqual(chartDefinitions.map((chart) => chart.type).sort());
     const ava = new AVA({ llm: { model: 'unused' } });
     for (const [chartType, config] of Object.entries(fixtures)) {
       const spec = vizInputSchema.parse({ chartType, config: { ...config, customOption: true } });
-      expect(spec.config.type).toBe(chartType);
-      expect(spec.config.customOption).toBe(true);
+      expect(spec.config?.type).toBe(chartType);
+      expect(spec.config?.customOption).toBe(true);
       const html = await ava.viz(spec);
       expect(runInNewContext(`(${html.match(/const visConfig = (.+);/)![1]})`, {}, { timeout: 1000 }).type).toBe(
         chartType
@@ -26,15 +26,17 @@ describe('native chart contracts', () => {
     }
   });
 
-  it('accepts native summary strings without adding summaries to automatic chart recommendations', async () => {
+  it('renders T8 text and normalizes legacy summary inputs', async () => {
     const ava = new AVA({ llm: { model: 'unused' } });
-    const spec = { chartType: 'summary' as const, config: '# Sales report\nRevenue increased by 10%.' };
+    const spec = { chartType: 'summary' as const, text: '# Sales report\nRevenue increased by 10%.' };
+    const legacy = { chartType: 'summary' as const, config: spec.text };
     const html = await ava.viz(spec);
-    expect(runInNewContext(`(${html.match(/const visConfig = (.+);/)![1]})`, {}, { timeout: 1000 })).toBe(spec.config);
-    expect(chartDefinitions.some((chart) => chart.type === 'summary')).toBe(false);
-    expect(() => vizInputSchema.parse({ ...spec, config: { type: 'summary', text: 'Report' } })).toThrow();
-    for (const config of ['', '   ', 'vis column\ndata\n  - category A\n    value 1']) {
-      expect(() => vizInputSchema.parse({ ...spec, config })).toThrow();
+    expect(runInNewContext(`(${html.match(/const visConfig = (.+);/)![1]})`, {}, { timeout: 1000 })).toBe(spec.text);
+    expect(vizInputSchema.parse(legacy)).toEqual(spec);
+    expect(await ava.viz(legacy)).toBe(html);
+    expect(() => vizInputSchema.parse({ ...spec, ...legacy })).toThrow();
+    for (const text of ['', '   ', 'vis column\ndata\n  - category A\n    value 1']) {
+      expect(() => vizInputSchema.parse({ ...spec, text })).toThrow();
     }
   });
 
@@ -46,7 +48,7 @@ describe('native chart contracts', () => {
       style: { mark: { interval: { radius: 4 } } },
     };
     expect(vizInputSchema.parse({ chartType: 'column', config }).config).toMatchObject(config);
-    expect(vizInputSchema.parse({ chartType: 'column', config: { ...config, theme: 'midnight' } }).config.theme).toBe(
+    expect(vizInputSchema.parse({ chartType: 'column', config: { ...config, theme: 'midnight' } }).config?.theme).toBe(
       'midnight'
     );
     expect(() => vizInputSchema.parse({ chartType: 'column', config, hmtl: '' })).toThrow();
