@@ -128,12 +128,15 @@ export async function loadMySQL(options: MySQLSourceOptions, alias = ATTACH_ALIA
       }
     },
     getSchema: async (conn, namespace) => {
-      const sql = sqlUnionAll([
+      const catalogSQL = sqlUnionAll([
         tablesSQL(options.database),
         columnsSQL(options.database),
         indexesSQL(options.database),
         foreignKeysSQL(options.database),
       ]);
+      // Some MySQL versions expose the mixed string and JSON UNION result as a BLOB.
+      const sql = `SELECT kind, table_name, CAST(metadata AS CHAR CHARACTER SET utf8mb4) AS metadata
+        FROM (${catalogSQL}) AS catalog_rows`;
 
       const reader = await conn.runAndReadAll(
         `SELECT * FROM mysql_query(${sqlStringLiteral(alias)}, ${sqlStringLiteral(sql)})`
