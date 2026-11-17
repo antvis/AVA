@@ -80,6 +80,23 @@ describe('loaders/csv-file', () => {
     ]);
   });
 
+  it('honors an explicit reader schema with auto detection disabled', async () => {
+    const csvPath = await writeTempFile('id\n001\n', 'csv');
+    try {
+      engine = new DuckDBEngine(getLLMConfig());
+      await engine.load({
+        type: 'csv-file',
+        options: { path: csvPath, options: { auto_detect: false, header: true, columns: { id: 'VARCHAR' } } },
+      });
+
+      expect((await engine.execute('SELECT id FROM data')).data).toEqual([{ id: '001' }]);
+    } finally {
+      await engine?.dispose();
+      engine = null;
+      await removeTempFile(csvPath);
+    }
+  });
+
   it('reads GB18030 Chinese with automatic extension loading disabled', async () => {
     // GB18030 bytes for "name\n中文\n".
     const csvPath = await writeTempFile(Buffer.from('6e616d650ad6d0cec40a', 'hex'), 'csv');

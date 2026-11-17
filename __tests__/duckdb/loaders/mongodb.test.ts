@@ -36,10 +36,11 @@ describe.skipIf(process.env.AVA_MONGODB_TEST !== '1')('loaders/mongodb', () => {
 
     // init.js creates three collections; information_schema returns them alphabetically
     expect(schema.models.map(({ name }) => name)).toEqual(['customers', 'order notes', 'orders']);
-    // The DuckDB mongo extension maps MongoDB collections as views — indexes and
-    // constraints from the source database are not exposed to DuckDB's catalog,
-    // so both indexes and relations are always empty.
-    expect(schema.models.every(({ indexes }) => indexes.length === 0)).toBe(true);
+    // Collection views do not expose MongoDB's keys or relationships.
+    for (const { primaryKey, uniqueKeys } of schema.models) {
+      expect(primaryKey).toBeUndefined();
+      expect(uniqueKeys).toBeUndefined();
+    }
     expect(schema.relationships).toEqual([]);
 
     // ── customers ──────────────────────────────────────────────

@@ -6,15 +6,38 @@ import { stringifyDataModel } from '../util/data-model';
 import type { DuckDBInstance } from '@duckdb/node-api';
 import type { TranslationResult, QueryDialect, LLMConfig, DataModel } from '../types';
 
+const READ_ONLY_QUERY_NODES = new Set(['SELECT_NODE', 'SET_OPERATION_NODE', 'RECURSIVE_CTE_NODE', 'CTE_NODE']);
+
+function isReadOnlyQuery(root: unknown): boolean {
+  if (!root || typeof root !== 'object' || !('cte_map' in root)) return false;
+
+  const pending: object[] = [root];
+  while (pending.length) {
+    const node = pending.pop()!;
+    // DuckDB serializes cte_map on every query node, including DuckDB 2.0's write nodes.
+    if (
+      'cte_map' in node &&
+      (!('type' in node) || typeof node.type !== 'string' || !READ_ONLY_QUERY_NODES.has(node.type))
+    ) {
+      return false;
+    }
+    for (const child of Object.values(node)) {
+      if (child && typeof child === 'object') pending.push(child);
+    }
+  }
+  return true;
+}
+
 export class DuckDBSQLDialect implements QueryDialect {
   readonly id = 'duckdb-sql';
 
   // Identifier quoting and set semantics follow the DuckDB SQL reference.
-  // https://duckdb.org/docs/1.5/sql/dialect/keywords_and_identifiers
-  // https://duckdb.org/docs/1.5/sql/query_syntax/setops
+  // https://duckdb.org/docs/2.0/sql/dialect/keywords_and_identifiers
+  // https://duckdb.org/docs/2.0/sql/query_syntax/setops
   readonly rules = `Use read-only SELECT queries (WITH is allowed).
   Use the exact table references and column names from the data model, joining tables when needed. Use double quotes for identifier components that need quoting and single quotes for strings.
-  Use DuckDB SQL syntax and functions appropriate to the column types. UNION removes duplicates and UNION ALL preserves them; align columns by position, or explicitly choose UNION BY NAME to align them by name.`;
+  Use DuckDB 2.0 SQL syntax and functions appropriate to the column types. Write lambdas as lambda x : expression.
+  UNION removes duplicates and UNION ALL preserves them; align columns by position, or explicitly choose UNION BY NAME to align them by name.`;
 
   private parserInstance: Promise<DuckDBInstance> | undefined;
 
@@ -72,12 +95,16 @@ export class DuckDBSQLDialect implements QueryDialect {
     try {
       // The official serializer accepts SELECTs, including their CTEs and subqueries, without binding tables.
       // User SQL is a bound value; only the serializer runs in this data-free instance.
-      // https://duckdb.org/docs/1.5/data/json/sql_to_and_from_json
+      // https://duckdb.org/docs/2.0/data/json/sql_to_and_from_json
       const reader = await connection.runAndReadAll('SELECT json_serialize_sql(CAST(? AS VARCHAR)) AS ast', [sql]);
       const serialized = reader.getRowObjectsJson()[0]?.ast;
       if (typeof serialized !== 'string') throw new Error('Missing DuckDB SQL validation result');
-      const ast = JSON.parse(serialized) as { error: boolean; error_message?: string; statements?: unknown[] };
-      if (ast.error !== false || ast.statements?.length !== 1) {
+      const ast = JSON.parse(serialized) as {
+        error: boolean;
+        error_message?: string;
+        statements?: { node?: unknown }[];
+      };
+      if (ast.error !== false || ast.statements?.length !== 1 || !isReadOnlyQuery(ast.statements[0]?.node)) {
         throw new Error(
           `DuckDB query must contain exactly one read-only SELECT statement${
             ast.error_message ? `: ${ast.error_message}` : ''

@@ -106,12 +106,13 @@ export function fileSource(
         await conn.run('INSTALL encodings');
         await conn.run('LOAD encodings');
       }
-      // csv/json default to auto_detect=true; a user-supplied auto_detect
-      // overrides it because DuckDB applies later duplicate options over earlier ones.
-      const sniff = format === 'parquet' ? '' : `, auto_detect=true${serializeOptions(options)}`;
+      // Infer the JSON layout independently of the caller's column schema.
+      const jsonFormat = options && 'format' in options ? options.format : undefined;
+      const readerOptions = format === 'json' ? { ...options, format: jsonFormat ?? 'auto' } : options;
+      const readOptions = format === 'parquet' ? '' : serializeOptions(readerOptions);
       const view = sqlQualifiedName('data', namespace);
       await conn.run(
-        `CREATE OR REPLACE VIEW ${view} AS SELECT * FROM ${READ_FN[format]}('${escapeSql(path)}'${sniff})`
+        `CREATE OR REPLACE VIEW ${view} AS SELECT * FROM ${READ_FN[format]}('${escapeSql(path)}'${readOptions})`
       );
       return ['data'];
     },

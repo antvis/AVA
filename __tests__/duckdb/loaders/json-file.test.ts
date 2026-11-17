@@ -42,6 +42,22 @@ describe('loaders/json-file', () => {
     }
   });
 
+  it('detects the layout of a JSON array with explicit column types', async () => {
+    const file = await writeTempFile('[{"id":"001"},{"id":"002"}]', 'json');
+    try {
+      engine = new DuckDBEngine(getLLMConfig());
+      await engine.load({
+        type: 'json-file',
+        options: { path: file, options: { auto_detect: false, columns: { id: 'VARCHAR' } } },
+      });
+      expect((await engine.execute('SELECT id FROM data ORDER BY id')).data).toEqual([{ id: '001' }, { id: '002' }]);
+    } finally {
+      await engine?.dispose();
+      engine = null;
+      await removeTempFile(file);
+    }
+  });
+
   it('loads a JSON file with a complete schema and original column order', async () => {
     engine = new DuckDBEngine(getLLMConfig());
     await engine.load({ type: 'json-file', options: { path: path.join(__dirname, '../../datasets/customers.json') } });

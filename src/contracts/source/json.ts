@@ -17,7 +17,7 @@ export const jsonReadOptionsSchema = z
     field_appearance_threshold: z.number().optional(),
     /** Include filename in SELECT *. Default false; also available as a virtual column */
     filename: z.boolean().optional(),
-    /** Input layout. read_json defaults to auto-detection */
+    /** Input layout. AVA defaults to 'auto', even with column inference disabled. */
     format: z.enum(['auto', 'unstructured', 'newline_delimited', 'array']).optional(),
     /** Read Hive partitions from paths. Default auto-detected */
     hive_partitioning: z.boolean().optional(),
