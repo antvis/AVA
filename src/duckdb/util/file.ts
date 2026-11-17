@@ -106,13 +106,10 @@ export function fileSource(
         await conn.run('INSTALL encodings');
         await conn.run('LOAD encodings');
       }
-      const { auto_detect = true, ...readerOptions } = options ?? {};
-      if (format === 'json' && !auto_detect) {
-        // DuckDB 2.0 needs an explicit format to detect the layout without inferring columns.
-        const jsonOptions = readerOptions as JSONReadOptions;
-        jsonOptions.format ??= 'auto';
-      }
-      const readOptions = format === 'parquet' ? '' : serializeOptions({ auto_detect, ...readerOptions });
+      // Infer the JSON layout independently of the caller's column schema.
+      const jsonFormat = options && 'format' in options ? options.format : undefined;
+      const readerOptions = format === 'json' ? { ...options, format: jsonFormat ?? 'auto' } : options;
+      const readOptions = format === 'parquet' ? '' : serializeOptions(readerOptions);
       const view = sqlQualifiedName('data', namespace);
       await conn.run(
         `CREATE OR REPLACE VIEW ${view} AS SELECT * FROM ${READ_FN[format]}('${escapeSql(path)}'${readOptions})`
