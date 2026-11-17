@@ -116,6 +116,11 @@ export async function loadPostgreSQL(options: PostgreSQLSourceOptions, alias = A
   return {
     register: async (conn, namespace) => {
       try {
+        const installedExtensions = await conn.runAndReadAll(
+          `SELECT extension_name FROM duckdb_extensions()
+           WHERE installed AND (extension_name = 'postgres' OR list_contains(aliases, 'postgres'))`
+        );
+        if (!installedExtensions.getRowObjectsJson().length) await conn.run('INSTALL postgres');
         await conn.run('LOAD postgres');
         // READ_ONLY keeps the analysis read-only against the source database
         await conn.run(

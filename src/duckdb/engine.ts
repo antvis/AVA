@@ -36,9 +36,8 @@ import type {
 /**
  * Process-level security baseline: DuckDB extensions run with the same
  * privileges as the host process, so disable auto-install/auto-load and keep
- * community extensions off by default at instance creation. The mysql/postgres
- * loaders still work because those extensions are statically linked (built-in),
- * so an explicit `LOAD mysql`/`LOAD postgres` is unaffected by these flags.
+ * community extensions off by default at instance creation. Data source
+ * loaders can explicitly install and load the extensions they require.
  * https://duckdb.org/docs/current/operations_manual/securing_duckdb/securing_extensions
  */
 const EXTENSION_LOCKDOWN = {
