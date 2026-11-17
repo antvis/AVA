@@ -1,0 +1,114 @@
+3:"$Sreact.fragment"
+4:"/_next/static/chunks/2qw5ule3nfj6b.js"
+5:"/_next/static/chunks/23av_q-vhhh-c.js"
+6:"/_next/static/chunks/203dk2ri706-l.js"
+7:"/_next/static/chunks/19kjhq-b46d2z.js"
+8:"/_next/static/chunks/1j9jp6-vv8faf.js"
+9:I[400503,["$4","$5","$6","$7","$8"],"default"]
+a:I[697790,["$4","$5","$6","$7"],"default"]
+b:I[474333,["$4","$5","$6","$7"],"default"]
+c:"/_next/static/chunks/0xpkuc787v-p9.js"
+d:I[936064,["$c"],"default"]
+e:I[481497,["$c"],"default"]
+15:I[5138,["$4","$5","$6","$7","$8"],"default"]
+21:"ViewportBoundary"
+22:I[675049,["$c"],"$21"]
+23:"MetadataBoundary"
+24:I[675049,["$c"],"$23"]
+25:"$Sreact.suspense"
+26:I[934035,["$c"],"IconMark"]
+:HL["/_next/static/chunks/3v4072gbndkul.css","style"]
+:HL["https://mdn.alipayobjects.com/huamei_qa8qxu/afts/img/A*A-lcQbVTpjwAAAAAAAAAAAAADmJ7AQ/original","image"]
+10:X
+13:X
+13:C
+16:Td3c,# Tencent Docs SmartSheet
+
+Connect a Tencent Docs SmartSheet to AVA.
+
+AVA reads records from one Tencent Docs SmartSheet subtable. It supports text, numbers, checkboxes, dates, creation and modification times, progress, phone numbers, email, single select, currency, and percentages. Other fields, such as images and multiple select, are skipped. Loading fails if an integer's absolute value exceeds 9,007,199,254,740,991.
+
+The Tencent Docs OpenAPI returns records in pages and provides no parameter to pin them to one version. If someone edits the table during loading, pages may reflect different points in time. For results you need to reconcile, load the table after edits have stopped. [Tencent Docs pagination parameters](https://docs.qq.com/open/document/app/openapi/v2/smartsheet/record/params.html#getrecordsrequest)
+
+## Connect Tencent Docs
+
+For personal use, sign in to the Tencent Docs Open Platform with an account that can access the document. Copy `client_id`, `open_id`, and `access_token`. [Open the Tencent Docs Open Platform](https://docs.qq.com/open#/)
+
+## Get the file and subtable IDs
+
+Open the subtable you want to analyze and copy the URL from your browser. For example, `https://docs.qq.com/smartsheet/EXAMPLE_ID?tab=TAB_ID`.
+
+1. **`fileId`** Take `EXAMPLE_ID` from the path after `/smartsheet/`. Send `value=EXAMPLE_ID` and `type=2` to the Tencent Docs ID converter, then use the returned `data.fileID` in AVA. [File ID conversion](https://docs.qq.com/open/document/app/openapi/v2/file/util/converter.html)
+2. **`sheetId`** Use `TAB_ID`, the value of `tab` in the URL. If the URL has no `tab` parameter, use the converted `fileId` to look up the subtables. [List subtables](https://docs.qq.com/open/document/app/openapi/v2/smartsheet/sheet/get_sheet.html)
+
+## Load the data
+
+Fill in the five values below. In the Node.js SDK, pass the configuration object to `ava.source(config)`. In the CLI, save the configuration locally as `tencent-source.json` and run `ava source @tencent-source.json`.
+
+```json
+{
+  "type": "tencent-smartsheet",
+  "options": {
+    "fileId": "<native-file-id>",
+    "sheetId": "<sheet-id>",
+    "clientId": "<client-id>",
+    "openId": "<open-id>",
+    "accessToken": "<access-token>"
+  }
+}
+```
+
+To analyze the subtable alongside other sources, add `"name": "tencent"` at the top level of the configuration. Pass the configurations as an array in the SDK, or run `ava source @tencent-source.json orders.csv` in the CLI. See [Connect multiple sources](/documentation/data/sources/#connect-multiple-sources).
+
+## Configuration options
+
+| Option | Required | Description |
+| --- | --- | --- |
+| `fileId` | Yes | The file ID returned by the converter. |
+| `sheetId` | Yes | The ID of the subtable to analyze. |
+| `clientId` | Yes | The `client_id` from the Open Platform. |
+| `openId` | Yes | The `open_id` from the Open Platform. |
+| `accessToken` | Yes | The `access_token` from the Open Platform. |
+| `maxRecords` | No | Maximum records per load. Defaults to 10,000 and accepts 1–100,000. Wide tables may reach the cell or data size limit first. |
+| `timeoutMs` | No | Time limit for the whole load in milliseconds. Defaults to 60,000 and accepts 1–110,000. |
+| `pageSize` | No | Fields or records per request. Defaults to 100 and accepts 1–100. |
+| `maxRetries` | No | Retries for transient errors. Defaults to 2 and accepts 0–5. |
+14:[["children",{"s":"__PAGE__","h":160,"d":{"r":["$","$3","c",{"children":[[["$","main",null,{"className":"docs-main","id":"docs-content","children":[["$","div",null,{"className":"docs-page-toolbar","children":[["$","div",null,{"className":"docs-eyebrow","children":"Working with data"}],["$","$L15","data/online-services/tencent-smartsheet",{"label":"Copy Markdown","text":"$16"}]]}],"$L17","$L18","$L19","$L1a","$L1b","$L1c"]}],"$L1d"],["$L1e"],"$L1f"]}],"p":"$@20","v":null,"s":"$10"}}]]
+11:[["children",{"s":{"n":"slug","t":"c","k":"data/online-services/tencent-smartsheet","s":[]},"h":65632,"d":{"r":["$","$3","c",{"children":[null,["$","$Ld",null,{"parallelRouterKey":"children","template":["$","$Le",null,{}]}]]}],"p":"$@12","v":"$13","s":"$10"},"c":"$Q14"}]]
+2:[["children",{"s":"documentation","h":131136,"d":{"r":["$","$3","c",{"children":[[["$","link","0",{"rel":"stylesheet","href":"/_next/static/chunks/3v4072gbndkul.css","precedence":"next"}],["$","script","script-0",{"src":"/_next/static/chunks/203dk2ri706-l.js","async":true}],["$","script","script-1",{"src":"/_next/static/chunks/19kjhq-b46d2z.js","async":true}]],["$","div",null,{"className":"docs-site","children":[["$","a",null,{"className":"docs-skip","href":"#docs-content","children":"Skip to content"}],["$","header",null,{"className":"docs-header","children":["$","div",null,{"className":"docs-header-inner","children":[["$","$L9",null,{"href":"/","className":"docs-brand","aria-label":"AVA home","children":[["$","img",null,{"src":"https://mdn.alipayobjects.com/huamei_qa8qxu/afts/img/A*A-lcQbVTpjwAAAAAAAAAAAAADmJ7AQ/original","alt":"","width":"80","height":"48"}],["$","strong",null,{"children":"AVA"}],["$","span",null,{"children":"Documentation"}]]}],["$","nav",null,{"aria-label":"Main navigation","className":"docs-header-links","children":[["$","$L9",null,{"href":"/blog/","children":"Blog"}],["$","$L9",null,{"href":"/","className":"docs-website","children":["Website"," ",["$","span",null,{"aria-hidden":"true","children":"↗"}]]}],["$","a",null,{"href":"https://github.com/antvis/AVA","className":"docs-github","children":["GitHub ",["$","span",null,{"aria-hidden":"true","children":"↗"}]]}],["$","$La",null,{}],["$","$L9",null,{"href":"/ai/","className":"docs-ai","children":["AI"," ",["$","span",null,{"aria-hidden":"true","children":"→"}]]}]]}]]}]}],["$","$Lb",null,{"mobile":true}],["$","div",null,{"className":"docs-layout","children":[["$","aside",null,{"className":"docs-sidebar","children":[["$","$L9",null,{"href":"/documentation/","className":"docs-sidebar-label","children":[["$","span",null,{"className":"docs-book-icon","aria-hidden":"true","children":"▤"}]," ","Documentation"]}],["$","$Lb",null,{}],["$","div",null,{"className":"docs-sidebar-footer","children":[["$","span",null,{"className":"docs-status-dot"}]," ","AVA · AI Visual Analytics"]}]]}],["$","$Ld",null,{"parallelRouterKey":"children","template":["$","$Le",null,{}]}]]}]]}]]}],"p":"$@f","v":null,"s":"$10"},"c":"$Q11"}]]
+1:[["children",{"s":"(en)","h":131120,"c":"$Q2"}]]
+0:{"t":{"t":{"s":"","h":131152,"c":"$Q1"},"h":{"r":["$","$3","h",{"children":[null,["$","$L22",null,{"children":[["$","meta","0",{"charSet":"utf-8"}],["$","meta","1",{"name":"viewport","content":"width=device-width, initial-scale=1"}]]}],["$","$L24",null,{"children":[["$","div",null,{"hidden":true,"children":["$","$25",null,{"name":"Next.Metadata","children":[["$","title","0",{"children":"Tencent Docs SmartSheet — AVA Docs"}],["$","meta","1",{"name":"description","content":"Connect a Tencent Docs SmartSheet to AVA."}],["$","meta","2",{"name":"author","content":"AntV"}],["$","meta","3",{"name":"keywords","content":"AVA, visual analytics, AI-native, LLM, data visualization, natural language, data analysis, AntV, chart generation"}],["$","link","4",{"rel":"canonical","href":"https://ava.antv.vision/documentation/data/online-services/tencent-smartsheet/"}],["$","link","5",{"rel":"alternate","hrefLang":"en","href":"https://ava.antv.vision/documentation/data/online-services/tencent-smartsheet/"}],["$","link","6",{"rel":"alternate","hrefLang":"zh-CN","href":"https://ava.antv.vision/zh/documentation/data/online-services/tencent-smartsheet/"}],["$","link","7",{"rel":"alternate","hrefLang":"x-default","href":"https://ava.antv.vision/documentation/data/online-services/tencent-smartsheet/"}],["$","meta","8",{"property":"og:title","content":"Tencent Docs SmartSheet — AVA Docs"}],["$","meta","9",{"property":"og:description","content":"Connect a Tencent Docs SmartSheet to AVA."}],["$","meta","10",{"property":"og:url","content":"https://ava.antv.vision/documentation/data/online-services/tencent-smartsheet/"}],["$","meta","11",{"property":"og:type","content":"article"}],["$","meta","12",{"name":"twitter:card","content":"summary"}],["$","meta","13",{"name":"twitter:title","content":"Tencent Docs SmartSheet — AVA Docs"}],["$","meta","14",{"name":"twitter:description","content":"Connect a Tencent Docs SmartSheet to AVA."}],["$","link","15",{"rel":"icon","href":"https://mdn.alipayobjects.com/huamei_qa8qxu/afts/img/A*FBLnQIAzx6cAAAAAQDAAAAgAemJ7AQ/original"}],["$","$L26","16",{}]]}]}],null]}],null]}],"p":"$@27","v":null,"s":"$10"}},"a":"$@28","u":"$@29","b":"iatYuqX12q8tSoxtzf3RI"}
+38:I[754170,["$4","$5","$6","$7","$8"],"default"]
+39:I[675049,["$c"],"OutletBoundary"]
+17:["$","h1",null,{"children":"Tencent Docs SmartSheet"}]
+18:["$","p",null,{"className":"docs-description","children":"Connect a Tencent Docs SmartSheet to AVA."}]
+19:["$","article",null,{"className":"docs-prose","children":[["$","p",null,{"children":"AVA reads records from one Tencent Docs SmartSheet subtable. It supports text, numbers, checkboxes, dates, creation and modification times, progress, phone numbers, email, single select, currency, and percentages. Other fields, such as images and multiple select, are skipped. Loading fails if an integer's absolute value exceeds 9,007,199,254,740,991."}],"\n",["$","p",null,{"children":["The Tencent Docs OpenAPI returns records in pages and provides no parameter to pin them to one version. If someone edits the table during loading, pages may reflect different points in time. For results you need to reconcile, load the table after edits have stopped. ",["$","$L9",null,{"href":"https://docs.qq.com/open/document/app/openapi/v2/smartsheet/record/params.html#getrecordsrequest","children":"Tencent Docs pagination parameters"}]]}],"\n",["$","h2",null,{"id":"connect-tencent-docs","children":["$","a",null,{"href":"#connect-tencent-docs","className":"docs-heading-link","children":"Connect Tencent Docs"}]}],"\n",["$","p",null,{"children":["For personal use, sign in to the Tencent Docs Open Platform with an account that can access the document. Copy ",["$","code",null,{"children":"client_id"}],", ",["$","code",null,{"children":"open_id"}],", and ",["$","code",null,{"children":"access_token"}],". ",["$","$L9",null,{"href":"https://docs.qq.com/open#/","children":"Open the Tencent Docs Open Platform"}]]}],"\n",["$","h2",null,{"id":"get-the-file-and-subtable-ids","children":["$","a",null,{"href":"#get-the-file-and-subtable-ids","className":"docs-heading-link","children":"Get the file and subtable IDs"}]}],"\n",["$","p",null,{"children":["Open the subtable you want to analyze and copy the URL from your browser. For example, ",["$","code",null,{"children":"https://docs.qq.com/smartsheet/EXAMPLE_ID?tab=TAB_ID"}],"."]}],"\n",["$","ol",null,{"children":["\n",["$","li",null,{"children":[["$","strong",null,{"children":["$","code",null,{"children":"fileId"}]}]," Take ",["$","code",null,{"children":"EXAMPLE_ID"}]," from the path after ",["$","code",null,{"children":"/smartsheet/"}],". Send ",["$","code",null,{"children":"value=EXAMPLE_ID"}]," and ",["$","code",null,{"children":"type=2"}]," to the Tencent Docs ID converter, then use the returned ",["$","code",null,{"children":"data.fileID"}]," in AVA. ",["$","$L9",null,{"href":"https://docs.qq.com/open/document/app/openapi/v2/file/util/converter.html","children":"File ID conversion"}]]}],"\n",["$","li",null,{"children":[["$","strong",null,{"children":["$","code",null,{"children":"sheetId"}]}]," Use ",["$","code",null,{"children":"TAB_ID"}],", the value of ",["$","code",null,{"children":"tab"}]," in the URL. If the URL has no ",["$","code",null,{"children":"tab"}]," parameter, use the converted ",["$","code",null,{"children":"fileId"}]," to look up the subtables. ",["$","$L9",null,{"href":"https://docs.qq.com/open/document/app/openapi/v2/smartsheet/sheet/get_sheet.html","children":"List subtables"}]]}],"\n"]}],"\n",["$","h2",null,{"id":"load-the-data","children":["$","a",null,{"href":"#load-the-data","className":"docs-heading-link","children":"Load the data"}]}],"\n",["$","p",null,{"children":["Fill in the five values below. In the Node.js SDK, pass the configuration object to ",["$","code",null,{"children":"ava.source(config)"}],". In the CLI, save the configuration locally as ",["$","code",null,{"children":"tencent-source.json"}]," and run ",["$","code",null,{"children":"ava source @tencent-source.json"}],"."]}],"\n",["$","figure",null,{"data-rehype-pretty-code-figure":"","children":["$","div",null,{"className":"docs-code-block","children":[["$","div",null,{"className":"docs-code-toolbar","children":[["$","span",null,{"children":"json"}],["$","$L15",null,{}]]}],["$","pre",null,{"tabIndex":"0","data-language":"json","data-theme":"github-light","children":["$","code",null,{"data-language":"json","data-theme":"github-light","style":{"display":"grid"},"children":[["$","span",null,{"data-line":"","children":["$","span",null,{"style":{"color":"#24292E"},"children":"{"}]}],"\n",["$","span",null,{"data-line":"","children":[["$","span",null,{"style":{"color":"#005CC5"},"children":"  \"type\""}],"$L2a","$L2b","$L2c"]}],"\n","$L2d","\n","$L2e","\n","$L2f","\n","$L30","\n","$L31","\n","$L32","\n","$L33","\n","$L34"]}]}]]}]}],"\n","$L35","\n","$L36","\n","$L37"]}]
+1a:["$","div",null,{"className":"docs-page-meta","children":["$","a",null,{"href":"https://github.com/antvis/AVA/blob/ai/site/content/docs/en/data/online-services/tencent-smartsheet.mdx","children":["Edit this page on GitHub"," ",["$","span",null,{"aria-hidden":"true","children":"↗"}]]}]}]
+1b:["$","nav",null,{"className":"docs-pagination","aria-label":"Chapter navigation","children":[["$","$L9",null,{"href":"/documentation/data/online-services/feishu-bitable/","children":[["$","span",null,{"children":"← Previous"}],["$","strong",null,{"children":"Lark Base"}]]}],["$","$L9",null,{"href":"/documentation/data/online-services/github/","className":"docs-next","children":[["$","span",null,{"children":"Next →"}],["$","strong",null,{"children":"GitHub"}]]}]]}]
+1c:["$","footer",null,{"className":"docs-footer","children":[["$","span",null,{"children":"AVA · An AntV project"}],["$","a",null,{"href":"https://github.com/antvis/AVA","children":"Open source on GitHub ↗"}]]}]
+1d:["$","$L38","data/online-services/tencent-smartsheet",{}]
+1e:["$","script","script-0",{"src":"/_next/static/chunks/1j9jp6-vv8faf.js","async":true}]
+1f:["$","$L39",null,{"children":["$","$25",null,{"name":"Next.MetadataOutlet","children":"$@3a"}]}]
+29:true
+10:300
+2a:["$","span",null,{"style":{"color":"#24292E"},"children":": "}]
+2b:["$","span",null,{"style":{"color":"#032F62"},"children":"\"tencent-smartsheet\""}]
+2c:["$","span",null,{"style":{"color":"#24292E"},"children":","}]
+2d:["$","span",null,{"data-line":"","children":[["$","span",null,{"style":{"color":"#005CC5"},"children":"  \"options\""}],["$","span",null,{"style":{"color":"#24292E"},"children":": {"}]]}]
+2e:["$","span",null,{"data-line":"","children":[["$","span",null,{"style":{"color":"#005CC5"},"children":"    \"fileId\""}],["$","span",null,{"style":{"color":"#24292E"},"children":": "}],["$","span",null,{"style":{"color":"#032F62"},"children":"\"<native-file-id>\""}],["$","span",null,{"style":{"color":"#24292E"},"children":","}]]}]
+2f:["$","span",null,{"data-line":"","children":[["$","span",null,{"style":{"color":"#005CC5"},"children":"    \"sheetId\""}],["$","span",null,{"style":{"color":"#24292E"},"children":": "}],["$","span",null,{"style":{"color":"#032F62"},"children":"\"<sheet-id>\""}],["$","span",null,{"style":{"color":"#24292E"},"children":","}]]}]
+30:["$","span",null,{"data-line":"","children":[["$","span",null,{"style":{"color":"#005CC5"},"children":"    \"clientId\""}],["$","span",null,{"style":{"color":"#24292E"},"children":": "}],["$","span",null,{"style":{"color":"#032F62"},"children":"\"<client-id>\""}],["$","span",null,{"style":{"color":"#24292E"},"children":","}]]}]
+31:["$","span",null,{"data-line":"","children":[["$","span",null,{"style":{"color":"#005CC5"},"children":"    \"openId\""}],["$","span",null,{"style":{"color":"#24292E"},"children":": "}],["$","span",null,{"style":{"color":"#032F62"},"children":"\"<open-id>\""}],["$","span",null,{"style":{"color":"#24292E"},"children":","}]]}]
+32:["$","span",null,{"data-line":"","children":[["$","span",null,{"style":{"color":"#005CC5"},"children":"    \"accessToken\""}],["$","span",null,{"style":{"color":"#24292E"},"children":": "}],["$","span",null,{"style":{"color":"#032F62"},"children":"\"<access-token>\""}]]}]
+33:["$","span",null,{"data-line":"","children":["$","span",null,{"style":{"color":"#24292E"},"children":"  }"}]}]
+34:["$","span",null,{"data-line":"","children":["$","span",null,{"style":{"color":"#24292E"},"children":"}"}]}]
+35:["$","p",null,{"children":["To analyze the subtable alongside other sources, add ",["$","code",null,{"children":"\"name\": \"tencent\""}]," at the top level of the configuration. Pass the configurations as an array in the SDK, or run ",["$","code",null,{"children":"ava source @tencent-source.json orders.csv"}]," in the CLI. See ",["$","$L9",null,{"href":"/documentation/data/sources/#connect-multiple-sources","children":"Connect multiple sources"}],"."]}]
+36:["$","h2",null,{"id":"configuration-options","children":["$","a",null,{"href":"#configuration-options","className":"docs-heading-link","children":"Configuration options"}]}]
+37:["$","div",null,{"className":"docs-table","children":["$","table",null,{"children":[["$","thead",null,{"children":["$","tr",null,{"children":[["$","th",null,{"children":"Option"}],["$","th",null,{"children":"Required"}],["$","th",null,{"children":"Description"}]]}]}],["$","tbody",null,{"children":[["$","tr",null,{"children":[["$","td",null,{"children":["$","code",null,{"children":"fileId"}]}],["$","td",null,{"children":"Yes"}],["$","td",null,{"children":"The file ID returned by the converter."}]]}],["$","tr",null,{"children":[["$","td",null,{"children":["$","code",null,{"children":"sheetId"}]}],["$","td",null,{"children":"Yes"}],["$","td",null,{"children":"The ID of the subtable to analyze."}]]}],["$","tr",null,{"children":[["$","td",null,{"children":["$","code",null,{"children":"clientId"}]}],["$","td",null,{"children":"Yes"}],["$","td",null,{"children":["The ",["$","code",null,{"children":"client_id"}]," from the Open Platform."]}]]}],["$","tr",null,{"children":[["$","td",null,{"children":["$","code",null,{"children":"openId"}]}],["$","td",null,{"children":"Yes"}],["$","td",null,{"children":["The ",["$","code",null,{"children":"open_id"}]," from the Open Platform."]}]]}],["$","tr",null,{"children":[["$","td",null,{"children":["$","code",null,{"children":"accessToken"}]}],["$","td",null,{"children":"Yes"}],["$","td",null,{"children":["The ",["$","code",null,{"children":"access_token"}]," from the Open Platform."]}]]}],["$","tr",null,{"children":[["$","td",null,{"children":["$","code",null,{"children":"maxRecords"}]}],["$","td",null,{"children":"No"}],["$","td",null,{"children":"Maximum records per load. Defaults to 10,000 and accepts 1–100,000. Wide tables may reach the cell or data size limit first."}]]}],["$","tr",null,{"children":[["$","td",null,{"children":["$","code",null,{"children":"timeoutMs"}]}],["$","td",null,{"children":"No"}],["$","td",null,{"children":"Time limit for the whole load in milliseconds. Defaults to 60,000 and accepts 1–110,000."}]]}],["$","tr",null,{"children":[["$","td",null,{"children":["$","code",null,{"children":"pageSize"}]}],["$","td",null,{"children":"No"}],["$","td",null,{"children":"Fields or records per request. Defaults to 100 and accepts 1–100."}]]}],["$","tr",null,{"children":[["$","td",null,{"children":["$","code",null,{"children":"maxRetries"}]}],["$","td",null,{"children":"No"}],["$","td",null,{"children":"Retries for transient errors. Defaults to 2 and accepts 0–5."}]]}]]}]]}]}]
+3a:null
+10:C
+28:0
+12:"$undefined"
+f:"$undefined"
+27:"$undefined"
+20:"$undefined"

@@ -1,0 +1,112 @@
+3:"$Sreact.fragment"
+4:"/_next/static/chunks/0xpkuc787v-p9.js"
+5:I[936064,["$4"],"default"]
+6:I[481497,["$4"],"default"]
+b:"/_next/static/chunks/2qw5ule3nfj6b.js"
+c:"/_next/static/chunks/23av_q-vhhh-c.js"
+d:"/_next/static/chunks/203dk2ri706-l.js"
+e:"/_next/static/chunks/19kjhq-b46d2z.js"
+f:"/_next/static/chunks/1j9jp6-vv8faf.js"
+10:I[400503,["$b","$c","$d","$e","$f"],"default"]
+11:I[697790,["$b","$c","$d","$e"],"default"]
+12:I[474333,["$b","$c","$d","$e"],"default"]
+17:I[5138,["$b","$c","$d","$e","$f"],"default"]
+23:"ViewportBoundary"
+24:I[675049,["$4"],"$23"]
+25:"MetadataBoundary"
+26:I[675049,["$4"],"$25"]
+27:"$Sreact.suspense"
+28:I[934035,["$4"],"IconMark"]
+:HL["/_next/static/chunks/3v4072gbndkul.css","style"]
+:HL["https://mdn.alipayobjects.com/huamei_qa8qxu/afts/img/A*A-lcQbVTpjwAAAAAAAAAAAAADmJ7AQ/original","image"]
+8:X
+8:C
+9:X
+18:Td29,# 腾讯文档智能表格
+
+将腾讯文档中的智能子表接入 AVA。
+
+import { Heading } from '../../../../../mdx-components';
+
+AVA 可以读取腾讯文档中一张智能子表的记录，支持文本、数字、复选框、日期、创建和修改时间、进度、电话、邮箱、单选、货币和百分比。图片和多选等其他字段会跳过。遇到绝对值超过 9,007,199,254,740,991 的整数，加载会报错。
+
+腾讯文档 OpenAPI 按页返回记录，公开接口没有提供固定同一版本的参数。如果加载期间有人编辑表格，不同页可能读到不同时间的数据。需要核对准确结果时，请在表格停止编辑后加载。[腾讯文档分页参数](https://docs.qq.com/open/document/app/openapi/v2/smartsheet/record/params.html#getrecordsrequest)
+
+<Heading as="h2" id="connect-tencent-docs">准备接入信息</Heading>
+
+个人使用时，用有权访问目标文档的账号登录腾讯文档开放平台，复制 `client_id`、`open_id` 和 `access_token`。[打开腾讯文档开放平台](https://docs.qq.com/open#/)
+
+<Heading as="h2" id="get-file-and-sheet-ids">从链接获取文件和子表 ID</Heading>
+
+打开要分析的子表，复制浏览器地址栏中的链接。例如 `https://docs.qq.com/smartsheet/EXAMPLE_ID?tab=TAB_ID`。
+
+1. **`fileId`** 取链接中 `/smartsheet/` 后面的 `EXAMPLE_ID`，在腾讯文档的 ID 转换接口中填入 `value=EXAMPLE_ID` 和 `type=2`，将返回的 `data.fileID` 填入 AVA。[文件 ID 转换](https://docs.qq.com/open/document/app/openapi/v2/file/util/converter.html)
+2. **`sheetId`** 取链接中 `tab` 的值 `TAB_ID`。如果链接没有 `tab`，可以用转换后的 `fileId` 查询文档中的子表。[查询子表](https://docs.qq.com/open/document/app/openapi/v2/smartsheet/sheet/get_sheet.html)
+
+## 加载数据
+
+填入下面五项配置，用 Node.js SDK 时将配置对象传给 `ava.source(config)`。用 CLI 时将配置保存到本地 `tencent-source.json`，运行 `ava source @tencent-source.json`。
+
+```json
+{
+  "type": "tencent-smartsheet",
+  "options": {
+    "fileId": "<native-file-id>",
+    "sheetId": "<sheet-id>",
+    "clientId": "<client-id>",
+    "openId": "<open-id>",
+    "accessToken": "<access-token>"
+  }
+}
+```
+
+与其他数据源一起分析时，可以在配置顶层加上 `"name": "tencent"`。在 SDK 中把各数据源配置放入同一个数组，或在 CLI 中运行 `ava source @tencent-source.json orders.csv`。参见[多数据源接入](/documentation/data/sources/#connect-multiple-sources)。
+
+<Heading as="h2" id="options">配置参数</Heading>
+
+| 参数 | 必填 | 说明 |
+| --- | --- | --- |
+| `fileId` | 是 | 转换后得到的文件 ID。 |
+| `sheetId` | 是 | 要分析的子表 ID。 |
+| `clientId` | 是 | 开放平台中的 `client_id`。 |
+| `openId` | 是 | 开放平台中的 `open_id`。 |
+| `accessToken` | 是 | 开放平台中的 `access_token`。 |
+| `maxRecords` | 否 | 一次读取的记录上限。默认 10,000，范围 1–100,000。宽表可能先达到单元格或数据大小上限。 |
+| `timeoutMs` | 否 | 整次读取的时限，单位为毫秒。默认 60,000，范围 1–110,000。 |
+| `pageSize` | 否 | 每次读取的字段数或记录数。默认 100，范围 1–100。 |
+| `maxRetries` | 否 | 遇到临时错误时的重试次数。默认 2，范围 0–5。 |
+16:[["children",{"s":"__PAGE__","h":160,"d":{"r":["$","$3","c",{"children":[[["$","main",null,{"className":"docs-main","id":"docs-content","children":[["$","div",null,{"className":"docs-page-toolbar","children":[["$","div",null,{"className":"docs-eyebrow","children":"理解与接入数据"}],["$","$L17","data/online-services/tencent-smartsheet",{"label":"复制 Markdown","text":"$18"}]]}],"$L19","$L1a","$L1b","$L1c","$L1d","$L1e"]}],"$L1f"],["$L20"],"$L21"]}],"p":"$@22","v":null,"s":"$9"}}]]
+14:[["children",{"s":{"n":"slug","t":"c","k":"data/online-services/tencent-smartsheet","s":[]},"h":65632,"d":{"r":["$","$3","c",{"children":[null,["$","$L5",null,{"parallelRouterKey":"children","template":["$","$L6",null,{}]}]]}],"p":"$@15","v":"$8","s":"$9"},"c":"$Q16"}]]
+a:[["children",{"s":"documentation","h":131168,"d":{"r":["$","$3","c",{"children":[[["$","link","0",{"rel":"stylesheet","href":"/_next/static/chunks/3v4072gbndkul.css","precedence":"next"}],["$","script","script-0",{"src":"/_next/static/chunks/203dk2ri706-l.js","async":true}],["$","script","script-1",{"src":"/_next/static/chunks/19kjhq-b46d2z.js","async":true}]],["$","div",null,{"className":"docs-site","children":[["$","a",null,{"className":"docs-skip","href":"#docs-content","children":"跳至正文"}],["$","header",null,{"className":"docs-header","children":["$","div",null,{"className":"docs-header-inner","children":[["$","$L10",null,{"href":"/","className":"docs-brand","aria-label":"AVA 首页","children":[["$","img",null,{"src":"https://mdn.alipayobjects.com/huamei_qa8qxu/afts/img/A*A-lcQbVTpjwAAAAAAAAAAAAADmJ7AQ/original","alt":"","width":"80","height":"48"}],["$","strong",null,{"children":"AVA"}],["$","span",null,{"children":"使用文档"}]]}],["$","nav",null,{"aria-label":"主导航","className":"docs-header-links","children":[["$","$L10",null,{"href":"/blog/","children":"Blog"}],["$","$L10",null,{"href":"/","className":"docs-website","children":["官网首页"," ",["$","span",null,{"aria-hidden":"true","children":"↗"}]]}],["$","a",null,{"href":"https://github.com/antvis/AVA","className":"docs-github","children":["GitHub ",["$","span",null,{"aria-hidden":"true","children":"↗"}]]}],["$","$L11",null,{}],["$","$L10",null,{"href":"/ai/","className":"docs-ai","children":["AI 体验"," ",["$","span",null,{"aria-hidden":"true","children":"→"}]]}]]}]]}]}],["$","$L12",null,{"mobile":true}],["$","div",null,{"className":"docs-layout","children":[["$","aside",null,{"className":"docs-sidebar","children":[["$","$L10",null,{"href":"/documentation/","className":"docs-sidebar-label","children":[["$","span",null,{"className":"docs-book-icon","aria-hidden":"true","children":"▤"}]," ","使用文档"]}],["$","$L12",null,{}],["$","div",null,{"className":"docs-sidebar-footer","children":[["$","span",null,{"className":"docs-status-dot"}]," ","AVA · AI Visual Analytics"]}]]}],["$","$L5",null,{"parallelRouterKey":"children","template":["$","$L6",null,{}]}]]}]]}]]}],"p":"$@13","v":null,"s":"$9"},"c":"$Q14"}]]
+2:[["children",{"s":"zh","h":131136,"d":{"r":["$","$3","c",{"children":[null,["$","$L5",null,{"parallelRouterKey":"children","template":["$","$L6",null,{}]}]]}],"p":"$@7","v":"$8","s":"$9"},"c":"$Qa"}]]
+1:[["children",{"s":"(zh)","h":131120,"c":"$Q2"}]]
+0:{"t":{"t":{"s":"","h":131152,"c":"$Q1"},"h":{"r":["$","$3","h",{"children":[null,["$","$L24",null,{"children":[["$","meta","0",{"charSet":"utf-8"}],["$","meta","1",{"name":"viewport","content":"width=device-width, initial-scale=1"}]]}],["$","$L26",null,{"children":[["$","div",null,{"hidden":true,"children":["$","$27",null,{"name":"Next.Metadata","children":[["$","title","0",{"children":"腾讯文档智能表格 — AVA 文档"}],["$","meta","1",{"name":"description","content":"将腾讯文档中的智能子表接入 AVA。"}],["$","meta","2",{"name":"author","content":"AntV"}],["$","meta","3",{"name":"keywords","content":"AVA, visual analytics, AI-native, LLM, data visualization, natural language, data analysis, AntV, chart generation"}],["$","link","4",{"rel":"canonical","href":"https://ava.antv.vision/zh/documentation/data/online-services/tencent-smartsheet/"}],["$","link","5",{"rel":"alternate","hrefLang":"en","href":"https://ava.antv.vision/documentation/data/online-services/tencent-smartsheet/"}],["$","link","6",{"rel":"alternate","hrefLang":"zh-CN","href":"https://ava.antv.vision/zh/documentation/data/online-services/tencent-smartsheet/"}],["$","link","7",{"rel":"alternate","hrefLang":"x-default","href":"https://ava.antv.vision/documentation/data/online-services/tencent-smartsheet/"}],["$","meta","8",{"property":"og:title","content":"腾讯文档智能表格 — AVA 文档"}],["$","meta","9",{"property":"og:description","content":"将腾讯文档中的智能子表接入 AVA。"}],["$","meta","10",{"property":"og:url","content":"https://ava.antv.vision/zh/documentation/data/online-services/tencent-smartsheet/"}],["$","meta","11",{"property":"og:type","content":"article"}],["$","meta","12",{"name":"twitter:card","content":"summary"}],["$","meta","13",{"name":"twitter:title","content":"腾讯文档智能表格 — AVA 文档"}],["$","meta","14",{"name":"twitter:description","content":"将腾讯文档中的智能子表接入 AVA。"}],["$","link","15",{"rel":"icon","href":"https://mdn.alipayobjects.com/huamei_qa8qxu/afts/img/A*FBLnQIAzx6cAAAAAQDAAAAgAemJ7AQ/original"}],["$","$L28","16",{}]]}]}],null]}],null]}],"p":"$@29","v":null,"s":"$9"}},"a":"$@2a","u":"$@2b","b":"iatYuqX12q8tSoxtzf3RI"}
+34:I[754170,["$b","$c","$d","$e","$f"],"default"]
+35:I[675049,["$4"],"OutletBoundary"]
+19:["$","h1",null,{"children":"腾讯文档智能表格"}]
+1a:["$","p",null,{"className":"docs-description","children":"将腾讯文档中的智能子表接入 AVA。"}]
+1b:["$","article",null,{"className":"docs-prose","children":[["$","p",null,{"children":"AVA 可以读取腾讯文档中一张智能子表的记录，支持文本、数字、复选框、日期、创建和修改时间、进度、电话、邮箱、单选、货币和百分比。图片和多选等其他字段会跳过。遇到绝对值超过 9,007,199,254,740,991 的整数，加载会报错。"}],"\n",["$","p",null,{"children":["腾讯文档 OpenAPI 按页返回记录，公开接口没有提供固定同一版本的参数。如果加载期间有人编辑表格，不同页可能读到不同时间的数据。需要核对准确结果时，请在表格停止编辑后加载。",["$","$L10",null,{"href":"https://docs.qq.com/open/document/app/openapi/v2/smartsheet/record/params.html#getrecordsrequest","children":"腾讯文档分页参数"}]]}],"\n",["$","h2",null,{"id":"connect-tencent-docs","children":["$","a",null,{"href":"#connect-tencent-docs","className":"docs-heading-link","children":"准备接入信息"}]}],"\n",["$","p",null,{"children":["个人使用时，用有权访问目标文档的账号登录腾讯文档开放平台，复制 ",["$","code",null,{"children":"client_id"}],"、",["$","code",null,{"children":"open_id"}]," 和 ",["$","code",null,{"children":"access_token"}],"。",["$","$L10",null,{"href":"https://docs.qq.com/open#/","children":"打开腾讯文档开放平台"}]]}],"\n",["$","h2",null,{"id":"get-file-and-sheet-ids","children":["$","a",null,{"href":"#get-file-and-sheet-ids","className":"docs-heading-link","children":"从链接获取文件和子表 ID"}]}],"\n",["$","p",null,{"children":["打开要分析的子表，复制浏览器地址栏中的链接。例如 ",["$","code",null,{"children":"https://docs.qq.com/smartsheet/EXAMPLE_ID?tab=TAB_ID"}],"。"]}],"\n",["$","ol",null,{"children":["\n",["$","li",null,{"children":[["$","strong",null,{"children":["$","code",null,{"children":"fileId"}]}]," 取链接中 ",["$","code",null,{"children":"/smartsheet/"}]," 后面的 ",["$","code",null,{"children":"EXAMPLE_ID"}],"，在腾讯文档的 ID 转换接口中填入 ",["$","code",null,{"children":"value=EXAMPLE_ID"}]," 和 ",["$","code",null,{"children":"type=2"}],"，将返回的 ",["$","code",null,{"children":"data.fileID"}]," 填入 AVA。",["$","$L10",null,{"href":"https://docs.qq.com/open/document/app/openapi/v2/file/util/converter.html","children":"文件 ID 转换"}]]}],"\n",["$","li",null,{"children":[["$","strong",null,{"children":["$","code",null,{"children":"sheetId"}]}]," 取链接中 ",["$","code",null,{"children":"tab"}]," 的值 ",["$","code",null,{"children":"TAB_ID"}],"。如果链接没有 ",["$","code",null,{"children":"tab"}],"，可以用转换后的 ",["$","code",null,{"children":"fileId"}]," 查询文档中的子表。",["$","$L10",null,{"href":"https://docs.qq.com/open/document/app/openapi/v2/smartsheet/sheet/get_sheet.html","children":"查询子表"}]]}],"\n"]}],"\n",["$","h2",null,{"id":"加载数据","children":["$","a",null,{"href":"#加载数据","className":"docs-heading-link","children":"加载数据"}]}],"\n",["$","p",null,{"children":["填入下面五项配置，用 Node.js SDK 时将配置对象传给 ",["$","code",null,{"children":"ava.source(config)"}],"。用 CLI 时将配置保存到本地 ",["$","code",null,{"children":"tencent-source.json"}],"，运行 ",["$","code",null,{"children":"ava source @tencent-source.json"}],"。"]}],"\n",["$","figure",null,{"data-rehype-pretty-code-figure":"","children":["$","div",null,{"className":"docs-code-block","children":[["$","div",null,{"className":"docs-code-toolbar","children":[["$","span",null,{"children":"json"}],["$","$L17",null,{}]]}],["$","pre",null,{"tabIndex":"0","data-language":"json","data-theme":"github-light","children":["$","code",null,{"data-language":"json","data-theme":"github-light","style":{"display":"grid"},"children":[["$","span",null,{"data-line":"","children":["$","span",null,{"style":{"color":"#24292E"},"children":"{"}]}],"\n",["$","span",null,{"data-line":"","children":[["$","span",null,{"style":{"color":"#005CC5"},"children":"  \"type\""}],["$","span",null,{"style":{"color":"#24292E"},"children":": "}],["$","span",null,{"style":{"color":"#032F62"},"children":"\"tencent-smartsheet\""}],["$","span",null,{"style":{"color":"#24292E"},"children":","}]]}],"\n",["$","span",null,{"data-line":"","children":[["$","span",null,{"style":{"color":"#005CC5"},"children":"  \"options\""}],["$","span",null,{"style":{"color":"#24292E"},"children":": {"}]]}],"\n",["$","span",null,{"data-line":"","children":[["$","span",null,{"style":{"color":"#005CC5"},"children":"    \"fileId\""}],["$","span",null,{"style":{"color":"#24292E"},"children":": "}],["$","span",null,{"style":{"color":"#032F62"},"children":"\"<native-file-id>\""}],["$","span",null,{"style":{"color":"#24292E"},"children":","}]]}],"\n",["$","span",null,{"data-line":"","children":[["$","span",null,{"style":{"color":"#005CC5"},"children":"    \"sheetId\""}],["$","span",null,{"style":{"color":"#24292E"},"children":": "}],["$","span",null,{"style":{"color":"#032F62"},"children":"\"<sheet-id>\""}],["$","span",null,{"style":{"color":"#24292E"},"children":","}]]}],"\n",["$","span",null,{"data-line":"","children":[["$","span",null,{"style":{"color":"#005CC5"},"children":"    \"clientId\""}],["$","span",null,{"style":{"color":"#24292E"},"children":": "}],["$","span",null,{"style":{"color":"#032F62"},"children":"\"<client-id>\""}],["$","span",null,{"style":{"color":"#24292E"},"children":","}]]}],"\n",["$","span",null,{"data-line":"","children":[["$","span",null,{"style":{"color":"#005CC5"},"children":"    \"openId\""}],["$","span",null,{"style":{"color":"#24292E"},"children":": "}],"$L2c","$L2d"]}],"\n","$L2e","\n","$L2f","\n","$L30"]}]}]]}]}],"\n","$L31","\n","$L32","\n","$L33"]}]
+1c:["$","div",null,{"className":"docs-page-meta","children":["$","a",null,{"href":"https://github.com/antvis/AVA/blob/ai/site/content/docs/zh/data/online-services/tencent-smartsheet.mdx","children":["在 GitHub 编辑本页"," ",["$","span",null,{"aria-hidden":"true","children":"↗"}]]}]}]
+1d:["$","nav",null,{"className":"docs-pagination","aria-label":"章节导航","children":[["$","$L10",null,{"href":"/documentation/data/online-services/feishu-bitable/","children":[["$","span",null,{"children":"← 上一篇"}],["$","strong",null,{"children":"飞书多维表格"}]]}],["$","$L10",null,{"href":"/documentation/data/online-services/github/","className":"docs-next","children":[["$","span",null,{"children":"下一篇 →"}],["$","strong",null,{"children":"GitHub"}]]}]]}]
+1e:["$","footer",null,{"className":"docs-footer","children":[["$","span",null,{"children":"AVA · AntV 开源项目"}],["$","a",null,{"href":"https://github.com/antvis/AVA","children":"在 GitHub 查看源码 ↗"}]]}]
+1f:["$","$L34","data/online-services/tencent-smartsheet",{}]
+20:["$","script","script-0",{"src":"/_next/static/chunks/1j9jp6-vv8faf.js","async":true}]
+21:["$","$L35",null,{"children":["$","$27",null,{"name":"Next.MetadataOutlet","children":"$@36"}]}]
+2b:true
+9:300
+2c:["$","span",null,{"style":{"color":"#032F62"},"children":"\"<open-id>\""}]
+2d:["$","span",null,{"style":{"color":"#24292E"},"children":","}]
+2e:["$","span",null,{"data-line":"","children":[["$","span",null,{"style":{"color":"#005CC5"},"children":"    \"accessToken\""}],["$","span",null,{"style":{"color":"#24292E"},"children":": "}],["$","span",null,{"style":{"color":"#032F62"},"children":"\"<access-token>\""}]]}]
+2f:["$","span",null,{"data-line":"","children":["$","span",null,{"style":{"color":"#24292E"},"children":"  }"}]}]
+30:["$","span",null,{"data-line":"","children":["$","span",null,{"style":{"color":"#24292E"},"children":"}"}]}]
+31:["$","p",null,{"children":["与其他数据源一起分析时，可以在配置顶层加上 ",["$","code",null,{"children":"\"name\": \"tencent\""}],"。在 SDK 中把各数据源配置放入同一个数组，或在 CLI 中运行 ",["$","code",null,{"children":"ava source @tencent-source.json orders.csv"}],"。参见",["$","$L10",null,{"href":"/documentation/data/sources/#connect-multiple-sources","children":"多数据源接入"}],"。"]}]
+32:["$","h2",null,{"id":"options","children":["$","a",null,{"href":"#options","className":"docs-heading-link","children":"配置参数"}]}]
+33:["$","div",null,{"className":"docs-table","children":["$","table",null,{"children":[["$","thead",null,{"children":["$","tr",null,{"children":[["$","th",null,{"children":"参数"}],["$","th",null,{"children":"必填"}],["$","th",null,{"children":"说明"}]]}]}],["$","tbody",null,{"children":[["$","tr",null,{"children":[["$","td",null,{"children":["$","code",null,{"children":"fileId"}]}],["$","td",null,{"children":"是"}],["$","td",null,{"children":"转换后得到的文件 ID。"}]]}],["$","tr",null,{"children":[["$","td",null,{"children":["$","code",null,{"children":"sheetId"}]}],["$","td",null,{"children":"是"}],["$","td",null,{"children":"要分析的子表 ID。"}]]}],["$","tr",null,{"children":[["$","td",null,{"children":["$","code",null,{"children":"clientId"}]}],["$","td",null,{"children":"是"}],["$","td",null,{"children":["开放平台中的 ",["$","code",null,{"children":"client_id"}],"。"]}]]}],["$","tr",null,{"children":[["$","td",null,{"children":["$","code",null,{"children":"openId"}]}],["$","td",null,{"children":"是"}],["$","td",null,{"children":["开放平台中的 ",["$","code",null,{"children":"open_id"}],"。"]}]]}],["$","tr",null,{"children":[["$","td",null,{"children":["$","code",null,{"children":"accessToken"}]}],["$","td",null,{"children":"是"}],["$","td",null,{"children":["开放平台中的 ",["$","code",null,{"children":"access_token"}],"。"]}]]}],["$","tr",null,{"children":[["$","td",null,{"children":["$","code",null,{"children":"maxRecords"}]}],["$","td",null,{"children":"否"}],["$","td",null,{"children":"一次读取的记录上限。默认 10,000，范围 1–100,000。宽表可能先达到单元格或数据大小上限。"}]]}],["$","tr",null,{"children":[["$","td",null,{"children":["$","code",null,{"children":"timeoutMs"}]}],["$","td",null,{"children":"否"}],["$","td",null,{"children":"整次读取的时限，单位为毫秒。默认 60,000，范围 1–110,000。"}]]}],["$","tr",null,{"children":[["$","td",null,{"children":["$","code",null,{"children":"pageSize"}]}],["$","td",null,{"children":"否"}],["$","td",null,{"children":"每次读取的字段数或记录数。默认 100，范围 1–100。"}]]}],["$","tr",null,{"children":[["$","td",null,{"children":["$","code",null,{"children":"maxRetries"}]}],["$","td",null,{"children":"否"}],["$","td",null,{"children":"遇到临时错误时的重试次数。默认 2，范围 0–5。"}]]}]]}]]}]}]
+36:null
+9:C
+2a:0
+15:"$undefined"
+13:"$undefined"
+7:"$undefined"
+29:"$undefined"
+22:"$undefined"
