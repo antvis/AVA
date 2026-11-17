@@ -1,7 +1,26 @@
-import { describe, it, expect, afterEach } from 'vitest';
+import { describe, it, expect, afterEach, vi } from 'vitest';
 
 import { DuckDBEngine } from '../../../src/duckdb/engine';
+import { loadPostgreSQL } from '../../../src/duckdb/loaders/postgresql';
 import { getLLMConfig } from '../../test-utils';
+
+it.each([
+  { installed: false, commands: [['INSTALL postgres'], ['LOAD postgres']] },
+  { installed: true, commands: [['LOAD postgres']] },
+])('loads the PostgreSQL extension with installed=$installed', async ({ installed, commands }) => {
+  const source = await loadPostgreSQL({ host: 'localhost', database: 'analytics' });
+  const conn = {
+    run: vi.fn().mockResolvedValue(undefined),
+    runAndReadAll: vi
+      .fn()
+      .mockResolvedValueOnce({ getRowObjectsJson: () => (installed ? [{ extension_name: 'postgres_scanner' }] : []) })
+      .mockResolvedValue({ getRowObjectsJson: () => [] }),
+  };
+
+  await source.register(conn);
+
+  expect(conn.run.mock.calls).toEqual([...commands, [expect.stringContaining('(TYPE postgres, READ_ONLY)')]]);
+});
 
 describe.skipIf(process.env.AVA_POSTGRESQL_TEST !== '1')('loaders/postgresql', () => {
   let engine: DuckDBEngine | null = null;

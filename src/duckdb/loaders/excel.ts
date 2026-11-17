@@ -53,11 +53,7 @@ export async function loadExcel(options: ExcelSourceOptions): Promise<LoadedSour
   let sheetNames: string[] = [];
   return {
     register: async (conn, namespace) => {
-      // The excel extension is dynamically loaded, not statically linked like
-      // mysql/postgres, so it must be installed explicitly. EXTENSION_LOCKDOWN
-      // only blocks *auto*-install; an explicit INSTALL of a known official
-      // extension is allowed and is idempotent (a no-op once installed). This
-      // keeps CI (fresh ~/.duckdb) working the same as a local machine.
+      // Install explicitly because the engine disables automatic extension installation.
       await conn.run('INSTALL excel');
       await conn.run('LOAD excel');
       const available = readSheetNames(filePath);
