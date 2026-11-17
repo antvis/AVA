@@ -162,6 +162,14 @@ const chartDefinitions: ChartTypeDefinition[] = [
     dataRequirements: ['任意结构化数据'],
     limitations: [],
   },
+  {
+    type: 'summary',
+    name: '文本摘要',
+    features: ['概括数据结论和关键指标'],
+    useCases: ['明确请求可视化摘要或数据简报'],
+    dataRequirements: ['有可概括的数据或指标'],
+    limitations: ['普通问答或已明确指定其他图表的场景'],
+  },
 ];
 
 export { chartDefinitions };

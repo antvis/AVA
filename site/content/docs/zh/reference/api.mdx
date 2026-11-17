@@ -371,11 +371,11 @@ Setter 接收选项对象，同步返回 `Semantic`。AVA 验证并复制结果�
 | ---------------- | ----------- | -------- | --------------------------------------------------------------------------------------------------- |
 | `spec` | `ChartSpecInput` | 是 | 应用默认值之前的图表描述对象。 |
 | `spec.chartType` | `ChartType` | 是 | 下方类型之一；JSON 图表必须与 `config.type` 一致。 |
-| `spec.config` | `ChartSpecInput['config']` | 是 | 原生 GPT-Vis 配置；省略 `config.type` 时由 `chartType` 补齐。`summary` 使用 T8 Syntax 字符串。 |
+| `spec.config` | `ChartSpecInput['config']` | 是 | 原生 GPT-Vis 配置；省略 `config.type` 时由 `chartType` 补齐。`summary` 使用 GPT-Vis 原生摘要字符串。 |
 
 `ChartType` 可选值：`line`、`column`、`bar`、`pie`、`area`、`scatter`、`dual-axes`、`histogram`、`boxplot`、`radar`、`funnel`、`waterfall`、`liquid`、`word-cloud`、`violin`、`venn`、`treemap`、`sankey`、`table`、`summary`。
 
-GPT-Vis 支持 26 种可视化类型。AVA 自动推荐上述 19 种 JSON 图表，也允许通过 `viz({ chartType: 'summary', config: '# 销售报告' })` 渲染原生摘要字符串。6 种关系图暂不在 AVA 契约范围内。`ChartSpec` 描述规范化后的结果，其中 JSON 图表的 `config.type` 已补齐。
+GPT-Vis 支持 26 种可视化类型。AVA 可以推荐上述 20 种图表。`summary` 的 `config` 为 GPT-Vis 原生摘要字符串。也可以通过 `viz({ chartType: 'summary', config: '# 销售报告' })` 渲染原生摘要字符串。6 种关系图暂不在 AVA 契约范围内。`ChartSpec` 描述规范化后的结果，其中 JSON 图表的 `config.type` 已补齐。
 
 `spec.html?: string` 用于接收 `visualize()` 的完整返回值。渲染始终根据 `config` 生成新的 HTML，不复用已有 `html`；外层其他未知字段会被拒绝。
 
