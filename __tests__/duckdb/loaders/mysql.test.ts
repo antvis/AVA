@@ -1,7 +1,22 @@
-import { describe, it, expect, afterEach } from 'vitest';
+import { describe, it, expect, afterEach, vi } from 'vitest';
 
 import { DuckDBEngine } from '../../../src/duckdb/engine';
+import { loadMySQL } from '../../../src/duckdb/loaders/mysql';
 import { getLLMConfig } from '../../test-utils';
+
+it('installs the MySQL extension before loading it and attaching the source read-only', async () => {
+  const source = await loadMySQL({ host: 'localhost', database: 'analytics' });
+  const conn = {
+    run: vi.fn().mockResolvedValue(undefined),
+    runAndReadAll: vi.fn().mockResolvedValue({ getRowObjectsJson: () => [] }),
+  };
+
+  await source.register(conn);
+
+  expect(conn.run).toHaveBeenNthCalledWith(1, 'INSTALL mysql');
+  expect(conn.run).toHaveBeenNthCalledWith(2, 'LOAD mysql');
+  expect(conn.run).toHaveBeenLastCalledWith(expect.stringContaining('(TYPE mysql, READ_ONLY)'));
+});
 
 describe.skipIf(process.env.AVA_MYSQL_TEST !== '1')('loaders/mysql', () => {
   let engine: DuckDBEngine | null = null;

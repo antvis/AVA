@@ -94,6 +94,7 @@ export async function loadMySQL(options: MySQLSourceOptions, alias = ATTACH_ALIA
   return {
     register: async (conn, namespace) => {
       try {
+        await conn.run('INSTALL mysql');
         await conn.run('LOAD mysql');
         // Workaround for https://github.com/duckdb/duckdb-mysql/issues/266: DuckDB 1.5's aggregate
         // pushdown to MySQL fails on queries through the generated views. Not needed after upgrading to 2.0.
