@@ -1,6 +1,6 @@
 import { z } from 'zod';
 
-export const tencentDocsOptionsSchema = z
+export const tencentSmartsheetOptionsSchema = z
   .object({
     /** Native OpenAPI fileID. */
     fileId: z.string().trim().min(1).max(256),
@@ -15,6 +15,6 @@ export const tencentDocsOptionsSchema = z
   })
   .strict();
 
-export const tencentDocsSourceSchema = z
-  .object({ type: z.literal('tencent-smartsheet'), options: tencentDocsOptionsSchema })
+export const tencentSmartsheetSourceSchema = z
+  .object({ type: z.literal('tencent-smartsheet'), options: tencentSmartsheetOptionsSchema })
   .strict();

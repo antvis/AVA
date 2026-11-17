@@ -1,0 +1,47 @@
+AVA reads records from one Tencent Docs SmartSheet subtable. It supports text, numbers, checkboxes, dates, creation and modification times, progress, phone numbers, email, single select, currency, and percentages. Other fields, such as images and multiple select, are skipped. Loading fails if an integer's absolute value exceeds 9,007,199,254,740,991.
+
+The Tencent Docs OpenAPI returns records in pages and provides no parameter to pin them to one version. If someone edits the table during loading, pages may reflect different points in time. For results you need to reconcile, load the table after edits have stopped. [Tencent Docs pagination parameters](https://docs.qq.com/open/document/app/openapi/v2/smartsheet/record/params.html#getrecordsrequest)
+
+## Connect Tencent Docs
+
+For personal use, sign in to the Tencent Docs Open Platform with an account that can access the document. Copy `client_id`, `open_id`, and `access_token`. [Open the Tencent Docs Open Platform](https://docs.qq.com/open#/)
+
+## Get the file and subtable IDs
+
+Open the subtable you want to analyze and copy the URL from your browser. For example, `https://docs.qq.com/smartsheet/EXAMPLE_ID?tab=TAB_ID`.
+
+1. **`fileId`** Take `EXAMPLE_ID` from the path after `/smartsheet/`. Send `value=EXAMPLE_ID` and `type=2` to the Tencent Docs ID converter, then use the returned `data.fileID` in AVA. [File ID conversion](https://docs.qq.com/open/document/app/openapi/v2/file/util/converter.html)
+2. **`sheetId`** Use `TAB_ID`, the value of `tab` in the URL. If the URL has no `tab` parameter, use the converted `fileId` to look up the subtables. [List subtables](https://docs.qq.com/open/document/app/openapi/v2/smartsheet/sheet/get_sheet.html)
+
+## Load the data
+
+Fill in the five values below. In the Node.js SDK, pass the configuration object to `ava.source(config)`. In the CLI, save the configuration locally as `tencent-source.json` and run `ava source @tencent-source.json`.
+
+```json
+{
+  "type": "tencent-smartsheet",
+  "options": {
+    "fileId": "<native-file-id>",
+    "sheetId": "<sheet-id>",
+    "clientId": "<client-id>",
+    "openId": "<open-id>",
+    "accessToken": "<access-token>"
+  }
+}
+```
+
+To analyze the subtable alongside other sources, add `"name": "tencent"` at the top level of the configuration. Pass the configurations as an array in the SDK, or run `ava source @tencent-source.json orders.csv` in the CLI. See [Connect multiple sources](/documentation/data/sources/#connect-multiple-sources).
+
+## Configuration options
+
+| Option | Required | Description |
+| --- | --- | --- |
+| `fileId` | Yes | The file ID returned by the converter. |
+| `sheetId` | Yes | The ID of the subtable to analyze. |
+| `clientId` | Yes | The `client_id` from the Open Platform. |
+| `openId` | Yes | The `open_id` from the Open Platform. |
+| `accessToken` | Yes | The `access_token` from the Open Platform. |
+| `maxRecords` | No | Maximum records per load. Defaults to 10,000 and accepts 1–100,000. Wide tables may reach the cell or data size limit first. |
+| `timeoutMs` | No | Time limit for the whole load in milliseconds. Defaults to 60,000 and accepts 1–110,000. |
+| `pageSize` | No | Fields or records per request. Defaults to 100 and accepts 1–100. |
+| `maxRetries` | No | Retries for transient errors. Defaults to 2 and accepts 0–5. |

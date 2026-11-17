@@ -93,7 +93,11 @@
   "DocsNavigation": {
     "mobileDocumentation": "移动端文档导航",
     "documentationChapters": "文档章节",
-    "browseDocumentation": "浏览文档"
+    "browseDocumentation": "浏览文档",
+    "onlineServices": "在线服务",
+    "sourceOverview": "总览",
+    "files": "文件",
+    "databases": "数据库"
   },
   "DocsToc": {
     "onThisPage": "本页目录",
@@ -468,15 +472,23 @@
     },
     "data_sources": {
       "title": "接入数据",
-      "description": "连接内存数据、文件、数据库和飞书多维表格。"
+      "description": "连接内存数据、文件、数据库和在线服务。"
     },
     "data_schema": {
       "title": "了解你的数据",
       "description": "自动发现表结构，按需查看统计信息，再补充业务背景。"
     },
-    "data_feishu-bitable": {
-      "title": "飞书多维表格配置",
+    "data_online-services_feishu-bitable": {
+      "title": "飞书多维表格",
       "description": "图文介绍应用创建、权限授权、凭证绑定和多维表格加载验证。"
+    },
+    "data_online-services_tencent-smartsheet": {
+      "title": "腾讯文档智能表格",
+      "description": "将腾讯文档中的智能子表接入 AVA。"
+    },
+    "data_online-services_github": {
+      "title": "GitHub",
+      "description": "将 GitHub 仓库接入 AVA。"
     },
     "data_semantic": {
       "title": "补充业务语义",

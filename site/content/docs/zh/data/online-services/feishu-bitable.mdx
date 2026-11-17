@@ -1,4 +1,4 @@
-import { Heading } from '../../../../mdx-components';
+import { Heading } from '../../../../../mdx-components';
 
 这篇指南带你创建飞书应用、授予数据访问权限，再把多维表格接入 AVA。完成后，可以通过 CLI 或 Node.js SDK 查询数据，也可以交给 [Agent Skill](/documentation/agent-skill/)继续分析和生成图表。
 
@@ -167,6 +167,8 @@ ava source @feishu-source.json
 CLI 的凭证优先级依次为：**配置中的 `appId` + `appSecret` → 环境变量 → `~/.ava/feishu.json` → 交互终端绑定**。前两处若只填一个值会直接报错，不会拼接不同来源的凭证。管道输入、重定向或其他非交互环境不会提示绑定，需要事先配置好凭证。
 
 App Secret 和本地绑定文件都属于敏感信息，避免提交到 Git 或输出到日志。更换已保存的应用时，可以修改本地绑定文件中的完整凭证对，或用优先级更高的环境变量覆盖。
+
+人员、附件、链接、位置和群组会转换为文本，多个值通常以逗号分隔。公式和查找引用字段按返回值类型读取。
 
 <Heading as="h2" id="verify-the-data">5. 验证数据并开始分析</Heading>
 

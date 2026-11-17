@@ -1,4 +1,4 @@
-import { Heading } from '../../../../mdx-components';
+import { Heading } from '../../../../../mdx-components';
 
 Create a Lark app, grant access to your Base, and load its data into AVA. Once connected, query it with the CLI or Node.js SDK, or use the [Agent Skill](/documentation/agent-skill/) to analyze the data and generate charts.
 
@@ -160,6 +160,8 @@ When both `url` and `appToken` / `tableId` are supplied, they must identify the 
 CLI credential priority is **configuration `appId` + `appSecret` → environment variables → `~/.ava/feishu.json` → interactive terminal binding**. A partial pair in either of the first two sources causes an error; credentials from different sources are not combined. Piped input, redirection, and other non-interactive environments do not prompt for binding, so configure credentials beforehand.
 
 Keep App Secret and the saved binding file out of Git and logs. To change a saved app, update the complete credential pair in the binding file, or override it with higher-priority environment variables.
+
+People, attachments, links, locations, and groups are read as text, usually with multiple values separated by commas. Formulas and lookup fields are read according to the type of value they return.
 
 <Heading as="h2" id="verify-the-data">5. Verify the data and start analysis</Heading>
 

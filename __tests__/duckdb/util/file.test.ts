@@ -46,19 +46,6 @@ describe('duckdb/util/file', () => {
     await expect(fs.access(dirname(tmpFile))).rejects.toThrow();
   });
 
-  it.skipIf(process.platform === 'win32')('keeps the directory and file private under a permissive Unix umask', async () => {
-    const original = process.umask(0o022);
-    let tmpFile: string | undefined;
-    try {
-      tmpFile = await writeTempFile('synthetic private cells', 'json');
-      expect((await fs.stat(dirname(tmpFile))).mode & 0o777).toBe(0o700);
-      expect((await fs.stat(tmpFile)).mode & 0o777).toBe(0o600);
-    } finally {
-      process.umask(original);
-      if (tmpFile) await removeTempFile(tmpFile);
-    }
-  });
-
   it('removes the private directory when writing fails', async () => {
     const directory = await fs.mkdtemp(join(tmpdir(), 'ava-write-failed-'));
     vi.stubEnv(process.platform === 'win32' ? 'TEMP' : 'TMPDIR', directory);

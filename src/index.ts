@@ -72,7 +72,7 @@ export type {
   DuckDBEngineOptions,
   PythonEngineOptions,
   DataSourceConfig,
-  TencentDocsSourceOptions,
+  TencentSmartsheetSourceOptions,
   GitHubSourceOptions,
   SchemaOptions,
   SemanticOptions,

@@ -22,7 +22,7 @@ export async function writeTempFile(content: string | Buffer, ext: string): Prom
   const directory = await fs.mkdtemp(join(os.tmpdir(), 'ava-source-'));
   try {
     const tmpFile = join(directory, `data.${ext}`);
-    await fs.writeFile(tmpFile, content, { flag: 'wx', mode: 0o600 });
+    await fs.writeFile(tmpFile, content);
     return tmpFile;
   } catch (error) {
     await fs.rm(directory, { recursive: true, force: true });

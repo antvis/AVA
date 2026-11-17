@@ -16,7 +16,7 @@ import { clickhouseSourceSchema } from './clickhouse';
 import { sqlserverSourceSchema } from './sqlserver';
 import { snowflakeSourceSchema } from './snowflake';
 import { feishuBitableSourceSchema } from './feishu-bitable';
-import { tencentDocsSourceSchema } from './tencent-smartsheet';
+import { tencentSmartsheetSourceSchema } from './tencent-smartsheet';
 import { githubSourceSchema } from './github';
 
 const sourceFields = {
@@ -49,6 +49,6 @@ export const sourceInputSchema = z.discriminatedUnion('type', [
   sqlserverSourceSchema.extend(sourceFields),
   snowflakeSourceSchema.extend(sourceFields),
   feishuBitableSourceSchema.extend(sourceFields),
-  tencentDocsSourceSchema.extend(sourceFields),
+  tencentSmartsheetSourceSchema.extend(sourceFields),
   githubSourceSchema.extend(sourceFields),
 ]);

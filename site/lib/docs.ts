@@ -24,7 +24,7 @@ export const docs = [
     slug: 'data/sources',
     title: 'Data sources',
     group: 'Working with data',
-    description: 'Load inline data, local or remote files, and database tables.',
+    description: 'Load inline data, files, database tables, and data from online services.',
   },
   {
     slug: 'data/schema',
@@ -39,10 +39,22 @@ export const docs = [
     description: 'Write business definitions, model mappings, and reusable measures, with a worked sales example.',
   },
   {
-    slug: 'data/feishu-bitable',
-    title: 'Lark Base setup',
+    slug: 'data/online-services/feishu-bitable',
+    title: 'Lark Base',
     group: 'Working with data',
     description: 'Create an app, grant document access, and load data from Lark Base with an illustrated guide.',
+  },
+  {
+    slug: 'data/online-services/tencent-smartsheet',
+    title: 'Tencent Docs SmartSheet',
+    group: 'Working with data',
+    description: 'Connect a Tencent Docs SmartSheet to AVA.',
+  },
+  {
+    slug: 'data/online-services/github',
+    title: 'GitHub',
+    group: 'Working with data',
+    description: 'Connect a GitHub repository to AVA.',
   },
   {
     slug: 'analysis/overview',
@@ -143,6 +155,17 @@ export const docs = [
 ] as const;
 
 export type Doc = { slug: (typeof docs)[number]['slug']; title: string; group: string; description: string };
+
+const legacyFeishuSlug = 'data/feishu-bitable';
+
+export function docStaticParams() {
+  return [...docs.slice(1).map((doc) => doc.slug), legacyFeishuSlug].map((slug) => ({ slug: slug.split('/') }));
+}
+
+export function findDoc(slug: string) {
+  const canonical = slug === legacyFeishuSlug ? 'data/online-services/feishu-bitable' : slug;
+  return docs.find((doc) => doc.slug === canonical);
+}
 
 export function localizedDoc(doc: Doc, locale: Locale): Doc {
   if (locale === 'en') return doc;

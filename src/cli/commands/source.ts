@@ -201,10 +201,10 @@ feishu.json:
     Keep appSecret out of version control and logs.
 
 Tencent Docs SmartSheet (Node.js / DuckDB):
-  tencent-docs.json:
+  tencent-source.json:
     { "type": "tencent-smartsheet", "options": { "fileId": "<file-id>", "sheetId": "<sheet-id>", "clientId": "<client-id>", "openId": "<open-id>", "accessToken": "<access-token>" } }
   Pass all three OpenAPI credentials explicitly in options; environment variables are not resolved. fileId must be a native API ID.
-  Loads a read-only snapshot into data, or <sourceName>.data in a multi-source dataset.
+  Reads records into data, or <sourceName>.data when loading multiple sources.
   _record_id preserves source identity.
   Explicit IDs are required; document sharing URLs are not auto-detected.
 

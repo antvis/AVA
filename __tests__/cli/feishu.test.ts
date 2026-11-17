@@ -4,26 +4,16 @@ import { join } from 'path';
 
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
-import {
-  feishuBindError,
-  feishuCredentials,
-  feishuUrl,
-  isFeishuBitableUrl,
-  isFeishuHostUrl,
-} from '../../src/cli/feishu';
+import { feishuBindError, feishuCredentials, feishuUrl, isFeishuBitableUrl, isFeishuHostUrl } from '../../src/cli/feishu';
 
 const baseUrl = 'https://my.feishu.cn/base/AXuDbVoV7aKqzpslXwscP41Wncc?table=tblehsChh5T3X69i&view=vewfxHhZEb';
 const credentials = { appId: 'cli_test_app', appSecret: 'test-secret' };
 
 let home: string | undefined;
+const originalHome = process.env.HOME;
 const stdinDescriptor = Object.getOwnPropertyDescriptor(process.stdin, 'isTTY');
 
-beforeEach(async () => {
-  home = await mkdtemp(join(tmpdir(), 'ava-feishu-home-'));
-  // os.homedir() reads USERPROFILE on Windows and HOME on Unix. Isolate both
-  // so these tests never read the developer's real saved credentials.
-  vi.stubEnv('HOME', home);
-  vi.stubEnv('USERPROFILE', home);
+beforeEach(() => {
   vi.stubEnv('AVA_FEISHU_APP_ID', '');
   vi.stubEnv('AVA_FEISHU_APP_SECRET', '');
   Object.defineProperty(process.stdin, 'isTTY', { configurable: true, value: false });
@@ -31,6 +21,8 @@ beforeEach(async () => {
 
 afterEach(async () => {
   vi.unstubAllEnvs();
+  if (originalHome === undefined) delete process.env.HOME;
+  else process.env.HOME = originalHome;
   if (home) await rm(home, { recursive: true, force: true });
   home = undefined;
   if (stdinDescriptor) Object.defineProperty(process.stdin, 'isTTY', stdinDescriptor);
@@ -96,6 +88,8 @@ describe('Feishu credentials', () => {
   });
 
   it('reads ~/.ava/feishu.json when nothing else is configured', async () => {
+    home = await mkdtemp(join(tmpdir(), 'ava-feishu-home-'));
+    vi.stubEnv('HOME', home);
     await mkdir(join(home, '.ava'));
     await writeFile(join(home, '.ava', 'feishu.json'), JSON.stringify(credentials));
 
@@ -103,6 +97,8 @@ describe('Feishu credentials', () => {
   });
 
   it('reports invalid saved credentials JSON', async () => {
+    home = await mkdtemp(join(tmpdir(), 'ava-feishu-home-'));
+    vi.stubEnv('HOME', home);
     await mkdir(join(home, '.ava'));
     await writeFile(join(home, '.ava', 'feishu.json'), 'not json');
 
@@ -110,6 +106,9 @@ describe('Feishu credentials', () => {
   });
 
   it('explains how to provide credentials when none are available', async () => {
+    home = await mkdtemp(join(tmpdir(), 'ava-feishu-home-'));
+    vi.stubEnv('HOME', home);
+
     await expect(feishuCredentials({})).rejects.toThrow(
       'Feishu Bitable source requires appId and appSecret. Provide them in the source config'
     );

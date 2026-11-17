@@ -1,0 +1,49 @@
+import { Heading } from '../../../../../mdx-components';
+
+AVA 可以读取腾讯文档中一张智能子表的记录，支持文本、数字、复选框、日期、创建和修改时间、进度、电话、邮箱、单选、货币和百分比。图片和多选等其他字段会跳过。遇到绝对值超过 9,007,199,254,740,991 的整数，加载会报错。
+
+腾讯文档 OpenAPI 按页返回记录，公开接口没有提供固定同一版本的参数。如果加载期间有人编辑表格，不同页可能读到不同时间的数据。需要核对准确结果时，请在表格停止编辑后加载。[腾讯文档分页参数](https://docs.qq.com/open/document/app/openapi/v2/smartsheet/record/params.html#getrecordsrequest)
+
+<Heading as="h2" id="connect-tencent-docs">准备接入信息</Heading>
+
+个人使用时，用有权访问目标文档的账号登录腾讯文档开放平台，复制 `client_id`、`open_id` 和 `access_token`。[打开腾讯文档开放平台](https://docs.qq.com/open#/)
+
+<Heading as="h2" id="get-file-and-sheet-ids">从链接获取文件和子表 ID</Heading>
+
+打开要分析的子表，复制浏览器地址栏中的链接。例如 `https://docs.qq.com/smartsheet/EXAMPLE_ID?tab=TAB_ID`。
+
+1. **`fileId`** 取链接中 `/smartsheet/` 后面的 `EXAMPLE_ID`，在腾讯文档的 ID 转换接口中填入 `value=EXAMPLE_ID` 和 `type=2`，将返回的 `data.fileID` 填入 AVA。[文件 ID 转换](https://docs.qq.com/open/document/app/openapi/v2/file/util/converter.html)
+2. **`sheetId`** 取链接中 `tab` 的值 `TAB_ID`。如果链接没有 `tab`，可以用转换后的 `fileId` 查询文档中的子表。[查询子表](https://docs.qq.com/open/document/app/openapi/v2/smartsheet/sheet/get_sheet.html)
+
+## 加载数据
+
+填入下面五项配置，用 Node.js SDK 时将配置对象传给 `ava.source(config)`。用 CLI 时将配置保存到本地 `tencent-source.json`，运行 `ava source @tencent-source.json`。
+
+```json
+{
+  "type": "tencent-smartsheet",
+  "options": {
+    "fileId": "<native-file-id>",
+    "sheetId": "<sheet-id>",
+    "clientId": "<client-id>",
+    "openId": "<open-id>",
+    "accessToken": "<access-token>"
+  }
+}
+```
+
+与其他数据源一起分析时，可以在配置顶层加上 `"name": "tencent"`。在 SDK 中把各数据源配置放入同一个数组，或在 CLI 中运行 `ava source @tencent-source.json orders.csv`。参见[多数据源接入](/documentation/data/sources/#connect-multiple-sources)。
+
+<Heading as="h2" id="options">配置参数</Heading>
+
+| 参数 | 必填 | 说明 |
+| --- | --- | --- |
+| `fileId` | 是 | 转换后得到的文件 ID。 |
+| `sheetId` | 是 | 要分析的子表 ID。 |
+| `clientId` | 是 | 开放平台中的 `client_id`。 |
+| `openId` | 是 | 开放平台中的 `open_id`。 |
+| `accessToken` | 是 | 开放平台中的 `access_token`。 |
+| `maxRecords` | 否 | 一次读取的记录上限。默认 10,000，范围 1–100,000。宽表可能先达到单元格或数据大小上限。 |
+| `timeoutMs` | 否 | 整次读取的时限，单位为毫秒。默认 60,000，范围 1–110,000。 |
+| `pageSize` | 否 | 每次读取的字段数或记录数。默认 100，范围 1–100。 |
+| `maxRetries` | 否 | 遇到临时错误时的重试次数。默认 2，范围 0–5。 |
