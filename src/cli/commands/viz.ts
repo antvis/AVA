@@ -36,7 +36,7 @@ export const help = `${description}.
 Usage:
   ava viz --spec <json|@file|-> [--output <path>]
 
-Spec must contain chartType and config (GPT-Vis JSON config), as returned by ava recommend.
+Spec must contain chartType and config (a native GPT-Vis config), as returned by ava recommend.
 Without --output, returns the validated { chartType, config } as JSON.
 With --output, writes HTML and returns { "output": "<absolute-path>" }.
 No API key is required.

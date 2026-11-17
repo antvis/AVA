@@ -1,12 +1,12 @@
 # Visualization
 
-Verified against the published `@antv/gpt-vis` **1.3.1** package (2026-11-09). Use the [official chart reference](https://gpt-vis.antv.vision/docs/charts) for native options. AVA accepts a JSON Spec; SDK Syntax strings and T8 Summary text are not CLI inputs.
+Verified against the published `@antv/gpt-vis` **1.3.1** package (2026-11-09). Use the [official chart reference](https://gpt-vis.antv.vision/docs/charts) for native options. AVA accepts a JSON spec; use GPT-Vis summary text as `config` when `chartType` is `summary`.
 
 ## Spec and Field Mapping
 
-A Spec has exactly two keys: `{ "chartType": "…", "config": {…} }`. Put the fields below directly in `config`; most types use `config.data` as an array of row objects. `value`, `x`, and `y` must be numbers. Map a second dimension to row field `group`.
+A chart spec uses `{ "chartType": "…", "config": {…} }`. Put the fields below directly in `config`; most types use `config.data` as an array of row objects. `value`, `x`, and `y` must be numbers. Map a second dimension to row field `group`.
 
-GPT-Vis supports 26 types; AVA currently accepts the 19 below. Its CLI does not register `flow-diagram`, `network-graph`, `mindmap`, `indented-tree`, `organization-chart`, `fishbone-diagram`, or `summary`.
+AVA can recommend the 19 chart types below and `summary`, which uses `{ "chartType": "summary", "config": "# Sales report" }`.
 
 | `chartType` | Data fields or structure |
 | --- | --- |

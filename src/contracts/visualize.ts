@@ -230,9 +230,12 @@ const chartSchemas = [
   z
     .object({
       chartType: z.literal('summary'),
-      config: z.string().refine((text) => text.trim().length > 0 && !text.trim().startsWith('vis '), {
-        message: 'Summary requires nonempty T8 text, not vis chart syntax',
-      }),
+      config: z
+        .string()
+        .refine((text) => text.trim().length > 0 && !text.trim().startsWith('vis '), {
+          message: 'Summary requires nonempty GPT-Vis summary text',
+        })
+        .describe('GPT-Vis summary text with Markdown headings and paragraphs.'),
       html: z.string().optional(),
     })
     .strict(),

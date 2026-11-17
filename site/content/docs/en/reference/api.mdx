@@ -369,11 +369,11 @@ Neither requires a loaded source. Both use the model and return `null` for empty
 | ---------------- | ----------- | -------- | --------------------------------------------------------------------------------------------------- |
 | `spec`           | `ChartSpecInput` | Yes      | Chart specification before defaults are applied. |
 | `spec.chartType` | `ChartType` | Yes      | One of the types below; must match `config.type` for JSON charts. |
-| `spec.config`    | `ChartSpecInput['config']` | Yes    | Native GPT-Vis config; a missing `config.type` is filled from `chartType`. For `summary`, pass a T8 Syntax string. |
+| `spec.config`    | `ChartSpecInput['config']` | Yes    | Native GPT-Vis config; a missing `config.type` is filled from `chartType`. For `summary`, pass a GPT-Vis summary string. |
 
 `ChartType` values: `line`, `column`, `bar`, `pie`, `area`, `scatter`, `dual-axes`, `histogram`, `boxplot`, `radar`, `funnel`, `waterfall`, `liquid`, `word-cloud`, `violin`, `venn`, `treemap`, `sankey`, `table`, `summary`.
 
-GPT-Vis supports 26 visualization types. AVA recommends the 19 JSON chart types above and additionally accepts native summary strings through `viz({ chartType: 'summary', config: '# Sales report' })`. The six relationship graph types are outside AVA's current contract. `ChartSpec` describes the normalized result, with `config.type` filled for JSON charts.
+GPT-Vis supports 26 visualization types. AVA can recommend the 20 types above. For `summary`, `config` contains the native GPT-Vis summary string. You can also render a summary directly through `viz({ chartType: 'summary', config: '# Sales report' })`. The six relationship graph types are outside AVA's current contract. `ChartSpec` describes the normalized result, with `config.type` filled for JSON charts.
 
 `spec.html?: string` accepts the complete result from `visualize()`. Rendering always uses `config` to generate fresh HTML; an existing `html` value is not reused. Other unknown envelope fields are rejected.
 

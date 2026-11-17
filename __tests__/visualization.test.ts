@@ -28,7 +28,7 @@ function reply(text: string) {
 describe('chart recommendation', () => {
   it('generates a chart specification without rendering HTML', async () => {
     reply('column');
-    reply(`\`\`\`json\n${json}\n\`\`\``);
+    reply(`\`\`\`json\n${JSON.stringify({ data: config.data })}\n\`\`\``);
     expect(await ava['recommend'](result)).toEqual({ chartType: 'column', config });
     expect(generateText).toHaveBeenCalledTimes(2);
     const prompt = vi.mocked(generateText).mock.calls[0][0].prompt;
@@ -54,6 +54,22 @@ describe('chart recommendation', () => {
   it('propagates recommendation errors', async () => {
     vi.mocked(generateText).mockRejectedValueOnce(new Error('Model unavailable'));
     await expect(ava['recommend'](result)).rejects.toThrow('Model unavailable');
+  });
+
+  it('generates and renders a requested GPT-Vis summary through visualize', async () => {
+    const query = 'Create a visual summary of revenue by city';
+    const summary = '# Revenue\nHangzhou earned [100](metric_value, origin=100).';
+    reply('summary');
+    reply(JSON.stringify(summary));
+
+    const visualization = await ava.visualize({ ...result, query });
+
+    expect(visualization).toMatchObject({ chartType: 'summary', config: summary });
+    expect(vi.mocked(generateText).mock.calls[0][0].prompt).toContain('"summary"');
+    expect(vi.mocked(generateText).mock.calls[1][0].prompt).toContain('"type":"string"');
+    expect(
+      runInNewContext(`(${visualization!.html.match(/const visConfig = (.+);/)![1]})`, {}, { timeout: 1000 })
+    ).toBe(summary);
   });
 
   it('renders the recommended specification through visualize', async () => {
