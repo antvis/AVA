@@ -143,7 +143,7 @@ exports[`getDuckDBSchema > discovers replaced view definitions and preserves col
     "views": [
       {
         "name": "current_view",
-        "statement": "SELECT * FROM (WITH RECURSIVE "sequence" (n) AS ((SELECT 1) UNION  ALL (SELECT (n + 1) FROM "sequence" WHERE (n < 3)))SELECT n, 'AS ;' FROM "sequence" WHERE (n > 10)) AS "__ava_view"("empty, value", "label AS text")",
+        "statement": "SELECT * FROM (WITH RECURSIVE "sequence" (n) AS ((SELECT 1) UNION ALL (SELECT (n + 1) FROM "sequence" WHERE (n < 3))) SELECT n, 'AS ;' FROM "sequence" WHERE (n > 10)) AS "__ava_view"("empty, value", "label AS text")",
       },
     ],
   },
@@ -291,7 +291,7 @@ exports[`getDuckDBSchema > preserves CTEs, joins, aggregates, windows and nested
     "views": [
       {
         "name": "sales.report AS "quoted",
-        "statement": "SELECT * FROM (WITH totals AS (SELECT c."name", CAST(COALESCE(sum(o.amount) FILTER (WHERE (o.status = 'paid')), 0) AS INTEGER) AS total FROM customers AS c LEFT JOIN orders AS o ON ((c.id = o.customer_id)) GROUP BY c."name")SELECT "name", total, CAST(row_number() OVER (ORDER BY total DESC, "name") AS INTEGER) FROM totals) AS "__ava_view"("customer, name", "total AS ""net", "position")",
+        "statement": "SELECT * FROM (WITH totals AS (SELECT c."name", CAST(COALESCE(sum(o.amount) FILTER (WHERE (o.status = 'paid')), 0) AS INTEGER) AS total FROM (customers AS c LEFT JOIN orders AS o ON ((c.id = o.customer_id))) GROUP BY c."name") SELECT "name", total, CAST(row_number() OVER (ORDER BY total DESC, "name") AS INTEGER) FROM totals) AS "__ava_view"("customer, name", "total AS ""net", "position")",
       },
       {
         "name": "top customers",

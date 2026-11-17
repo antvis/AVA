@@ -63,6 +63,7 @@ describe('DuckDB SQL validation', () => {
     'SELECT 1 AS n UNION ALL BY NAME SELECT 1 AS n',
     'WITH RECURSIVE seq(n) AS (SELECT 1 UNION ALL SELECT n + 1 FROM seq WHERE n < 3) SELECT * FROM seq',
     "SELECT 9223372036854775807 AS n, '中文😀; -- literal' AS text",
+    'SELECT list_transform([1, 2, 3], lambda x : x * 2)',
     'SELECT [x * 2 FOR x IN [1, 2, 3]]',
     'SELECT 1e2 AS n, typeof(1e2) AS kind',
     'SELECT (1e-1 + 1e-1 + 1e-1) = 0.3 AS matches',

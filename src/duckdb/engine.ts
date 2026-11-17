@@ -182,7 +182,7 @@ export class DuckDBEngine implements AnalysisEngine {
     const query = await this.dialect.validateDSL(sql);
     const timeoutMs = this.engineOptions.queryTimeoutMs ?? DEFAULT_QUERY_TIMEOUT_MS;
     // query() parses the original source; a quoted constant keeps its own parameters unbound.
-    // https://duckdb.org/docs/1.5/guides/sql_features/query_and_query_table_functions
+    // https://duckdb.org/docs/2.0/guides/sql_features/query_and_query_table_functions
     const reader = await runWithTimeout(
       conn.runAndReadAll(`SELECT * FROM query(${sqlStringLiteral(query)}) LIMIT ${maxRows(options) + 1}`),
       timeoutMs,

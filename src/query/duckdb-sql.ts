@@ -32,11 +32,12 @@ export class DuckDBSQLDialect implements QueryDialect {
   readonly id = 'duckdb-sql';
 
   // Identifier quoting and set semantics follow the DuckDB SQL reference.
-  // https://duckdb.org/docs/1.5/sql/dialect/keywords_and_identifiers
-  // https://duckdb.org/docs/1.5/sql/query_syntax/setops
+  // https://duckdb.org/docs/2.0/sql/dialect/keywords_and_identifiers
+  // https://duckdb.org/docs/2.0/sql/query_syntax/setops
   readonly rules = `Use read-only SELECT queries (WITH is allowed).
   Use the exact table references and column names from the data model, joining tables when needed. Use double quotes for identifier components that need quoting and single quotes for strings.
-  Use DuckDB SQL syntax and functions appropriate to the column types. UNION removes duplicates and UNION ALL preserves them; align columns by position, or explicitly choose UNION BY NAME to align them by name.`;
+  Use DuckDB 2.0 SQL syntax and functions appropriate to the column types. Write lambdas as lambda x : expression.
+  UNION removes duplicates and UNION ALL preserves them; align columns by position, or explicitly choose UNION BY NAME to align them by name.`;
 
   private parserInstance: Promise<DuckDBInstance> | undefined;
 
@@ -94,7 +95,7 @@ export class DuckDBSQLDialect implements QueryDialect {
     try {
       // The official serializer accepts SELECTs, including their CTEs and subqueries, without binding tables.
       // User SQL is a bound value; only the serializer runs in this data-free instance.
-      // https://duckdb.org/docs/1.5/data/json/sql_to_and_from_json
+      // https://duckdb.org/docs/2.0/data/json/sql_to_and_from_json
       const reader = await connection.runAndReadAll('SELECT json_serialize_sql(CAST(? AS VARCHAR)) AS ast', [sql]);
       const serialized = reader.getRowObjectsJson()[0]?.ast;
       if (typeof serialized !== 'string') throw new Error('Missing DuckDB SQL validation result');
