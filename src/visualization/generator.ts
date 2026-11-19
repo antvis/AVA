@@ -60,7 +60,8 @@ export async function generateVisualizationConfig(
   chartType: ChartType,
   data: unknown,
   query: string,
-  llmConfig: LLMConfig
+  llmConfig: LLMConfig,
+  signal?: AbortSignal
 ): Promise<unknown> {
   const chartSchema = vizInputSchema.options.find((schema) => schema.shape.chartType.value === chartType)!;
   const prompt = `你是一个 GPT-Vis 可视化专家。根据图表类型、数据和用户查询，生成对应的 GPT-Vis 配置。
@@ -92,6 +93,7 @@ ${JSON.stringify(z.toJSONSchema(chartSchema.shape.config, { io: 'input' }))}
   const { text } = await generateText({
     model: languageModel(llmConfig),
     maxRetries: llmConfig.maxRetries ?? 3,
+    abortSignal: signal,
     prompt,
   });
 

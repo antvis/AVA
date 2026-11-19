@@ -182,6 +182,48 @@ describe('dataset engine and language', () => {
     expect(result.rowCount).toBe(1);
   });
 
+  it('disposes without waiting for a running command', async () => {
+    await datasets.createDataset([source], llm, 'javascript');
+
+    let release: (() => void) | undefined;
+    let started = false;
+    let commandSignal: AbortSignal | undefined;
+    const running = datasets.withDataset(
+      (_ava, signal) =>
+        new Promise<void>((resolve) => {
+          started = true;
+          commandSignal = signal;
+          release = resolve;
+        })
+    );
+
+    await vi.waitFor(() => expect(started).toBe(true));
+    const startedAt = Date.now();
+    await datasets.disposeDataset();
+
+    // Disposal is authoritative: it aborts the running command instead of awaiting it.
+    expect(Date.now() - startedAt).toBeLessThan(2_000);
+    expect(commandSignal?.aborted).toBe(true);
+    await expect(datasets.withDataset(() => Promise.resolve(null))).rejects.toThrow(/unavailable|disposed/i);
+
+    release!();
+    await running;
+  });
+
+  it('does not execute a command whose signal was already aborted', async () => {
+    await datasets.createDataset([source], llm, 'javascript');
+
+    const controller = new AbortController();
+    const operation = vi.fn(() => Promise.resolve('executed'));
+    controller.abort(new Error('Client disconnected'));
+
+    await expect(datasets.withDataset(operation, controller.signal)).rejects.toThrow('Client disconnected');
+    expect(operation).not.toHaveBeenCalled();
+
+    // The queue recovers, so the session still serves later commands.
+    await expect(datasets.withDataset(() => Promise.resolve('ok'))).resolves.toBe('ok');
+  });
+
   it('retains imported semantics alongside schema and profile in model context', async () => {
     const profile = {
       models: [

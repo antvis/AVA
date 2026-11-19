@@ -234,9 +234,13 @@ export interface AnalysisEngine {
   /** Compute statistics for the loaded data. */
   profile?(schema: Schema, options?: ProfileOptions): Promise<Profile>;
   /** Generate the executable DSL (SQL) for a natural-language query */
-  getDSL(query: string, dataModel: DataModel): Promise<TranslationResult>;
+  getDSL(query: string, dataModel: DataModel, signal?: AbortSignal): Promise<TranslationResult>;
   /** Execute one DSL statement with a bounded result. */
-  execute<T = Record<string, unknown>>(dsl: string, options?: ExecutionOptions): Promise<ExecutionResult<T>>;
+  execute<T = Record<string, unknown>>(
+    dsl: string,
+    options?: ExecutionOptions,
+    signal?: AbortSignal
+  ): Promise<ExecutionResult<T>>;
   /** Release resources (temp files, database connections) */
   dispose(): Promise<void>;
 }
@@ -258,7 +262,7 @@ export interface QueryDialect {
   /** Language rules and execution bindings, independent of the model response format. */
   readonly rules: string;
   /** Generate executable code for a natural-language query. */
-  getDSL(query: string, dataModel: DataModel): Promise<TranslationResult>;
+  getDSL(query: string, dataModel: DataModel, signal?: AbortSignal): Promise<TranslationResult>;
   /** Validate the DSL without executing it, preserving its source semantics. */
   validateDSL(dsl: string): Promise<string>;
 }
@@ -270,6 +274,8 @@ export interface AnalysisRuntime {
   dataModel: DataModel;
   engine: AnalysisEngine;
   llm: LLMConfig;
+  /** Cancels the whole analysis, including in-flight model requests and queries. */
+  signal?: AbortSignal;
 }
 
 /** A replaceable way of analyzing a natural-language query. */

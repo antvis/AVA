@@ -11,6 +11,7 @@ import { JavaScriptDialect } from '../../query/javascript';
 import { extractDataSchema } from '../../util/schema';
 import { executionResult, inferQuerySchema } from '../../util/result';
 import { DEFAULT_METRICS, parseProfileOptions } from '../../util/profile';
+import { throwIfAborted } from '../../util/abort';
 
 import { profileTables } from './profile';
 import { executeCode } from './sandbox';
@@ -71,19 +72,24 @@ export class JavaScriptEngine implements AnalysisEngine {
     return profileTables(this.data, schema, parseProfileOptions(options, { metrics: DEFAULT_METRICS }));
   }
 
-  async getDSL(query: string, dataModel: DataModel): Promise<TranslationResult> {
+  async getDSL(query: string, dataModel: DataModel, signal?: AbortSignal): Promise<TranslationResult> {
     if (!this.data) {
       throw new Error('No data loaded. Please call source() first.');
     }
 
-    return this.dialect.getDSL(query, dataModel);
+    return this.dialect.getDSL(query, dataModel, signal);
   }
 
-  async execute<T = Record<string, unknown>>(code: string, options?: ExecutionOptions): Promise<ExecutionResult<T>> {
+  async execute<T = Record<string, unknown>>(
+    code: string,
+    options?: ExecutionOptions,
+    signal?: AbortSignal
+  ): Promise<ExecutionResult<T>> {
     if (!this.data) {
       throw new Error('No data loaded. Please call source() first.');
     }
 
+    throwIfAborted(signal);
     const validated = await this.dialect.validateDSL(code);
     const result = await executeCode(structuredClone(this.data), validated);
     const rows = (Array.isArray(result) ? result : [{ value: result }]) as T[];

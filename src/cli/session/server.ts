@@ -1,14 +1,9 @@
 import { rm } from 'fs/promises';
 
+import { handleConnection } from './connection';
 import { createDataset, describeDataset, disposeDataset, withDataset } from './datasets';
-import {
-  IPC_TIMEOUT_MS,
-  IPC_MAX_REQUEST_BYTES,
-  IPC_MAX_RESPONSE_BYTES,
-  requestSchema,
-  startupSchema,
-} from './protocol';
-import { createSessionServer, readMessage, sendResponse, sessionDirectory, sessionEndpoint } from './transport';
+import { startupSchema } from './protocol';
+import { createSessionServer, sessionDirectory, sessionEndpoint } from './transport';
 
 import type { Server, Socket } from 'net';
 import type { Request } from './protocol';
@@ -24,8 +19,15 @@ let pending = 0;
 function close(): Promise<void> {
   if (!closing) {
     clearTimeout(idle);
-    server?.close();
-    closing = disposeDataset().finally(() => rm(sessionDirectory(id), { recursive: true, force: true }));
+    closing = (async () => {
+      try {
+        await disposeDataset();
+      } finally {
+        // Release the dataset first; only then stop accepting new commands.
+        server?.close();
+        await rm(sessionDirectory(id), { recursive: true, force: true });
+      }
+    })();
   }
 
   return closing;
@@ -48,7 +50,7 @@ function resetIdle(): void {
     }, 30 * 60_000);
 }
 
-async function dispatch(message: Request): Promise<unknown> {
+async function dispatch(message: Request, signal: AbortSignal): Promise<unknown> {
   if (closing) throw new Error('Dataset has been disposed.');
 
   if (message.command === 'dispose') {
@@ -62,7 +64,7 @@ async function dispatch(message: Request): Promise<unknown> {
     throw new Error('Set OPENAI_API_KEY before ava source, then load the dataset again.');
   }
 
-  return withDataset(async (ava) => {
+  return withDataset(async (ava, commandSignal) => {
     switch (message.command) {
       case 'semantic':
         return ava.semantic(undefined, message.semantic === undefined ? undefined : () => message.semantic!);
@@ -72,52 +74,41 @@ async function dispatch(message: Request): Promise<unknown> {
           message.profile === undefined ? undefined : () => message.profile!
         );
       case 'suggest':
-        return ava.suggest(message.count);
+        return ava.suggest(message.count, commandSignal);
       case 'translate':
-        return { dsl: await ava.translate(message.query) };
+        return { dsl: await ava.translate(message.query, commandSignal) };
       case 'analyze':
-        return ava.analyze(message.query, {
-          ...(message.strategy ? { strategy: { type: message.strategy } } : {}),
-          maxRows: message.maxRows,
-          maxResultBytes: message.maxResultBytes,
-        });
+        return ava.analyze(
+          message.query,
+          {
+            ...(message.strategy ? { strategy: { type: message.strategy } } : {}),
+            maxRows: message.maxRows,
+            maxResultBytes: message.maxResultBytes,
+          },
+          commandSignal
+        );
       case 'query':
-        return ava.query(message.dsl, { maxRows: message.maxRows, maxResultBytes: message.maxResultBytes });
+        return ava.query(message.dsl, { maxRows: message.maxRows, maxResultBytes: message.maxResultBytes }, commandSignal);
     }
-  });
+  }, signal);
 }
 
-function handleConnection(socket: Socket): void {
-  socket.setTimeout(IPC_TIMEOUT_MS, () => socket.destroy());
-  socket.on('error', () => socket.destroy());
-
-  readMessage(socket, IPC_MAX_REQUEST_BYTES, (body) => {
-    if (socket.destroyed) return;
-    socket.setTimeout(0);
+function trackBusy(busy: boolean): void {
+  if (busy) {
     pending++;
     clearTimeout(idle);
+    return;
+  }
 
-    void (async () => {
-      try {
-        let response: string;
-        try {
-          const result = await dispatch(requestSchema.parse(JSON.parse(body)));
-          response = JSON.stringify({ ok: true, result });
-        } catch (error) {
-          response = JSON.stringify({ ok: false, error: error instanceof Error ? error.message : String(error) });
-        }
+  pending--;
+  resetIdle();
+}
 
-        if (socket.destroyed) return;
-        if (Buffer.byteLength(response) > IPC_MAX_RESPONSE_BYTES)
-          response = JSON.stringify({ ok: false, error: 'Dataset response exceeds 16 MiB.' });
-
-        socket.setTimeout(IPC_TIMEOUT_MS);
-        sendResponse(socket, response);
-      } finally {
-        pending--;
-        resetIdle();
-      }
-    })();
+function serveConnection(socket: Socket): void {
+  handleConnection(socket, {
+    dispatch,
+    onBusy: trackBusy,
+    exit: (code) => process.exit(code),
   });
 }
 
@@ -128,7 +119,7 @@ process.once('message', (message) => {
     await createDataset(startup.sources, { ...startup.llm, model: startup.llm.model }, startup.engine);
     if (closing) return;
 
-    server = await createSessionServer(id, handleConnection);
+    server = await createSessionServer(id, serveConnection);
     if (closing) return;
     server.on('error', (error) => void fail(error));
 
@@ -158,6 +149,11 @@ process.once('disconnect', () => {
 
 for (const signal of ['SIGTERM', 'SIGINT'] as const) {
   process.once(signal, () => {
-    void close().finally(() => process.exit(0));
+    // Graceful first; never let an in-flight task pin the daemon.
+    const deadline = setTimeout(() => process.exit(0), 3_000);
+    void close().finally(() => {
+      clearTimeout(deadline);
+      process.exit(0);
+    });
   });
 }

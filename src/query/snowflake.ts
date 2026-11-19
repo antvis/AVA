@@ -113,7 +113,7 @@ export class SnowflakeQueryDialect implements QueryDialect {
 
   constructor(private readonly llmConfig: LLMConfig, private readonly compile: SnowflakeCompiler) {}
 
-  async getDSL(query: string, dataModel: DataModel): Promise<TranslationResult> {
+  async getDSL(query: string, dataModel: DataModel, signal?: AbortSignal): Promise<TranslationResult> {
     const prompt = `You are a SQL expert. Given the following dataset profile and user query, generate a SQL query to answer the question.
 
 Dataset Context:
@@ -127,6 +127,7 @@ Generate exactly one query. Return only SQL text, without explanation or Markdow
     const { text, usage, finishReason } = await generateText({
       model: languageModel(this.llmConfig),
       maxRetries: this.llmConfig.maxRetries ?? 3,
+      abortSignal: signal,
       prompt,
     });
 
