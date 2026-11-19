@@ -50,6 +50,24 @@ const PROJECTS = [
     kind: 'tracing',
   },
   {
+    name: 'mcp-server-ava',
+    origin: 'community',
+    description: 'mcpServerAvaDescription',
+    status: 'Community integration',
+    href: 'https://github.com/DoubleCore/mcp-server-ava',
+    repository: 'DoubleCore/mcp-server-ava',
+    kind: 'mcp',
+  },
+  {
+    name: 'ai-sdk-ava',
+    origin: 'community',
+    description: 'aiSdkAvaDescription',
+    status: 'Community integration',
+    href: 'https://github.com/DoubleCore/ai-sdk-ava',
+    repository: 'DoubleCore/ai-sdk-ava',
+    kind: 'ai-sdk',
+  },
+  {
     name: 'AVA Agent Skill',
     origin: 'official',
     description: 'exploreDataAndGenerateChartsDirectlyFromTheAiAgentYouAlreadyUse',
@@ -101,6 +119,20 @@ function ProjectVisual({ kind }: { kind: string }) {
             <i style={{ marginLeft: `${i * 10}px`, width: `${72 - i * 14}%` }} />
           </div>
         ))}
+      </div>
+    );
+  }
+  if (kind === 'mcp' || kind === 'ai-sdk') {
+    return (
+      <div className={styles.protocolVisual} aria-hidden="true">
+        <strong>{t(kind === 'mcp' ? 'mcpVisualTitle' : 'aiSdkVisualTitle')}</strong>
+        {['loadDataSchemaLabel', 'queryRowsLabel', 'visualizeChartLabel'].map((key, i) => (
+          <div key={key}>
+            <span>{t(key)}</span>
+            <i style={{ width: `${86 - i * 16}%` }} />
+          </div>
+        ))}
+        <small className={styles.protocolTag}>{t(kind === 'mcp' ? 'mcpProtocolTag' : 'aiSdkProtocolTag')}</small>
       </div>
     );
   }
