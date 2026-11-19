@@ -62,10 +62,11 @@ const result = {
 
   constructor(private readonly llmConfig: LLMConfig) {}
 
-  async getDSL(query: string, dataModel: DataModel): Promise<TranslationResult> {
+  async getDSL(query: string, dataModel: DataModel, signal?: AbortSignal): Promise<TranslationResult> {
     const { text, usage, finishReason } = await generateText({
       model: languageModel(this.llmConfig),
       maxRetries: this.llmConfig.maxRetries ?? 3,
+      abortSignal: signal,
       prompt: `You are a data analysis expert. Generate JavaScript code to answer the question.
 
 Dataset Context:

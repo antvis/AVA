@@ -10,6 +10,7 @@
 
 import { PostgreSQLDialect } from '../../query/postgresql';
 import { executionResult, inferQuerySchema, limitedQuery, maxRows } from '../../util/result';
+import { throwIfAborted } from '../../util/abort';
 import { DEFAULT_METRICS, parseProfileOptions } from '../../util/profile';
 
 import { profileTables } from './profile';
@@ -77,17 +78,22 @@ export class SupabaseEngine implements AnalysisEngine {
     );
   }
 
-  async getDSL(query: string, dataModel: DataModel): Promise<TranslationResult> {
+  async getDSL(query: string, dataModel: DataModel, signal?: AbortSignal): Promise<TranslationResult> {
     if (!this.connection) {
       throw new Error('No data loaded. Please call source() first.');
     }
-    return this.dialect.getDSL(query, dataModel);
+    return this.dialect.getDSL(query, dataModel, signal);
   }
 
-  async execute<T = Record<string, unknown>>(sql: string, options?: ExecutionOptions): Promise<ExecutionResult<T>> {
+  async execute<T = Record<string, unknown>>(
+    sql: string,
+    options?: ExecutionOptions,
+    signal?: AbortSignal
+  ): Promise<ExecutionResult<T>> {
     if (!this.connection) {
       throw new Error('No data loaded. Please call source() first.');
     }
+    throwIfAborted(signal);
     const query = await this.dialect.validateDSL(sql);
     const rows = (await this.runQuery(limitedQuery(query, maxRows(options)))) as T[];
     return executionResult(rows, inferQuerySchema(rows), options);

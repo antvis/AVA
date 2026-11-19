@@ -43,7 +43,7 @@ export class DuckDBSQLDialect implements QueryDialect {
 
   constructor(private readonly llmConfig: LLMConfig) {}
 
-  async getDSL(query: string, dataModel: DataModel): Promise<TranslationResult> {
+  async getDSL(query: string, dataModel: DataModel, signal?: AbortSignal): Promise<TranslationResult> {
     const prompt = `You are a DuckDB SQL expert. Given the following data model and user query, generate a SQL query to answer the question.
 
     Dataset Context:
@@ -57,6 +57,7 @@ export class DuckDBSQLDialect implements QueryDialect {
     const { text, usage, finishReason } = await generateText({
       model: languageModel(this.llmConfig),
       maxRetries: this.llmConfig.maxRetries ?? 3,
+      abortSignal: signal,
       prompt,
     });
 

@@ -60,7 +60,7 @@ export class TSQLDialect implements QueryDialect {
 
   constructor(private readonly llmConfig: LLMConfig) {}
 
-  async getDSL(query: string, dataModel: DataModel): Promise<TranslationResult> {
+  async getDSL(query: string, dataModel: DataModel, signal?: AbortSignal): Promise<TranslationResult> {
     const prompt = `You are a SQL Server expert. Generate a query answering the user's question using the supplied data model.
 
     Dataset Context:
@@ -74,6 +74,7 @@ export class TSQLDialect implements QueryDialect {
     const { text, usage, finishReason } = await generateText({
       model: languageModel(this.llmConfig),
       maxRetries: this.llmConfig.maxRetries ?? 3,
+      abortSignal: signal,
       prompt,
     });
 

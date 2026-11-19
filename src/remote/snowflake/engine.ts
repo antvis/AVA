@@ -6,6 +6,7 @@ import { SnowflakeQueryDialect } from '../../query/snowflake';
 import { DEFAULT_METRICS, parseProfileOptions } from '../../util/profile';
 import { executionResult, maxRows, maxResultBytes, resultRowBytes } from '../../util/result';
 import { runWithTimeout } from '../../util/timeout';
+import { throwIfAborted } from '../../util/abort';
 
 import { profileTables } from './profile';
 import { convertRow, queryColumn } from './result';
@@ -184,13 +185,18 @@ export class SnowflakeEngine implements AnalysisEngine {
     );
   }
 
-  async getDSL(query: string, dataModel: DataModel): Promise<TranslationResult> {
+  async getDSL(query: string, dataModel: DataModel, signal?: AbortSignal): Promise<TranslationResult> {
     this.requireScope();
-    return this.dialect.getDSL(query, dataModel);
+    return this.dialect.getDSL(query, dataModel, signal);
   }
 
-  async execute<T = Record<string, unknown>>(dsl: string, options?: ExecutionOptions): Promise<ExecutionResult<T>> {
+  async execute<T = Record<string, unknown>>(
+    dsl: string,
+    options?: ExecutionOptions,
+    signal?: AbortSignal
+  ): Promise<ExecutionResult<T>> {
     this.requireScope();
+    throwIfAborted(signal);
     const sql = await this.dialect.validateDSL(dsl);
     // One row beyond the limit reveals truncation without fetching the rest of the result.
     const { rows, columns, truncatedBy } = await this.run(sql, {

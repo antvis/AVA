@@ -12,6 +12,7 @@ import { generateSuggestions } from './suggest';
 import { analyze } from './analysis';
 import { LifecycleEventType, LifecycleEvent, AnalysisEventType, AnalysisEvent, emit } from './event';
 import { serializeError } from './util/error';
+import { throwIfAborted } from './util/abort';
 
 import type { LanguageModelUsage } from 'ai';
 import type {
@@ -234,11 +235,12 @@ export class AVA extends EventEmitter {
    * The query is turned into SQL via LLM and executed by the configured engine.
    * Use visualize() separately to generate charts from the analysis result.
    */
-  async analyze(query: string, config: AnalysisConfig = {}): Promise<AnalysisResponse> {
+  async analyze(query: string, config: AnalysisConfig = {}, signal?: AbortSignal): Promise<AnalysisResponse> {
     if (!this.engine) {
       throw new Error('No data loaded. Please call source() first.');
     }
 
+    throwIfAborted(signal);
     emit(this, new LifecycleEvent(LifecycleEventType.ANALYZE_START, { query }));
 
     let result: AnalysisResponse;
@@ -248,6 +250,7 @@ export class AVA extends EventEmitter {
         dataModel: await this.getDataModel(),
         engine: this.engine,
         llm: this.llmConfig,
+        signal,
       };
       result = await analyze(query, config, runtime);
     } catch (error) {
@@ -265,17 +268,22 @@ export class AVA extends EventEmitter {
    * Translate a natural-language query into DSL.
    * Use query() to execute the generated DSL.
    */
-  async translate(query: string): Promise<string> {
+  async translate(query: string, signal?: AbortSignal): Promise<string> {
     if (!this.engine) {
       throw new Error('No data loaded. Please call source() first.');
     }
 
+    throwIfAborted(signal);
     emit(this, new AnalysisEvent(AnalysisEventType.TRANSLATE_START, { query }));
 
     let dsl: string;
     let usage: LanguageModelUsage | undefined;
     try {
-      ({ dsl, usage } = await this.engine.getDSL(query, await this.getDataModel()));
+      const dataModel = await this.getDataModel();
+      // Keep the two-argument call shape when no signal is supplied.
+      ({ dsl, usage } = signal
+        ? await this.engine.getDSL(query, dataModel, signal)
+        : await this.engine.getDSL(query, dataModel));
     } catch (error) {
       emit(this, new AnalysisEvent(AnalysisEventType.TRANSLATE_END, { error: serializeError(error) }));
 
@@ -291,16 +299,20 @@ export class AVA extends EventEmitter {
    * Execute a read-only query against the data source.
    * The DSL must match the current engine's query language.
    */
-  async query(dsl: string, options?: ExecutionOptions): Promise<ExecutionResult> {
+  async query(dsl: string, options?: ExecutionOptions, signal?: AbortSignal): Promise<ExecutionResult> {
     if (!this.engine) {
       throw new Error('No data loaded. Please call source() first.');
     }
 
+    throwIfAborted(signal);
     emit(this, new AnalysisEvent(AnalysisEventType.QUERY_START, { dsl }));
 
     let result: ExecutionResult;
     try {
-      result = await this.engine.execute(dsl, options);
+      // Keep the two-argument call shape when no signal is supplied.
+      result = signal
+        ? await this.engine.execute(dsl, options, signal)
+        : await this.engine.execute(dsl, options);
     } catch (error) {
       emit(this, new AnalysisEvent(AnalysisEventType.QUERY_END, { error: serializeError(error) }));
 
@@ -319,12 +331,16 @@ export class AVA extends EventEmitter {
    * @param analysisResult - The result returned from analyze()
    * @returns VisualizeResponse, or null if no chart is needed. Generation errors propagate to the caller.
    */
-  async visualize(analysisResult: Pick<AnalysisResponse, 'query' | 'data'>): Promise<VisualizeResponse | null> {
+  async visualize(
+    analysisResult: Pick<AnalysisResponse, 'query' | 'data'>,
+    signal?: AbortSignal
+  ): Promise<VisualizeResponse | null> {
+    throwIfAborted(signal);
     emit(this, new LifecycleEvent(LifecycleEventType.VISUALIZE_START, { query: analysisResult.query }));
 
     let result: VisualizeResponse | null;
     try {
-      const spec = await this.recommend(analysisResult);
+      const spec = await this.recommend(analysisResult, signal);
       result = spec ? { ...spec, html: await this.viz(spec) } : null;
     } catch (error) {
       emit(this, new LifecycleEvent(LifecycleEventType.VISUALIZE_END, { error: serializeError(error) }));
@@ -341,15 +357,19 @@ export class AVA extends EventEmitter {
    * Recommend a chart specification for the analysis result.
    * Combine a suitable chart type with GPT-Vis JSON config for rendering.
    */
-  async recommend(analysisResult: Pick<AnalysisResponse, 'query' | 'data'>): Promise<ChartSpec | null> {
+  async recommend(
+    analysisResult: Pick<AnalysisResponse, 'query' | 'data'>,
+    signal?: AbortSignal
+  ): Promise<ChartSpec | null> {
     const { data, query } = analysisResult;
     if (!hasData(data)) return null;
 
+    throwIfAborted(signal);
     const dataInfo = Array.isArray(data) ? stringifyDataModel(extractDataSchema(data)) : JSON.stringify(data);
-    const chartType = await adviseChartType(query, dataInfo, this.llmConfig);
+    const chartType = await adviseChartType(query, dataInfo, this.llmConfig, signal);
     if (!chartType) return null;
 
-    const config = await generateVisualizationConfig(chartType, data, query, this.llmConfig);
+    const config = await generateVisualizationConfig(chartType, data, query, this.llmConfig, signal);
     return vizInputSchema.parse({ chartType, config });
   }
 
@@ -364,16 +384,21 @@ export class AVA extends EventEmitter {
   /**
    * Suggest questions about the loaded data.
    */
-  async suggest(count: number = 3): Promise<SuggestResult[]> {
+  async suggest(count: number = 3, signal?: AbortSignal): Promise<SuggestResult[]> {
     if (!this.engine) {
       throw new Error('No data loaded. Please call source() first.');
     }
 
+    throwIfAborted(signal);
     emit(this, new LifecycleEvent(LifecycleEventType.SUGGEST_START));
 
     let result: SuggestResult[];
     try {
-      result = await generateSuggestions(this.llmConfig, await this.getDataModel(), count);
+      const dataModel = await this.getDataModel();
+      // Keep the three-argument call shape when no signal is supplied.
+      result = signal
+        ? await generateSuggestions(this.llmConfig, dataModel, count, signal)
+        : await generateSuggestions(this.llmConfig, dataModel, count);
     } catch (error) {
       emit(this, new LifecycleEvent(LifecycleEventType.SUGGEST_END, { error: serializeError(error) }));
 
