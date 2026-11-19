@@ -73,6 +73,9 @@ describe('session startup protocol', () => {
     expect(requestSchema.parse({ command: 'schema', schema })).toEqual({ command: 'schema', schema });
     expect(() => requestSchema.parse({ command: 'schema', schema: { models: null } })).toThrow();
     expect(() => requestSchema.parse({ command: 'profile', profile: { models: null } })).toThrow();
+    const profileRequest = { command: 'profile', metrics: ['row_count', { id: 'quantiles', probabilities: [0.5] }] };
+    expect(requestSchema.parse(profileRequest)).toEqual(profileRequest);
+    expect(() => requestSchema.parse({ command: 'profile', metrics: [{ probabilities: [0.5] }] })).toThrow();
     expect(requestSchema.parse({ command: 'semantic' })).toEqual({ command: 'semantic' });
     expect(requestSchema.parse({ command: 'semantic', semantic: {} })).toEqual({ command: 'semantic', semantic: {} });
     expect(() => requestSchema.parse({ command: 'semantic', semantic: { models: null } })).toThrow();

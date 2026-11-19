@@ -1,6 +1,13 @@
 import { z } from 'zod';
 
-import { sourceInputSchema, profileOutputSchema, schemaOutputSchema, semanticOutputSchema } from '../../contracts';
+import {
+  sourceInputSchema,
+  profileInputSchema,
+  profileOutputSchema,
+  qualityInputSchema,
+  schemaOutputSchema,
+  semanticOutputSchema,
+} from '../../contracts';
 
 export const IPC_TIMEOUT_MS = 120_000;
 export const IPC_MAX_REQUEST_BYTES = 1024 * 1024;
@@ -30,11 +37,12 @@ export const requestSchema = z.discriminatedUnion('command', [
   z
     .object({
       command: z.literal('profile'),
-      metrics: z.array(text).optional(),
+      ...profileInputSchema.shape,
       profile: profileOutputSchema.optional(),
     })
     .strict(),
   z.object({ command: z.literal('suggest'), count: z.number().int().positive().max(100) }).strict(),
+  z.object({ command: z.literal('quality'), rules: qualityInputSchema.shape.rules }).strict(),
   z
     .object({
       command: z.literal('analyze'),

@@ -162,7 +162,7 @@ describe('source-to-chart contract flow', () => {
     const names = Object.keys(contracts)
       .filter((name) => /(Input|Output)Schema$/.test(name))
       .sort();
-    expect(names).toHaveLength(21);
+    expect(names).toHaveLength(23);
     expect(Object.keys(contracts).sort()).toEqual(names);
     for (const entry of [node, browser]) {
       expect(

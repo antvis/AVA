@@ -3,9 +3,9 @@ import { isBuiltin } from 'node:module';
 
 import { defineConfig } from 'vite';
 
-const { dependencies } = JSON.parse(readFileSync(new URL('./package.json', import.meta.url), 'utf8'));
+const { dependencies, optionalDependencies } = JSON.parse(readFileSync(new URL('./package.json', import.meta.url), 'utf8'));
 // Bundle the emitter's ESM build to avoid its CommonJS default-export interop issue in Node.
-const external = Object.keys(dependencies).filter((name) => name !== '@antv/event-emitter');
+const external = Object.keys({ ...dependencies, ...optionalDependencies }).filter((name) => name !== '@antv/event-emitter');
 const sdkEntries = { index: 'src/index.ts', 'index.browser': 'src/index.browser.ts' };
 
 export default defineConfig({

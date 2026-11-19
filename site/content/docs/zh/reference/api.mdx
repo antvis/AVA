@@ -14,6 +14,7 @@ import { Heading } from '../../../../mdx-components';
 <tr><th scope="rowgroup" rowSpan={4}><a href="#data">数据</a></th><td><a href="#source"><code>source(configs)</code></a></td><td>加载或替换一个或多个数据源。</td></tr>
 <tr><td><a href="#schema"><code>schema(options?, setter?)</code></a></td><td>查看或设置数据结构。</td></tr>
 <tr><td><a href="#profile"><code>profile(options?, setter?)</code></a></td><td>计算或设置统计信息。</td></tr>
+<tr><td><a href="#quality"><code>quality(options?)</code></a></td><td>根据保存的画像检查数据质量。</td></tr>
 <tr><td><a href="#semantic"><code>semantic(options?, setter?)</code></a></td><td>读取或设置业务定义。</td></tr>
 </tbody>
 <tbody>
@@ -183,13 +184,26 @@ await ava.profile(undefined, () => savedProfile);
 | --- | --- | --- | --- |
 | `options` | `ProfileOptions` | 否 | `{}`，使用下方默认指标。 |
 | `options.metrics` | `MetricConfig[]` | 否 | 交给引擎计算的指标列表；提供后替换默认列表。 |
+| `options.preset` | `minimal` 或 `explorative` | 否 | DuckDB 预设，采用 `data-profiling` 统计口径。`minimal` 包含单变量统计和表概览，`explorative` 还启用类型推断、结构化文本、关联、缺失模式和样本。显式传入 `metrics` 可替换预设的指标列表。 |
+| `options.typeSchema` | `Record<string, Record<string, ProfileType>>` | 否 | 按模型名和列名覆写 DuckDB 画像类型。例如 `{ data: { order_date: 'DateTime' } }` 将文本按日期解析并计算日期指标。 |
+| `options.inferTypes` | 对象 | 否 | `{}` 启用基于存储值的 DuckDB 类型推断。数值列的不同值数不超过 `numericCategoryThreshold` 时视为类别。文本列由 `textCategoryThreshold` 和 `textCategoryRatio` 判断是否为类别。默认阈值分别为 `5`、`50` 和 `0.5`。 |
+| `options.inferTypes.booleanMappings` | `Record<string, boolean>` | 否 | 小写文本到布尔值的映射。默认识别 `true`、`t`、`yes`、`y` 和 `false`、`f`、`no`、`n`。全部观测都匹配时才推断为布尔。 |
+| `options.inferTypes.url`、`options.inferTypes.path` | 布尔 | 否 | 所有观测值都带协议和主机时推断为 URL，所有观测值都为绝对 POSIX 路径时推断为路径。 |
+| `options.inferTypes.fileRoot`、`options.inferTypes.image` | 字符串、布尔 | 否 | 指定本地绝对根目录后，目录内的普通文件可推断为 `File`。设 `image: true` 可将带受支持图片文件头的值推断为 `Image`。敏感模式跳过文件系统推断。 |
+| `options.inferTypes.timeSeries` | 对象 | 否 | `{}` 启用时序推断。任一滞后的自相关系数达到 `threshold`（默认 `0.7`）时判定为 `TimeSeries`。`lags` 默认为 `[1, 7, 12, 24, 30]`，可用 `orderBy` 指定排序列。 |
+| `options.sensitive` | 布尔 | 否 | `true` 时 DuckDB 仅计算允许的汇总指标，省略原始行、重复组、原值和文本频数、文件元数据及时序点。 |
 | `setter` | `(options: ProfileOptions) => Profile` | 否 | 返回要保存的 profile，替代引擎计算。 |
+
+可解析为数值且不同值数超过 `numericCategoryThreshold` 的文本按数值画像。整数字符串在取值范围允许时使用 64 位整数类型。
+支持解析的同格式或混合格式日期文本按 `DateTime` 画像。空字符串和 `NaT` 标记在日期统计中视为缺失。
 
 Setter 接收选项对象（默认 `{}`），同步返回 `Profile`，不要求引擎支持统计。AVA 会验证并复制结果；无效结果或 setter 抛错会让调用失败，并保留原有元数据。选项直接传给 setter，AVA 不会代替它计算或过滤指标。
 
 需要先加载数据源。两条路径都会替换已保存的 profile，供分析、翻译和推荐问题复用。设置 profile 不会替换 schema。
 
 <h4 id="profile-format">Profile 格式</h4>
+
+DuckDB 类型覆写支持 `Numeric`、`Categorical`、`Text`、`Boolean`、`DateTime`、`TimeSeries`、`URL`、`Path`、`File`、`Image` 和 `Unsupported`。已覆写的列会返回 `properties.profileType`。
 
 Profile 通过名称，将统计信息附加到已有的 schema 模型和列上：
 
@@ -205,9 +219,7 @@ Profile 通过名称，将统计信息附加到已有的 schema 模型和列上�
 
 <h4 id="metrics">统计指标</h4>
 
-默认指标为 `row_count`、`null_count`、`distinct_count`、`top_values`、`min`、`max`、`mean`。其他内置指标包括 `duplicate_count`、`min_length`、`max_length`、`sum`、`stddev`、`median`。
-
-每项可以是指标名称，也可以是包含 `id` 和该指标专用选项的对象：
+`metrics` 的每一项可以是指标名，也可以是带 `id` 和指标参数的对象。
 
 ```typescript
 await ava.profile({
@@ -215,15 +227,190 @@ await ava.profile({
 });
 ```
 
-| 字段 | 类型 | 默认值与行为 |
+**通用指标**
+
+| 指标 | 适用范围 | 默认计算 | 含义 |
+| --- | --- | --- | --- |
+| `row_count` | 表 | 是 | 总行数。 |
+| `null_count` | 列 | 是 | SQL NULL 或引擎中的缺失值数量。 |
+| `distinct_count` | 数值、文本、布尔、日期 | 是 | 不同非空值的数量。 |
+| `top_values` | 文本、布尔 | 是 | 最常见的非空值及其计数。不同值占比超过 `maxDistinctRatio` 时省略。 |
+| `min`、`max` | 数值、日期 | 是 | 最小值和最大值。日期使用 Unix 毫秒。 |
+| `mean` | 数值 | 是 | 算术均值。 |
+| `duplicate_count` | 列 | — | 非空值数减去不同值数。 |
+| `min_length`、`max_length` | 文本 | — | 最短和最长字符串的长度。 |
+| `sum` | 数值 | — | 总和。 |
+| `stddev` | 数值 | — | 样本标准差。 |
+| `median` | 数值 | — | 中位数。 |
+
+**DuckDB 扩展指标**
+
+| 指标 | 适用范围 | 含义 |
 | --- | --- | --- |
-| `id` | `string` | 对象形式必填，指标名称。 |
-| `limit` | `number` | 仅用于 `top_values`，默认 `3`，必须是非负安全整数。 |
-| `maxDistinctRatio` | `number` | 仅用于 `top_values`，默认 `0.5`，必须是 `0`—`1` 之间的有限数值。 |
+| `table_summary` | 表 | 行列数、SQL NULL 单元格数与占比、含 NULL 的列数、全 NULL 列数及各逻辑类型的列数。空表的全 NULL 列数为零。`data-profiling` 模式中，没有有效观测的列的逻辑类型为 `unknown`。 |
+| `memory_size`、`record_size` | 表、列（`memory_size`） | 估算 DuckDB 数据字节数及平均每行字节数。计入定长槽位、UTF-8 文本和二进制数据，其他类型按 UTF-8 文本表示估算。计算范围为数据本身。 |
+| `time_index` | 表 | 时序列数量、索引长度、端点和平均间隔。日期和时长使用毫秒。 |
+| `time_series` | 数值 | 用于折线图的有序观测。数据量较大时保留等长行分段中的极值。 |
+| `row_duplicates` | 表 | 重复组数、重复组数占总行数的比例、组内总行数、去重后会移除的行数，以及按频次和键排序的样本。 |
+| `row_sample` | 表 | 首部、尾部和随机样本，含按 DuckDB 扫描顺序计算的零起始行号。随机样本无放回。 |
+| `pearson` | 表中的数值列 | 对称相关矩阵 `{ columns, matrix }`。每对列使用两边均为有限值的行。常量列或样本不足时返回 `null`。 |
+| `spearman` | 表中的数值列 | 对称秩相关矩阵。每对列在各自的有限观测上排序，并列值取平均秩。 |
+| `kendall` | 表中的数值列 | 有限值对的 Kendall tau-b 矩阵，分母包含并列值校正。 |
+| `cramers` | 表中的类别列 | 经过偏差校正的 Cramér's V，对 2 × 2 列联表使用 Yates 校正。排除 NULL 和 NaN，符合条件的列不足两列时返回 `null`。 |
+| `auto` | 表中的数值列和类别列 | 两列均为数值时使用 Spearman，含类别时使用 Cramér's V。数值与类别配对前对数值做右闭等宽分箱。 |
+| `phi_k` | 表 | 由列联表计算 Phi-k 相关。数值列使用等宽分箱，系数通过二元正态分布校准。 |
+| `missing_correlation` | 表 | 缺失标记之间的 Pearson 相关矩阵，SQL NULL 与 NaN 均算缺失。排除全缺失或全非缺失的列。 |
+| `missing_matrix` | 表 | 按扫描顺序为每行返回一个字符串。所选列的 SQL NULL 或 NaN 记为 `1`，有值记为 `0`。同时返回列名和总行数。 |
+| `missing_bands` | 表 | 将扫描行等间距分段，汇总每段中各列的非缺失比例，供 HTML 报告绘制缺失矩阵。 |
+| `scatter_pairs` | 表 | 数值列之间的散点。数据量较小时返回配对的有限值，超过阈值时返回六边形分箱计数。 |
+| `valid_count` | 列 | 非 NULL 值数量。 |
+| `null_ratio` | 列 | SQL NULL 数量除以总行数。 |
+| `distinct_ratio` | 数值、文本、布尔、日期 | 不同非空值数除以非空值数。 |
+| `unique_count`、`unique_ratio` | 数值、文本、布尔、日期 | 仅出现一次的值数，以及该数量占非空值数的比例。 |
+| `is_unique` | 数值、文本、布尔、日期 | 所有非空值是否都仅出现一次。无非空值时返回 `false`。 |
+| `value_counts` | 数值、文本、布尔、日期 | 全部非空值的 `{ value, count }` 频数，按计数降序和原值排序。结果大小随不同值的数量增长。 |
+| `extreme_values` | 数值 | 按值返回最小和最大的不同值及其频数。 |
+| `text_examples` | 文本 | 按扫描顺序返回最前面的非空文本，可含重复值。 |
+| `mode`、`mode_count` | 数值、文本、布尔、日期 | 频数排序中第一位的值及其计数。 |
+| `imbalance` | 文本、布尔、数值类别编码 | 一减去归一化的 Shannon 熵，排除 NULL 和 NaN。均匀分布或少于两个类别时返回零。 |
+| `monotonicity` | 数值 | 按 DuckDB 扫描顺序比较相邻有效值，跳过 NULL 和 NaN。返回递增、递减及各自严格单调的标志，`direction` 为严格递增 `2`、严格递减 `-2`、非严格递增 `1`、非严格递减 `-1` 或 `0`。 |
+| `autocorrelation` | 数值 | 对有限观测计算 ACF 和未调整的 Yule–Walker PACF，附 95% 置信区间。 |
+| `time_series_gaps` | 数值 | 找出超过平均正间隔两倍的观测断点，返回端点及间隔统计。日期索引和时长使用毫秒。 |
+| `frequency_spectrum` | 数值 | FFT 正频率及分贝功率、检测到的峰值、选中的季节性峰值与对应观测周期。 |
+| `adf` | 数值 | 含常数项的增广 Dickey–Fuller 检验统计量、MacKinnon p 值、选用滞后阶数、有效样本数和平稳判定。样本过少或回归奇异时返回 `null`。 |
+| `chi_squared` | 数值、日期、文本 | 检验频数是否符合均匀分布，返回 `{ statistic, pvalue }`。文本按类别计数，数值和日期对有限值自动等宽分箱。 |
+| `mean_length`、`median_length` | 文本 | 按 Unicode 码点计算的长度均值和中位数，重复值按出现次数加权。`data-profiling` 模式的中位数采用参考库将长度权重单独排序的算法。 |
+| `length_histogram` | 文本 | 按长度排列的 `{ length, count }`。排除 NULL，空字符串长度为零。 |
+| `word_counts` | 文本 | 使用 Unicode 小写、空白切词和 ASCII 标点修剪后的 `{ value, count }`。重复字符串按频数加权。 |
+| `character_counts` | 文本 | 各 Unicode 码点的 `{ value, count }` 频数，保留空白和大小写。 |
+| `unicode_summary` | 文本 | Unicode 码点总数、不同码点数，以及按通用类别、区块别名和文字系统分组的总频数与字符频数。 |
+| `url_summary` | 文本 | URL 协议、授权部分、路径、查询和片段的频数。缺省部分计为空字符串。 |
+| `path_summary` | 文本 | POSIX 路径的主干、后缀、名称、父目录和锚点频数与去重计数，以及字符级公共前缀。 |
+| `file_summary` | `File` | 文件大小、访问时间、修改时间、元数据变更时间和文件大小直方图。时间使用 Unix 毫秒，保留到秒。 |
+| `image_summary` | `Image` | 尺寸频数、宽高和面积统计、截断图像计数及可选的 EXIF 频数。使用可选依赖 `sharp` 和 `exifr`。 |
+| `date_validation` | 文本、日期 | 无效日期的去重计数、行数和占比。文本支持 pandas 纳秒日期范围内的 ISO、常见数字和英文月份格式。 |
+| `zero_count`、`zero_ratio` | 数值 | 零值数量及其占总行数的比例。 |
+| `negative_count`、`negative_ratio` | 数值 | 负值数量及其占总行数的比例，包含负无穷。 |
+| `infinite_count`、`infinite_ratio` | 数值 | 正负无穷值数量及其占总行数的比例。 |
+| `nan_count`、`nan_ratio` | 数值 | NaN 数量及其占总行数的比例。 |
+| `finite_count`、`finite_ratio` | 数值 | 有限值数量及其占总行数的比例。 |
+| `variance`、`mad`、`iqr` | 数值 | 样本方差、中位数绝对偏差、75% 分位数减去 25% 分位数。 |
+| `cv` | 数值 | 样本标准差除以均值。均值为零时返回 `null`。 |
+| `range` | 数值、日期 | 最大值减去最小值。日期使用毫秒。整数和小数先相减再转为 JavaScript 数值，溢出时回退到浮点计算。 |
+| `skewness`、`kurtosis` | 数值 | 样本偏度和超额峰度，分别至少需要三个和四个有限值。 |
+| `quantiles` | 数值 | 按请求顺序返回 `{ probability, value }`。对有限值线性插值，无有限值时 `value` 为 `null`。 |
+| `histogram` | 数值、日期 | 有限值的 `{ bin_edges, counts }`。内部分界线上的值归右侧桶，常量列使用一个加宽的桶。日期边界使用 Unix 毫秒。 |
 
-其他内置指标没有额外选项。引擎计算 profile 时会拒绝未知指标与未知选项名。指标是否可用取决于引擎及字段类型。
+DuckDB 中，分母为零时比例返回 `0`。默认分别统计 SQL NULL、NaN 和无穷值，数值摘要使用有限值。设定 `semantics: 'data-profiling'` 会将 NaN 视为 NULL，同时保留 `nan_count` 和 `nan_ratio`，并按参考库的规则在数值摘要中处理无穷值。正负无穷分别使用字符串 `Infinity` 和 `-Infinity`，未定义的数值结果使用 `null`。频数中的日期、大整数和小数也可用字符串保留原值。
 
-`metrics: []` 会生成空的指标对象。新 profile 替换旧统计信息，不会累加之前的指标。
+表级缺失统计与列空值计数共用扫描，频数指标共用聚合，Pearson 的所有列对共用一次扫描。Pearson 的列对数随列数平方增长，宽表可指定列子集。直方图和分布形状指标共用一次预扫描计算分桶边界与均值。所有分位点在一次列表聚合中计算。
+
+**指标参数**
+
+| 指标 | 参数 | 默认值 | 约束与行为 |
+| --- | --- | --- | --- |
+| `top_values` | `limit` | `3` | 非负安全整数。 |
+| `top_values` | `maxDistinctRatio` | `0.5` | `[0, 1]` 范围内的有限数值。 |
+| `extreme_values`、`text_examples` | `limit` | `5` | 每个列表返回的条目数，须为非负整数。 |
+| `row_duplicates` | `columns` | 画像中的全部列 | 非空且不重复的分组键列名列表。 |
+| `row_duplicates` | `limit` | `10` | 样本数上限，设为 `0` 时只返回计数。 |
+| `row_sample` | `head`、`tail`、`random` | `10`、`10`、`0` | 非负样本行数。`0` 关闭对应采样。非空表的随机样本数不能超过总行数。 |
+| `row_sample` | `columns`、`seed` | 全部列、未设置 | 选择样本列，可指定整数随机种子。 |
+| `row_sample` | `custom` | — | 调用方提供的 `{ name, caption?, data }` 样本，其中 `data` 为 JSON 行数组。提供后使用该样本。 |
+| `pearson` | `columns` | 所有数值列 | 非空且不重复的数值列名列表。 |
+| `spearman` | `columns` | 所有数值列 | 非空且不重复的数值列名列表。各列对排序共用同一份选定列的数据。 |
+| `kendall` | `columns` | 所有数值列 | 非空且不重复的数值列名列表。通过分组秩统计观测对。 |
+| `cramers` | `columns` | 文本和布尔列 | 非空且不重复的类别列名列表。显式选择时也支持数值类别编码。 |
+| `cramers` | `maxCategories` | `100` | 每列的不同类别数上限。排除常量列和全缺失列。 |
+| `auto` | `columns` | 数值、文本和布尔列 | 非空且不重复的列名列表。 |
+| `auto` | `maxCategories` | `100` | 文本和布尔列的不同值数量上限。 |
+| `auto` | `bins` | `10` | 数值与类别配对时的等宽分箱数量。 |
+| `phi_k` | `columns` | 受支持的列 | 非空且不重复的列名列表。 |
+| `phi_k` | `maxCategories` | `100` | 非数值列的不同值数量上限。 |
+| `phi_k` | `bins` | `10` | 数值列的等宽分箱数量。 |
+| `phi_k` | `noiseCorrection` | `true` | 扣除估算的列联表噪声。 |
+| `autocorrelation` | `orderBy` | DuckDB 扫描顺序 | 对观测值作升序排序的列。 |
+| `autocorrelation` | `lags` | `100` | 请求的最大滞后阶数，范围为 0 到 2048。输出上限为有限样本数的一半减一，至少保留 0 阶。 |
+| `time_series_gaps` | `orderBy` | 零起始行号 | 数值或日期索引列。 |
+| `time_index` | `orderBy` | 零起始行号 | 数值或日期索引列。 |
+| `time_series` | `orderBy`、`limit` | 零起始行号、`1200` | 数值或日期索引列及最多显示的观测数。 |
+| `frequency_spectrum` | `orderBy` | DuckDB 扫描顺序 | 对观测值作升序排序的列。 |
+| `frequency_spectrum` | `madThreshold` | `6` | 计算频谱峰值阈值的平均绝对偏差倍数。 |
+| `adf` | `orderBy` | DuckDB 扫描顺序 | 对观测值作升序排序的列。 |
+| `adf` | `maxLag` | 由样本数决定 | 回归最大滞后阶数。 |
+| `adf` | `autolag` | `AIC` | 滞后阶数选择方式，可用 `AIC`、`BIC`、`t-stat` 或 `null`（使用最大阶数）。 |
+| `adf` | `significance` | `0.05` | 平稳性检验的 p 值阈值。 |
+| `file_summary` | `root` | 必填 | 包含被引用文件的本地绝对目录。 |
+| `image_summary` | `root` | 必填 | 包含被引用图像的本地绝对目录。 |
+| `image_summary` | `exif` | `false` | 统计 EXIF 标签和取值频数。 |
+| `missing_matrix` | `columns` | 全部列 | 非空且不重复的列名列表。 |
+| `missing_matrix` | `limit` | 全部行 | 缺失矩阵返回的最大行数。 |
+| `missing_bands` | `columns`、`bands` | 全部列、`200` | 选择列并限制最大分段数量。 |
+| `scatter_pairs` | `columns`、`targets` | 全部数值列 | 选择数值列，可指定横轴使用的列。 |
+| `scatter_pairs` | `threshold`、`gridsize` | `1000`、`15` | 设置切换到六边形分箱的点数阈值和横向分箱数。 |
+| `missing_correlation` | `columns` | 所有列 | 非空且不重复的列名列表。同时含缺失值与有效值的列不足两列时返回 `null`。 |
+| `quantiles` | `probabilities` | `[0.05, 0.25, 0.5, 0.75, 0.95]` | 非空数组，元素在 `[0, 1]` 范围内。 |
+| `histogram` | `bins` | `50` | 非负整数，`0` 表示按 Sturges/Freedman–Diaconis 规则自动选桶。 |
+| `histogram` | `maxBins` | `250` | 正整数，限制最大桶数。 |
+| `histogram` | `density` | `false` | 开启后 `counts` 返回概率密度。 |
+| `word_counts` | `stopWords` | `[]` | 排除的词，忽略大小写。 |
+| `word_counts` | `limit` | 全部词 | 返回词数上限，按频数降序和词排序。 |
+
+对象形式的指标必须提供字符串 `id`。引擎会拒绝未知指标或未列出的参数。`metrics: []` 返回结构和空的指标对象。每次计算都会替换上一次的画像。
+
+<Heading as="h3" id="compareprofiles">compareProfiles</Heading>
+
+`compareProfiles(before, after)` 校验两份已保存的画像，按名称对齐模型、列和指标，并返回两侧观测值与有限数值差。两份画像需使用相同统计口径，仅出现在一侧的模型和列也会保留。
+
+```typescript
+import { compareProfiles } from '@antv/ava';
+
+const comparison = compareProfiles(beforeProfile, afterProfile);
+```
+
+`renderProfileComparisonHtml(before, after, { title })` 将两侧观测和变化量渲染为可离线查看的并排表格。
+
+<Heading as="h3" id="renderprofilehtml">renderProfileHtml</Heading>
+
+`renderProfileHtml(profile, { title, theme, transparent, fullWidth })` 将保存的画像渲染成可离线打开的 HTML。报告展示已有的指标表格、分布、相关矩阵和质量告警。`theme` 可选 `light`、`dark` 或 `auto`。
+
+<Heading as="h3" id="profileexpectations">profileExpectations</Heading>
+
+`profileExpectations(profile, { name })` 根据已保存的画像生成旧版 Great Expectations 风格的规则集，每个模型一份。非空、唯一、数值和日期范围、单调性及允许值规则取自对应的已保存指标。
+
+`validateProfileExpectations(profile, suites)` 用传入的画像验证已生成的规则集。每条规则返回 `passed`、`failed` 或 `missing_evidence`。
+
+`renderProfileValidationHtml(profile, suites)` 将验证结果渲染为离线报告。
+
+<Heading as="h3" id="quality">quality</Heading>
+
+```typescript
+quality(options?: QualityOptions): Promise<Quality>
+```
+
+用 `profile()` 已保存的指标检查数据质量，返回 `{ models: [{ name, alerts }] }`。这一步直接读取画像。每条告警包含规则名 `rule`，并在适用时返回相关列、观测值和阈值。
+
+```typescript
+await ava.profile({ metrics: ['row_count', 'null_count', 'distinct_count'] });
+const quality = await ava.quality({ rules: ['missing', 'constant'] });
+```
+
+| 规则 | 使用的画像指标 | 默认阈值 |
+| --- | --- | --- |
+| `empty` | `row_count` 或 `table_summary` | 行数为零 |
+| `duplicates` | `row_duplicates` | 至少一个重复组 |
+| `constant`、`unique` | `distinct_count`、`row_count` | 仅一个不同值，或每行都有不同值 |
+| `missing` | `null_ratio`，或 `null_count` 与 `row_count`，已有 `nan_count` 时计入 NaN | `ratioThreshold: 0.01` |
+| `zeros`、`infinite` | `zero_ratio`、`infinite_ratio` | `ratioThreshold: 0.01` |
+| `high_cardinality` | 文本列的 `distinct_count` | `cardinalityThreshold: 50` |
+| `high_correlation` | 已保存的相关矩阵，每对列取绝对值最大的系数 | `correlationThreshold: 0.9` |
+| `imbalance` | `imbalance` | `imbalanceThreshold: 0.5` |
+| `skewed` | `skewness` | 偏度绝对值超过 `skewnessThreshold: 20` |
+| `uniform` | 数值和文本列的 `chi_squared.pvalue` | `uniformThreshold: 0.999` |
+| `non_stationary`、`seasonal` | 时序列的 `adf` 和 `frequency_spectrum` | ADF 检验未通过或检测到季节性峰时判为非平稳。 |
+| `unsupported`、`rejected` | 列逻辑类型 | `unknown` |
+
+省略 `rules` 时检查所有具有对应指标的规则。默认画像支持基础检查，其他检查需要先计算相应指标。
 
 <Heading as="h3" id="semantic">semantic</Heading>
 
@@ -406,6 +593,7 @@ API 类型统一通过 `z.input<typeof inputSchema>` 与 `z.output<typeof output
 | `source` | `sourceInputSchema`：数据源配置 | 无返回值（`void`） |
 | `schema` | `schemaInputSchema`：选项 `{}` | `schemaOutputSchema` |
 | `profile` | `profileInputSchema`：`{ metrics? }` | `profileOutputSchema` |
+| `quality` | `qualityInputSchema` | `qualityOutputSchema` |
 | `semantic` | `semanticInputSchema`：选项 `{}` | `semanticOutputSchema` |
 | `query` | `queryInputSchema`：`{ dsl, options? }` | `queryOutputSchema` |
 | `analyze` | `analyzeInputSchema`：`{ query, config? }` | `analyzeOutputSchema` |
