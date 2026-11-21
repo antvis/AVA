@@ -354,6 +354,19 @@ describe('source', () => {
     }
   });
 
+  it('accepts a base link without ?table= to load the whole base', async () => {
+    vi.stubEnv('AVA_FEISHU_APP_ID', 'cli_test_app');
+    vi.stubEnv('AVA_FEISHU_APP_SECRET', 'test-secret');
+    const url = 'https://my.feishu.cn/base/appToken123';
+
+    expect(JSON.parse(await execute(['source', url]))).toEqual({ datasetId });
+    expect(createSession).toHaveBeenCalledExactlyOnceWith(
+      [{ type: 'feishu-bitable', options: { url, appId: 'cli_test_app', appSecret: 'test-secret' } }],
+      { model: 'gpt-4o-mini' },
+      undefined
+    );
+  });
+
   it('rejects --type with a Feishu Bitable URL', async () => {
     await expect(
       run(['source', 'https://my.feishu.cn/base/appToken123?table=tbl123', '--type', 'feishu-bitable'])

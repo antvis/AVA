@@ -1,59 +1,15 @@
-import { feishuGet } from './api';
 import { parseTableLink } from './url';
 import { resolveWikiNode } from './wiki';
 
 import type { FeishuApi } from './api';
-import type { BitableRef } from './url';
 import type { FeishuBitableSourceOptions } from '../../../types';
 
 export type BitableSourceOptions = Pick<FeishuBitableSourceOptions, 'url' | 'appToken' | 'tableId'>;
 
-const TABLES_PAGE_SIZE = 100;
-const TABLES_TO_LIST = 10;
-
-interface TableSummary {
-  tableId: string;
-  name: string;
-}
-
-function isRecord(value: unknown): value is Record<string, unknown> {
-  return Boolean(value) && typeof value === 'object' && !Array.isArray(value);
-}
-
-async function listTables(appToken: string, api: FeishuApi): Promise<TableSummary[]> {
-  const url = `${api.origin}/open-apis/bitable/v1/apps/${encodeURIComponent(
-    appToken
-  )}/tables?page_size=${TABLES_PAGE_SIZE}`;
-  const data = await feishuGet(url, api.token);
-  const items = Array.isArray(data.items) ? data.items : [];
-  return items
-    .filter(isRecord)
-    .map((item) => ({
-      tableId: typeof item.table_id === 'string' ? item.table_id : '',
-      name: typeof item.name === 'string' ? item.name : '',
-    }))
-    .filter((table) => table.tableId);
-}
-
-/**
- * Use the only table of a Bitable when the link does not name one.
- */
-async function onlyTable(appToken: string, api: FeishuApi): Promise<string> {
-  const tables = await listTables(appToken, api);
-  if (tables.length === 1) {
-    return tables[0].tableId;
-  }
-  if (tables.length === 0) {
-    throw new Error('Feishu Bitable has no tables.');
-  }
-  const listed = tables
-    .slice(0, TABLES_TO_LIST)
-    .map((table) => `${table.name || 'Untitled'} (${table.tableId})`)
-    .join(', ');
-  const more = tables.length > TABLES_TO_LIST ? ', ...' : '';
-  throw new Error(
-    `Feishu Bitable has ${tables.length} tables. Add ?table=<tableId> to the URL or "tableId" to the source config. Tables: ${listed}${more}`
-  );
+/** A Bitable app, and the table to load when the source names one. */
+export interface BitableTarget {
+  appToken: string;
+  tableId?: string;
 }
 
 function pickTableId(linkTableId: string | undefined, optionTableId: string | undefined): string | undefined {
@@ -64,19 +20,18 @@ function pickTableId(linkTableId: string | undefined, optionTableId: string | un
 }
 
 /**
- * Resolve a Feishu source to the Bitable app token and table ID the API needs.
+ * Resolve a Feishu source to the Bitable app token the API needs.
  *
  * `/base/<appToken>` links already carry the app token, while `/wiki/<nodeToken>`
  * links carry a wiki node token whose hosted object has to be looked up first.
- * Either link may omit `?table=` when the Bitable has exactly one table.
+ * The table comes from `?table=` or `tableId`; without one the whole base is loaded.
  */
-export async function resolveBitableTable(options: BitableSourceOptions, api: FeishuApi): Promise<BitableRef> {
+export async function resolveBitable(options: BitableSourceOptions, api: FeishuApi): Promise<BitableTarget> {
   if (!options.url) {
-    const { appToken, tableId } = options;
-    if (!appToken || !tableId) {
-      throw new Error('Feishu Bitable url or appToken/tableId must be provided');
+    if (!options.appToken) {
+      throw new Error('Feishu Bitable url or appToken must be provided');
     }
-    return { appToken, tableId };
+    return { appToken: options.appToken, tableId: options.tableId };
   }
 
   const link = parseTableLink(options.url);
@@ -89,7 +44,7 @@ export async function resolveBitableTable(options: BitableSourceOptions, api: Fe
     if (options.appToken && options.appToken !== link.token) {
       throw new Error('Feishu Bitable appToken does not match url.');
     }
-    return { appToken: link.token, tableId: tableId ?? (await onlyTable(link.token, api)) };
+    return { appToken: link.token, tableId };
   }
 
   const node = await resolveWikiNode(link.token, api);
@@ -102,5 +57,5 @@ export async function resolveBitableTable(options: BitableSourceOptions, api: Fe
   if (options.appToken && options.appToken !== node.objToken) {
     throw new Error("Feishu Bitable appToken does not match the wiki node's table.");
   }
-  return { appToken: node.objToken, tableId: tableId ?? (await onlyTable(node.objToken, api)) };
+  return { appToken: node.objToken, tableId };
 }

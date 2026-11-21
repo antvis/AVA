@@ -101,11 +101,27 @@ async function bindFeishu(url?: string) {
   }
 }
 
-export async function feishuCredentials(options: { appId?: string; appSecret?: string; url?: string }) {
-  const configured =
-    pair(options.appId, options.appSecret, 'configuration') ??
-    pair(process.env.AVA_FEISHU_APP_ID, process.env.AVA_FEISHU_APP_SECRET, 'environment variables');
+type FeishuCredentials = { appId: string; appSecret: string } | { accessToken: string };
+
+/**
+ * Resolve the credential of a feishu-bitable source: the source config first, then
+ * AVA_FEISHU_APP_ID / AVA_FEISHU_APP_SECRET, ~/.ava/feishu.json, and finally an
+ * interactive prompt in a terminal.
+ */
+export async function feishuCredentials(options: {
+  appId?: string;
+  appSecret?: string;
+  accessToken?: string;
+  url?: string;
+}): Promise<FeishuCredentials> {
+  if (options.accessToken && (options.appId || options.appSecret)) {
+    throw new Error('Feishu Bitable source configuration must use either appId/appSecret or accessToken');
+  }
+  if (options.accessToken) return { accessToken: options.accessToken };
+  const configured = pair(options.appId, options.appSecret, 'configuration');
   if (configured) return configured;
+  const environment = pair(process.env.AVA_FEISHU_APP_ID, process.env.AVA_FEISHU_APP_SECRET, 'environment variables');
+  if (environment) return environment;
   try {
     const parsed = JSON.parse(await readFile(join(homedir(), '.ava', 'feishu.json'), 'utf8')) as {
       appId?: unknown;
@@ -121,7 +137,7 @@ export async function feishuCredentials(options: { appId?: string; appSecret?: s
   }
   if (process.stdin.isTTY) return bindFeishu(options.url);
   throw new Error(
-    'Feishu Bitable source requires appId and appSecret. Provide them in the source config, via AVA_FEISHU_APP_ID/AVA_FEISHU_APP_SECRET, or in ~/.ava/feishu.json'
+    'Feishu Bitable source requires appId and appSecret, or an accessToken. Provide them in the source config, via AVA_FEISHU_APP_ID/AVA_FEISHU_APP_SECRET, or in ~/.ava/feishu.json'
   );
 }
 

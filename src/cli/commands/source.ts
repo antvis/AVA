@@ -35,7 +35,7 @@ async function parseSourceArgument(dataset: string, options: Options): Promise<D
     input = { type: 'feishu-bitable', options: { url: dataset } };
   } else if (isFeishuHostUrl(dataset)) {
     throw new Error(
-      'Only Feishu Bitable links are supported: /base/<appToken>?table=<tableId> or /wiki/<nodeToken>?table=<tableId>. Docx, Sheets, and other Feishu links cannot be loaded.'
+      'Only Feishu Bitable links are supported: /base/<appToken> or /wiki/<nodeToken>, optionally with ?table=<tableId>. Docx, Sheets, and other Feishu links cannot be loaded.'
     );
   } else if (isGitHubRepositoryUrl(dataset)) {
     if (options.type !== undefined) throw new Error('--type cannot be combined with a GitHub repository link.');
@@ -64,9 +64,7 @@ async function parseSourceArgument(dataset: string, options: Options): Promise<D
   }
 
   if (config.type === 'feishu-bitable') {
-    const creds = await feishuCredentials(config.options);
-    config.options.appId = creds.appId;
-    config.options.appSecret = creds.appSecret;
+    Object.assign(config.options, await feishuCredentials(config.options));
   }
 
   if (config.type === 'github' && config.options.token === undefined) {
@@ -127,21 +125,24 @@ Options:
   --engine <type>    duckdb, python, javascript, supabase, clickhouse, sqlserver, or snowflake.
                     Default: supabase/clickhouse/sqlserver/snowflake for those sources, otherwise duckdb.
                     Fixed for the session. Multiple sources require DuckDB.
-                    feishu-bitable uses duckdb. The loaded view is named data.
+                    feishu-bitable uses duckdb.
   -h, --help         Show help.
 
 Feishu Bitable:
   A /base/ or /wiki/ link from feishu.cn or larksuite.com is detected automatically:
     ava source "https://my.feishu.cn/base/<appToken>?table=<tableId>"
+    ava source "https://my.feishu.cn/base/<appToken>"
     ava source "https://my.feishu.cn/wiki/<nodeToken>?table=<tableId>"
+  With ?table=, that table is loaded as a table named data. Without it, every
+  table of the base is loaded under its own name, and links that hold one record
+  per row get a <field>_record_id column joined to the linked table's record_id.
+  The view in a copied link is ignored; set viewId in a config to load one view.
   A wiki node is resolved to the Bitable it hosts, so the app also needs wiki
   read access and membership of the wiki space.
-  Without ?table=, AVA uses the only table of the Bitable and lists the tables
-  when there are several. Or pass a "feishu-bitable" config via @file or stdin.
-  appId and appSecret are required. They are resolved from the config first,
-  then AVA_FEISHU_APP_ID / AVA_FEISHU_APP_SECRET, then ~/.ava/feishu.json;
-  in a terminal AVA offers to bind and save them.
-  The whole table is loaded as one view named data; the view query is ignored.
+  Credentials, first match wins: the source config (appId and appSecret, or
+  accessToken), AVA_FEISHU_APP_ID / AVA_FEISHU_APP_SECRET, ~/.ava/feishu.json;
+  in a terminal AVA offers to bind and save app credentials.
+  Dates use the time zone of the base unless the config sets timeZone.
   Docx and Sheets links are not supported.
 
 Snowflake:
@@ -177,6 +178,7 @@ Examples:
   ava source @source.json
   echo '{ "type": "json", "options": { "data": [{ "sales": 10 }] } }' | ava source -
   ava source "https://my.feishu.cn/base/<appToken>?table=<tableId>"
+  ava source "https://my.feishu.cn/base/<appToken>"
   ava source "https://my.feishu.cn/wiki/<nodeToken>?table=<tableId>"
   ava source @feishu.json
   ava source @sqlserver.json
@@ -193,12 +195,14 @@ feishu.json:
   "type": "feishu-bitable",
   "options": {
     "url": "https://my.feishu.cn/base/<appToken>?table=<tableId>",
+    "viewId": "<view-id>",
     "appId": "<app-id>",
     "appSecret": "<app-secret>"
   }
 }
-    Provide url or both appToken and tableId; they must name the same table.
-    Keep appSecret out of version control and logs.
+    Provide url or appToken; with both, they must name the same base.
+    Use one credential: appId with appSecret, or accessToken.
+    Keep secrets out of version control and logs.
 
 Tencent Docs SmartSheet (Node.js / DuckDB):
   tencent-source.json:

@@ -1,8 +1,3 @@
-export interface BitableRef {
-  appToken: string;
-  tableId: string;
-}
-
 /**
  * A Feishu link that points at a Bitable, either directly (`/base/<appToken>`) or
  * through a wiki node (`/wiki/<nodeToken>`). A wiki token is a node token, not the
@@ -38,15 +33,4 @@ export function parseTableLink(input: string): FeishuTableLink | undefined {
     token: segments[index + 1],
     tableId: url.searchParams.get('table') || undefined,
   };
-}
-
-/**
- * Parse a `/base/` link that names its table, e.g. `/base/<appToken>?table=<tableId>`.
- */
-export function parseBitableUrl(input: string): BitableRef {
-  const link = parseTableLink(input);
-  if (!link || link.kind !== 'base' || !link.tableId) {
-    throw new Error('Invalid Feishu Bitable URL.');
-  }
-  return { appToken: link.token, tableId: link.tableId };
 }

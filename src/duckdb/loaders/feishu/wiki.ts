@@ -1,4 +1,4 @@
-import { feishuGet } from './api';
+import { feishuRequest } from './api';
 
 import type { FeishuApi } from './api';
 
@@ -19,8 +19,9 @@ function isRecord(value: unknown): value is Record<string, unknown> {
  * from the document grant on the hosted table.
  */
 export async function resolveWikiNode(wikiToken: string, api: FeishuApi): Promise<WikiNode> {
-  const url = `${api.origin}/open-apis/wiki/v2/spaces/get_node?token=${encodeURIComponent(wikiToken)}&obj_type=wiki`;
-  const data = await feishuGet(url, api.token);
+  const data = await feishuRequest(api, '/open-apis/wiki/v2/spaces/get_node', {
+    query: { token: wikiToken, obj_type: 'wiki' },
+  });
   const node = isRecord(data.node) ? data.node : {};
   const objToken = typeof node.obj_token === 'string' ? node.obj_token : '';
   if (!objToken) {
