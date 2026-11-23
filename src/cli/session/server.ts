@@ -85,7 +85,8 @@ async function dispatch(message: Request, signal: AbortSignal): Promise<unknown>
       case 'profile':
         return ava.profile(
           { metrics: message.metrics },
-          message.profile === undefined ? undefined : () => message.profile!
+          message.profile === undefined ? undefined : () => message.profile!,
+          commandSignal
         );
       case 'suggest':
         return ava.suggest(message.count, commandSignal);

@@ -64,15 +64,16 @@ export class SupabaseEngine implements AnalysisEngine {
     this.connection = config.options;
   }
 
-  async schema(): Promise<Schema> {
+  async schema(signal?: AbortSignal): Promise<Schema> {
     if (!this.connection) throw new Error('No data loaded. Please call source() first.');
-    return getSupabaseSchema((sql) => this.runQuery(sql));
+    return getSupabaseSchema((sql) => this.runQuery(sql, signal));
   }
 
-  async profile(schema: Schema, options: ProfileOptions = {}): Promise<Profile> {
+  async profile(schema: Schema, options: ProfileOptions = {}, signal?: AbortSignal): Promise<Profile> {
     if (!this.connection) throw new Error('No data loaded. Please call source() first.');
+    throwIfAborted(signal);
     return profileTables(
-      (sql) => this.runQuery(sql),
+      (sql) => this.runQuery(sql, signal),
       schema,
       parseProfileOptions(options, { metrics: DEFAULT_METRICS })
     );
@@ -95,7 +96,7 @@ export class SupabaseEngine implements AnalysisEngine {
     }
     throwIfAborted(signal);
     const query = await this.dialect.validateDSL(sql);
-    const rows = (await this.runQuery(limitedQuery(query, maxRows(options)))) as T[];
+    const rows = (await this.runQuery(limitedQuery(query, maxRows(options)), signal)) as T[];
     return executionResult(rows, inferQuerySchema(rows), options);
   }
 
@@ -107,21 +108,24 @@ export class SupabaseEngine implements AnalysisEngine {
    * Execute a read-only SQL query through the Management API and return the
    * result rows.
    */
-  private async runQuery(sql: string): Promise<Record<string, unknown>[]> {
+  private async runQuery(sql: string, signal?: AbortSignal): Promise<Record<string, unknown>[]> {
+    if (!this.connection) throw new Error('No data loaded. Please call source() first.');
+    throwIfAborted(signal);
     const controller = new AbortController();
+    const requestSignal = signal ? AbortSignal.any([signal, controller.signal]) : controller.signal;
     const timer = setTimeout(() => controller.abort(), REQUEST_TIMEOUT_MS);
 
     try {
       const response = await fetch(
-        `${SUPABASE_API_BASE}/v1/projects/${encodeURIComponent(this.connection!.projectRef)}/database/query`,
+        `${SUPABASE_API_BASE}/v1/projects/${encodeURIComponent(this.connection.projectRef)}/database/query`,
         {
           method: 'POST',
           headers: {
-            Authorization: `Bearer ${this.connection!.accessToken}`,
+            Authorization: `Bearer ${this.connection.accessToken}`,
             'Content-Type': 'application/json',
           },
           body: JSON.stringify({ query: sql, read_only: true }),
-          signal: controller.signal,
+          signal: requestSignal,
         }
       );
 
@@ -130,7 +134,11 @@ export class SupabaseEngine implements AnalysisEngine {
       }
 
       const payload = (await response.json()) as unknown;
+      throwIfAborted(requestSignal);
       return Array.isArray(payload) ? (payload as Record<string, unknown>[]) : [];
+    } catch (error) {
+      throwIfAborted(signal);
+      throw error;
     } finally {
       clearTimeout(timer);
     }

@@ -13,23 +13,28 @@ export function createAbortError(message = 'Operation aborted'): Error {
   return error;
 }
 
+function abortReason(signal: AbortSignal): Error {
+  return signal.reason instanceof Error ? signal.reason : createAbortError();
+}
+
 /** Throw the abort reason (or a standard AbortError) when the signal is already aborted. */
 export function throwIfAborted(signal?: AbortSignal): void {
   if (!signal?.aborted) return;
-  throw signal.reason instanceof Error ? signal.reason : createAbortError();
+  throw abortReason(signal);
 }
 
 /**
  * Run a listener when the signal aborts.
  * Returns a disposer so callers can detach it in a finally block.
  */
-export function onAbort(signal: AbortSignal | undefined, listener: () => void): () => void {
+export function onAbort(signal: AbortSignal | undefined, listener: (reason: Error) => void): () => void {
   if (!signal) return () => {};
+  const abort = () => listener(abortReason(signal));
   if (signal.aborted) {
-    listener();
+    abort();
     return () => {};
   }
-  signal.addEventListener('abort', listener, { once: true });
+  signal.addEventListener('abort', abort, { once: true });
 
-  return () => signal.removeEventListener('abort', listener);
+  return () => signal.removeEventListener('abort', abort);
 }

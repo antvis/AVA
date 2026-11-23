@@ -36,6 +36,9 @@ jobs:
       - name: Build
         run: npm run build
 
+      - name: Test CLI session lifecycle
+        run: node --test __tests__/cli-session.e2e.cjs
+
       - name: Load package entry points in Node
         run: |
           node --input-type=module -e "const { sourceInputSchema } = await import('@antv/ava'); sourceInputSchema.parse({ type: 'json', options: { data: [] } })"
@@ -53,6 +56,8 @@ jobs:
           node-version: 22.x
       - run: npm install --legacy-peer-deps
       - run: npm run build:cjs
+      - name: Test CLI session lifecycle
+        run: node --test __tests__/cli-session.e2e.cjs
       - name: Smoke test a dataset session
         shell: pwsh
         run: |

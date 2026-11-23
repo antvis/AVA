@@ -91,6 +91,36 @@ describe('DuckDBEngine', () => {
     expect(aggregated.data[0].count).toBe(3);
   });
 
+  it('interrupts the active profile without interrupting work for a cancelled queued caller', async () => {
+    await engine.load({ type: 'json', options: { data: [{ amount: 42 }] } });
+    const schema = await engine.schema();
+    const connection = engine['connection']!;
+    let rejectProfile: (error: Error) => void;
+    const run = vi.spyOn(connection, 'runAndReadAll').mockImplementationOnce(
+      () =>
+        new Promise((_, reject) => {
+          rejectProfile = reject;
+        })
+    );
+    const interrupt = vi
+      .spyOn(connection, 'interrupt')
+      .mockImplementation(() => rejectProfile(new Error('Interrupted')));
+    const active = new AbortController();
+    const queued = new AbortController();
+    const reason = new Error('Client disconnected');
+    const profile = expect(engine.profile(schema, {}, active.signal)).rejects.toBe(reason);
+    await vi.waitFor(() => expect(run).toHaveBeenCalledOnce());
+    const discovery = expect(engine.schema(queued.signal)).rejects.toBe(reason);
+    queued.abort(reason);
+    expect(interrupt).not.toHaveBeenCalled();
+
+    active.abort(reason);
+    await Promise.all([profile, discovery]);
+    expect(interrupt).toHaveBeenCalledOnce();
+    expect(run).toHaveBeenCalledOnce();
+    expect((await engine.execute('SELECT amount FROM data')).data).toEqual([{ amount: 42 }]);
+  });
+
   describe('structural schema', () => {
     it('should load a Parquet schema containing numeric arrays', async () => {
       await engine.load({

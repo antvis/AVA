@@ -6,7 +6,7 @@ import { SnowflakeQueryDialect } from '../../query/snowflake';
 import { DEFAULT_METRICS, parseProfileOptions } from '../../util/profile';
 import { executionResult, maxRows, maxResultBytes, resultRowBytes } from '../../util/result';
 import { runWithTimeout } from '../../util/timeout';
-import { throwIfAborted } from '../../util/abort';
+import { onAbort, throwIfAborted } from '../../util/abort';
 
 import { profileTables } from './profile';
 import { convertRow, queryColumn } from './result';
@@ -106,13 +106,13 @@ export class SnowflakeEngine implements AnalysisEngine {
   private connection: Connection | null = null;
   private scope: SnowflakeScope | null = null;
   private timeoutMs = DEFAULT_QUERY_TIMEOUT_MS;
-  /** Active statements and callbacks that stop their local result streams. */
-  private readonly running = new Map<RowStatement, (error: Error) => void>();
+  /** Active statements and their shared local and server-side cancellation. */
+  private readonly running = new Map<RowStatement, (error: Error) => Promise<void>>();
 
   constructor(llmConfig: LLMConfig) {
-    this.dialect = new SnowflakeQueryDialect(llmConfig, async (query) => {
+    this.dialect = new SnowflakeQueryDialect(llmConfig, async (query, signal) => {
       this.requireScope();
-      await this.run(query, { describeOnly: true });
+      await this.run(query, { describeOnly: true, signal });
     });
   }
 
@@ -172,14 +172,15 @@ export class SnowflakeEngine implements AnalysisEngine {
     }
   }
 
-  async schema(): Promise<Schema> {
-    return getSnowflakeSchema((sql, binds) => this.runQuery(sql, binds), this.requireScope());
+  async schema(signal?: AbortSignal): Promise<Schema> {
+    return getSnowflakeSchema((sql, binds) => this.runQuery(sql, binds, signal), this.requireScope());
   }
 
-  async profile(schema: Schema, options: ProfileOptions = {}): Promise<Profile> {
+  async profile(schema: Schema, options: ProfileOptions = {}, signal?: AbortSignal): Promise<Profile> {
     this.requireScope();
+    throwIfAborted(signal);
     return profileTables(
-      (sql) => this.runQuery(sql),
+      (sql) => this.runQuery(sql, undefined, signal),
       schema,
       parseProfileOptions(options, { metrics: DEFAULT_METRICS })
     );
@@ -197,28 +198,25 @@ export class SnowflakeEngine implements AnalysisEngine {
   ): Promise<ExecutionResult<T>> {
     this.requireScope();
     throwIfAborted(signal);
-    const sql = await this.dialect.validateDSL(dsl);
+    const sql = await (signal ? this.dialect.validateDSL(dsl, signal) : this.dialect.validateDSL(dsl));
     // One row beyond the limit reveals truncation without fetching the rest of the result.
     const { rows, columns, truncatedBy } = await this.run(sql, {
       limit: maxRows(options) + 1,
       maxBytes: maxResultBytes(options),
+      signal,
     });
     return executionResult(rows as T[], columns, options, truncatedBy);
   }
 
   async dispose(): Promise<void> {
     const connection = this.connection;
-    const running = [...this.running];
+    const running = [...this.running.values()];
     this.connection = null;
     this.scope = null;
     this.running.clear();
     // Closing a Snowflake session does not stop the statements it started, so cancel them first.
-    await Promise.all(
-      running.map(([statement, stop]) => {
-        stop(new Error('Snowflake source was disposed'));
-        return settle((done) => statement.cancel(() => done()));
-      })
-    );
+    const error = new Error('Snowflake source was disposed');
+    await Promise.all(running.map((cancel) => cancel(error)));
     if (connection) await settle((done) => connection.destroy(() => done()));
   }
 
@@ -227,8 +225,8 @@ export class SnowflakeEngine implements AnalysisEngine {
     return this.scope;
   }
 
-  private async runQuery(sql: string, binds?: Binds): Promise<Rows> {
-    return (await this.run(sql, { binds })).rows;
+  private async runQuery(sql: string, binds?: Binds, signal?: AbortSignal): Promise<Rows> {
+    return (await this.run(sql, { binds, signal })).rows;
   }
 
   /**
@@ -242,15 +240,18 @@ export class SnowflakeEngine implements AnalysisEngine {
       limit,
       maxBytes,
       describeOnly = false,
+      signal,
     }: {
       binds?: Binds;
       limit?: number;
       maxBytes?: number;
       describeOnly?: boolean;
+      signal?: AbortSignal;
     } = {}
   ): Promise<QueryResult> {
     const connection = this.connection;
     if (!connection) throw new Error('No data loaded. Please call source() first.');
+    throwIfAborted(signal);
     const timeoutMs = this.timeoutMs;
 
     let statement: RowStatement | undefined;
@@ -323,21 +324,39 @@ export class SnowflakeEngine implements AnalysisEngine {
     });
 
     const current = statement;
-    if (current) this.running.set(current, stop);
+    let cancellation: Promise<void> | undefined;
+    const cancel = (error: Error) => {
+      if (!cancellation) {
+        stop(error);
+        cancellation = current ? settle((done) => current.cancel(() => done())) : Promise.resolve();
+      }
+      return cancellation;
+    };
+    if (current) this.running.set(current, cancel);
+    const detach = onAbort(signal, (reason) => void cancel(reason));
     try {
-      return await runWithTimeout(result, timeoutMs, {
+      const response = await runWithTimeout(result, timeoutMs, {
         onTimeout: () => {
           const error = new SnowflakeQueryTimeoutError(timeoutMs);
-          stop(error);
-          current?.cancel(() => undefined);
+          void cancel(error);
           return error;
         },
         unref: true,
       });
+      throwIfAborted(signal);
+      return response;
+    } catch (error) {
+      throwIfAborted(signal);
+      throw error;
     } finally {
+      detach();
       stopped = true;
       stream?.destroy();
-      if (current) this.running.delete(current);
+      if (current) {
+        // A concurrent dispose must wait for the cancellation before destroying the connection.
+        if (cancellation) void cancellation.then(() => this.running.delete(current));
+        else this.running.delete(current);
+      }
     }
   }
 }

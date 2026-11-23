@@ -111,4 +111,29 @@ describe('SQLServerEngine', () => {
     expect(request.cancel).toHaveBeenCalledOnce();
     expect(pool.close).toHaveBeenCalledOnce();
   });
+
+  it('cancels an active request without closing its pool', async () => {
+    let rejectQuery: (error: Error) => void;
+    const request = requestStub(queryResult([{ id: 1 }]));
+    request.query.mockImplementationOnce(
+      () =>
+        new Promise((_, reject) => {
+          rejectQuery = reject;
+        })
+    );
+    request.cancel.mockImplementation(() => rejectQuery(new Error('Driver cancelled')));
+    const pool = poolStub(request);
+    engine = new SQLServerEngine({ model: 'unused' });
+    await engine.load(source);
+
+    const controller = new AbortController();
+    const reason = new Error('Client disconnected');
+    const rejected = expect(engine.execute('SELECT 1 AS id', undefined, controller.signal)).rejects.toBe(reason);
+    await vi.waitFor(() => expect(request.query).toHaveBeenCalledOnce());
+    controller.abort(reason);
+    await rejected;
+    expect(request.cancel).toHaveBeenCalledOnce();
+    expect(pool.close).not.toHaveBeenCalled();
+    expect((await engine.execute('SELECT 1 AS id')).data).toEqual([{ id: 1 }]);
+  });
 });

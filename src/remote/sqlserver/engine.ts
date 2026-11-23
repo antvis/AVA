@@ -5,12 +5,12 @@ import mssql from 'mssql';
 import { TSQLDialect } from '../../query/tsql';
 import { DEFAULT_METRICS, parseProfileOptions } from '../../util/profile';
 import { executionResult, maxRows } from '../../util/result';
-import { throwIfAborted } from '../../util/abort';
+import { onAbort, throwIfAborted } from '../../util/abort';
 
 import { profileTables } from './profile';
 import { getSQLServerSchema } from './schema';
 
-import type { ConnectionPool, config as SQLConfig, IColumnMetadata, IResult, Request } from 'mssql';
+import type { ConnectionPool, config as SQLConfig, IColumnMetadata, IResult } from 'mssql';
 import type {
   AnalysisEngine,
   DataModel,
@@ -54,7 +54,7 @@ function queryColumns(columns: IColumnMetadata[string][]): QueryColumn[] {
 export class SQLServerEngine implements AnalysisEngine {
   private pool: ConnectionPool | null = null;
   private sourceSchema: string | undefined;
-  private readonly requests = new Set<Request>();
+  private readonly cancelRequests = new Set<() => void>();
   readonly dialect: TSQLDialect;
 
   constructor(llmConfig: LLMConfig) {
@@ -85,15 +85,16 @@ export class SQLServerEngine implements AnalysisEngine {
     }
   }
 
-  async schema(): Promise<Schema> {
+  async schema(signal?: AbortSignal): Promise<Schema> {
     if (!this.pool) throw new Error('No data loaded. Please call source() first.');
-    return getSQLServerSchema(async (query) => (await this.runQuery(query)).recordset, this.sourceSchema);
+    return getSQLServerSchema(async (query) => (await this.runQuery(query, signal)).recordset, this.sourceSchema);
   }
 
-  async profile(schema: Schema, options: ProfileOptions = {}): Promise<Profile> {
+  async profile(schema: Schema, options: ProfileOptions = {}, signal?: AbortSignal): Promise<Profile> {
     if (!this.pool) throw new Error('No data loaded. Please call source() first.');
+    throwIfAborted(signal);
     return profileTables(
-      async (query) => (await this.runQuery(query)).recordset,
+      async (query) => (await this.runQuery(query, signal)).recordset,
       schema,
       parseProfileOptions(options, { metrics: DEFAULT_METRICS })
     );
@@ -113,7 +114,7 @@ export class SQLServerEngine implements AnalysisEngine {
     throwIfAborted(signal);
     const query = await this.dialect.validateDSL(dsl);
     // query() uses sp_executesql, which restores SET options on return.
-    const result = await this.runQuery<T>(`SET ROWCOUNT ${maxRows(options) + 1};\n${query}`);
+    const result = await this.runQuery<T>(`SET ROWCOUNT ${maxRows(options) + 1};\n${query}`, signal);
     const schema = queryColumns(Object.values(result.recordset.columns));
     return executionResult(result.recordset, schema, options);
   }
@@ -123,21 +124,35 @@ export class SQLServerEngine implements AnalysisEngine {
     this.pool = null;
     this.sourceSchema = undefined;
     try {
-      for (const request of this.requests) request.cancel();
+      for (const cancel of this.cancelRequests) cancel();
     } finally {
-      this.requests.clear();
+      this.cancelRequests.clear();
       await pool?.close();
     }
   }
 
-  private async runQuery<T = Record<string, unknown>>(query: string): Promise<IResult<T>> {
+  private async runQuery<T = Record<string, unknown>>(query: string, signal?: AbortSignal): Promise<IResult<T>> {
     if (!this.pool) throw new Error('No data loaded. Please call source() first.');
+    throwIfAborted(signal);
     const request = this.pool.request();
-    this.requests.add(request);
+    const cancel = () => {
+      if (this.cancelRequests.delete(cancel)) request.cancel();
+    };
+    this.cancelRequests.add(cancel);
+    let detach: (() => void) | undefined;
     try {
-      return await request.query<T>(query);
+      const running = request.query<T>(query);
+      // Starting a request resets the driver's cancellation flag.
+      detach = onAbort(signal, cancel);
+      const result = await running;
+      throwIfAborted(signal);
+      return result;
+    } catch (error) {
+      throwIfAborted(signal);
+      throw error;
     } finally {
-      this.requests.delete(request);
+      detach?.();
+      this.cancelRequests.delete(cancel);
     }
   }
 }

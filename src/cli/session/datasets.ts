@@ -82,12 +82,12 @@ export function withDataset<T>(
 }
 
 export async function describeDataset(schema?: Schema, signal?: AbortSignal) {
-  return withDataset(async (instance) => {
+  return withDataset(async (instance, commandSignal) => {
     const engine = instance.engine!;
     const language = engine.dialect.id;
     if (!language) throw new Error('Query dialect must provide a non-empty id');
     return {
-      ...(await instance.schema(undefined, schema === undefined ? undefined : () => schema)),
+      ...(await instance.schema(undefined, schema === undefined ? undefined : () => schema, commandSignal)),
       language,
       ...(engine.dialect.rules ? { instructions: engine.dialect.rules } : {}),
     };

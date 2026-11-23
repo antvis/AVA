@@ -230,9 +230,9 @@ export interface AnalysisEngine {
    */
   load(configs: DataSourceConfig | DataSourceConfig[]): Promise<void>;
   /** Discover the loaded source structure. */
-  schema(): Promise<Schema>;
+  schema(signal?: AbortSignal): Promise<Schema>;
   /** Compute statistics for the loaded data. */
-  profile?(schema: Schema, options?: ProfileOptions): Promise<Profile>;
+  profile?(schema: Schema, options?: ProfileOptions, signal?: AbortSignal): Promise<Profile>;
   /** Generate the executable DSL (SQL) for a natural-language query */
   getDSL(query: string, dataModel: DataModel, signal?: AbortSignal): Promise<TranslationResult>;
   /** Execute one DSL statement with a bounded result. */
@@ -264,7 +264,7 @@ export interface QueryDialect {
   /** Generate executable code for a natural-language query. */
   getDSL(query: string, dataModel: DataModel, signal?: AbortSignal): Promise<TranslationResult>;
   /** Validate the DSL without executing it, preserving its source semantics. */
-  validateDSL(dsl: string): Promise<string>;
+  validateDSL(dsl: string, signal?: AbortSignal): Promise<string>;
 }
 
 /** Runtime dependencies available to an analysis strategy. */
@@ -274,7 +274,7 @@ export interface AnalysisRuntime {
   dataModel: DataModel;
   engine: AnalysisEngine;
   llm: LLMConfig;
-  /** Cancels the whole analysis, including in-flight model requests and queries. */
+  /** Cancels analysis and is forwarded to model requests and engine operations. */
   signal?: AbortSignal;
 }
 
