@@ -8,7 +8,7 @@ import { Heading } from '../../../../../mdx-components';
 - **Node.js 22.13.0 或更高版本**。CLI 当前支持 macOS / Linux，安装方式见[命令行工具](/documentation/reference/cli/)。
 - 目标数据表的浏览器地址，通常包含 `/base/` 或 `/wiki/`。
 
-AVA 使用应用身份读取数据，在 Node.js 的 DuckDB 引擎中将记录加载为名为 `data` 的只读视图。加载、查看结构和执行 SQL 不需要模型 API 密钥；使用 AVA 的自然语言分析与可视化功能时，再按[模型配置](/documentation/configuration/)设置模型。
+AVA 使用应用身份读取数据，在 Node.js 的 DuckDB 引擎中复制为只读数据表：链接指定了数据表时表名为 `data`，不指定时加载整个多维表格，每张表使用原表名。加载、查看结构和执行 SQL 不需要模型 API 密钥；使用 AVA 的自然语言分析与可视化功能时，再按[模型配置](/documentation/configuration/)设置模型。
 
 以下使用飞书官方教程中的真实界面截图，点击图片可查看原图。截图中的应用名称仅为示例，请使用你自己的应用；界面布局可能随飞书版本更新。
 
@@ -49,9 +49,10 @@ AVA 使用应用身份读取数据，在 Node.js 的 DuckDB 引擎中将记录�
 
 | 接口 | 用途 | 何时需要 |
 | --- | --- | --- |
-| `GET /open-apis/bitable/v1/apps/{app_token}/tables/{table_id}/fields` | 读取字段名称和类型 | 每次加载 |
-| `GET /open-apis/bitable/v1/apps/{app_token}/tables/{table_id}/records` | 读取记录 | 每次加载 |
-| `GET /open-apis/bitable/v1/apps/{app_token}/tables` | 查找数据表 | 链接没有 `table` 参数时 |
+| `GET /open-apis/bitable/v1/apps/{app_token}` | 读取多维表格时区，用于换算日期 | 每次加载 |
+| `GET /open-apis/bitable/v1/apps/{app_token}/tables` | 列出数据表 | 每次加载 |
+| `GET /open-apis/bitable/v1/apps/{app_token}/tables/{table_id}/fields` | 读取字段名称和类型 | 每次加载；关联字段指向的表也会读取 |
+| `POST /open-apis/bitable/v1/apps/{app_token}/tables/{table_id}/records/search` | 读取记录 | 每次加载；未加载的关联表只读取主字段 |
 | `GET /open-apis/wiki/v2/spaces/get_node` | 将知识库节点解析为多维表格 | 使用 `/wiki/` 链接时，额外申请知识库读取权限 |
 
 参考[飞书服务端 API 文档](https://open.feishu.cn/document/server-docs/docs/bitable-v1/overview)。申请后，在 **版本管理与发布** 中创建版本并发布；如果企业要求管理员审批，等待审批完成，确认权限已生效。
@@ -98,13 +99,13 @@ https://my.feishu.cn/wiki/NODE_TOKEN?table=TABLE_ID&view=VIEW_ID
 | `/base/` 后的 `APP_TOKEN` | `appToken` | 多维表格标识，不是 App ID |
 | `/wiki/` 后的 `NODE_TOKEN` | 放在 `url` 中 | 知识库节点标识；AVA 自动解析实际 App Token，不能直接用作 `appToken` |
 | `table=TABLE_ID` | `tableId` | 当前数据表标识 |
-| `view=VIEW_ID` | 无 | AVA 会忽略这个参数 |
+| `view=VIEW_ID` | `viewId`（可选） | 链接中的视图会被忽略；需要时在配置中设置 `viewId`，只加载该视图 |
 
-缺少 `table` 参数时，AVA 会尝试查找数据表：只有一张表就自动使用；有多张表则报错并列出候选表名和 ID，需要指定 `table` 或 `tableId` 后重新加载。飞书文档 `/docx/`、电子表格 `/sheets/` 和知识库中的其他文档类型不支持作为该数据源加载。
+缺少 `table` 参数时，AVA 加载整个多维表格，每张表使用原表名。每张表都有主键 `record_id`；关联字段显示被关联记录的主字段，每条记录最多关联一条记录时，还会生成 `<字段名>_record_id` 列，并在结构中声明到被关联表的关系，可以跨表关联查询。飞书文档 `/docx/`、电子表格 `/sheets/` 和知识库中的其他文档类型不支持作为该数据源加载。
 
 <Callout>
-  AVA 加载的是应用可读取的整张数据表，按接口分页读取字段和记录，不会应用飞书视图中的筛选条件。
-  例如某个视图只显示本月记录，带上它的 `view` 参数也不会把 AVA 的数据限制为本月；请在 SQL 中明确筛选。
+  AVA 加载的是应用可读取的整张数据表，按接口分页读取字段和记录；分页结果与接口返回的总数不一致时会报错，不会返回不完整的数据。复制链接中的 `view` 参数不会生效：
+  例如某个视图只显示本月记录，带上它的 `view` 参数也不会把 AVA 的数据限制为本月；请在 SQL 中明确筛选，或在数据源配置中设置 `viewId`。
 </Callout>
 
 Lark 国际版同样支持 `larksuite.com` 下的 `/base/` 和 `/wiki/` 链接，使用 [Lark 开放平台](https://open.larksuite.com/)创建的应用。AVA 根据链接域名自动选择接口服务；使用 Lark 时请保留 `url`，仅提供 `appToken` / `tableId` 会默认访问飞书中国版接口。
@@ -156,15 +157,17 @@ ava source @feishu-source.json
 
 | 配置字段 | 必填 | 说明 |
 | --- | --- | --- |
-| `url` | 与 `appToken` + `tableId` 二选一 | 普通多维表格或知识库链接 |
+| `url` | 与 `appToken` 二选一 | 普通多维表格或知识库链接 |
 | `appToken` | 不提供 `url` 时必填 | 实际多维表格的 App Token |
-| `tableId` | 不提供 `url` 时必填 | 目标数据表 ID；也可补充到不含 `table` 的链接 |
-| `appId` | SDK 必填；CLI 可从其他位置读取 | 开放平台应用 App ID |
-| `appSecret` | SDK 必填；CLI 可从其他位置读取 | 开放平台应用 App Secret |
+| `tableId` | 否 | 加载为 `data` 的数据表；与链接中的 `table` 都不提供时加载整个多维表格 |
+| `viewId` | 否 | 只加载该视图中可见的记录，需要同时指定数据表 |
+| `appId` / `appSecret` | 凭证二选一；CLI 可从其他位置读取 | 开放平台应用凭证 |
+| `accessToken` | 凭证二选一 | 由接入方应用获取的 tenant 或 user access token |
+| `timeZone` | 否 | 读取日期使用的 IANA 时区，默认使用多维表格的时区 |
 
-如果同时指定 `url` 与 `appToken` / `tableId`，它们必须指向同一张数据表。
+如果同时指定 `url` 与 `appToken` / `tableId`，它们必须指向同一张数据表。`viewId` 需要同时指定数据表；`timeZone`（IANA 时区名，如 `Asia/Shanghai`）可覆盖多维表格自身的时区。
 
-CLI 的凭证优先级依次为：**配置中的 `appId` + `appSecret` → 环境变量 → `~/.ava/feishu.json` → 交互终端绑定**。前两处若只填一个值会直接报错，不会拼接不同来源的凭证。管道输入、重定向或其他非交互环境不会提示绑定，需要事先配置好凭证。
+CLI 的凭证优先级依次为：**配置中的凭证（`appId` + `appSecret` 或 `accessToken`）→ `AVA_FEISHU_APP_ID` / `AVA_FEISHU_APP_SECRET` → `~/.ava/feishu.json` → 交互终端绑定**。同一份配置只能包含一种凭证。前两处若只填一个值会直接报错，不会拼接不同来源的凭证。管道输入、重定向或其他非交互环境不会提示绑定，需要事先配置好凭证。
 
 App Secret 和本地绑定文件都属于敏感信息，避免提交到 Git 或输出到日志。更换已保存的应用时，可以修改本地绑定文件中的完整凭证对，或用优先级更高的环境变量覆盖。
 
@@ -180,9 +183,9 @@ ava query YOUR_DATASET_ID --dsl 'SELECT * FROM data LIMIT 5'
 ava query YOUR_DATASET_ID --dsl 'SELECT COUNT(*) AS row_count FROM data'
 ```
 
-核对表名 `data`、字段名称和读取范围；记录数应与应用可访问的目标数据表一致。完成后运行 `ava dispose YOUR_DATASET_ID` 释放会话。飞书数据更新后，重新运行 `ava source` 加载新数据，再使用新返回的 ID；现有会话不会持续同步远端变更。
+核对表名（单表为 `data`，整库为各数据表原名）、字段名称和读取范围；记录数应与应用可访问的目标数据表一致。完成后运行 `ava dispose YOUR_DATASET_ID` 释放会话。飞书数据更新后，重新运行 `ava source` 加载新数据，再使用新返回的 ID；现有会话不会持续同步远端变更。
 
-人员、附件、关联记录等复杂字段会转换成便于查询的文本，多个值通常以逗号分隔；附件只读取元信息，不下载文件。公式和查找引用字段按返回值类型转换，不保证全部为文本。不支持的字段类型会跳过；空表仍保留支持的字段结构。
+列类型取自字段元数据。日期按多维表格时区读取，与飞书界面显示一致：日期字段为 `DATE`，带时间的日期、创建时间和修改时间为 `TIMESTAMP`。未勾选的复选框为 `false`。多选、人员、群组、附件、关联和查找引用只有在某条记录确有多个值时才是列表（`VARCHAR[]`，可用 `list_contains` 或 `UNNEST` 查询），否则是普通列。附件只读取文件名，不下载文件。公式和查找引用按结果类型转换。流程和按钮字段会被跳过；空表仍保留支持的字段结构。
 
 如果希望把后续分析交给 Agent，可以在安装 [AVA Skill](/documentation/agent-skill/)后提出需求：
 
@@ -227,11 +230,11 @@ try {
 | 提示「飞书应用绑定失败」 | 核对 App ID 与 App Secret 是否属于同一个企业自建应用、是否复制完整，以及飞书 / Lark 平台是否对应；错误保留平台返回的 code 和 msg。 |
 | 绑定成功，加载却提示权限不足 | 检查读取接口权限是否已发布生效，再检查目标文档是否添加了同一个应用；本人有权限不代表应用有权限。 |
 | `/base/` 能加载，`/wiki/` 失败 | 检查知识库读取接口权限、知识空间访问权限，以及节点承载的对象是否为多维表格。 |
-| 提示 `has … tables` | 指定 `?table=TABLE_ID` 或配置 `tableId`，不要把视图 ID 当成数据表 ID。 |
+| 提示 `reported … records but returned …` | 读取期间数据表被修改，重新加载即可。 |
 | 提示 `does not match` | 删除重复配置，或核对 `url`、`appToken` 与 `tableId` 是否指向同一张表。 |
 | 非交互环境提示缺少凭证 | 预先设置成对的环境变量，或提供完整配置 / 本地绑定文件。 |
 | 提示 `~/.ava/feishu.json is not valid JSON` | 修复绑定文件为包含 `appId` 和 `appSecret` 的有效 JSON；环境变量可优先覆盖该文件。 |
-| 结果多于视图中看到的记录，或远端修改未出现 | `view` 筛选会被忽略；在 SQL 中加筛选。远端更新需要重新加载数据源。 |
+| 结果多于视图中看到的记录，或远端修改未出现 | 链接中的 `view` 会被忽略；在 SQL 中加筛选或设置 `viewId`。远端更新需要重新加载数据源。 |
 | 返回网络错误或非 JSON 响应 | 检查到 `open.feishu.cn` / `open.larksuite.com` 的网络连接与代理设置，根据原始错误定位失败请求。 |
 
 完整 CLI 用法见[命令行工具](/documentation/reference/cli/)，其他数据源见[接入数据](/documentation/data/sources/)。

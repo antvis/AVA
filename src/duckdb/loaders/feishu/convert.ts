@@ -1,5 +1,13 @@
-export type FeishuCell = string | number | boolean | null;
+/**
+ * Convert Feishu Bitable cell values into typed column values.
+ *
+ * Every converter returns the values of one cell as a list (empty when the cell is
+ * empty), tagged with a value kind. The loader turns a field into a scalar column when
+ * no cell holds more than one value, and into a DuckDB list column otherwise.
+ * Value formats follow the record value structure of the Bitable Open API.
+ */
 
+/** Field types reported by the field list API. */
 export enum FeishuFieldType {
   Text = 1,
   Number = 2,
@@ -26,7 +34,44 @@ export enum FeishuFieldType {
   Button = 3001,
 }
 
-const supportedFieldTypes = new Set<number>([
+/** Field metadata from the field list API. */
+export interface FeishuField {
+  id?: string;
+  name: string;
+  type: number;
+  uiType?: string;
+  primary?: boolean;
+  property?: Record<string, unknown>;
+}
+
+export type FeishuScalar = string | number | boolean;
+
+/** Value kinds and the DuckDB type of one value. */
+export const VALUE_TYPES = {
+  text: 'VARCHAR',
+  number: 'DOUBLE',
+  integer: 'BIGINT',
+  boolean: 'BOOLEAN',
+  date: 'DATE',
+  timestamp: 'TIMESTAMP',
+} as const;
+
+export type ValueKind = keyof typeof VALUE_TYPES;
+
+/** The values of one cell; an empty list means the cell is empty. */
+export interface CellValues {
+  kind: ValueKind;
+  values: FeishuScalar[];
+}
+
+export interface ConvertContext {
+  /** IANA time zone used to read dates as the wall-clock values shown in Feishu. */
+  timeZone: string;
+  /** Display text of a linked record, normally the primary field value of that record. */
+  linkText: (tableId: string | undefined, recordId: string) => string;
+}
+
+const SUPPORTED_TYPES = new Set<number>([
   FeishuFieldType.Text,
   FeishuFieldType.Number,
   FeishuFieldType.SingleSelect,
@@ -50,253 +95,311 @@ const supportedFieldTypes = new Set<number>([
   FeishuFieldType.AutoNumber,
 ]);
 
+/** Field types whose cells hold a list of items, so a cell may contribute several values. */
+const LIST_TYPES = new Set<number>([
+  FeishuFieldType.MultiSelect,
+  FeishuFieldType.User,
+  FeishuFieldType.Attachment,
+  FeishuFieldType.SingleLink,
+  FeishuFieldType.DuplexLink,
+  FeishuFieldType.GroupChat,
+  FeishuFieldType.Lookup,
+  FeishuFieldType.Formula,
+]);
+
 export function isSupportedFieldType(type: number): boolean {
-  return supportedFieldTypes.has(type);
+  return SUPPORTED_TYPES.has(type);
+}
+
+export function isListFieldType(type: number): boolean {
+  return LIST_TYPES.has(type);
+}
+
+export function isLinkFieldType(type: number): boolean {
+  return type === FeishuFieldType.SingleLink || type === FeishuFieldType.DuplexLink;
+}
+
+/** Linked table of a link field, from its property. */
+export function linkedTableId(field: FeishuField): string | undefined {
+  const tableId = field.property?.table_id;
+  return typeof tableId === 'string' && tableId ? tableId : undefined;
 }
 
 function isRecord(value: unknown): value is Record<string, unknown> {
   return Boolean(value) && typeof value === 'object' && !Array.isArray(value);
 }
 
-function firstString(record: Record<string, unknown>, keys: string[]): string | null {
+function items(value: unknown): unknown[] {
+  if (value === null || value === undefined) return [];
+  return Array.isArray(value) ? value : [value];
+}
+
+/** Items of a list cell; lookups through several links nest one list per linked record. */
+function flatItems(value: unknown): unknown[] {
+  return items(value).reduce<unknown[]>(
+    (all, item) => (Array.isArray(item) ? all.concat(flatItems(item)) : all.concat([item])),
+    []
+  );
+}
+
+function firstString(record: Record<string, unknown>, keys: string[]): string | undefined {
   for (const key of keys) {
     const value = record[key];
     if (typeof value === 'string' && value.trim() !== '') return value;
   }
-  return null;
+  return undefined;
 }
 
-function joinLabels(values: unknown[], read: (value: unknown) => string | null): string | null {
-  const labels: string[] = [];
-  for (const value of values) {
-    const label = read(value);
-    if (label) labels.push(label);
+function labels(value: unknown, keys: string[]): string[] {
+  const result: string[] = [];
+  for (const item of flatItems(value)) {
+    const label = typeof item === 'string' ? item : isRecord(item) ? firstString(item, keys) : undefined;
+    if (label) result.push(label);
   }
-  return labels.length === 0 ? null : labels.join(',');
-}
-
-export function asString(value: unknown): string | null {
-  if (typeof value === 'string') return value === '' ? null : value;
-  if (typeof value === 'number') return String(value);
-  if (typeof value === 'boolean') return value ? 'true' : 'false';
-  return null;
+  return result;
 }
 
 function textOf(segment: unknown): string {
   if (typeof segment === 'string') return segment;
-  if (segment && typeof segment === 'object') {
-    const text = (segment as { text?: unknown }).text;
-    if (typeof text === 'string') return text;
-  }
+  if (typeof segment === 'number' || typeof segment === 'boolean') return String(segment);
+  if (isRecord(segment) && typeof segment.text === 'string') return segment.text;
   return '';
 }
 
-export function asMultiSelect(value: unknown): string | null {
-  if (!Array.isArray(value)) return null;
-  const names: string[] = [];
-  for (const item of value) {
-    if (typeof item === 'string' && item !== '') names.push(item);
-  }
-  return names.length === 0 ? null : names.join(',');
-}
-
-export function asCheckbox(value: unknown): boolean | null {
-  if (typeof value === 'boolean') return value;
-  return null;
-}
-
+/** Multi-line text is a list of segments (text, mention, url); join them into one string. */
 export function asText(value: unknown): string | null {
-  if (!Array.isArray(value)) return asString(value);
-  const text = value
-    .map((segment) => textOf(segment))
-    .join('')
-    .trim();
+  const text = items(value).map(textOf).join('').trim();
   return text === '' ? null : text;
 }
 
-export function asPhone(value: unknown): string | null {
-  if (typeof value !== 'string' || value === '') return null;
-  return value;
-}
-
-export function asSingleSelect(value: unknown): string | null {
-  if (typeof value !== 'string' || value === '') return null;
-  return value;
-}
-
 export function asNumber(value: unknown): number | null {
-  if (value === null || value === undefined) return null;
-  // 飞书数字字段可能返回 number，也可能返回字符串（如 "100"）
-  if (typeof value === 'string' && value.trim() === '') return null;
-  const number = typeof value === 'number' ? value : Number(value);
+  if (typeof value === 'number') return Number.isFinite(value) ? value : null;
+  if (typeof value !== 'string' || value.trim() === '') return null;
+  const number = Number(value);
   return Number.isFinite(number) ? number : null;
 }
 
-export function asTimestamp(value: unknown): string | null {
-  const ms = asNumber(value);
-  if (ms === null) return null;
-  const date = new Date(ms);
-  // 超出 Date 可表示范围时 getTime() 为 NaN，此时 toISOString() 会抛错
-  return Number.isNaN(date.getTime()) ? null : date.toISOString();
-}
+/** Date-time fields of a time zone, cached per zone. */
+const dateFormats = new Map<string, Intl.DateTimeFormat>();
 
-export function asUrl(value: unknown): string | null {
-  if (typeof value === 'string') return value === '' ? null : value;
-  if (!value || typeof value !== 'object') return null;
-  const link = value as { text?: unknown; link?: unknown };
-  if (typeof link.text === 'string' && link.text !== '') return link.text;
-  if (typeof link.link === 'string' && link.link !== '') return link.link;
-  return null;
-}
-
-export function asAutoNumber(value: unknown): string | null {
-  // 文档约定返回值是 string，这里同时兼容部分接口返回 number 的情况
-  if (typeof value === 'number' && Number.isFinite(value)) return String(value);
-  if (typeof value === 'string' && value !== '') return value;
-  return null;
-}
-
-function userLabel(value: unknown): string | null {
-  if (typeof value === 'string') return value === '' ? null : value;
-  if (!isRecord(value)) return null;
-  return firstString(value, ['name', 'en_name', 'email', 'id']);
-}
-
-/** 人员、创建人、修改人：取人员名称，多个用逗号拼接。 */
-export function asUser(value: unknown): string | null {
-  if (value === null || value === undefined) return null;
-  return joinLabels(Array.isArray(value) ? value : [value], userLabel);
-}
-
-function attachmentLabel(value: unknown): string | null {
-  if (typeof value === 'string') return value === '' ? null : value;
-  if (!isRecord(value)) return null;
-  return firstString(value, ['name', 'file_token']);
-}
-
-/** 附件：取文件名，多个用逗号拼接。 */
-export function asAttachment(value: unknown): string | null {
-  if (value === null || value === undefined) return null;
-  return joinLabels(Array.isArray(value) ? value : [value], attachmentLabel);
-}
-
-function linkIds(value: unknown): string[] {
-  if (typeof value === 'string') return value === '' ? [] : [value];
-  if (isRecord(value) && Array.isArray(value.link_record_ids)) {
-    return value.link_record_ids.filter((id): id is string => typeof id === 'string' && id !== '');
+function dateFormat(timeZone: string): Intl.DateTimeFormat {
+  let format = dateFormats.get(timeZone);
+  if (!format) {
+    format = new Intl.DateTimeFormat('en-US', {
+      timeZone,
+      hourCycle: 'h23',
+      year: 'numeric',
+      month: '2-digit',
+      day: '2-digit',
+      hour: '2-digit',
+      minute: '2-digit',
+      second: '2-digit',
+    });
+    dateFormats.set(timeZone, format);
   }
-  return [];
+  return format;
 }
 
-/** 单向/双向关联：取关联记录 ID，多个用逗号拼接。 */
-export function asLink(value: unknown): string | null {
-  const values = value === null || value === undefined ? [] : Array.isArray(value) ? value : [value];
+/** Throw a clear error for a time zone the runtime does not know. */
+export function checkTimeZone(timeZone: string): string {
+  try {
+    dateFormat(timeZone);
+  } catch {
+    throw new Error(`Invalid Feishu Bitable time zone: ${timeZone}`);
+  }
+  return timeZone;
+}
+
+/**
+ * Read a Unix millisecond timestamp as the wall-clock time of a time zone,
+ * e.g. 1675526400000 in Asia/Shanghai is "2023-02-05 00:00:00.000".
+ */
+export function wallClock(ms: number, timeZone: string): string | null {
+  const date = new Date(ms);
+  if (Number.isNaN(date.getTime())) return null;
+  const parts: Record<string, string> = {};
+  for (const { type, value } of dateFormat(timeZone).formatToParts(date)) parts[type] = value;
+  const millis = String(((ms % 1000) + 1000) % 1000).padStart(3, '0');
+  return `${parts.year.padStart(4, '0')}-${parts.month}-${parts.day} ${parts.hour}:${parts.minute}:${
+    parts.second
+  }.${millis}`;
+}
+
+/** Whether a date formatter shows the time; undefined when the field has no formatter. */
+function showsTime(field: FeishuField): boolean | undefined {
+  const formatter = field.property?.date_formatter;
+  return typeof formatter === 'string' && formatter ? /[Hhms]/.test(formatter) : undefined;
+}
+
+function dateValues(value: unknown, kind: 'date' | 'timestamp', ctx: ConvertContext): CellValues {
+  const values: string[] = [];
+  for (const item of items(value)) {
+    const ms = asNumber(item);
+    const clock = ms === null ? null : wallClock(ms, ctx.timeZone);
+    if (clock) values.push(kind === 'date' ? clock.slice(0, 10) : clock);
+  }
+  return { kind, values };
+}
+
+/** Record IDs of a link cell, in display order. */
+export function linkRecordIds(value: unknown): string[] {
   const ids: string[] = [];
-  for (const item of values) ids.push(...linkIds(item));
-  return ids.length === 0 ? null : ids.join(',');
+  for (const item of flatItems(value)) {
+    if (typeof item === 'string' && item) ids.push(item);
+    else if (isRecord(item)) {
+      // Record APIs return { link_record_ids }; the legacy list API returns { record_ids, text_arr }.
+      for (const key of ['link_record_ids', 'record_ids']) {
+        const list = item[key];
+        if (Array.isArray(list)) ids.push(...list.filter((id): id is string => typeof id === 'string' && id !== ''));
+      }
+    }
+  }
+  return ids;
 }
 
-/** 地理位置：优先完整地址，其次地名、详细地址、经纬度。 */
-export function asLocation(value: unknown): string | null {
-  if (typeof value === 'string') return value === '' ? null : value;
-  if (!isRecord(value)) return null;
-  return firstString(value, ['full_address', 'name', 'address', 'location']);
+const textCell = (value: string | null): CellValues => ({ kind: 'text', values: value === null ? [] : [value] });
+
+function autoNumber(value: unknown): CellValues {
+  const label = typeof value === 'number' && Number.isFinite(value) ? String(value) : value;
+  if (typeof label !== 'string' || label === '') return { kind: 'integer', values: [] };
+  // Auto-increment numbers sort numerically; custom rules such as "NO-001" stay text.
+  return /^\d{1,15}$/.test(label) ? { kind: 'integer', values: [Number(label)] } : textCell(label);
 }
 
-function groupChatLabel(value: unknown): string | null {
-  if (typeof value === 'string') return value === '' ? null : value;
-  if (!isRecord(value)) return null;
-  return firstString(value, ['name', 'id']);
+/** Kind of a field without values, used when no cell has a value. */
+export function defaultKind(field: FeishuField): ValueKind {
+  switch (field.type) {
+    case FeishuFieldType.Number:
+      return 'number';
+    case FeishuFieldType.Checkbox:
+      return 'boolean';
+    case FeishuFieldType.DateTime:
+      return showsTime(field) === true ? 'timestamp' : 'date';
+    case FeishuFieldType.CreatedTime:
+    case FeishuFieldType.ModifiedTime:
+      return 'timestamp';
+    case FeishuFieldType.AutoNumber: {
+      const serial = field.property?.auto_serial;
+      return isRecord(serial) && serial.type === 'custom' ? 'text' : 'integer';
+    }
+    default:
+      return 'text';
+  }
 }
 
-/** 群组：取群组名称，多个用逗号拼接。 */
-export function asGroupChat(value: unknown): string | null {
-  if (value === null || value === undefined) return null;
-  return joinLabels(Array.isArray(value) ? value : [value], groupChatLabel);
+/**
+ * Kind shared by several cells. Formula results can mix kinds; numbers widen to
+ * DOUBLE, dates to TIMESTAMP, and any other mix falls back to text.
+ */
+export function commonKind(field: FeishuField, cells: CellValues[]): ValueKind {
+  const kinds = new Set(cells.filter((cell) => cell.values.length > 0).map((cell) => cell.kind));
+  if (kinds.size === 0) return defaultKind(field);
+  if (kinds.size === 1) return [...kinds][0];
+  if ([...kinds].every((kind) => kind === 'integer' || kind === 'number')) return 'number';
+  if ([...kinds].every((kind) => kind === 'date' || kind === 'timestamp')) return 'timestamp';
+  return 'text';
 }
 
-const converters: Record<number, (value: unknown) => FeishuCell> = {
-  [FeishuFieldType.Text]: asText,
-  [FeishuFieldType.Number]: asNumber,
-  [FeishuFieldType.SingleSelect]: asSingleSelect,
-  [FeishuFieldType.MultiSelect]: asMultiSelect,
-  [FeishuFieldType.DateTime]: asTimestamp,
-  [FeishuFieldType.Checkbox]: asCheckbox,
-  [FeishuFieldType.User]: asUser,
-  [FeishuFieldType.Phone]: asPhone,
-  [FeishuFieldType.Url]: asUrl,
-  [FeishuFieldType.Attachment]: asAttachment,
-  [FeishuFieldType.SingleLink]: asLink,
-  [FeishuFieldType.DuplexLink]: asLink,
-  [FeishuFieldType.Location]: asLocation,
-  [FeishuFieldType.GroupChat]: asGroupChat,
-  [FeishuFieldType.CreatedTime]: asTimestamp,
-  [FeishuFieldType.ModifiedTime]: asTimestamp,
-  [FeishuFieldType.CreatedUser]: asUser,
-  [FeishuFieldType.ModifiedUser]: asUser,
-  [FeishuFieldType.AutoNumber]: asAutoNumber,
-};
+/** Cast a value of one kind to the kind chosen by commonKind. */
+export function castValue(value: FeishuScalar, from: ValueKind, to: ValueKind): FeishuScalar {
+  if (from === to || (to === 'number' && typeof value === 'number')) return value;
+  if (to === 'timestamp' && from === 'date') return `${value} 00:00:00.000`;
+  return String(value);
+}
+
+function mergeCells(field: FeishuField, cells: CellValues[]): CellValues {
+  const kind = commonKind(field, cells);
+  return { kind, values: cells.flatMap((cell) => cell.values.map((value) => castValue(value, cell.kind, kind))) };
+}
 
 const MAX_FORMULA_DEPTH = 5;
 
+type Converter = (field: FeishuField, value: unknown, ctx: ConvertContext, depth: number) => CellValues;
+
+/** Formula and lookup cells wrap the result as { type, value }; convert it as the wrapped type. */
+function formulaValues(value: unknown, ctx: ConvertContext, depth: number, convert: Converter): CellValues {
+  if (!isRecord(value) || typeof value.type !== 'number' || depth >= MAX_FORMULA_DEPTH) {
+    return { kind: 'text', values: [] };
+  }
+  const inner: FeishuField = { name: '', type: value.type };
+  if (!isSupportedFieldType(inner.type)) return { kind: 'text', values: [] };
+  if (inner.type === FeishuFieldType.Formula || inner.type === FeishuFieldType.Lookup) {
+    return mergeCells(
+      inner,
+      items(value.value).map((item) => formulaValues(item, ctx, depth + 1, convert))
+    );
+  }
+  if (inner.type === FeishuFieldType.Text) return textCell(asText(value.value));
+  if (isListFieldType(inner.type)) return convert(inner, value.value, ctx, depth + 1);
+  // Scalar results arrive bare or as a list with one value per referenced record.
+  return mergeCells(
+    inner,
+    items(value.value).map((item) => convert(inner, item, ctx, depth + 1))
+  );
+}
+
 /**
- * 公式/查找引用的 value 永远是数组：标量取第一个元素，列表类型保留数组。
+ * Convert one cell. The field type decides the conversion; the result lists every
+ * value of the cell, e.g. each selected option or each linked record.
  */
-function formulaInner(type: number, value: unknown[]): unknown {
-  switch (type) {
+export function cellValues(field: FeishuField, value: unknown, ctx: ConvertContext, depth = 0): CellValues {
+  switch (field.type) {
     case FeishuFieldType.Text:
-      return value;
+    case FeishuFieldType.Phone:
+    case FeishuFieldType.SingleSelect:
+      return textCell(asText(value));
+    case FeishuFieldType.Number:
+      return {
+        kind: 'number',
+        values: items(value)
+          .map(asNumber)
+          .filter((number): number is number => number !== null),
+      };
     case FeishuFieldType.MultiSelect:
+      return { kind: 'text', values: labels(value, ['name', 'text']) };
+    case FeishuFieldType.DateTime: {
+      const time = showsTime(field);
+      if (time !== undefined) return dateValues(value, time ? 'timestamp' : 'date', ctx);
+      // Without a formatter, keep the time unless the value is a local midnight.
+      const cell = dateValues(value, 'timestamp', ctx);
+      return cell.values.every((clock) => String(clock).endsWith(' 00:00:00.000'))
+        ? { kind: 'date', values: cell.values.map((clock) => String(clock).slice(0, 10)) }
+        : cell;
+    }
+    case FeishuFieldType.CreatedTime:
+    case FeishuFieldType.ModifiedTime:
+      return dateValues(value, 'timestamp', ctx);
+    case FeishuFieldType.Checkbox:
+      // An unchecked box is omitted from the record, so a missing value means false.
+      return { kind: 'boolean', values: [items(value).some((item) => item === true || item === 'true')] };
     case FeishuFieldType.User:
-    case FeishuFieldType.Attachment:
-    case FeishuFieldType.GroupChat:
-      return value.length === 1 && Array.isArray(value[0]) ? value[0] : value;
+    case FeishuFieldType.CreatedUser:
+    case FeishuFieldType.ModifiedUser:
+      return { kind: 'text', values: labels(value, ['name', 'en_name', 'email', 'id']) };
     case FeishuFieldType.Url:
-    case FeishuFieldType.Location:
+      return { kind: 'text', values: labels(value, ['text', 'link']) };
+    case FeishuFieldType.Attachment:
+      return { kind: 'text', values: labels(value, ['name', 'file_token']) };
     case FeishuFieldType.SingleLink:
-    case FeishuFieldType.DuplexLink:
-      return value.length === 1 ? value[0] : value;
+    case FeishuFieldType.DuplexLink: {
+      const tableId = linkedTableId(field);
+      return { kind: 'text', values: linkRecordIds(value).map((id) => ctx.linkText(tableId, id)) };
+    }
+    case FeishuFieldType.Location:
+      return { kind: 'text', values: labels(value, ['full_address', 'name', 'address', 'location']) };
+    case FeishuFieldType.GroupChat:
+      return { kind: 'text', values: labels(value, ['name', 'id']) };
+    case FeishuFieldType.AutoNumber:
+      return autoNumber(value);
+    case FeishuFieldType.Formula:
+    case FeishuFieldType.Lookup:
+      return formulaValues(value, ctx, depth, cellValues);
     default:
-      return value[0];
+      throw new Error(`Unsupported field type: ${field.type}`);
   }
 }
 
-function convertFormula(value: unknown, depth: number): FeishuCell {
-  if (!isRecord(value) || typeof value.type !== 'number' || !Array.isArray(value.value) || value.value.length === 0) {
-    return null;
-  }
-  const innerType = value.type;
-  if (innerType === FeishuFieldType.Formula || innerType === FeishuFieldType.Lookup) {
-    if (depth >= MAX_FORMULA_DEPTH) return null;
-    return convertFormula(value.value[0], depth + 1);
-  }
-  const converter = converters[innerType];
-  return converter ? converter(formulaInner(innerType, value.value)) : null;
-}
-
-/** 查找引用/公式：按包内 type 递归转换结果。 */
-export function asFormula(value: unknown): FeishuCell {
-  return convertFormula(value, 0);
-}
-
-export function convertFieldValue(type: number, value: unknown): FeishuCell {
-  if (type === FeishuFieldType.Formula || type === FeishuFieldType.Lookup) return asFormula(value);
-  const converter = converters[type];
-  if (!converter) throw new Error(`Unsupported field type: ${type}`);
-  return converter(value);
-}
-
-export interface FeishuField {
-  name: string;
-  type: number;
-}
-
-// 一行对象
-export function convertRecord(fields: FeishuField[], record: Record<string, unknown>): Record<string, FeishuCell> {
-  const row: Record<string, FeishuCell> = {};
-  for (const field of fields) {
-    const value = record[field.name];
-    row[field.name] = convertFieldValue(field.type, value);
-  }
-  return row;
+/** Plain text of a cell, used to label linked records. */
+export function displayText(cell: CellValues): string | undefined {
+  return cell.values.length === 0 ? undefined : cell.values.map(String).join(', ');
 }

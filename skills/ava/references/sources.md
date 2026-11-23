@@ -107,18 +107,19 @@ For MySQL/PostgreSQL behind a bastion, use the database address reachable from i
 
 ## Feishu Bitable
 
-Links on `feishu.cn` and `larksuite.com` load the whole table read-only as `data`, ignoring the URL's `view` filter:
+Links on `feishu.cn` and `larksuite.com` load read-only into DuckDB. A link with `?table=` loads that table as `data`; a link without it loads every table of the base under its own name. The URL's `view` filter is ignored:
 
 ```sh
 ava source "https://<tenant>.feishu.cn/base/<app_token>?table=<table_id>" > session.json
+ava source "https://<tenant>.feishu.cn/base/<app_token>" > session.json
 ava source "https://<tenant>.feishu.cn/wiki/<node_token>?table=<table_id>" > session.json
 ```
 
-Without `?table=`, a single table is selected automatically; multiple tables are listed for selection. Wiki URLs must host Bitable, not Docx or Sheets; they require `wiki:wiki:readonly` and wiki-space membership. Keep the wiki URL: its node token is not an `appToken`.
+Every table has a `record_id` primary key (`record_id_2` if a field already uses that name). Link fields show the primary field of the linked records. When the whole base is loaded and a link holds at most one record per row, it also gets a `<field>_record_id` column with a declared `MANY_TO_ONE` relationship to the linked table's `record_id`; join through it for attributes of the linked table, for example `SELECT c.城市, SUM(o.金额) FROM 订单 o JOIN 客户 c ON o.客户_record_id = c.record_id GROUP BY 1`. Wiki URLs must host Bitable, not Docx or Sheets; they require `wiki:wiki:readonly` and wiki-space membership. Keep the wiki URL: its node token is not an `appToken`.
 
 ### Credentials
 
-The internal app needs table collaborator access and `bitable:app:readonly`; advanced permissions require manage rights. Credentials resolve from configuration, then `AVA_FEISHU_APP_ID`/`AVA_FEISHU_APP_SECRET`, then `~/.ava/feishu.json`. Terminals can bind and save them.
+The internal app needs table collaborator access and `bitable:app:readonly`; advanced permissions require manage rights. Credentials resolve from configuration (`appId` + `appSecret`, or an `accessToken` your application obtains), then `AVA_FEISHU_APP_ID`/`AVA_FEISHU_APP_SECRET`, then `~/.ava/feishu.json`. Terminals can bind and save app credentials. Apps created with a personal account such as a Doubao account are rejected with `Feishu Error 21001`.
 
 Alternatively load an `@file`/stdin configuration (`--type` cannot supply this source):
 
@@ -133,11 +134,11 @@ Alternatively load an `@file`/stdin configuration (`--type` cannot supply this s
 }
 ```
 
-Instead of `url`, a base table accepts `appToken` and `tableId`. When both forms are present they must agree. Keep `appSecret` out of commits and deliverables.
+Instead of `url`, pass `appToken`, with `tableId` for one table. When both forms are present they must agree. `viewId` loads only the records of one view (a table is required), and `timeZone` (an IANA name) overrides the time zone of the base. Keep secrets out of commits and deliverables.
 
 ### Cell Values
 
-Complex cells flatten to text, lists join with commas, and dates use ISO strings. People/chats use names, attachments use filenames, and record links use IDs. Unsupported fields are omitted; unsupported formula/lookup results become null.
+Column types come from the field metadata. Dates are read in the time zone of the base, as shown in Feishu: date fields are `DATE`, date-time, created and modified times are `TIMESTAMP`. Unchecked checkboxes are `false`. Multi-select, people, groups, attachments, links and lookups become lists (`VARCHAR[]`, use `list_contains` or `UNNEST`) only when some record holds several values; otherwise they are plain columns with names, filenames or option names. Formulas and lookups take the type of their result, auto-increment numbers are `BIGINT`, and workflow and button fields are skipped. Records are read 500 per page through the record search API; a load fails rather than return partial data when the pages do not add up to the reported total.
 
 ## Tencent Docs SmartSheet
 

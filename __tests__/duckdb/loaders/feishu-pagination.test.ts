@@ -1,90 +1,127 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
 
-import { readTable } from '../../../src/duckdb/loaders/feishu/read';
+import { feishuPages, feishuRequest } from '../../../src/duckdb/loaders/feishu/api';
+import { readRecords } from '../../../src/duckdb/loaders/feishu/read';
 
 afterEach(() => vi.unstubAllGlobals());
 
-describe('readTable pagination', () => {
-  it('rejects missing credentials before making API requests', async () => {
-    const fetch = vi.fn();
-    vi.stubGlobal('fetch', fetch);
-    await expect(readTable({ appToken: 'app', tableId: 'tbl' })).rejects.toThrow('appId and appSecret');
-    expect(fetch).not.toHaveBeenCalled();
-  });
+const api = { token: 't', origin: 'https://open.feishu.cn' };
+const table = { id: 'tbl1', name: '订单' };
 
+/** Serve the given pages in order, ignoring the request. */
+function stubPages(...pages: unknown[]) {
+  const fetch = vi.fn(async () => Response.json(pages.shift() ?? { code: 0, data: {} }));
+  vi.stubGlobal('fetch', fetch);
+  return fetch;
+}
+
+const records = (...ids: string[]) => ids.map((id) => ({ record_id: id, fields: { n: id } }));
+
+describe('feishuPages', () => {
   it('follows has_more and page_token until the last page', async () => {
-    const requests: string[] = [];
-    vi.stubGlobal(
-      'fetch',
-      vi.fn(async (input: string | URL) => {
-        const url = String(input);
-        requests.push(url);
-        if (url.includes('tenant_access_token')) return Response.json({ code: 0, tenant_access_token: 't' });
-        if (url.includes('/fields')) return Response.json({ code: 0, data: { items: [{ field_name: 'n', type: 2 }] } });
-        const data = url.includes('page_token=p2')
-          ? { items: [{ fields: { n: 2 } }], has_more: false }
-          : { items: [{ fields: { n: 1 } }], has_more: true, page_token: 'p2' };
-        return Response.json({ code: 0, data });
-      })
+    const fetch = stubPages(
+      { code: 0, data: { items: [{ a: 1 }], has_more: true, page_token: 'p2', total: 2 } },
+      { code: 0, data: { items: [{ a: 2 }], has_more: false, total: 2 } }
     );
 
-    const rows = await readTable({ appToken: 'app', tableId: 'tbl', appId: 'id', appSecret: 'secret' });
-    expect(rows).toEqual([{ n: 1 }, { n: 2 }]);
-    expect(requests.filter((url) => url.includes('/records'))).toEqual([
-      expect.stringContaining('page_size=500'),
-      expect.stringContaining('page_token=p2'),
+    await expect(feishuPages(api, '/x', { pageSize: 500 })).resolves.toEqual({ items: [{ a: 1 }, { a: 2 }], total: 2 });
+    const urls = fetch.mock.calls.map(([input]) => String(input));
+    expect(urls).toEqual([
+      'https://open.feishu.cn/x?page_size=500',
+      'https://open.feishu.cn/x?page_size=500&page_token=p2',
     ]);
   });
 
-  it('keeps the newly supported field types and drops read-only ones', async () => {
-    vi.stubGlobal(
-      'fetch',
-      vi.fn(async (input: string | URL) => {
-        const url = String(input);
-        if (url.includes('tenant_access_token')) return Response.json({ code: 0, tenant_access_token: 't' });
-        if (url.includes('/fields')) {
-          return Response.json({
-            code: 0,
-            data: {
-              items: [
-                { field_name: '标题', type: 1 },
-                { field_name: '负责人', type: 11 },
-                { field_name: '附件', type: 17 },
-                { field_name: '关联', type: 18 },
-                { field_name: '地址', type: 22 },
-                { field_name: '公式', type: 20 },
-                { field_name: '流程', type: 24 },
-                { field_name: '按钮', type: 3001 },
-              ],
-            },
-          });
-        }
-        return Response.json({
-          code: 0,
-          data: {
-            items: [
-              {
-                fields: {
-                  标题: [{ text: '任务', type: 'text' }],
-                  负责人: [{ id: 'ou_1', name: '黄泡泡' }],
-                  附件: [{ name: 'a.png' }],
-                  关联: { link_record_ids: ['rec1'] },
-                  地址: { full_address: '北京市海淀区' },
-                  公式: { type: 2, value: [3] },
-                  流程: '进行中',
-                  按钮: true,
-                },
-              },
-            ],
-            has_more: false,
-          },
-        });
-      })
+  it('ignores a page token on the last page', async () => {
+    stubPages({ code: 0, data: { items: [{ a: 1 }], has_more: false, page_token: 'stale', total: 25 } });
+
+    await expect(feishuPages(api, '/x', { pageSize: 100 })).resolves.toEqual({ items: [{ a: 1 }], total: 25 });
+  });
+
+  it('accepts empty tables that return null items', async () => {
+    stubPages({ code: 0, data: { items: null, has_more: false, total: 0 } });
+
+    await expect(feishuPages(api, '/x', { pageSize: 100 })).resolves.toEqual({ items: [], total: 0 });
+  });
+
+  it('rejects has_more without a page token and repeated page tokens', async () => {
+    stubPages({ code: 0, data: { items: [], has_more: true } });
+    await expect(feishuPages(api, '/x', { pageSize: 1 })).rejects.toThrow('has_more without page_token');
+
+    stubPages(
+      { code: 0, data: { items: [], has_more: true, page_token: 'p' } },
+      { code: 0, data: { items: [], has_more: true, page_token: 'p' } }
+    );
+    await expect(feishuPages(api, '/x', { pageSize: 1 })).rejects.toThrow('repeated page_token');
+  });
+
+  it('posts the search body with every page', async () => {
+    const fetch = stubPages(
+      { code: 0, data: { items: [], has_more: true, page_token: 'p2' } },
+      { code: 0, data: { items: [], has_more: false } }
     );
 
-    const rows = await readTable({ appToken: 'app', tableId: 'tbl', appId: 'id', appSecret: 'secret' });
-    expect(rows).toEqual([
-      { 标题: '任务', 负责人: '黄泡泡', 附件: 'a.png', 关联: 'rec1', 地址: '北京市海淀区', 公式: 3 },
+    await feishuPages(api, '/search', { method: 'POST', pageSize: 500, body: { view_id: 'vew1' } });
+    for (const [, init] of fetch.mock.calls as unknown as [string, Parameters<typeof fetch>[1]][]) {
+      expect(init).toMatchObject({ method: 'POST', body: '{"view_id":"vew1"}' });
+      expect(init!.headers).toMatchObject({
+        Authorization: 'Bearer t',
+        'Content-Type': 'application/json; charset=utf-8',
+      });
+    }
+  });
+});
+
+describe('feishuRequest', () => {
+  it('retries transient failures and reports the last Feishu error', async () => {
+    const fetch = stubPages(
+      { code: 1254607, msg: 'Data not ready' },
+      { code: 1255040, msg: 'Request timed out' },
+      { code: 0, data: { ok: true } }
+    );
+    await expect(feishuRequest(api, '/x')).resolves.toEqual({ ok: true });
+    expect(fetch).toHaveBeenCalledTimes(3);
+  });
+
+  it('does not retry permission errors', async () => {
+    const fetch = stubPages({ code: 91402, msg: 'NOTEXIST' });
+    await expect(feishuRequest(api, '/x')).rejects.toEqual(new Error('Feishu Error 91402: NOTEXIST'));
+    expect(fetch).toHaveBeenCalledTimes(1);
+  });
+
+  it('reports network failures and non-JSON responses', async () => {
+    vi.stubGlobal(
+      'fetch',
+      vi.fn(async () => new Response('<html>Bad Request</html>', { status: 400 }))
+    );
+    await expect(feishuRequest(api, '/x')).rejects.toThrow('response is not JSON (HTTP 400)');
+  });
+});
+
+describe('readRecords', () => {
+  it('reads every page of the record search API', async () => {
+    const fetch = stubPages(
+      { code: 0, data: { items: records('rec1'), has_more: true, page_token: 'p2', total: 2 } },
+      { code: 0, data: { items: records('rec2'), has_more: false, total: 2 } }
+    );
+
+    await expect(readRecords(api, 'app', table)).resolves.toEqual([
+      { id: 'rec1', fields: { n: 'rec1' } },
+      { id: 'rec2', fields: { n: 'rec2' } },
     ]);
+    expect(String(fetch.mock.calls[0][0])).toBe(
+      'https://open.feishu.cn/open-apis/bitable/v1/apps/app/tables/tbl1/records/search?page_size=500'
+    );
+  });
+
+  it('fails instead of returning a partial or duplicated table', async () => {
+    stubPages({ code: 0, data: { items: records('rec1'), has_more: false, total: 3 } });
+    await expect(readRecords(api, 'app', table)).rejects.toThrow('订单 reported 3 records but returned 1');
+
+    stubPages(
+      { code: 0, data: { items: records('rec1'), has_more: true, page_token: 'p2', total: 2 } },
+      { code: 0, data: { items: records('rec1'), has_more: false, total: 2 } }
+    );
+    await expect(readRecords(api, 'app', table)).rejects.toThrow('returned record rec1 twice');
   });
 });

@@ -8,7 +8,7 @@ Create a Lark app, grant access to your Base, and load its data into AVA. Once c
 - **Node.js 22.13.0 or later**. The CLI currently supports macOS / Linux; see the [CLI guide](/documentation/reference/cli/) for installation.
 - The browser URL of the target table, usually containing `/base/` or `/wiki/`.
 
-AVA reads as the app and loads records into a read-only view named `data` using the Node.js DuckDB engine. Loading, inspecting the schema, and running SQL do not require a model API key. Configure a model for AVA's natural-language analysis and visualization as described in [Model configuration](/documentation/configuration/).
+AVA reads as the app and copies the data into read-only DuckDB tables in Node.js: a URL that names a table loads it as `data`, and a URL without a table loads every table of the Base under its own name. Loading, inspecting the schema, and running SQL do not require a model API key. Configure a model for AVA's natural-language analysis and visualization as described in [Model configuration](/documentation/configuration/).
 
 Click any screenshot to view it at full size.
 
@@ -49,9 +49,10 @@ In **Permissions & Scopes**, search for Base and request permissions to read tab
 
 | Endpoint | Purpose | When required |
 | --- | --- | --- |
-| `GET /open-apis/bitable/v1/apps/{app_token}/tables/{table_id}/fields` | Read field names and types | Every load |
-| `GET /open-apis/bitable/v1/apps/{app_token}/tables/{table_id}/records` | Read records | Every load |
-| `GET /open-apis/bitable/v1/apps/{app_token}/tables` | Find the target table | When the URL has no `table` parameter |
+| `GET /open-apis/bitable/v1/apps/{app_token}` | Read the time zone of the Base, used for dates | Every load |
+| `GET /open-apis/bitable/v1/apps/{app_token}/tables` | List the tables | Every load |
+| `GET /open-apis/bitable/v1/apps/{app_token}/tables/{table_id}/fields` | Read field names and types | Every load, also for tables that link fields point to |
+| `POST /open-apis/bitable/v1/apps/{app_token}/tables/{table_id}/records/search` | Read records | Every load; linked tables outside the selection are read with their primary field only |
 | `GET /open-apis/wiki/v2/spaces/get_node` | Resolve a Wiki node to its Base | For `/wiki/` URLs; also request Wiki read permissions |
 
 See the [Lark Base API documentation](https://open.larksuite.com/document/server-docs/docs/bitable-v1/overview). Create and publish a version under **Version Management & Release** after requesting permissions. Wait for administrator approval when required, and confirm the permissions have taken effect.
@@ -91,13 +92,13 @@ https://my.larksuite.com/wiki/NODE_TOKEN?table=TABLE_ID&view=VIEW_ID
 | `APP_TOKEN` after `/base/` | `appToken` | Base identifier, distinct from App ID |
 | `NODE_TOKEN` after `/wiki/` | Keep it in `url` | Wiki node identifier; AVA resolves the actual App Token. Do not use the node token as `appToken`. |
 | `table=TABLE_ID` | `tableId` | Target table identifier |
-| `view=VIEW_ID` | None | Ignored by AVA |
+| `view=VIEW_ID` | `viewId` (optional) | Ignored in a URL; set `viewId` in a configuration to load only that view |
 
-Without `table`, AVA tries to discover the table: it uses the only table when there is one, or reports candidate names and IDs when there are several. Specify `table` or `tableId` and reload. Lark `/docx/`, `/sheets/`, and Wiki nodes hosting other document types are not supported by this source.
+Without `table`, AVA loads every table of the Base under its own name. Every table gets a `record_id` primary key. Link fields show the primary field of the linked records; when a link holds at most one record per row, it also gets a `<field>_record_id` column that the schema declares as a relationship to the linked table, so you can join tables. Lark `/docx/`, `/sheets/`, and Wiki nodes hosting other document types are not supported by this source.
 
 <Callout>
-  AVA loads the entire table accessible to the app, paginating through fields and records. Base view filters are not applied.
-  A view showing only this month's records will not limit the loaded data, even if its `view` parameter is present. Add the filter explicitly in SQL.
+  AVA loads the entire table accessible to the app, paginating through fields and records, and fails instead of returning partial data if the pages do not add up to the reported total. The `view` parameter of a copied URL is not applied:
+  a view showing only this month's records will not limit the loaded data. Add the filter in SQL, or set `viewId` in a source configuration.
 </Callout>
 
 Always pass the full Lark URL in `url`. AVA uses its `larksuite.com` domain to select the Lark API. When you supply only `appToken` and `tableId`, AVA defaults to the Feishu China API.
@@ -151,13 +152,15 @@ ava source @lark-source.json
 | --- | --- | --- |
 | `url` | Yes for Lark | Full Base or Wiki URL on `larksuite.com` |
 | `appToken` | No | Base App Token, if supplied alongside the URL |
-| `tableId` | No | Target table ID. Supply it if the URL omits `table` and the Base has multiple tables. |
-| `appId` | SDK: yes; CLI: can be resolved elsewhere | Open Platform App ID |
-| `appSecret` | SDK: yes; CLI: can be resolved elsewhere | Open Platform App Secret |
+| `tableId` | No | Table to load as `data`. Omit it, and `table` in the URL, to load the whole Base. |
+| `viewId` | No | Load only the records visible in this view; requires a table |
+| `appId` / `appSecret` | One credential is required; the CLI can resolve it elsewhere | Open Platform app credentials |
+| `accessToken` | One credential is required | Tenant or user access token obtained by your application |
+| `timeZone` | No | IANA time zone for dates; defaults to the time zone of the Base |
 
-When both `url` and `appToken` / `tableId` are supplied, they must identify the same table.
+When both `url` and `appToken` / `tableId` are supplied, they must identify the same table. `viewId` requires a table, and `timeZone` (an IANA name such as `Asia/Shanghai`) overrides the time zone of the Base for dates.
 
-CLI credential priority is **configuration `appId` + `appSecret` → environment variables → `~/.ava/feishu.json` → interactive terminal binding**. A partial pair in either of the first two sources causes an error; credentials from different sources are not combined. Piped input, redirection, and other non-interactive environments do not prompt for binding, so configure credentials beforehand.
+CLI credential priority is **configuration (`appId` + `appSecret`, or `accessToken`) → `AVA_FEISHU_APP_ID` / `AVA_FEISHU_APP_SECRET` → `~/.ava/feishu.json` → interactive terminal binding**. A configuration may contain only one kind of credential. A partial pair in either of the first two sources causes an error; credentials from different sources are not combined. Piped input, redirection, and other non-interactive environments do not prompt for binding, so configure credentials beforehand.
 
 Keep App Secret and the saved binding file out of Git and logs. To change a saved app, update the complete credential pair in the binding file, or override it with higher-priority environment variables.
 
@@ -173,9 +176,9 @@ ava query YOUR_DATASET_ID --dsl 'SELECT * FROM data LIMIT 5'
 ava query YOUR_DATASET_ID --dsl 'SELECT COUNT(*) AS row_count FROM data'
 ```
 
-Check the `data` view, field names, and read scope. The count should match the target table accessible to the app. Run `ava dispose YOUR_DATASET_ID` when finished. After changes in Base, run `ava source` again and use the new ID; existing sessions do not continuously synchronize remote changes.
+Check the table names (`data` for one table, the Base table names for a whole Base), field names, and read scope. The count should match the target table accessible to the app. Run `ava dispose YOUR_DATASET_ID` when finished. After changes in Base, run `ava source` again and use the new ID; existing sessions do not continuously synchronize remote changes.
 
-Complex fields such as people, attachments, and linked records become queryable text, usually with multiple values separated by commas. Attachments expose metadata without downloading files. Formula and lookup fields are converted according to their returned value types and are not necessarily text. Unsupported field types are skipped; an empty table preserves supported field definitions.
+Column types come from the field metadata. Dates are read in the time zone of the Base, as shown in Lark: date fields become `DATE`; date-time fields and created or modified times become `TIMESTAMP`. Unchecked checkboxes are `false`. Multi-select, people, groups, attachments, links, and lookups become lists (`VARCHAR[]`, queried with `list_contains` or `UNNEST`) only when some record holds several values; otherwise they are plain columns. Attachments expose file names without downloading files. Formula and lookup fields take the type of their result. Workflow and button fields are skipped; an empty table preserves supported field definitions.
 
 After installing the [AVA Skill](/documentation/agent-skill/), you can ask your agent:
 
@@ -221,11 +224,11 @@ try {
 | App binding fails | Check that App ID and App Secret belong to the same enterprise custom app, are copied in full, and belong to the Lark tenant hosting your Base. The error preserves the platform's code and message. |
 | Binding succeeds but loading reports insufficient permissions | Confirm read API permissions are published and effective, and the same app is added to the target document. Your own access does not grant app access. |
 | `/base/` works but `/wiki/` fails | Check Wiki read API permissions, space access, and whether the node hosts a Base. |
-| Error contains `has … tables` | Specify `?table=TABLE_ID` or `tableId`; do not use a view ID as a table ID. |
+| Error contains `reported … records but returned …` | The table changed while it was being read. Load it again. |
 | Error contains `does not match` | Remove redundant identifiers or ensure `url`, `appToken`, and `tableId` identify the same table. |
 | Missing credentials in a non-interactive environment | Configure paired environment variables, a complete source configuration, or a saved binding file beforehand. |
 | `~/.ava/feishu.json is not valid JSON` | Repair the file to valid JSON containing `appId` and `appSecret`, or override it with environment variables. |
-| More records than the view shows, or remote changes are missing | `view` filters are ignored; filter in SQL. Reload the source to read remote updates. |
+| More records than the view shows, or remote changes are missing | The `view` of a URL is ignored; filter in SQL or set `viewId`. Reload the source to read remote updates. |
 | Network error or non-JSON response | Check connectivity and proxy settings for `open.larksuite.com`, and inspect the original failing request. |
 
 See the [CLI guide](/documentation/reference/cli/) for complete commands and [Data sources](/documentation/data/sources/) for other connectors.

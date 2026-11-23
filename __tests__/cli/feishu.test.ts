@@ -4,7 +4,13 @@ import { join } from 'path';
 
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
-import { feishuBindError, feishuCredentials, feishuUrl, isFeishuBitableUrl, isFeishuHostUrl } from '../../src/cli/feishu';
+import {
+  feishuBindError,
+  feishuCredentials,
+  feishuUrl,
+  isFeishuBitableUrl,
+  isFeishuHostUrl,
+} from '../../src/cli/feishu';
 
 const baseUrl = 'https://my.feishu.cn/base/AXuDbVoV7aKqzpslXwscP41Wncc?table=tblehsChh5T3X69i&view=vewfxHhZEb';
 const credentials = { appId: 'cli_test_app', appSecret: 'test-secret' };
@@ -110,7 +116,23 @@ describe('Feishu credentials', () => {
     vi.stubEnv('HOME', home);
 
     await expect(feishuCredentials({})).rejects.toThrow(
-      'Feishu Bitable source requires appId and appSecret. Provide them in the source config'
+      'Feishu Bitable source requires appId and appSecret, or an accessToken. Provide them in the source config'
+    );
+  });
+
+  it('keeps an access token from the source config', async () => {
+    vi.stubEnv('AVA_FEISHU_APP_ID', 'env-id');
+    vi.stubEnv('AVA_FEISHU_APP_SECRET', 'env-secret');
+
+    await expect(feishuCredentials({ accessToken: 'u-config' })).resolves.toEqual({ accessToken: 'u-config' });
+  });
+
+  it('rejects a config that mixes credential kinds', async () => {
+    await expect(feishuCredentials({ appId: 'id', appSecret: 'secret', accessToken: 'u-1' })).rejects.toThrow(
+      'must use either appId/appSecret or accessToken'
+    );
+    await expect(feishuCredentials({ appSecret: 'secret', accessToken: 'u-1' })).rejects.toThrow(
+      'must use either appId/appSecret or accessToken'
     );
   });
 });

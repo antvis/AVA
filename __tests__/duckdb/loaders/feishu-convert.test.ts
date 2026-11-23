@@ -1,19 +1,28 @@
 import { describe, expect, it } from 'vitest';
 
 import {
-  asAttachment,
-  asAutoNumber,
-  asFormula,
-  asGroupChat,
-  asLink,
-  asLocation,
-  asMultiSelect,
   asNumber,
-  asTimestamp,
-  asUser,
-  convertFieldValue,
+  asText,
+  castValue,
+  cellValues,
+  checkTimeZone,
+  commonKind,
+  defaultKind,
+  displayText,
   isSupportedFieldType,
+  linkRecordIds,
+  wallClock,
 } from '../../../src/duckdb/loaders/feishu/convert';
+
+import type { ConvertContext, FeishuField } from '../../../src/duckdb/loaders/feishu/convert';
+
+const ctx: ConvertContext = {
+  timeZone: 'Asia/Shanghai',
+  linkText: (tableId, id) => (tableId === 'tblCustomers' && id === 'recC1' ? '华东贸易' : id),
+};
+const field = (type: number, property?: Record<string, unknown>): FeishuField => ({ name: 'f', type, property });
+const values = (type: number, value: unknown, property?: Record<string, unknown>) =>
+  cellValues(field(type, property), value, ctx);
 
 const user = {
   avatar_url: 'https://example.com/avatar.png',
@@ -23,170 +32,191 @@ const user = {
   name: '黄泡泡',
 };
 
-describe('asNumber', () => {
-  it('keeps numbers and parses numeric strings', () => {
-    expect(asNumber(42)).toBe(42);
-    expect(asNumber('42.5')).toBe(42.5);
+// 2023-02-05 00:00 in Beijing, the documented date example.
+const BEIJING_MIDNIGHT = 1675526400000;
+
+describe('wallClock', () => {
+  it('reads a timestamp as the wall-clock time of a time zone', () => {
+    expect(wallClock(BEIJING_MIDNIGHT, 'Asia/Shanghai')).toBe('2023-02-05 00:00:00.000');
+    expect(wallClock(BEIJING_MIDNIGHT, 'UTC')).toBe('2023-02-04 16:00:00.000');
+    expect(wallClock(BEIJING_MIDNIGHT + 1234, 'America/New_York')).toBe('2023-02-04 11:00:01.234');
+    expect(wallClock(0, 'UTC')).toBe('1970-01-01 00:00:00.000');
   });
 
-  it('returns null for empty or non-numeric values', () => {
-    expect(asNumber(null)).toBeNull();
-    expect(asNumber(undefined)).toBeNull();
-    expect(asNumber('')).toBeNull();
-    expect(asNumber('   ')).toBeNull();
+  it('returns null outside the representable range', () => {
+    expect(wallClock(8640000000000001, 'UTC')).toBeNull();
+  });
+
+  it('rejects unknown time zones', () => {
+    expect(checkTimeZone('Asia/Shanghai')).toBe('Asia/Shanghai');
+    expect(() => checkTimeZone('Mars/Base')).toThrow('Invalid Feishu Bitable time zone: Mars/Base');
+  });
+});
+
+describe('scalar fields', () => {
+  it('joins text segments, including mentions and links', () => {
+    const note = [
+      { text: '请 ', type: 'text' },
+      { text: '@张三', type: 'mention', token: 'ou_1', mentionType: 'User', name: '张三' },
+      { text: ' 查看 ', type: 'text' },
+      { text: '飞书官网', type: 'url', link: 'https://www.feishu.cn' },
+    ];
+    expect(values(1, note)).toEqual({ kind: 'text', values: ['请 @张三 查看 飞书官网'] });
+    expect(values(1, 'plain')).toEqual({ kind: 'text', values: ['plain'] });
+    expect(values(1, [])).toEqual({ kind: 'text', values: [] });
+    expect(asText([{ text: '  ', type: 'text' }])).toBeNull();
+  });
+
+  it('keeps numbers, parses numeric strings and drops the rest', () => {
+    expect(values(2, 42)).toEqual({ kind: 'number', values: [42] });
+    expect(values(2, '0.5')).toEqual({ kind: 'number', values: [0.5] });
+    expect(values(2, undefined)).toEqual({ kind: 'number', values: [] });
     expect(asNumber('abc')).toBeNull();
+    expect(asNumber('  ')).toBeNull();
+    expect(asNumber(Number.NaN)).toBeNull();
+  });
+
+  it('keeps single select, phone and auto numbers', () => {
+    expect(values(3, '进行中')).toEqual({ kind: 'text', values: ['进行中'] });
+    expect(values(13, '+86-010-12345678')).toEqual({ kind: 'text', values: ['+86-010-12345678'] });
+    expect(values(1005, '17')).toEqual({ kind: 'integer', values: [17] });
+    expect(values(1005, 'WO-20240226-0001')).toEqual({ kind: 'text', values: ['WO-20240226-0001'] });
+  });
+
+  it('reads an omitted checkbox as unchecked', () => {
+    expect(values(7, true)).toEqual({ kind: 'boolean', values: [true] });
+    expect(values(7, false)).toEqual({ kind: 'boolean', values: [false] });
+    expect(values(7, undefined)).toEqual({ kind: 'boolean', values: [false] });
+  });
+
+  it('labels links, locations and attachments', () => {
+    expect(values(15, { text: '飞书开放平台', link: 'https://open.feishu.cn' })).toEqual({
+      kind: 'text',
+      values: ['飞书开放平台'],
+    });
+    expect(values(15, { link: 'https://open.feishu.cn' }).values).toEqual(['https://open.feishu.cn']);
+    expect(
+      values(22, { full_address: '北京市海淀区学清路', name: 'Bytedance', location: '116.35,40.01' }).values
+    ).toEqual(['北京市海淀区学清路']);
+    expect(values(17, [{ name: 'a.png', file_token: 't1' }, { file_token: 't2' }]).values).toEqual(['a.png', 't2']);
   });
 });
 
-describe('asTimestamp', () => {
-  it('converts millisecond timestamps to ISO strings', () => {
-    expect(asTimestamp(1675526400000)).toBe('2023-02-04T16:00:00.000Z');
-    expect(asTimestamp('1675526400000')).toBe('2023-02-04T16:00:00.000Z');
-    expect(asTimestamp(0)).toBe('1970-01-01T00:00:00.000Z');
+describe('dates', () => {
+  it('uses the date formatter to choose DATE or TIMESTAMP', () => {
+    expect(values(5, BEIJING_MIDNIGHT, { date_formatter: 'yyyy/MM/dd' })).toEqual({
+      kind: 'date',
+      values: ['2023-02-05'],
+    });
+    expect(values(5, BEIJING_MIDNIGHT + 3600_000, { date_formatter: 'yyyy-MM-dd HH:mm' })).toEqual({
+      kind: 'timestamp',
+      values: ['2023-02-05 01:00:00.000'],
+    });
+    expect(defaultKind(field(5, { date_formatter: 'yyyy/MM/dd HH:mm' }))).toBe('timestamp');
+    expect(defaultKind(field(5, { date_formatter: 'MM-dd' }))).toBe('date');
   });
 
-  it('returns null for invalid or out-of-range timestamps', () => {
-    expect(asTimestamp(null)).toBeNull();
-    expect(asTimestamp('')).toBeNull();
-    expect(asTimestamp('abc')).toBeNull();
-    expect(asTimestamp(8640000000000001)).toBeNull();
-  });
-});
-
-describe('asMultiSelect', () => {
-  it('joins option names with a comma', () => {
-    expect(asMultiSelect(['审批集成', '办公管理'])).toBe('审批集成,办公管理');
+  it('keeps the time without a formatter unless it is a local midnight', () => {
+    expect(values(5, BEIJING_MIDNIGHT).kind).toBe('date');
+    expect(values(5, BEIJING_MIDNIGHT + 60_000).values).toEqual(['2023-02-05 00:01:00.000']);
   });
 
-  it('returns null for empty or non-array values', () => {
-    expect(asMultiSelect([])).toBeNull();
-    expect(asMultiSelect('审批集成')).toBeNull();
-  });
-});
-
-describe('asUser', () => {
-  it('joins user names with a comma', () => {
-    expect(asUser([user])).toBe('黄泡泡');
-    expect(asUser([{ name: '张三' }, { en_name: 'Bob' }])).toBe('张三,Bob');
-  });
-
-  it('accepts a bare user object and falls back to id', () => {
-    expect(asUser(user)).toBe('黄泡泡');
-    expect(asUser([{ id: 'ou_2' }])).toBe('ou_2');
-  });
-
-  it('skips empty entries', () => {
-    expect(asUser([null, {}, { name: '' }])).toBeNull();
-    expect(asUser(null)).toBeNull();
+  it('reads created and modified times as timestamps', () => {
+    expect(values(1001, BEIJING_MIDNIGHT, { date_formatter: 'yyyy/MM/dd' })).toEqual({
+      kind: 'timestamp',
+      values: ['2023-02-05 00:00:00.000'],
+    });
+    expect(values(1002, 'not a date').values).toEqual([]);
   });
 });
 
-describe('asAttachment', () => {
-  it('joins attachment names with a comma', () => {
-    expect(asAttachment([{ name: 'a.png', file_token: 't1' }, { file_token: 't2' }])).toBe('a.png,t2');
+describe('list fields', () => {
+  it('keeps every option, person and group', () => {
+    expect(values(4, ['审批集成', '办公管理'])).toEqual({ kind: 'text', values: ['审批集成', '办公管理'] });
+    expect(values(11, [user, { en_name: 'Bob' }, { id: 'ou_2' }, {}]).values).toEqual(['黄泡泡', 'Bob', 'ou_2']);
+    expect(values(1003, user).values).toEqual(['黄泡泡']);
+    expect(values(23, [{ name: '测试部门', id: 'oc_1' }, { id: 'oc_2' }]).values).toEqual(['测试部门', 'oc_2']);
   });
 
-  it('returns null for empty values', () => {
-    expect(asAttachment([])).toBeNull();
-    expect(asAttachment(null)).toBeNull();
-  });
-});
-
-describe('asLink', () => {
-  it('joins record ids with a comma', () => {
-    expect(asLink({ link_record_ids: ['rec1', 'rec2'] })).toBe('rec1,rec2');
-    expect(asLink([{ link_record_ids: ['rec1'] }, 'rec2'])).toBe('rec1,rec2');
-  });
-
-  it('returns null for empty values', () => {
-    expect(asLink({ link_record_ids: [] })).toBeNull();
-    expect(asLink(null)).toBeNull();
+  it('labels linked records through the context', () => {
+    const link = field(21, { table_id: 'tblCustomers', multiple: true });
+    expect(cellValues(link, { link_record_ids: ['recC1', 'recC9'] }, ctx).values).toEqual(['华东贸易', 'recC9']);
+    expect(linkRecordIds({ link_record_ids: ['rec1', 'rec2'] })).toEqual(['rec1', 'rec2']);
+    // Legacy list API shape.
+    expect(linkRecordIds([{ record_ids: ['rec1'], table_id: 'tbl1', text: 'a', type: 'text' }])).toEqual(['rec1']);
+    expect(linkRecordIds(null)).toEqual([]);
   });
 });
 
-describe('asLocation', () => {
-  it('prefers the full address and falls back to other labels', () => {
-    expect(asLocation({ full_address: '字节跳动，北京市海淀区', name: '字节跳动' })).toBe('字节跳动，北京市海淀区');
-    expect(asLocation({ name: '字节跳动' })).toBe('字节跳动');
-    expect(asLocation({ location: '116.35,40.01' })).toBe('116.35,40.01');
+describe('formula and lookup', () => {
+  it('converts the wrapped result as its own type', () => {
+    expect(values(20, { type: 1, ui_type: 'Text', value: [{ text: '✅ 正常', type: 'text' }] })).toEqual({
+      kind: 'text',
+      values: ['✅ 正常'],
+    });
+    expect(values(20, { type: 2, ui_type: 'Currency', value: 1250.5 })).toEqual({ kind: 'number', values: [1250.5] });
+    expect(values(20, { type: 2, value: ['0.5'] })).toEqual({ kind: 'number', values: [0.5] });
+    expect(values(20, { type: 7, value: [true] })).toEqual({ kind: 'boolean', values: [true] });
+    expect(values(20, { type: 5, ui_type: 'DateTime', value: BEIJING_MIDNIGHT })).toEqual({
+      kind: 'date',
+      values: ['2023-02-05'],
+    });
   });
 
-  it('returns null for empty values', () => {
-    expect(asLocation({})).toBeNull();
-    expect(asLocation(null)).toBeNull();
-  });
-});
-
-describe('asGroupChat', () => {
-  it('joins group names with a comma', () => {
-    expect(asGroupChat([{ name: '测试部门', id: 'oc_1' }, { id: 'oc_2' }])).toBe('测试部门,oc_2');
-  });
-
-  it('returns null for empty values', () => {
-    expect(asGroupChat([])).toBeNull();
-  });
-});
-
-describe('asAutoNumber', () => {
-  it('accepts the documented string and numeric variants', () => {
-    expect(asAutoNumber('1')).toBe('1');
-    expect(asAutoNumber(2)).toBe('2');
-  });
-
-  it('returns null for empty values', () => {
-    expect(asAutoNumber('')).toBeNull();
-    expect(asAutoNumber({})).toBeNull();
-  });
-});
-
-describe('asFormula', () => {
-  it('converts text, numeric, date and checkbox results', () => {
-    expect(asFormula({ type: 1, ui_type: 'Text', value: [{ text: '✅ 正常', type: 'text' }] })).toBe('✅ 正常');
-    expect(asFormula({ type: 2, value: [0.5] })).toBe(0.5);
-    expect(asFormula({ type: 2, value: ['0.5'] })).toBe(0.5);
-    expect(asFormula({ type: 5, value: [1675526400000] })).toBe('2023-02-04T16:00:00.000Z');
-    expect(asFormula({ type: 7, value: [true] })).toBe(true);
-  });
-
-  it('converts list-shaped results', () => {
-    expect(asFormula({ type: 4, value: [['审批集成', '办公管理']] })).toBe('审批集成,办公管理');
-    expect(asFormula({ type: 11, value: [user] })).toBe('黄泡泡');
-    expect(asFormula({ type: 17, value: [{ name: 'a.png' }] })).toBe('a.png');
-    expect(asFormula({ type: 18, value: [{ link_record_ids: ['rec1', 'rec2'] }] })).toBe('rec1,rec2');
-    expect(asFormula({ type: 22, value: [{ full_address: '北京市海淀区' }] })).toBe('北京市海淀区');
-    expect(asFormula({ type: 23, value: [{ name: '测试部门' }] })).toBe('测试部门');
+  it('keeps one value per referenced record for lookups', () => {
+    expect(values(19, { type: 2, value: [3, 5] }).values).toEqual([3, 5]);
+    expect(values(19, { type: 4, value: [['审批集成', '办公管理'], ['人事']] }).values).toEqual([
+      '审批集成',
+      '办公管理',
+      '人事',
+    ]);
+    expect(values(19, { type: 11, value: [user] }).values).toEqual(['黄泡泡']);
+    expect(values(19, { type: 3, value: ['上海', '北京'] }).values).toEqual(['上海', '北京']);
   });
 
   it('unwraps nested formula and lookup wrappers', () => {
-    expect(asFormula({ type: 20, value: [{ type: 1, value: [{ text: 'nested', type: 'text' }] }] })).toBe('nested');
-    expect(asFormula({ type: 19, value: [{ type: 2, value: [3] }] })).toBe(3);
+    expect(values(20, { type: 20, value: [{ type: 1, value: [{ text: 'nested', type: 'text' }] }] }).values).toEqual([
+      'nested',
+    ]);
+    expect(values(19, { type: 19, value: [{ type: 2, value: [3] }] }).values).toEqual([3]);
   });
 
-  it('returns null for empty, malformed or unsupported results', () => {
-    expect(asFormula(null)).toBeNull();
-    expect(asFormula({ type: 2, value: [] })).toBeNull();
-    expect(asFormula({ type: 24, value: ['x'] })).toBeNull();
-    expect(asFormula('text')).toBeNull();
+  it('returns no values for empty, malformed or unsupported results', () => {
+    expect(values(20, null).values).toEqual([]);
+    expect(values(20, { type: 2, value: [] }).values).toEqual([]);
+    expect(values(20, { type: 24, value: ['x'] }).values).toEqual([]);
+    expect(values(20, 'text').values).toEqual([]);
   });
 });
 
-describe('convertFieldValue', () => {
-  it('dispatches the newly supported field types', () => {
-    expect(convertFieldValue(11, [user])).toBe('黄泡泡');
-    expect(convertFieldValue(17, [{ name: 'a.png' }])).toBe('a.png');
-    expect(convertFieldValue(18, { link_record_ids: ['rec1'] })).toBe('rec1');
-    expect(convertFieldValue(19, { type: 1, value: [{ text: 'lookup', type: 'text' }] })).toBe('lookup');
-    expect(convertFieldValue(20, { type: 2, value: [1] })).toBe(1);
-    expect(convertFieldValue(21, { link_record_ids: ['rec1'] })).toBe('rec1');
-    expect(convertFieldValue(22, { full_address: '北京市海淀区' })).toBe('北京市海淀区');
-    expect(convertFieldValue(23, [{ name: '测试部门' }])).toBe('测试部门');
-    expect(convertFieldValue(1003, user)).toBe('黄泡泡');
-    expect(convertFieldValue(1004, [user])).toBe('黄泡泡');
+describe('column kinds', () => {
+  const formula = field(20);
+
+  it('widens mixed formula results', () => {
+    const number = { kind: 'number' as const, values: [1.5] };
+    const integer = { kind: 'integer' as const, values: [2] };
+    const date = { kind: 'date' as const, values: ['2024-01-01'] };
+    const timestamp = { kind: 'timestamp' as const, values: ['2024-01-01 08:00:00.000'] };
+    const text = { kind: 'text' as const, values: ['x'] };
+    const empty = { kind: 'text' as const, values: [] };
+
+    expect(commonKind(formula, [number, integer, empty])).toBe('number');
+    expect(commonKind(formula, [date, timestamp])).toBe('timestamp');
+    expect(commonKind(formula, [number, text])).toBe('text');
+    expect(commonKind(field(2), [empty])).toBe('number');
+    expect(castValue('2024-01-01', 'date', 'timestamp')).toBe('2024-01-01 00:00:00.000');
+    expect(castValue(1.5, 'number', 'text')).toBe('1.5');
+    expect(castValue(2, 'integer', 'number')).toBe(2);
   });
 
-  it('rejects unsupported field types', () => {
-    expect(() => convertFieldValue(24, 'x')).toThrow('Unsupported field type: 24');
-    expect(() => convertFieldValue(3001, true)).toThrow('Unsupported field type: 3001');
+  it('labels a cell with its values', () => {
+    expect(displayText({ kind: 'text', values: ['a', 'b'] })).toBe('a, b');
+    expect(displayText({ kind: 'number', values: [] })).toBeUndefined();
+  });
+
+  it('reads auto numbers with custom rules as text', () => {
+    expect(defaultKind(field(1005, { auto_serial: { type: 'custom' } }))).toBe('text');
+    expect(defaultKind(field(1005, { auto_serial: { type: 'auto_increment_number' } }))).toBe('integer');
   });
 });
 
@@ -197,9 +227,10 @@ describe('isSupportedFieldType', () => {
     }
   });
 
-  it('rejects read-only and unknown field types', () => {
+  it('rejects workflow, button and unknown field types', () => {
     for (const type of [24, 3001, 99]) {
       expect(isSupportedFieldType(type), `type ${type}`).toBe(false);
     }
+    expect(() => values(24, 'x')).toThrow('Unsupported field type: 24');
   });
 });
