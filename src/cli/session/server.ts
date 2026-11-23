@@ -9,6 +9,7 @@ import type { Server, Socket } from 'net';
 import type { Request } from './protocol';
 
 const id = process.argv[2];
+const DISPOSE_EXIT_DEADLINE_MS = 1_500;
 let server: Server | undefined;
 let closing: Promise<void> | undefined;
 let hasModel = false;
@@ -23,9 +24,22 @@ function close(): Promise<void> {
       try {
         await disposeDataset();
       } finally {
-        // Release the dataset first; only then stop accepting new commands.
-        server?.close();
-        await rm(sessionDirectory(id), { recursive: true, force: true });
+        const listener = server;
+        const drained = listener?.listening
+          ? new Promise<void>((resolve) => listener.close(() => resolve()))
+          : undefined;
+        try {
+          await rm(sessionDirectory(id), { recursive: true, force: true });
+        } finally {
+          if (drained) {
+            // Let all accepted clients receive the shared result before exiting.
+            const deadline = setTimeout(() => process.exit(0), DISPOSE_EXIT_DEADLINE_MS);
+            void drained.then(() => {
+              clearTimeout(deadline);
+              process.exit(0);
+            });
+          }
+        }
       }
     })();
   }
@@ -46,19 +60,19 @@ function resetIdle(): void {
   clearTimeout(idle);
   if (!closing && pending === 0)
     idle = setTimeout(() => {
-      void close().catch(fail);
+      void close().catch(() => {});
     }, 30 * 60_000);
 }
 
 async function dispatch(message: Request, signal: AbortSignal): Promise<unknown> {
-  if (closing) throw new Error('Dataset has been disposed.');
-
   if (message.command === 'dispose') {
     await close();
     return { datasetId: id, disposed: true };
   }
 
-  if (message.command === 'schema') return describeDataset(message.schema);
+  if (closing) throw new Error('Dataset has been disposed.');
+
+  if (message.command === 'schema') return describeDataset(message.schema, signal);
 
   if (['suggest', 'analyze', 'translate'].includes(message.command) && !hasModel) {
     throw new Error('Set OPENAI_API_KEY before ava source, then load the dataset again.');
@@ -88,7 +102,11 @@ async function dispatch(message: Request, signal: AbortSignal): Promise<unknown>
           commandSignal
         );
       case 'query':
-        return ava.query(message.dsl, { maxRows: message.maxRows, maxResultBytes: message.maxResultBytes }, commandSignal);
+        return ava.query(
+          message.dsl,
+          { maxRows: message.maxRows, maxResultBytes: message.maxResultBytes },
+          commandSignal
+        );
     }
   }, signal);
 }
@@ -108,7 +126,6 @@ function serveConnection(socket: Socket): void {
   handleConnection(socket, {
     dispatch,
     onBusy: trackBusy,
-    exit: (code) => process.exit(code),
   });
 }
 

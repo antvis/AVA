@@ -207,6 +207,59 @@ describe('ClickHouseEngine', () => {
     }
   });
 
+  it('cancels a ClickHouse request after the driver starts it', async () => {
+    const client = {
+      query: vi.fn(
+        ({ abort_signal }: { abort_signal?: AbortSignal }) =>
+          new Promise((_resolve, reject) => {
+            abort_signal?.addEventListener('abort', () => reject(new Error('HTTP request cancelled')), { once: true });
+          })
+      ),
+      close: vi.fn(),
+    };
+    mockedCreateClient.mockReturnValue(client as never);
+    const ava = new AVA({ llm: { model: 'unused' }, engine: { type: 'clickhouse' } });
+    try {
+      await ava.source({ type: 'clickhouse', options: { host: 'localhost', database: 'default' } });
+      const controller = new AbortController();
+      const reason = new Error('Client disconnected');
+      const cancelled = expect(ava.query('SELECT 1', undefined, controller.signal)).rejects.toBe(reason);
+      await vi.waitFor(() =>
+        expect(client.query).toHaveBeenCalledWith(expect.objectContaining({ abort_signal: controller.signal }))
+      );
+      controller.abort(reason);
+      await cancelled;
+    } finally {
+      await ava.dispose();
+    }
+  });
+
+  it('closes a ClickHouse result set while its rows are still being read', async () => {
+    let rejectRead: (error: Error) => void;
+    const cursor = {
+      json: vi.fn(() => new Promise((_resolve, reject) => (rejectRead = reject))),
+      close: vi.fn(() => rejectRead(new Error('Result set closed'))),
+    };
+    mockedCreateClient.mockReturnValue({
+      query: vi.fn().mockResolvedValue(cursor),
+      close: vi.fn(),
+    } as never);
+
+    const engine = new ClickHouseEngine({ model: 'unused' });
+    try {
+      await engine.load({ type: 'clickhouse', options: { host: 'localhost', database: 'default' } });
+      const controller = new AbortController();
+      const reason = new Error('Client disconnected');
+      const cancelled = expect(engine.execute('SELECT 1', undefined, controller.signal)).rejects.toBe(reason);
+      await vi.waitFor(() => expect(cursor.json).toHaveBeenCalledOnce());
+      controller.abort(reason);
+      await cancelled;
+      expect(cursor.close).toHaveBeenCalledOnce();
+    } finally {
+      await engine.dispose();
+    }
+  });
+
   it('profiles ClickHouse tables with quoted identifiers and normalized top values', async () => {
     const run = vi
       .fn<(sql: string) => Promise<Record<string, unknown>[]>>()

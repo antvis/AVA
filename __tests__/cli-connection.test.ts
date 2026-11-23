@@ -2,7 +2,7 @@ import { EventEmitter } from 'events';
 
 import { describe, expect, it, vi } from 'vitest';
 
-import { DISPOSE_EXIT_DEADLINE_MS, handleConnection } from '../src/cli/session/connection';
+import { handleConnection } from '../src/cli/session/connection';
 
 import type { Socket } from 'net';
 
@@ -11,8 +11,6 @@ class FakeSocket extends EventEmitter {
   destroyed = false;
   written: string[] = [];
   timeouts: number[] = [];
-  /** Set to false to simulate a client that never drains the response. */
-  flushes = true;
 
   setTimeout(ms: number): this {
     this.timeouts.push(ms);
@@ -32,7 +30,6 @@ class FakeSocket extends EventEmitter {
 
   end(chunk?: string): this {
     if (chunk) this.written.push(chunk);
-    if (this.flushes) this.emit('finish');
     return this;
   }
 }
@@ -90,35 +87,13 @@ describe('session connection', () => {
     expect(onBusy.mock.calls).toEqual([[true], [false]]);
   });
 
-  it('exits once the dispose response is flushed', async () => {
+  it('writes the result of a dispose request', async () => {
     const { socket, net } = connect();
-    const exit = vi.fn();
-
-    handleConnection(net, { dispatch: vi.fn().mockResolvedValue({ disabled: true, disposed: true }), exit });
+    handleConnection(net, { dispatch: vi.fn().mockResolvedValue({ disposed: true }) });
     socket.emit('data', '{"command":"dispose"}\n');
 
-    await vi.waitFor(() => expect(exit).toHaveBeenCalledWith(0));
-    expect(socket.written).toHaveLength(1);
-    expect(JSON.parse(socket.written[0].trim())).toEqual({ ok: true, result: { disabled: true, disposed: true } });
-  });
-
-  it('bounds the exit of an unflushed dispose response', async () => {
-    vi.useFakeTimers();
-    try {
-      const { socket, net } = connect();
-      const exit = vi.fn();
-      socket.flushes = false;
-
-      handleConnection(net, { dispatch: vi.fn().mockResolvedValue({ disposed: true }), exit });
-      socket.emit('data', '{"command":"dispose"}\n');
-      await vi.advanceTimersByTimeAsync(0);
-
-      expect(exit).not.toHaveBeenCalled();
-      await vi.advanceTimersByTimeAsync(DISPOSE_EXIT_DEADLINE_MS);
-      expect(exit).toHaveBeenCalledWith(0);
-    } finally {
-      vi.useRealTimers();
-    }
+    await vi.waitFor(() => expect(socket.written).toHaveLength(1));
+    expect(JSON.parse(socket.written[0].trim())).toEqual({ ok: true, result: { disposed: true } });
   });
 
   it('answers an invalid request with an error instead of running it', async () => {

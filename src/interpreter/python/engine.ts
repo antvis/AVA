@@ -78,7 +78,7 @@ export class PythonEngine implements AnalysisEngine {
   async getDSL(query: string, dataModel: DataModel, signal?: AbortSignal): Promise<TranslationResult> {
     if (!this.source) throw new Error('No data loaded. Please call source() first.');
 
-    return this.dialect.getDSL(query, dataModel, signal);
+    return signal ? this.dialect.getDSL(query, dataModel, signal) : this.dialect.getDSL(query, dataModel);
   }
 
   async profile(schema: Schema, options: ProfileOptions = {}): Promise<Profile> {

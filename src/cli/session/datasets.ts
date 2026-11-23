@@ -1,9 +1,9 @@
 import { AVA } from '../..';
-import { createAbortError, withDeadline } from '../../util/abort';
+import { createAbortError, throwIfAborted } from '../../util/abort';
+import { runWithTimeout } from '../../util/timeout';
 
 import type { DataSourceConfig, Schema, EngineConfig, LLMConfig } from '../../types';
 
-// A release that cannot finish must not keep the caller waiting: dispose already answered no.
 const DISPOSE_TIMEOUT_MS = 2_000;
 
 // One server process owns one dataset. The socket path supplies its external ID.
@@ -16,7 +16,7 @@ const active = new Set<AbortController>();
  * Abort queued and running commands.
  * Disposal is authoritative: it must not wait for the serial queue to drain.
  */
-export function cancelActive(): void {
+function cancelActive(): void {
   for (const controller of active) controller.abort(createAbortError('Dataset has been disposed.'));
   active.clear();
 }
@@ -27,9 +27,9 @@ export function disposeDataset(): Promise<void> {
     cancelActive();
     const instance = ava;
     ava = undefined;
-    disposal = (async () => {
-      await withDeadline(Promise.resolve(instance?.dispose()), DISPOSE_TIMEOUT_MS);
-    })();
+    disposal = runWithTimeout(Promise.resolve(instance?.dispose()), DISPOSE_TIMEOUT_MS, {
+      onTimeout: () => new Error(`Dataset cleanup timed out after ${DISPOSE_TIMEOUT_MS} ms.`),
+    });
   }
 
   return disposal;
@@ -68,9 +68,7 @@ export function withDataset<T>(
   const combined = signal ? AbortSignal.any([signal, controller.signal]) : controller.signal;
 
   const result = queue.then(() => {
-    // A command whose client disconnected must not run at all.
-    if (combined.aborted) throw combined.reason instanceof Error ? combined.reason : createAbortError('Request cancelled.');
-
+    throwIfAborted(combined);
     return operation(instance, combined);
   });
 
@@ -83,7 +81,7 @@ export function withDataset<T>(
   return result.finally(() => active.delete(controller));
 }
 
-export async function describeDataset(schema?: Schema) {
+export async function describeDataset(schema?: Schema, signal?: AbortSignal) {
   return withDataset(async (instance) => {
     const engine = instance.engine!;
     const language = engine.dialect.id;
@@ -93,5 +91,5 @@ export async function describeDataset(schema?: Schema) {
       language,
       ...(engine.dialect.rules ? { instructions: engine.dialect.rules } : {}),
     };
-  });
+  }, signal);
 }

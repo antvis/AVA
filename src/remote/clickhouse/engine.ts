@@ -3,7 +3,7 @@ import { createClient } from '@clickhouse/client';
 import { ClickHouseSQLDialect } from '../../query/clickhouse-sql';
 import { DEFAULT_METRICS, parseProfileOptions } from '../../util/profile';
 import { executionResult, inferQuerySchema, limitedQuery, maxRows } from '../../util/result';
-import { throwIfAborted } from '../../util/abort';
+import { onAbort, throwIfAborted } from '../../util/abort';
 
 import { profileTables } from './profile';
 import { getClickHouseSchema } from './schema';
@@ -84,7 +84,7 @@ export class ClickHouseEngine implements AnalysisEngine {
 
   async getDSL(query: string, dataModel: DataModel, signal?: AbortSignal): Promise<TranslationResult> {
     if (!this.client) throw new Error('No data loaded. Please call source() first.');
-    return this.dialect.getDSL(query, dataModel, signal);
+    return signal ? this.dialect.getDSL(query, dataModel, signal) : this.dialect.getDSL(query, dataModel);
   }
 
   async execute<T = Record<string, unknown>>(
@@ -95,7 +95,12 @@ export class ClickHouseEngine implements AnalysisEngine {
     if (!this.client) throw new Error('No data loaded. Please call source() first.');
     throwIfAborted(signal);
     const query = await this.dialect.validateDSL(dsl);
-    const rows = await this.runQuery<T>(limitedQuery(query, maxRows(options)));
+    throwIfAborted(signal);
+    const rows = await this.runQuery<T>(limitedQuery(query, maxRows(options)), signal).catch((error) => {
+      throwIfAborted(signal);
+      throw error;
+    });
+    throwIfAborted(signal);
     return executionResult(rows, inferQuerySchema(rows), options);
   }
 
@@ -106,12 +111,24 @@ export class ClickHouseEngine implements AnalysisEngine {
     await client?.close();
   }
 
-  private async runQuery<T = Record<string, unknown>>(query: string): Promise<T[]> {
+  private async runQuery<T = Record<string, unknown>>(query: string, signal?: AbortSignal): Promise<T[]> {
     if (!this.client) throw new Error('No data loaded. Please call source() first.');
     // Enforce on each request, including when source options specify readonly: 0.
     // https://clickhouse.com/docs/operations/settings/permissions-for-queries#readonly
-    const result = await this.client.query({ query, format: 'JSONEachRow', clickhouse_settings: { readonly: '1' } });
-    const rows = await result.json<unknown>();
-    return Array.isArray(rows) ? (rows as T[]) : [];
+    const result = await this.client.query({
+      query,
+      format: 'JSONEachRow',
+      clickhouse_settings: { readonly: '1' },
+      ...(signal ? { abort_signal: signal } : {}),
+    });
+    // The driver's request abort handler is detached once it returns the result set.
+    const detach = onAbort(signal, () => result.close());
+    try {
+      throwIfAborted(signal);
+      const rows = await result.json<unknown>();
+      return Array.isArray(rows) ? (rows as T[]) : [];
+    } finally {
+      detach();
+    }
   }
 }

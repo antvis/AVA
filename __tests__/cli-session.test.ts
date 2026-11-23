@@ -103,6 +103,29 @@ describe('session startup protocol', () => {
   });
 });
 
+it('shares cleanup timeouts across concurrent disposal requests', async () => {
+  vi.resetModules();
+  const datasets = await import('../src/cli/session/datasets');
+  const { getEngineClass } = await import('../src/engines');
+  const dispose = vi
+    .spyOn(getEngineClass('javascript').prototype, 'dispose')
+    .mockImplementation(() => new Promise(() => {}));
+  vi.useFakeTimers();
+  try {
+    await datasets.createDataset([source], llm, 'javascript');
+    const first = datasets.disposeDataset();
+    const second = datasets.disposeDataset();
+    expect(second).toBe(first);
+    const result = expect(first).rejects.toThrow('Dataset cleanup timed out after 2000 ms.');
+    await vi.advanceTimersByTimeAsync(2_000);
+    await result;
+    expect(dispose).toHaveBeenCalledOnce();
+  } finally {
+    vi.useRealTimers();
+    dispose.mockRestore();
+  }
+});
+
 describe('dataset engine and language', () => {
   let datasets: typeof import('../src/cli/session/datasets');
 

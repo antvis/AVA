@@ -173,7 +173,7 @@ export class DuckDBEngine implements AnalysisEngine {
   async getDSL(query: string, dataModel: DataModel, signal?: AbortSignal): Promise<TranslationResult> {
     if (!this.sources.length) throw new Error('No data loaded. Please call source() first.');
 
-    return this.dialect.getDSL(query, dataModel, signal);
+    return signal ? this.dialect.getDSL(query, dataModel, signal) : this.dialect.getDSL(query, dataModel);
   }
 
   async execute<T = Record<string, unknown>>(

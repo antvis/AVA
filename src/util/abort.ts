@@ -33,25 +33,3 @@ export function onAbort(signal: AbortSignal | undefined, listener: () => void): 
 
   return () => signal.removeEventListener('abort', listener);
 }
-
-/**
- * Stop waiting for `promise` after `ms`, resolving with undefined instead.
- * Release paths use it so one stuck handle cannot pin the caller forever; the timer is unref'd so
- * it never keeps the process alive on its own.
- */
-export function withDeadline<T>(promise: Promise<T>, ms: number): Promise<T | undefined> {
-  return new Promise((resolve, reject) => {
-    const timer = setTimeout(() => resolve(undefined), ms);
-    timer.unref?.();
-    promise.then(
-      (value) => {
-        clearTimeout(timer);
-        resolve(value);
-      },
-      (error: unknown) => {
-        clearTimeout(timer);
-        reject(error);
-      }
-    );
-  });
-}

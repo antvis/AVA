@@ -82,7 +82,7 @@ export class SupabaseEngine implements AnalysisEngine {
     if (!this.connection) {
       throw new Error('No data loaded. Please call source() first.');
     }
-    return this.dialect.getDSL(query, dataModel, signal);
+    return signal ? this.dialect.getDSL(query, dataModel, signal) : this.dialect.getDSL(query, dataModel);
   }
 
   async execute<T = Record<string, unknown>>(
