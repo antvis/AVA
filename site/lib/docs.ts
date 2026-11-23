@@ -23,38 +23,38 @@ export const docs = [
   {
     slug: 'data/sources',
     title: 'Data sources',
-    group: 'Working with data',
+    group: 'Data ingestion',
     description: 'Load inline data, files, database tables, and data from online services.',
-  },
-  {
-    slug: 'data/schema',
-    title: 'Inspect your data',
-    group: 'Working with data',
-    description: 'Let AVA discover the structure, inspect statistics when useful, then add business meaning.',
-  },
-  {
-    slug: 'data/semantic',
-    title: 'Define data semantics',
-    group: 'Working with data',
-    description: 'Write business definitions, model mappings, and reusable measures, with a worked sales example.',
   },
   {
     slug: 'data/online-services/feishu-bitable',
     title: 'Lark Base',
-    group: 'Working with data',
+    group: 'Data ingestion',
     description: 'Create an app, grant document access, and load data from Lark Base with an illustrated guide.',
   },
   {
     slug: 'data/online-services/tencent-smartsheet',
     title: 'Tencent Docs SmartSheet',
-    group: 'Working with data',
+    group: 'Data ingestion',
     description: 'Connect a Tencent Docs SmartSheet to AVA.',
   },
   {
     slug: 'data/online-services/github',
     title: 'GitHub',
-    group: 'Working with data',
+    group: 'Data ingestion',
     description: 'Connect a GitHub repository to AVA.',
+  },
+  {
+    slug: 'data/schema',
+    title: 'Inspect your data',
+    group: 'Understanding data',
+    description: 'Let AVA discover the structure, inspect statistics when useful, then add business meaning.',
+  },
+  {
+    slug: 'data/semantic',
+    title: 'Define data semantics',
+    group: 'Understanding data',
+    description: 'Write business definitions, model mappings, and reusable measures, with a worked sales example.',
   },
   {
     slug: 'analysis/overview',
@@ -171,7 +171,8 @@ export function localizedDoc(doc: Doc, locale: Locale): Doc {
   if (locale === 'en') return doc;
   const groups: Record<string, string> = {
     'Get started': '开始使用',
-    'Working with data': '理解与接入数据',
+    'Data ingestion': '数据接入',
+    'Understanding data': '数据理解',
     'Analysis & visualization': '分析与可视化',
     'Advanced usage': '进阶使用',
     'Execution engines': '执行引擎',
