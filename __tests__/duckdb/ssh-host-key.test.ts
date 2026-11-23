@@ -10,14 +10,15 @@ import type { Connection } from 'ssh2';
 import type { SSHOptions } from '../../src/types';
 import type { SSHTunnel } from '../../src/duckdb/util/ssh';
 
-const hostKey = utils.generateKeyPairSync('ed25519');
+// ssh2 can truncate leading zero bytes in generated Ed25519 public keys.
+const hostKey = utils.generateKeyPairSync('ecdsa', { bits: 256 });
 const fingerprint = `SHA256:${createHash('sha256')
   .update(Buffer.from(hostKey.public.split(' ')[1], 'base64'))
   .digest('base64')
   .replace(/=+$/, '')}`;
 
 describe('SSH host key verification', () => {
-  let server: Server;
+  let server: Server | undefined;
   let port: number;
   let tunnel: SSHTunnel | undefined;
   let passwords: string[];
@@ -49,7 +50,9 @@ describe('SSH host key verification', () => {
     await tunnel?.close();
     tunnel = undefined;
     for (const connection of connections) connection.end();
-    await new Promise<void>((resolve) => server.close(() => resolve()));
+    const testServer = server;
+    server = undefined;
+    if (testServer) await new Promise<void>((resolve) => testServer.close(() => resolve()));
   });
 
   async function connect(hostKeyFingerprint?: string) {
