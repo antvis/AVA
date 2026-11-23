@@ -237,6 +237,60 @@ describe('DuckDBEngine', () => {
     }
   });
 
+  it('keeps the connection occupied after a query timeout until the driver settles', async () => {
+    const fast = new DuckDBEngine(getLLMConfig(), { queryTimeoutMs: 25 });
+    let finishDriver: (() => void) | undefined;
+    try {
+      await fast.load({ type: 'json', options: { data: [{ amount: 42 }] } });
+      const connection = fast['connection']!;
+      const native = vi.spyOn(connection, 'runAndReadAll').mockImplementationOnce(
+        () =>
+          new Promise((_, reject) => {
+            finishDriver = () => reject(new Error('Interrupted'));
+          })
+      );
+      const interrupt = vi.spyOn(connection, 'interrupt');
+      await expect(fast.execute('SELECT amount FROM data')).rejects.toThrow(QueryTimeoutError);
+      expect(interrupt).toHaveBeenCalledOnce();
+
+      const schema = fast.schema();
+      await new Promise(setImmediate);
+      expect(native).toHaveBeenCalledOnce();
+      finishDriver!();
+      await expect(schema).resolves.toMatchObject({ models: [{ name: 'data' }] });
+    } finally {
+      finishDriver?.();
+      await fast.dispose();
+    }
+  });
+
+  it('interrupts an active operation and waits for the driver before closing the connection', async () => {
+    await engine.load({ type: 'json', options: { data: [{ amount: 42 }] } });
+    const schema = await engine.schema();
+    const connection = engine['connection']!;
+    let finishDriver: (() => void) | undefined;
+    const native = vi.spyOn(connection, 'runAndReadAll').mockImplementationOnce(
+      () =>
+        new Promise((_, reject) => {
+          finishDriver = () => reject(new Error('Interrupted'));
+        })
+    );
+    const interrupt = vi.spyOn(connection, 'interrupt');
+    const close = vi.spyOn(connection, 'closeSync');
+    const profile = expect(engine.profile(schema)).rejects.toThrow('Data source is no longer loaded.');
+    try {
+      await vi.waitFor(() => expect(native).toHaveBeenCalledOnce());
+      const disposal = engine.dispose();
+      expect(interrupt).toHaveBeenCalledOnce();
+      expect(close).not.toHaveBeenCalled();
+      finishDriver!();
+      await Promise.all([profile, disposal]);
+      expect(close).toHaveBeenCalledOnce();
+    } finally {
+      finishDriver?.();
+    }
+  });
+
   it('should require one read-only statement', async () => {
     await engine.load({ type: 'json', options: { data: [{ a: 1 }] } });
 

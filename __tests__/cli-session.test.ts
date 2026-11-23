@@ -103,25 +103,25 @@ describe('session startup protocol', () => {
   });
 });
 
-it('shares cleanup timeouts across concurrent disposal requests', async () => {
+it('shares the full cleanup operation across disposal calls', async () => {
   vi.resetModules();
   const datasets = await import('../src/cli/session/datasets');
   const { getEngineClass } = await import('../src/engines');
-  const dispose = vi
-    .spyOn(getEngineClass('javascript').prototype, 'dispose')
-    .mockImplementation(() => new Promise(() => {}));
-  vi.useFakeTimers();
+  let release!: () => void;
+  const cleanup = new Promise<void>((resolve) => {
+    release = resolve;
+  });
+  const dispose = vi.spyOn(getEngineClass('javascript').prototype, 'dispose').mockReturnValue(cleanup);
   try {
     await datasets.createDataset([source], llm, 'javascript');
     const first = datasets.disposeDataset();
     const second = datasets.disposeDataset();
     expect(second).toBe(first);
-    const result = expect(first).rejects.toThrow('Dataset cleanup timed out after 2000 ms.');
-    await vi.advanceTimersByTimeAsync(2_000);
-    await result;
-    expect(dispose).toHaveBeenCalledOnce();
+    await vi.waitFor(() => expect(dispose).toHaveBeenCalledOnce());
+    release();
+    await first;
   } finally {
-    vi.useRealTimers();
+    release();
     dispose.mockRestore();
   }
 });
@@ -137,6 +137,30 @@ describe('dataset engine and language', () => {
   afterEach(async () => {
     await datasets.disposeDataset();
     vi.restoreAllMocks();
+  });
+
+  it('waits for in-progress startup before disposing the engine', async () => {
+    const { getEngineClass } = await import('../src/engines');
+    const Engine = getEngineClass('javascript');
+    let completeLoad!: () => void;
+    const load = vi.spyOn(Engine.prototype, 'load').mockReturnValue(
+      new Promise<void>((resolve) => {
+        completeLoad = resolve;
+      })
+    );
+    const dispose = vi.spyOn(Engine.prototype, 'dispose');
+    const starting = datasets.createDataset([source], llm, 'javascript');
+    try {
+      await vi.waitFor(() => expect(load).toHaveBeenCalledOnce());
+      const closing = datasets.disposeDataset();
+      await Promise.resolve();
+      expect(dispose).not.toHaveBeenCalled();
+      completeLoad();
+      await Promise.all([starting, closing]);
+      expect(dispose).toHaveBeenCalledOnce();
+    } finally {
+      completeLoad();
+    }
   });
 
   it.each<{

@@ -1,34 +1,24 @@
 import { AVA } from '../..';
 import { createAbortError, throwIfAborted } from '../../util/abort';
-import { runWithTimeout } from '../../util/timeout';
 
 import type { DataSourceConfig, Schema, EngineConfig, LLMConfig } from '../../types';
 
-const DISPOSE_TIMEOUT_MS = 2_000;
-
 // One server process owns one dataset. The socket path supplies its external ID.
 let ava: AVA | undefined;
-let queue = Promise.resolve();
+let loading = Promise.resolve();
+let queue = loading;
 let disposal: Promise<void> | undefined;
-const active = new Set<AbortController>();
-
-/**
- * Abort queued and running commands.
- * Disposal is authoritative: it must not wait for the serial queue to drain.
- */
-function cancelActive(): void {
-  for (const controller of active) controller.abort(createAbortError('Dataset has been disposed.'));
-  active.clear();
-}
+const lifetime = new AbortController();
 
 export function disposeDataset(): Promise<void> {
   if (!disposal) {
-    // Release the dataset reference before awaiting so new commands are rejected immediately.
-    cancelActive();
     const instance = ava;
     ava = undefined;
-    disposal = runWithTimeout(Promise.resolve(instance?.dispose()), DISPOSE_TIMEOUT_MS, {
-      onTimeout: () => new Error(`Dataset cleanup timed out after ${DISPOSE_TIMEOUT_MS} ms.`),
+    disposal = Promise.resolve().then(async () => {
+      lifetime.abort(createAbortError('Dataset has been disposed.'));
+      // The engine still owns initialization until load settles. Running commands are cancelled independently.
+      await loading;
+      return instance?.dispose();
     });
   }
 
@@ -44,14 +34,10 @@ export async function createDataset(
 
   const remote = sources.find(({ type }) => ['supabase', 'clickhouse', 'sqlserver', 'snowflake'].includes(type));
   ava = new AVA({ llm, engine: { type: engine ?? remote?.type ?? 'duckdb' } });
-  const loading = ava.source(sources);
-  queue = loading.catch(() => undefined);
-  try {
-    await loading;
-  } catch (error) {
-    await disposeDataset();
-    throw error;
-  }
+  const startup = ava.source(sources);
+  loading = startup.catch(() => undefined);
+  queue = loading;
+  await startup;
 }
 
 export function withDataset<T>(
@@ -61,11 +47,7 @@ export function withDataset<T>(
   if (!ava || disposal) return Promise.reject(new Error('Dataset is unavailable.'));
 
   const instance = ava;
-  const controller = new AbortController();
-  active.add(controller);
-
-  // The caller's socket signal and the disposal signal both cancel this command.
-  const combined = signal ? AbortSignal.any([signal, controller.signal]) : controller.signal;
+  const combined = signal ? AbortSignal.any([signal, lifetime.signal]) : lifetime.signal;
 
   const result = queue.then(() => {
     throwIfAborted(combined);
@@ -78,7 +60,7 @@ export function withDataset<T>(
     () => undefined
   );
 
-  return result.finally(() => active.delete(controller));
+  return result;
 }
 
 export async function describeDataset(schema?: Schema, signal?: AbortSignal) {

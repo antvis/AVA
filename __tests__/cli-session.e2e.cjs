@@ -48,12 +48,14 @@ for (const release of [true, false]) {
     );
 
     const replies = Promise.allSettled([request(id, { command: 'dispose' }), request(id, { command: 'dispose' })]);
-    for (const event of ['cleanup-started', 'dispose-received', 'dispose-received']) {
+    const started = [];
+    for (let i = 0; i < 3; i++) {
       const {
         value: [received],
       } = await messages.next();
-      assert.equal(received, event);
+      started.push(received);
     }
+    assert.deepEqual(started.sort(), ['cleanup-started', 'dispose-received', 'dispose-received']);
     // Hold cleanup until both commands are inside the same daemon.
     if (release) child.send('release-cleanup');
 
@@ -65,6 +67,16 @@ for (const release of [true, false]) {
         assert.equal(reply.reason.message, 'Dataset cleanup timed out after 2000 ms.');
       }
     }
+    if (!release) {
+      assert.equal(child.exitCode, null, 'The daemon must keep cleaning up after its clients time out');
+      assert.equal(child.connected, true);
+      child.send('release-cleanup');
+    }
+    const event = await Promise.race([
+      messages.next().then(({ value: [message] }) => message),
+      exited.then(() => 'daemon-exited'),
+    ]);
+    assert.equal(event, 'cleanup-finished');
     assert.deepEqual(await exited, [0, null]);
     await assert.rejects(access(directory), { code: 'ENOENT' });
   });

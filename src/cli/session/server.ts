@@ -1,5 +1,7 @@
 import { rm } from 'fs/promises';
 
+import { runWithTimeout } from '../../util/timeout';
+
 import { handleConnection } from './connection';
 import { createDataset, describeDataset, disposeDataset, withDataset } from './datasets';
 import { startupSchema } from './protocol';
@@ -9,7 +11,11 @@ import type { Server, Socket } from 'net';
 import type { Request } from './protocol';
 
 const id = process.argv[2];
-const DISPOSE_EXIT_DEADLINE_MS = 1_500;
+const DISPOSE_RESPONSE_TIMEOUT_MS = 2_000;
+const DRAIN_TIMEOUT_MS = 1_500;
+const STARTUP_SHUTDOWN_TIMEOUT_MS = 5_000;
+// Snowflake can spend up to 10 seconds each on cancellation and logout.
+const SHUTDOWN_TIMEOUT_MS = 25_000;
 let server: Server | undefined;
 let closing: Promise<void> | undefined;
 let hasModel = false;
@@ -17,50 +23,50 @@ let ready = false;
 let idle: ReturnType<typeof setTimeout>;
 let pending = 0;
 
-function close(): Promise<void> {
+function close(exitCode = 0): Promise<void> {
   if (!closing) {
     clearTimeout(idle);
-    closing = (async () => {
-      try {
-        await disposeDataset();
-      } finally {
-        const listener = server;
-        const drained = listener?.listening
-          ? new Promise<void>((resolve) => listener.close(() => resolve()))
-          : undefined;
-        try {
-          await rm(sessionDirectory(id), { recursive: true, force: true });
-        } finally {
-          if (drained) {
-            // Let all accepted clients receive the shared result before exiting.
-            const deadline = setTimeout(() => process.exit(0), DISPOSE_EXIT_DEADLINE_MS);
-            void drained.then(() => {
-              clearTimeout(deadline);
-              process.exit(0);
-            });
-          }
-        }
+    const cleanup = disposeDataset();
+    const deadline = setTimeout(() => process.exit(1), ready ? SHUTDOWN_TIMEOUT_MS : STARTUP_SHUTDOWN_TIMEOUT_MS);
+    const response = runWithTimeout(cleanup, DISPOSE_RESPONSE_TIMEOUT_MS, {
+      onTimeout: () => new Error(`Dataset cleanup timed out after ${DISPOSE_RESPONSE_TIMEOUT_MS} ms.`),
+    });
+    let drained = Promise.resolve();
+    const retire = async () => {
+      const listener = server;
+      if (listener?.listening) {
+        drained = new Promise<void>((resolve) => listener.close(() => resolve()));
       }
-    })();
+      await rm(sessionDirectory(id), { recursive: true, force: true });
+    };
+    const retired = response.then(retire, retire);
+    closing = Promise.all([response, retired]).then(() => undefined);
+    void closing.catch(() => {});
+
+    const waitForConnections = retired.finally(() =>
+      runWithTimeout(drained, DRAIN_TIMEOUT_MS, {
+        onTimeout: () => new Error('Dataset connections did not drain.'),
+      }).catch(() => {})
+    );
+    void Promise.allSettled([cleanup, waitForConnections]).then((results) => {
+      clearTimeout(deadline);
+      process.exit(results.some((result) => result.status === 'rejected') ? 1 : exitCode);
+    });
   }
 
   return closing;
 }
 
-async function fail(error: unknown): Promise<void> {
+function fail(error: unknown): void {
   if (process.connected) process.send?.({ ok: false, error: error instanceof Error ? error.message : String(error) });
-  try {
-    await close();
-  } finally {
-    process.exit(1);
-  }
+  void close(1);
 }
 
 function resetIdle(): void {
   clearTimeout(idle);
   if (!closing && pending === 0)
     idle = setTimeout(() => {
-      void close().catch(() => {});
+      void close();
     }, 30 * 60_000);
 }
 
@@ -153,25 +159,11 @@ process.once('message', (message) => {
 });
 
 process.once('disconnect', () => {
-  if (ready) return;
-
-  // Loading may be blocked on a remote source; bound orphan cleanup.
-  const timer = setTimeout(() => {
-    void rm(sessionDirectory(id), { recursive: true, force: true }).finally(() => process.exit(1));
-  }, 5_000);
-  void close().finally(() => {
-    clearTimeout(timer);
-    process.exit(1);
-  });
+  if (!ready) void close(1);
 });
 
 for (const signal of ['SIGTERM', 'SIGINT'] as const) {
   process.once(signal, () => {
-    // Graceful first; never let an in-flight task pin the daemon.
-    const deadline = setTimeout(() => process.exit(0), 3_000);
-    void close().finally(() => {
-      clearTimeout(deadline);
-      process.exit(0);
-    });
+    void close();
   });
 }
