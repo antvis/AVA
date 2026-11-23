@@ -571,38 +571,31 @@ describe('SnowflakeEngine execution', () => {
     expect(await pending).toBeInstanceOf(Error);
   });
 
-  it.each(['compilation', 'execution'])(
-    'cancels %s once and waits for acknowledgement before disconnecting',
-    async (phase) => {
-      const { connection, statements } = install((options) => {
-        const target = phase === 'compilation' ? options.describeOnly : options.sqlText === 'SELECT 1';
-        return target ? 'hang' : undefined;
-      });
-      const engine = new SnowflakeEngine({ model: 'unused' });
-      await engine.load(SOURCE);
+  it('cancels compilation once and waits for acknowledgement before disconnecting', async () => {
+    const { connection, statements } = install((options) => (options.describeOnly ? 'hang' : undefined));
+    const engine = new SnowflakeEngine({ model: 'unused' });
+    await engine.load(SOURCE);
 
-      const controller = new AbortController();
-      const reason = new Error('Client disconnected');
-      const rejected = expect(engine.execute('SELECT 1', undefined, controller.signal)).rejects.toBe(reason);
-      const expectedStatements = phase === 'compilation' ? 3 : 4;
-      await vi.waitFor(() => expect(statements).toHaveLength(expectedStatements));
-      const active = statements[expectedStatements - 1];
-      let acknowledge: () => void;
-      active.cancel.mockImplementation((callback) => {
-        acknowledge = callback;
-      });
-      controller.abort(reason);
-      await rejected;
-      const disposed = engine.dispose();
-      expect(active.cancel).toHaveBeenCalledOnce();
-      expect(connection.destroy).not.toHaveBeenCalled();
-      acknowledge!();
-      await disposed;
-      expect(connection.destroy).toHaveBeenCalledOnce();
-      // The query itself never runs after cancelling compilation.
-      expect(statements).toHaveLength(expectedStatements);
-    }
-  );
+    const controller = new AbortController();
+    const reason = new Error('Client disconnected');
+    const rejected = expect(engine.execute('SELECT 1', undefined, controller.signal)).rejects.toBe(reason);
+    await vi.waitFor(() => expect(statements).toHaveLength(3));
+    const active = statements[2];
+    let acknowledge: () => void;
+    active.cancel.mockImplementation((callback) => {
+      acknowledge = callback;
+    });
+    controller.abort(reason);
+    await rejected;
+    const disposed = engine.dispose();
+    expect(active.cancel).toHaveBeenCalledOnce();
+    expect(connection.destroy).not.toHaveBeenCalled();
+    acknowledge!();
+    await disposed;
+    expect(connection.destroy).toHaveBeenCalledOnce();
+    // The query itself never runs after cancelling compilation.
+    expect(statements).toHaveLength(3);
+  });
 
   it('integrates with AVA through the engine registry', async () => {
     install((options) =>

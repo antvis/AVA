@@ -91,36 +91,6 @@ describe('DuckDBEngine', () => {
     expect(aggregated.data[0].count).toBe(3);
   });
 
-  it('interrupts the active profile without interrupting work for a cancelled queued caller', async () => {
-    await engine.load({ type: 'json', options: { data: [{ amount: 42 }] } });
-    const schema = await engine.schema();
-    const connection = engine['connection']!;
-    let rejectProfile: (error: Error) => void;
-    const run = vi.spyOn(connection, 'runAndReadAll').mockImplementationOnce(
-      () =>
-        new Promise((_, reject) => {
-          rejectProfile = reject;
-        })
-    );
-    const interrupt = vi
-      .spyOn(connection, 'interrupt')
-      .mockImplementation(() => rejectProfile(new Error('Interrupted')));
-    const active = new AbortController();
-    const queued = new AbortController();
-    const reason = new Error('Client disconnected');
-    const profile = expect(engine.profile(schema, {}, active.signal)).rejects.toBe(reason);
-    await vi.waitFor(() => expect(run).toHaveBeenCalledOnce());
-    const discovery = expect(engine.schema(queued.signal)).rejects.toBe(reason);
-    queued.abort(reason);
-    expect(interrupt).not.toHaveBeenCalled();
-
-    active.abort(reason);
-    await Promise.all([profile, discovery]);
-    expect(interrupt).toHaveBeenCalledOnce();
-    expect(run).toHaveBeenCalledOnce();
-    expect((await engine.execute('SELECT amount FROM data')).data).toEqual([{ amount: 42 }]);
-  });
-
   describe('structural schema', () => {
     it('should load a Parquet schema containing numeric arrays', async () => {
       await engine.load({
@@ -264,7 +234,7 @@ describe('DuckDBEngine', () => {
     }
   });
 
-  it('interrupts an active operation and waits for the driver before closing the connection', async () => {
+  it('ignores queued cancellations and waits for active work before closing the connection', async () => {
     await engine.load({ type: 'json', options: { data: [{ amount: 42 }] } });
     const schema = await engine.schema();
     const connection = engine['connection']!;
@@ -280,11 +250,17 @@ describe('DuckDBEngine', () => {
     const profile = expect(engine.profile(schema)).rejects.toThrow('Data source is no longer loaded.');
     try {
       await vi.waitFor(() => expect(native).toHaveBeenCalledOnce());
+      const queued = new AbortController();
+      const reason = new Error('Client disconnected');
+      const discovery = expect(engine.schema(queued.signal)).rejects.toBe(reason);
+      queued.abort(reason);
+      expect(interrupt).not.toHaveBeenCalled();
+
       const disposal = engine.dispose();
       expect(interrupt).toHaveBeenCalledOnce();
       expect(close).not.toHaveBeenCalled();
       finishDriver!();
-      await Promise.all([profile, disposal]);
+      await Promise.all([profile, discovery, disposal]);
       expect(close).toHaveBeenCalledOnce();
     } finally {
       finishDriver?.();

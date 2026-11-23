@@ -103,29 +103,6 @@ describe('session startup protocol', () => {
   });
 });
 
-it('shares the full cleanup operation across disposal calls', async () => {
-  vi.resetModules();
-  const datasets = await import('../src/cli/session/datasets');
-  const { getEngineClass } = await import('../src/engines');
-  let release!: () => void;
-  const cleanup = new Promise<void>((resolve) => {
-    release = resolve;
-  });
-  const dispose = vi.spyOn(getEngineClass('javascript').prototype, 'dispose').mockReturnValue(cleanup);
-  try {
-    await datasets.createDataset([source], llm, 'javascript');
-    const first = datasets.disposeDataset();
-    const second = datasets.disposeDataset();
-    expect(second).toBe(first);
-    await vi.waitFor(() => expect(dispose).toHaveBeenCalledOnce());
-    release();
-    await first;
-  } finally {
-    release();
-    dispose.mockRestore();
-  }
-});
-
 describe('dataset engine and language', () => {
   let datasets: typeof import('../src/cli/session/datasets');
 

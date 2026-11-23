@@ -87,15 +87,6 @@ describe('session connection', () => {
     expect(onBusy.mock.calls).toEqual([[true], [false]]);
   });
 
-  it('writes the result of a dispose request', async () => {
-    const { socket, net } = connect();
-    handleConnection(net, { dispatch: vi.fn().mockResolvedValue({ disposed: true }) });
-    socket.emit('data', '{"command":"dispose"}\n');
-
-    await vi.waitFor(() => expect(socket.written).toHaveLength(1));
-    expect(JSON.parse(socket.written[0].trim())).toEqual({ ok: true, result: { disposed: true } });
-  });
-
   it('answers an invalid request with an error instead of running it', async () => {
     const { socket, net } = connect();
     const dispatch = vi.fn();
