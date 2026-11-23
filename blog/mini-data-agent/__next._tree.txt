@@ -1,6 +1,6 @@
 :HL["/_next/static/chunks/18tc5dsvzyyc7.css","style"]
 :HL["/_next/static/chunks/42oz27_hfzr17.css","style"]
-:HL["/_next/static/chunks/3v4072gbndkul.css","style"]
+:HL["/_next/static/chunks/3u1t0cye4m0d1.css","style"]
 :HL["/_next/static/chunks/0cqj6wx2o_ng4.css","style"]
 :HL["https://mdn.alipayobjects.com/huamei_aphk1k/afts/img/A*Y620RYP00wMAAAAAUXAAAAgAegfkAQ/original","image"]
 :HL["https://mdn.alipayobjects.com/huamei_aphk1k/afts/img/A*m_BqSr6ehAkAAAAARMAAAAgAegfkAQ/original","image"]
@@ -8,4 +8,4 @@
 3:[["children",{"s":{"n":"slug","t":"d","k":"mini-data-agent","s":[]},"h":65632,"c":"$Q4"}]]
 2:[["children",{"s":"blog","h":131136,"c":"$Q3"}]]
 1:[["children",{"s":"(en)","h":131120,"c":"$Q2"}]]
-0:{"b":"5QUGwZMalp3BgovWG4m2p","t":{"t":{"s":"","h":131152,"c":"$Q1"}}}
+0:{"b":"eizBUVkr1glJdOXJkomsP","t":{"t":{"s":"","h":131152,"c":"$Q1"}}}
