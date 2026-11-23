@@ -4,6 +4,12 @@ import { useEffect } from 'react';
 import { docHref } from '../../lib/docs';
 import type { Locale } from '../../lib/i18n';
 
+const servicePages = new Map([
+  ['feishu-bitable', 'data/online-services/feishu-bitable'],
+  ['tencent-docs-smartsheet', 'data/online-services/tencent-smartsheet'],
+  ['github', 'data/online-services/github'],
+]);
+
 const movedAnchors = {
   files: new Set([
     'files',
@@ -50,6 +56,11 @@ export default function SourceAnchorRedirect({ locale }: { locale: Locale }) {
     function redirectMovedAnchor() {
       const { hash, search } = window.location;
       const anchor = hash.slice(1);
+      const servicePage = servicePages.get(anchor);
+      if (servicePage) {
+        window.location.replace(`${docHref(servicePage, locale)}${search}`);
+        return;
+      }
       const entry = Object.entries(movedAnchors).find(([, anchors]) => anchors.has(anchor));
       if (entry) {
         const [page] = entry;

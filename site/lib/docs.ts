@@ -118,7 +118,7 @@ export const docs = [
   },
   {
     slug: 'engines/remote',
-    title: 'Supabase & ClickHouse',
+    title: 'Remote database engines',
     group: 'Execution engines',
     description: 'Discover schemas and execute queries in a remote database.',
   },

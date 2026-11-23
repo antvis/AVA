@@ -531,7 +531,7 @@
       "description": "通过本地 Python 或自定义执行器，使用 pandas 分析数据。"
     },
     "engines_remote": {
-      "title": "Supabase 与 ClickHouse",
+      "title": "远程数据库引擎",
       "description": "在远程数据库中发现表结构、执行查询。"
     },
     "engines_javascript": {

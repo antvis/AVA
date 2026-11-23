@@ -544,7 +544,7 @@
       "description": "Use pandas through local Python or an executor supplied by your application."
     },
     "engines_remote": {
-      "title": "Supabase & ClickHouse",
+      "title": "Remote database engines",
       "description": "Discover schemas and execute queries in a remote database."
     },
     "engines_javascript": {

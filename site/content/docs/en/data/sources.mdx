@@ -71,7 +71,7 @@ import { Heading } from '../../../../mdx-components';
     <span>Cloud data warehouse</span>
     <span className="docs-source-type" data-type="database">Database</span>
   </a>
-  <a href="/documentation/data/online-services/feishu-bitable/">
+  <a id="online-services" href="/documentation/data/online-services/feishu-bitable/">
     <img src="/logos/feishu-bitable.svg" alt="" width="28" height="28" />
     <strong>Lark Base</strong>
     <span>Table records</span>
@@ -130,16 +130,14 @@ await ava.source({
 
 ### Connect multiple sources
 
-AVA can analyze data from [CSV](/documentation/data/files/#csv), [JSON](/documentation/data/files/#json), [Parquet](/documentation/data/files/#parquet), [Excel](/documentation/data/files/#excel), [text](/documentation/data/files/#text), [SQLite](/documentation/data/databases/#sqlite), [MySQL](/documentation/data/databases/#mysql), [PostgreSQL](/documentation/data/databases/#postgresql), [MongoDB](/documentation/data/databases/#mongodb), [Lark Base](#feishu-bitable), [Tencent Docs SmartSheet](#tencent-docs-smartsheet), and [GitHub](#github) together.
-
-In the Node.js SDK, use `ava.source([...])` to connect multiple data sources in one call.
+In the Node.js SDK, use the default DuckDB engine and pass an array of source configurations to `ava.source()`.
 
 - Use a unique **`name`** for each source.
 - With two or more sources, `ava.schema()` lists tables as **`sourceName.tableName`**. A CSV source exposes one table named `data`, and an Excel workbook exposes one table per selected sheet.
 - **A single source** keeps its original table names whether passed as an object or a one-entry array.
 
 <Callout>
-  Use the default engine to analyze multiple sources together. In the CLI, run `ava source A B C` to load sources into one session. See [CLI source inputs](/documentation/reference/cli/#source-inputs-and-engines).
+  In the CLI, run `ava source A B C` to load sources into one session. See [CLI source inputs](/documentation/reference/cli/#source-inputs-and-engines).
 </Callout>
 
 ```typescript
@@ -150,17 +148,3 @@ await ava.source([
 
 const schema = await ava.schema();
 ```
-
-## Online services
-
-<Heading as="h3" id="feishu-bitable">Lark Base</Heading>
-
-Read one Base table, or every table of a Base with single-record links declared as relationships. [Set up Lark Base](/documentation/data/online-services/feishu-bitable/).
-
-<Heading as="h3" id="tencent-docs-smartsheet">Tencent Docs SmartSheet</Heading>
-
-Read fields and records from a SmartSheet subtable. [Connect Tencent Docs](/documentation/data/online-services/tencent-smartsheet/).
-
-<Heading as="h3" id="github">GitHub</Heading>
-
-Read issues and pull requests. [Connect GitHub](/documentation/data/online-services/github/).

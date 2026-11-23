@@ -71,7 +71,7 @@ import { Heading } from '../../../../mdx-components';
     <span>云数据仓库</span>
     <span className="docs-source-type" data-type="database">数据库</span>
   </a>
-  <a href="/zh/documentation/data/online-services/feishu-bitable/">
+  <a id="online-services" href="/zh/documentation/data/online-services/feishu-bitable/">
     <img src="/logos/feishu-bitable.svg" alt="" width="28" height="28" />
     <strong>飞书多维表格</strong>
     <span>多维表格记录</span>
@@ -130,16 +130,14 @@ await ava.source({
 
 <Heading as="h3" id="connect-multiple-sources">接入多个数据源</Heading>
 
-AVA 支持同时分析来自 [CSV](/documentation/data/files/#csv)、[JSON](/documentation/data/files/#json)、[Parquet](/documentation/data/files/#parquet)、[Excel](/documentation/data/files/#excel)、[文本](/documentation/data/files/#text)、[SQLite](/documentation/data/databases/#sqlite)、[MySQL](/documentation/data/databases/#mysql)、[PostgreSQL](/documentation/data/databases/#postgresql)、[MongoDB](/documentation/data/databases/#mongodb)、[飞书多维表格](#feishu-bitable)、[腾讯文档智能表格](#tencent-docs-smartsheet)和 [GitHub](#github) 的数据。
-
-在 Node.js SDK 中，使用 `ava.source([...])` 一次接入多个数据源。
+在 Node.js SDK 中，使用默认的 DuckDB 引擎，并向 `ava.source()` 传入数据源配置数组。
 
 - 为每个数据源设置唯一的 **`name`**。
 - 接入两个或更多数据源时，`ava.schema()` 按 **`源名.表名`** 列出表。CSV 提供一张名为 `data` 的表，Excel 工作簿中的每张选定工作表各对应一张表。
 - **只接入一个数据源**时，配置对象和单元素数组都沿用原表名。
 
 <Callout>
-  多源分析使用默认引擎。CLI 可通过 `ava source A B C` 一次接入多个数据源。详见[命令行的数据源输入](/documentation/reference/cli/#source-inputs-and-engines)。
+  在 CLI 中运行 `ava source A B C`，可将多个数据源加载到同一会话。详见[命令行的数据源输入](/documentation/reference/cli/#source-inputs-and-engines)。
 </Callout>
 
 ```typescript
@@ -150,17 +148,3 @@ await ava.source([
 
 const schema = await ava.schema();
 ```
-
-<Heading as="h2" id="online-services">在线服务</Heading>
-
-<Heading as="h3" id="feishu-bitable">飞书多维表格</Heading>
-
-读取一张数据表，或读取整个多维表格并把单条关联声明为表间关系。[查看飞书配置指南](/documentation/data/online-services/feishu-bitable/)。
-
-<Heading as="h3" id="tencent-docs-smartsheet">腾讯文档智能表格</Heading>
-
-读取智能子表的字段和记录。[查看腾讯文档配置指南](/documentation/data/online-services/tencent-smartsheet/)。
-
-<Heading as="h3" id="github">GitHub</Heading>
-
-读取仓库中的 Issue 和 Pull Request。[查看 GitHub 配置指南](/documentation/data/online-services/github/)。

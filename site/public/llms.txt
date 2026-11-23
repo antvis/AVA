@@ -37,7 +37,7 @@ DuckDB is the default Node.js engine. JavaScript supports browsers and Node.js; 
 - [DuckDB](https://ava.antv.vision/documentation/engines/duckdb/): Run SQL against inline data, files, and attached databases.
 - [JavaScript](https://ava.antv.vision/documentation/engines/javascript/): Execute JavaScript against an in-memory dataset.
 - [Python](https://ava.antv.vision/documentation/engines/python/): Analyze with pandas using local Python or an application-provided executor.
-- [Supabase, ClickHouse, and Snowflake](https://ava.antv.vision/documentation/engines/remote/): Discover schemas and execute queries in remote databases.
+- [Remote database engines](https://ava.antv.vision/documentation/engines/remote/): Discover schemas and execute queries in remote databases.
 - [Custom engines](https://ava.antv.vision/documentation/engines/custom/): Implement and register a custom analysis engine.
 
 ## API reference
@@ -76,7 +76,7 @@ DuckDB is the default Node.js engine. JavaScript supports browsers and Node.js; 
 - [选择执行引擎](https://ava.antv.vision/zh/documentation/engines/overview/): 决定数据在哪里加载、查询用什么语言、代码在哪里执行。
 - [DuckDB](https://ava.antv.vision/zh/documentation/engines/duckdb/): 用 SQL 分析内存数据、文件及可连接的数据库。
 - [Python](https://ava.antv.vision/zh/documentation/engines/python/): 通过本地 Python 或自定义执行器，使用 pandas 分析数据。
-- [Supabase 与 ClickHouse](https://ava.antv.vision/zh/documentation/engines/remote/): 在远程数据库中发现表结构、执行查询。
+- [远程数据库引擎](https://ava.antv.vision/zh/documentation/engines/remote/): 在远程数据库中发现表结构、执行查询。
 - [JavaScript](https://ava.antv.vision/zh/documentation/engines/javascript/): 在 Node.js 或浏览器中，对内存数据执行 JavaScript 分析。
 - [扩展执行引擎](https://ava.antv.vision/zh/documentation/engines/custom/): 实现引擎接口，把自己的数据与执行环境接入 AVA。
 - [API 参考](https://ava.antv.vision/zh/documentation/reference/api/): 查询构造参数、方法签名、默认值与返回结构。
