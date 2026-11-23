@@ -163,6 +163,7 @@
 }
 .sqlVisual,
 .traceVisual,
+.protocolVisual,
 .feishuVisual {
   height: 100%;
   padding: 16px;
@@ -203,6 +204,39 @@
   display: block;
   margin-bottom: 12px;
   font-size: 13px;
+}
+
+.protocolVisual > strong {
+  display: block;
+  margin-bottom: 14px;
+  font-size: 13px;
+}
+
+.protocolVisual > div {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 9px;
+  font-family: var(--font-mono);
+}
+
+.protocolVisual span {
+  width: 138px;
+  flex-shrink: 0;
+}
+
+.protocolVisual i {
+  display: block;
+  height: 7px;
+  border-radius: 3px;
+  background: #91c4dc;
+}
+
+.protocolTag {
+  display: block;
+  margin-top: 14px;
+  color: #8299a6;
+  font-size: 10px;
 }
 .traceVisual > div {
   display: flex;
