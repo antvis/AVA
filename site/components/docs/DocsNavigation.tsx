@@ -48,8 +48,6 @@ function ChapterNavigation({ pathname, mobile }: { pathname: string; mobile: boo
   const docs = chapters.map((doc) => localizedDoc(doc, locale));
   const slug = pathname.slice(docHref('introduction', locale).length).replace(/\/$/, '') || 'introduction';
   const active = findDoc(slug);
-  const isOnlineService = (doc: (typeof docs)[number]) => doc.slug.startsWith('data/online-services/');
-  const sourcesHref = docHref('data/sources', locale);
   const navigationRef = useRef<HTMLElement>(null);
   const mobileMenuRef = useRef<HTMLDetailsElement>(null);
 
@@ -61,7 +59,7 @@ function ChapterNavigation({ pathname, mobile }: { pathname: string; mobile: boo
     if (mobileMenuRef.current) mobileMenuRef.current.open = false;
   }
 
-  function renderLink(doc: (typeof docs)[number], title = doc.title) {
+  function renderLink(doc: (typeof docs)[number]) {
     return (
       <Link
         key={doc.slug}
@@ -69,41 +67,18 @@ function ChapterNavigation({ pathname, mobile }: { pathname: string; mobile: boo
         aria-current={active?.slug === doc.slug ? 'page' : undefined}
         onNavigate={closeMobileMenu}
       >
-        {title}
+        {doc.title}
       </Link>
     );
   }
 
   const navigation = (
     <nav ref={navigationRef} aria-label={mobile ? t('mobileDocumentation') : t('documentationChapters')}>
-      {Array.from(new Set(docs.map((doc) => doc.group))).map((group) => {
-        const groupDocs = docs.filter((doc) => doc.group === group);
-        const services = groupDocs.filter(isOnlineService);
-        return (
-          <ChapterGroup key={group} title={group}>
-            {groupDocs
-              .filter((doc) => !isOnlineService(doc))
-              .map((doc) =>
-                doc.slug === 'data/sources' ? (
-                  <ChapterGroup key={doc.slug} title={doc.title}>
-                    {renderLink(doc, t('sourceOverview'))}
-                    <Link href={`${sourcesHref}#files`} onNavigate={closeMobileMenu}>
-                      {t('files')}
-                    </Link>
-                    <Link href={`${sourcesHref}#databases`} onNavigate={closeMobileMenu}>
-                      {t('databases')}
-                    </Link>
-                    <ChapterGroup title={t('onlineServices')}>
-                      {services.map((service) => renderLink(service))}
-                    </ChapterGroup>
-                  </ChapterGroup>
-                ) : (
-                  renderLink(doc)
-                )
-              )}
-          </ChapterGroup>
-        );
-      })}
+      {Array.from(new Set(docs.map((doc) => doc.group))).map((group) => (
+        <ChapterGroup key={group} title={group}>
+          {docs.filter((doc) => doc.group === group).map(renderLink)}
+        </ChapterGroup>
+      ))}
     </nav>
   );
 

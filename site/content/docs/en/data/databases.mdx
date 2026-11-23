@@ -1,0 +1,357 @@
+Pass the connection settings for your database to `ava.source()`. See the [data source overview](/documentation/data/sources/#connect-a-source) for the configuration format and [execution engines](/documentation/engines/overview/) to choose an engine.
+
+## SQLite
+
+Open a local SQLite database in read-only mode.
+
+```typescript
+await ava.source({
+  type: 'sqlite',
+  options: { path: './analytics.sqlite' },
+});
+```
+
+| Field  | Type     | Required | Meaning / default                |
+| ------ | -------- | -------- | -------------------------------- |
+| `path` | `string` | Yes      | Local SQLite database file path. |
+
+## MySQL
+
+Connect to a database and discover its tables.
+
+```typescript
+await ava.source({
+  type: 'mysql',
+  options: {
+    host: 'localhost',
+    database: 'analytics',
+    user: 'reader',
+    password: process.env.MYSQL_PASSWORD,
+  },
+});
+```
+
+| Field      | Type         | Required | Meaning / default                           |
+| ---------- | ------------ | -------- | ------------------------------------------- |
+| `host`     | `string`     | Yes      | Database hostname.                          |
+| `port`     | `number`     | No       | Default: `3306`.                            |
+| `database` | `string`     | Yes      | Database to expose.                         |
+| `user`     | `string`     | No       | Database user; omitted if not supplied.     |
+| `password` | `string`     | No       | Database password; omitted if not supplied. |
+| `ssh`      | `SSHOptions` | No       | Optional [SSH tunnel](#ssh-options).        |
+
+## PostgreSQL
+
+Connect to a database and discover its tables.
+
+```typescript
+await ava.source({
+  type: 'postgresql',
+  options: {
+    host: 'localhost',
+    database: 'analytics',
+    user: 'reader',
+    password: process.env.POSTGRES_PASSWORD,
+  },
+});
+```
+
+| Field      | Type         | Required | Meaning / default                                |
+| ---------- | ------------ | -------- | ------------------------------------------------ |
+| `host`     | `string`     | Yes      | Database hostname.                               |
+| `port`     | `number`     | No       | Default: `5432`.                                 |
+| `database` | `string`     | Yes      | Database to expose.                              |
+| `user`     | `string`     | No       | Database user; omitted if not supplied.          |
+| `password` | `string`     | No       | Database password; omitted if not supplied.      |
+| `schema`   | `string`     | No       | Schema the tables live in (defaults to `public`) |
+| `ssh`      | `SSHOptions` | No       | Optional [SSH tunnel](#ssh-options).             |
+
+## SSH options
+
+To reach MySQL or PostgreSQL through a bastion, add `ssh` under `options`. The database `host` and `port` must be reachable from the bastion.
+
+First, obtain the SSH server's host key fingerprint from its administrator over a trusted channel. The administrator can read it on the server with `ssh-keygen -lf /etc/ssh/ssh_host_ed25519_key.pub -E sha256`. Use the `SHA256:...` value in your connection configuration:
+
+```typescript
+await ava.source({
+  type: 'mysql', // PostgreSQL: 'postgresql'
+  options: {
+    host: 'db.internal',
+    database: 'analytics',
+    user: 'reader',
+    password: process.env.DB_PASSWORD,
+    ssh: {
+      host: 'bastion.example.com',
+      user: 'ssh-user',
+      password: process.env.SSH_PASSWORD,
+      hostKeyFingerprint: 'SHA256:REPLACE_WITH_SERVER_FINGERPRINT',
+    },
+  },
+});
+```
+
+Fields inside `options.ssh`:
+
+| Field | Type | Required | Meaning / default |
+| --- | --- | --- | --- |
+| `host` | `string` | Yes | SSH server hostname. |
+| `port` | `number` | No | Default: `22`. |
+| `user` | `string` | Yes | SSH login user. |
+| `password` | `string` | No | SSH login password. |
+| `hostKeyFingerprint` | `string` | Yes | Expected host key fingerprint, `SHA256:<base64>` without padding. |
+
+## MongoDB
+
+Load collections from the specified database. Use structured connection fields or supply `connection`, which takes precedence over them.
+
+```typescript
+await ava.source({
+  type: 'mongodb',
+  options: {
+    connection: process.env.MONGODB_URI!,
+    database: 'analytics',
+  },
+});
+```
+
+| Field                         | Type      | Required | Meaning / default                                                                                                                                               |
+| ----------------------------- | --------- | -------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `connection`                  | `string`  | No       | Advanced connection string, e.g. `host=localhost port=27017` or `mongodb://user:pass@host:27017/db`. Takes precedence over all structured fields when provided. |
+| `host`                        | `string`  | No       | MongoDB hostname or IP address (default `localhost`).                                                                                                           |
+| `port`                        | `number`  | No       | MongoDB port number (default `27017`).                                                                                                                          |
+| `database`                    | `string`  | Yes      | Database containing the collections to load.                                                                                                                    |
+| `user`                        | `string`  | No       | MongoDB username.                                                                                                                                               |
+| `password`                    | `string`  | No       | MongoDB password.                                                                                                                                               |
+| `authSource`                  | `string`  | No       | Authentication database (MongoDB `authSource`).                                                                                                                 |
+| `srv`                         | `boolean` | No       | Use SRV connection format (for MongoDB Atlas).                                                                                                                  |
+| `tls`                         | `boolean` | No       | Enable TLS/SSL encryption. Alias: `ssl`.                                                                                                                        |
+| `ssl`                         | `boolean` | No       | Alias for `tls`.                                                                                                                                                |
+| `tlsCAFile`                   | `string`  | No       | Path to CA certificate file for TLS.                                                                                                                            |
+| `tlsAllowInvalidCertificates` | `boolean` | No       | Allow invalid certificates (testing only, default false).                                                                                                       |
+
+## SQL Server
+
+Provide a server hostname and database. Use SQL authentication.
+
+```typescript
+const ava = new AVA({
+  llm: { model: 'YOUR_MODEL', apiKey: process.env.OPENAI_API_KEY },
+  engine: { type: 'sqlserver' },
+});
+await ava.source({
+  type: 'sqlserver',
+  options: {
+    host: 'localhost',
+    database: 'analytics',
+    user: 'reader',
+    password: process.env.SQLSERVER_PASSWORD!,
+  },
+});
+```
+
+| Field | Type | Required | Meaning / default |
+| --- | --- | --- | --- |
+| `host` | `string` | Yes | SQL Server hostname or IP address. |
+| `port` | `number` | No | Default: `1433`. |
+| `database` | `string` | Yes | Database to analyze. |
+| `user` | `string` | Yes | SQL-authentication login. |
+| `password` | `string` | Yes | Login password. |
+| `schema` | `string` | No | Restrict discovery to one schema; otherwise use all visible user tables and views. |
+| `encrypt` | `boolean` | No | Encrypt the connection; `true`. |
+| `trustServerCertificate` | `boolean` | No | Trust the server certificate without verification; `false`. Only enable for a trusted self-signed test server. |
+| `connectionTimeoutMs` | `number` | No | Connection deadline; `10000` ms. |
+| `requestTimeoutMs` | `number` | No | Query deadline; `30000` ms. |
+
+Grant `SELECT` and `VIEW DEFINITION` permissions to the SQL login.
+
+## Supabase
+
+Provide your project reference and a Supabase Management API access token. Your application obtains and refreshes the token.
+
+```typescript
+const ava = new AVA({
+  llm: { model: 'YOUR_MODEL', apiKey: process.env.OPENAI_API_KEY },
+  engine: { type: 'supabase' },
+});
+await ava.source({
+  type: 'supabase',
+  options: {
+    projectRef: 'YOUR_PROJECT_REF',
+    accessToken: process.env.SUPABASE_ACCESS_TOKEN!,
+  },
+});
+```
+
+| Field         | Type     | Required | Meaning / default                                                           |
+| ------------- | -------- | -------- | --------------------------------------------------------------------------- |
+| `accessToken` | `string` | Yes      | OAuth access token from the Supabase Management API OAuth flow              |
+| `projectRef`  | `string` | Yes      | Project reference (as returned by GET https://api.supabase.com/v1/projects) |
+
+## ClickHouse
+
+Provide a server endpoint and database. Use `url` or `host`; `url` takes precedence when both are present.
+
+```typescript
+const ava = new AVA({
+  llm: { model: 'YOUR_MODEL', apiKey: process.env.OPENAI_API_KEY },
+  engine: { type: 'clickhouse' },
+});
+await ava.source({
+  type: 'clickhouse',
+  options: {
+    url: 'http://localhost:8123',
+    database: 'analytics',
+    username: 'reader',
+    password: process.env.CLICKHOUSE_PASSWORD,
+  },
+});
+```
+
+### Connection fields
+
+| Field      | Type     | Required        | Meaning / default                                                         |
+| ---------- | -------- | --------------- | ------------------------------------------------------------------------- |
+| `host`     | `string` | `host` or `url` | Host or host:port; AVA adds `http://` if the scheme is absent.            |
+| `url`      | `string` | `host` or `url` | Full server URL; takes precedence over `host`.                            |
+| `port`     | `number` | No              | Overrides the endpoint's port.                                            |
+| `database` | `string` | Yes             | Database to discover and query.                                           |
+| `username` | `string` | No              | Client username; takes precedence over `user`. Client default: `default`. |
+| `user`     | `string` | No              | Alias for `username`.                                                     |
+| `password` | `string` | No              | Client password; empty by default.                                        |
+
+AVA requires an endpoint even though the underlying client has a localhost default.
+
+### Forwarded client fields
+
+`ClickHouseSourceOptions` also accepts the following fields from `@clickhouse/client`. This table follows the installed client type declarations (1.23.1); these fields are owned by that dependency. AVA forwards them when creating the client.
+
+| Field                          | Type                          | Default / meaning                                                                                          |
+| ------------------------------ | ----------------------------- | ---------------------------------------------------------------------------------------------------------- |
+| `pathname`                     | `string`                      | Empty; extra proxy path.                                                                                   |
+| `request_timeout`              | `number`                      | `30000` milliseconds.                                                                                      |
+| `max_open_connections`         | `number`                      | `10` sockets per host.                                                                                     |
+| `compression`                  | Object                        | Request and response compression; nested fields below.                                                     |
+| `access_token`                 | `string`                      | Unset; ClickHouse Cloud JWT. Do not combine with username/password.                                        |
+| `application`                  | `string`                      | Empty; application name.                                                                                   |
+| `clickhouse_settings`          | `ClickHouseSettings`          | Empty; server settings map. AVA enforces `readonly: '1'` on every query, overriding a conflicting setting. |
+| `log`                          | Object                        | Client logging options below.                                                                              |
+| `session_id`                   | `string`                      | Empty; no explicit server session.                                                                         |
+| `role`                         | `string \| string[]`          | Unset; server roles.                                                                                       |
+| `http_headers`                 | `Record<string, string>`      | Empty; additional request headers.                                                                         |
+| `additional_headers`           | `Record<string, string>`      | Deprecated client alias; use `http_headers`.                                                               |
+| `keep_alive`                   | Object                        | Socket reuse options below.                                                                                |
+| `json`                         | `Partial<JSONHandling>`       | Native `JSON.parse` / `JSON.stringify`; callbacks below.                                                   |
+| `tracer`                       | `ClickHouseTracer`            | Unset; client tracing implementation.                                                                      |
+| `use_multipart_params`         | `boolean`                     | `false`; always send query parameters as multipart data.                                                   |
+| `use_multipart_params_auto`    | `boolean`                     | `false`; use multipart when encoded parameters exceed 4096 characters.                                     |
+| `tls`                          | TLS options object            | Unset; certificate fields below.                                                                           |
+| `http_agent`                   | `http.Agent \| https.Agent`   | Unset; a custom agent supersedes `max_open_connections`, `tls`, and `keep_alive`. Experimental client API. |
+| `set_basic_auth_header`        | `boolean`                     | `true`; send a Basic Authorization header. Experimental.                                                   |
+| `capture_enhanced_stack_trace` | `boolean`                     | `false`; capture extended client stacks. Experimental.                                                     |
+| `max_response_headers_size`    | `number`                      | Unset; Node.js response header byte limit applies.                                                         |
+| `connection`                   | `Connection<Stream.Readable>` | Unset; experimental client backend connection. Overrides the default HTTP transport and its options.       |
+
+All forwarded fields are optional. Server settings are an extensible, server-version-dependent map rather than an AVA-defined finite list. The dependency's `ClickHouseSettings` type and your server determine accepted keys. Tracer, agent, logger, and connection objects implement the corresponding client contracts; they are not plain AVA configuration objects.
+
+### Nested client options
+
+| Field                                      | Type                                             | Required / default                                                          |
+| ------------------------------------------ | ------------------------------------------------ | --------------------------------------------------------------------------- |
+| `compression.response`                     | `boolean \| { codec: 'gzip' \| 'zstd' \| 'br' }` | Optional; `false`. `true` selects gzip.                                     |
+| `compression.request`                      | `boolean \| RequestCompression`                  | Optional; `false`. `true` selects gzip.                                     |
+| `compression.request.codec`                | `'gzip' \| 'zstd' \| 'br'`                       | Required in the object form.                                                |
+| `compression.request.level`                | `number`                                         | Optional for gzip/zstd; codec default.                                      |
+| `compression.request.quality`              | `number`                                         | Optional for Brotli; default `4`.                                           |
+| `log.LoggerClass`                          | `new () => Logger`                               | Optional; client's default logger.                                          |
+| `log.level`                                | `ClickHouseLogLevel`                             | Optional; `WARN`. Values: `TRACE`, `DEBUG`, `INFO`, `WARN`, `ERROR`, `OFF`. |
+| `keep_alive.enabled`                       | `boolean`                                        | Optional; `true`.                                                           |
+| `keep_alive.idle_socket_ttl`               | `number`                                         | Optional; `2500` ms; `0` disables idle socket management.                   |
+| `keep_alive.eagerly_destroy_stale_sockets` | `boolean`                                        | Optional; `false`.                                                          |
+| `tls.ca_cert`                              | `Buffer`                                         | Required when `tls` is supplied.                                            |
+| `tls.cert`                                 | `Buffer`                                         | Required for mutual TLS.                                                    |
+| `tls.key`                                  | `Buffer`                                         | Required for mutual TLS.                                                    |
+| `json.parse`                               | `<T>(input: string) => T`                        | Optional; parses a JSON string.                                             |
+| `json.stringify`                           | `<T>(input: T) => string`                        | Optional; serializes a value.                                               |
+
+Zstd compression requires Node.js 22.15 or newer in this client. Response compression may conflict with the engine's enforced read-only server settings; leave it disabled unless the server permits it.
+
+## Snowflake
+
+Use the `snowflake` source and engine in Node.js to analyze tables and views on your Snowflake warehouse. Each source discovers one schema and returns query results to AVA.
+
+### Permissions
+
+Prepare a warehouse, database and schema. The connection role needs `USAGE` on each, plus `SELECT` on the tables and views to analyze. For a shared database such as `SNOWFLAKE_SAMPLE_DATA`, grant `IMPORTED PRIVILEGES`. Keep procedure, external function and integration privileges out of this role.
+
+The following example creates a read-only service user with [key-pair authentication](https://docs.snowflake.com/en/developer-guide/node-js/nodejs-driver-authenticate). Replace `<public-key-body>` with your public key; the connection below uses the corresponding private key file.
+
+```sql
+CREATE ROLE AVA_READER;
+GRANT USAGE ON WAREHOUSE AVA_WH TO ROLE AVA_READER;
+GRANT USAGE ON DATABASE ANALYTICS TO ROLE AVA_READER;
+GRANT USAGE ON SCHEMA ANALYTICS.SALES TO ROLE AVA_READER;
+GRANT SELECT ON ALL TABLES IN SCHEMA ANALYTICS.SALES TO ROLE AVA_READER;
+GRANT SELECT ON ALL VIEWS IN SCHEMA ANALYTICS.SALES TO ROLE AVA_READER;
+CREATE USER AVA_READER_SVC TYPE = SERVICE DEFAULT_ROLE = AVA_READER DEFAULT_WAREHOUSE = AVA_WH
+  RSA_PUBLIC_KEY = '<public-key-body>';
+GRANT ROLE AVA_READER TO USER AVA_READER_SVC;
+```
+
+Queries consume warehouse credits. Enable auto-suspend and a resource monitor to control usage.
+
+### Connection fields
+
+Set both the engine and source type to `snowflake`, then provide your account, credentials and warehouse:
+
+```typescript
+const ava = new AVA({
+  llm: { model: 'YOUR_MODEL', apiKey: process.env.OPENAI_API_KEY },
+  engine: { type: 'snowflake' },
+});
+await ava.source({
+  type: 'snowflake',
+  options: {
+    account: 'myorg-myaccount',
+    username: 'AVA_READER_SVC',
+    authenticator: 'SNOWFLAKE_JWT',
+    privateKeyPath: '/secure/ava_reader_key.p8',
+    warehouse: 'AVA_WH',
+    role: 'AVA_READER',
+    database: 'ANALYTICS',
+    schema: 'SALES',
+  },
+});
+```
+
+| Field                       | Type     | Required             | Meaning / default                                                                                                                                                   |
+| --------------------------- | -------- | -------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `account`                   | `string` | Yes                  | Account identifier, `orgname-accountname`.                                                                                                                          |
+| `database`                  | `string` | Yes                  | Database to discover and query.                                                                                                                                     |
+| `schema`                    | `string` | No                   | Schema whose tables and views are exposed; also the session's default schema. Default `PUBLIC`.                                                                     |
+| `warehouse`                 | `string` | No                   | Warehouse that runs the queries; defaults to the user's `DEFAULT_WAREHOUSE`.                                                                                        |
+| `role`                      | `string` | No                   | Role for the session; defaults to the user's `DEFAULT_ROLE`. Use a read-only role.                                                                                  |
+| `username`                  | `string` | For most methods     | Login name.                                                                                                                                                         |
+| `authenticator`             | `string` | No                   | Driver authentication method, such as `SNOWFLAKE_JWT`, `PROGRAMMATIC_ACCESS_TOKEN` or `OAUTH`. Default `SNOWFLAKE` (password).                                       |
+| `privateKey`                | `string` | For `SNOWFLAKE_JWT`  | PEM private key; or set `privateKeyPath` to read it from a file, and `privateKeyPass` for an encrypted key.                                                         |
+| `token`                     | `string` | For token methods    | Programmatic access token or OAuth access token; or set `tokenFilePath`.                                                                                            |
+| `password`                  | `string` | For `SNOWFLAKE`      | Password. Snowflake is phasing out single-factor password sign-in, so prefer key pairs or tokens.                                                                   |
+| `queryTimeoutMs`            | `number` | No                   | Limit for each statement in milliseconds. Snowflake enforces it (statement and queue timeouts) and the client cancels the statement when it expires. Default `30000`. |
+
+Other [driver connection options](https://docs.snowflake.com/en/developer-guide/node-js/nodejs-driver-options), including `host`, proxy settings and `queryTag` (default `AVA`), are forwarded. AVA manages result formats and session cleanup. Loading fails if the database, schema or warehouse is missing or unauthorized.
+
+### Query execution
+
+Use `schema()` to inspect authorized tables, views and declared keys, `query()` to execute Snowflake SQL, or `analyze()` to ask a question. `analyze()` sends the question and dataset metadata to your configured model to generate SQL. By default, it also sends query results to the model for a summary; pass `{ includeSummary: false }` to skip that summary.
+
+```typescript
+try {
+  const result = await ava.analyze('What is the total order amount for each month?');
+  console.log(result.data, result.text);
+} finally {
+  await ava.dispose();
+}
+```
+
+- Write a single read-only `SELECT` (`WITH` is allowed), quoting table and column names exactly as listed by `schema()`. Procedures, `SYSTEM$` functions, and dynamic function calls such as `IDENTIFIER(name)(...)` are rejected.
+- Use `maxRows` and `maxResultBytes` to limit the number of rows and size of returned results.
+- `NUMBER` values become JavaScript numbers when conversion preserves their digits; larger or more precise values stay decimal strings. Float `NaN` and infinities stay strings. Dates use `YYYY-MM-DD`; times and timestamps have nine fractional digits, with an offset for time-zone types. `VARIANT`, `OBJECT` and `ARRAY` are parsed JSON; `BINARY` is hexadecimal text.

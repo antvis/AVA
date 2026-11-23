@@ -93,11 +93,7 @@
   "DocsNavigation": {
     "mobileDocumentation": "移动端文档导航",
     "documentationChapters": "文档章节",
-    "browseDocumentation": "浏览文档",
-    "onlineServices": "在线服务",
-    "sourceOverview": "总览",
-    "files": "文件",
-    "databases": "数据库"
+    "browseDocumentation": "浏览文档"
   },
   "DocsToc": {
     "onThisPage": "本页目录",
@@ -471,8 +467,16 @@
       "description": "安装 AVA，接入第一份数据，跑通分析与图表生成。"
     },
     "data_sources": {
-      "title": "接入数据",
-      "description": "连接内存数据、文件、数据库和在线服务。"
+      "title": "数据源总览",
+      "description": "查看 AVA 支持的数据源，了解如何接入单个或多个数据源。"
+    },
+    "data_files": {
+      "title": "文件与内存数据",
+      "description": "读取 CSV、JSON、Parquet 和 Excel 文件，或直接传入 CSV、JSON 和文本。"
+    },
+    "data_databases": {
+      "title": "数据库",
+      "description": "填写数据库连接参数，并选择查询所需的执行引擎。"
     },
     "data_schema": {
       "title": "了解你的数据",

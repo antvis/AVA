@@ -212,10 +212,6 @@
   padding-inline-start: 12px;
   border-inline-start: 1px solid var(--docs-border);
 }
-.docs-nav-children .docs-nav-children {
-  margin-inline-start: 10px;
-  padding-inline-start: 8px;
-}
 .docs-nav-group a {
   display: block;
   margin: 2px 0;

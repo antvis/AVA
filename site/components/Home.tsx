@@ -13,18 +13,18 @@ import TrustedAnalytics from './landing/TrustedAnalytics';
 import styles from '../app/home.module.css';
 
 const SOURCES = [
-  ['CSV', 'csv', 'Inline & file'],
-  ['JSON', 'json', 'Inline & file'],
-  ['Excel', 'excel', 'Workbook'],
-  ['Parquet', 'parquet', 'Columnar file'],
-  ['Text', 'text', 'Unstructured text'],
-  ['SQLite', 'sqlite', 'Local database'],
-  ['MySQL', 'mysql', 'SQL database'],
-  ['PostgreSQL', 'postgresql', 'SQL database'],
-  ['MongoDB', 'mongodb', 'Document database'],
-  ['Supabase', 'supabase', 'Cloud database'],
-  ['ClickHouse', 'clickhouse', 'Analytics database'],
-  ['Feishu Bitable', 'feishu-bitable', 'Multidimensional table'],
+  ['CSV', 'csv', '/documentation/data/files/#csv'],
+  ['JSON', 'json', '/documentation/data/files/#json'],
+  ['Excel', 'excel', '/documentation/data/files/#excel'],
+  ['Parquet', 'parquet', '/documentation/data/files/#parquet'],
+  ['Text', 'text', '/documentation/data/files/#text'],
+  ['SQLite', 'sqlite', '/documentation/data/databases/#sqlite'],
+  ['MySQL', 'mysql', '/documentation/data/databases/#mysql'],
+  ['PostgreSQL', 'postgresql', '/documentation/data/databases/#postgresql'],
+  ['MongoDB', 'mongodb', '/documentation/data/databases/#mongodb'],
+  ['Supabase', 'supabase', '/documentation/data/databases/#supabase'],
+  ['ClickHouse', 'clickhouse', '/documentation/data/databases/#clickhouse'],
+  ['Feishu Bitable', 'feishu-bitable', '/documentation/data/online-services/feishu-bitable/'],
 ];
 
 function Arrow() {
@@ -107,8 +107,8 @@ export default function Home({ locale }: { locale: Locale }) {
           <div className={styles.sourcePanel}>
             <div className={styles.sourceWindow}>
               <div className={styles.sourceGrid}>
-                {SOURCES.map(([label, logo, detail]) => (
-                  <Link key={label} href={`/documentation/data/sources/#${logo}`}>
+                {SOURCES.map(([label, logo, href]) => (
+                  <Link key={label} href={href}>
                     <span className={styles.sourceIcon}>
                       <img src={`/logos/${logo}.svg`} alt="" width="32" height="32" loading="lazy" />
                     </span>

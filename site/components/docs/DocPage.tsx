@@ -6,6 +6,7 @@ import { docs, docHref, type Doc, localizedDoc } from '../../lib/docs';
 import { content } from '../../content/docs';
 import DocsToc from './DocsToc';
 import CopyCode from './CopyCode';
+import SourceAnchorRedirect from './SourceAnchorRedirect';
 import { getTranslator, pageMetadata, type Locale } from '../../lib/i18n';
 
 export function docMetadata(original: Doc, locale: Locale = 'en'): Metadata {
@@ -44,6 +45,7 @@ export default async function DocPage({ doc: original, locale }: { doc: Doc; loc
         <article className="docs-prose">
           <Content />
         </article>
+        {doc.slug === 'data/sources' ? <SourceAnchorRedirect locale={locale} /> : null}
         <div className="docs-page-meta">
           <a href={`https://github.com/antvis/AVA/blob/ai/site/content/docs/${locale}/${doc.slug}.mdx`}>
             {t('edit')} <span aria-hidden="true">↗</span>

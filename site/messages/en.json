@@ -93,11 +93,7 @@
   "DocsNavigation": {
     "mobileDocumentation": "Mobile documentation",
     "documentationChapters": "Documentation chapters",
-    "browseDocumentation": "Browse documentation",
-    "onlineServices": "Online services",
-    "sourceOverview": "Overview",
-    "files": "Files",
-    "databases": "Databases"
+    "browseDocumentation": "Browse documentation"
   },
   "DocsToc": {
     "onThisPage": "On this page",
@@ -484,8 +480,16 @@
       "description": "Install AVA and go from your first dataset to a visual answer."
     },
     "data_sources": {
-      "title": "Data sources",
-      "description": "Load inline data, files, database tables, and data from online services."
+      "title": "Data source overview",
+      "description": "Choose a supported data source and configure one or more sources with AVA."
+    },
+    "data_files": {
+      "title": "Files and inline data",
+      "description": "Read CSV, JSON, Parquet, and Excel files, or pass CSV, JSON, and text directly."
+    },
+    "data_databases": {
+      "title": "Databases",
+      "description": "Configure database connections and choose an engine to query your tables."
     },
     "data_schema": {
       "title": "Inspect your data",

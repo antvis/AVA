@@ -1,0 +1,243 @@
+The examples below pass file paths or inline content to `ava.source()`. See [Connect one source](/documentation/data/sources/#connect-one-source) to set up AVA.
+
+## CSV
+
+### Inline CSV
+
+Pass the CSV content as a string with `type: 'csv'`.
+
+```typescript
+await ava.source({
+  type: 'csv',
+  options: { csv: 'city,revenue\nHangzhou,120\nShanghai,200\nBeijing,160' },
+});
+```
+
+| Field     | Type             | Required | Meaning / default                          |
+| --------- | ---------------- | -------- | ------------------------------------------ |
+| `csv`     | `string`         | Yes      | Raw CSV content string                     |
+| `options` | `CSVReadOptions` | No       | [CSV reader options](#csv-reader-options). |
+
+### CSV files
+
+Use `type: 'csv-file'` with a local path or HTTP(S) URL. For a protected URL, supply request headers in `options.headers`.
+
+For remote CSV, JSON, Parquet, and Excel files, a nonempty `headers` object restricts redirects to the same origin (scheme, hostname, and effective port), with a limit of 20 redirects. This applies to both DuckDB and Python, including custom Python executors. Cross-origin redirects fail before the next request, even when the only header is `Accept` or the redirect upgrades HTTP to HTTPS. Downloads without headers, or with `headers: {}`, retain the underlying downloader's redirect behavior. Use the final trusted URL when a protected download requires a different origin.
+
+```typescript
+await ava.source({
+  type: 'csv-file',
+  options: {
+    path: 'https://example.com/sales.csv',
+    headers: { Authorization: 'Bearer YOUR_TOKEN' },
+    options: { header: true, delim: ';' },
+  },
+});
+```
+
+| Field     | Type                     | Required | Meaning / default                                    |
+| --------- | ------------------------ | -------- | ---------------------------------------------------- |
+| `path`    | `string`                 | Yes      | Local file path or http(s) URL                       |
+| `headers` | `Record<string, string>` | No       | HTTP headers for remote sources (e.g. Authorization) |
+| `options` | `CSVReadOptions`         | No       | [CSV reader options](#csv-reader-options).           |
+
+### CSV reader options
+
+Use these fields in `options.options` for `csv` and `csv-file` sources with DuckDB. Every field is optional. AVA forwards supplied values to `read_csv`; omitted values use DuckDB reader defaults or detection. Defaults below describe individual reader settings; automatic detection can determine the effective header, delimiter, and types.
+
+| Field                  | Type                                 | Required | Meaning / default                                                                               |
+| ---------------------- | ------------------------------------ | -------- | ----------------------------------------------------------------------------------------------- |
+| `header`               | `boolean`                            | No       | First line of each file contains the column names. Default false                                |
+| `names`                | `string[]`                           | No       | Column names, as a list                                                                         |
+| `columns`              | `Record<string, string>`             | No       | Column names → types struct, e.g. &#123; col1: 'INTEGER' &#125;. Disables schema auto-detection |
+| `types`                | `string[] \| Record<string, string>` | No       | Column types, by position (list) or by name (struct)                                            |
+| `all_varchar`          | `boolean`                            | No       | Skip type detection and read all columns as VARCHAR. Default false                              |
+| `normalize_names`      | `boolean`                            | No       | Remove non-alphanumeric chars from column names; prefix reserved keywords with \_               |
+| `force_not_null`       | `string[]`                           | No       | Columns that must not be matched against the NULL string                                        |
+| `delim`                | `string`                             | No       | Field delimiter (up to 4 bytes). Default ','                                                    |
+| `quote`                | `string`                             | No       | Quote character. Default '"'                                                                    |
+| `escape`               | `string`                             | No       | Escape character for the quote within quoted values. Default '"'                                |
+| `comment`              | `string`                             | No       | Character used to initiate comments                                                             |
+| `new_line`             | `string`                             | No       | New line character(s): '\r' \| '\n' \| '\r\n'                                                   |
+| `auto_detect`          | `boolean`                            | No       | Auto detect CSV parameters. Default true                                                        |
+| `auto_type_candidates` | `string[]`                           | No       | Types the sniffer considers when detecting column types, e.g. ['BIGINT', 'DATE']                |
+| `dateformat`           | `string`                             | No       | Date format used when parsing dates                                                             |
+| `timestampformat`      | `string`                             | No       | Timestamp format used when parsing timestamps                                                   |
+| `decimal_separator`    | `string`                             | No       | Decimal separator for numbers. Default '.'                                                      |
+| `thousands`            | `string`                             | No       | Thousands separator (single char, different from decimal_separator)                             |
+| `nullstr`              | `string \| string[]`                 | No       | String(s) that represent a NULL value                                                           |
+| `allow_quoted_nulls`   | `boolean`                            | No       | Allow the conversion of quoted values to NULL. Default true                                     |
+| `sample_size`          | `number`                             | No       | Number of sample lines for auto detection. Default 20480                                        |
+| `buffer_size`          | `number`                             | No       | Size of the read buffers in bytes. Default 16 \* max_line_size                                  |
+| `files_to_sniff`       | `number`                             | No       | Files used by the sniffer for multi-file schema detection; -1 = all. Default 10                 |
+| `max_line_size`        | `number`                             | No       | Maximum line size in bytes. Default 2000000                                                     |
+| `parallel`             | `boolean`                            | No       | Use the parallel CSV reader. Default true                                                       |
+| `skip`                 | `number`                             | No       | Number of lines to skip at the start of each file. Default 0                                    |
+| `ignore_errors`        | `boolean`                            | No       | Ignore any parsing errors encountered. Default false                                            |
+| `null_padding`         | `boolean`                            | No       | Pad short rows with NULL values on the right. Default false                                     |
+| `strict_mode`          | `boolean`                            | No       | Throw an error upon encountering any issue. Default true                                        |
+| `store_rejects`        | `boolean`                            | No       | Skip faulty lines and store them in the rejects table. Default false                            |
+| `rejects_table`        | `string`                             | No       | Temp table name for faulty lines. Default 'reject_errors'                                       |
+| `rejects_scan`         | `string`                             | No       | Temp table name for faulty scans. Default 'reject_scans'                                        |
+| `rejects_limit`        | `number`                             | No       | Upper limit on faulty lines recorded per file; 0 = no limit. Default 0                          |
+| `encoding`             | `string`                             | No       | File encoding: 'utf-8' \| 'utf-16' \| 'latin-1'. Default 'utf-8'                                |
+| `compression`          | `string`                             | No       | Compression method: 'none' \| 'gzip' \| 'zstd'. Default auto (from file extension)              |
+| `union_by_name`        | `boolean`                            | No       | Align columns from different files by name instead of position. Default false                   |
+| `hive_partitioning`    | `boolean`                            | No       | Interpret the path as a Hive partitioned path. Default auto-detected                            |
+| `filename`             | `boolean`                            | No       | Add the source file path to each row as a `filename` column. Default false                      |
+
+## JSON
+
+### Inline JSON
+
+Pass an array of objects with `type: 'json'`.
+
+```typescript
+await ava.source({
+  type: 'json',
+  options: { data: [{ city: 'Hangzhou', revenue: 120 }] },
+});
+```
+
+| Field  | Type    | Required | Meaning / default      |
+| ------ | ------- | -------- | ---------------------- |
+| `data` | `any[]` | Yes      | Array of rows to load. |
+| `options` | `JSONReadOptions` | No | DuckDB reader parameters below. |
+
+### JSON files
+
+Use `type: 'json-file'` with a local path or HTTP(S) URL.
+
+```typescript
+await ava.source({
+  type: 'json-file',
+  options: {
+    path: './sales.json',
+    options: { columns: { city: 'VARCHAR', revenue: 'DOUBLE' }, sample_size: -1 },
+  },
+});
+```
+
+| Field     | Type                     | Required | Meaning / default                                    |
+| --------- | ------------------------ | -------- | ---------------------------------------------------- |
+| `path`    | `string`                 | Yes      | Local file path or http(s) URL                       |
+| `headers` | `Record<string, string>` | No       | HTTP headers for remote sources (e.g. Authorization) |
+| `options` | `JSONReadOptions` | No | DuckDB reader parameters below. |
+
+### JSON reader options
+
+Both JSON source types accept `options.options` when using the DuckDB engine. All fields are optional.
+The complete [DuckDB JSON reader parameter list](https://duckdb.org/docs/current/data/json/loading_json) is exposed as `JSONReadOptions`:
+
+| Parameter | Type | Default | Meaning |
+| --- | --- | --- | --- |
+| `auto_detect` | `boolean` | `true` | Infer schema |
+| `columns` | `Record<string, string>` | Unset | Names → DuckDB types; selects columns |
+| `compression` | `'auto_detect' \| 'none' \| 'gzip' \| 'zstd'` | `'auto_detect'` | Codec |
+| `dateformat` | `string` | `'iso'` | Date pattern |
+| `field_appearance_threshold` | `number` | `0.1` | Sparse-object MAP threshold |
+| `filename` | `boolean` | `false` | Include filename in `SELECT *` |
+| `format` | `'auto' \| 'unstructured' \| 'newline_delimited' \| 'array'` | `'auto'` | Input layout for `read_json` |
+| `hive_partitioning` | `boolean` | Auto-detected | Path partitions |
+| `ignore_errors` | `boolean` | `false` | Skip errors; NDJSON only |
+| `map_inference_threshold` | `number` | `200` | STRUCT subfield limit; `-1` disables MAP inference |
+| `maximum_depth` | `number` | `-1` | Inference depth; `-1` unlimited |
+| `maximum_object_size` | `number` | `16777216` | Bytes per object |
+| `maximum_sample_files` | `number` | `32` | Files sampled |
+| `records` | `'auto' \| 'true' \| 'false'` | `'auto'` | Unpack objects |
+| `sample_size` | `number` | `20480` | Objects sampled; `-1` scans all |
+| `timestampformat` | `string` | `'iso'` | Timestamp pattern |
+| `union_by_name` | `boolean` | `false` | Merge schemas |
+
+Inline data is serialized as an uncompressed JSON array; choose compatible reader options.
+Remote files are downloaded to temporary paths, so set `compression` explicitly for compressed URLs.
+
+## Parquet
+
+Read a Parquet file from a local path or HTTP(S) URL.
+
+```typescript
+await ava.source({
+  type: 'parquet',
+  options: { path: './sales.parquet' },
+});
+```
+
+| Field     | Type                     | Required | Meaning / default                                    |
+| --------- | ------------------------ | -------- | ---------------------------------------------------- |
+| `path`    | `string`                 | Yes      | Local file path or http(s) URL                       |
+| `headers` | `Record<string, string>` | No       | HTTP headers for remote sources (e.g. Authorization) |
+
+## Excel
+
+Read an `.xlsx` workbook from a local path or HTTP(S) URL. Each selected worksheet becomes a separate table named after the sheet. Call `schema()` to inspect the resulting tables and columns.
+
+```typescript
+await ava.source({
+  type: 'excel',
+  options: {
+    path: './sales.xlsx',
+    sheets: [
+      { sheet: 'Sales', range: 'A3:F100', header: true },
+      { sheet: 'Costs', range: 'B2:C50', header: false },
+    ],
+  },
+});
+```
+
+### Source options
+
+| Field | Type | Required | Meaning / default |
+| --- | --- | --- | --- |
+| `path` | `string` | Yes | Local file path or HTTP(S) URL |
+| `headers` | `Record<string, string>` | No | HTTP headers for remote sources, such as Authorization |
+| `sheets` | `ExcelSheetOptions[]` | No | Sheets to load and their individual read settings; omitted loads all sheets with `header: true` |
+
+### Sheet selection and reader options
+
+Each entry in `sheets` contains a required `sheet` and optional `ExcelReadOptions` fields. Set these fields directly on the sheet entry, as shown above.
+
+| Field | Type | Default | Meaning |
+| --- | --- | --- | --- |
+| `sheet` | `string` | Required | Exact worksheet name; also used as the table name |
+| `range` | `string` | Inferred by the engine | Inclusive A1 rectangle, such as `B3:F100` |
+| `header` | `boolean` | `true` | Use the first row of the selected range as column names; `false` keeps it as data |
+| `all_varchar` | `boolean` | `false` | DuckDB only: read all cells as VARCHAR |
+| `ignore_errors` | `boolean` | `false` | DuckDB only: replace cells that fail type conversion with NULL |
+| `stop_at_empty` | `boolean` | `false` with `range`, otherwise `true` | DuckDB only: stop reading at the first empty row |
+| `empty_as_varchar` | `boolean` | `false` | DuckDB only: infer empty cells as VARCHAR instead of DOUBLE |
+
+A supplied `sheets` list must be non-empty, and every name must exist in the workbook and appear only once. Ranges must be valid, bounded A1 rectangles. Invalid selections and unsupported fields are rejected.
+
+### Engine behavior
+
+Both engines support `sheet`, `range`, and `header`. The Python engine rejects the four DuckDB-only options in the table above.
+
+DuckDB reader options follow [`read_xlsx`](https://duckdb.org/docs/current/core_extensions/excel#reading-xlsx-files), except that AVA defaults `header` to `true` instead of inferring it. For example, to preserve mixed cell types as text and continue past empty rows:
+
+```typescript
+await ava.source({
+  type: 'excel',
+  options: {
+    path: './sales.xlsx',
+    sheets: [{ sheet: 'Sales', all_varchar: true, stop_at_empty: false }],
+  },
+});
+```
+
+DuckDB rejects workbooks containing sheet names with literal XML entity text, such as `Sales &amp; Tax`, because its Excel extension can confuse them with another sheet. Rename those sheets or use the Python engine. Ordinary ampersands, quotes, and Unicode names are supported.
+
+## Text
+
+Extract structured rows from unstructured text. This source calls your configured model.
+
+```typescript
+await ava.source({
+  type: 'text',
+  options: { text: 'Hangzhou revenue was 120. Shanghai revenue was 200.' },
+});
+```
+
+| Field  | Type     | Required | Meaning / default                                        |
+| ------ | -------- | -------- | -------------------------------------------------------- |
+| `text` | `string` | Yes      | Unstructured text to extract using the configured model. |
