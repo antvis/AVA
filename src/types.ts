@@ -190,9 +190,10 @@ export interface PythonEngineOptions {
    * Override local python3 execution with a custom environment. Local execution is not sandboxed.
    * Run the complete Python script and return its JSON output as ExecutionResult.
    * Each query first sends a compile-only validation script, then the source-loading and result script.
-   * Configure remote execution deadlines separately.
+   * The buffer limit is in bytes. The signal fires on cancellation, disposal, or the configured deadline.
+   * A custom executor must act on the signal to stop work in its own environment.
    */
-  execute?: (code: string) => Promise<ExecutionResult>;
+  execute?: (code: string, maxBuffer?: number, signal?: AbortSignal) => Promise<ExecutionResult>;
   /** Wait and local process deadline for each validation or execution call. Default 30000 ms. */
   queryTimeoutMs?: number;
 }

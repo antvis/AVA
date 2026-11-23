@@ -2,10 +2,12 @@ const assert = require('node:assert/strict');
 const { fork } = require('node:child_process');
 const { randomBytes } = require('node:crypto');
 const { on, once } = require('node:events');
-const { access, rm } = require('node:fs/promises');
+const { access, mkdtemp, readFile, rm } = require('node:fs/promises');
 const { createServer } = require('node:http');
+const { tmpdir } = require('node:os');
 const { join } = require('node:path');
 const { test } = require('node:test');
+const { setTimeout: wait } = require('node:timers/promises');
 const { ClickHouseLogLevel } = require('@clickhouse/client');
 
 const { request } = require('../lib/cli/session/client');
@@ -144,6 +146,50 @@ for (const command of ['analyze', 'profile', 'schema']) {
       assert.deepEqual(result.data, [{ amount: 42 }]);
       assert.equal(queries.length, 2);
       await request(id, { command: 'dispose' });
+      assert.deepEqual(await exited, [0, null]);
+    }
+  );
+}
+
+for (const action of ['disconnect', 'dispose']) {
+  test(
+    `Python execution exits when the client requests ${action}`,
+    { skip: process.env.AVA_PYTHON_LOCAL_TEST !== '1', timeout: 15_000 },
+    async (t) => {
+      const directory = await mkdtemp(join(tmpdir(), 'ava-python-abort-'));
+      t.after(() => rm(directory, { recursive: true, force: true }));
+      const marker = join(directory, 'pid');
+      const { id, exited } = await startSession(t, {
+        sources: [{ type: 'json', options: { data: [{ amount: 42 }] } }],
+        llm: { model: 'unused' },
+        engine: 'python',
+      });
+      const dsl = `import os, signal, time
+from pathlib import Path
+signal.signal(signal.SIGTERM, signal.SIG_IGN)
+Path(${JSON.stringify(marker)}).write_text(str(os.getpid()))
+time.sleep(20)
+result = df`;
+      const socket = await connectSession(id, JSON.stringify({ command: 'query', dsl }));
+      socket.on('error', () => socket.destroy());
+      t.after(() => socket.destroy());
+      let pid;
+      while (!pid) {
+        const value = await readFile(marker, 'utf8').catch((error) => {
+          if (error.code !== 'ENOENT') throw error;
+          return '';
+        });
+        pid = Number(value);
+        if (!pid) await wait(25, undefined, { signal: t.signal });
+      }
+
+      if (action === 'disconnect') {
+        socket.destroy();
+        const next = await request(id, { command: 'schema' });
+        assert.equal(next.models[0].name, 'data');
+      }
+      await request(id, { command: 'dispose' });
+      assert.throws(() => process.kill(pid, 0), { code: 'ESRCH' });
       assert.deepEqual(await exited, [0, null]);
     }
   );

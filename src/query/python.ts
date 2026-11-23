@@ -2,8 +2,9 @@ import { generateText } from 'ai';
 
 import { languageModel } from '../util/model';
 import { stringifyDataModel } from '../util/data-model';
+import { throwIfAborted } from '../util/abort';
 
-import type { DataModel, LLMConfig, PythonEngineOptions, QueryDialect, TranslationResult } from '../types';
+import type { DataModel, ExecutionResult, LLMConfig, QueryDialect, TranslationResult } from '../types';
 
 export class PythonDialect implements QueryDialect {
   readonly id = 'python';
@@ -18,7 +19,10 @@ DataFrame and Series indexes are not returned; use reset_index() when index valu
 Each execution starts from fresh input data; variables and mutations do not persist between calls.
 Do not read files, access the network, install packages, or print the answer.`;
 
-  constructor(private readonly llmConfig: LLMConfig, private readonly execute?: PythonEngineOptions['execute']) {}
+  constructor(
+    private readonly llmConfig: LLMConfig,
+    private readonly execute?: (code: string, signal?: AbortSignal) => Promise<ExecutionResult>
+  ) {}
 
   async getDSL(query: string, dataModel: DataModel, signal?: AbortSignal): Promise<TranslationResult> {
     const { text, usage, finishReason } = await generateText({
@@ -44,7 +48,8 @@ Return only executable Python code, without explanation or Markdown.`,
     return { dsl, usage };
   }
 
-  async validateDSL(code: string): Promise<string> {
+  async validateDSL(code: string, signal?: AbortSignal): Promise<string> {
+    throwIfAborted(signal);
     if (!code.trim()) throw new Error('Python query must contain code');
     if (code.includes('\0')) throw new Error('Python query contains a NUL character');
     // Compile in the execution environment without running the user's code or loading source data.
@@ -54,11 +59,12 @@ compile(json.loads(${JSON.stringify(JSON.stringify(code))}), '<ava-query>', 'exe
 print('{"data":[],"schema":[],"rowCount":0}')
 `;
     if (this.execute) {
-      await this.execute(script);
+      await (signal ? this.execute(script, signal) : this.execute(script));
     } else {
       const { createPythonExecutor } = await import('../interpreter/python/util/execute');
-      await createPythonExecutor(30_000)(script, 64 * 1024);
+      await createPythonExecutor(30_000)(script, 64 * 1024, signal);
     }
+    throwIfAborted(signal);
     return code;
   }
 }

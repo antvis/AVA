@@ -108,6 +108,48 @@ describe('python/engine', () => {
     await vi.advanceTimersByTimeAsync(20);
     await validation;
   });
+
+  it.each(['validation', 'execution'])('cancels %s even when a custom executor remains pending', async (stage) => {
+    const execute = vi.fn().mockReturnValue(new Promise(() => {}));
+    if (stage === 'execution') execute.mockResolvedValueOnce(compiled);
+    const engine = new PythonEngine({ model: 'unused' }, { execute });
+    try {
+      await engine.load(source);
+      const controller = new AbortController();
+      const reason = new Error('Client disconnected');
+      const cancelled = expect(engine.schema(controller.signal)).rejects.toBe(reason);
+      const calls = stage === 'execution' ? 2 : 1;
+      await vi.waitFor(() => expect(execute).toHaveBeenCalledTimes(calls));
+      const [, , signal] = execute.mock.calls[calls - 1];
+      expect(signal.aborted).toBe(false);
+      controller.abort(reason);
+      await cancelled;
+      expect(signal.reason).toBe(reason);
+      expect(execute).toHaveBeenCalledTimes(calls);
+
+      execute.mockResolvedValueOnce(compiled).mockResolvedValueOnce(metadata);
+      await expect(engine.schema()).resolves.toEqual({ models: [table] });
+    } finally {
+      await engine.dispose();
+    }
+  });
+
+  it('notifies a custom executor that its stage reached the deadline', async () => {
+    vi.useFakeTimers();
+    const execute = vi.fn().mockReturnValue(new Promise(() => {}));
+    const engine = new PythonEngine({ model: 'unused' }, { execute, queryTimeoutMs: 20 });
+    try {
+      await engine.load(source);
+      const timedOut = expect(engine.execute('result = df')).rejects.toThrow('Python validation timed out after 20ms');
+      const [, , signal] = execute.mock.calls[0];
+      await vi.advanceTimersByTimeAsync(20);
+      await timedOut;
+      expect(signal.reason.message).toBe('Python validation timed out after 20ms');
+      expect(vi.getTimerCount()).toBe(0);
+    } finally {
+      await engine.dispose();
+    }
+  });
 });
 
 describe('python/engine metadata', () => {
