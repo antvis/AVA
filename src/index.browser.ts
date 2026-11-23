@@ -14,6 +14,8 @@ export {
   schemaOutputSchema,
   profileInputSchema,
   profileOutputSchema,
+  qualityInputSchema,
+  qualityOutputSchema,
   semanticInputSchema,
   semanticOutputSchema,
   queryInputSchema,
@@ -33,6 +35,11 @@ export {
 } from './contracts';
 
 export { AVA } from './ava';
+export { compareProfiles } from './util/profile-compare';
+export type { ProfileComparison } from './util/profile-compare';
+export { renderProfileHtml, renderProfileComparisonHtml, renderProfileValidationHtml } from './util/profile-report';
+export { profileExpectations, validateProfileExpectations } from './util/profile-expectations';
+export type { ProfileExpectationSuite } from './util/profile-expectations';
 export { registerEngine } from './engines';
 
 export type {
@@ -54,6 +61,9 @@ export type {
   JsonValue,
   Schema,
   Profile,
+  ProfileType,
+  Quality,
+  QualityOptions,
   LLMConfig,
   AVAConfig,
   AnalysisConfig,

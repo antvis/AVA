@@ -12,6 +12,7 @@ Use this reference to look up signatures, inputs, and return values after follow
 <tr><th scope="rowgroup" rowSpan={4}><a href="#data">Data</a></th><td><a href="#source"><code>source(configs)</code></a></td><td>Load or replace one or more data sources.</td></tr>
 <tr><td><a href="#schema"><code>schema(options?, setter?)</code></a></td><td>Inspect or set data structure.</td></tr>
 <tr><td><a href="#profile"><code>profile(options?, setter?)</code></a></td><td>Compute or set statistics.</td></tr>
+<tr><td><a href="#quality"><code>quality(options?)</code></a></td><td>Evaluate quality rules against the saved profile.</td></tr>
 <tr><td><a href="#semantic"><code>semantic(options?, setter?)</code></a></td><td>Read or set business definitions.</td></tr>
 </tbody>
 <tbody>
@@ -181,7 +182,18 @@ await ava.profile(undefined, () => savedProfile);
 | --- | --- | --- | --- |
 | `options` | `ProfileOptions` | No | `{}`; uses the default metrics below. |
 | `options.metrics` | `MetricConfig[]` | No | Metrics for engine computation. A supplied list replaces the defaults. |
+| `options.preset` | `minimal` or `explorative` | No | DuckDB presets using `data-profiling` semantics. `minimal` includes univariate and overview statistics. `explorative` adds type inference, text and structured summaries, associations, missingness, and samples. Explicit `metrics` override the metric list. |
+| `options.typeSchema` | `Record<string, Record<string, ProfileType>>` | No | DuckDB type overrides by model and column name. For example, `{ data: { order_date: 'DateTime' } }` parses text dates for date metrics. |
+| `options.inferTypes` | Object | No | `{}` enables DuckDB type inference on stored values. Numeric columns with up to `numericCategoryThreshold` distinct values become categorical. Text is categorical if it meets `textCategoryThreshold` and `textCategoryRatio`. Defaults are `5`, `50`, and `0.5`. |
+| `options.inferTypes.booleanMappings` | `Record<string, boolean>` | No | Map lowercase strings to boolean values. Defaults to `true`, `t`, `yes`, `y` and `false`, `f`, `no`, `n`. Every observed string must match for inference. |
+| `options.inferTypes.url`, `options.inferTypes.path` | Boolean | No | Detect URLs with a scheme and authority, or absolute POSIX paths, when every observed value qualifies. |
+| `options.inferTypes.fileRoot`, `options.inferTypes.image` | String, Boolean | No | With an absolute local root, infer `File` for paths to regular files inside it. Set `image: true` to recognize supported image signatures as `Image`. Sensitive mode skips filesystem inference. |
+| `options.inferTypes.timeSeries` | Object | No | `{}` enables `TimeSeries` inference when any lag autocorrelation meets `threshold` (default `0.7`). The default `lags` are `[1, 7, 12, 24, 30]`. `orderBy` optionally sorts the observations. |
+| `options.sensitive` | Boolean | No | `true` limits DuckDB computation to aggregate metrics. Raw rows, duplicate groups, values and text frequencies, file metadata, and time-series points are omitted. |
 | `setter` | `(options: ProfileOptions) => Profile` | No | Returns the profile to save instead of computing it through the engine. |
+
+Text that parses as numbers and exceeds `numericCategoryThreshold` is profiled as numeric. Integral text uses a 64-bit integer type when the values fit.
+Text with a consistent date format or compatible mixed date formats is profiled as `DateTime`. Empty strings and `NaT` markers are treated as missing for date statistics.
 
 A setter receives the options object (default `{}`) and returns a `Profile` synchronously. It does not require engine profiling support. AVA validates and copies its result; invalid results or thrown errors reject the call without changing previous metadata. The options are passed to the setter; AVA does not calculate or filter metrics on its behalf.
 
@@ -190,6 +202,8 @@ Requires a loaded source. Both paths replace the saved profile, which analysis, 
 #### Profile format
 
 A profile attaches observations to existing schema models and columns by name:
+
+DuckDB type overrides use `Numeric`, `Categorical`, `Text`, `Boolean`, `DateTime`, `TimeSeries`, `URL`, `Path`, `File`, `Image`, or `Unsupported`. Overridden columns include `properties.profileType` in the profile output.
 
 | Field | Meaning |
 | --- | --- |
@@ -203,9 +217,7 @@ A missing metric means it was not computed, not zero. Setting a schema clears th
 
 #### Metrics
 
-The default metrics are `row_count`, `null_count`, `distinct_count`, `top_values`, `min`, `max`, and `mean`. Additional built-in metrics are `duplicate_count`, `min_length`, `max_length`, `sum`, `stddev`, and `median`.
-
-Each entry is a metric name or an object with an `id` and metric-specific options:
+Each `metrics` entry is a name or an object with an `id` and metric options.
 
 ```typescript
 await ava.profile({
@@ -213,15 +225,190 @@ await ava.profile({
 });
 ```
 
-| Field | Type | Default / behavior |
+**Common metrics**
+
+| Metric | Applies to | Default | Result |
+| --- | --- | --- | --- |
+| `row_count` | Table | Yes | Number of rows. |
+| `null_count` | Column | Yes | Number of SQL NULLs or missing values in the engine. |
+| `distinct_count` | Numeric, text, boolean, date | Yes | Number of different non-null values. |
+| `top_values` | Text, boolean | Yes | Most frequent non-null values with their counts. Omitted when the distinct ratio exceeds `maxDistinctRatio`. |
+| `min`, `max` | Numeric, date | Yes | Minimum and maximum. Date bounds use Unix milliseconds. |
+| `mean` | Numeric | Yes | Arithmetic mean. |
+| `duplicate_count` | Column | — | Non-null count minus distinct count. |
+| `min_length`, `max_length` | Text | — | Shortest and longest string lengths. |
+| `sum` | Numeric | — | Sum of values. |
+| `stddev` | Numeric | — | Sample standard deviation. |
+| `median` | Numeric | — | Median. |
+
+**Additional DuckDB metrics**
+
+| Metric | Applies to | Result |
 | --- | --- | --- |
-| `id` | `string` | Required for object entries; the metric name. |
-| `limit` | `number` | `top_values` only. Default `3`; a non-negative safe integer. |
-| `maxDistinctRatio` | `number` | `top_values` only. Default `0.5`; a finite number from `0` to `1`. |
+| `table_summary` | Table | Row and column counts, NULL cell count and ratio, columns with NULLs, all-NULL columns, and counts by logical type. An empty table has no all-NULL columns. Under `data-profiling` semantics, columns with no observed values have logical type `unknown`. |
+| `memory_size`, `record_size` | Table, column (`memory_size`) | Estimated DuckDB payload bytes and average bytes per row. Counts fixed-width slots, UTF-8 and binary payloads, and the UTF-8 representation of other types. Excludes runtime overhead and compression. |
+| `time_index` | Table | Number of time-series columns, index length, endpoints and mean interval. Date values and durations use milliseconds. |
+| `time_series` | Numeric | Ordered observations for line charts. Large series keep the extrema in equal row buckets. |
+| `row_duplicates` | Table | Repeated group count, group count / total rows, rows in repeated groups, rows removable by deduplication, and samples sorted by count and key. |
+| `row_sample` | Table | First, last, and random rows with zero-based positions in DuckDB's scan order. Random selection is without replacement. |
+| `pearson` | Table, numeric columns | Symmetric `{ columns, matrix }`. Each pair uses rows where both values are finite. Constant columns and insufficient pairs yield `null`. |
+| `spearman` | Table, numeric columns | Symmetric rank correlation matrix. Each pair is ranked over its finite observations, with averaged ranks for ties. |
+| `kendall` | Table, numeric columns | Kendall tau-b matrix over finite pairs. Tied observations are included in the denominator correction. |
+| `cramers` | Table, category columns | Bias-corrected Cramér's V with Yates correction for 2 × 2 pairs. NULL and NaN are excluded. Returns `null` when fewer than two columns qualify. |
+| `auto` | Table, numeric and category columns | Spearman for numeric pairs, Cramér's V for pairs involving categories. Mixed pairs use right-closed equal-width bins. |
+| `phi_k` | Table | Phi-k correlation from contingency tables, with equal-width bins for numeric columns and bivariate normal calibration. |
+| `missing_correlation` | Table | Pearson correlations of missing-value masks. SQL NULL and NaN count as missing. Columns with constant masks are excluded. |
+| `missing_matrix` | Table | One string per row in scan order. Each selected column contributes `1` for SQL NULL or NaN and `0` for a present value. Includes column names and total row count. |
+| `missing_bands` | Table | Present-value fractions per column over equally spaced scan-position ranges. The HTML report uses these bands to render a missingness matrix. |
+| `scatter_pairs` | Table | Numeric interactions. Returns finite paired observations for small pairs or hexagon counts for large pairs. |
+| `valid_count` | Column | Number of non-NULL values. |
+| `null_ratio` | Column | SQL NULL count / total rows. |
+| `distinct_ratio` | Numeric, text, boolean, date | Different non-NULL values / non-NULL count. |
+| `unique_count`, `unique_ratio` | Numeric, text, boolean, date | Number of values occurring exactly once, and that count divided by the non-NULL count. |
+| `is_unique` | Numeric, text, boolean, date | Whether all non-NULL values occur once. Returns `false` when no non-NULL values exist. |
+| `value_counts` | Numeric, text, boolean, date | All non-NULL frequencies as `{ value, count }`, sorted by count descending and then value. Output grows with the number of distinct values. |
+| `extreme_values` | Numeric | Lowest and highest distinct values with counts, in value order. |
+| `text_examples` | Text | First non-NULL text values in scan order, including repeats. |
+| `mode`, `mode_count` | Numeric, text, boolean, date | First value in frequency order and its count. |
+| `imbalance` | Text, boolean, numeric category codes | One minus normalized Shannon entropy, excluding NULL and NaN. Returns zero for uniform distributions or fewer than two classes. |
+| `mean_length`, `median_length` | Text | Mean and median length in Unicode code points, weighted by occurrence. In `data-profiling` mode, the median follows the reference's separately sorted length weights. |
+| `length_histogram` | Text | `{ length, count }` entries ordered by length. NULLs are excluded and an empty string has length zero. |
+| `word_counts` | Text | `{ value, count }` entries after Unicode lowercasing, whitespace splitting and ASCII punctuation trimming. Repeated strings contribute by frequency. |
+| `character_counts` | Text | Frequency of each Unicode code point as `{ value, count }` entries. Counts preserve whitespace and case. |
+| `unicode_summary` | Text | Total and distinct Unicode code points, grouped by general category, block alias, and script. Each group includes its total and per-character frequencies. |
+| `url_summary` | Text | URL scheme, authority, path, query, and fragment frequencies. Empty components are counted as empty strings. |
+| `path_summary` | Text | POSIX path stem, suffix, name, parent and anchor frequencies with distinct counts and the common character prefix. |
+| `file_summary` | `File` | File sizes, access and modification times, metadata change times, and a size histogram. Times use Unix milliseconds at second precision. |
+| `image_summary` | `Image` | Dimension frequencies, width, height and area statistics, truncated-image count, and optional EXIF frequencies. Uses the optional `sharp` and `exifr` packages. |
+| `date_validation` | Text, date | Distinct invalid dates, invalid rows, and their share of total rows. Text accepts ISO, common numeric, and English month-name formats within the pandas nanosecond date range. |
+| `monotonicity` | Numeric | Compares adjacent observations in DuckDB scan order, skipping NULL and NaN. Returns increasing, decreasing and strict flags, with `direction` of `2` for strictly increasing, `-2` for strictly decreasing, `1` for increasing, `-1` for decreasing, or `0`. |
+| `autocorrelation` | Numeric | ACF and unadjusted Yule–Walker PACF with 95% confidence intervals on the finite observations. |
+| `time_series_gaps` | Numeric | Gaps larger than twice the mean positive interval between observed rows, including the endpoints and gap statistics. Date indexes and durations use milliseconds. |
+| `frequency_spectrum` | Numeric | Positive FFT frequencies and power in decibels, detected peaks, selected seasonal peaks, and periods in observations. |
+| `adf` | Numeric | Augmented Dickey–Fuller statistic with constant, MacKinnon p-value, used lag, effective observations, and stationarity by the p-value threshold. Short or singular series return `null`. |
+| `chi_squared` | Numeric, date, text | Chi-square goodness-of-fit `{ statistic, pvalue }` against uniform frequencies. Text uses category counts. Numeric and date columns use automatic equal-width bins over finite observations. |
+| `zero_count`, `zero_ratio` | Numeric | Zero values and their share of all rows. |
+| `negative_count`, `negative_ratio` | Numeric | Negative values, including negative infinity, and their share of all rows. |
+| `infinite_count`, `infinite_ratio` | Numeric | Positive and negative infinity and their share of all rows. |
+| `nan_count`, `nan_ratio` | Numeric | NaN values and their share of all rows. |
+| `finite_count`, `finite_ratio` | Numeric | Finite values and their share of all rows. |
+| `variance`, `mad`, `iqr` | Numeric | Sample variance, median absolute deviation, and the 75th minus the 25th percentile. |
+| `cv` | Numeric | Sample standard deviation / mean. Returns `null` for a zero mean. |
+| `range` | Numeric, date | Maximum minus minimum. Dates use milliseconds. Integers and decimals are subtracted before conversion to JavaScript numbers, with a floating-point fallback on overflow. |
+| `skewness`, `kurtosis` | Numeric | Sample-adjusted skewness and excess kurtosis, requiring at least three and four finite values respectively. |
+| `quantiles` | Numeric | `{ probability, value }` entries in requested order. Uses linear interpolation over finite values and returns `null` values when none exist. |
+| `histogram` | Numeric, date | `{ bin_edges, counts }` over finite values. Interior edges belong to the bin on their right. Constants use one padded bin. Date edges use Unix milliseconds. |
 
-Other built-in metrics accept no additional options. Unknown metrics and unknown option names are rejected when the engine computes the profile. Availability depends on the engine and field type.
+DuckDB ratios with a zero denominator return `0`. SQL NULL, NaN, and infinity are separate observations by default, and numeric summaries use finite values. Set `semantics: 'data-profiling'` in DuckDB profile options to treat NaN as NULL while retaining `nan_count` and `nan_ratio`, and use the reference library's handling of infinity in numeric summaries. Infinity is represented by the strings `Infinity` and `-Infinity`, and undefined numeric results use `null`. Frequency values may also use strings for dates, large integers, and decimals.
 
-`metrics: []` produces empty metric objects. A new profile replaces previous statistics; metrics are not accumulated.
+Table completeness shares the scan with column NULL counts, frequency metrics share their aggregate, and all Pearson pairs share one scan. Use a column subset to control the quadratic cost of Pearson on wide tables. Histograms and distribution shape share one preliminary scan for bin edges and means. Quantiles compute all requested probabilities in one list aggregate.
+
+**Metric options**
+
+| Metric | Option | Default | Behavior |
+| --- | --- | --- | --- |
+| `top_values` | `limit` | `3` | Non-negative safe integer. |
+| `top_values` | `maxDistinctRatio` | `0.5` | Finite number in `[0, 1]`. |
+| `extreme_values`, `text_examples` | `limit` | `5` | Non-negative number of entries per list. |
+| `row_duplicates` | `columns` | All profile columns | Non-empty list of distinct column names used as the group key. |
+| `row_duplicates` | `limit` | `10` | Maximum sample count. Use `0` for counts alone. |
+| `row_sample` | `head`, `tail`, `random` | `10`, `10`, `0` | Non-negative row counts. Zero disables that sample. On nonempty tables, `random` cannot exceed the row count. |
+| `row_sample` | `columns`, `seed` | All columns, unset | Select sample columns and optionally seed random selection with an integer. |
+| `row_sample` | `custom` | — | Caller-supplied `{ name, caption?, data }` sample, with `data` as a JSON row array. Replaces generated samples. |
+| `pearson` | `columns` | All numeric columns | Non-empty list of distinct numeric column names. |
+| `spearman` | `columns` | All numeric columns | Non-empty list of distinct numeric column names. Pairwise sorts reuse a single materialized projection. |
+| `kendall` | `columns` | All numeric columns | Non-empty list of distinct numeric column names. Counts pairs using grouped ranks. |
+| `cramers` | `columns` | Text and boolean columns | Non-empty list of distinct category column names. Explicit selections can also include numeric category codes. |
+| `cramers` | `maxCategories` | `100` | Upper bound on the number of distinct categories per column. Constant and all-missing columns are excluded. |
+| `auto` | `columns` | Numeric, text and boolean columns | Non-empty list of distinct column names. |
+| `auto` | `maxCategories` | `100` | Upper bound on distinct values for text and boolean columns. |
+| `auto` | `bins` | `10` | Number of equal-width bins for mixed pairs. |
+| `phi_k` | `columns` | Supported columns | Non-empty list of distinct column names. |
+| `phi_k` | `maxCategories` | `100` | Upper bound on distinct values for nonnumeric columns. |
+| `phi_k` | `bins` | `10` | Number of equal-width bins for numeric columns. |
+| `phi_k` | `noiseCorrection` | `true` | Subtract the estimated contingency-table noise. |
+| `autocorrelation` | `orderBy` | DuckDB scan order | Column used to sort observations in ascending order. |
+| `autocorrelation` | `lags` | `100` | Requested maximum lag from 0 to 2048. The output is capped at half the finite sample size minus one, with lag zero retained. |
+| `time_series_gaps` | `orderBy` | Zero-based row positions | Numeric or date index column. |
+| `time_index` | `orderBy` | Zero-based row positions | Numeric or date index column. |
+| `time_series` | `orderBy`, `limit` | Zero-based row positions, `1200` | Numeric or date index column and maximum displayed observations. |
+| `frequency_spectrum` | `orderBy` | DuckDB scan order | Column used to sort observations in ascending order. |
+| `frequency_spectrum` | `madThreshold` | `6` | Mean absolute deviation multiplier for the spectral peak threshold. |
+| `adf` | `orderBy` | DuckDB scan order | Column used to sort observations in ascending order. |
+| `adf` | `maxLag` | Sample-dependent | Maximum lag for regression. |
+| `adf` | `autolag` | `AIC` | Lag selection with `AIC`, `BIC`, or `t-stat`. Use `null` to fit the maximum lag. |
+| `adf` | `significance` | `0.05` | P-value threshold for the stationarity test. |
+| `file_summary` | `root` | Required | Absolute local directory that contains the referenced files. |
+| `image_summary` | `root` | Required | Absolute local directory that contains the referenced images. |
+| `image_summary` | `exif` | `false` | Include EXIF tag and value frequencies. |
+| `missing_matrix` | `columns` | All columns | Non-empty list of distinct column names. |
+| `missing_matrix` | `limit` | All rows | Maximum number of rows included in the matrix. |
+| `missing_bands` | `columns`, `bands` | All columns, `200` | Select columns and set the maximum number of row bands. |
+| `scatter_pairs` | `columns`, `targets` | All numeric columns | Select numeric columns and a subset to place on the horizontal axis. |
+| `scatter_pairs` | `threshold`, `gridsize` | `1000`, `15` | Switch to hexagon counts above the threshold and choose the number of bins across the horizontal axis. |
+| `missing_correlation` | `columns` | All columns | Non-empty list of distinct column names. Returns `null` when fewer than two columns have both missing and present values. |
+| `quantiles` | `probabilities` | `[0.05, 0.25, 0.5, 0.75, 0.95]` | Non-empty array of numbers in `[0, 1]`. |
+| `histogram` | `bins` | `50` | Non-negative integer. Use `0` for automatic Sturges/Freedman–Diaconis selection. |
+| `histogram` | `maxBins` | `250` | Positive integer cap on the number of bins. |
+| `histogram` | `density` | `false` | Return probability density in `counts` instead of raw bin counts. |
+| `word_counts` | `stopWords` | `[]` | Case-insensitive words excluded from the result. |
+| `word_counts` | `limit` | All words | Maximum result length, ordered by frequency descending and then word. |
+
+Metric objects require a string `id`. Engines reject unknown metrics and undocumented options. Use `metrics: []` to return the structure with empty metric objects. Each new profile replaces the previous observations.
+
+### compareProfiles
+
+`compareProfiles(before, after)` validates two saved profiles, aligns models, columns and metrics by name, and returns both observations and finite numeric deltas. The inputs must use matching metric semantics. Models and columns present in only one input remain visible in the comparison.
+
+```typescript
+import { compareProfiles } from '@antv/ava';
+
+const comparison = compareProfiles(beforeProfile, afterProfile);
+```
+
+`renderProfileComparisonHtml(before, after, { title })` displays those observations in side-by-side tables in a standalone report.
+
+### renderProfileHtml
+
+`renderProfileHtml(profile, { title, theme, transparent, fullWidth })` renders a saved profile as standalone HTML. The report includes tables, distributions, correlations and quality alerts when those observations are present. `theme` accepts `light`, `dark` or `auto`. The report opens offline using the saved observations.
+
+### profileExpectations
+
+`profileExpectations(profile, { name })` derives legacy Great Expectations-style suites from saved observations. Request the corresponding metrics for non-null, uniqueness, numeric and date bounds, monotonicity, and allowed-value rules. The return value contains one suite per model.
+
+`validateProfileExpectations(profile, suites)` evaluates generated suites against the supplied profile. Each rule reports `passed`, `failed` or `missing_evidence`.
+
+`renderProfileValidationHtml(profile, suites)` renders the validation results as an offline report.
+
+### quality
+
+```typescript
+quality(options?: QualityOptions): Promise<Quality>
+```
+
+Evaluates rules against the observations saved by `profile()` and returns `{ models: [{ name, alerts }] }`. It performs no data query or model call. Each alert has a `rule` and the relevant columns, observed value, and threshold when available.
+
+```typescript
+await ava.profile({ metrics: ['row_count', 'null_count', 'distinct_count'] });
+const quality = await ava.quality({ rules: ['missing', 'constant'] });
+```
+
+| Rule | Profile evidence | Default threshold |
+| --- | --- | --- |
+| `empty` | `row_count` or `table_summary` | Zero rows |
+| `duplicates` | `row_duplicates` | At least one repeated group |
+| `constant`, `unique` | `distinct_count`, `row_count` | One distinct value, or one distinct value per row |
+| `missing` | `null_ratio`, or `null_count` and `row_count` with `nan_count` when available | `ratioThreshold: 0.01` |
+| `zeros`, `infinite` | `zero_ratio`, `infinite_ratio` | `ratioThreshold: 0.01` |
+| `high_cardinality` | Text `distinct_count` | `cardinalityThreshold: 50` |
+| `high_correlation` | Saved correlation matrices, using the strongest absolute coefficient per pair | `correlationThreshold: 0.9` |
+| `imbalance` | `imbalance` | `imbalanceThreshold: 0.5` |
+| `skewed` | `skewness` | `skewnessThreshold: 20` on the absolute skewness |
+| `uniform` | Numeric and text `chi_squared.pvalue` | `uniformThreshold: 0.999` |
+| `non_stationary`, `seasonal` | Time-series `adf` and `frequency_spectrum` | Nonstationary if the ADF test fails or a seasonal peak is detected. |
+| `unsupported`, `rejected` | Column logical type | `unknown` |
+
+Omit `rules` to evaluate every rule with available evidence. The default profile supplies basic checks. Request extra metrics to enable the corresponding checks.
 
 ### semantic
 
@@ -404,6 +591,7 @@ Public schemas follow API input/output names. Multi-argument methods use named a
 | `source` | `sourceInputSchema`: source config | No result (`void`) |
 | `schema` | `schemaInputSchema`: options `{}` | `schemaOutputSchema` |
 | `profile` | `profileInputSchema`: `{ metrics? }` | `profileOutputSchema` |
+| `quality` | `qualityInputSchema` | `qualityOutputSchema` |
 | `semantic` | `semanticInputSchema`: options `{}` | `semanticOutputSchema` |
 | `query` | `queryInputSchema`: `{ dsl, options? }` | `queryOutputSchema` |
 | `analyze` | `analyzeInputSchema`: `{ query, config? }` | `analyzeOutputSchema` |
