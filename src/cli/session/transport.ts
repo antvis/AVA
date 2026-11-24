@@ -18,7 +18,8 @@ export function sessionDirectory(id: string): string {
 
 export function sessionEndpoint(id: string): string {
   const directory = sessionDirectory(id);
-  return windows ? '\\\\.\\pipe\\ava-' + id : join(directory, 'ipc');
+  // The old POSIX endpoint uses EOF framing. A versioned name makes mixed versions fail before sending a request.
+  return windows ? '\\\\.\\pipe\\ava-' + id : join(directory, 'v2');
 }
 
 export async function prepareSession(id: string): Promise<string> {
@@ -70,22 +71,17 @@ export function readMessage(socket: Socket, limit: number, receive: (body: strin
   socket.setEncoding('utf8');
   socket.on('data', (chunk: string) => {
     if (received) return;
-    bytes += Buffer.byteLength(chunk);
-    if (bytes > limit + 1) {
+    const end = chunk.indexOf('\n');
+    const fragment = end === -1 ? chunk : chunk.slice(0, end);
+    bytes += Buffer.byteLength(fragment);
+    if (bytes > limit) {
       socket.destroy(limitError);
       return;
     }
-    const end = chunk.indexOf('\n');
-    body += end === -1 ? chunk : chunk.slice(0, end);
+    body += fragment;
     if (end !== -1) finish();
   });
-  // Accept an EOF-terminated frame from a peer that half-closes without a terminator (older POSIX clients).
-  // Windows pipes keep their previous behavior: an incomplete frame is dropped instead of parsed.
   socket.once('end', () => {
-    if (!windows) {
-      finish();
-      return;
-    }
     if (!received) socket.destroy();
   });
 }

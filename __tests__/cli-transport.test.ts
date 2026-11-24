@@ -1,16 +1,18 @@
+import { randomBytes } from 'crypto';
 import { once } from 'events';
 import { rm } from 'fs/promises';
 import { createServer, connect } from 'net';
+import { join } from 'path';
 
 import { afterEach, describe, expect, it, vi } from 'vitest';
 
+import { request } from '../src/cli/session/client';
 import {
   connectSession,
   createSessionServer,
   prepareSession,
   readMessage,
   sendResponse,
-  sessionDirectory,
   sessionEndpoint,
 } from '../src/cli/session/transport';
 
@@ -48,7 +50,7 @@ describe('session transport framing', () => {
   it('waits for the newline terminator even when the frame arrives in pieces', async () => {
     const { client, server } = await socketPair();
     const received: string[] = [];
-    readMessage(server, 1024, (body) => received.push(body));
+    readMessage(server, Buffer.byteLength('{"command":"schema"}'), (body) => received.push(body));
 
     client.write('{"command":"sch');
     await new Promise((resolve) => setTimeout(resolve, 20));
@@ -86,15 +88,15 @@ describe('session transport framing', () => {
     expect(received).toHaveLength(1);
   });
 
-  it('still accepts an EOF terminated frame from a peer without a terminator', async () => {
+  it('drops a frame cut short by EOF', async () => {
     const { client, server } = await socketPair();
     const received: string[] = [];
     readMessage(server, 1024, (body) => received.push(body));
 
-    client.write('{"command":"schema"}');
-    client.end();
+    client.end('{"command":"schema"}');
 
-    await vi.waitFor(() => expect(received).toEqual(['{"command":"schema"}']));
+    await vi.waitFor(() => expect(server.destroyed).toBe(true));
+    expect(received).toEqual([]);
   });
 
   it('destroys the socket when a frame exceeds the limit', async () => {
@@ -123,19 +125,21 @@ describe('session transport framing', () => {
 // Named pipes cannot signal EOF in one direction, so the half-close behavior is POSIX only.
 describe.skipIf(process.platform === 'win32')('session client framing', () => {
   let listener: Server | undefined;
+  let id: string;
 
   afterEach(() => {
     listener?.close();
     listener = undefined;
   });
 
-  async function serve(frame: string): Promise<{ ended: () => boolean; frame: () => string }> {
-    const id = `ds_${'a'.repeat(24)}`;
-    const directory = sessionDirectory(id);
-    await rm(directory, { recursive: true, force: true });
-    await prepareSession(id);
+  async function prepare(): Promise<string> {
+    id = `ds_${randomBytes(12).toString('hex')}`;
+    const directory = await prepareSession(id);
     cleanups.push(() => rm(directory, { recursive: true, force: true }));
+    return join(directory, 'ipc');
+  }
 
+  async function serve(frame: string): Promise<{ ended: () => boolean; frame: () => string }> {
     let ended = false;
     let body = '';
     listener = await createSessionServer(id, (socket) => {
@@ -153,13 +157,35 @@ describe.skipIf(process.platform === 'win32')('session client framing', () => {
   }
 
   it('keeps the write side open until the response so a disconnect stays observable', async () => {
+    await prepare();
     const session = await serve('{"ok":true}');
-    const socket = await connectSession(`ds_${'a'.repeat(24)}`, '{"command":"schema"}');
+    const socket = await connectSession(id, '{"command":"schema"}');
+    cleanups.push(() => socket.destroy());
 
     await vi.waitFor(() => expect(session.frame()).toBe('{"command":"schema"}'));
     expect(session.ended()).toBe(false);
 
     socket.destroy();
     await vi.waitFor(() => expect(session.ended()).toBe(true));
+  });
+
+  it('tells the new client to reload without connecting to an EOF-framed daemon', async () => {
+    const legacyEndpoint = await prepare();
+    const received = vi.fn((socket: Socket) => socket.destroy());
+    listener = createServer(received);
+    await new Promise<void>((resolve) => listener!.listen(legacyEndpoint, resolve));
+
+    await expect(request(id, { command: 'schema' })).rejects.toThrow('Load it again with ava source.');
+    expect(received).not.toHaveBeenCalled();
+  });
+
+  it('keeps an EOF-framed client away from the new daemon', async () => {
+    const legacyEndpoint = await prepare();
+    const session = await serve('{"ok":true}');
+    const legacy = connect(legacyEndpoint, () => legacy.end('{"command":"schema"}'));
+
+    // Older clients already map a missing socket to the ava source recovery message.
+    await expect(once(legacy, 'connect')).rejects.toMatchObject({ code: 'ENOENT' });
+    expect(session.frame()).toBe('');
   });
 });

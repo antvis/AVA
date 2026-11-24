@@ -64,6 +64,23 @@ describe('cancellation', () => {
     expect(generateText).toHaveBeenCalledWith(expect.objectContaining({ abortSignal: controller.signal }));
   });
 
+  it('does not cache schema returned by an engine after cancellation', async () => {
+    const controller = new AbortController();
+    const reason = new Error('Client disconnected');
+    const model = { models: [], relationships: [] };
+    const schema = vi.spyOn(ava.engine!, 'schema').mockImplementationOnce(async () => {
+      controller.abort(reason);
+      return model;
+    });
+
+    await expect(ava.translate('Rows', controller.signal)).rejects.toBe(reason);
+    expect(schema).toHaveBeenCalledExactlyOnceWith(controller.signal);
+    expect(generateText).not.toHaveBeenCalled();
+
+    expect((await ava.schema()).models).toHaveLength(1);
+    expect(schema).toHaveBeenLastCalledWith();
+  });
+
   it('forwards the signal to query execution', async () => {
     const execute = vi.spyOn(ava.engine!, 'execute');
     const controller = new AbortController();

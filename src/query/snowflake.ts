@@ -6,7 +6,7 @@ import { stringifyDataModel } from '../util/data-model';
 import type { DataModel, LLMConfig, QueryDialect, TranslationResult } from '../types';
 
 /** Compiles SQL in Snowflake without running it; rejects with Snowflake's compilation error. */
-export type SnowflakeCompiler = (sql: string) => Promise<void>;
+export type SnowflakeCompiler = (sql: string, signal?: AbortSignal) => Promise<void>;
 
 const WORD = /[A-Za-z_][A-Za-z0-9_$]*/y;
 
@@ -153,7 +153,7 @@ Generate exactly one query. Return only SQL text, without explanation or Markdow
    * The statement then runs unwrapped, because Snowflake does not keep a subquery's ORDER BY.
    * https://docs.snowflake.com/en/sql-reference/constructs/order-by#usage-notes
    */
-  async validateDSL(sql: string): Promise<string> {
+  async validateDSL(sql: string, signal?: AbortSignal): Promise<string> {
     const { words, end, systemFunction, dynamicFunction } = scanStatement(sql);
     const query = sql.slice(0, end).trim();
     if (!query) throw new Error('Snowflake query must be one read-only SELECT statement');
@@ -163,7 +163,8 @@ Generate exactly one query. Return only SQL text, without explanation or Markdow
       throw new Error('Snowflake procedures are not allowed in analysis queries');
     }
     // The newline lets a trailing line comment end before the closing parenthesis.
-    await this.compile(`SELECT * FROM (${query}\n)`);
+    const validation = `SELECT * FROM (${query}\n)`;
+    await (signal ? this.compile(validation, signal) : this.compile(validation));
     return query;
   }
 }

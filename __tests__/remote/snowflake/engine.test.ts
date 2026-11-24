@@ -539,7 +539,7 @@ describe('SnowflakeEngine execution', () => {
       await engine.load({ type: 'snowflake', options: { ...SOURCE.options, queryTimeoutMs: 30 } });
       const error = await engine.execute('SELECT COUNT(*) FROM TABLE(GENERATOR(TIMELIMIT => 60))').catch((e) => e);
       expect(error).toBeInstanceOf(SnowflakeQueryTimeoutError);
-      expect(error.message).toBe('Snowflake query timed out after 30ms and was cancelled');
+      expect(error.message).toBe('Snowflake query timed out after 30ms. Cancellation requested.');
       expect(statements[statements.length - 1].cancel).toHaveBeenCalledOnce();
       expect(stream.destroyed).toBe(true);
     } finally {
@@ -569,6 +569,35 @@ describe('SnowflakeEngine execution', () => {
     complete(undefined, { getColumns: () => [], streamRows });
     expect(streamRows).not.toHaveBeenCalled();
     expect(await pending).toBeInstanceOf(Error);
+  });
+
+  it('retries a failed cancellation that overlaps disposal and surfaces a second failure', async () => {
+    const { connection, statements } = install((options) => (options.describeOnly ? 'hang' : undefined));
+    const engine = new SnowflakeEngine({ model: 'unused' });
+    await engine.load(SOURCE);
+
+    const controller = new AbortController();
+    const reason = new Error('Client disconnected');
+    const rejected = expect(engine.execute('SELECT 1', undefined, controller.signal)).rejects.toBe(reason);
+    await vi.waitFor(() => expect(statements).toHaveLength(3));
+    const active = statements[2];
+    const failure = new Error('Remote cancellation unavailable');
+    let completeCancel!: (error: Error) => void;
+    active.cancel
+      .mockImplementationOnce((callback) => {
+        completeCancel = callback;
+      })
+      .mockImplementation((callback) => callback(failure));
+    controller.abort(reason);
+    await rejected;
+    const disposed = expect(engine.dispose()).rejects.toBe(failure);
+    expect(active.cancel).toHaveBeenCalledOnce();
+    completeCancel(failure);
+    await disposed;
+    expect(active.cancel).toHaveBeenCalledTimes(2);
+    expect(connection.destroy).toHaveBeenCalledOnce();
+    // The query itself never runs after cancelling compilation.
+    expect(statements).toHaveLength(3);
   });
 
   it('integrates with AVA through the engine registry', async () => {

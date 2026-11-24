@@ -207,6 +207,32 @@ describe('ClickHouseEngine', () => {
     }
   });
 
+  it('closes a ClickHouse result set while its rows are still being read', async () => {
+    let rejectRead: (error: Error) => void;
+    const cursor = {
+      json: vi.fn(() => new Promise((_resolve, reject) => (rejectRead = reject))),
+      close: vi.fn(() => rejectRead(new Error('Result set closed'))),
+    };
+    mockedCreateClient.mockReturnValue({
+      query: vi.fn().mockResolvedValue(cursor),
+      close: vi.fn(),
+    } as never);
+
+    const engine = new ClickHouseEngine({ model: 'unused' });
+    try {
+      await engine.load({ type: 'clickhouse', options: { host: 'localhost', database: 'default' } });
+      const controller = new AbortController();
+      const reason = new Error('Client disconnected');
+      const cancelled = expect(engine.execute('SELECT 1', undefined, controller.signal)).rejects.toBe(reason);
+      await vi.waitFor(() => expect(cursor.json).toHaveBeenCalledOnce());
+      controller.abort(reason);
+      await cancelled;
+      expect(cursor.close).toHaveBeenCalledOnce();
+    } finally {
+      await engine.dispose();
+    }
+  });
+
   it('profiles ClickHouse tables with quoted identifiers and normalized top values', async () => {
     const run = vi
       .fn<(sql: string) => Promise<Record<string, unknown>[]>>()

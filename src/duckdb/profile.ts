@@ -1,5 +1,6 @@
 import { sqlIdentifier, sqlQualifiedName } from '../util/sql';
 import { resolveMetric, table, column, logicalTypes, TOP_VALUES_OPTIONS } from '../util/profile';
+import { throwIfAborted } from '../util/abort';
 
 import type { MetricField } from '../util/profile';
 import type { Metric, DuckDBConnection, Schema, ParsedProfileOptions, LogicalType, MetricId, Profile } from '../types';
@@ -117,12 +118,14 @@ function postProcessMetrics(
 export async function profileTables(
   connection: DuckDBConnection,
   schema: Schema,
-  options: ParsedProfileOptions
+  options: ParsedProfileOptions,
+  signal?: AbortSignal
 ): Promise<Profile> {
   const metrics = options.metrics.map((metric) => ({ metric, definition: resolveMetric(metric, BUILTIN_METRICS) }));
   const profiles: Profile['models'] = [];
 
   for (const table of schema.models) {
+    throwIfAborted(signal);
     const { name, tableReference } = table;
     const reference = sqlQualifiedName(tableReference.table, tableReference.schema);
     const profile: Profile['models'][number] = {

@@ -116,6 +116,30 @@ describe('dataset engine and language', () => {
     vi.restoreAllMocks();
   });
 
+  it('waits for in-progress startup before disposing the engine', async () => {
+    const { getEngineClass } = await import('../src/engines');
+    const Engine = getEngineClass('javascript');
+    let completeLoad!: () => void;
+    const load = vi.spyOn(Engine.prototype, 'load').mockReturnValue(
+      new Promise<void>((resolve) => {
+        completeLoad = resolve;
+      })
+    );
+    const dispose = vi.spyOn(Engine.prototype, 'dispose');
+    const starting = datasets.createDataset([source], llm, 'javascript');
+    try {
+      await vi.waitFor(() => expect(load).toHaveBeenCalledOnce());
+      const closing = datasets.disposeDataset();
+      await Promise.resolve();
+      expect(dispose).not.toHaveBeenCalled();
+      completeLoad();
+      await Promise.all([starting, closing]);
+      expect(dispose).toHaveBeenCalledOnce();
+    } finally {
+      completeLoad();
+    }
+  });
+
   it.each<{
     source: DataSourceConfig;
     engine: EngineConfig['type'];

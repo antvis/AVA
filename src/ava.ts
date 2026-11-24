@@ -68,12 +68,30 @@ export class AVA extends EventEmitter {
     this.engineConfig = config.engine ?? { type: 'duckdb' };
   }
 
+  private async discoverSchema(signal?: AbortSignal): Promise<Schema> {
+    throwIfAborted(signal);
+    const schema = await (signal ? this.engine!.schema(signal) : this.engine!.schema());
+    throwIfAborted(signal);
+    return schema;
+  }
+
+  private async ensureSchema(signal?: AbortSignal): Promise<Schema> {
+    throwIfAborted(signal);
+    if (!this.dataSchema) {
+      const schema = await this.discoverSchema(signal);
+      throwIfAborted(signal);
+      this.dataSchema ??= schema;
+    }
+    return this.dataSchema;
+  }
+
   /** Assemble the dataset model when a model-facing operation needs it. */
-  private async getDataModel(): Promise<DataModel> {
-    this.dataSchema ??= await this.engine!.schema();
+  private async getDataModel(signal?: AbortSignal): Promise<DataModel> {
+    const schema = await this.ensureSchema(signal);
+    throwIfAborted(signal);
 
     return buildDataModel({
-      schema: this.dataSchema,
+      schema,
       profile: this.dataProfile ?? undefined,
       semantic: this.dataSemantic,
     });
@@ -155,18 +173,24 @@ export class AVA extends EventEmitter {
    * Describe the data source structure.
    * Include tables, fields, types, indexes, and relations.
    */
-  async schema(options: SchemaOptions = {}, setter?: (options: SchemaOptions) => Schema): Promise<Schema> {
+  async schema(
+    options: SchemaOptions = {},
+    setter?: (options: SchemaOptions) => Schema,
+    signal?: AbortSignal
+  ): Promise<Schema> {
     if (!this.engine) {
       throw new Error('No data loaded. Please call source() first.');
     }
 
+    throwIfAborted(signal);
     if (!setter && this.dataSchema) return this.dataSchema;
 
     emit(this, new LifecycleEvent(LifecycleEventType.SCHEMA_START));
 
     try {
-      const f = setter ?? (() => this.engine!.schema());
-      this.dataSchema = schemaOutputSchema.parse(await f(options));
+      const schema = setter ? await setter(options) : await this.discoverSchema(signal);
+      throwIfAborted(signal);
+      this.dataSchema = schemaOutputSchema.parse(schema);
       this.dataProfile = null;
     } catch (error) {
       emit(this, new LifecycleEvent(LifecycleEventType.SCHEMA_END, { error: serializeError(error) }));
@@ -182,7 +206,11 @@ export class AVA extends EventEmitter {
   /**
    * Compute a statistical profile of the data source.
    */
-  async profile(options: ProfileOptions = {}, setter?: (options: ProfileOptions) => Profile): Promise<Profile> {
+  async profile(
+    options: ProfileOptions = {},
+    setter?: (options: ProfileOptions) => Profile,
+    signal?: AbortSignal
+  ): Promise<Profile> {
     if (!this.engine) {
       throw new Error('No data loaded. Please call source() first.');
     }
@@ -190,12 +218,18 @@ export class AVA extends EventEmitter {
       throw new Error('Profiling is not supported by the registered engine.');
     }
 
+    throwIfAborted(signal);
     emit(this, new LifecycleEvent(LifecycleEventType.PROFILE_START));
 
     try {
-      this.dataSchema ??= await this.engine!.schema();
-      const f = setter ?? (async (options: ProfileOptions) => this.engine!.profile!(this.dataSchema!, options));
-      this.dataProfile = profileOutputSchema.parse(await f(options));
+      const schema = await this.ensureSchema(signal);
+      throwIfAborted(signal);
+      const engine = this.engine!;
+      const profile = setter
+        ? await setter(options)
+        : await (signal ? engine.profile!(schema, options, signal) : engine.profile!(schema, options));
+      throwIfAborted(signal);
+      this.dataProfile = profileOutputSchema.parse(profile);
     } catch (error) {
       emit(this, new LifecycleEvent(LifecycleEventType.PROFILE_END, { error: serializeError(error) }));
 
@@ -247,7 +281,7 @@ export class AVA extends EventEmitter {
     try {
       const runtime = {
         emit: (event: AnalysisEvent) => emit(this, event),
-        dataModel: await this.getDataModel(),
+        dataModel: await this.getDataModel(signal),
         engine: this.engine,
         llm: this.llmConfig,
         signal,
@@ -279,7 +313,7 @@ export class AVA extends EventEmitter {
     let dsl: string;
     let usage: LanguageModelUsage | undefined;
     try {
-      const dataModel = await this.getDataModel();
+      const dataModel = await this.getDataModel(signal);
       // Keep the two-argument call shape when no signal is supplied.
       ({ dsl, usage } = signal
         ? await this.engine.getDSL(query, dataModel, signal)
@@ -394,7 +428,7 @@ export class AVA extends EventEmitter {
 
     let result: SuggestResult[];
     try {
-      const dataModel = await this.getDataModel();
+      const dataModel = await this.getDataModel(signal);
       // Keep the three-argument call shape when no signal is supplied.
       result = signal
         ? await generateSuggestions(this.llmConfig, dataModel, count, signal)

@@ -87,6 +87,30 @@ describe('SupabaseEngine', () => {
     }
   });
 
+  it('aborts an active request with the caller reason and clears the request timer', async () => {
+    vi.useFakeTimers();
+    const fetch = vi.fn(
+      (_url: string, { signal }: { signal: AbortSignal }) =>
+        new Promise((_, reject) => signal.addEventListener('abort', () => reject(signal.reason), { once: true }))
+    );
+    vi.stubGlobal('fetch', fetch);
+    const engine = new SupabaseEngine({ model: 'unused' });
+    await engine.load({ type: 'supabase', options: CONNECTION });
+
+    const controller = new AbortController();
+    const reason = new Error('Client disconnected');
+    const cancelled = expect(engine.schema(controller.signal)).rejects.toBe(reason);
+    expect(fetch).toHaveBeenCalledOnce();
+    expect(fetch.mock.calls[0][1].signal.aborted).toBe(false);
+    controller.abort(reason);
+    await cancelled;
+    expect(fetch.mock.calls[0][1].signal.aborted).toBe(true);
+    expect(vi.getTimerCount()).toBe(0);
+    stubApi([{ rows: [] }]);
+    await expect(engine.schema()).resolves.toMatchObject({ models: [] });
+    await engine.dispose();
+  });
+
   describe('schema', () => {
     it.each([200, 503])('times out while reading an HTTP %s response body', async (status) => {
       vi.useFakeTimers();

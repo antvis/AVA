@@ -103,10 +103,33 @@ describe('python/engine', () => {
     const pending = expect(engine.execute('result = 1')).rejects.toThrow('timed out after 20ms');
     await vi.advanceTimersByTimeAsync(20);
     await pending;
+    expect(execute.mock.lastCall![2].reason.message).toBe('Python execution timed out after 20ms');
     execute.mockReturnValueOnce(new Promise(() => {}));
     const validation = expect(engine.execute('result = 1')).rejects.toThrow('validation timed out after 20ms');
     await vi.advanceTimersByTimeAsync(20);
     await validation;
+  });
+
+  it('cancels Python validation even when a custom executor remains pending', async () => {
+    const execute = vi.fn().mockReturnValue(new Promise(() => {}));
+    const engine = new PythonEngine({ model: 'unused' }, { execute });
+    try {
+      await engine.load(source);
+      const controller = new AbortController();
+      const reason = new Error('Client disconnected');
+      const cancelled = expect(engine.schema(controller.signal)).rejects.toBe(reason);
+      const [, , signal] = execute.mock.calls[0];
+      expect(signal.aborted).toBe(false);
+      controller.abort(reason);
+      await cancelled;
+      expect(signal.reason).toBe(reason);
+      expect(execute).toHaveBeenCalledOnce();
+
+      execute.mockResolvedValueOnce(compiled).mockResolvedValueOnce(metadata);
+      await expect(engine.schema()).resolves.toEqual({ models: [table] });
+    } finally {
+      await engine.dispose();
+    }
   });
 });
 

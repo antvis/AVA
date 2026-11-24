@@ -13,7 +13,7 @@ import { sqlIdentifier, sqlStringLiteral } from '../util/sql';
 import { findAvailableName, parseSourceConfigs } from '../util/source';
 import { parseProfileOptions } from '../util/profile';
 import { runWithTimeout } from '../util/timeout';
-import { onAbort, throwIfAborted } from '../util/abort';
+import { createAbortError, onAbort, throwIfAborted } from '../util/abort';
 
 import { DEFAULT_METRICS, profileTables } from './profile';
 import { loadSource } from './loaders';
@@ -51,6 +51,7 @@ const EXTENSION_LOCKDOWN = {
 const DEFAULT_MEMORY_LIMIT = '512MB';
 const DEFAULT_THREADS = 1;
 const DEFAULT_QUERY_TIMEOUT_MS = 30_000;
+const INTERRUPT_RETRY_MS = 25;
 
 // Built-in schemas and catalogs can conflict with two-part source.table references.
 const RESERVED_NAMESPACES = ['main', 'memory', 'system', 'temp', 'information_schema', 'pg_catalog'];
@@ -66,6 +67,8 @@ export class QueryTimeoutError extends Error {
 export class DuckDBEngine implements AnalysisEngine {
   private instance: DuckDBInstance | null = null;
   private connection: DuckDBConnection | null = null;
+  private operations: Promise<void> = Promise.resolve();
+  private lifetime = new AbortController();
   private sources: { source: LoadedSource; namespace?: string }[] = [];
   private tempDirectory: string | null = null;
   readonly dialect: DuckDBSQLDialect;
@@ -88,6 +91,8 @@ export class DuckDBEngine implements AnalysisEngine {
         this.allowCommunityExtensions || this.engineOptions.allowCommunityExtensions ? 'true' : 'false',
     });
     this.connection = await this.instance.connect();
+    this.operations = Promise.resolve();
+    this.lifetime = new AbortController();
     return this.connection;
   }
 
@@ -144,36 +149,32 @@ export class DuckDBEngine implements AnalysisEngine {
     this.sources = loaded;
   }
 
-  async schema(): Promise<Schema> {
-    if (!this.sources.length || !this.connection) throw new Error('No data loaded. Please call source() first.');
-
-    const models: Schema['models'] = [];
-    const relationships: NonNullable<Schema['relationships']> = [];
-    const views: NonNullable<Schema['views']> = [];
-    for (const { source, namespace } of this.sources) {
-      const schema = await source.getSchema(this.connection, namespace);
-      models.push(...schema.models);
-      relationships.push(...(schema.relationships ?? []));
-      views.push(...(schema.views ?? []));
-    }
-    return { models, relationships, views };
+  async schema(signal?: AbortSignal): Promise<Schema> {
+    return this.withConnection(signal, async (connection, commandSignal) => {
+      const models: Schema['models'] = [];
+      const relationships: NonNullable<Schema['relationships']> = [];
+      const views: NonNullable<Schema['views']> = [];
+      for (const { source, namespace } of this.sources) {
+        throwIfAborted(commandSignal);
+        const schema = await source.getSchema(connection, namespace);
+        models.push(...schema.models);
+        relationships.push(...(schema.relationships ?? []));
+        views.push(...(schema.views ?? []));
+      }
+      return { models, relationships, views };
+    });
   }
 
-  async profile(schema: Schema, options: ProfileOptions = {}): Promise<Profile> {
-    if (!this.sources.length || !this.connection) {
-      throw new Error('No data loaded. Please call source() first.');
-    }
-
-    const defaultOptions = { metrics: DEFAULT_METRICS };
-    const parsedOptions = parseProfileOptions(options, defaultOptions);
-
-    return profileTables(this.connection, schema, parsedOptions);
+  async profile(schema: Schema, options: ProfileOptions = {}, signal?: AbortSignal): Promise<Profile> {
+    return this.withConnection(signal, (connection, commandSignal) =>
+      profileTables(connection, schema, parseProfileOptions(options, { metrics: DEFAULT_METRICS }), commandSignal)
+    );
   }
 
   async getDSL(query: string, dataModel: DataModel, signal?: AbortSignal): Promise<TranslationResult> {
     if (!this.sources.length) throw new Error('No data loaded. Please call source() first.');
 
-    return this.dialect.getDSL(query, dataModel, signal);
+    return signal ? this.dialect.getDSL(query, dataModel, signal) : this.dialect.getDSL(query, dataModel);
   }
 
   async execute<T = Record<string, unknown>>(
@@ -181,32 +182,17 @@ export class DuckDBEngine implements AnalysisEngine {
     options?: ExecutionOptions,
     signal?: AbortSignal
   ): Promise<ExecutionResult<T>> {
-    if (!this.sources.length || !this.connection) throw new Error('No data loaded. Please call source() first.');
-
-    throwIfAborted(signal);
-    const conn = this.connection;
-    const query = await this.dialect.validateDSL(sql);
-    throwIfAborted(signal);
-    const timeoutMs = this.engineOptions.queryTimeoutMs ?? DEFAULT_QUERY_TIMEOUT_MS;
-    // Interrupt the running statement when the caller cancels (same channel as the query timeout).
-    const detach = onAbort(signal, () => conn.interrupt());
-    try {
+    return this.withConnection(signal, async (conn, commandSignal, runNative) => {
+      const query = await this.dialect.validateDSL(sql);
+      throwIfAborted(commandSignal);
+      const timeoutMs = this.engineOptions.queryTimeoutMs ?? DEFAULT_QUERY_TIMEOUT_MS;
       // query() parses the original source; a quoted constant keeps its own parameters unbound.
       // https://duckdb.org/docs/2.0/guides/sql_features/query_and_query_table_functions
-      const reader = await runWithTimeout(
-        conn.runAndReadAll(`SELECT * FROM query(${sqlStringLiteral(query)}) LIMIT ${maxRows(options) + 1}`),
-        timeoutMs,
-        {
-          onTimeout: () => {
-            conn.interrupt();
-            return new QueryTimeoutError(timeoutMs);
-          },
-          unref: true,
-        }
-      ).catch((error) => {
-        throwIfAborted(signal);
-        throw error;
-      });
+      const pending = conn.runAndReadAll(
+        `SELECT * FROM query(${sqlStringLiteral(query)}) LIMIT ${maxRows(options) + 1}`
+      );
+      const reader = await runNative(pending, timeoutMs);
+      throwIfAborted(commandSignal);
       const schema = Array.from({ length: reader.columnCount }, (_, index) => ({
         name: reader.columnName(index),
         type: reader.columnType(index).toString(),
@@ -218,24 +204,85 @@ export class DuckDBEngine implements AnalysisEngine {
         .map((row) => Object.fromEntries(row.map((value, index) => [names[index], value])));
 
       return executionResult(coerceNumbers(rows, schema) as T[], schema, options);
-    } finally {
-      detach();
-    }
+    });
+  }
+
+  private async withConnection<T>(
+    caller: AbortSignal | undefined,
+    operation: (
+      connection: DuckDBConnection,
+      signal: AbortSignal,
+      runNative: <R>(pending: Promise<R>, timeoutMs: number) => Promise<R>
+    ) => Promise<T>
+  ): Promise<T> {
+    const connection = this.connection;
+    if (!this.sources.length || !connection) throw new Error('No data loaded. Please call source() first.');
+    const deadline = new AbortController();
+    const signals = [this.lifetime.signal, deadline.signal];
+    if (caller) signals.push(caller);
+    const signal = AbortSignal.any(signals);
+    throwIfAborted(signal);
+
+    // Interrupt applies to the entire connection, so only its current operation may install a listener.
+    let nativeWork: Promise<void> | undefined;
+    let detach: (() => void) | undefined;
+    let interruptTimer: ReturnType<typeof setInterval> | undefined;
+    const result = this.operations.then(async () => {
+      throwIfAborted(signal);
+      detach = onAbort(signal, () => {
+        // A query submitted to the native pool may not have started when the first interrupt fires.
+        const interrupt = () => connection.interrupt();
+        interrupt();
+        interruptTimer = setInterval(interrupt, INTERRUPT_RETRY_MS).unref();
+      });
+      try {
+        const value = await operation(connection, signal, (pending, timeoutMs) => {
+          nativeWork = pending.then(
+            () => undefined,
+            () => undefined
+          );
+          return runWithTimeout(pending, timeoutMs, {
+            onTimeout: () => {
+              const error = new QueryTimeoutError(timeoutMs);
+              deadline.abort(error);
+              return error;
+            },
+            unref: true,
+          });
+        });
+        throwIfAborted(signal);
+        return value;
+      } catch (error) {
+        throwIfAborted(signal);
+        throw error;
+      }
+    });
+    // The caller can time out before DuckDB has finished handling the interrupt.
+    const waitForNative = () => nativeWork;
+    this.operations = result.then(waitForNative, waitForNative).finally(() => {
+      detach?.();
+      clearInterval(interruptTimer);
+    });
+    return result;
   }
 
   /**
    * Close the database connection and instance
    */
-  private close(): void {
-    try {
-      this.connection?.closeSync();
-      this.instance?.closeSync();
-    } catch {
-      // already closed
-    }
+  private async close(): Promise<void> {
+    const connection = this.connection;
+    const instance = this.instance;
     this.connection = null;
     this.instance = null;
     this.allowCommunityExtensions = false;
+    this.lifetime.abort(createAbortError('Data source is no longer loaded.'));
+    await this.operations;
+    try {
+      connection?.closeSync();
+      instance?.closeSync();
+    } catch {
+      // already closed
+    }
   }
 
   async dispose(): Promise<void> {
@@ -243,7 +290,7 @@ export class DuckDBEngine implements AnalysisEngine {
     const tempDirectory = this.tempDirectory;
     this.sources = [];
     this.tempDirectory = null;
-    this.close();
+    await this.close();
     let failure: PromiseRejectedResult | undefined;
     try {
       await this.dialect.dispose();

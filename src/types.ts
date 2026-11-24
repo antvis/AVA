@@ -190,9 +190,10 @@ export interface PythonEngineOptions {
    * Override local python3 execution with a custom environment. Local execution is not sandboxed.
    * Run the complete Python script and return its JSON output as ExecutionResult.
    * Each query first sends a compile-only validation script, then the source-loading and result script.
-   * Configure remote execution deadlines separately.
+   * The buffer limit is in bytes. The signal fires on cancellation, disposal, or the configured deadline.
+   * A custom executor must act on the signal to stop work in its own environment.
    */
-  execute?: (code: string) => Promise<ExecutionResult>;
+  execute?: (code: string, maxBuffer?: number, signal?: AbortSignal) => Promise<ExecutionResult>;
   /** Wait and local process deadline for each validation or execution call. Default 30000 ms. */
   queryTimeoutMs?: number;
 }
@@ -230,9 +231,9 @@ export interface AnalysisEngine {
    */
   load(configs: DataSourceConfig | DataSourceConfig[]): Promise<void>;
   /** Discover the loaded source structure. */
-  schema(): Promise<Schema>;
+  schema(signal?: AbortSignal): Promise<Schema>;
   /** Compute statistics for the loaded data. */
-  profile?(schema: Schema, options?: ProfileOptions): Promise<Profile>;
+  profile?(schema: Schema, options?: ProfileOptions, signal?: AbortSignal): Promise<Profile>;
   /** Generate the executable DSL (SQL) for a natural-language query */
   getDSL(query: string, dataModel: DataModel, signal?: AbortSignal): Promise<TranslationResult>;
   /** Execute one DSL statement with a bounded result. */
@@ -264,7 +265,7 @@ export interface QueryDialect {
   /** Generate executable code for a natural-language query. */
   getDSL(query: string, dataModel: DataModel, signal?: AbortSignal): Promise<TranslationResult>;
   /** Validate the DSL without executing it, preserving its source semantics. */
-  validateDSL(dsl: string): Promise<string>;
+  validateDSL(dsl: string, signal?: AbortSignal): Promise<string>;
 }
 
 /** Runtime dependencies available to an analysis strategy. */
@@ -274,7 +275,7 @@ export interface AnalysisRuntime {
   dataModel: DataModel;
   engine: AnalysisEngine;
   llm: LLMConfig;
-  /** Cancels the whole analysis, including in-flight model requests and queries. */
+  /** Cancels analysis and is forwarded to model requests and engine operations. */
   signal?: AbortSignal;
 }
 
