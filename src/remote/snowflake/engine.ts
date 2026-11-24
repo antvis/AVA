@@ -37,10 +37,10 @@ const DEFAULT_QUERY_TIMEOUT_MS = 30_000;
 /** Cleanup never waits longer than this for Snowflake to acknowledge a cancel or logout. */
 const CLEANUP_TIMEOUT_MS = 10_000;
 
-/** Thrown when a statement exceeds queryTimeoutMs; the statement is cancelled in Snowflake. */
+/** Thrown when a statement exceeds queryTimeoutMs and cancellation is requested. */
 export class SnowflakeQueryTimeoutError extends Error {
   constructor(timeoutMs: number) {
-    super(`Snowflake query timed out after ${timeoutMs}ms and was cancelled`);
+    super(`Snowflake query timed out after ${timeoutMs}ms. Cancellation requested.`);
     this.name = 'SnowflakeQueryTimeoutError';
   }
 }
@@ -85,19 +85,14 @@ function sessionSettings(timeoutMs: number): string {
     TIMESTAMP_TZ_OUTPUT_FORMAT = 'YYYY-MM-DD HH24:MI:SS.FF9 TZH:TZM'`;
 }
 
-/** Wait for a best-effort cleanup callback, ignoring its errors and giving up after CLEANUP_TIMEOUT_MS. */
-async function settle(operation: (done: () => void) => void): Promise<void> {
-  const settled = new Promise<void>((resolve) => {
-    try {
-      operation(resolve);
-    } catch {
-      resolve();
-    }
-  });
-  await runWithTimeout(settled, CLEANUP_TIMEOUT_MS, {
-    onTimeout: () => new Error('cleanup timed out'),
-    unref: true,
-  }).catch(() => undefined);
+function waitForCleanup(action: string, operation: (done: (error?: Error | null) => void) => void): Promise<void> {
+  return runWithTimeout(
+    new Promise<void>((resolve, reject) => {
+      operation((error) => (error ? reject(error) : resolve()));
+    }),
+    CLEANUP_TIMEOUT_MS,
+    { onTimeout: () => new Error(`Snowflake ${action} timed out`), unref: true }
+  );
 }
 
 export class SnowflakeEngine implements AnalysisEngine {
@@ -167,7 +162,7 @@ export class SnowflakeEngine implements AnalysisEngine {
       }
       this.scope = { database: String(session.database), schema: String(session.schema) };
     } catch (error) {
-      await this.dispose();
+      await this.dispose().catch(() => {});
       throw error;
     }
   }
@@ -216,8 +211,14 @@ export class SnowflakeEngine implements AnalysisEngine {
     this.running.clear();
     // Closing a Snowflake session does not stop the statements it started, so cancel them first.
     const error = new Error('Snowflake source was disposed');
-    await Promise.all(running.map((cancel) => cancel(error)));
-    if (connection) await settle((done) => connection.destroy(() => done()));
+    const cancelled = await Promise.allSettled(running.map((cancel) => cancel(error)));
+    const failure = cancelled.find((result) => result.status === 'rejected');
+    try {
+      if (connection) await waitForCleanup('logout', (done) => connection.destroy(done));
+    } catch (error) {
+      if (!failure) throw error;
+    }
+    if (failure) throw failure.reason;
   }
 
   private requireScope(): SnowflakeScope {
@@ -231,7 +232,7 @@ export class SnowflakeEngine implements AnalysisEngine {
 
   /**
    * Run one statement within the source's timeout. Rows are streamed and at most `limit` are fetched
-   * (Snowflake also stops producing rows at ROWS_PER_RESULTSET). On timeout the statement is cancelled.
+   * (Snowflake also stops producing rows at ROWS_PER_RESULTSET). On timeout AVA requests cancellation.
    */
   private async run(
     sqlText: string,
@@ -257,6 +258,7 @@ export class SnowflakeEngine implements AnalysisEngine {
     let statement: RowStatement | undefined;
     let stream: Readable | undefined;
     let stopped = false;
+    let serverCompleted = false;
     // The Promise executor assigns this synchronously before registration or timeout handling.
     let stop!: (error: Error) => void;
     const result = new Promise<QueryResult>((resolve, reject) => {
@@ -274,7 +276,11 @@ export class SnowflakeEngine implements AnalysisEngine {
         fetchAsString: ['Number', 'Date', 'Buffer'],
         parameters: { MULTI_STATEMENT_COUNT: 1, ...(limit ? { ROWS_PER_RESULTSET: limit } : {}) },
         complete: (error, completed) => {
-          if (stopped) return;
+          serverCompleted = !error;
+          if (stopped) {
+            if (serverCompleted && statement) this.running.delete(statement);
+            return;
+          }
           if (error) {
             reject(error);
             return;
@@ -324,21 +330,33 @@ export class SnowflakeEngine implements AnalysisEngine {
     });
 
     const current = statement;
+    let cancellationRequested = false;
     let cancellation: Promise<void> | undefined;
     const cancel = (error: Error) => {
-      if (!cancellation) {
+      if (!cancellationRequested) {
+        cancellationRequested = true;
         stop(error);
-        cancellation = current ? settle((done) => current.cancel(() => done())) : Promise.resolve();
       }
-      return cancellation;
+      if (!current) return Promise.resolve();
+      return (cancellation ??= waitForCleanup('cancellation', (done) => current.cancel(done))
+        .catch((error) => {
+          // Keep unconfirmed statements registered so disposal can try again.
+          if (serverCompleted) return;
+          cancellation = undefined;
+          throw error;
+        })
+        .then(() => {
+          this.running.delete(current);
+        }));
     };
     if (current) this.running.set(current, cancel);
-    const detach = onAbort(signal, (reason) => void cancel(reason));
+    const requestCancellation = (error: Error) => void cancel(error).catch(() => {});
+    const detach = onAbort(signal, requestCancellation);
     try {
       const response = await runWithTimeout(result, timeoutMs, {
         onTimeout: () => {
           const error = new SnowflakeQueryTimeoutError(timeoutMs);
-          void cancel(error);
+          requestCancellation(error);
           return error;
         },
         unref: true,
@@ -352,11 +370,7 @@ export class SnowflakeEngine implements AnalysisEngine {
       detach();
       stopped = true;
       stream?.destroy();
-      if (current) {
-        // A concurrent dispose must wait for the cancellation before destroying the connection.
-        if (cancellation) void cancellation.then(() => this.running.delete(current));
-        else this.running.delete(current);
-      }
+      if (current && !cancellationRequested) this.running.delete(current);
     }
   }
 }

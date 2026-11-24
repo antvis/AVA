@@ -259,6 +259,8 @@ describe('DuckDBEngine', () => {
       const disposal = engine.dispose();
       expect(interrupt).toHaveBeenCalledOnce();
       expect(close).not.toHaveBeenCalled();
+      // The first interrupt can run before the native worker starts.
+      await vi.waitFor(() => expect(interrupt.mock.calls.length).toBeGreaterThan(1));
       finishDriver!();
       await Promise.all([profile, discovery, disposal]);
       expect(close).toHaveBeenCalledOnce();

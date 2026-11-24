@@ -539,7 +539,7 @@ describe('SnowflakeEngine execution', () => {
       await engine.load({ type: 'snowflake', options: { ...SOURCE.options, queryTimeoutMs: 30 } });
       const error = await engine.execute('SELECT COUNT(*) FROM TABLE(GENERATOR(TIMELIMIT => 60))').catch((e) => e);
       expect(error).toBeInstanceOf(SnowflakeQueryTimeoutError);
-      expect(error.message).toBe('Snowflake query timed out after 30ms and was cancelled');
+      expect(error.message).toBe('Snowflake query timed out after 30ms. Cancellation requested.');
       expect(statements[statements.length - 1].cancel).toHaveBeenCalledOnce();
       expect(stream.destroyed).toBe(true);
     } finally {
@@ -571,7 +571,7 @@ describe('SnowflakeEngine execution', () => {
     expect(await pending).toBeInstanceOf(Error);
   });
 
-  it('cancels compilation once and waits for acknowledgement before disconnecting', async () => {
+  it('retries unconfirmed Snowflake cancellation on dispose and surfaces a second failure', async () => {
     const { connection, statements } = install((options) => (options.describeOnly ? 'hang' : undefined));
     const engine = new SnowflakeEngine({ model: 'unused' });
     await engine.load(SOURCE);
@@ -581,17 +581,13 @@ describe('SnowflakeEngine execution', () => {
     const rejected = expect(engine.execute('SELECT 1', undefined, controller.signal)).rejects.toBe(reason);
     await vi.waitFor(() => expect(statements).toHaveLength(3));
     const active = statements[2];
-    let acknowledge: () => void;
-    active.cancel.mockImplementation((callback) => {
-      acknowledge = callback;
-    });
+    const failure = new Error('Remote cancellation unavailable');
+    active.cancel.mockImplementation((callback) => callback(failure));
     controller.abort(reason);
     await rejected;
-    const disposed = engine.dispose();
-    expect(active.cancel).toHaveBeenCalledOnce();
-    expect(connection.destroy).not.toHaveBeenCalled();
-    acknowledge!();
-    await disposed;
+    await new Promise(setImmediate);
+    await expect(engine.dispose()).rejects.toBe(failure);
+    expect(active.cancel).toHaveBeenCalledTimes(2);
     expect(connection.destroy).toHaveBeenCalledOnce();
     // The query itself never runs after cancelling compilation.
     expect(statements).toHaveLength(3);

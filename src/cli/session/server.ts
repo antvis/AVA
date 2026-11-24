@@ -23,35 +23,39 @@ let ready = false;
 let idle: ReturnType<typeof setTimeout>;
 let pending = 0;
 
+async function finishShutdown(cleanup: Promise<void>, deadline: ReturnType<typeof setTimeout>, exitCode: number) {
+  try {
+    const listener = server;
+    const drained = listener?.listening ? new Promise<void>((resolve) => listener.close(() => resolve())) : undefined;
+    const results = await Promise.allSettled([
+      cleanup,
+      rm(sessionDirectory(id), { recursive: true, force: true }),
+      drained &&
+        runWithTimeout(drained, DRAIN_TIMEOUT_MS, {
+          onTimeout: () => new Error('Dataset connections did not drain.'),
+        }).catch(() => {}),
+    ]);
+    if (results.some((result) => result.status === 'rejected')) exitCode = 1;
+  } catch {
+    exitCode = 1;
+  } finally {
+    clearTimeout(deadline);
+    process.exit(exitCode);
+  }
+}
+
 function close(exitCode = 0): Promise<void> {
   if (!closing) {
     clearTimeout(idle);
     const cleanup = disposeDataset();
     const deadline = setTimeout(() => process.exit(1), ready ? SHUTDOWN_TIMEOUT_MS : STARTUP_SHUTDOWN_TIMEOUT_MS);
-    const response = runWithTimeout(cleanup, DISPOSE_RESPONSE_TIMEOUT_MS, {
+    closing = runWithTimeout(cleanup, DISPOSE_RESPONSE_TIMEOUT_MS, {
       onTimeout: () => new Error(`Dataset cleanup timed out after ${DISPOSE_RESPONSE_TIMEOUT_MS} ms.`),
+    }).finally(() => {
+      // Stop accepting before replying. Filesystem cleanup and socket drain belong to shutdown.
+      void finishShutdown(cleanup, deadline, exitCode);
     });
-    let drained = Promise.resolve();
-    const retire = async () => {
-      const listener = server;
-      if (listener?.listening) {
-        drained = new Promise<void>((resolve) => listener.close(() => resolve()));
-      }
-      await rm(sessionDirectory(id), { recursive: true, force: true });
-    };
-    const retired = response.then(retire, retire);
-    closing = Promise.all([response, retired]).then(() => undefined);
     void closing.catch(() => {});
-
-    const waitForConnections = retired.finally(() =>
-      runWithTimeout(drained, DRAIN_TIMEOUT_MS, {
-        onTimeout: () => new Error('Dataset connections did not drain.'),
-      }).catch(() => {})
-    );
-    void Promise.allSettled([cleanup, waitForConnections]).then((results) => {
-      clearTimeout(deadline);
-      process.exit(results.some((result) => result.status === 'rejected') ? 1 : exitCode);
-    });
   }
 
   return closing;

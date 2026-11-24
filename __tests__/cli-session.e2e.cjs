@@ -13,11 +13,12 @@ const { ClickHouseLogLevel } = require('@clickhouse/client');
 const { request } = require('../lib/cli/session/client');
 const { connectSession, prepareSession } = require('../lib/cli/session/transport');
 
-async function startSession(t, startup, execArgv = []) {
+async function startSession(t, startup, pauseDisposal) {
   const id = `ds_${randomBytes(12).toString('hex')}`;
   const directory = await prepareSession(id);
   const child = fork(join(__dirname, '../lib/cli/session/server.js'), [id], {
-    execArgv,
+    execArgv: pauseDisposal ? ['--require', join(__dirname, 'fixtures/cli-session-dispose.cjs')] : [],
+    env: { ...process.env, AVA_TEST_PAUSE_DISPOSAL: pauseDisposal ?? '' },
     stdio: ['ignore', 'ignore', 'inherit', 'ipc'],
   });
   const exited = once(child, 'exit');
@@ -47,7 +48,7 @@ test(
         llm: { model: 'unused' },
         engine: 'javascript',
       },
-      ['--require', join(__dirname, 'fixtures/cli-session-dispose.cjs')]
+      'engine'
     );
 
     const replies = Promise.allSettled([request(id, { command: 'dispose' }), request(id, { command: 'dispose' })]);
@@ -99,10 +100,16 @@ test(
     });
     await once(api, 'listening', { signal: t.signal });
     const url = `http://127.0.0.1:${api.address().port}`;
-    const { id, exited } = await startSession(t, {
-      sources: [{ type: 'clickhouse', options: { url, database: 'default', log: { level: ClickHouseLogLevel.OFF } } }],
-      llm: { model: 'unused', apiKey: 'local-test', baseURL: `${url}/v1` },
-    });
+    const { id, directory, child, messages, exited } = await startSession(
+      t,
+      {
+        sources: [
+          { type: 'clickhouse', options: { url, database: 'default', log: { level: ClickHouseLogLevel.OFF } } },
+        ],
+        llm: { model: 'unused', apiKey: 'local-test', baseURL: `${url}/v1` },
+      },
+      'directory'
+    );
     const started = once(api, 'query-started', { signal: t.signal });
     const socket = await connectSession(
       id,
@@ -119,8 +126,15 @@ test(
     const result = await request(id, { command: 'query', dsl: 'SELECT 42 AS amount' });
     assert.deepEqual(result.data, [{ amount: 42 }]);
     assert.equal(queries.length, 2);
-    assert.deepEqual(await request(id, { command: 'dispose' }), { datasetId: id, disposed: true });
+    const disposed = request(id, { command: 'dispose' });
+    const {
+      value: [cleanupStarted],
+    } = await messages.next();
+    assert.equal(cleanupStarted, 'directory-cleanup-started');
+    assert.deepEqual(await disposed, { datasetId: id, disposed: true });
+    child.send('release-cleanup');
     assert.deepEqual(await exited, [0, null]);
+    await assert.rejects(access(directory), { code: 'ENOENT' });
   }
 );
 

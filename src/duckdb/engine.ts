@@ -51,6 +51,7 @@ const EXTENSION_LOCKDOWN = {
 const DEFAULT_MEMORY_LIMIT = '512MB';
 const DEFAULT_THREADS = 1;
 const DEFAULT_QUERY_TIMEOUT_MS = 30_000;
+const INTERRUPT_RETRY_MS = 25;
 
 // Built-in schemas and catalogs can conflict with two-part source.table references.
 const RESERVED_NAMESPACES = ['main', 'memory', 'system', 'temp', 'information_schema', 'pg_catalog'];
@@ -181,7 +182,7 @@ export class DuckDBEngine implements AnalysisEngine {
     options?: ExecutionOptions,
     signal?: AbortSignal
   ): Promise<ExecutionResult<T>> {
-    return this.withConnection(signal, async (conn, commandSignal, holdConnection) => {
+    return this.withConnection(signal, async (conn, commandSignal, runNative) => {
       const query = await this.dialect.validateDSL(sql);
       throwIfAborted(commandSignal);
       const timeoutMs = this.engineOptions.queryTimeoutMs ?? DEFAULT_QUERY_TIMEOUT_MS;
@@ -190,14 +191,7 @@ export class DuckDBEngine implements AnalysisEngine {
       const pending = conn.runAndReadAll(
         `SELECT * FROM query(${sqlStringLiteral(query)}) LIMIT ${maxRows(options) + 1}`
       );
-      holdConnection(pending);
-      const reader = await runWithTimeout(pending, timeoutMs, {
-        onTimeout: () => {
-          conn.interrupt();
-          return new QueryTimeoutError(timeoutMs);
-        },
-        unref: true,
-      });
+      const reader = await runNative(pending, timeoutMs);
       throwIfAborted(commandSignal);
       const schema = Array.from({ length: reader.columnCount }, (_, index) => ({
         name: reader.columnName(index),
@@ -218,40 +212,57 @@ export class DuckDBEngine implements AnalysisEngine {
     operation: (
       connection: DuckDBConnection,
       signal: AbortSignal,
-      holdConnection: (pending: Promise<unknown>) => void
+      runNative: <R>(pending: Promise<R>, timeoutMs: number) => Promise<R>
     ) => Promise<T>
   ): Promise<T> {
     const connection = this.connection;
     if (!this.sources.length || !connection) throw new Error('No data loaded. Please call source() first.');
-    const signal = caller ? AbortSignal.any([caller, this.lifetime.signal]) : this.lifetime.signal;
+    const deadline = new AbortController();
+    const signals = [this.lifetime.signal, deadline.signal];
+    if (caller) signals.push(caller);
+    const signal = AbortSignal.any(signals);
     throwIfAborted(signal);
 
     // Interrupt applies to the entire connection, so only its current operation may install a listener.
     let nativeWork: Promise<void> | undefined;
+    let detach: (() => void) | undefined;
+    let interruptTimer: ReturnType<typeof setInterval> | undefined;
     const result = this.operations.then(async () => {
       throwIfAborted(signal);
-      const detach = onAbort(signal, () => connection.interrupt());
+      detach = onAbort(signal, () => {
+        // A query submitted to the native pool may not have started when the first interrupt fires.
+        const interrupt = () => connection.interrupt();
+        interrupt();
+        interruptTimer = setInterval(interrupt, INTERRUPT_RETRY_MS).unref();
+      });
       try {
-        const value = await operation(connection, signal, (pending) => {
+        const value = await operation(connection, signal, (pending, timeoutMs) => {
           nativeWork = pending.then(
             () => undefined,
             () => undefined
           );
+          return runWithTimeout(pending, timeoutMs, {
+            onTimeout: () => {
+              const error = new QueryTimeoutError(timeoutMs);
+              deadline.abort(error);
+              return error;
+            },
+            unref: true,
+          });
         });
         throwIfAborted(signal);
         return value;
       } catch (error) {
         throwIfAborted(signal);
         throw error;
-      } finally {
-        detach();
       }
     });
     // The caller can time out before DuckDB has finished handling the interrupt.
-    this.operations = result.then(
-      () => undefined,
-      () => nativeWork
-    );
+    const waitForNative = () => nativeWork;
+    this.operations = result.then(waitForNative, waitForNative).finally(() => {
+      detach?.();
+      clearInterval(interruptTimer);
+    });
     return result;
   }
 
