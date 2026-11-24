@@ -85,12 +85,16 @@ function sessionSettings(timeoutMs: number): string {
     TIMESTAMP_TZ_OUTPUT_FORMAT = 'YYYY-MM-DD HH24:MI:SS.FF9 TZH:TZM'`;
 }
 
-function waitForCleanup(action: string, operation: (done: (error?: Error | null) => void) => void): Promise<void> {
+function waitForCleanup(
+  action: string,
+  operation: (done: (error?: Error | null) => void) => void,
+  timeoutMs = CLEANUP_TIMEOUT_MS
+): Promise<void> {
   return runWithTimeout(
     new Promise<void>((resolve, reject) => {
       operation((error) => (error ? reject(error) : resolve()));
     }),
-    CLEANUP_TIMEOUT_MS,
+    timeoutMs,
     { onTimeout: () => new Error(`Snowflake ${action} timed out`), unref: true }
   );
 }
@@ -332,13 +336,13 @@ export class SnowflakeEngine implements AnalysisEngine {
     const current = statement;
     let cancellationRequested = false;
     let cancellation: Promise<void> | undefined;
-    const cancel = (error: Error) => {
+    const cancel = (error: Error, timeoutMs = CLEANUP_TIMEOUT_MS) => {
       if (!cancellationRequested) {
         cancellationRequested = true;
         stop(error);
       }
       if (!current) return Promise.resolve();
-      return (cancellation ??= waitForCleanup('cancellation', (done) => current.cancel(done))
+      return (cancellation ??= waitForCleanup('cancellation', (done) => current.cancel(done), timeoutMs)
         .catch((error) => {
           // Keep unconfirmed statements registered so disposal can try again.
           if (serverCompleted) return;
@@ -349,7 +353,19 @@ export class SnowflakeEngine implements AnalysisEngine {
           this.running.delete(current);
         }));
     };
-    if (current) this.running.set(current, cancel);
+    if (current) {
+      this.running.set(current, (error) => {
+        if (!cancellation) return cancel(error);
+        // A failed in-flight request can be retried within the same disposal budget.
+        const deadline = performance.now() + CLEANUP_TIMEOUT_MS;
+        return cancellation.catch((failure) => {
+          if (serverCompleted) return;
+          const remaining = deadline - performance.now();
+          if (remaining < 1) throw failure;
+          return cancel(error, remaining);
+        });
+      });
+    }
     const requestCancellation = (error: Error) => void cancel(error).catch(() => {});
     const detach = onAbort(signal, requestCancellation);
     try {

@@ -571,7 +571,7 @@ describe('SnowflakeEngine execution', () => {
     expect(await pending).toBeInstanceOf(Error);
   });
 
-  it('retries unconfirmed Snowflake cancellation on dispose and surfaces a second failure', async () => {
+  it('retries a failed cancellation that overlaps disposal and surfaces a second failure', async () => {
     const { connection, statements } = install((options) => (options.describeOnly ? 'hang' : undefined));
     const engine = new SnowflakeEngine({ model: 'unused' });
     await engine.load(SOURCE);
@@ -582,11 +582,18 @@ describe('SnowflakeEngine execution', () => {
     await vi.waitFor(() => expect(statements).toHaveLength(3));
     const active = statements[2];
     const failure = new Error('Remote cancellation unavailable');
-    active.cancel.mockImplementation((callback) => callback(failure));
+    let completeCancel!: (error: Error) => void;
+    active.cancel
+      .mockImplementationOnce((callback) => {
+        completeCancel = callback;
+      })
+      .mockImplementation((callback) => callback(failure));
     controller.abort(reason);
     await rejected;
-    await new Promise(setImmediate);
-    await expect(engine.dispose()).rejects.toBe(failure);
+    const disposed = expect(engine.dispose()).rejects.toBe(failure);
+    expect(active.cancel).toHaveBeenCalledOnce();
+    completeCancel(failure);
+    await disposed;
     expect(active.cancel).toHaveBeenCalledTimes(2);
     expect(connection.destroy).toHaveBeenCalledOnce();
     // The query itself never runs after cancelling compilation.
