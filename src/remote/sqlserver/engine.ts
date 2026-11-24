@@ -5,6 +5,7 @@ import mssql from 'mssql';
 import { TSQLDialect } from '../../query/tsql';
 import { DEFAULT_METRICS, parseProfileOptions } from '../../util/profile';
 import { executionResult, maxRows } from '../../util/result';
+import { throwIfAborted } from '../../util/abort';
 
 import { profileTables } from './profile';
 import { getSQLServerSchema } from './schema';
@@ -98,13 +99,18 @@ export class SQLServerEngine implements AnalysisEngine {
     );
   }
 
-  async getDSL(query: string, dataModel: DataModel): Promise<TranslationResult> {
+  async getDSL(query: string, dataModel: DataModel, signal?: AbortSignal): Promise<TranslationResult> {
     if (!this.pool) throw new Error('No data loaded. Please call source() first.');
-    return this.dialect.getDSL(query, dataModel);
+    return this.dialect.getDSL(query, dataModel, signal);
   }
 
-  async execute<T = Record<string, unknown>>(dsl: string, options?: ExecutionOptions): Promise<ExecutionResult<T>> {
+  async execute<T = Record<string, unknown>>(
+    dsl: string,
+    options?: ExecutionOptions,
+    signal?: AbortSignal
+  ): Promise<ExecutionResult<T>> {
     if (!this.pool) throw new Error('No data loaded. Please call source() first.');
+    throwIfAborted(signal);
     const query = await this.dialect.validateDSL(dsl);
     // query() uses sp_executesql, which restores SET options on return.
     const result = await this.runQuery<T>(`SET ROWCOUNT ${maxRows(options) + 1};\n${query}`);

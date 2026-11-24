@@ -50,36 +50,46 @@ export async function connectSession(id: string, request: string): Promise<Socke
     return socket;
   }
   const socket = connect(endpoint);
-  socket.once('connect', () => socket.end(request));
+  // Keep the write side open: a client that half-closes up front gives the daemon no way to
+  // notice that the caller gave up (the peer's FIN has already been consumed as the request frame).
+  socket.once('connect', () => socket.write(request + '\n'));
   return socket;
 }
 
-// Windows pipes cannot signal EOF in one direction while keeping the other
-// open. Frame one JSON message per connection, preserving Unix EOF framing.
+// One JSON message per connection, newline framed on every platform: JSON bodies never contain a
+// raw newline, and keeping the write side open lets a half-open peer be detected as a disconnect.
 export function readMessage(socket: Socket, limit: number, receive: (body: string) => void, limitError?: Error): void {
   let body = '';
   let bytes = 0;
   let received = false;
+  const finish = () => {
+    if (received) return;
+    received = true;
+    receive(body);
+  };
   socket.setEncoding('utf8');
   socket.on('data', (chunk: string) => {
     if (received) return;
     bytes += Buffer.byteLength(chunk);
-    if (bytes > limit + Number(windows)) {
+    if (bytes > limit + 1) {
       socket.destroy(limitError);
       return;
     }
-    body += chunk;
-    if (windows && body.endsWith('\n')) {
-      received = true;
-      receive(body.slice(0, -1));
-    }
+    const end = chunk.indexOf('\n');
+    body += end === -1 ? chunk : chunk.slice(0, end);
+    if (end !== -1) finish();
   });
+  // Accept an EOF-terminated frame from a peer that half-closes without a terminator (older POSIX clients).
+  // Windows pipes keep their previous behavior: an incomplete frame is dropped instead of parsed.
   socket.once('end', () => {
-    if (!windows) receive(body);
-    else if (!received) socket.destroy();
+    if (!windows) {
+      finish();
+      return;
+    }
+    if (!received) socket.destroy();
   });
 }
 
 export function sendResponse(socket: Socket, response: string): void {
-  socket.end(windows ? response + '\n' : response);
+  socket.end(response + '\n');
 }

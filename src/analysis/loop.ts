@@ -15,6 +15,7 @@ import { languageModel } from '../util/model';
 import { stringifyDataModel } from '../util/data-model';
 import { AnalysisEvent, AnalysisEventType, eventPair } from '../event';
 import { serializeError } from '../util/error';
+import { throwIfAborted } from '../util/abort';
 
 import type { LanguageModelUsage } from 'ai';
 import type { AnalysisStrategy, QueryLanguage, ExecutionResult } from '../types';
@@ -172,7 +173,7 @@ const transcriptPrompt = (transcript: string[]) => {
 /**
  * Explore, refine, execute, and verify SQL before returning an answer.
  */
-export const loopAnalysis: AnalysisStrategy = async (query, config, { dataModel, engine, llm, emit }) => {
+export const loopAnalysis: AnalysisStrategy = async (query, config, { dataModel, engine, llm, emit, signal }) => {
   let stepId: string | undefined;
   let parentStepIds: string[] = [];
   const emitEvent = (type: AnalysisEventType, data: object, eventId: string) =>
@@ -214,6 +215,7 @@ export const loopAnalysis: AnalysisStrategy = async (query, config, { dataModel,
       const { text: responseText, usage: responseUsage } = await generateText({
         model: languageModel(llm),
         maxRetries: llm.maxRetries ?? 3,
+        abortSignal: signal,
         prompt,
       });
 
@@ -258,10 +260,11 @@ export const loopAnalysis: AnalysisStrategy = async (query, config, { dataModel,
 
         let execution: ExecutionResult;
         try {
-          execution = await engine.execute(proposal, config);
+          execution = signal ? await engine.execute(proposal, config, signal) : await engine.execute(proposal, config);
         } catch (error) {
           queryEvent.end({ error: serializeError(error) });
 
+          throwIfAborted(signal);
           if (action === 'SQL') result = undefined;
 
           observations.push(
@@ -328,6 +331,7 @@ export const loopAnalysis: AnalysisStrategy = async (query, config, { dataModel,
     const { text: responseText, usage: responseUsage } = await generateText({
       model: languageModel(llm),
       maxRetries: llm.maxRetries ?? 3,
+      abortSignal: signal,
       prompt: `${basePrompt}
 
     # DATABASE CONTEXT
@@ -358,10 +362,11 @@ export const loopAnalysis: AnalysisStrategy = async (query, config, { dataModel,
 
     let execution: ExecutionResult;
     try {
-      execution = await engine.execute(statement, config);
+      execution = signal ? await engine.execute(statement, config, signal) : await engine.execute(statement, config);
     } catch (error) {
       queryEvent.end({ error: serializeError(error) });
 
+      throwIfAborted(signal);
       throw new Error(
         `Loop final statement failed: ${
           error instanceof Error ? error.message : String(error)

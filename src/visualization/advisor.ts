@@ -109,13 +109,15 @@ ${chartDescriptions}
 export async function adviseChartType(
   query: string,
   dataInfoStr: string,
-  llmConfig: LLMConfig
+  llmConfig: LLMConfig,
+  signal?: AbortSignal
 ): Promise<ChartType | null> {
   const prompt = buildAdvisorPrompt(query, dataInfoStr);
 
   const { text } = await generateText({
     model: languageModel(llmConfig),
     maxRetries: llmConfig.maxRetries ?? 3,
+    abortSignal: signal,
     prompt,
   });
 

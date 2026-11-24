@@ -7,6 +7,7 @@ import { executionResult, maxRows, maxResultBytes } from '../../util/result';
 import { DEFAULT_METRICS, parseProfileOptions } from '../../util/profile';
 import { profileOutputSchema } from '../../contracts';
 import { runWithTimeout } from '../../util/timeout';
+import { throwIfAborted } from '../../util/abort';
 
 import { SCHEMA_CODE, sourceSchema, tableSchema, resultSchema } from './util/schema';
 import { profileCode } from './profile';
@@ -74,10 +75,10 @@ export class PythonEngine implements AnalysisEngine {
     return { models: tables } as Schema;
   }
 
-  async getDSL(query: string, dataModel: DataModel): Promise<TranslationResult> {
+  async getDSL(query: string, dataModel: DataModel, signal?: AbortSignal): Promise<TranslationResult> {
     if (!this.source) throw new Error('No data loaded. Please call source() first.');
 
-    return this.dialect.getDSL(query, dataModel);
+    return this.dialect.getDSL(query, dataModel, signal);
   }
 
   async profile(schema: Schema, options: ProfileOptions = {}): Promise<Profile> {
@@ -87,9 +88,14 @@ export class PythonEngine implements AnalysisEngine {
     return profileOutputSchema.parse({ models: tables });
   }
 
-  async execute<T = Record<string, unknown>>(code: string, options?: ExecutionOptions): Promise<ExecutionResult<T>> {
+  async execute<T = Record<string, unknown>>(
+    code: string,
+    options?: ExecutionOptions,
+    signal?: AbortSignal
+  ): Promise<ExecutionResult<T>> {
     if (!this.source) throw new Error('No data loaded. Please call source() first.');
 
+    throwIfAborted(signal);
     const validated = await this.dialect.validateDSL(code);
     const limits = {
       maxRows: z.number().int().positive().parse(maxRows(options)),

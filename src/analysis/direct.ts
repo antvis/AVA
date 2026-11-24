@@ -21,6 +21,7 @@ import { languageModel } from '../util/model';
 import { repairJson } from '../util/json';
 import { AnalysisEvent, AnalysisEventType, eventPair } from '../event';
 import { serializeError } from '../util/error';
+import { throwIfAborted } from '../util/abort';
 
 import type { LanguageModelUsage } from 'ai';
 import type { AnalysisStrategy, ExecutionResult, LLMConfig } from '../types';
@@ -35,7 +36,13 @@ const summarySchema = z.object({
 
 type Summary = z.infer<typeof summarySchema>;
 
-async function summarizeResult(query: string, dsl: string, result: ExecutionResult, llm: LLMConfig) {
+async function summarizeResult(
+  query: string,
+  dsl: string,
+  result: ExecutionResult,
+  llm: LLMConfig,
+  signal?: AbortSignal
+) {
   const prompt = `You are a data analysis assistant. Explain the executed query and answer using only its result.
 
   User question: ${query}
@@ -63,13 +70,14 @@ async function summarizeResult(query: string, dsl: string, result: ExecutionResu
     }),
     output: Output.object<Summary>({ schema: summarySchema }),
     maxRetries: llm.maxRetries ?? 3,
+    abortSignal: signal,
     prompt,
   });
 
   return { summary, usage };
 }
 
-export const directAnalysis: AnalysisStrategy = async (query, config, { dataModel, engine, llm, emit }) => {
+export const directAnalysis: AnalysisStrategy = async (query, config, { dataModel, engine, llm, emit, signal }) => {
   const maxRetries = Math.max(config.strategy?.type === 'direct' ? config.strategy.maxRetries ?? 2 : 10, 0);
 
   let stepId: string;
@@ -89,12 +97,16 @@ export const directAnalysis: AnalysisStrategy = async (query, config, { dataMode
     let result: ExecutionResult;
 
     for (let attempt = 0; ; attempt++) {
+      throwIfAborted(signal);
       const translationEvent = eventPair(emitEvent, AnalysisEventType.TRANSLATE_START, AnalysisEventType.TRANSLATE_END);
       translationEvent.start({ query, attempt });
 
       let usage: LanguageModelUsage | undefined;
       try {
-        ({ dsl, usage } = await engine.getDSL(translationQuery, dataModel));
+        // Keep the two-argument call shape when no signal is supplied.
+        ({ dsl, usage } = signal
+          ? await engine.getDSL(translationQuery, dataModel, signal)
+          : await engine.getDSL(translationQuery, dataModel));
       } catch (error) {
         translationEvent.end({ error: serializeError(error) });
 
@@ -108,10 +120,11 @@ export const directAnalysis: AnalysisStrategy = async (query, config, { dataMode
       queryEvent.start({ dsl });
 
       try {
-        result = await engine.execute(dsl, config);
+        result = signal ? await engine.execute(dsl, config, signal) : await engine.execute(dsl, config);
       } catch (error) {
         queryEvent.end({ error: serializeError(error) });
 
+        throwIfAborted(signal);
         if (attempt >= maxRetries) throw error;
 
         translationQuery = `${query}
@@ -138,7 +151,7 @@ export const directAnalysis: AnalysisStrategy = async (query, config, { dataMode
       summaryEvent.start({ queryId });
 
       try {
-        ({ summary, usage } = await summarizeResult(query, dsl, result, llm));
+        ({ summary, usage } = await summarizeResult(query, dsl, result, llm, signal));
       } catch (error) {
         summaryEvent.end({ error: serializeError(error) });
 

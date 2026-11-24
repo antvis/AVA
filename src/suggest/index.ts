@@ -15,7 +15,8 @@ import type { SuggestResult, DataModel, LLMConfig } from '../types';
 export async function generateSuggestions(
   llmConfig: LLMConfig,
   dataModel: DataModel,
-  count: number = 3
+  count: number = 3,
+  signal?: AbortSignal
 ): Promise<SuggestResult[]> {
   const dataModelStr = stringifyDataModel(dataModel);
 
@@ -53,6 +54,7 @@ Generate the JSON array now.`;
   const { text } = await generateText({
     model: languageModel(llmConfig),
     maxRetries: llmConfig.maxRetries ?? 3,
+    abortSignal: signal,
     prompt,
   });
 

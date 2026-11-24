@@ -13,6 +13,7 @@ import { sqlIdentifier, sqlStringLiteral } from '../util/sql';
 import { findAvailableName, parseSourceConfigs } from '../util/source';
 import { parseProfileOptions } from '../util/profile';
 import { runWithTimeout } from '../util/timeout';
+import { onAbort, throwIfAborted } from '../util/abort';
 
 import { DEFAULT_METRICS, profileTables } from './profile';
 import { loadSource } from './loaders';
@@ -169,41 +170,57 @@ export class DuckDBEngine implements AnalysisEngine {
     return profileTables(this.connection, schema, parsedOptions);
   }
 
-  async getDSL(query: string, dataModel: DataModel): Promise<TranslationResult> {
+  async getDSL(query: string, dataModel: DataModel, signal?: AbortSignal): Promise<TranslationResult> {
     if (!this.sources.length) throw new Error('No data loaded. Please call source() first.');
 
-    return this.dialect.getDSL(query, dataModel);
+    return this.dialect.getDSL(query, dataModel, signal);
   }
 
-  async execute<T = Record<string, unknown>>(sql: string, options?: ExecutionOptions): Promise<ExecutionResult<T>> {
+  async execute<T = Record<string, unknown>>(
+    sql: string,
+    options?: ExecutionOptions,
+    signal?: AbortSignal
+  ): Promise<ExecutionResult<T>> {
     if (!this.sources.length || !this.connection) throw new Error('No data loaded. Please call source() first.');
 
+    throwIfAborted(signal);
     const conn = this.connection;
     const query = await this.dialect.validateDSL(sql);
+    throwIfAborted(signal);
     const timeoutMs = this.engineOptions.queryTimeoutMs ?? DEFAULT_QUERY_TIMEOUT_MS;
-    // query() parses the original source; a quoted constant keeps its own parameters unbound.
-    // https://duckdb.org/docs/2.0/guides/sql_features/query_and_query_table_functions
-    const reader = await runWithTimeout(
-      conn.runAndReadAll(`SELECT * FROM query(${sqlStringLiteral(query)}) LIMIT ${maxRows(options) + 1}`),
-      timeoutMs,
-      {
-        onTimeout: () => {
-          conn.interrupt();
-          return new QueryTimeoutError(timeoutMs);
-        },
-        unref: true,
-      }
-    );
-    const schema = Array.from({ length: reader.columnCount }, (_, index) => ({
-      name: reader.columnName(index),
-      type: reader.columnType(index).toString(),
-    }));
-    const names = reader.deduplicatedColumnNames();
-    // The driver's object conversion assigns __proto__ through the prototype setter.
-    const rows = reader
-      .getRowsJson()
-      .map((row) => Object.fromEntries(row.map((value, index) => [names[index], value])));
-    return executionResult(coerceNumbers(rows, schema) as T[], schema, options);
+    // Interrupt the running statement when the caller cancels (same channel as the query timeout).
+    const detach = onAbort(signal, () => conn.interrupt());
+    try {
+      // query() parses the original source; a quoted constant keeps its own parameters unbound.
+      // https://duckdb.org/docs/2.0/guides/sql_features/query_and_query_table_functions
+      const reader = await runWithTimeout(
+        conn.runAndReadAll(`SELECT * FROM query(${sqlStringLiteral(query)}) LIMIT ${maxRows(options) + 1}`),
+        timeoutMs,
+        {
+          onTimeout: () => {
+            conn.interrupt();
+            return new QueryTimeoutError(timeoutMs);
+          },
+          unref: true,
+        }
+      ).catch((error) => {
+        throwIfAborted(signal);
+        throw error;
+      });
+      const schema = Array.from({ length: reader.columnCount }, (_, index) => ({
+        name: reader.columnName(index),
+        type: reader.columnType(index).toString(),
+      }));
+      const names = reader.deduplicatedColumnNames();
+      // The driver's object conversion assigns __proto__ through the prototype setter.
+      const rows = reader
+        .getRowsJson()
+        .map((row) => Object.fromEntries(row.map((value, index) => [names[index], value])));
+
+      return executionResult(coerceNumbers(rows, schema) as T[], schema, options);
+    } finally {
+      detach();
+    }
   }
 
   /**
