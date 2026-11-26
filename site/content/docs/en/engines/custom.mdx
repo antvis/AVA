@@ -43,14 +43,14 @@ To migrate an older engine, move discovery out of `load()` into `schema()`, chan
 
 Every engine, including custom engines, exposes a required `dialect` implementing `QueryDialect`: `id`, `rules`, `getDSL()` and `validateDSL()`. Analysis and CLI read `dialect.id` and `dialect.rules` for SQL, Python and JavaScript alike. To migrate, move language metadata into `dialect.id` and `dialect.rules`, and delegate generation and validation to the dialect. Built-in language ids are `duckdb-sql`, `clickhouse-sql`, `postgresql`, `tsql`, `snowflake-sql`, `python`, and `javascript`; the custom example below uses `json`. The loop executes code-block contents using the engine dialect, with or without a Markdown language label. SQL validation enforces read-only SELECTs; Python uses its execution environment's official compiler for syntax checks, and JavaScript reports syntax errors when the runtime compiles the code for execution. Execution permissions and resource limits belong to the engine.
 
-`DataModel` combines structural metadata, optional statistics, and semantic annotations. AVA assembles it from cached `Schema`, `Profile`, and `Semantic` metadata when analysis, translation, or suggestions need it. Engines receive the model directly, without a context wrapper.
+AVA assembles `DataModel` from `Schema`, optional `Profile` observations, and the loaded Apache Ossie model. Analysis, translation, and suggestions pass it to the engine.
 
-| `DataModel` field | Type             | Required | Meaning                                                        |
-| ----------------- | ---------------- | -------- | -------------------------------------------------------------- |
-| `models`          | `Model[]`        | No       | Models and columns, including optional metrics and properties. |
-| `relationships`   | `Relationship[]` | No       | Joins between models.                                          |
-| `views`           | `View[]`         | No       | Named queries.                                                 |
-| `properties`      | `Properties`     | No       | Dataset annotations.                                           |
+| `DataModel` field | Type | Required | Meaning |
+| --- | --- | --- | --- |
+| `models` | `Model[]` | Yes | Source tables and their columns, with optional profile observations. |
+| `relationships` | `Relationship[]` | No | Foreign keys discovered from the source schema. |
+| `views` | `View[]` | No | Views discovered from the source schema. |
+| `semantic` | `Semantic` | No | Apache Ossie model with business metrics, fields, and relationships. |
 
 ## Example: a sales metrics engine
 

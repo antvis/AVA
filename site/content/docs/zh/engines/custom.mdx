@@ -45,14 +45,14 @@ AVA 管理 schema 与 profile 缓存。`load()` 准备资源，`schema()` 按需
 
 所有引擎（包括自定义引擎）均提供必填的 `dialect`，实现 `QueryDialect`，包含 `id`、`rules`、`getDSL()` 和 `validateDSL()`。SQL、Python、JavaScript 的分析流程与 CLI 均读取 `dialect.id` 和 `dialect.rules`。迁移时将语言信息移入 `dialect.id` 和 `dialect.rules`，由方言实现生成与校验。内置语言 id 为 `duckdb-sql`、`clickhouse-sql`、`postgresql`、`tsql`、`snowflake-sql`、`python`、`javascript`，下文自定义引擎使用 `json`。Loop 提取代码块内容后，始终使用引擎方言执行，代码块可带或不带 Markdown 语言标签。SQL 校验落实只读 SELECT 边界，Python 使用执行环境中的官方编译器校验语法，JavaScript 由运行时在执行前编译并报告语法错误；执行权限和资源限制由引擎负责。
 
-`DataModel` 组合结构元数据、可选统计信息和语义注释。分析、翻译或推荐问题需要它时，AVA 会从缓存的 `Schema`、`Profile`、`Semantic` 组装。引擎直接接收模型，不需要额外的上下文包装对象。
+AVA 通过 `Schema`、可选的 `Profile` 观测结果和已加载的 Apache Ossie 模型组装 `DataModel`，供分析、翻译和问题推荐调用引擎时使用。
 
 | `DataModel` 字段 | 类型 | 必填 | 含义 |
-| ----------------- | ---------------- | -------- | -------------------------------------------------------------- |
-| `models` | `Model[]` | 否 | 模型与列，可包含指标和属性。 |
-| `relationships` | `Relationship[]` | 否 | 模型间的连接关系。 |
-| `views` | `View[]` | 否 | 命名查询。 |
-| `properties` | `Properties` | 否 | 数据集注释。 |
+| --- | --- | --- | --- |
+| `models` | `Model[]` | 是 | 来源表和列，可以附带画像统计。 |
+| `relationships` | `Relationship[]` | 否 | 从数据源结构发现的外键关系。 |
+| `views` | `View[]` | 否 | 从数据源结构发现的视图。 |
+| `semantic` | `Semantic` | 否 | Apache Ossie 模型，包含业务指标、字段和关系。 |
 
 <Heading as="h2" id="example-a-sales-metrics-engine">示例：销售指标引擎</Heading>
 

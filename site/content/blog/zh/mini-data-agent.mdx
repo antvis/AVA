@@ -22,47 +22,42 @@ Data Agent 的核心是**由执行结果驱动的分析循环**：模型提出�
 
 接着，为 Agent 的分析约定口径：销售额按折后金额统计，月份以下单时间为准，变化额为本期减去上期。把这些约定写入语义配置，供多次查询和后续追问参考。
 
-本文示例使用 AVA 4.0.0 的语义格式。新版源码使用 Apache Ossie，见[补充业务语义](/documentation/data/semantic/)。
+将下面的 Apache Ossie 模型保存为 `sales.ossie.yaml`。
 
 ```yaml
-models:
-  - name: data
-    tableReference:
-      table: data
-    properties:
-      description: Each row represents one order.
-cubes:
-  - name: sales
-    baseObject: data
-    measures:
-      - name: total_sales
-        expression: CAST(SUM(sales) AS DOUBLE)
-        type: DOUBLE
-        description: Sales after discounts, calculated by summing sales.
-    dimensions:
+version: 0.3.0.dev0
+name: sales_reporting
+ai_context:
+  instructions: >-
+    Compare both periods using the same set of products. Change is current-period
+    sales minus prior-period sales. Divide by prior-period sales for the change
+    rate. Return null when prior-period sales are zero.
+datasets:
+  - name: orders
+    source: data
+    description: Each row represents one order.
+    fields:
       - name: product
-        expression: product
-        type: VARCHAR
-    timeDimensions:
+        expression: { sql: product }
+        datatype: String
       - name: order_date
-        expression: CAST(order_date AS DATE)
-        type: DATE
-    properties:
-      description: |
-        Compare both periods using the same set of products. Change is current-period sales minus prior-period sales; negative values indicate a decline.
-        Change rate is change divided by prior-period sales. Return null when prior-period sales are zero, indicating that the rate is not applicable.
+        expression: { sql: "CAST(order_date AS DATE)" }
+        datatype: Date
+    metrics:
+      - name: total_sales
+        expression: { sql: "CAST(SUM(source.sales) AS DOUBLE)" }
+        datatype: Float
+        description: Sales after discounts.
 ```
-
-`YOUR_SEMANTIC` 表示这段 YAML 解析后的对象。
 
 ## 构建 Data Agent
 
 数据和口径准备好后，将 AVA 的能力封装成两个工具：`analyze` 查询和计算数据，`visualize` **通过结果编号引用分析数据**并生成图表。
 
-示例使用 **Node.js 22.13.0 或更高版本**，安装以下依赖：
+示例需要 **Node.js 22.13.0 或更高版本**，以及支持 Apache Ossie 的 AVA 构建。使用源码时，在 AVA 目录执行 `npm run build`，再到示例应用的目录安装。
 
 ```bash
-npm install @antv/ava@4.0.0 ai@7.0.112 @ai-sdk/openai@4.0.73 zod@4.6.7
+npm install /absolute/path/to/AVA ai@7.0.112 @ai-sdk/openai@4.0.73 zod@4.6.7
 ```
 
 运行前设置环境变量 `OPENAI_API_KEY` 和 `OPENAI_MODEL`，模型需支持工具调用；使用兼容 OpenAI Chat Completions 的服务时，再设置 `OPENAI_BASE_URL`。
@@ -129,7 +124,8 @@ async function createDataAgent({ model, data, semantic }) {
 用这 53 行核心代码搭建好 Mini Data Agent 后，就可以发起分析，并在同一会话中继续追问：
 
 ```javascript
-import { writeFile } from 'node:fs/promises';
+import { readFile, writeFile } from 'node:fs/promises';
+import { parseSemantic } from '@antv/ava';
 import { createOpenAI } from '@ai-sdk/openai';
 
 const model = createOpenAI({
@@ -140,7 +136,7 @@ const model = createOpenAI({
 const assistant = await createDataAgent({
   model,
   data: YOUR_DATA,
-  semantic: YOUR_SEMANTIC,
+  semantic: parseSemantic(await readFile('sales.ossie.yaml', 'utf8')),
 });
 
 try {

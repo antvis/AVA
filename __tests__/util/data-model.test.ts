@@ -1,7 +1,6 @@
 import { describe, expect, it } from 'vitest';
 
 import { buildDataModel, stringifyDataModel, dataModelInputSchema } from '../../src/util/data-model';
-import { dataModelStructure } from '../../src/contracts/shared/data-model';
 import { semanticOutputSchema, profileOutputSchema } from '../../src/contracts';
 import { parseSemantic } from '../../src/contracts/semantic';
 import { ossieModel } from '../fixtures/ossie';
@@ -9,9 +8,8 @@ import { ossieModel } from '../fixtures/ossie';
 import type { DataModel, Profile, Schema } from '../../src/types';
 
 describe('stringifyDataModel', () => {
-  it('renders model sources, constraints, columns and metadata as Markdown tables', () => {
+  it('renders physical sources, constraints and observations as Markdown tables', () => {
     const input: DataModel = {
-      properties: { description: 'Sales data' },
       models: [
         {
           name: 'orders',
@@ -19,23 +17,18 @@ describe('stringifyDataModel', () => {
           primaryKey: ['id', 'customer_id'],
           uniqueKeys: ['id'],
           metrics: { row_count: 0 },
-          properties: { description: 'Confirmed orders' },
           columns: [
             { name: 'id', type: 'INTEGER', notNull: true },
             {
               name: 'amount',
               type: 'DOUBLE',
               notNull: false,
-              isCalculated: true,
-              expression: 'price * quantity',
               metrics: { min: null, max: 0, top_values: [] },
-              properties: { unit: 'USD' },
+              properties: { logicalType: 'numeric' },
             },
-            { name: 'customer', type: 'customers', relationship: 'order_customer', expression: null },
           ],
         },
-        { name: 'customers', baseObject: 'raw_customers' },
-        { name: 'recent_orders', refSql: 'SELECT * FROM orders\nWHERE id > 0' },
+        { name: 'customers', tableReference: { table: 'raw_customers' }, columns: [] },
       ],
       relationships: [
         {
@@ -43,245 +36,62 @@ describe('stringifyDataModel', () => {
           models: ['orders', 'customers'],
           joinType: 'MANY_TO_ONE',
           condition: 'orders.customer_id = customers.id',
-          properties: { description: 'Buyer' },
-          custom: false,
         },
       ],
-      views: [{ name: 'all_orders', statement: 'SELECT * FROM orders', custom: { enabled: true } }],
+      views: [{ name: 'all_orders', statement: 'SELECT * FROM orders' }],
     };
     const original = structuredClone(input);
-    const result = stringifyDataModel(input);
-
-    expect(result).toMatchSnapshot();
+    expect(stringifyDataModel(input)).toMatchSnapshot();
     expect(input).toEqual(original);
   });
 
-  it('accepts empty and partial descriptions without inventing metadata', () => {
-    expect(stringifyDataModel({})).toBe('# Data Model');
-    expect(stringifyDataModel({ properties: {}, models: [], relationships: [], views: [], cubes: [] })).toBe(
-      '# Data Model'
-    );
-    expect(stringifyDataModel({ models: [{ name: 'data', baseObject: 'source' }] })).toBe(
-      '# Data Model\n\n## Models\n\n### Model: data\n\n| Attribute | Value |\n| --- | --- |\n| baseObject | source |'
-    );
+  it('omits empty sections', () => {
+    expect(stringifyDataModel({ models: [], relationships: [], views: [] })).toBe('# Data Model');
   });
 
   it('escapes Markdown, HTML, pipes and line breaks in headings and table cells', () => {
     const result = stringifyDataModel({
-      properties: { 'a|b': '<script>\r\n**value** & `code` [link](url) \\' },
-      models: [{ name: 'a|b\n# heading', refSql: "SELECT 'a|b'\rFROM data" }],
+      models: [
+        {
+          name: 'a|b\n# heading',
+          tableReference: { table: 'data' },
+          columns: [{ name: '<field>', type: 'VARCHAR', notNull: true }],
+        },
+      ],
+      views: [{ name: '<view>', statement: "SELECT '<script>|a**b'\rFROM data" }],
     });
-
-    expect(result).toContain(
-      '| a&#124;b | &#60;script&#62;<br>&#42;&#42;value&#42;&#42; &#38; &#96;code&#96; &#91;link&#93;(url) &#92; |'
-    );
     expect(result).toContain('### Model: a&#124;b<br># heading');
-    expect(result).toContain("| refSql | SELECT 'a&#124;b'<br>FROM data |");
+    expect(result).toContain('- &#60;field&#62; (VARCHAR) NOT NULL');
+    expect(result).toContain('### View: &#60;view&#62;');
+    expect(result).toContain("| statement | SELECT '&#60;script&#62;&#124;a&#42;&#42;b'<br>FROM data |");
   });
 
-  it('expands column semantics, properties and observations beside the owning field', () => {
-    const result = stringifyDataModel({
+  it('omits obsolete metadata from manually constructed engine context', () => {
+    const input = {
+      description: 'obsolete root description',
+      cubes: [{ name: 'obsolete cube' }],
       models: [
         {
           name: 'orders',
-          tableReference: { table: 'orders' },
-          properties: { description: 'One row per order', dataScope: 'Paid orders' },
-          columns: [
-            {
-              name: 'id',
-              type: 'INTEGER',
-              notNull: true,
-              isPrimaryKey: true,
-              properties: { description: 'Order identifier' },
-            },
-            {
-              name: 'net',
-              type: 'DOUBLE',
-              isCalculated: true,
-              expression: 'amount - refund',
-              properties: { description: 'Net revenue', unit: 'USD', derivedFrom: ['amount', 'refund'] },
-              metrics: { min: null, max: 0, top_values: [] },
-            },
-            {
-              name: 'customer',
-              type: 'customers',
-              relationship: 'buyer',
-              properties: { acceptedValues: ['retail', 'business'], custom: { enabled: false } },
-            },
-          ],
-        },
-      ],
-    });
-    expect(result).toContain('| dataScope | Paid orders |');
-    expect(result).toContain('- id (INTEGER) NOT NULL PRIMARY KEY');
-    const net = result.split('- net (DOUBLE)')[1].split('- customer (customers)')[0];
-    expect(net).toContain('&#91;calculated: amount - refund&#93;');
-    expect(net).toContain('| description | Net revenue |');
-    expect(net).toContain('| unit | USD |');
-    expect(net).toContain('| derivedFrom | &#91;"amount","refund"&#93; |');
-    expect(net).toContain('| min | null |');
-    expect(net).toContain('| max | 0 |');
-    expect(net).toContain('| top&#95;values | &#91;&#93; |');
-    const customer = result.split('- customer (customers)')[1];
-    expect(customer).toContain('&#91;relationship: buyer&#93;');
-    expect(customer).toContain('| acceptedValues | &#91;"retail","business"&#93; |');
-    expect(customer).toContain('| custom | {"enabled":false} |');
-  });
-
-  it('describes cube members and drill-down paths without nesting their definitions in JSON', () => {
-    const input: DataModel = {
-      cubes: [
-        {
-          name: 'revenue',
-          baseObject: 'orders',
-          measures: [
-            {
-              name: 'total',
-              type: 'DOUBLE',
-              expression: 'SUM(amount - refund)',
-              description: 'Net revenue',
-              properties: { unit: 'USD' },
-            },
-          ],
-          dimensions: [{ name: 'region', type: 'VARCHAR', expression: 'region' }],
-          timeDimensions: [{ name: 'month', type: 'DATE', expression: "DATE_TRUNC('month', ordered_at)" }],
-          hierarchies: { calendar: ['year', 'month'] },
-          properties: { description: 'Sales reporting' },
-        },
-        { name: 'counts', baseObject: 'orders', measures: [{ name: 'count', type: 'BIGINT', expression: 'COUNT(*)' }] },
-      ],
-    };
-    const original = structuredClone(input);
-    const result = stringifyDataModel(input);
-    expect(result).toMatchSnapshot();
-    expect(result).toContain('#### Measures\n\n- total (DOUBLE)');
-    expect(result).toContain('#### Dimensions\n\n- region (VARCHAR)');
-    expect(result).toContain('#### Time dimensions\n\n- month (DATE)');
-    expect(result).toContain('#### Hierarchies\n\n- calendar: year → month');
-    expect(result).not.toContain('| measures |');
-    expect(input).toEqual(original);
-  });
-
-  it('escapes column summaries, cube members and hierarchy paths', () => {
-    const result = stringifyDataModel({
-      models: [
-        {
-          name: 'data',
           tableReference: { table: 'data' },
-          columns: [
-            {
-              name: '<field>',
-              type: 'VARCHAR',
-              isCalculated: true,
-              expression: "'<script>\\n'",
-              relationship: '[join]',
-            },
-          ],
+          refSql: 'obsolete source override',
+          columns: [{ name: 'amount', type: 'BIGINT', expression: 'obsolete calculation' }],
         },
       ],
-      cubes: [
-        {
-          name: '<cube>',
-          baseObject: 'data',
-          measures: [{ name: '[total]', type: 'DOUBLE', expression: 'SUM(value)' }],
-          hierarchies: { '<path>': ['[year]', 'month\n# injected'] },
-        },
-      ],
-    });
-    expect(result).toContain('- &#60;field&#62; (VARCHAR) &#91;calculated:');
-    expect(result).toContain('&#91;relationship: &#91;join&#93;&#93;');
-    expect(result).toContain('### Cube: &#60;cube&#62;');
-    expect(result).toContain('- &#91;total&#93; (DOUBLE)');
-    expect(result).toContain('- &#60;path&#62;: &#91;year&#93; → month<br># injected');
-    expect(result).not.toContain('<script>');
-    expect(result).not.toContain('\n# injected');
+      semantic: ossieModel,
+    };
+    const context = stringifyDataModel(input);
+    expect(context).not.toContain('obsolete');
+    expect(context).toContain('SUM(amount)');
+    expect(() => stringifyDataModel({ models: [], semantic: { cubes: [] } as never })).toThrow();
   });
 
   it('retains complete context above the future retrieval threshold', () => {
     const description = '业务说明'.repeat(8_000);
-    const result = stringifyDataModel({ description, views: [{ name: 'last_view', statement: 'SELECT 1' }] });
+    const result = stringifyDataModel({ models: [], semantic: { ...ossieModel, description } });
     expect(result.length).toBeGreaterThan(30_000);
     expect(result).toContain(description);
-    expect(result).toContain('### View: last&#95;view');
   });
-});
-
-describe('dataModelStructure', () => {
-  it('preserves and snapshots structure, observations and semantic metadata together', () => {
-    const input: DataModel = {
-      properties: { description: 'Orders', custom: { labels: ['sales'] } },
-      models: [
-        {
-          name: 'orders',
-          tableReference: { table: 'raw_orders', schema: 'public' },
-          primaryKey: ['id'],
-          uniqueKeys: [['external_id']],
-          metrics: { row_count: 0 },
-          properties: { description: 'Confirmed orders' },
-          columns: [
-            { name: 'id', type: 'INTEGER', notNull: true },
-            { name: 'external_id', type: 'VARCHAR', metrics: { top_values: [] } },
-            {
-              name: 'amount',
-              type: 'DOUBLE',
-              isCalculated: true,
-              expression: 'price * quantity',
-              properties: { unit: 'USD' },
-              metrics: { min: null, max: 0, custom: [{ value: false, count: 1 }] },
-            },
-          ],
-        },
-      ],
-      relationships: [
-        {
-          name: 'parent_order',
-          models: ['orders', 'orders'],
-          joinType: 'MANY_TO_ONE',
-          condition: 'child.parent_id = parent.id',
-          properties: { description: 'Parent order' },
-          aliases: ['child', 'parent'],
-        },
-      ],
-      views: [{ name: 'large_orders', statement: 'SELECT * FROM orders WHERE amount > 100', custom: true }],
-    };
-    const result = dataModelStructure.parse(input);
-
-    expect(result).toEqual(input);
-    expect(result.models[0].columns[2].metrics.custom).not.toBe(input.models[0].columns[2].metrics.custom);
-    expect(result.properties.custom).not.toBe(input.properties.custom);
-  });
-
-  it.each([
-    {},
-    { tableReference: { table: 'orders' }, refSql: 'SELECT 1' },
-    { refSql: 'SELECT 1', baseObject: 'orders' },
-    { baseObject: 'orders', tableReference: { table: 'orders' } },
-  ])('rejects missing or ambiguous model sources: %j', (source) => {
-    expect(() => dataModelStructure.parse({ models: [{ name: 'orders', ...source }] })).toThrow('exactly one');
-  });
-
-  it.each([Infinity, NaN, undefined, BigInt(1), () => 1])(
-    'rejects non-JSON observations and properties: %s',
-    (value) => {
-      expect(() => dataModelStructure.parse({ properties: { invalid: value } })).toThrow();
-      expect(() =>
-        dataModelStructure.parse({ models: [{ name: 'data', baseObject: 'source', metrics: { invalid: value } }] })
-      ).toThrow();
-    }
-  );
-
-  it('accepts an incomplete description without inventing sources, columns or statistics', () => {
-    expect(dataModelStructure.parse({})).toEqual({});
-    const input = { models: [{ name: 'data', refSql: 'SELECT 1' }] };
-    expect(dataModelStructure.parse(input)).toEqual(input);
-  });
-
-  it.each([{ tables: [] }, { catalog: 'analytics' }, { schema: 'sales' }])(
-    'rejects obsolete root fields instead of silently discarding data: %j',
-    (fields) => {
-      expect(() => dataModelStructure.parse({ models: [], ...fields })).toThrow();
-    }
-  );
 });
 
 describe('Ossie semantic models', () => {
@@ -311,7 +121,7 @@ describe('Ossie semantic models', () => {
     expect(parsed).toEqual(document);
     parsed.nonportable_extensions[0].data.warehouse = 'changed';
     expect(document.nonportable_extensions[0].data.warehouse).toBe('PRIVATE');
-    const context = stringifyDataModel({ semantic: parsed });
+    const context = stringifyDataModel({ models: [], semantic: parsed });
     for (const value of ['## Apache Ossie semantic model', 'Amounts are in USD.', 'SUM(amount)', 'order_customer']) {
       expect(context).toContain(value);
     }
@@ -567,6 +377,14 @@ describe('buildDataModel', () => {
     input.models[0].metrics.invalid = value as never;
 
     expect(() => buildDataModel({ schema, profile: input })).toThrow();
+  });
+
+  it('rejects obsolete metadata in a physical schema', () => {
+    expect(() => buildDataModel({ schema: { ...schema, cubes: [] } as Schema })).toThrow();
+
+    const structure = structuredClone(schema);
+    Object.assign(structure.models[0], { refSql: 'SELECT * FROM orders' });
+    expect(() => buildDataModel({ schema: structure })).toThrow();
   });
 
   it('rejects inputs that cross field ownership boundaries', () => {

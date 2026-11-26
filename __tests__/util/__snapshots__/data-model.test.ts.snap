@@ -1,80 +1,7 @@
 // Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
-exports[`stringifyDataModel > describes cube members and drill-down paths without nesting their definitions in JSON 1`] = `
+exports[`stringifyDataModel > renders physical sources, constraints and observations as Markdown tables 1`] = `
 "# Data Model
-
-## Cubes
-
-### Cube: revenue
-
-| Attribute | Value |
-| --- | --- |
-| baseObject | orders |
-
-Properties:
-
-| Attribute | Value |
-| --- | --- |
-| description | Sales reporting |
-
-#### Measures
-
-- total (DOUBLE)
-
-| Attribute | Value |
-| --- | --- |
-| expression | SUM(amount - refund) |
-| description | Net revenue |
-
-Properties:
-
-| Attribute | Value |
-| --- | --- |
-| unit | USD |
-
-#### Dimensions
-
-- region (VARCHAR)
-
-| Attribute | Value |
-| --- | --- |
-| expression | region |
-
-#### Time dimensions
-
-- month (DATE)
-
-| Attribute | Value |
-| --- | --- |
-| expression | DATE&#95;TRUNC('month', ordered&#95;at) |
-
-#### Hierarchies
-
-- calendar: year → month
-
-### Cube: counts
-
-| Attribute | Value |
-| --- | --- |
-| baseObject | orders |
-
-#### Measures
-
-- count (BIGINT)
-
-| Attribute | Value |
-| --- | --- |
-| expression | COUNT(&#42;) |"
-`;
-
-exports[`stringifyDataModel > renders model sources, constraints, columns and metadata as Markdown tables 1`] = `
-"# Data Model
-
-## Properties
-
-| Attribute | Value |
-| --- | --- |
-| description | Sales data |
 
 ## Models
 
@@ -85,12 +12,6 @@ exports[`stringifyDataModel > renders model sources, constraints, columns and me
 | tableReference | {"schema":"public","table":"raw&#95;orders"} |
 | primaryKey | &#91;"id","customer&#95;id"&#93; |
 | uniqueKeys | &#91;"id"&#93; |
-
-Properties:
-
-| Attribute | Value |
-| --- | --- |
-| description | Confirmed orders |
 
 Metrics:
 
@@ -106,19 +27,17 @@ Metrics:
 | --- | --- |
 | notNull | true |
 
-- amount (DOUBLE) &#91;calculated: price &#42; quantity&#93;
+- amount (DOUBLE)
 
 | Attribute | Value |
 | --- | --- |
 | notNull | false |
-| isCalculated | true |
-| expression | price &#42; quantity |
 
 Properties:
 
 | Attribute | Value |
 | --- | --- |
-| unit | USD |
+| logicalType | numeric |
 
 Metrics:
 
@@ -128,24 +47,11 @@ Metrics:
 | max | 0 |
 | top&#95;values | &#91;&#93; |
 
-- customer (customers) &#91;relationship: order&#95;customer&#93;
-
-| Attribute | Value |
-| --- | --- |
-| relationship | order&#95;customer |
-| expression | null |
-
 ### Model: customers
 
 | Attribute | Value |
 | --- | --- |
-| baseObject | raw&#95;customers |
-
-### Model: recent&#95;orders
-
-| Attribute | Value |
-| --- | --- |
-| refSql | SELECT &#42; FROM orders<br>WHERE id &#62; 0 |
+| tableReference | {"table":"raw&#95;customers"} |
 
 ## Relationships
 
@@ -158,13 +64,6 @@ orders → customers (MANY&#95;TO&#95;ONE)
 | models | &#91;"orders","customers"&#93; |
 | joinType | MANY&#95;TO&#95;ONE |
 | condition | orders.customer&#95;id = customers.id |
-| custom | false |
-
-Properties:
-
-| Attribute | Value |
-| --- | --- |
-| description | Buyer |
 
 ## Views
 
@@ -172,6 +71,5 @@ Properties:
 
 | Attribute | Value |
 | --- | --- |
-| statement | SELECT &#42; FROM orders |
-| custom | {"enabled":true} |"
+| statement | SELECT &#42; FROM orders |"
 `;

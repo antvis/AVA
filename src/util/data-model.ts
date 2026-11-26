@@ -1,24 +1,54 @@
 import { z } from 'zod';
 
 import { profileOutputSchema, schemaOutputSchema, semanticOutputSchema } from '../contracts';
-import { dataModelStructure } from '../contracts/shared/data-model';
 
 import { escapeMarkdown, markdownTable } from './markdown';
 
-import type { DataModel, Model, Semantic, Profile, Properties, Schema } from '../types';
+import type { DataModel, Model, Semantic, Profile, Schema } from '../types';
 
-const modelSchema = profileOutputSchema.shape.models.element;
-const columnSchema = modelSchema.shape.columns.element;
+const identifier = z.string().min(1);
+const key = z.union([identifier, z.tuple([identifier]).rest(identifier)]);
+const schemaShape = schemaOutputSchema.shape;
+const schemaModel = schemaShape.models.element;
+const profileModel = profileOutputSchema.shape.models.element;
+const profileColumn = profileModel.shape.columns.element;
 
 // Assembly rejects unsupported nested fields instead of silently discarding them.
+const schemaAssemblySchema = schemaOutputSchema.strict().extend({
+  models: z.array(
+    schemaModel.strict().extend({
+      name: identifier,
+      tableReference: schemaModel.shape.tableReference.strict().extend({ table: identifier }),
+      columns: z.array(schemaModel.shape.columns.element.strict().extend({ name: identifier, type: identifier })),
+      primaryKey: key.optional(),
+      uniqueKeys: z.array(key).optional(),
+    })
+  ),
+  relationships: z
+    .array(
+      schemaShape.relationships
+        .unwrap()
+        .element.strict()
+        .extend({
+          name: identifier,
+          models: z.tuple([identifier, identifier]),
+          condition: identifier,
+        })
+    )
+    .optional(),
+  views: z
+    .array(schemaShape.views.unwrap().element.strict().extend({ name: identifier, statement: identifier }))
+    .optional(),
+});
+
 const profileAssemblySchema = profileOutputSchema.extend({
   models: z.array(
-    modelSchema.strict().extend({
-      name: modelSchema.shape.name.min(1),
+    profileModel.strict().extend({
+      name: identifier,
       columns: z.array(
-        columnSchema.strict().extend({
-          name: columnSchema.shape.name.min(1),
-          properties: columnSchema.shape.properties.strict(),
+        profileColumn.strict().extend({
+          name: identifier,
+          properties: profileColumn.shape.properties.strict(),
         })
       ),
     })
@@ -26,7 +56,7 @@ const profileAssemblySchema = profileOutputSchema.extend({
 });
 
 export const dataModelInputSchema = z.object({
-  schema: schemaOutputSchema.strict(),
+  schema: schemaAssemblySchema,
   profile: profileAssemblySchema.optional(),
   semantic: semanticOutputSchema.optional(),
 });
@@ -49,7 +79,7 @@ export function buildDataModel(input: { schema: Schema; profile?: Profile; seman
 
   const models = indexByName<Model>(schema.models, 'schema model');
   const columns = new Map(
-    [...models].map(([name, model]) => [name, indexByName(model.columns ?? [], `schema column in model "${name}"`)])
+    [...models].map(([name, model]) => [name, indexByName(model.columns, `schema column in model "${name}"`)])
   );
 
   for (const observation of indexByName(profile?.models ?? [], 'profile model').values()) {
@@ -67,100 +97,67 @@ export function buildDataModel(input: { schema: Schema; profile?: Profile; seman
     }
   }
 
-  const physical = dataModelStructure.parse({ ...schema, models: [...models.values()] });
+  const physical = { ...schema, models: [...models.values()] };
   return semantic ? { ...physical, semantic } : physical;
 }
 
-/** Describe each semantic object separately, retaining source mappings, properties and observations. */
-export function stringifyDataModel({ description, semantic, ...dataModel }: DataModel): string {
+/** Describe physical metadata and profile observations alongside the Ossie model. */
+export function stringifyDataModel({ models, relationships, views, semantic }: DataModel): string {
   const attributes = (value: object): string =>
-    markdownTable(Object.entries(value).map(([key, value]) => ({ Attribute: key, Value: value })));
-  const metadata = ({ properties, metrics, ...value }: { properties?: Properties; metrics?: Properties }): string =>
-    [
-      attributes(value),
-      properties && Object.keys(properties).length ? `Properties:\n\n${attributes(properties)}` : '',
-      metrics && Object.keys(metrics).length ? `Metrics:\n\n${attributes(metrics)}` : '',
-    ]
-      .filter(Boolean)
-      .join('\n\n');
+    markdownTable(
+      Object.entries(value)
+        .filter(([, value]) => value !== undefined)
+        .map(([key, value]) => ({ Attribute: key, Value: value }))
+    );
+  const observations = (label: string, value?: object): string =>
+    value && Object.keys(value).length ? `${label}:\n\n${attributes(value)}` : '';
   const sections = ['# Data Model'];
 
-  if (description !== undefined) sections.push(attributes({ description }));
-
-  if (dataModel.properties && Object.keys(dataModel.properties).length) {
-    sections.push('## Properties', attributes(dataModel.properties));
-  }
-
-  if (dataModel.models?.length) {
+  if (models.length) {
     sections.push('## Models');
-    for (const { name, columns, ...model } of dataModel.models) {
-      sections.push(`### Model: ${escapeMarkdown(name)}`, metadata(model));
-      if (columns?.length) {
+    for (const { name, columns, tableReference, primaryKey, uniqueKeys, metrics } of models) {
+      const { catalog, schema, table } = tableReference;
+      sections.push(
+        `### Model: ${escapeMarkdown(name)}`,
+        attributes({ tableReference: { catalog, schema, table }, primaryKey, uniqueKeys }),
+        observations('Metrics', metrics)
+      );
+      if (columns.length) {
         sections.push('#### Columns');
-        for (const { name, type, ...column } of columns) {
-          const summary = [
-            `${name} (${type})`,
-            column.isCalculated && column.expression ? `[calculated: ${column.expression}]` : '',
-            column.relationship ? `[relationship: ${column.relationship}]` : '',
-            column.notNull ? 'NOT NULL' : '',
-            column.isPrimaryKey ? 'PRIMARY KEY' : '',
-          ]
-            .filter(Boolean)
-            .join(' ');
-          sections.push(`- ${escapeMarkdown(summary)}`, metadata(column));
+        for (const { name, type, notNull, properties, metrics } of columns) {
+          sections.push(
+            `- ${escapeMarkdown(`${name} (${type})${notNull ? ' NOT NULL' : ''}`)}`,
+            attributes({ notNull }),
+            observations('Properties', properties && { logicalType: properties.logicalType }),
+            observations('Metrics', metrics)
+          );
         }
       }
     }
   }
 
-  if (dataModel.relationships?.length) {
+  if (relationships?.length) {
     sections.push('## Relationships');
-    for (const { name, ...relationship } of dataModel.relationships) {
-      const [from, to] = relationship.models;
+    for (const { name, models, joinType, condition } of relationships) {
+      const [from, to] = models;
       sections.push(
         `### Relationship: ${escapeMarkdown(name)}`,
-        escapeMarkdown(`${from} → ${to} (${relationship.joinType})`),
-        metadata(relationship)
+        escapeMarkdown(`${from} → ${to} (${joinType})`),
+        attributes({ models, joinType, condition })
       );
     }
   }
 
-  if (dataModel.views?.length) {
+  if (views?.length) {
     sections.push('## Views');
-    for (const { name, ...view } of dataModel.views) {
-      sections.push(`### View: ${escapeMarkdown(name)}`, metadata(view));
+    for (const { name, statement } of views) {
+      sections.push(`### View: ${escapeMarkdown(name)}`, attributes({ statement }));
     }
   }
 
-  if (dataModel.cubes?.length) {
-    sections.push('## Cubes');
-    for (const { name, measures, dimensions, timeDimensions, hierarchies, ...cube } of dataModel.cubes) {
-      sections.push(`### Cube: ${escapeMarkdown(name)}`, metadata(cube));
-      for (const [label, fields] of [
-        ['Measures', measures],
-        ['Dimensions', dimensions],
-        ['Time dimensions', timeDimensions],
-      ] as const) {
-        if (!fields?.length) continue;
-        sections.push(`#### ${label}`);
-        for (const { name, type, ...field } of fields) {
-          sections.push(`- ${escapeMarkdown(`${name} (${type})`)}`, metadata(field));
-        }
-      }
-      if (hierarchies && Object.keys(hierarchies).length) {
-        sections.push(
-          '#### Hierarchies',
-          ...Object.entries(hierarchies).map(
-            ([name, levels]) => `- ${escapeMarkdown(`${name}: ${levels.join(' → ')}`)}`
-          )
-        );
-      }
-    }
-  }
-
-  if (semantic) {
+  if (semantic !== undefined) {
     const portable = JSON.stringify(
-      semantic,
+      semanticOutputSchema.parse(semantic),
       (key, value) => (key === 'nonportable_extensions' ? undefined : value),
       2
     );

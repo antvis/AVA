@@ -21,7 +21,6 @@ import type {
 import type { csvReadOptionsSchema } from './contracts/source/csv';
 import type { jsonReadOptionsSchema } from './contracts/source/json';
 import type { excelSheetSchema } from './contracts/source/excel';
-import type { dataModelStructure } from './contracts/shared/data-model';
 import type { jsonValue } from './contracts/shared/json';
 
 /**
@@ -84,19 +83,17 @@ export type MetricId = Exclude<MetricConfig, string>['id'];
 export type ParsedProfileOptions = { metrics: Exclude<MetricConfig, string>[] };
 
 export type JsonValue = z.output<typeof jsonValue>;
-export type Properties = Record<string, JsonValue>;
-export type DataModel = z.output<typeof dataModelStructure> & { semantic?: Semantic };
-export type Model = NonNullable<DataModel['models']>[number];
-export type Column = NonNullable<Model['columns']>[number];
-export type TableReference = NonNullable<Model['tableReference']>;
+type SchemaModel = Schema['models'][number];
+type ProfileModel = Profile['models'][number];
+export type Column = SchemaModel['columns'][number] &
+  Partial<Pick<ProfileModel['columns'][number], 'metrics' | 'properties'>>;
+export type Model = Omit<SchemaModel, 'columns'> & { columns: Column[]; metrics?: ProfileModel['metrics'] };
+export type DataModel = Omit<Schema, 'models'> & { models: Model[]; semantic?: Semantic };
+export type TableReference = SchemaModel['tableReference'];
 export type PrimaryKey = NonNullable<Model['primaryKey']>;
-export type Relationship = NonNullable<DataModel['relationships']>[number];
+export type Relationship = NonNullable<Schema['relationships']>[number];
 export type JoinType = Relationship['joinType'];
-export type View = NonNullable<DataModel['views']>[number];
-export type Cube = NonNullable<DataModel['cubes']>[number];
-export type Measure = Cube['measures'][number];
-export type CubeDimension = Measure;
-export type TimeDimension = CubeDimension;
+export type View = NonNullable<Schema['views']>[number];
 
 export type DataSourceConfig = z.input<typeof sourceInputSchema>;
 export type ParsedDataSourceConfig = z.output<typeof sourceInputSchema> & { name: string };
