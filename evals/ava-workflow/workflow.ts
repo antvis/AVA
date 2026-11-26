@@ -1,6 +1,5 @@
 import { existsSync, readFileSync } from 'node:fs';
-import { parse } from 'yaml';
-import { semanticMetadataSchema } from '../../lib/util/data-model.js';
+import { parseSemantic } from '../../lib/index.js';
 import { integer } from '../_shared/args.js';
 import type { AVA, AnalysisConfig, AnalysisStrategyConfig, DataSourceConfig, Semantic } from '../../lib/index.js';
 import type { Metadata } from './metadata.ts';
@@ -22,7 +21,7 @@ export function readStrategy(values: {
 
 export function readSemantic(path: string): Semantic | undefined {
   if (!existsSync(path)) return undefined;
-  return semanticMetadataSchema.parse(parse(readFileSync(path, 'utf8')));
+  return parseSemantic(readFileSync(path, 'utf8'));
 }
 
 export async function workflow(

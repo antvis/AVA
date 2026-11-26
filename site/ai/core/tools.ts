@@ -33,7 +33,7 @@ export function createTools({ ava, dataset }: { ava: AVA; dataset: AIDataset }) 
 
     semantic: tool({
       description:
-        'Read the user-provided metric definitions, field meanings and drill-down hierarchies. Returns an empty definition when no semantics are supplied. This tool cannot change the definitions.',
+        'Read the supplied Apache Ossie model with metric definitions, field meanings and relationships. Returns null when no model is loaded.',
       inputSchema: z.object({}),
       execute: () => ava.semantic(),
     }),

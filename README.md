@@ -127,7 +127,10 @@ Inspect the structure and data quality, then add [business definitions](https://
 const schema = await ava.schema();
 const profile = await ava.profile({ metrics: ['row_count', 'null_count'] });
 await ava.semantic(undefined, () => ({
-  description: 'Use the sales column for amounts after discounts and order_date for monthly comparisons.',
+  version: '0.3.0.dev0',
+  name: 'sales_reporting',
+  description: 'Use sales for amounts after discounts and order_date for monthly comparisons.',
+  datasets: [{ name: 'orders', source: 'data' }],
 }));
 ```
 

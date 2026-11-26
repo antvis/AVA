@@ -28,19 +28,18 @@ Use `--engine` to select an execution engine. The CLI infers Supabase, ClickHous
 
 ## Reuse saved metadata
 
-After loading a source, use `--file` on `schema`, `profile`, or `semantic` to supply an existing JSON file:
+Use `--file` with a plain path or `-` for stdin. Schema and profile take JSON. Semantic takes one Apache Ossie model in YAML or JSON.
 
-```bash
+```sh
 ava schema "$DATASET_ID" --file schema.json
 ava profile "$DATASET_ID" --file profile.json
-ava semantic "$DATASET_ID" --file semantic.json
+ava semantic "$DATASET_ID" --file sales.ossie.yaml
+ava semantic "$DATASET_ID" --clear
 ```
 
-Pass a plain file path, without `@`. AVA validates the file and saves its contents in the session. Setting schema clears the saved profile, so set schema first when supplying both. Setting profile only replaces the statistics; it does not replace schema. Setting semantic replaces the complete business definition and retains schema/profile; schema/profile updates also retain semantic. Use metadata matching the loaded source.
+Setting schema clears the saved profile. Setting profile replaces the statistics. Setting semantic replaces the complete business model alongside the physical schema and profile. Invalid files leave the current session value in place.
 
-Without `--file`, schema uses the cached structure or discovers it through the engine, profile computes fresh statistics, and semantic returns the saved definition (initially `{}`). For profile, `--file` cannot be combined with `--metrics`. See [schema behavior](/documentation/reference/api/#schema), [profile behavior](/documentation/reference/api/#profile), and [business definitions](/documentation/data/semantic/).
-
-Keep semantic JSON files to reuse confirmed metric definitions across sessions. A file containing `{}` clears the session's semantic definition. Invalid files leave the previous definition intact. Validation checks the JSON structure, not SQL correctness or whether the business rules fit the source. The CLI does not automatically find, merge, or persist semantic files outside the session.
+Without `--file`, schema returns the cached or discovered structure, profile computes fresh statistics, and semantic returns the saved model as JSON or `null`. For profile, `--file` and `--metrics` are mutually exclusive. For semantic, `--file` and `--clear` are mutually exclusive. Keep your model file to reload it in another session. See [Define data semantics](/documentation/data/semantic/).
 
 ## Explore and analyze
 
@@ -82,7 +81,7 @@ All commands accept `-h` / `--help` (boolean; optional). Every positional argume
 | `source`    | One or more `dataset` inputs: path, URL, `@file`, or `-`  | `-t` / `--type`: `csv-file`, `json-file`, `parquet`, `excel`, `sqlite`, `github`; file types are inferred from extensions. `--engine`: `duckdb`, `python`, `javascript`, `supabase`, `clickhouse`, `sqlserver`, `snowflake`; inferred as described above. |
 | `schema` | `dataset-id` | Optional `--file`: path to an existing schema JSON file. |
 | `profile` | `dataset-id` | Optional `--file`: path to an existing profile JSON file. Otherwise, `--metrics` selects comma-separated metric names; defaults to the [standard metric set](/documentation/reference/api/#profile). An empty string computes no statistics. |
-| `semantic` | `dataset-id` | Optional `--file`: path to a Semantic JSON file that replaces the complete session definition. Without it, reads the current definition. |
+| `semantic` | `dataset-id` | `--file <path\|->` loads an Ossie YAML/JSON model, `--clear` removes it, and no option reads it. |
 | `suggest`   | `dataset-id`                           | `--count`: integer `1`–`100`; default `3`.                                                                                                                                                            |
 | `analyze`   | `dataset-id`, natural-language `query` | `--strategy`: `direct` (default), `loop`; `--max-rows` and `--max-result-bytes` below.                                                                                                      |
 | `translate` | `dataset-id`, natural-language `query` | No additional flags.                                                                                                                                                                                  |

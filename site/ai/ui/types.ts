@@ -58,7 +58,7 @@ export interface LiveChat {
   onConfigure: () => void;
   onAttach: (file: File) => void;
   onSuggest: () => void;
-  onSemanticChange: (json: string) => Promise<void>;
+  onSemanticChange: (text: string) => Promise<void>;
 }
 
 export interface ChatPlayback {

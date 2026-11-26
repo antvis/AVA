@@ -11,6 +11,8 @@ import { startupSchema } from '../src/cli/session/protocol';
 import { resultSchema as pythonResultSchema } from '../src/interpreter/python/util/schema';
 import { parseSourceConfigs } from '../src/util/source';
 
+import { ossieModel } from './fixtures/ossie';
+
 import type { DataSourceConfig } from '../src/types';
 
 const source = { type: 'json' as const, options: { data: [{ sales: 10 }] } };
@@ -179,7 +181,7 @@ describe('source-to-chart contract flow', () => {
     }
     expect(contracts.schemaOutputSchema.parse({ models: [] })).toEqual({ models: [] });
     expect(contracts.profileOutputSchema.parse({ models: [] })).toEqual({ models: [] });
-    expect(contracts.semanticOutputSchema.parse({ description: 'Sales' })).toEqual({ description: 'Sales' });
+    expect(contracts.semanticOutputSchema.parse(ossieModel)).toEqual(ossieModel);
   });
 
   it('loads, queries and renders real SQL results through the public contracts', async () => {

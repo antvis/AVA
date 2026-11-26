@@ -50,7 +50,7 @@ Close task-created sessions when no longer needed with `ava dispose "$DATASET_ID
 
 | Need | Reference |
 | --- | --- |
-| Definition confirmation, types, merging, and persistence | [Semantic](references/semantic.md) |
+| Definition confirmation, Apache Ossie format, and persistence | [Semantic](references/semantic.md) |
 | Files, URLs, database connections, or Feishu credentials | [Sources](references/sources.md) |
 | SQL dialects, profiling options, and response limits | [Queries and results](references/queries.md) |
 | Chart selection, rendering, and inspection | [Visualization](references/visualization.md) |

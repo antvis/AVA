@@ -30,19 +30,18 @@ ava source sales.csv customers.json costs.xlsx
 
 <Heading as="h2" id="reuse-saved-metadata">复用已有元数据</Heading>
 
-加载数据源后，可以为 `schema`、`profile` 或 `semantic` 提供 `--file`，读取已有 JSON 文件：
+`--file` 接收普通文件路径，传 `-` 时从标准输入读取。Schema 和 profile 接收 JSON，semantic 接收 YAML 或 JSON 格式的单份 Apache Ossie 模型。
 
-```bash
+```sh
 ava schema "$DATASET_ID" --file schema.json
 ava profile "$DATASET_ID" --file profile.json
-ava semantic "$DATASET_ID" --file semantic.json
+ava semantic "$DATASET_ID" --file sales.ossie.yaml
+ava semantic "$DATASET_ID" --clear
 ```
 
-传入普通文件路径，不加 `@`。AVA 验证后将内容保存到会话中。设置 schema 会清空 profile，因此需要同时提供时，请先设置 schema。设置 profile 只替换统计信息，不替换 schema。设置 semantic 会替换完整业务定义，并保留 schema 和 profile；更新 schema 或 profile 也会保留 semantic。元数据应与当前数据源匹配。
+设置 schema 会清空已保存的 profile，设置 profile 会替换统计数据。设置 semantic 会替换完整业务模型，会话仍可使用原有 schema 和 profile。文件无效时，会话中的原有数据继续生效。
 
-不提供 `--file` 时，schema 使用缓存结构，或通过引擎发现；profile 重新计算统计信息；semantic 返回已保存的定义，初始值为 `{}`。profile 的 `--file` 不可与 `--metrics` 同时使用。详见 [schema 行为](/documentation/reference/api/#schema)、[profile 行为](/documentation/reference/api/#profile)和[业务口径](/documentation/data/semantic/)。
-
-保留 semantic JSON 文件，可在不同会话中复用已确认的指标口径。加载内容为 `{}` 的文件即可清空当前定义；文件无效时，原有定义保持不变。验证只检查 JSON 结构，不能证明 SQL 正确或业务规则适用于当前数据源。CLI 不会自动查找、合并定义文件，也不会将定义持久化到会话之外。
+不提供 `--file` 时，schema 返回缓存或发现的数据结构，profile 重新计算统计数据，semantic 返回当前模型的 JSON，未设置时返回 `null`。Profile 的 `--file` 和 `--metrics` 互斥，semantic 的 `--file` 和 `--clear` 互斥。保留模型文件可在新会话中重新加载。详见[业务口径](/documentation/data/semantic/)。
 
 <Heading as="h2" id="explore-and-analyze">探索与分析</Heading>
 
@@ -84,7 +83,7 @@ ava visualize --query "Plot revenue by region" --data @rows.json
 | `source` | 一个或多个 `dataset`：路径、URL、`@file` 或 `-` | `-t` / `--type`：`csv-file`、`json-file`、`parquet`、`excel`、`sqlite`、`github`，文件类型按扩展名推断。`--engine`：`duckdb`、`python`、`javascript`、`supabase`、`clickhouse`、`sqlserver`、`snowflake`，推断规则见上文。 |
 | `schema` | `dataset-id` | 可选 `--file`：已有 schema JSON 文件的路径。 |
 | `profile` | `dataset-id` | 可选 `--file`：已有 profile JSON 文件的路径；否则可用 `--metrics` 指定逗号分隔的指标名，默认[标准指标集](/documentation/reference/api/#profile)。传入空字符串则不计算统计项。 |
-| `semantic` | `dataset-id` | 可选 `--file`：Semantic JSON 文件的路径，用于替换会话中的完整定义；不提供时读取当前定义。 |
+| `semantic` | `dataset-id` | `--file <path\|->` 加载 Ossie YAML/JSON 模型，`--clear` 清除模型，无选项时读取。 |
 | `suggest` | `dataset-id` | `--count`：整数 `1`—`100`，默认 `3`。 |
 | `analyze` | `dataset-id`、自然语言 `query` | `--strategy`：`direct`（默认）或 `loop`；结果限制见下方。 |
 | `translate` | `dataset-id`、自然语言 `query` | 无额外标志。 |

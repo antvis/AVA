@@ -293,11 +293,11 @@
     "semantics": "业务语义",
     "optional": "可选 · ",
     "closeSemantics": "关闭业务语义设置",
-    "defineMetricsExplainFieldsAndDescribeDrill": "补充指标口径、字段含义或下钻层级，让分析更贴近你的业务。先写一段业务说明也可以。",
-    "semanticJSON": "业务语义 JSON",
+    "modelDescription": "使用 Apache Ossie 模型定义当前数据的指标、字段和关联。",
+    "semanticDocument": "Ossie 模型（YAML 或 JSON）",
     "formatGuide": "查看格式说明 ↗",
-    "importJSON": "导入 JSON",
-    "importSemanticJSON": "导入业务语义 JSON",
+    "importDocument": "导入模型",
+    "importSemanticDocument": "导入 Ossie 模型",
     "applyingOrRemovingSemanticsStartsANew": "应用或移除业务语义后，将基于当前数据开始新对话。上传其他数据时，业务语义会一并清空。",
     "removeSemantics": "移除业务语义",
     "cancel": "取消",
@@ -307,7 +307,7 @@
     "optional2": "可选",
     "currentDataset": "当前数据：{name}，{count} 行",
     "fileError": "无法读取这个文件，请重新导入。",
-    "placeholder": "说明你的业务规则和指标口径。"
+    "placeholder": "粘贴 Apache Ossie YAML 或 JSON 文档。"
   },
   "MetadataTable": {
     "noRows": "暂无数据。",

@@ -26,7 +26,7 @@ const execution = {
 
 export const requestSchema = z.discriminatedUnion('command', [
   z.object({ command: z.literal('schema'), schema: schemaOutputSchema.optional() }).strict(),
-  z.object({ command: z.literal('semantic'), semantic: semanticOutputSchema.optional() }).strict(),
+  z.object({ command: z.literal('semantic'), semantic: semanticOutputSchema.nullable().optional() }).strict(),
   z
     .object({
       command: z.literal('profile'),

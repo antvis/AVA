@@ -90,8 +90,10 @@ async function dispatch(message: Request, signal: AbortSignal): Promise<unknown>
 
   return withDataset(async (ava, commandSignal) => {
     switch (message.command) {
-      case 'semantic':
-        return ava.semantic(undefined, message.semantic === undefined ? undefined : () => message.semantic!);
+      case 'semantic': {
+        const { semantic } = message;
+        return ava.semantic(undefined, semantic === undefined ? undefined : () => semantic);
+      }
       case 'profile':
         return ava.profile(
           { metrics: message.metrics },

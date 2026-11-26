@@ -11,6 +11,8 @@ import { run } from '../src/cli';
 import { createSession, request } from '../src/cli/session/client';
 import { accent, badge, bold, formatError, muted } from '../src/cli/util';
 
+import { ossieModel } from './fixtures/ossie';
+
 vi.mock('../src/cli/session/client', () => ({ createSession: vi.fn(), request: vi.fn() }));
 vi.mock('../src/ava', () => ({
   AVA: vi.fn(function () {
@@ -102,7 +104,7 @@ describe('metadata input', () => {
     }
 
     it('imports valid metadata', async () => {
-      const value = kind === 'semantic' ? { description: 'Revenue excludes refunds.' } : { models: [] };
+      const value = kind === 'semantic' ? ossieModel : { models: [] };
       mockStdin(JSON.stringify(value));
 
       const output = await execute(args);
@@ -114,11 +116,13 @@ describe('metadata input', () => {
       );
     });
 
-    it('rejects malformed JSON before sending a request or writing a result', async () => {
+    it('rejects invalid documents before sending a request or writing a result', async () => {
       const write = vi.fn();
-      mockStdin('invalid JSON');
+      mockStdin('{ unterminated');
 
-      await expect(run(args, write)).rejects.toThrow('Cannot read JSON');
+      await expect(run(args, write)).rejects.toThrow(
+        kind === 'semantic' ? 'Cannot read Ossie YAML or JSON' : 'Cannot read JSON'
+      );
 
       expect(request).not.toHaveBeenCalled();
       expect(write).not.toHaveBeenCalled();
@@ -138,7 +142,7 @@ describe('metadata input', () => {
   it.each(['schema', 'profile', 'semantic'])('sets %s from a plain file path', async (kind) => {
     const directory = await mkdtemp(join(tmpdir(), 'ava-cli-test-'));
     try {
-      const value = kind === 'semantic' ? { description: 'Revenue excludes refunds.' } : { models: [] };
+      const value = kind === 'semantic' ? ossieModel : { models: [] };
       const file = join(directory, 'metadata.json');
       await writeFile(file, JSON.stringify(value));
       await execute([kind, datasetId, '--file', file]);
@@ -150,13 +154,32 @@ describe('metadata input', () => {
       vi.mocked(request).mockClear();
       await expect(run([kind, datasetId, '--file', file])).rejects.toThrow();
       expect(request).not.toHaveBeenCalled();
-      await writeFile(file, 'invalid JSON');
-      await expect(run([kind, datasetId, '--file', file])).rejects.toThrow('Cannot read JSON');
-      await expect(run([kind, datasetId, '--file', join(directory, 'missing')])).rejects.toThrow('Cannot read JSON');
+      await writeFile(file, '{ unterminated');
+      await expect(run([kind, datasetId, '--file', file])).rejects.toThrow(
+        kind === 'semantic' ? 'Cannot read Ossie YAML or JSON' : 'Cannot read JSON'
+      );
+      await expect(run([kind, datasetId, '--file', join(directory, 'missing')])).rejects.toThrow('ENOENT');
       expect(request).not.toHaveBeenCalled();
     } finally {
       await rm(directory, { recursive: true, force: true });
     }
+  });
+
+  it('loads Ossie YAML from stdin and clears it explicitly', async () => {
+    const text = ['version: 0.3.0.dev0', 'name: sales', 'datasets:', '  - name: orders', '    source: data'].join('\n');
+    const stream = Readable.from([text], { objectMode: false });
+    vi.spyOn(process, 'stdin', 'get').mockReturnValue(stream as typeof process.stdin);
+    await execute(['semantic', datasetId, '--file', '-']);
+    expect(request).toHaveBeenLastCalledWith(datasetId, {
+      command: 'semantic',
+      semantic: { version: '0.3.0.dev0', name: 'sales', datasets: [{ name: 'orders', source: 'data' }] },
+    });
+
+    await execute(['semantic', datasetId, '--clear']);
+    expect(request).toHaveBeenLastCalledWith(datasetId, { command: 'semantic', semantic: null });
+    await expect(run(['semantic', datasetId, '--clear', '--file', '-'])).rejects.toThrow(
+      '--clear cannot be combined with --file'
+    );
   });
 
   it('rejects file import combined with metric computation', async () => {

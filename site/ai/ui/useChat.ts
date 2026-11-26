@@ -3,6 +3,7 @@
 import { useTranslations } from 'use-intl';
 
 import { useEffect, useMemo, useState } from 'react';
+import { parseSemantic } from '@antv/ava/browser';
 import type { LLMConfig } from '@antv/ava/browser';
 import { useChat as useAIChat } from '@ai-sdk/react';
 import type { AIUIMessage } from '../core/session';
@@ -141,15 +142,14 @@ export default function useChat({ config, onConfigure }: { config: LLMConfig; on
       }
     }
   }
-  async function updateSemantic(json: string) {
+  async function updateSemantic(text: string) {
     if (lifecycle.locked || busy) throw new Error(t('waitForTheCurrentOperationToFinish'));
-    if (new TextEncoder().encode(json).length > MAX_UPLOAD_SIZE_BYTES)
+    if (new TextEncoder().encode(text).length > MAX_UPLOAD_SIZE_BYTES)
       throw new Error(t('maxSemantic', { size: MAX_UPLOAD_SIZE_MB }));
-    const value: unknown = json.trim() ? JSON.parse(json) : undefined;
     lifecycle.locked = true;
     setWorkingSessionId(session.id);
     try {
-      const semantic = value === undefined ? undefined : await session.validateSemantic(value);
+      const semantic = text.trim() ? parseSemantic(text) : undefined;
       if (!lifecycle.active) throw new Error(t('theDatasetChangedReopenSemanticsAndTry'));
       if (JSON.stringify(semantic) === JSON.stringify(dataset.semantic)) return;
       setDataset({ ...dataset, semantic });

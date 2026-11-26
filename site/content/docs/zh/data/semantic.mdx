@@ -34,90 +34,62 @@ import { Heading } from '../../../../mdx-components';
 
 因此，East 的收入为 **150 美元** ，West 为 **60 美元** 。下面的语义定义将记录产生这些结果的规则。
 
-<Heading as="h2" id="write-the-definition">编写语义定义</Heading>
+<Heading as="h2" id="write-the-definition">编写定义</Heading>
 
-将上表作为内存 JSON 加载后，DuckDB 会暴露名为 `data` 的表。对应的语义定义如下：
+将模型保存为 `sales.ossie.yaml`。逻辑数据集 `orders` 指向物理表 `data`，`fields` 定义可分组字段，`metrics` 记录指标公式。数据集级指标里的 `source.amount` 指向该数据集的来源列。
 
-```javascript
-/** @satisfies {import('@antv/ava').Semantic} */
-const semantic = {
-  description: 'Sales reporting in USD. Revenue means net revenue from paid and refunded orders. Pending and cancelled orders do not count. A missing refund is zero. Dates are order dates, not refund dates.',
-  properties: { owner: 'Sales operations' },
-  models: [{
-    name: 'data',
-    tableReference: { table: 'data' },
-    primaryKey: 'order_id',
-    properties: { description: 'One row per order; refunds are cumulative amounts on the original order.' },
-    columns: [
-      { name: 'amount', type: 'BIGINT', properties: { description: 'Order amount before refunds.', unit: 'USD' } },
-      { name: 'refund_amount', type: 'BIGINT', properties: { description: 'Cumulative refund, not a separate refund transaction. Null means zero.', unit: 'USD' } },
-      { name: 'status', type: 'VARCHAR', properties: { description: 'Only paid and refunded orders contribute to revenue.' } },
-      {
-        name: 'net_amount',
-        type: 'DOUBLE',
-        isCalculated: true,
-        expression: 'amount - COALESCE(refund_amount, 0)',
-        properties: { description: 'Per-order amount after refunds, before filtering by status.', unit: 'USD' },
-      },
-    ],
-  }],
-  cubes: [{
-    name: 'sales',
-    baseObject: 'data',
-    measures: [{
-      name: 'net_revenue',
-      expression: "SUM(CASE WHEN status IN ('paid', 'refunded') THEN amount - COALESCE(refund_amount, 0) ELSE 0 END)",
-      type: 'DOUBLE',
-      description: 'Revenue after refunds, counting only paid and refunded orders.',
-      properties: { unit: 'USD', synonyms: ['revenue', 'net sales'] },
-    }],
-    dimensions: [{ name: 'region', expression: 'region', type: 'VARCHAR' }],
-    timeDimensions: [{ name: 'order_date', expression: 'CAST(ordered_at AS DATE)', type: 'DATE' }],
-  }],
-};
+```yaml
+version: 0.3.0.dev0
+name: sales_reporting
+description: 订单与累计退款，金额单位为美元。
+datasets:
+  - name: orders
+    source: data
+    primary_key: [order_id]
+    fields:
+      - name: order_id
+        expression: { sql: order_id }
+        datatype: Integer
+      - name: region
+        expression: { sql: region }
+        datatype: String
+      - name: order_date
+        expression: { sql: "CAST(ordered_at AS DATE)" }
+        datatype: Date
+        dimension: { is_time: true }
+    metrics:
+      - name: net_revenue
+        description: 扣除退款后的销售收入，金额单位为美元。
+        datatype: Decimal
+        expression:
+          sql: >-
+            SUM(CASE WHEN source.status IN ('paid', 'refunded')
+              THEN source.amount - COALESCE(source.refund_amount, 0)
+              ELSE 0 END)
 ```
 
-<Callout>
-  **语义定义用于指导查询生成。** 它不会创建数据库对象，也不负责执行访问控制规则。
-</Callout>
+<Heading as="h2" id="save-the-definition-and-see-the-result">加载模型</Heading>
 
-可以从三个部分理解：
+先加载数据源，再导入模型。CLI 接收 YAML 或 JSON 文件，也可以通过 `--file -` 从标准输入读取。
 
-1. **`description` 和 `properties` 解释业务含义。** 共享描述定义收入口径；模型和列的属性说明行粒度、单位与空值含义。`unit`、`synonyms` 这样的键是注释信息，不是 SDK 的特殊选项。
-2. **`models` 将含义映射到数据。** `name: 'data'` 与自动发现的模型一致；计算列 `net_amount` 描述单笔订单的净额。未列出的物理列仍可通过 schema 使用。
-3. **`cubes` 定义可复用的分析口径。** `sales` 将指标与分组表达式组织在一起；`net_revenue` 同时包含状态过滤与退款计算；`dimensions` 提供地区分组，`timeDimensions` 提供下单日期分组。
+```sh
+ava semantic "$DATASET_ID" --file sales.ossie.yaml
+ava semantic "$DATASET_ID" > sales.ossie.json
+ava semantic "$DATASET_ID" --clear
+```
 
-指标里包含了哪些记录可计入收入的规则，因此按地区或日期分组时，这些规则仍然生效。仅有计算列 `net_amount`，并不能决定哪些订单应计入收入。
-
-接入自己的数据源时，先查看 `await ava.schema()`。模型名和列名必须准确匹配，并保留物理数据源限定信息。每个语义模型必须且只能提供 `tableReference`、`refSql`、`baseObject` 之一；每列必须有 `name` 和 `type`。物理字段沿用发现的类型，计算字段则声明其结果类型。其他来源映射方式见[语义模型来源](/documentation/reference/api/#semantic-model-sources)。
-
-也可以从更简单的定义开始：`{ description: '这里填写业务规则。' }` 就是有效输入。随着问题深入，再用 models 说明字段含义、relationships 描述连接关系、cubes 定义可复用指标。
-
-<Heading as="h2" id="save-the-definition-and-see-the-result">保存定义并查看结果</Heading>
-
-完成 `ava` 配置并通过 `source()` 加载数据后，让 setter 返回这份定义：
+SDK 接收相同结构的对象。用 `parseSemantic` 解析 YAML 或 JSON 文本。
 
 ```typescript
-await ava.semantic(undefined, () => semantic);
+import { readFile } from 'node:fs/promises';
+import { parseSemantic } from '@antv/ava';
+
+const model = parseSemantic(await readFile('sales.ossie.yaml', 'utf8'));
+await ava.semantic(undefined, () => model);
 const saved = await ava.semantic();
 ```
 
-`undefined` 表示使用默认选项；目前 semantic 没有可配置选项。Setter 会验证并保存一份副本，之后的 `analyze()`、`translate()` 和 `suggest()` 会将它与 schema、已有 profile 一起使用。
-
-<Heading as="h3" id="use-the-cli">通过 CLI 使用</Heading>
-
-先将定义保存为 JSON 文件，例如在应用中调用 `JSON.stringify(semantic, null, 2)`。用 `ava source` 加载数据源后，通过返回的数据集 ID 设置或读取定义：
-
-```sh
-ava semantic "$DATASET_ID" --file semantic.json
-ava semantic "$DATASET_ID" > semantic-readback.json
-```
-
-`--file` 接受不带 `@` 的普通文件路径，并替换会话中的完整定义。不传 `--file` 时读取当前定义，初始值为 `{}`。这两种操作都不需要模型密钥。加载内容为 `{}` 的文件即可清空定义；文件无效时，原有定义保持不变。
-
-保留这份 JSON 文件，方便后续会话复用；CLI 不会自动加载它。更新 schema 或 profile 会保留语义定义，新建数据源会话则需要重新设置。[AVA Skill](/documentation/agent-skill/) 会引导 Agent 与用户确认影响分析结果的业务口径，并记录已确认口径的来源和适用范围，供后续复用。查找定义文件、判断其是否适用于当前数据源，由 Agent 负责。
-
-`analyze`、`translate` 和 `suggest` 会将这些定义作为模型上下文。Agent 自行编写的 `query` DSL 需要显式体现业务规则；语义定义不会改写实际执行的查询。
+每次导入都会替换会话模型。加载新数据源或调用 `dispose()` 会清除模型。更新 schema 和 profile 会保留模型。`analyze()`、`translate()` 和 `suggest()` 会同时使用业务模型和物理元数据。调用 `query()` 时，在提交的查询中明确应用这些定义。
 
 <Heading as="h3" id="query-using-the-definition">按业务口径查询</Heading>
 
@@ -146,20 +118,23 @@ ORDER BY region;
 
 这只是一个示例查询。模型生成的 SQL 写法和列别名可能不同。
 
-逻辑模型、cube、view 或计算列不会自动变成可直接查询的数据库对象。例如，SQL 使用 `net_amount` 时，需要展开其表达式，或在子查询、CTE 中定义它。上面的查询直接嵌入指标表达式，读取物理表 `data`。
-
 <Heading as="h2" id="check-and-maintain-your-definition">验证并维护定义</Heading>
 
-将定义用于实际问题前，先完成以下检查：
+与数据负责人确认行粒度、单位、记录范围、空值处理和时间归属。用可独立核对的结果验证生成的查询，覆盖退款、被排除的记录和连接基数。
 
-1. 与数据负责人确认行粒度、单位、记录范围、空值处理和时间含义。涉及表连接时，检查同一行是否被重复计数。
-2. 用结果已知的小数据集测试表达式，覆盖本例中的退款、排除订单等边界情况。
-3. 检查生成的 SQL，并将执行结果与已知答案对照。Setter 验证的是对象结构，不能证明 SQL 或业务逻辑正确。
+将完整模型与数据源契约一起管理版本。AVA 使用固定版本的 Ossie JSON Schema 校验模型，并检查数据集、字段、键和关系的引用。上游参考校验器还检查表达式语法、指标作用域和可移植性。[Ossie 参考校验器](https://github.com/apache/ossie/blob/aedf08651451306896d98e17657c16c99848ef78/validation/validate.py)
 
-将完整定义保存在应用代码或 JSON 文件中，并与数据契约一起管理版本。
+字段定义、旧版 AVA 迁移方式和 SDK 签名见 [API 参考](/documentation/reference/api/#semantic-fields)。
 
-<Callout>
-  **每次 setter 都会替换完整定义。** 加载新数据源或调用 `dispose()` 会清除语义，因此加载数据源后需要重新设置。更新 schema 或 profile 会保留语义。
-</Callout>
+<Heading as="h2" id="gravitino">从 Apache Gravitino 接入</Heading>
 
-准确的字段结构、来源映射、关系、视图、合并规则及验证错误见 [API 参考中的语义字段](/documentation/reference/api/#semantic-fields)。其他上下文输入见[了解数据结构](/documentation/data/schema/)，方法签名见 [AVA API](/documentation/reference/api/#semantic)。
+用 Gravitino 管理共享语义定义的所有者、权限和发布修订。AVA 消费已发布的 Ossie 快照，并通过配置好的引擎连接实际数据。语义模型标识为 `metalake/catalog/schema/model`，导出时另外指定修订号。Gravitino 在保存时按写入者的权限解析数据集指向的表或视图。执行查询时，以查询身份再次检查数据访问与来源映射。[Gravitino 源校验实现](https://github.com/apache/gravitino/blob/ac461b995d2e02aab4f542b686b633faa67fbd7a/server/src/main/java/org/apache/gravitino/server/web/rest/SemanticModelSourceValidator.java)
+
+1. **固定已发布修订。** 在支持修订的 Gravitino 版本中，先用 `GET …/semantic-models/{model}/revisions` 选择已发布修订，再请求 `GET …/semantic-models/{model}/revisions/{revision}/ossie?format=json`。消费账号只需模型读取权限及必要的目录、模式访问权限。早期支持 Ossie 导出的版本可用 `…/semantic-models/{model}/ossie?format=json`，将审核后的导出快照连同摘要归档。[Gravitino 导出实现](https://github.com/apache/gravitino/blob/ac461b995d2e02aab4f542b686b633faa67fbd7a/server/src/main/java/org/apache/gravitino/server/web/rest/SemanticModelOperations.java)
+2. **在导入前转换版本。** 所核对的 Gravitino 主线默认导出 `0.2.0.dev0`。导出对象已经是单模型扁平结构。保留 `datasets`、关系、根级指标以及 `expression.dialects`。把各级 `custom_extensions` 转为 `nonportable_extensions`，将 `data` 的 JSON 字符串解析成对象。显式核对键与关联列是否引用已声明的逻辑字段。转换后标记为 `0.3.0.dev0`，用该版本的官方参考校验器验证。只有确认属于 `OSSIE_SQL_2026` 的表达式才写入 `expression.sql`。[Gravitino 导出字段](https://github.com/apache/gravitino/blob/ac461b995d2e02aab4f542b686b633faa67fbd7a/common/src/main/java/org/apache/gravitino/semantic/OssieDocumentConverter.java) · [Ossie 核心规范](https://github.com/apache/ossie/blob/aedf08651451306896d98e17657c16c99848ef78/core-spec/spec.md)
+3. **绑定来源并核对结果。** 例如，模型的逻辑数据集 `orders` 可指向 `sales.mart.orders`。先确认该来源在 AVA 当前引擎中可解析，再加载转换后的模型。若目录别名或表名不同，在部署时配置明确映射，并复核指标、连接粒度和典型结果。模型修订号和文件摘要随运行记录保存，方便复现。
+
+```sh
+ava schema "$DATASET_ID"
+ava semantic "$DATASET_ID" --file sales.ossie.v0.3.json
+```

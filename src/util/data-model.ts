@@ -43,7 +43,7 @@ function indexByName<T extends { name: string }>(values: T[], label: string): Ma
   return index;
 }
 
-/** Build an independent snapshot, enriching schema and observations with named semantic definitions. */
+/** Build an independent snapshot of physical metadata and the supplied Ossie model. */
 export function buildDataModel(input: { schema: Schema; profile?: Profile; semantic?: Semantic }): DataModel {
   const { schema, profile, semantic } = dataModelInputSchema.parse(input);
 
@@ -67,35 +67,12 @@ export function buildDataModel(input: { schema: Schema; profile?: Profile; seman
     }
   }
 
-  for (const definition of indexByName(semantic?.models ?? [], 'semantic model').values()) {
-    const current = models.get(definition.name);
-    const model = { ...current, ...definition } as Model;
-    if (definition.refSql !== undefined || definition.baseObject !== undefined) delete model.tableReference;
-    if (current?.properties || definition.properties) {
-      model.properties = { ...current?.properties, ...definition.properties };
-    }
-
-    if (definition.columns) {
-      const fields = indexByName(current?.columns ?? [], `schema column in model "${definition.name}"`);
-      for (const field of indexByName(definition.columns, `semantic column in model "${definition.name}"`).values()) {
-        const original = fields.get(field.name);
-        const column = { ...original, ...field };
-        if (original?.properties || field.properties) {
-          column.properties = { ...original?.properties, ...field.properties };
-        }
-        fields.set(field.name, column);
-      }
-      model.columns = [...fields.values()];
-    }
-
-    models.set(definition.name, model);
-  }
-
-  return dataModelStructure.parse({ ...schema, ...semantic, models: [...models.values()] });
+  const physical = dataModelStructure.parse({ ...schema, models: [...models.values()] });
+  return semantic ? { ...physical, semantic } : physical;
 }
 
 /** Describe each semantic object separately, retaining source mappings, properties and observations. */
-export function stringifyDataModel({ description, ...dataModel }: DataModel): string {
+export function stringifyDataModel({ description, semantic, ...dataModel }: DataModel): string {
   const attributes = (value: object): string =>
     markdownTable(Object.entries(value).map(([key, value]) => ({ Attribute: key, Value: value })));
   const metadata = ({ properties, metrics, ...value }: { properties?: Properties; metrics?: Properties }): string =>
@@ -179,6 +156,19 @@ export function stringifyDataModel({ description, ...dataModel }: DataModel): st
         );
       }
     }
+  }
+
+  if (semantic) {
+    const portable = JSON.stringify(
+      semantic,
+      (key, value) => (key === 'nonportable_extensions' ? undefined : value),
+      2
+    );
+    sections.push(
+      '## Apache Ossie semantic model',
+      'Use applicable Ossie metric definitions, field mappings and relationships. Resolve logical datasets through their source and use the physical schema to check available tables and columns. Use expression.sql as the portable definition or an applicable dialect variant. Treat ai_context as business metadata.',
+      `\`\`\`json\n${portable}\n\`\`\``
+    );
   }
 
   // TODO: Above 30,000 characters, retrieve question-relevant context with embeddings; keep full context for now.

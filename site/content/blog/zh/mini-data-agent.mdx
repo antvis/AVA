@@ -22,6 +22,8 @@ Data Agent 的核心是**由执行结果驱动的分析循环**：模型提出�
 
 接着，为 Agent 的分析约定口径：销售额按折后金额统计，月份以下单时间为准，变化额为本期减去上期。把这些约定写入语义配置，供多次查询和后续追问参考。
 
+本文示例使用 AVA 4.0.0 的语义格式。新版源码使用 Apache Ossie，见[补充业务语义](/documentation/data/semantic/)。
+
 ```yaml
 models:
   - name: data

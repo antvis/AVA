@@ -14,9 +14,10 @@ import * as suggestions from '../src/suggest';
 import * as duckdbSchema from '../src/duckdb/util/schema';
 import * as memorySchema from '../src/util/schema';
 
+import { ossieModel } from './fixtures/ossie';
 import { getLLMConfig, skipLLMTests } from './test-utils';
 
-import type { DataSourceConfig, Profile, Schema, Semantic } from '../src';
+import type { DataSourceConfig, Profile, Schema } from '../src';
 
 describe('AVA', () => {
   let ava: AVA;
@@ -539,27 +540,8 @@ describe('AVA metadata setters', () => {
       try {
         await ava.source(source);
         const discover = vi.spyOn(ava.engine!, 'schema');
-        expect(await ava.semantic()).toEqual({});
-        const definitions: Semantic = {
-          description: 'Sales definitions',
-          properties: { currency: 'USD' },
-          models: [
-            {
-              ...schema.models[0],
-              properties: { description: 'Values' },
-              columns: [{ name: 'value', type: 'number', properties: { unit: 'USD' } }],
-            },
-          ],
-          relationships: [],
-          views: [{ name: 'positive_values', statement: 'SELECT * FROM data WHERE value > 0' }],
-          cubes: [
-            {
-              name: 'values',
-              baseObject: 'data',
-              measures: [{ name: 'total', expression: 'SUM(value)', type: 'DOUBLE' }],
-            },
-          ],
-        };
+        expect(await ava.semantic()).toBeNull();
+        const definitions = structuredClone(ossieModel);
         const expected = structuredClone(definitions);
         const options = {};
         const setter = vi.fn(() => definitions);
@@ -574,7 +556,8 @@ describe('AVA metadata setters', () => {
           { type: 'semanticend', data: {} },
         ]);
         definitions.description = 'changed';
-        definitions.models[0].columns[0].properties.unit = 'changed';
+        definitions.datasets[0].fields[0].description = 'changed';
+        (await ava.semantic()).datasets[0].source = 'changed';
         expect(await ava.semantic()).toEqual(expected);
         expect(onSemantic).toHaveBeenCalledTimes(2);
 
@@ -589,11 +572,11 @@ describe('AVA metadata setters', () => {
         await ava.translate('Total');
         const context = getDSL.mock.calls[0][1];
         const snapshot = structuredClone(context);
-        expect(context).toMatchObject(expected);
+        expect(context.semantic).toEqual(expected);
         expect(context.models[0].metrics).toEqual({ row_count: 2 });
         expect(context.models[0].columns[0]).toMatchObject({
           metrics: { mean: 3 },
-          properties: { logicalType: 'numeric', unit: 'USD' },
+          properties: { logicalType: 'numeric' },
         });
         expect(
           (await ava.analyze('Total', { includeSummary: false, strategy: { type: 'direct', maxRetries: 0 } })).data
@@ -606,9 +589,9 @@ describe('AVA metadata setters', () => {
         expect(getDSL.mock.calls.at(-1)[1].models[0].columns[0].metrics).toEqual({ sum: 6 });
         expect(await ava.semantic()).toEqual(expected);
 
-        await ava.semantic(undefined, () => ({}));
+        await ava.semantic(undefined, () => null);
         await ava.translate('Total');
-        expect(getDSL.mock.calls.at(-1)[1]).not.toHaveProperty('cubes');
+        expect(getDSL.mock.calls.at(-1)[1]).not.toHaveProperty('semantic');
         expect(getDSL.mock.calls[0][1]).toEqual(snapshot);
       } finally {
         await ava.dispose();
@@ -620,7 +603,7 @@ describe('AVA metadata setters', () => {
     const ava = new AVA({ llm, engine: { type: 'javascript' } });
     try {
       await ava.source(source);
-      const setter = vi.fn(() => ({ description: 'Original' }));
+      const setter = vi.fn(() => ({ ...ossieModel, description: 'Original' }));
       await ava.semantic(undefined, setter);
       expect(setter).toHaveBeenCalledExactlyOnceWith({});
       const onEnd = vi.fn();
@@ -636,7 +619,7 @@ describe('AVA metadata setters', () => {
       ).rejects.toThrow();
       expect(onEnd.mock.calls[0][0].data.error.message).toBe(error.message);
       expect(onEnd.mock.calls[1][0].data.error.name).toBe('ZodError');
-      expect(await ava.semantic()).toEqual({ description: 'Original' });
+      expect(await ava.semantic()).toEqual({ ...ossieModel, description: 'Original' });
     } finally {
       await ava.dispose();
     }
@@ -801,13 +784,13 @@ describe('AVA metadata setters', () => {
       await expect(ava.schema(undefined, () => schema)).rejects.toThrow('No data loaded');
       await expect(ava.profile(undefined, () => profile)).rejects.toThrow('No data loaded');
       await expect(ava.semantic()).rejects.toThrow('No data loaded');
-      await expect(ava.semantic(undefined, () => ({}))).rejects.toThrow('No data loaded');
+      await expect(ava.semantic(undefined, () => null)).rejects.toThrow('No data loaded');
       await ava.source(source);
       await ava.schema(undefined, () => schema);
       await ava.profile(undefined, () => profile);
-      await ava.semantic(undefined, () => ({ description: 'Previous source' }));
+      await ava.semantic(undefined, () => ({ ...ossieModel, description: 'Previous source' }));
       await ava.source(source);
-      expect(await ava.semantic()).toEqual({});
+      expect(await ava.semantic()).toBeNull();
       const discover = vi.spyOn(ava.engine!, 'schema');
       expect(discover).not.toHaveBeenCalled();
       const getDSL = vi.spyOn(ava.engine!, 'getDSL').mockResolvedValue({ dsl: 'const result = data;' });
@@ -816,13 +799,13 @@ describe('AVA metadata setters', () => {
       expect(getDSL).toHaveBeenLastCalledWith('Rows', schema);
       await ava.schema(undefined, () => schema);
       await ava.profile(undefined, () => profile);
-      await ava.semantic(undefined, () => ({ description: 'Failed source' }));
+      await ava.semantic(undefined, () => ({ ...ossieModel, description: 'Failed source' }));
       await expect(ava.source({ type: 'parquet', options: { path: 'unsupported.parquet' } })).rejects.toThrow();
       expect(ava.engine).toBeNull();
       await expect(ava.schema()).rejects.toThrow('No data loaded');
       await ava.source(source);
-      expect(await ava.semantic()).toEqual({});
-      await ava.semantic(undefined, () => ({ description: 'Disposed source' }));
+      expect(await ava.semantic()).toBeNull();
+      await ava.semantic(undefined, () => ({ ...ossieModel, description: 'Disposed source' }));
     } finally {
       await ava.dispose();
     }
@@ -830,7 +813,7 @@ describe('AVA metadata setters', () => {
     await expect(ava.semantic()).rejects.toThrow('No data loaded');
     await ava.source(source);
     try {
-      expect(await ava.semantic()).toEqual({});
+      expect(await ava.semantic()).toBeNull();
     } finally {
       await ava.dispose();
     }

@@ -293,11 +293,11 @@
     "semantics": "Semantics",
     "optional": "Optional · ",
     "closeSemantics": "Close semantics",
-    "defineMetricsExplainFieldsAndDescribeDrill": "Define metrics, explain fields, and describe drill-down hierarchies. A description alone is enough to start.",
-    "semanticJSON": "Semantic JSON",
+    "modelDescription": "Add an Apache Ossie model to define metrics, fields, and relationships for this dataset.",
+    "semanticDocument": "Ossie model (YAML or JSON)",
     "formatGuide": "Format guide ↗",
-    "importJSON": "Import JSON",
-    "importSemanticJSON": "Import semantic JSON",
+    "importDocument": "Import model",
+    "importSemanticDocument": "Import an Ossie model",
     "applyingOrRemovingSemanticsStartsANew": "Applying or removing semantics starts a new conversation with this dataset. Semantics are cleared when you upload another dataset.",
     "removeSemantics": "Remove semantics",
     "cancel": "Cancel",
@@ -307,7 +307,7 @@
     "optional2": "Optional",
     "currentDataset": "Current dataset: {name}, {count} rows",
     "fileError": "Could not read this file. Try importing it again.",
-    "placeholder": "Explain your business rules and metric definitions."
+    "placeholder": "Paste an Apache Ossie YAML or JSON document."
   },
   "MetadataTable": {
     "noRows": "No rows.",

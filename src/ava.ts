@@ -60,7 +60,7 @@ export class AVA extends EventEmitter {
   engine: AnalysisEngine | null = null;
   private dataSchema: Schema | null = null;
   private dataProfile: Profile | null = null;
-  private dataSemantic: Semantic = {};
+  private dataSemantic: Semantic | null = null;
 
   constructor(config: AVAConfig) {
     super();
@@ -93,7 +93,7 @@ export class AVA extends EventEmitter {
     return buildDataModel({
       schema,
       profile: this.dataProfile ?? undefined,
-      semantic: this.dataSemantic,
+      semantic: this.dataSemantic ?? undefined,
     });
   }
 
@@ -242,17 +242,23 @@ export class AVA extends EventEmitter {
   }
 
   /** Read or replace semantic definitions used in model-facing operations. */
-  async semantic(options: SemanticOptions = {}, setter?: (options: SemanticOptions) => Semantic): Promise<Semantic> {
-    if (!this.engine) {
+  async semantic(
+    options: SemanticOptions = {},
+    setter?: (options: SemanticOptions) => Semantic | null
+  ): Promise<Semantic | null> {
+    const engine = this.engine;
+    if (!engine) {
       throw new Error('No data loaded. Please call source() first.');
     }
 
-    if (!setter) return this.dataSemantic;
+    if (!setter) return structuredClone(this.dataSemantic);
 
     emit(this, new LifecycleEvent(LifecycleEventType.SEMANTIC_START));
 
     try {
-      this.dataSemantic = semanticOutputSchema.parse(await setter(options));
+      const value = await setter(options);
+      if (engine !== this.engine) throw new Error('The data source changed while setting its semantic model.');
+      this.dataSemantic = value === null ? null : semanticOutputSchema.parse(value);
     } catch (error) {
       emit(this, new LifecycleEvent(LifecycleEventType.SEMANTIC_END, { error: serializeError(error) }));
 
@@ -261,7 +267,7 @@ export class AVA extends EventEmitter {
 
     emit(this, new LifecycleEvent(LifecycleEventType.SEMANTIC_END));
 
-    return this.dataSemantic;
+    return structuredClone(this.dataSemantic);
   }
 
   /**
@@ -454,7 +460,7 @@ export class AVA extends EventEmitter {
       this.engine = null;
       this.dataSchema = null;
       this.dataProfile = null;
-      this.dataSemantic = {};
+      this.dataSemantic = null;
     }
   }
 }

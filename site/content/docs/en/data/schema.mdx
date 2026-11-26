@@ -90,20 +90,23 @@ The table contains paid, refunded, pending, and cancelled orders. Which should c
 
 ```typescript
 await ava.semantic(undefined, () => ({
-  description: 'Amounts are USD. Revenue counts paid and refunded orders, subtracts refunds, and excludes pending and cancelled orders. A missing refund is zero.',
-  cubes: [{
-    name: 'sales',
-    baseObject: 'data',
-    measures: [{
+  version: '0.3.0.dev0',
+  name: 'sales_reporting',
+  datasets: [{
+    name: 'orders',
+    source: 'data',
+    fields: [{ name: 'region', expression: { sql: 'region' } }],
+    metrics: [{
       name: 'net_revenue',
-      expression: "SUM(CASE WHEN status IN ('paid', 'refunded') THEN amount - COALESCE(refund_amount, 0) ELSE 0 END)",
-      type: 'DOUBLE',
+      description: 'Revenue after refunds, in USD.',
+      expression: {
+        sql: "SUM(CASE WHEN source.status IN ('paid', 'refunded') THEN source.amount - COALESCE(source.refund_amount, 0) ELSE 0 END)",
+      },
     }],
-    dimensions: [{ name: 'region', expression: 'region', type: 'VARCHAR' }],
   }],
 }));
 ```
 
-`description` explains the business rule. The `sales` cube names its source (`data`), revenue calculation (`measures`), and region grouping (`dimensions`). The discovered columns remain available without repeating them; the cube guides query generation and does not create a database object.
+The Ossie dataset `orders` maps to `data`. Its metric defines the revenue formula and its region field supplies a grouping dimension.
 
 Continue to [Define data semantics](/documentation/data/semantic/) for the full example and corresponding SQL result: **East 150 USD, West 60 USD** . Field formats, manual overrides, and update rules are in the [API reference](/documentation/reference/api/#schema).

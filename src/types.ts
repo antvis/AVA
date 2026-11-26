@@ -85,7 +85,7 @@ export type ParsedProfileOptions = { metrics: Exclude<MetricConfig, string>[] };
 
 export type JsonValue = z.output<typeof jsonValue>;
 export type Properties = Record<string, JsonValue>;
-export type DataModel = z.output<typeof dataModelStructure>;
+export type DataModel = z.output<typeof dataModelStructure> & { semantic?: Semantic };
 export type Model = NonNullable<DataModel['models']>[number];
 export type Column = NonNullable<Model['columns']>[number];
 export type TableReference = NonNullable<Model['tableReference']>;

@@ -51,7 +51,7 @@ evals/BIRD/.venv/bin/python3 -c "import sqlite3; print(sqlite3.sqlite_version)"
 
 ## 本地语义文件
 
-Workflow 可读取本目录 `semantics/<db_id>.yaml`，复用 SDK 的 `Semantic` 结构。语义文件由使用者自行准备，保留在本地，不随仓库提交，下载器也不提供；文件不存在时沿用 schema/profile 流程。`--no-semantic` 可显式关闭加载，`--database-description` 可同时使用。
+Workflow 可读取本目录 `semantics/<db_id>.yaml`，复用 SDK 的 Apache Ossie `0.3.0.dev0` 核心模型格式。语义文件由使用者自行准备，保留在本地，不随仓库提交，下载器也不提供；文件不存在时沿用 schema/profile 流程。`--no-semantic` 可显式关闭加载，`--database-description` 可同时使用。
 
 定义只描述可复用的实体、字段、关系和指标，不包含逐题答案。若使用题目或 gold 校准定义，须在报告中注明属于样本内调优，并与无语义基线分开解释。
 

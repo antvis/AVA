@@ -92,20 +92,23 @@ const profile = await ava.profile({
 
 ```typescript
 await ava.semantic(undefined, () => ({
-  description: 'Amounts are USD. Revenue counts paid and refunded orders, subtracts refunds, and excludes pending and cancelled orders. A missing refund is zero.',
-  cubes: [{
-    name: 'sales',
-    baseObject: 'data',
-    measures: [{
+  version: '0.3.0.dev0',
+  name: 'sales_reporting',
+  datasets: [{
+    name: 'orders',
+    source: 'data',
+    fields: [{ name: 'region', expression: { sql: 'region' } }],
+    metrics: [{
       name: 'net_revenue',
-      expression: "SUM(CASE WHEN status IN ('paid', 'refunded') THEN amount - COALESCE(refund_amount, 0) ELSE 0 END)",
-      type: 'DOUBLE',
+      description: '扣除退款后的销售收入，金额单位为美元。',
+      expression: {
+        sql: "SUM(CASE WHEN source.status IN ('paid', 'refunded') THEN source.amount - COALESCE(source.refund_amount, 0) ELSE 0 END)",
+      },
     }],
-    dimensions: [{ name: 'region', expression: 'region', type: 'VARCHAR' }],
   }],
 }));
 ```
 
-`description` 说明业务口径；`sales` cube 指定来源（`data`）、收入计算（`measures`）和地区分组（`dimensions`）。自动发现的列无需重复声明，仍可使用。Cube 用于指导查询生成，不会创建数据库对象。
+Ossie 数据集 `orders` 指向表 `data`。指标定义收入公式，`region` 字段提供分组维度。
 
 继续阅读[补充业务语义](/documentation/data/semantic/)，查看完整示例与 SQL 结果： **East 150 美元，West 60 美元** 。字段格式、手动覆盖与更新规则见 [API 参考](/documentation/reference/api/#schema)。

@@ -86,7 +86,7 @@ node evals/cli.js run ava-workflow --benchmark spider2lite --limit all \
 
 模型配置和 `direct`、`loop` 策略见 [AVA Workflow](../ava-workflow/README.md)。默认 `direct`、20 题、并发 1；可用 `--id local002`（可重复）、`--suite <数据库名>`、`--offset` 选题。完整参数用 `--help` 查看。
 
-Workflow 每道题执行 `source → profile → semantic（可选）→ analyze`，使用 DuckDB 引擎，通过官方 SQLite 扩展只读加载数据库。默认读取本目录 `semantics/<数据库名>.yaml`；语义文件须自行准备，不随仓库提交或下载，缺少时跳过；`--no-semantic` 可关闭这一步。输入包含 AVA 数据库画像、业务定义、原始问题和题目指定的外部知识；不向模型提供官方 `DDL.csv`、表描述 JSON、gold 或评分条件。Agent 入口不加载这些本地 YAML。
+Workflow 每道题执行 `source → profile → semantic（可选）→ analyze`，使用 DuckDB 引擎，通过官方 SQLite 扩展只读加载数据库。默认读取本目录 `semantics/<数据库名>.yaml`；使用 Apache Ossie `0.3.0.dev0` 核心模型格式，文件须自行准备，不随仓库提交或下载，缺少时跳过；`--no-semantic` 可关闭这一步。输入包含 AVA 数据库画像、业务定义、原始问题和题目指定的外部知识；不向模型提供官方 `DDL.csv`、表描述 JSON、gold 或评分条件。Agent 入口不加载这些本地 YAML。
 
 `--context raw` 运行裸数据对照：只向模型提供每个执行表/视图的名称、CSV 表头和前 3 行，以及原始问题和指定外部知识；不注入字段类型、键、schema/profile 元数据或 semantic。所有查询仍在完整数据上执行。该模式仅支持 Direct，保留正常 SQL 纠错，诊断可能透露字段名或类型；加载器内部的存储类型检查仍然执行。`--no-semantic` 则保留 Schema + Profile，作为 with schema 对照。两种模式须使用独立输出目录，详见 [Workflow 参数](../ava-workflow/README.md#spider2-lite-评测器)。
 

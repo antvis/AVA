@@ -3,8 +3,10 @@ import { describe, expect, it } from 'vitest';
 import { buildDataModel, stringifyDataModel, dataModelInputSchema } from '../../src/util/data-model';
 import { dataModelStructure } from '../../src/contracts/shared/data-model';
 import { semanticOutputSchema, profileOutputSchema } from '../../src/contracts';
+import { parseSemantic } from '../../src/contracts/semantic';
+import { ossieModel } from '../fixtures/ossie';
 
-import type { DataModel, Profile, Schema, Semantic } from '../../src/types';
+import type { DataModel, Profile, Schema } from '../../src/types';
 
 describe('stringifyDataModel', () => {
   it('renders model sources, constraints, columns and metadata as Markdown tables', () => {
@@ -282,114 +284,70 @@ describe('dataModelStructure', () => {
   );
 });
 
-describe('semantic metadata', () => {
-  const input: Semantic = {
-    description: 'Sales definitions',
-    models: [
-      {
-        name: 'orders',
-        tableReference: { catalog: 'warehouse', schema: 'public', table: 'raw_orders' },
-        dialect: 'duckdb',
-        columns: [
-          { name: 'id', type: 'INTEGER', isPrimaryKey: true },
-          { name: 'cost', type: 'DOUBLE' },
-        ],
-      },
-    ],
-    views: [{ name: 'sales', statement: 'SELECT * FROM orders', dialect: 'duckdb' }],
-    cubes: [
-      {
-        name: 'revenue',
-        baseObject: 'sales',
-        measures: [
-          {
-            name: 'total_revenue',
-            expression: 'SUM(amount)',
-            type: 'DOUBLE',
-            description: 'Recognized revenue',
-            properties: { unit: 'USD' },
-          },
-        ],
-        dimensions: [{ name: 'status', expression: 'status', type: 'VARCHAR' }],
-        timeDimensions: [{ name: 'ordered_at', expression: 'ordered_at', type: 'TIMESTAMP' }],
-        hierarchies: { calendar: ['ordered_at'] },
-        properties: { description: 'Revenue by order status' },
-      },
-    ],
+describe('Ossie semantic models', () => {
+  const orders = ossieModel.datasets[0];
+  const customers = {
+    name: 'customers',
+    source: 'sales.public.customers',
+    fields: [{ name: 'id', expression: { sql: 'id' } }],
+    primary_key: ['id'],
   };
+  const relationship = {
+    name: 'order_customer',
+    from: 'orders',
+    from_columns: ['amount'],
+    to: 'customers',
+    to_columns: ['ID'],
+  };
+  const related = { ...ossieModel, datasets: [orders, customers], relationships: [relationship] };
 
-  it('validates and copies semantic definitions without filling defaults or mixing them with observations', () => {
-    const result = semanticOutputSchema.parse(input);
-    expect(result).toEqual(input);
-    expect(result.cubes[0].measures).not.toBe(input.cubes[0].measures);
-    expect(result.models[0].columns).not.toBe(input.models[0].columns);
-    expect(result.models[0]).not.toHaveProperty('metrics');
-  });
-
-  it.each([
-    { name: 'orders', baseObject: 'raw_orders', metrics: { row_count: 2 } },
-    {
-      name: 'orders',
-      baseObject: 'raw_orders',
-      columns: [{ name: 'amount', type: 'DOUBLE', metrics: { mean: 3 } }],
-    },
-  ])('rejects profiling observations in semantic definitions: %j', (model) => {
-    const value = { models: [model] };
-    expect(() => semanticOutputSchema.parse(value)).toThrow();
-    expect(() => buildDataModel({ schema: { models: [] }, semantic: value })).toThrow();
-    expect(dataModelStructure.parse(value)).toEqual(value);
-  });
-
-  it('includes description and cubes in model context without mutating it', () => {
-    const original = structuredClone(input);
-    const result = stringifyDataModel(input);
-    for (const value of ['Sales definitions', '## Cubes', 'total&#95;revenue', 'SUM(amount)', 'ordered&#95;at']) {
-      expect(result).toContain(value);
+  it('round-trips portable and vendor metadata without sharing references', () => {
+    const document = {
+      ...related,
+      ai_context: { instructions: 'Amounts are in USD.', scope: { report: 'finance' } },
+      nonportable_extensions: [{ vendor_name: 'EXAMPLE', data: { warehouse: 'PRIVATE' } }],
+    };
+    const parsed = parseSemantic(JSON.stringify(document));
+    expect(parsed).toEqual(document);
+    parsed.nonportable_extensions[0].data.warehouse = 'changed';
+    expect(document.nonportable_extensions[0].data.warehouse).toBe('PRIVATE');
+    const context = stringifyDataModel({ semantic: parsed });
+    for (const value of ['## Apache Ossie semantic model', 'Amounts are in USD.', 'SUM(amount)', 'order_customer']) {
+      expect(context).toContain(value);
     }
-    expect(input).toEqual(original);
+    expect(context).not.toContain('nonportable_extensions');
+    expect(context).not.toContain('changed');
+  });
+
+  it('accepts native dialect alternatives and rejects missing expressions', () => {
+    const model = (expression: unknown) => ({
+      ...ossieModel,
+      datasets: [{ ...orders, fields: [{ name: 'amount', expression }], metrics: [] }],
+    });
+    expect(
+      semanticOutputSchema.safeParse(model({ dialects: [{ dialect: 'DUCKDB', expression: 'value' }] })).success
+    ).toBe(true);
+    expect(() => semanticOutputSchema.parse(model({}))).toThrow();
+    expect(() => semanticOutputSchema.parse(model({ sql: 'value', dialects: [] }))).toThrow();
   });
 
   it.each([
-    { models: [{ name: 'missing_source' }] },
-    { models: [{ ...input.models[0], refSql: 'SELECT 1' }] },
-    { cubes: [{ name: 'empty', baseObject: 'orders', measures: [] }] },
-    { cubes: [{ name: 'invalid', measures: [{ name: 'total', expression: 'SUM(amount)', type: 'DOUBLE' }] }] },
-    { cubes: [{ ...input.cubes[0], measures: [{ name: 'total', type: 'DOUBLE' }] }] },
-    { cubes: [{ ...input.cubes[0], hierarchies: { calendar: [] } }] },
-  ])('rejects malformed semantic metadata: %j', (value) => {
+    { version: '0.1.1', semantic_model: [related] },
+    { models: [], description: 'Legacy AVA definition' },
+    { ...ossieModel, datasets: [] },
+    { ...ossieModel, datasets: [{ ...orders, metrics: { row_count: 2 } }] },
+    { ...related, relationships: [{ ...relationship, to: 'unknown' }] },
+    { ...related, relationships: [{ ...relationship, to_columns: ['unknown'] }] },
+    { ...related, relationships: [{ ...relationship, to_columns: ['id', 'id'] }] },
+    { ...related, datasets: [orders, { ...customers, primary_key: ['unknown'] }] },
+    { ...ossieModel, datasets: [{ ...orders, fields: [...orders.fields, ...orders.fields] }] },
+    { ...ossieModel, datasets: [{ ...orders, metrics: [{ ...orders.metrics[0], name: 'AMOUNT' }] }] },
+  ])('rejects invalid definitions %#', (value) => {
     expect(() => semanticOutputSchema.parse(value)).toThrow();
   });
 
-  it.each([
-    { models: [{ ...input.models[0], cached: false }] },
-    { models: [{ ...input.models[0], refreshTime: '1h' }] },
-    { models: [{ ...input.models[0], rowLevelAccessControls: [] }] },
-    { cubes: [{ ...input.cubes[0], refreshTime: '30m' }] },
-    {
-      models: [{ ...input.models[0], columns: [{ name: 'cost', type: 'DOUBLE', isHidden: true }] }],
-    },
-    {
-      models: [
-        {
-          ...input.models[0],
-          columns: [
-            {
-              name: 'cost',
-              type: 'DOUBLE',
-              columnLevelAccessControl: {
-                name: 'cost_access',
-                operator: 'EQUALS',
-                requiredProperties: [{ name: 'role', required: true }],
-              },
-            },
-          ],
-        },
-      ],
-    },
-  ])('rejects unsupported execution metadata: %j', (value) => {
-    expect(() => semanticOutputSchema.parse(value)).toThrow();
-    expect(() => dataModelStructure.parse(value)).toThrow();
-    expect(() => buildDataModel({ schema: { models: [] }, semantic: value })).toThrow();
+  it('rejects duplicate keys in serialized models', () => {
+    expect(() => parseSemantic('version: 0.3.0.dev0\nname: orders\nname: customers')).toThrow(/unique/i);
   });
 });
 
@@ -527,85 +485,19 @@ describe('buildDataModel', () => {
     expect(buildDataModel({ schema: input })).toEqual(input);
   });
 
-  it('merges semantic models and columns by name while retaining structure and observations', () => {
-    const semantic: Semantic = {
-      description: 'Sales definitions',
-      properties: { currency: 'USD' },
-      models: [
-        {
-          name: 'orders',
-          tableReference: { catalog: 'sales', schema: 'public', table: 'raw_orders' },
-          properties: { description: 'Customer orders' },
-          columns: [
-            { name: 'amount', type: 'DOUBLE', properties: { unit: 'USD' } },
-            { name: 'amount_with_tax', type: 'DOUBLE', isCalculated: true, expression: 'amount * 1.1' },
-          ],
-        },
-        { name: 'order_totals', refSql: 'SELECT SUM(amount) AS total FROM orders' },
-      ],
-      relationships: [],
-      views: [{ name: 'all_orders', statement: 'SELECT * FROM orders' }],
-      cubes: [
-        {
-          name: 'revenue',
-          baseObject: 'orders',
-          measures: [{ name: 'total', type: 'DOUBLE', expression: 'SUM(amount)' }],
-        },
-      ],
-    };
+  it('keeps the logical model and its source mappings beside physical structure and observations', () => {
+    const semantic = structuredClone(ossieModel);
+    semantic.datasets[0].source = 'SELECT amount AS value FROM sales.public.raw_orders';
     const original = structuredClone({ schema, profile, semantic });
     const result = buildDataModel({ schema, profile, semantic });
 
-    expect(result.description).toBe('Sales definitions');
-    expect(result.properties).toEqual({ currency: 'USD' });
-    expect(result.models.map((model) => model.name)).toEqual(['orders', 'customers', 'order_totals']);
-    expect(result.models[0]).toMatchObject({
-      primaryKey: ['id', 'customer_id'],
-      uniqueKeys: ['id'],
-      metrics: { row_count: 0 },
-      properties: { description: 'Customer orders' },
-    });
-    expect(result.models[0].columns.map((column) => column.name)).toEqual([
-      'id',
-      'customer_id',
-      'amount',
-      'amount_with_tax',
-    ]);
-    expect(result.models[0].columns[2]).toEqual({
-      name: 'amount',
-      type: 'DOUBLE',
-      notNull: false,
-      metrics: { min: null, max: 0, top_values: [], custom: [{ value: false, count: 1 }] },
-      properties: { logicalType: 'numeric', unit: 'USD' },
-    });
-    expect(result.models[2]).toEqual(semantic.models[1]);
-    expect(result.relationships).toEqual([]);
-    expect(result.views).toEqual(semantic.views);
-    expect(result.cubes).toEqual(semantic.cubes);
+    expect(result).toEqual({ ...buildDataModel({ schema, profile }), semantic });
+    expect(result.models[0].tableReference).toEqual({ catalog: 'sales', schema: 'public', table: 'raw_orders' });
+    expect(result.models[0].metrics).toEqual({ row_count: 0 });
+    expect(result.semantic.datasets[0].source).toBe(semantic.datasets[0].source);
 
-    result.models[0].columns[2].properties.unit = 'changed';
-    result.cubes[0].measures[0].expression = 'COUNT(*)';
+    result.semantic.datasets[0].fields[0].expression.sql = 'changed';
     expect({ schema, profile, semantic }).toEqual(original);
-  });
-
-  it('replaces a discovered model source without retaining a conflicting table reference', () => {
-    const result = buildDataModel({
-      schema,
-      semantic: { models: [{ name: 'orders', refSql: 'SELECT * FROM raw_orders' }] },
-    });
-
-    expect(result.models[0].refSql).toBe('SELECT * FROM raw_orders');
-    expect(result.models[0]).not.toHaveProperty('tableReference');
-    expect(result.models[0].columns).toEqual(schema.models[0].columns);
-  });
-
-  it.each(['model', 'column'])('rejects duplicate semantic %ss', (kind) => {
-    const model = { ...schema.models[0] };
-    if (kind === 'column') model.columns = [model.columns[0], model.columns[0]];
-
-    expect(() => buildDataModel({ schema, semantic: { models: kind === 'model' ? [model, model] : [model] } })).toThrow(
-      `Duplicate semantic ${kind}`
-    );
   });
 
   it('does not mutate or retain nested references to either input', () => {

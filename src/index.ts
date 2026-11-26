@@ -40,6 +40,8 @@ export {
   vizOutputSchema,
 } from './contracts';
 
+export { parseSemantic } from './contracts/semantic';
+
 export { AVA } from './ava';
 export { registerEngine } from './engines';
 

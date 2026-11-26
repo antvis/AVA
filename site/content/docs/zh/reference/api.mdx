@@ -228,39 +228,31 @@ await ava.profile({
 <Heading as="h3" id="semantic">semantic</Heading>
 
 ```typescript
-semantic(options?: SemanticOptions, setter?: (options: SemanticOptions) => Semantic): Promise<Semantic>
+semantic(options?: SemanticOptions, setter?: (options: SemanticOptions) => Semantic | null): Promise<Semantic | null>
+parseSemantic(text: string): Semantic
 ```
 
-读取或替换已加载数据源的语义定义。不传 setter 时返回已保存的定义，初始为 `{}`。这个调用不会发现 schema、计算 profile 或请求大模型。
+`semantic()` 返回当前 Apache Ossie 模型的副本，未设置时返回 `null`。加载数据源后，setter 返回一个完整模型来替换当前模型，或返回 `null` 来清除。setter 接收空选项对象。校验失败或 setter 抛错时，当前模型继续生效。
+
+`parseSemantic()` 解析并校验 YAML 或 JSON 文本。对象校验可直接使用 `semanticOutputSchema`。两者都可以在加载数据源前调用，也无需模型密钥。
 
 ```typescript
 await ava.semantic(undefined, () => ({
-  description: 'Sales reporting; amounts are in USD.',
-  cubes: [{
-    name: 'revenue',
-    baseObject: 'data',
-    measures: [{ name: 'total', expression: 'SUM(revenue)', type: 'DOUBLE' }],
+  version: '0.3.0.dev0',
+  name: 'sales_reporting',
+  datasets: [{
+    name: 'orders',
+    source: 'data',
+    metrics: [{ name: 'total_revenue', expression: { sql: 'SUM(source.revenue)' } }],
   }],
 }));
-
-const definitions = await ava.semantic();
-await ava.semantic(undefined, () => ({})); // Clear the saved definitions.
+const model = await ava.semantic();
+await ava.semantic(undefined, () => null);
 ```
 
-| 参数 | 类型 | 必填 | 含义与默认值 |
-| --- | --- | --- | --- |
-| `options` | `SemanticOptions` | 否 | `{}`，目前没有可配置字段。 |
-| `setter` | `(options: SemanticOptions) => Semantic` | 否 | 返回要保存的业务语义，替换之前的完整定义。 |
+`analyze()`、`translate()` 和 `suggest()` 通过 `DataModel.semantic` 接收模型，同时使用物理结构和统计画像。AVA 保存并原样返回供应商扩展。重新加载或释放数据源会清除模型。
 
-Setter 接收选项对象，同步返回 `Semantic`。AVA 验证并复制结果；结果无效或 setter 抛错时保留之前的定义。需要先加载数据源。替换数据源或释放实例会清空语义；更新 schema、profile 会保留它。
-
-`Semantic` 描述业务定义，不包含模型或列的 `metrics`；统计信息应通过 `profile()` 提供。引擎接收的组合上下文仍是 `DataModel`。
-
-编写流程和销售示例见[补充业务语义](/documentation/data/semantic/)，详细字段见[语义字段](#semantic-fields)。
-
-在 `analyze()`、`translate()`、`suggest()` 中，AVA 按名称将语义中的模型和列与 schema、profile 合并。未指定的模型、列及统计信息仍可使用；模型和列的属性按键合并，同名键以语义值为准。显式提供的关系或视图列表会整体替换发现的列表，包括空列表。每个语义模型都必须且只能声明一种来源：`tableReference`、`refSql` 或 `baseObject`。
-
-这些定义为查询生成提供上下文。声明 cube、view 或计算列不会创建数据库对象，生成的查询仍须能在配置的引擎中执行。
+可参考[销售示例](/documentation/data/semantic/)和[语义字段](#semantic-fields)。
 
 <Heading as="h2" id="analysis-and-queries">分析与查询</Heading>
 
@@ -425,211 +417,30 @@ MCP 等 JSON Schema 工具对输入使用 `z.toJSONSchema(inputSchema, { io: 'in
 
 `dispose(): Promise<void>` 没有参数，释放当前引擎并清空 schema、profile 与业务语义。应在 `finally` 中等待它执行完成。
 
-<Heading as="h2" id="semantic-model-reference">语义模型参考</Heading>
+<Heading as="h2" id="semantic-model-reference">Ossie 模型参考</Heading>
 
 <Heading as="h3" id="semantic-fields">语义字段</Heading>
 
-六个顶层字段均可选，按应用需要提供即可。名称和必填表达式必须是非空字符串。`properties` 包含 JSON 值，其中的数值必须有限；`description`、`unit`、`synonyms`、`owner` 等键是应用约定，不代表 SDK 内置行为。
+`Semantic` 遵循固定的 Apache Ossie `0.3.0.dev0` 核心规范。每个文档包含一个根级模型名称 `name`，以及至少一个数据集。[官方核心规范](https://github.com/apache/ossie/blob/aedf08651451306896d98e17657c16c99848ef78/core-spec/spec.md)，[JSON Schema](https://github.com/apache/ossie/blob/aedf08651451306896d98e17657c16c99848ef78/core-spec/ossie-schema.json)
 
-| 字段 | Shape | 用途 |
-| --- | --- | --- |
-| `description` | `string` | 共享业务背景、术语、记录范围与时间口径。 |
-| `properties` | `Record<string, JsonValue>` | 共享注释。 |
-| `models` | 下方的模型定义 | 物理及逻辑数据集、列含义与来源映射。 |
-| `relationships` | 下方的关系定义 | 命名模型之间的连接关系。 |
-| `views` | 下方的视图定义 | 可复用的命名 SQL 查询。 |
-| `cubes` | 下方的 Cube 定义 | 指标、分组表达式与下钻路径。 |
-
-<Heading as="h3" id="semantic-models">语义模型</Heading>
-
-| 字段 | 必填 | 含义 |
-| --- | --- | --- |
-| `name` | 是 | 逻辑模型名；按名称匹配已有 schema 模型，或添加新模型。 |
-| `tableReference` | 三种来源选择器之一 | `{ table, schema?, catalog? }`，独立于逻辑名称的物理标识；额外的来源属性必须是 JSON 值。 |
-| `refSql` | 三种来源选择器之一 | 列映射与计算之前，用于定义源数据行的 SQL。 |
-| `baseObject` | 三种来源选择器之一 | 提供数据行的另一个模型或视图名称。 |
-| `columns` | 否 | 列定义见下方；未列出的已有列仍保留。 |
-| `primaryKey` | 否 | 单列名称，或代表复合主键的有序非空数组。 |
-| `uniqueKeys` | 否 | 唯一键数组，每项是单列名称或非空复合键数组。 |
-| `dialect` | 否 | `refSql` 的 SQL 方言；省略时使用执行上下文。 |
-| `properties` | 否 | 模型注释，尤其是行粒度和业务用途。 |
-
-主键、唯一键是声明，不是统计结论，需要对照数据源验证。`primaryKey: ['tenant_id', 'order_id']` 表示一个复合键；`uniqueKeys: ['email', ['tenant_id', 'external_id']]` 则声明两个候选唯一键。
-
-<Heading as="h3" id="semantic-columns">语义列</Heading>
-
-| 字段 | 必填 | 含义 |
-| --- | --- | --- |
-| `name` | 是 | 所属模型内的名称，用于匹配已有列。 |
-| `type` | 是 | 声明的类型；关系导航列则填写目标模型名称。 |
-| `properties` | 否 | 列的上下文，例如描述、单位、枚举含义或空值约定。 |
-| `expression` | 否 | 针对来源的 SQL 映射或计算；`null` 或省略表示不提供表达式。 |
-| `isCalculated` | 否 | 标记派生列的布尔值，本身不会执行计算。 |
-| `isPrimaryKey` | 否 | 标记是否属于已声明主键的布尔值。 |
-| `notNull` | 否 | 声明的非空约束，省略表示未指定。 |
-| `relationship` | 否 | 用于导航的关系标识，不是外键列名。 |
-
-<Heading as="h3" id="semantic-relationships-and-views">语义关系与视图</Heading>
-
-| 字段 | 必填 | 含义 |
-| --- | --- | --- |
-| `relationships[].name` | 是 | 关系标识，也用于列导航。 |
-| `relationships[].models` | 是 | 恰好两个模型名，顺序为第一模型、第二模型。 |
-| `relationships[].joinType` | 是 | `ONE_TO_ONE`、`ONE_TO_MANY`、`MANY_TO_ONE` 或 `MANY_TO_MANY`。 |
-| `relationships[].condition` | 是 | 使用限定列名的 SQL 连接条件。 |
-| `relationships[].properties` | 否 | 关系的业务背景。 |
-| `views[].name` | 是 | 查询的逻辑名称。 |
-| `views[].statement` | 是 | 定义结果的 SQL；保存不会执行它。 |
-| `views[].dialect` | 否 | SQL 方言，省略时使用执行上下文。 |
-| `views[].properties` | 否 | 用途与业务口径。 |
-
-关系和视图允许额外的 JSON 属性，由应用及其使用方约定含义。
-
-<Heading as="h3" id="semantic-cubes-and-expressions">语义 Cube 与表达式</Heading>
-
-| 字段 | 必填 | 含义 |
-| --- | --- | --- |
-| `name` | 是 | Cube 标识。 |
-| `baseObject` | 是 | 提供聚合数据行的模型或视图。 |
-| `measures` | 是 | 非空的聚合定义数组。 |
-| `dimensions` | 否 | 分组定义。 |
-| `timeDimensions` | 否 | 日期、时间分组定义，粒度在查询时选择。 |
-| `hierarchies` | 否 | 名称到非空维度名数组的映射，从粗粒度到细粒度排列。 |
-| `properties` | 否 | Cube 注释。 |
-
-`measures`、`dimensions` 和 `timeDimensions` 的每一项都使用以下字段：
-
-| 字段 | 必填 | 含义 |
-| --- | --- | --- |
-| `name` | 是 | Cube 内的表达式标识。 |
-| `expression` | 是 | 指标使用 SQL 聚合表达式，维度使用分组表达式。 |
-| `type` | 是 | 声明的结果类型。 |
-| `description` | 否 | 表达式的业务含义。 |
-| `properties` | 否 | 单位、同义词等注释。 |
-
-例如，按日历下钻时，先定义 `year`、`month`、`order_date` 的维度表达式，再声明 `hierarchies: { calendar: ['year', 'month', 'order_date'] }`。层级只描述路径，不会自动生成这些字段。
-
-模型、列、Cube 和表达式对象会拒绝未知字段；需要应用注释时，放在支持的 `properties` 中。
-
-<Heading as="h3" id="semantic-model-sources">语义模型来源</Heading>
-
-编写映射前，先调用 `schema()` 检查模型名称、来源引用与列类型。名称必须在所属模型内准确匹配。销售示例的内存 JSON 暴露为 `data`；其他数据源可能使用不同名称，并带有 catalog 或 schema 限定信息。
-
-`models` 中的每一项都需要 `name`，并且 **只能选择一种** 来源，即使只是想给已有模型补充描述：
-
-| 来源选择器 | 适用情况 | 示例 |
-| --- | --- | --- |
-| `tableReference` | 模型映射到物理表或数据库视图，保留发现的来源限定信息。 | `{ tableReference: { schema: 'public', table: 'orders' } }` |
-| `refSql` | 用 SQL 定义逻辑模型的源数据行。 | `{ refSql: "SELECT * FROM orders WHERE status = 'paid'" }` |
-| `baseObject` | 由另一个模型或已声明视图提供源数据行。 | `{ baseObject: 'paid_orders' }` |
-
-使用已有 schema 模型的 `name` 可以补充该模型。换用其他名称会新增逻辑模型，不会重命名底层表。列即使只补充描述，也必须提供 `name` 和 `type`；物理列沿用发现的类型，计算列声明结果类型。
-
-`baseObject`、`refSql` 和列的 `expression` 为查询生成器描述映射。逻辑名称不代表能直接交给 `query()` 执行。例如，查询计算列 `net_amount` 时，需要展开其表达式，或通过子查询、CTE 定义。
-
-<Heading as="h3" id="semantic-join-and-view-examples">语义关系与视图示例</Heading>
-
-跨模型分析时添加关系；可复用 SQL 有助于表达业务逻辑时添加视图。以下片段假定已有数据源提供 `orders`、`customers`，与前面的单表销售示例相互独立。
-
-<h4 id="relationship-example">关系示例</h4>
-
-```typescript
-import type { Semantic } from '@antv/ava';
-
-const semantic = {
-  relationships: [{
-    name: 'order_customer',
-    models: ['orders', 'customers'],
-    joinType: 'MANY_TO_ONE',
-    condition: 'orders.customer_id = customers.id',
-    properties: { description: 'Each order belongs to one customer.' },
-  }],
-} satisfies Semantic;
-```
-
-`models` 是有序模型对。`MANY_TO_ONE` 表示第一模型的多行可以匹配第二模型的一行。`joinType` 描述基数，不决定使用 `LEFT JOIN` 还是 `INNER JOIN`。复合键的连接条件需要包含所有键字段。
-
-如果暴露关系导航列，应将 `relationship` 设为关系的 **名称** ，将 `type` 设为目标模型名，例如 `{ name: 'customer', type: 'customers', relationship: 'order_customer' }`。物理外键列仍是 `customer_id`。
-
-跨表聚合前先检查行粒度。一笔订单连接多条明细时，订单金额可能被重复计算。基数声明只提供上下文，AVA 不会验证唯一性，也不会自动避免重复计数。
-
-<h4 id="view-and-derived-model-example">视图与派生模型示例</h4>
-
-```typescript
-import type { Semantic } from '@antv/ava';
-
-const semantic = {
-  views: [{
-    name: 'paid_orders',
-    statement: "SELECT * FROM orders WHERE status = 'paid'",
-    dialect: 'duckdb',
-    properties: { description: 'Paid orders only; this excludes fully refunded orders.' },
-  }],
-  models: [{
-    name: 'paid_sales',
-    baseObject: 'paid_orders',
-    properties: { description: 'One row per paid order.' },
-  }],
-} satisfies Semantic;
-```
-
-这里的逻辑模型引用一个命名查询，生成器可以将其展开为 CTE 或子查询。只有执行引擎中已存在 `paid_orders` 时，`await ava.query('SELECT * FROM paid_orders')` 才能执行；保存定义不会创建它。不需要单独命名视图时，也可以直接用模型的 `refSql` 描述来源查询。
-
-<Heading as="h3" id="save-and-combine-semantic-definitions">保存并合并语义定义</Heading>
-
-在应用中保留一份完整定义，与对应数据源一起管理版本，并在 `source()` 之后传给 AVA。每次 setter 都替换已保存的整个语义对象，不会追加或局部修改旧定义。
-
-```typescript
-await ava.semantic(undefined, () => completeDefinitions);
-const saved = await ava.semantic();
-await ava.semantic(undefined, () => ({})); // Clear all saved semantics.
-```
-
-定义可保存在代码或应用自己的 JSON 文件中。例如，Node.js 加载数据源后：
-
-```javascript
-const { readFile } = require('node:fs/promises');
-const definitions = JSON.parse(await readFile('./sales-semantic.json', 'utf8'));
-await ava.semantic(undefined, () => definitions);
-```
-
-JSON 文件只包含定义对象，不带 JavaScript 变量声明或 setter。AVA 接受对象而非文件路径；如果保存为 YAML，请先在应用中解析，再调用 setter。读取和解析文件可以异步完成，setter 本身同步返回对象。
-
-操作需要数据模型时，AVA 按以下顺序组合输入：
-
-| 组合方式 | 行为 |
+| 字段 | 用途 |
 | --- | --- |
-| 先 schema，再 profile | 按名称将统计信息附加到已有模型和列。 |
-| 语义模型 | 同名模型补充已有内容，新名称添加逻辑模型；显式来源选择器优先。 |
-| 语义列 | 同名列补充已有列，新名称添加新列。未列出的模型、列及 profile 指标仍可使用；空列数组不会删除已发现的列。 |
-| 模型与列的 `properties` | 按键合并，同名键以语义值为准；嵌套 JSON 值整体替换，不递归合并。 |
-| 显式提供的其他模型与列字段 | 语义值替换对应字段，包括类型与键声明。 |
-| 顶层字段 | 显式值替换对应内容。关系与视图数组整体替换；`[]` 会清空组合上下文中的相应列表。 |
+| `datasets[].source` | 提供数据行的物理表、视图或查询。 |
+| `datasets[].fields` | 命名的行级表达式。键和关联列列表引用这些字段名。 |
+| `datasets[].metrics` | 数据集级指标，用 `source.column` 引用物理来源列。 |
+| 根级 `metrics` | 模型级指标，用 `dataset.field` 引用数据集字段。 |
+| `relationships` | 描述多方到一方的关联，按顺序配对两端字段。 |
+| `ai_context` | 记录模型或对象的业务用法、同义词和问题示例。 |
+| `nonportable_extensions` | 按供应商标记的 JSON 元数据，随模型保存和返回。 |
 
-省略某部分会保留对应的 schema 上下文。需要在已发现的外键之外新增关系时，应在传入列表中包含仍要保留的关系。读取 `schema()`、`profile()`、`semantic()` 返回的仍是各自输入，不是组合模型；目前没有公开方法读取合并后的 `DataModel`。
+`expression.sql` 使用 `OSSIE_SQL_2026`，特定方言写在 `expression.dialects`。两者可以同时提供，其中 `expression.sql` 优先作为 `OSSIE_SQL_2026` 表达式。
 
-更新 schema 会清空 profile、保留语义；计算 profile 会替换统计信息、保留语义；加载新数据源或调用 `dispose()` 会清空三者。加载新数据源后应重新应用保存的定义，并在结构变化时复核映射。这些调用都需要活动数据源，无效数据源配置会保留当前数据集；配置通过校验后，实际替换过程失败则没有活动数据源。
+<Heading as="h3" id="migrate-legacy-ava">迁移旧版 AVA 定义</Heading>
 
-Setter 验证并复制返回对象。验证失败或 setter 抛错时，之前的语义定义保持不变。
+将原有 `model` 或 SQL 视图映射为 `dataset`，用物理表或查询作为 `source`。将旧列和 Cube 维度写入 `fields`，按作用域把 Cube 度量移到数据集或根级 `metrics`。主键和唯一键改为已声明字段的列表。等值连接使用配对的 `from_columns` 和 `to_columns`。下钻顺序等业务约定可写入 `ai_context`，专有元数据放入供应商扩展。迁移任意连接条件和派生来源时，先复核口径。
+
+旧版 OSI 文件若通过 `semantic_model` 包裹模型，参照上游迁移说明改为扁平文档。[Ossie 迁移说明](https://github.com/apache/ossie/blob/aedf08651451306896d98e17657c16c99848ef78/core-spec/spec.md#migrating-earlier-document-shapes)
 
 <Heading as="h3" id="semantic-validation">语义验证</Heading>
 
-结构验证检查字段形状、必填项、来源选择器的互斥性及非空指标列表，但 **不能证明** SQL 有效、引用对象存在、键声明成立、单位一致或业务规则正确。重复的语义模型名、同一模型内的重复列名，会在分析、翻译或推荐问题组装组合模型时被拒绝，而非仅由 setter 拒绝。
-
-为自己的数据定义口径时，可以沿用销售示例的验证流程：
-
-1. 查看 `schema()`，准确匹配名称与物理类型。远程数据源需保留 catalog 和 schema 限定信息。
-2. 请业务负责人复核行粒度、纳入统计的状态、空值处理、单位与时间口径。
-3. 用答案已知的小数据集逐一运行表达式，按需覆盖被排除记录、空值、退款及连接重复计数等情况。
-4. 针对同样的问题检查 `translate()` 输出，再将执行结果与已知答案对照。Setter 成功不等于端到端验证成功。
-5. 数据源结构或业务定义变化后，重新执行这些检查。
-
-| 现象 | 检查方向 |
-| --- | --- |
-| Setter 拒绝模型 | 必须且只能提供 `tableReference`、`refSql`、`baseObject` 之一；列需要 `name` 和 `type`。 |
-| Setter 拒绝 Cube | 需要 `baseObject`，以及至少一个包含 `name`、`expression`、`type` 的指标。 |
-| Setter 拒绝统计信息 | 模型与列的 `metrics` 应传给 `profile()`，不要放进 `semantic()`。 |
-| 查询提示逻辑名称不存在 | 检查 SQL 是否将声明的表达式、视图或模型展开为可执行 SQL。 |
-| 已发现的连接关系消失 | 你提供的关系列表替换了发现的列表，请包含所有仍需要的关系。 |
-| 数值偏大 | 检查行粒度、连接基数、重复键、记录过滤和退款处理。 |
-| 规则未生效 | 检查生成的查询。必须遵守的访问规则应在数据层或执行层强制实施。 |
+AVA 校验文档结构，以及模型声明的名称、键和关系引用。用官方参考校验器检查表达式语法、指标作用域及可移植性，再用实际数据核对来源映射和指标结果。[Ossie 参考校验器](https://github.com/apache/ossie/blob/aedf08651451306896d98e17657c16c99848ef78/validation/validate.py)

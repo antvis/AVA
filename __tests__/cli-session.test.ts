@@ -9,6 +9,8 @@ import { buildDataModel } from '../src/util/data-model';
 import { startupSchema, requestSchema } from '../src/cli/session/protocol';
 import { sessionDirectory } from '../src/cli/session/transport';
 
+import { ossieModel } from './fixtures/ossie';
+
 import type { DataSourceConfig, EngineConfig, Schema } from '../src/types';
 
 vi.mock('child_process', async (importOriginal) => ({
@@ -74,7 +76,10 @@ describe('session startup protocol', () => {
     expect(() => requestSchema.parse({ command: 'schema', schema: { models: null } })).toThrow();
     expect(() => requestSchema.parse({ command: 'profile', profile: { models: null } })).toThrow();
     expect(requestSchema.parse({ command: 'semantic' })).toEqual({ command: 'semantic' });
-    expect(requestSchema.parse({ command: 'semantic', semantic: {} })).toEqual({ command: 'semantic', semantic: {} });
+    expect(requestSchema.parse({ command: 'semantic', semantic: null })).toEqual({
+      command: 'semantic',
+      semantic: null,
+    });
     expect(() => requestSchema.parse({ command: 'semantic', semantic: { models: null } })).toThrow();
     expect(() =>
       requestSchema.parse({
@@ -265,8 +270,8 @@ describe('dataset engine and language', () => {
       ],
     };
     await datasets.createDataset([source], llm, 'javascript');
-    const semantic = { description: 'Sales are in USD.', properties: { confirmedBy: 'user' } };
-    expect(await datasets.withDataset((ava) => ava.semantic())).toEqual({});
+    const semantic = ossieModel;
+    expect(await datasets.withDataset((ava) => ava.semantic())).toBeNull();
     await datasets.withDataset((ava) => ava.semantic(undefined, () => semantic));
     expect(await datasets.describeDataset(schema)).toMatchObject(schema);
     await datasets.withDataset((ava) => ava.profile(undefined, () => profile));
@@ -275,9 +280,11 @@ describe('dataset engine and language', () => {
     );
     await datasets.withDataset((ava) => ava.translate('Sales'));
     expect(getDSL).toHaveBeenLastCalledWith('Sales', buildDataModel({ schema, profile, semantic }));
-    await expect(datasets.withDataset((ava) => ava.semantic(undefined, () => ({ models: null })))).rejects.toThrow();
+    await expect(
+      datasets.withDataset((ava) => ava.semantic(undefined, () => ({ models: null } as never)))
+    ).rejects.toThrow();
     expect(await datasets.withDataset((ava) => ava.semantic())).toEqual(semantic);
-    await datasets.withDataset((ava) => ava.semantic(undefined, () => ({})));
+    await datasets.withDataset((ava) => ava.semantic(undefined, () => null));
     await datasets.withDataset((ava) => ava.translate('Sales'));
     expect(getDSL).toHaveBeenLastCalledWith('Sales', buildDataModel({ schema, profile }));
   });

@@ -42,7 +42,7 @@ node evals/cli.js run ava-workflow --benchmark databench --limit all \
   --output evals/ava-workflow/results/databench-lite.csv
 ```
 
-语义文件由使用者自行准备，仅保存在本地，不随仓库提交，下载器也不提供。每个选中数据库默认读取 `evals/databench/semantics/<suite>.yaml`，例如 `002_Titanic.yaml`。文件不存在时沿用 schema/profile 流程。同一份业务定义供 lite 和 full 数据使用，文件内容遵循 SDK 的 `Semantic` 类型，可包含描述、模型和字段说明、关系、视图及 cubes；统计 `metrics` 仍由 profile 提供。流程通过 `ava.semantic(undefined, setter)` 接入模型上下文。
+语义文件由使用者自行准备，仅保存在本地，不随仓库提交，下载器也不提供。每个选中数据库默认读取 `evals/databench/semantics/<suite>.yaml`，例如 `002_Titanic.yaml`。文件不存在时沿用 schema/profile 流程。同一份业务定义供 lite 和 full 数据使用，文件使用 Apache Ossie `0.3.0.dev0` 核心模型格式。业务指标声明在 `metrics`，统计画像由 profile 提供。流程通过 `ava.semantic(undefined, setter)` 接入模型上下文。
 
 裸数据基线使用 `--context raw`：模型初始输入只包含表 `data` 的原始 CSV 表头及前 3 行，不包含字段类型、schema 说明、profile 统计或 semantic；SQL 仍在完整表上执行。该模式仅支持 DuckDB 和 direct 策略，自动跳过 semantic YAML，并屏蔽 `analyze()` 的自动 schema 发现。Direct 默认执行错误纠正仍保留，纠错时可见的引擎诊断可能包含字段名或类型。上下文口径写入 manifest，不能与普通评测结果混用同一输出文件。
 

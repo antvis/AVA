@@ -127,7 +127,10 @@ await ava.source({ type: 'csv-file', options: { path: './sales.csv' } });
 const schema = await ava.schema();
 const profile = await ava.profile({ metrics: ['row_count', 'null_count'] });
 await ava.semantic(undefined, () => ({
+  version: '0.3.0.dev0',
+  name: 'sales_reporting',
   description: 'sales 字段表示折后销售额，月度比较使用 order_date 字段。',
+  datasets: [{ name: 'orders', source: 'data' }],
 }));
 ```
 

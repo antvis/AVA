@@ -34,88 +34,60 @@ East therefore has **150 USD** in revenue; West has **60 USD** . The definition 
 
 ## Write the definition
 
-Load the table above as inline JSON, exposed by DuckDB as `data`. Its corresponding semantic definition is:
+Save the model as `sales.ossie.yaml`. It maps the logical dataset `orders` to the table `data`. `fields` exposes the grouping fields and `metrics` records the calculation. In a dataset-scoped metric, `source.amount` refers directly to a column of that dataset's source.
 
-```javascript
-/** @satisfies {import('@antv/ava').Semantic} */
-const semantic = {
-  description: 'Sales reporting in USD. Revenue means net revenue from paid and refunded orders. Pending and cancelled orders do not count. A missing refund is zero. Dates are order dates, not refund dates.',
-  properties: { owner: 'Sales operations' },
-  models: [{
-    name: 'data',
-    tableReference: { table: 'data' },
-    primaryKey: 'order_id',
-    properties: { description: 'One row per order; refunds are cumulative amounts on the original order.' },
-    columns: [
-      { name: 'amount', type: 'BIGINT', properties: { description: 'Order amount before refunds.', unit: 'USD' } },
-      { name: 'refund_amount', type: 'BIGINT', properties: { description: 'Cumulative refund, not a separate refund transaction. Null means zero.', unit: 'USD' } },
-      { name: 'status', type: 'VARCHAR', properties: { description: 'Only paid and refunded orders contribute to revenue.' } },
-      {
-        name: 'net_amount',
-        type: 'DOUBLE',
-        isCalculated: true,
-        expression: 'amount - COALESCE(refund_amount, 0)',
-        properties: { description: 'Per-order amount after refunds, before filtering by status.', unit: 'USD' },
-      },
-    ],
-  }],
-  cubes: [{
-    name: 'sales',
-    baseObject: 'data',
-    measures: [{
-      name: 'net_revenue',
-      expression: "SUM(CASE WHEN status IN ('paid', 'refunded') THEN amount - COALESCE(refund_amount, 0) ELSE 0 END)",
-      type: 'DOUBLE',
-      description: 'Revenue after refunds, counting only paid and refunded orders.',
-      properties: { unit: 'USD', synonyms: ['revenue', 'net sales'] },
-    }],
-    dimensions: [{ name: 'region', expression: 'region', type: 'VARCHAR' }],
-    timeDimensions: [{ name: 'order_date', expression: 'CAST(ordered_at AS DATE)', type: 'DATE' }],
-  }],
-};
+```yaml
+version: 0.3.0.dev0
+name: sales_reporting
+description: Orders and their cumulative refunds, in USD.
+datasets:
+  - name: orders
+    source: data
+    primary_key: [order_id]
+    fields:
+      - name: order_id
+        expression: { sql: order_id }
+        datatype: Integer
+      - name: region
+        expression: { sql: region }
+        datatype: String
+      - name: order_date
+        expression: { sql: "CAST(ordered_at AS DATE)" }
+        datatype: Date
+        dimension: { is_time: true }
+    metrics:
+      - name: net_revenue
+        description: Revenue after refunds, in USD.
+        datatype: Decimal
+        expression:
+          sql: >-
+            SUM(CASE WHEN source.status IN ('paid', 'refunded')
+              THEN source.amount - COALESCE(source.refund_amount, 0)
+              ELSE 0 END)
 ```
 
-<Callout>
-  **Definitions guide query generation.** They do not create database objects or enforce access rules.
-</Callout>
+## Load the model
 
-Read it in three parts:
+Load the source first, then import the model. The CLI accepts a YAML or JSON file or reads one from stdin with `--file -`.
 
-1. **`description` and `properties` explain meaning.** The shared description defines revenue; model and column properties explain row grain, units, and nulls. Keys such as `unit` and `synonyms` are annotations, not special SDK options.
-2. **`models` connects meaning to data.** `name: 'data'` matches the discovered model. The calculated `net_amount` describes a per-order value. Unlisted physical columns remain available from the schema.
-3. **`cubes` defines reusable analysis.** `sales` groups a measure and its grouping expressions. `net_revenue` contains both the status filter and refund calculation. `dimensions` supplies region grouping; `timeDimensions` supplies order-date grouping.
+```sh
+ava semantic "$DATASET_ID" --file sales.ossie.yaml
+ava semantic "$DATASET_ID" > sales.ossie.json
+ava semantic "$DATASET_ID" --clear
+```
 
-The measure includes its eligibility rule so that it still applies when grouping by region or date. The calculated `net_amount` alone does not decide which orders count toward revenue.
-
-For your own source, inspect `await ava.schema()` first. Match existing model and column names exactly and retain physical source qualifiers. Each semantic model requires exactly one of `tableReference`, `refSql`, or `baseObject`; each column requires `name` and `type`. Copy discovered types for physical fields and declare result types for calculations. See [model sources](/documentation/reference/api/#semantic-model-sources) for the alternatives.
-
-You can start smaller: `{ description: 'Your business rules here.' }` is valid. Add models for field-specific meaning, relationships for joins, and cubes for reusable measures as your questions require them.
-
-## Save the definition and see the result
-
-After configuring `ava` and loading a source with `source()`, pass the definition as the setter's return value:
+The SDK accepts the same document as an object. Use `parseSemantic` to read its YAML or JSON representation.
 
 ```typescript
-await ava.semantic(undefined, () => semantic);
+import { readFile } from 'node:fs/promises';
+import { parseSemantic } from '@antv/ava';
+
+const model = parseSemantic(await readFile('sales.ossie.yaml', 'utf8'));
+await ava.semantic(undefined, () => model);
 const saved = await ava.semantic();
 ```
 
-`undefined` uses the default options; semantic currently has no configurable options. The setter saves a validated copy. Subsequent `analyze()`, `translate()`, and `suggest()` calls combine it with the schema and available profile.
-
-### Use the CLI
-
-Save the definition as a JSON file, for example with `JSON.stringify(semantic, null, 2)` in your application. After loading the source with `ava source`, use its dataset ID:
-
-```sh
-ava semantic "$DATASET_ID" --file semantic.json
-ava semantic "$DATASET_ID" > semantic-readback.json
-```
-
-`--file` takes a plain path without `@` and replaces the complete session definition. Reading without `--file` returns the current definition, initially `{}`. Both operations work without a model key. To clear the definition, load a file containing `{}`. Invalid files leave the previous value intact.
-
-Keep the JSON file for later sessions; the CLI does not load it automatically. Schema/profile updates retain semantic, while a new source session starts without it. The [AVA skill](/documentation/agent-skill/) guides agents to resolve material definition gaps with the user and save reusable confirmations with their source and scope. File discovery and scope checks are agent responsibilities.
-
-`analyze`, `translate`, and `suggest` use these definitions as model context. Agent-written `query` DSL must apply them explicitly; semantic does not rewrite executed queries.
+Each import replaces the session model. A new source or `dispose()` clears it. Updates to schema and profile retain the model. `analyze()`, `translate()`, and `suggest()` consume the model alongside physical metadata. For `query()`, apply the definitions in the statements you submit.
 
 ### Query using the definition
 
@@ -144,20 +116,23 @@ The result for the six orders above is:
 
 This is an example query; model-generated SQL and column aliases can vary.
 
-A logical model, cube, view, or calculated column does not automatically become a queryable database object. For example, SQL using `net_amount` must expand its expression or define it in a subquery or CTE. The query above embeds the measure expression and reads the physical `data` table.
-
 ## Check and maintain your definition
 
-Before using a definition for real questions:
+Confirm grain, units, eligibility, null handling, and time attribution with the data owner. Compare generated queries against results you can verify, including refunds, excluded records, and join cardinality.
 
-1. Confirm row grain, units, eligible records, null handling, and time meaning with the data owner. For joins, check that a row is not counted multiple times.
-2. Test expressions on a small dataset with known answers, including edge cases such as the refunds and excluded orders shown above.
-3. Inspect generated SQL and compare executed results with those known answers. Setter validation checks the object structure; it does not prove the SQL or business logic is correct.
+Keep the complete model in version control alongside its source contract. AVA validates against the pinned Ossie JSON Schema and checks declared dataset, field, key, and relationship references. The upstream validator also checks expression syntax, metric scoping, and portability. [Ossie reference validator](https://github.com/apache/ossie/blob/aedf08651451306896d98e17657c16c99848ef78/validation/validate.py)
 
-Keep the complete definition in application code or a JSON file and version it with the data contract.
+For field definitions, migration from the old AVA format, and the SDK signature, see the [API reference](/documentation/reference/api/#semantic-fields).
 
-<Callout>
-  **Each setter replaces the complete definition.** Loading another source or calling `dispose()` clears it; reapply it after loading a source. Schema and profile updates retain it.
-</Callout>
+## Import from Apache Gravitino
 
-For exact field shapes, source mappings, relationships, views, merge rules, and validation errors, continue to the [semantic fields in the API reference](/documentation/reference/api/#semantic-fields). See [Inspect your data](/documentation/data/schema/) for the other inputs and [AVA API](/documentation/reference/api/#semantic) for the method signature.
+Use Gravitino to manage ownership, access and publication of shared models. AVA reads a published Ossie snapshot and connects to the data through its configured engine. A Gravitino model is identified by metalake, catalog, schema and model name. At write time, Gravitino resolves the source table or view using the author's permissions. Check the source mapping and data permissions again for the query identity. [Gravitino source validator](https://github.com/apache/gravitino/blob/ac461b995d2e02aab4f542b686b633faa67fbd7a/server/src/main/java/org/apache/gravitino/server/web/rest/SemanticModelSourceValidator.java)
+
+1. **Pin a published revision.** On a deployment with revision support, select a published revision from `GET …/semantic-models/{model}/revisions` and fetch `GET …/semantic-models/{model}/revisions/{revision}/ossie?format=json`. Give the reader access to the model and its parent catalog and schema. If only the unversioned export is available, archive the reviewed export and its digest. [Gravitino export implementation](https://github.com/apache/gravitino/blob/ac461b995d2e02aab4f542b686b633faa67fbd7a/server/src/main/java/org/apache/gravitino/server/web/rest/SemanticModelOperations.java)
+2. **Convert the protocol version before loading.** The Gravitino revision referenced here exports `0.2.0.dev0` by default as a flat single-model document. Keep datasets, relationships, root metrics and `expression.dialects`. Convert `custom_extensions` at every level to `nonportable_extensions` and decode each JSON string in `data` to an object. Check that keys and relationships refer to declared fields. Set the converted model's version to `0.3.0.dev0` and run the upstream validator. Set `expression.sql` only for verified `OSSIE_SQL_2026` expressions. [Gravitino export format](https://github.com/apache/gravitino/blob/ac461b995d2e02aab4f542b686b633faa67fbd7a/common/src/main/java/org/apache/gravitino/semantic/OssieDocumentConverter.java) · [Ossie core specification](https://github.com/apache/ossie/blob/aedf08651451306896d98e17657c16c99848ef78/core-spec/spec.md)
+3. **Bind the source and check results.** For a logical dataset `orders` pointing to `sales.mart.orders`, ensure AVA's configured engine can resolve that table. Configure explicit mappings when deployed catalog or table names differ. Check metric values and join grain against known results, and retain the revision number and document digest with the run.
+
+```sh
+ava schema "$DATASET_ID"
+ava semantic "$DATASET_ID" --file sales.ossie.v0.3.json
+```

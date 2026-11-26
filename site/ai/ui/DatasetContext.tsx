@@ -24,11 +24,11 @@ function SemanticEditor({ live, onClose }: { live: LiveChat; onClose: () => void
     editor.current?.focus();
   }, []);
 
-  async function apply(json: string) {
+  async function apply(text: string) {
     setPending(true);
     setError('');
     try {
-      await live.onSemanticChange(json);
+      await live.onSemanticChange(text);
       onClose();
     } catch (err) {
       const issues = err instanceof Error && 'issues' in err ? err.issues : undefined;
@@ -36,7 +36,7 @@ function SemanticEditor({ live, onClose }: { live: LiveChat; onClose: () => void
         Array.isArray(issues)
           ? issues
               .slice(0, 3)
-              .map((issue) => `${issue.path.join('.') || 'JSON'}: ${issue.message}`)
+              .map((issue) => `${issue.path.join('.') || 'Ossie'}: ${issue.message}`)
               .join('\n')
           : err instanceof Error
           ? err.message
@@ -88,13 +88,13 @@ function SemanticEditor({ live, onClose }: { live: LiveChat; onClose: () => void
             </button>
           </div>
           <p id="semantic-description" className="mt-3 text-sm leading-6 text-ink-2">
-            {t('defineMetricsExplainFieldsAndDescribeDrill')}
+            {t('modelDescription')}
           </p>
         </div>
         <div className="space-y-3 px-5 py-4 sm:px-6">
           <div className="flex flex-wrap items-center justify-between gap-2">
-            <label htmlFor="semantic-json" className="text-xs font-medium">
-              {t('semanticJSON')}
+            <label htmlFor="semantic-document" className="text-xs font-medium">
+              {t('semanticDocument')}
             </label>
             <div className="flex items-center gap-4 text-xs">
               <Link
@@ -111,15 +111,15 @@ function SemanticEditor({ live, onClose }: { live: LiveChat; onClose: () => void
                 onClick={() => fileInput.current?.click()}
                 className="font-medium underline decoration-[color:var(--color-primary-dark)] underline-offset-4 disabled:opacity-40"
               >
-                {t('importJSON')}
+                {t('importDocument')}
               </button>
             </div>
           </div>
           <input
             ref={fileInput}
             type="file"
-            accept=".json,application/json"
-            aria-label={t('importSemanticJSON')}
+            accept=".json,.yaml,.yml,application/json,application/yaml"
+            aria-label={t('importSemanticDocument')}
             className="hidden"
             disabled={pending}
             onChange={async (event) => {
@@ -143,7 +143,7 @@ function SemanticEditor({ live, onClose }: { live: LiveChat; onClose: () => void
           />
           <textarea
             ref={editor}
-            id="semantic-json"
+            id="semantic-document"
             spellCheck={false}
             value={draft}
             disabled={pending}

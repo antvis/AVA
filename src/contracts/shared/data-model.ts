@@ -6,7 +6,7 @@ const name = z.string().min(1);
 const properties = z.record(z.string(), jsonValue);
 const key = z.union([name, z.tuple([name]).rest(name)]);
 
-export const column = z
+const column = z
   .object({
     name,
     type: name,
@@ -24,7 +24,7 @@ const tableReference = z
   .object({ catalog: z.string().optional(), schema: z.string().optional(), table: name })
   .catchall(jsonValue);
 
-export const modelStructure = z
+const modelStructure = z
   .object({
     name,
     columns: z.array(column).optional(),
@@ -36,8 +36,7 @@ export const modelStructure = z
   })
   .strict();
 
-/** Share source exclusivity between the complete model and semantic-only model. */
-export function withModelSource<S extends z.ZodRawShape>(structure: z.ZodObject<S>) {
+function withModelSource<S extends z.ZodRawShape>(structure: z.ZodObject<S>) {
   return z.union(
     [
       structure.extend({ refSql: name, baseObject: z.never().optional(), tableReference: z.never().optional() }),
